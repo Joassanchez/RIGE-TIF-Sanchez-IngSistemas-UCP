@@ -1,0 +1,19 @@
+# Salidas de prueba del armado
+build/
+# Temporales de Office y LibreOffice
+~$*
+.~lock.*#
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+# Python
+__pycache__/
+*.pyc
+.venv/
+# Variables locales (usar .env.example)
+.env
+
+.claude/
+CLAUDE.md

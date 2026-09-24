@@ -1,0 +1,36 @@
+# Índice de decisiones (ADR)
+
+El ingeniero lee este índice al abrir cada sesión y abre solo los ADR que el tema requiere. Los ADR-001 a ADR-018 corresponden a los códigos D-01 a D-18 del Anexo III; la numeración continúa sin reiniciarse.
+
+| ADR | Decisión | Estado | Afecta |
+|---|---|---|---|
+| [ADR-001](ADR-001-relevar-referente-tecnico-individual.md) | Relevar a un referente técnico individual | aceptado (retroactivo) | apartado I.1.2 |
+| [ADR-002](ADR-002-verificar-oe-1-contra-resolucion.md) | Verificar el OE-1 contra la resolución por agente de la herramienta | aceptado (retroactivo) | apartado I.2.4 |
+| [ADR-003](ADR-003-determinar-limite-observacion-prueba-piloto.md) | Determinar el límite de observación en la prueba piloto, por criterio de censura | aceptado (retroactivo) | apartado I.3.2 |
+| [ADR-004](ADR-004-aplicar-tipologia-kendall-kendall-tipos.md) | Aplicar la tipología de Kendall y Kendall a los tipos de decisión sobre la configuración | aceptado (retroactivo) | apartado I.3.3 |
+| [ADR-005](ADR-005-anclar-criterio-exito-valor-observado.md) | Anclar el criterio de éxito en el valor observado y sostenerlo en la comparación pareada | aceptado (retroactivo) | apartado I.3.4 |
+| [ADR-006](ADR-006-incorporar-funciones-evaluacion-permisos-herramienta.md) | Incorporar las funciones de evaluación de permisos de la herramienta, bajo su licencia | aceptado (retroactivo) | apartado I.3.5 |
+| [ADR-007](ADR-007-asociar-proyecto-unicamente-ods-8.md) | Asociar el proyecto únicamente al ODS 8, meta 8.2 | aceptado (retroactivo) | apartado I.4.1 |
+| [ADR-008](ADR-008-adoptar-agente-como-eje-representacion.md) | Adoptar el agente como eje de la representación | aceptado (retroactivo) | apartado I.6.1 |
+| [ADR-009](ADR-009-construir-prototipo-v0-como-maqueta.md) | Construir el prototipo v0 como maqueta de baja fidelidad | aceptado (retroactivo) | apartado I.6.6 |
+| [ADR-010](ADR-010-ampliar-poblacion-usuarios-cualquier-herramienta.md) | Ampliar la población a usuarios de cualquier herramienta agéntica, con dos perfiles | aceptado (retroactivo) | apartado II.2.1 |
+| [ADR-011](ADR-011-emplear-forma-unica-instrumento-ambas.md) | Emplear una forma única de instrumento en ambas mediciones | aceptado (retroactivo) | apartado II.2.1 |
+| [ADR-012](ADR-012-admitir-totalidad-comandos-nativos-introspeccion.md) | Admitir la totalidad de los comandos nativos de introspección | aceptado (retroactivo) | apartado II.2.1 |
+| [ADR-013](ADR-013-relevar-incidencias-mediante-filtro-titulo.md) | Relevar las incidencias mediante filtro por título | aceptado (retroactivo) | apartado II.2.2 |
+| [ADR-014](ADR-014-presentar-desagregacion-perfil-condiciones-c.md) | Presentar la desagregación por perfil con las condiciones C-2 a C-4 agrupadas | aceptado (retroactivo) | apartado II.3.2 |
+| [ADR-015](ADR-015-aplicar-cadena-valor-desarrollo-software.md) | Aplicar la cadena de valor al desarrollo de software asistido por agentes | aceptado (retroactivo) | apartado II.5.3 |
+| [ADR-016](ADR-016-excluir-referente-muestra-linea-base.md) | Excluir al referente de la muestra de la línea de base | aceptado (retroactivo) | apartado II.2.4 |
+| [ADR-017](ADR-017-incorporar-interfaz-linea-comandos-solo.md) | Incorporar una interfaz de línea de comandos de solo lectura, con salida estructurada | aceptado (retroactivo) | apartado I.6.5 |
+| [ADR-018](ADR-018-no-producir-valoracion-monetaria-problema.md) | No producir una valoración monetaria del problema y establecer su magnitud con los indicadores de la línea de base | aceptado (retroactivo) | apartado I.3.1 |
+| [ADR-019](ADR-019-modelo-dominio-mixto-agente-entidad.md) | Modelo del dominio mixto: Agente como entidad de primera clase y Elemento genérico con subtipos | aceptado (retroactivo) | Cap. III (III.2) |
+| [ADR-020](ADR-020-adoptar-entrada-configuracion-denominacion-unica.md) | Adoptar «entrada de configuración» como denominación única de las vías por las que llega la configuración | aceptado (retroactivo) | Cap. III (III.2.4) y glosario; propaga al AE1 |
+| [ADR-021](ADR-021-explicacion-lenguaje-natural-mediante-plantillas.md) | Explicación en lenguaje natural mediante plantillas deterministas, sin modelo de lenguaje, limitada a decisiones de permiso y hallazgos | aceptado (retroactivo) | Cap. III (III.5), RF-02, RF-07; corrige la función F2 del AE1 |
+| [ADR-022](ADR-022-salida-linea-comandos-version-minima.md) | Salida por línea de comandos en versión mínima: un comando único de consulta de valores efectivos con procedencia | aceptado (retroactivo) | Cap. III (III.3, III.4), RF-03 |
+| [ADR-023](ADR-023-persistencia-almacen-propio-cache-hash.md) | Persistencia: almacén propio con caché por hash como optimización | propuesto | Cap. III / Cap. V (almacén de la iteración 1) |
+| [ADR-024](ADR-024-apertura-declaracion-determinante-editor-prioridad.md) | Apertura de la declaración determinante en el editor con prioridad Could | aceptado (retroactivo) | Cap. III (III.5), RF-12 |
+| [ADR-025](ADR-025-modelo-sostenimiento-licencia-abierta-mit.md) | Modelo de sostenimiento por licencia abierta (MIT), sin explotación comercial | aceptado (retroactivo) | Cap. IV (IV.1), Cap. X |
+| [ADR-026](ADR-026-vision-nombrar-herramientas-que-se.md) | Visión sin nombrar las herramientas que se incorporarían en el futuro | aceptado (retroactivo) | Cap. IV (IV.2) |
+| [ADR-027](ADR-027-flujo-valor-seleccionado-consulta-estado.md) | Flujo de valor seleccionado: consulta del estado efectivo de un agente (RF-01 y RF-02), con criterio fijado antes de medir | aceptado (retroactivo) | Cap. IV (IV.3), Cap. V |
+| [ADR-028](ADR-028-iteraciones-duracion-variable-cerradas-hitos.md) | Iteraciones de duración variable, cerradas en los hitos de cadencia | aceptado (retroactivo) | Cap. V (V.1) |
+| [ADR-029](ADR-029-estrategia-oraculo-hibrida-resultados-referencia.md) | Estrategia de oráculo híbrida: resultados de referencia versionados y regeneración completa al cierre de cada iteración | aceptado (retroactivo) | Cap. V; RNF-02 |
+| [ADR-030](ADR-030-presupuesto-sobre-horas-reales-190.md) | Presupuesto sobre horas reales: 190 h efectivas (136 técnicas y 54 de reserva documental), con cláusula de contingencia | aceptado (retroactivo) | Cap. V (V.4, V.5), Cap. X |

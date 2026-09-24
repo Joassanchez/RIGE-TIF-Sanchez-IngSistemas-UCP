@@ -1,0 +1,7 @@
+## I.5 · Descripción breve del Sistema de Información
+
+La configuración de un agente de programación no está escrita en un solo lugar. Se reparte entre varios archivos que la herramienta combina según un orden de prioridad, valores que llegan desde variables del entorno y reglas y elementos propios de la herramienta que no figuran en ningún archivo. Saber qué rige realmente sobre un agente obliga hoy a revisar todo eso y deducir el resultado a mano.
+
+RIGE es una aplicación de escritorio que corre en el equipo del desarrollador y funciona como el lugar único donde se consulta esa configuración. Lee lo que ya existe, sin modificarlo, y construye una representación unificada de los elementos que determinan el comportamiento del agente y de las relaciones entre ellos. Para cada valor informa qué rige, qué archivo lo determina y qué declaraciones quedan sin efecto; ante una acción concreta, indica si el agente puede realizarla, debe pedir confirmación o la tiene prohibida, y qué regla lo decide. Detecta además referencias a elementos inexistentes, reglas que nunca llegan a aplicarse y elementos que ningún agente puede utilizar. Las mismas respuestas se obtienen desde la terminal mediante un comando de solo lectura con salida estructurada, previsto para que otro programa consulte cómo está configurado un entorno antes de operar sobre él.
+
+RIGE está dirigida al desarrollador que utiliza OpenCode y configura su propio entorno. El cambio es directo: la respuesta que hoy se reconstruye archivo por archivo pasa a consultarse con su origen a la vista.

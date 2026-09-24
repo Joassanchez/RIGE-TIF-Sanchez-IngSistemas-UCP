@@ -1,0 +1,20 @@
+# Fuente única de los datos de identificación. El armado y la bitácora los toman de aquí.
+universidad: "Universidad de la Cuenca del Plata"
+facultad: "Facultad de Ingeniería, Tecnología y Arquitectura"
+carrera: "Ingeniería en Sistemas de Información"
+asignatura: "Proyecto Final de Grado"
+titulo: "RIGE: plataforma local para la resolución y explicación de la configuración efectiva y su procedencia en herramientas de programación basadas en agentes"
+autor:
+  apellido_nombre: "Sánchez, Joaquín Sebastián"
+  dni: "45.452.416"
+  correo: "joassanchez03@gmail.com"
+equipo: "Sanchez"          # usado en la nomenclatura de archivos (AAAAMMDD_InformeAEn_Equipo_vN)
+docente: "PosDr. Darío Ezequiel Díaz"
+comision: "Comisión A · Sede Posadas"
+lugar: "Posadas, Misiones"
+anio: 2026
+repositorio: "[DATO PENDIENTE: URL del repositorio en GitHub]"
+tablero: "[DATO PENDIENTE: URL del tablero de gestión]"
+referente:
+  nombre: "Valeria Areco"
+  organizacion: "EMSA (Electricidad de Misiones S.A.) — equipo de Sistemas"
