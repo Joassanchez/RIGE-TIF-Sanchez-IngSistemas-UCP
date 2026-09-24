@@ -27,9 +27,20 @@ Correcciones arrastradas y tareas abiertas. Formato: origen · sección · descr
 | M-09 | Cap. V · Figura 3 | El cronograma original estaba en página apaisada; en el armado se ajusta al ancho vertical. Revisar legibilidad. | menor |
 | M-10 | Anexos I, V (Cap. III) | Las tablas de estos anexos duplican el Libro de trabajo. Definir si el armado las genera desde `03-requisitos/libro/`. | menor |
 | M-11 | Armado | Numeración independiente de anexos («página X de Y») todavía no implementada en `tools/armar.py`. | importante (formal) |
-| M-12 | ADR-023 | Caché por hash: pendiente la consulta al docente sobre la capa de persistencia. | menor |
+| M-12 | ADR-023 | ~~Caché por hash: pendiente la consulta al docente sobre la capa de persistencia.~~ Reemplazado por AD-03 (24/09/2026). | menor |
 | M-13 | Libro · reglas, glosario, entidades | Valores fuera de las listas de la cátedra detectados al exportar el libro: estado de regla «Verificada en ejecución» (permitidos: Validada · Pendiente · En disputa); «¿En disputa?» del glosario con texto en lugar de Sí/No; reclasificaciones de entidades con texto adicional («Atributo de Entrada, …»). Ajustar en `03-requisitos/libro/`. | importante |
 | M-14 | `informe/datos-autor.yaml` | Confirmar el valor de «Equipo» para la nomenclatura de archivos (hoy «Sanchez»). | menor |
+
+## Detectados en el control de los ADR 019 a 030 (24/09/2026)
+
+| # | Sección | Pendiente | Severidad |
+|---|---|---|---|
+| AD-01 | III.3 (último párrafo) · IV.1 (Tabla 10) | Presupuesto inconsistente con V.4 y ADR-030: III.3 declara 20 h × **9** semanas = 180 h y **153 h** efectivas; IV.1 cita 153 h «(apartado V.4)». V.4 declara 28 h × **8** semanas = 224 h y **190 h** efectivas (136 técnicas). Alinear III.3 e IV.1 con V.4 (con `/corregir`; ambas secciones vuelven a borrador). | importante |
+| AD-02 | Libro · RNF-06 | IV.1 fija la plataforma de acreditación de RNF-06 en Ubuntu 26.04 con ejecución por contenedor y dice que «el valor se incorpora a la ficha de RNF-06», pero la ficha conserva `[plataformas]`. Cerrar A-04 en su parte de RNF-06. Esa decisión no tiene ADR: evaluar si se registra. | importante |
+| AD-03 | ADR-023 | El ADR quedó ampliado con tres alternativas y la recomendación del ingeniero (almacén propio sin caché; caché diferida). Decide el autor (`/aceptar` o `/rechazar`). Bloquea U-01. Reemplaza a M-12. | bloqueante |
+| AD-04 | Anexo III | `00-gestion/anexo-III.md` llega hasta D-18. Faltan las filas de D-19 en adelante para las decisiones de la AE2 (sin ADR-024 ni ADR-026). | importante |
+| AD-05 | ADR-024 y ADR-026 | Eliminación aprobada por el autor y no ejecutada (permiso denegado al ingeniero): borrar ambos archivos y sus filas en `INDICE.md`, y agregar la nota de números retirados. | menor |
+| AD-06 | Decisiones técnicas | No hay ADR sobre el stack del prototipo, la tecnología del almacén, la integración del evaluador de permisos (ADR-006) ni la herramienta de CI. Abrir con `/decidir` antes de construir el v1. | bloqueante |
 
 ## Arrastrados de sesiones anteriores
 

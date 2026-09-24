@@ -6,7 +6,7 @@ Reglas transversales que aplican el redactor y controlan los revisores. Fuente: 
 
 - Impersonal, verbos en presente y en afirmativo (Art. 21.º).
 - Sin desarrollos teóricos ni discusiones ajenas al proyecto; las alternativas propias se consignan en forma sintética, con la deliberación en el Anexo III.
-- Ortografía y redacción descuentan hasta un punto sobre diez (0,50 desde el sexto error de ortografía; 0,50 desde el cuarto de redacción).
+- Sin errores de Ortografía y redacción.
 - Criterio de formato uniforme.
 
 ## 2. Contenido transversal

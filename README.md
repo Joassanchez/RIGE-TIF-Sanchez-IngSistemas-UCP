@@ -35,6 +35,4 @@ python tools/construir_reference.py                # regenera el reference.docx
 
 `armar.py` solo genera una entrega si todas sus secciones están aprobadas en `00-gestion/estado.md`; con `--prueba` omite ese control y escribe en `build/`.
 
-## Trabajo con agentes
 
-La documentación se trabaja con Claude Code en VS Code. El funcionamiento completo está en [`00-gestion/diseno-sistema-agentes.md`](00-gestion/diseno-sistema-agentes.md); las reglas del ingeniero, en [`CLAUDE.md`](CLAUDE.md). Los commits y etiquetas los realiza únicamente el autor.
