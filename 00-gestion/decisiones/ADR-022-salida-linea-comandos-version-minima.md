@@ -1,6 +1,6 @@
 # ADR-022 — Salida por línea de comandos en versión mínima: un comando único de consulta de valores efectivos con procedencia
 
-- Estado: aceptado (retroactivo)
+- Estado: aceptado (retroactivo); reemplazado parcialmente por ADR-041 (25/09/2026) en la exclusión de la consulta de permisos por línea de comandos
 - Fecha: AE2 (septiembre de 2026)
 - Capítulos afectados: Cap. III (III.3, III.4 decisión L-06), RF-03, RNF-08; Cap. V (V.4, Tablas 18 y 19; V.5, CU-05 y Tabla 21)
 - Origen: Cap. III, III.3 y III.4; chat «Capitulo III - AE1»

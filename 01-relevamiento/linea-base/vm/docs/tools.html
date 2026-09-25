@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tools · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a class="actual" href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Tools</h1>
+<p>Tools allow the LLM to perform actions in your codebase. OpenCode comes with a set of built-in tools, but you can extend it with <a href="custom-tools.html">custom tools</a> or <a href="mcp-servers.html">MCP servers</a>.</p>
+<p>By default, all tools are <strong>enabled</strong> and don't need permission to run. You can control tool behavior through <a href="permissions.html">permissions</a>.</p>
+<hr />
+<h2 id="configure">Configure</h2>
+<p>Use the <code>permission</code> field to control tool behavior. You can allow, deny, or require approval for each tool.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;edit&quot;: &quot;deny&quot;,
+    &quot;bash&quot;: &quot;ask&quot;,
+    &quot;webfetch&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>You can also use wildcards to control multiple tools at once. For example, to require approval for all tools from an MCP server:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;mymcp_*&quot;: &quot;ask&quot;
+  }
+}
+</code></pre>
+<p><a href="permissions.html">Learn more</a> about configuring permissions.</p>
+<hr />
+<h2 id="built-in">Built-in</h2>
+<p>Here are all the built-in tools available in OpenCode.</p>
+<hr />
+<h3 id="bash">bash</h3>
+<p>Execute shell commands in your project environment.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;bash&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>This tool allows the LLM to run terminal commands like <code>npm install</code>, <code>git status</code>, or any other shell command.</p>
+<hr />
+<h3 id="edit">edit</h3>
+<p>Modify existing files using exact string replacements.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;edit&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>This tool performs precise edits to files by replacing exact text matches. It's the primary way the LLM modifies code.</p>
+<hr />
+<h3 id="write">write</h3>
+<p>Create new files or overwrite existing ones.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;edit&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>Use this to allow the LLM to create new files. It will overwrite existing files if they already exist.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>The <code>write</code> tool is controlled by the <code>edit</code> permission, which covers all file modifications (<code>edit</code>, <code>write</code>, <code>apply_patch</code>).</p>
+</div>
+<hr />
+<h3 id="read">read</h3>
+<p>Read file contents from your codebase.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;read&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>This tool reads files and returns their contents. It supports reading specific line ranges for large files.</p>
+<hr />
+<h3 id="grep">grep</h3>
+<p>Search file contents using regular expressions.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;grep&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>Fast content search across your codebase. Supports full regex syntax and file pattern filtering.</p>
+<hr />
+<h3 id="glob">glob</h3>
+<p>Find files by pattern matching.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;glob&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>Search for files using glob patterns like <code>**/*.js</code> or <code>src/**/*.ts</code>. Returns matching file paths sorted by modification time.</p>
+<hr />
+<h3 id="lsp-experimental">lsp (experimental)</h3>
+<p>Interact with your configured LSP servers to get code intelligence features like definitions, references, hover info, and call hierarchy.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>This tool is only available when <code>OPENCODE_EXPERIMENTAL_LSP_TOOL=true</code> (or <code>OPENCODE_EXPERIMENTAL=true</code>).</p>
+</div>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;lsp&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>Supported operations include <code>goToDefinition</code>, <code>findReferences</code>, <code>hover</code>, <code>documentSymbol</code>, <code>workspaceSymbol</code>, <code>goToImplementation</code>, <code>prepareCallHierarchy</code>, <code>incomingCalls</code>, and <code>outgoingCalls</code>.</p>
+<p>To configure which LSP servers are available for your project, see <a href="lsp.html">LSP Servers</a>.</p>
+<hr />
+<h3 id="apply_patch">apply_patch</h3>
+<p>Apply patches to files.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;edit&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>This tool applies patch files to your codebase. Useful for applying diffs and patches from various sources.</p>
+<p>When handling <code>tool.execute.before</code> or <code>tool.execute.after</code> hooks, check <code>input.tool === "apply_patch"</code> (not <code>"patch"</code>).</p>
+<p><code>apply_patch</code> uses <code>output.args.patchText</code> instead of <code>output.args.filePath</code>. Paths are embedded in marker lines within <code>patchText</code> and are relative to the project root (for example: <code>*** Add File: src/new-file.ts</code>, <code>*** Update File: src/existing.ts</code>, <code>*** Move to: src/renamed.ts</code>, <code>*** Delete File: src/obsolete.ts</code>).</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>The <code>apply_patch</code> tool is controlled by the <code>edit</code> permission, which covers all file modifications (<code>edit</code>, <code>write</code>, <code>apply_patch</code>).</p>
+</div>
+<hr />
+<h3 id="skill">skill</h3>
+<p>Load a <a href="skills.html">skill</a> (a <code>SKILL.md</code> file) and return its content in the conversation.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;skill&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<hr />
+<h3 id="todowrite">todowrite</h3>
+<p>Manage todo lists during coding sessions.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;todowrite&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>Creates and updates task lists to track progress during complex operations. The LLM uses this to organize multi-step tasks.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>This tool is disabled for subagents by default, but you can enable it manually. <a href="agents.html#permissions">Learn more</a></p>
+</div>
+<hr />
+<h3 id="webfetch">webfetch</h3>
+<p>Fetch web content.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;webfetch&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>Allows the LLM to fetch and read web pages. Useful for looking up documentation or researching online resources.</p>
+<hr />
+<h3 id="websearch">websearch</h3>
+<p>Search the web for information.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>This tool is only available when using the OpenCode or OpenCode Go provider, or when either the <code>OPENCODE_ENABLE_EXA</code> or <code>OPENCODE_ENABLE_PARALLEL</code> environment variable is set to any truthy value (e.g., <code>true</code> or <code>1</code>).</p>
+<p>To enable when launching OpenCode:</p>
+<pre><code class="language-bash">OPENCODE_ENABLE_EXA=1 opencode
+# or
+OPENCODE_ENABLE_PARALLEL=1 opencode
+</code></pre>
+</div>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;websearch&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>Performs web searches using Exa or Parallel to find relevant information online. Useful for researching topics, finding current events, or gathering information beyond the training data cutoff.</p>
+<p>No API key is required — the tool connects directly to the backend's hosted MCP service without authentication.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Use <code>websearch</code> when you need to find information (discovery), and <code>webfetch</code> when you need to retrieve content from a specific URL (retrieval).</p>
+</div>
+<hr />
+<h3 id="question">question</h3>
+<p>Ask the user questions during execution.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;question&quot;: &quot;allow&quot;
+  }
+}
+</code></pre>
+<p>This tool allows the LLM to ask the user questions during a task. It's useful for:</p>
+<ul>
+<li>Gathering user preferences or requirements</li>
+<li>Clarifying ambiguous instructions</li>
+<li>Getting decisions on implementation choices</li>
+<li>Offering choices about what direction to take</li>
+</ul>
+<p>Each question includes a header, the question text, and a list of options. Users can select from the provided options or type a custom answer. When there are multiple questions, users can navigate between them before submitting all answers.</p>
+<hr />
+<h2 id="custom-tools">Custom tools</h2>
+<p>Custom tools let you define your own functions that the LLM can call. These are defined in your config file and can execute arbitrary code.</p>
+<p><a href="custom-tools.html">Learn more</a> about creating custom tools.</p>
+<hr />
+<h2 id="mcp-servers">MCP servers</h2>
+<p>MCP (Model Context Protocol) servers allow you to integrate external tools and services. This includes database access, API integrations, and third-party services.</p>
+<p><a href="mcp-servers.html">Learn more</a> about configuring MCP servers.</p>
+<hr />
+<h2 id="internals">Internals</h2>
+<p>Internally, tools like <code>grep</code> and <code>glob</code> use <a href="https://github.com/BurntSushi/ripgrep">ripgrep</a> under the hood. By default, ripgrep respects <code>.gitignore</code> patterns, which means files and directories listed in your <code>.gitignore</code> will be excluded from searches and listings.</p>
+<hr />
+<h3 id="ignore-patterns">Ignore patterns</h3>
+<p>To include files that would normally be ignored, create a <code>.ignore</code> file in your project root. This file can explicitly allow certain paths.</p>
+<pre><code class="language-text">!node_modules/
+!dist/
+!build/
+</code></pre>
+<p>For example, this <code>.ignore</code> file allows ripgrep to search within <code>node_modules/</code>, <code>dist/</code>, and <code>build/</code> directories even if they're listed in <code>.gitignore</code>.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

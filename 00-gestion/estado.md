@@ -31,6 +31,29 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | V.4 | `informe/cap-05/V.4-cronograma.md` | aprobada (migración) | AE2 | 24/09/2026 |
 | V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | aprobada (migración) | AE2 | 24/09/2026 |
 
+## Secciones con correcciones pendientes por decisiones aceptadas (25/09/2026)
+
+El estado de cada sección no cambia hasta que se aplica `/corregir`, que la devuelve a `borrador`.
+
+| Sección | Decisión | Cuándo |
+|---|---|---|
+| I.3 (I.3.1 a I.3.4) | ADR-040 (línea de base con agentes, criterio 8 de 12) | Ventana del AE1 |
+| II.2, II.3, II.6.3 | ADR-040 (instrumento, encuesta, amenazas) | Ventana del AE1 |
+| III.4 (L-06), III.5 · RF-03 | ADR-041 (línea de comandos con permisos) | Antes del 01/10 |
+| V.1, V.4, V.5 | ADR-041; ADR-042 si se acepta | Antes del 01/10 |
+
+## Medición de la línea base (ADR-040)
+
+| Elemento | Estado |
+|---|---|
+| Diseño | `01-relevamiento/linea-base/DISENO-medicion-agentes.md` v1.1 |
+| Casos | 16 escenarios escritos; ninguno verificado en la VM |
+| Hoja de respuestas | Reconstruida; abierta hasta la fase 2 |
+| Modelos | Opus 5.5 · Sonnet 5 · Haiku 4.5 (registrados) |
+| Agente de la referente | Pedido enviado; archivo no recibido |
+| Encuesta | Borrador; falta plataforma, comunidades y versión en inglés |
+| Ejecución | Fase 0 no iniciada; ventana del 02/10 al 16/10 |
+
 ## Capítulos de la AE2 sin redactar
 
 | Capítulo | Estado |

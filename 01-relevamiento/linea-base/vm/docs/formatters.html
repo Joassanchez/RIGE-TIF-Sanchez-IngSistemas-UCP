@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formatters · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a class="actual" href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Formatters</h1>
+<p>OpenCode can format files after they are written or edited using language-specific formatters. Formatters are disabled by default; enable them in your config before OpenCode will run them.</p>
+<hr />
+<h2 id="built-in">Built-in</h2>
+<p>OpenCode comes with several built-in formatters for popular languages and frameworks. Below is a list of the formatters, supported file extensions, and commands or config options it needs.</p>
+<table>
+<thead>
+<tr>
+<th>Formatter</th>
+<th>Extensions</th>
+<th>Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>air</td>
+<td>.R</td>
+<td><code>air</code> command available</td>
+</tr>
+<tr>
+<td>biome</td>
+<td>.js, .jsx, .ts, .tsx, .html, .css, .md, .json, .yaml, and <a href="https://biomejs.dev/">more</a></td>
+<td><code>biome.json(c)</code> config file</td>
+</tr>
+<tr>
+<td>cargofmt</td>
+<td>.rs</td>
+<td><code>cargo fmt</code> command available</td>
+</tr>
+<tr>
+<td>clang-format</td>
+<td>.c, .cpp, .h, .hpp, .ino, and <a href="https://clang.llvm.org/docs/ClangFormat.html">more</a></td>
+<td><code>.clang-format</code> config file</td>
+</tr>
+<tr>
+<td>cljfmt</td>
+<td>.clj, .cljs, .cljc, .edn</td>
+<td><code>cljfmt</code> command available</td>
+</tr>
+<tr>
+<td>dart</td>
+<td>.dart</td>
+<td><code>dart</code> command available</td>
+</tr>
+<tr>
+<td>dfmt</td>
+<td>.d</td>
+<td><code>dfmt</code> command available</td>
+</tr>
+<tr>
+<td>gleam</td>
+<td>.gleam</td>
+<td><code>gleam</code> command available</td>
+</tr>
+<tr>
+<td>gofmt</td>
+<td>.go</td>
+<td><code>gofmt</code> command available</td>
+</tr>
+<tr>
+<td>htmlbeautifier</td>
+<td>.erb, .html.erb</td>
+<td><code>htmlbeautifier</code> command available</td>
+</tr>
+<tr>
+<td>ktlint</td>
+<td>.kt, .kts</td>
+<td><code>ktlint</code> command available</td>
+</tr>
+<tr>
+<td>mix</td>
+<td>.ex, .exs, .eex, .heex, .leex, .neex, .sface</td>
+<td><code>mix</code> command available</td>
+</tr>
+<tr>
+<td>nixfmt</td>
+<td>.nix</td>
+<td><code>nixfmt</code> command available</td>
+</tr>
+<tr>
+<td>ocamlformat</td>
+<td>.ml, .mli</td>
+<td><code>ocamlformat</code> command available and <code>.ocamlformat</code> config file</td>
+</tr>
+<tr>
+<td>ormolu</td>
+<td>.hs</td>
+<td><code>ormolu</code> command available</td>
+</tr>
+<tr>
+<td>oxfmt (Experimental)</td>
+<td>.js, .jsx, .ts, .tsx</td>
+<td><code>oxfmt</code> dependency in <code>package.json</code> and an <a href="cli.html#experimental">experimental env variable flag</a></td>
+</tr>
+<tr>
+<td>pint</td>
+<td>.php</td>
+<td><code>laravel/pint</code> dependency in <code>composer.json</code></td>
+</tr>
+<tr>
+<td>prettier</td>
+<td>.js, .jsx, .ts, .tsx, .html, .css, .md, .json, .yaml, and <a href="https://prettier.io/docs/en/index.html">more</a></td>
+<td><code>prettier</code> dependency in <code>package.json</code></td>
+</tr>
+<tr>
+<td>rubocop</td>
+<td>.rb, .rake, .gemspec, .ru</td>
+<td><code>rubocop</code> command available</td>
+</tr>
+<tr>
+<td>ruff</td>
+<td>.py, .pyi</td>
+<td><code>ruff</code> command available with config</td>
+</tr>
+<tr>
+<td>rustfmt</td>
+<td>.rs</td>
+<td><code>rustfmt</code> command available</td>
+</tr>
+<tr>
+<td>shfmt</td>
+<td>.sh, .bash</td>
+<td><code>shfmt</code> command available</td>
+</tr>
+<tr>
+<td>standardrb</td>
+<td>.rb, .rake, .gemspec, .ru</td>
+<td><code>standardrb</code> command available</td>
+</tr>
+<tr>
+<td>terraform</td>
+<td>.tf, .tfvars</td>
+<td><code>terraform</code> command available</td>
+</tr>
+<tr>
+<td>uv</td>
+<td>.py, .pyi</td>
+<td><code>uv</code> command available</td>
+</tr>
+<tr>
+<td>zig</td>
+<td>.zig, .zon</td>
+<td><code>zig</code> command available</td>
+</tr>
+</tbody>
+</table>
+<p>When formatters are enabled, OpenCode will use <code>prettier</code> for matching files if your project has <code>prettier</code> in <code>package.json</code>.</p>
+<hr />
+<h2 id="how-it-works">How it works</h2>
+<p>When OpenCode writes or edits a file and formatters are enabled, it:</p>
+<ol>
+<li>Checks the file extension against all enabled formatters.</li>
+<li>Runs the appropriate formatter command on the file.</li>
+<li>Applies the formatting changes.</li>
+</ol>
+<p>This process happens in the background for enabled formatters.</p>
+<hr />
+<h2 id="configure">Configure</h2>
+<p>You can enable and customize formatters through the <code>formatter</code> section in your OpenCode config.</p>
+<p>To enable all built-in formatters, set <code>formatter</code> to <code>true</code>.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;formatter&quot;: true
+}
+</code></pre>
+<p>Use an object to keep built-ins enabled while configuring overrides or custom formatters.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;formatter&quot;: {}
+}
+</code></pre>
+<p>Each formatter configuration supports the following:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>disabled</code></td>
+<td>boolean</td>
+<td>Set this to <code>true</code> to disable the formatter</td>
+</tr>
+<tr>
+<td><code>command</code></td>
+<td>string[]</td>
+<td>The command to run for formatting. Required for custom formatters; optional for built-ins.</td>
+</tr>
+<tr>
+<td><code>environment</code></td>
+<td>object</td>
+<td>Environment variables to set when running the formatter</td>
+</tr>
+<tr>
+<td><code>extensions</code></td>
+<td>string[]</td>
+<td>File extensions this formatter should handle</td>
+</tr>
+</tbody>
+</table>
+<p>Let's look at some examples.</p>
+<hr />
+<h3 id="disabling-formatters">Disabling formatters</h3>
+<p>If <code>formatter</code> is omitted, all formatters are disabled. To disable all formatters after another config enabled them, set <code>formatter</code> to <code>false</code>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;formatter&quot;: false
+}
+</code></pre>
+<p>To disable a <strong>specific</strong> formatter, set <code>disabled</code> to <code>true</code>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;formatter&quot;: {
+    &quot;prettier&quot;: {
+      &quot;disabled&quot;: true
+    }
+  }
+}
+</code></pre>
+<hr />
+<h3 id="custom-formatters">Custom formatters</h3>
+<p>You can configure built-in formatters with options like <code>environment</code> or <code>extensions</code>. To add a custom formatter, specify a <code>command</code> and <code>extensions</code>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;formatter&quot;: {
+    &quot;prettier&quot;: {
+      &quot;command&quot;: [&quot;npx&quot;, &quot;prettier&quot;, &quot;--write&quot;, &quot;$FILE&quot;],
+      &quot;environment&quot;: {
+        &quot;NODE_ENV&quot;: &quot;development&quot;
+      },
+      &quot;extensions&quot;: [&quot;.js&quot;, &quot;.ts&quot;, &quot;.jsx&quot;, &quot;.tsx&quot;]
+    },
+    &quot;custom-markdown-formatter&quot;: {
+      &quot;command&quot;: [&quot;deno&quot;, &quot;fmt&quot;, &quot;$FILE&quot;],
+      &quot;extensions&quot;: [&quot;.md&quot;]
+    }
+  }
+}
+</code></pre>
+<p>The <strong><code>$FILE</code> placeholder</strong> in the command will be replaced with the path to the file being formatted.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

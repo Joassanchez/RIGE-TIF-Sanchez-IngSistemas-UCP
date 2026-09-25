@@ -1,0 +1,5 @@
+Origen: tag v1.18.25 de anomalyco/opencode
+Commit: cb7d8b2f5e44876ef98b661dc10590c915af3a9f
+Carpeta: packages/web/src/content/docs (páginas .mdx del nivel raíz, en inglés)
+Páginas: 36
+Generado: 2026-09-21

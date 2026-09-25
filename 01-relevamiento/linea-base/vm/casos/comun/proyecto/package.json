@@ -1,0 +1,6 @@
+{
+  "name": "inventario-api",
+  "version": "0.3.1",
+  "private": true,
+  "scripts": { "dev": "node src/index.js" }
+}

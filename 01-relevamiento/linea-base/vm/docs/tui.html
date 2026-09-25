@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TUI · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a class="actual" href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>TUI</h1>
+<p>OpenCode provides an interactive terminal interface or TUI for working on your projects with an LLM.</p>
+<p>Running OpenCode starts the TUI for the current directory.</p>
+<pre><code class="language-bash">opencode
+</code></pre>
+<p>Or you can start it for a specific working directory.</p>
+<pre><code class="language-bash">opencode /path/to/project
+</code></pre>
+<p>Once you're in the TUI, you can prompt it with a message.</p>
+<pre><code class="language-text">Give me a quick summary of the codebase.
+</code></pre>
+<hr />
+<h2 id="file-references">File references</h2>
+<p>You can reference files in your messages using <code>@</code>. This does a fuzzy file search in the current working directory.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>You can also use <code>@</code> to reference files in your messages.</p>
+</div>
+<pre><code class="language-text">How is auth handled in @packages/functions/src/api/index.ts?
+</code></pre>
+<p>The content of the file is added to the conversation automatically.</p>
+<p>Configured <a href="references.html">references</a> also appear in <code>@</code> autocomplete. Type <code>@alias</code> to add the reference root as context, or type <code>@alias/</code> to autocomplete files inside that reference.</p>
+<pre><code class="language-text">Compare our setup with @docs/README.md
+</code></pre>
+<hr />
+<h2 id="bash-commands">Bash commands</h2>
+<p>Start a message with <code>!</code> to run a shell command.</p>
+<pre><code class="language-bash">!ls -la
+</code></pre>
+<p>The output of the command is added to the conversation as a tool result.</p>
+<hr />
+<h2 id="commands">Commands</h2>
+<p>When using the OpenCode TUI, you can type <code>/</code> followed by a command name to quickly execute actions. For example:</p>
+<pre><code class="language-bash">/help
+</code></pre>
+<p>Most commands also have keyboard shortcuts using <code>ctrl+x</code> as the default leader key. <a href="keybinds.html">Learn more</a>.</p>
+<p>Here are all available slash commands:</p>
+<hr />
+<h3 id="connect">connect</h3>
+<p>Add a provider to OpenCode. Allows you to select from available providers and add their API keys.</p>
+<pre><code class="language-bash">/connect
+</code></pre>
+<hr />
+<h3 id="compact">compact</h3>
+<p>Compact the current session. <em>Alias</em>: <code>/summarize</code></p>
+<pre><code class="language-bash">/compact
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x c</code></p>
+<hr />
+<h3 id="details">details</h3>
+<p>Toggle tool execution details.</p>
+<pre><code class="language-bash">/details
+</code></pre>
+<hr />
+<h3 id="editor">editor</h3>
+<p>Open external editor for composing messages. Uses the editor set in your <code>EDITOR</code> environment variable. <a href="#editor-setup">Learn more</a>.</p>
+<pre><code class="language-bash">/editor
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x e</code></p>
+<hr />
+<h3 id="exit">exit</h3>
+<p>Exit OpenCode. <em>Aliases</em>: <code>/quit</code>, <code>/q</code></p>
+<pre><code class="language-bash">/exit
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x q</code></p>
+<hr />
+<h3 id="export">export</h3>
+<p>Export current conversation to Markdown and open in your default editor. Uses the editor set in your <code>EDITOR</code> environment variable. <a href="#editor-setup">Learn more</a>.</p>
+<pre><code class="language-bash">/export
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x x</code></p>
+<hr />
+<h3 id="help">help</h3>
+<p>Show the help dialog.</p>
+<pre><code class="language-bash">/help
+</code></pre>
+<hr />
+<h3 id="init">init</h3>
+<p>Guided setup for creating or updating <code>AGENTS.md</code>. <a href="rules.html">Learn more</a>.</p>
+<pre><code class="language-bash">/init
+</code></pre>
+<hr />
+<h3 id="models">models</h3>
+<p>List available models.</p>
+<pre><code class="language-bash">/models
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x m</code></p>
+<hr />
+<h3 id="new">new</h3>
+<p>Start a new session. <em>Alias</em>: <code>/clear</code></p>
+<pre><code class="language-bash">/new
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x n</code></p>
+<hr />
+<h3 id="redo">redo</h3>
+<p>Redo a previously undone message. Only available after using <code>/undo</code>.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Any file changes will also be restored.</p>
+</div>
+<p>Internally, this uses Git to manage the file changes. So your project <strong>needs to
+be a Git repository</strong>.</p>
+<pre><code class="language-bash">/redo
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x r</code></p>
+<hr />
+<h3 id="sessions">sessions</h3>
+<p>List and switch between sessions. <em>Aliases</em>: <code>/resume</code>, <code>/continue</code></p>
+<pre><code class="language-bash">/sessions
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x l</code></p>
+<hr />
+<h3 id="share">share</h3>
+<p>Share current session. <a href="share.html">Learn more</a>.</p>
+<pre><code class="language-bash">/share
+</code></pre>
+<hr />
+<h3 id="themes">themes</h3>
+<p>List available themes.</p>
+<pre><code class="language-bash">/themes
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x t</code></p>
+<hr />
+<h3 id="thinking">thinking</h3>
+<p>Toggle the visibility of thinking/reasoning blocks in the conversation. When enabled, you can see the model's reasoning process for models that support extended thinking.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>This command only controls whether thinking blocks are <strong>displayed</strong> - it does not enable or disable the model's reasoning capabilities. To toggle actual reasoning capabilities, use <code>ctrl+t</code> to cycle through model variants.</p>
+</div>
+<pre><code class="language-bash">/thinking
+</code></pre>
+<hr />
+<h3 id="undo">undo</h3>
+<p>Undo last message in the conversation. Removes the most recent user message, all subsequent responses, and any file changes.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Any file changes made will also be reverted.</p>
+</div>
+<p>Internally, this uses Git to manage the file changes. So your project <strong>needs to
+be a Git repository</strong>.</p>
+<pre><code class="language-bash">/undo
+</code></pre>
+<p><strong>Keybind:</strong> <code>ctrl+x u</code></p>
+<hr />
+<h3 id="unshare">unshare</h3>
+<p>Unshare current session. <a href="share.html#un-sharing">Learn more</a>.</p>
+<pre><code class="language-bash">/unshare
+</code></pre>
+<hr />
+<h2 id="editor-setup">Editor setup</h2>
+<p>Both the <code>/editor</code> and <code>/export</code> commands use the editor specified in your <code>EDITOR</code> environment variable.</p>
+<div class="tab-t">Linux/macOS</div>
+
+<pre><code>```bash
+# Example for nano or vim
+export EDITOR=nano
+export EDITOR=vim
+
+# For GUI editors, VS Code, Cursor, VSCodium, Windsurf, Zed, etc.
+# include --wait
+export EDITOR="code --wait"
+```
+
+To make it permanent, add this to your shell profile;
+`~/.bashrc`, `~/.zshrc`, etc.
+</code></pre>
+<div class="tab-t">Windows (CMD)</div>
+
+<pre><code>```bash
+set EDITOR=notepad
+
+# For GUI editors, VS Code, Cursor, VSCodium, Windsurf, Zed, etc.
+# include --wait
+set EDITOR=code --wait
+```
+
+To make it permanent, use **System Properties** &gt; **Environment
+Variables**.
+</code></pre>
+<div class="tab-t">Windows (PowerShell)</div>
+
+<pre><code>```powershell
+$env:EDITOR = "notepad"
+
+# For GUI editors, VS Code, Cursor, VSCodium, Windsurf, Zed, etc.
+# include --wait
+$env:EDITOR = "code --wait"
+```
+
+To make it permanent, add this to your PowerShell profile.
+</code></pre>
+<p>Popular editor options include:</p>
+<ul>
+<li><code>code</code> - Visual Studio Code</li>
+<li><code>cursor</code> - Cursor</li>
+<li><code>windsurf</code> - Windsurf</li>
+<li><code>nvim</code> - Neovim editor</li>
+<li><code>vim</code> - Vim editor</li>
+<li><code>nano</code> - Nano editor</li>
+<li><code>notepad</code> - Windows Notepad</li>
+<li><code>subl</code> - Sublime Text</li>
+</ul>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Some editors like VS Code need to be started with the <code>--wait</code> flag.</p>
+</div>
+<p>Some editors need command-line arguments to run in blocking mode. The <code>--wait</code> flag makes the editor process block until closed.</p>
+<hr />
+<h2 id="configure">Configure</h2>
+<p>You can customize TUI behavior through <code>tui.json</code> (or <code>tui.jsonc</code>).</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/tui.json&quot;,
+  &quot;theme&quot;: &quot;opencode&quot;,
+  &quot;leader_timeout&quot;: 2000,
+  &quot;keybinds&quot;: {
+    &quot;leader&quot;: &quot;ctrl+x&quot;,
+    &quot;command_list&quot;: &quot;ctrl+p&quot;
+  },
+  &quot;scroll_speed&quot;: 3,
+  &quot;scroll_acceleration&quot;: {
+    &quot;enabled&quot;: false
+  },
+  &quot;diff_style&quot;: &quot;auto&quot;,
+  &quot;cursor&quot;: {
+    &quot;style&quot;: &quot;block&quot;,
+    &quot;blinking&quot;: true
+  },
+  &quot;mouse&quot;: true,
+  &quot;attention&quot;: {
+    &quot;enabled&quot;: true,
+    &quot;notifications&quot;: true,
+    &quot;sound&quot;: true,
+    &quot;volume&quot;: 0.4,
+    &quot;sound_pack&quot;: &quot;opencode.default&quot;,
+    &quot;sounds&quot;: {
+      &quot;error&quot;: &quot;./sounds/error.mp3&quot;
+    }
+  }
+}
+</code></pre>
+<p>This is separate from <code>opencode.json</code>, which configures server/runtime behavior.</p>
+<p><code>keybinds</code> is merged with built-in defaults, so you only need to configure the shortcuts you want to change.</p>
+<h3 id="options">Options</h3>
+<ul>
+<li><code>theme</code> - Sets your UI theme. <a href="themes.html">Learn more</a>.</li>
+<li><code>keybinds</code> - Customizes keyboard shortcuts. <a href="keybinds.html">Learn more</a>.</li>
+<li><code>leader_timeout</code> - Controls how long OpenCode waits after the leader key. Defaults to <code>2000</code>.</li>
+<li><code>scroll_acceleration.enabled</code> - Enable macOS-style scroll acceleration for smooth, natural scrolling. When enabled, scroll speed increases with rapid scrolling gestures and stays precise for slower movements. <strong>This setting takes precedence over <code>scroll_speed</code> and overrides it when enabled.</strong></li>
+<li><code>scroll_speed</code> - Controls how fast the TUI scrolls when using scroll commands (minimum: <code>0.001</code>, supports decimal values). Defaults to <code>3</code>. <strong>Note: This is ignored if <code>scroll_acceleration.enabled</code> is set to <code>true</code>.</strong></li>
+<li><code>diff_style</code> - Controls diff rendering. <code>"auto"</code> adapts to terminal width, <code>"stacked"</code> always shows a single-column layout.</li>
+<li><code>cursor</code> - Controls the terminal cursor in TUI input fields. <code>style</code> defaults to <code>"block"</code>, can be <code>"underline"</code>, <code>"line"</code>, or <code>"default"</code>; <code>blinking</code> defaults to <code>true</code>. When <code>style</code> is <code>"default"</code>, the terminal default cursor is restored, so <code>blinking</code> has no effect.</li>
+<li><code>mouse</code> - Enable or disable mouse capture in the TUI (default: <code>true</code>). When disabled, the terminal's native mouse selection/scrolling behavior is preserved.</li>
+<li><code>attention</code> - Configures TUI desktop notifications and sounds. Disabled by default.</li>
+</ul>
+<p>Use <code>OPENCODE_TUI_CONFIG</code> to load a custom TUI config path.</p>
+<h3 id="attention">Attention</h3>
+<p>The TUI can request attention for questions, permissions, session errors, and completed sessions. Enable it with <code>attention.enabled</code>; built-in events play sounds when triggered, and non-subagent events request desktop notifications only when the terminal is blurred.</p>
+<ul>
+<li><code>enabled</code> - Enable all attention notifications and sounds. Defaults to <code>false</code>.</li>
+<li><code>notifications</code> - Allow terminal-mediated desktop notifications when attention is enabled. Defaults to <code>true</code>.</li>
+<li><code>sound</code> - Allow attention sounds when attention is enabled. Defaults to <code>true</code>.</li>
+<li><code>volume</code> - Default sound volume from <code>0</code> to <code>1</code>. Defaults to <code>0.4</code>.</li>
+<li><code>sound_pack</code> - Sound pack ID to use. Defaults to <code>opencode.default</code>.</li>
+<li><code>sounds</code> - Override sound files for <code>default</code>, <code>question</code>, <code>permission</code>, <code>error</code>, <code>done</code>, or <code>subagent_done</code>. Paths can be absolute, <code>file://</code> URLs, or relative to <code>tui.json</code>.</li>
+</ul>
+<hr />
+<h2 id="customization">Customization</h2>
+<p>You can customize various aspects of the TUI view using the command palette (<code>ctrl+p</code>). These settings persist across restarts.</p>
+<hr />
+<h4 id="username-display">Username display</h4>
+<p>Toggle whether your username appears in chat messages. Access this through:</p>
+<ul>
+<li>Command palette: Search for "username" or "hide username"</li>
+<li>The setting persists automatically and will be remembered across TUI sessions</li>
+</ul>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

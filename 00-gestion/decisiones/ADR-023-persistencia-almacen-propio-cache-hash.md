@@ -1,6 +1,6 @@
 # ADR-023 — Persistencia: almacén propio con caché por hash como optimización
 
-- Estado: propuesto
+- Estado: aceptado (25/09/2026), opción B
 - Fecha: AE2 (septiembre de 2026)
 - Capítulos afectados: Cap. III (III.2.4, regla RR-01); Cap. V (V.4, Tabla 18; V.5, prototipo v1)
 - Origen: chat «Capitulo III - AE1» (aceptado por el autor con consulta pendiente al docente)
@@ -27,10 +27,10 @@ La consulta al docente sobre la capa de persistencia quedó registrada en el cha
 ### Recomendación y fundamento
 Recomendación del ingeniero: **adoptar B ahora y diferir la caché por hash.** El almacén propio no depende de la respuesta del docente, porque lo exige la guía y el informe aprobado ya lo compromete. La caché es la única parte en discusión y no es necesaria para el v1: se reevalúa cuando RNF-07 tenga un valor y una medición que muestre que el tiempo de resolución lo supera. Si la respuesta del docente llega y exige otra cosa, se reabre con un ADR de reemplazo.
 
-La tecnología del almacén (motor, formato, ubicación) no forma parte de esta decisión: `[DECISIÓN PENDIENTE: tecnología del almacén, junto con la del stack del prototipo]`.
+La tecnología del almacén (motor, formato, ubicación) no forma parte de esta decisión: SQLite embebido, resuelto en ADR-032..
 
 ### Decisión del autor
-[DECISIÓN PENDIENTE: el autor elige A, B o C; recomendación del ingeniero: B, con la caché diferida]
+El autor adopta la **opción B** (25/09/2026): almacén propio de la resolución, sin caché. La caché por hash se difiere hasta que RNF-07 tenga valor y una medición muestre que el tiempo de resolución lo supera. Tecnología del almacén: SQLite embebido (`bun:sqlite`), conforme a ADR-032.
 
 ### Consecuencias
 - Si se adopta B: el v1 implementa esquema, escritura y lectura de la resolución con su guion de creación o migración; la caché se registra como capacidad diferida en `pendientes.md`.

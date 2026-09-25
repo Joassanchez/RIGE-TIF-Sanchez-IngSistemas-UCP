@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Policies · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a class="actual" href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Policies</h1>
+<p>Policies control whether OpenCode may perform an action on a named resource. This feature is experimental and is configured with the <code>experimental.policies</code> array in <code>opencode.json</code>.</p>
+<p>Policies are separate from <a href="permissions.html">permissions</a>. Permissions control what tools can do during a session, while policies control whether OpenCode may use a resource such as an LLM provider.</p>
+<hr />
+<h2 id="configuration">Configuration</h2>
+<p>Each policy statement has three fields:</p>
+<ul>
+<li><code>effect</code> - Either <code>"allow"</code> or <code>"deny"</code>.</li>
+<li><code>action</code> - The operation being controlled.</li>
+<li><code>resource</code> - The resource ID or wildcard pattern the statement applies to.</li>
+</ul>
+<p>For example, deny use of the <code>openai</code> provider:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;experimental&quot;: {
+    &quot;policies&quot;: [
+      {
+        &quot;effect&quot;: &quot;deny&quot;,
+        &quot;action&quot;: &quot;provider.use&quot;,
+        &quot;resource&quot;: &quot;openai&quot;
+      }
+    ]
+  }
+}
+</code></pre>
+<p>A provider denied by policy is not available for model selection or model use, even if it has credentials or is otherwise configured correctly.</p>
+<hr />
+<h2 id="available-policies">Available Policies</h2>
+<p>OpenCode currently supports one policy action:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Resource</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>provider.use</code></td>
+<td>Provider ID, such as <code>openai</code></td>
+<td>Allow or deny use of an LLM provider.</td>
+</tr>
+</tbody>
+</table>
+<p>More policy actions may be added in the future.</p>
+<hr />
+<h2 id="matching">Matching</h2>
+<p>The <code>resource</code> field supports wildcard matching. Use <code>*</code> to match zero or more characters and <code>?</code> to match one character.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;experimental&quot;: {
+    &quot;policies&quot;: [
+      {
+        &quot;effect&quot;: &quot;deny&quot;,
+        &quot;action&quot;: &quot;provider.use&quot;,
+        &quot;resource&quot;: &quot;company-*&quot;
+      }
+    ]
+  }
+}
+</code></pre>
+<p>This denies providers such as <code>company-us</code> and <code>company-eu</code>.</p>
+<hr />
+<h2 id="rule-order">Rule Order</h2>
+<p>When multiple statements match, the last matching statement wins. Put broad rules first, then more specific exceptions after them.</p>
+<p>For example, allow only Anthropic:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;experimental&quot;: {
+    &quot;policies&quot;: [
+      {
+        &quot;effect&quot;: &quot;deny&quot;,
+        &quot;action&quot;: &quot;provider.use&quot;,
+        &quot;resource&quot;: &quot;*&quot;
+      },
+      {
+        &quot;effect&quot;: &quot;allow&quot;,
+        &quot;action&quot;: &quot;provider.use&quot;,
+        &quot;resource&quot;: &quot;anthropic&quot;
+      }
+    ]
+  }
+}
+</code></pre>
+<p>If no policy matches a provider, provider use is allowed by default.</p>
+<p>Policies may be set in both your global config and project config. If policies from both locations match the same provider, your global policy takes priority over the project policy. This prevents a repository from re-enabling a provider that you deny globally.</p>
+<hr />
+<h2 id="provider-lists">Provider Lists</h2>
+<p>Use policies instead of the older <code>disabled_providers</code> and <code>enabled_providers</code> settings when controlling provider access.</p>
+<p>To replace <code>disabled_providers</code>:</p>
+<pre><code class="language-json">{
+  &quot;experimental&quot;: {
+    &quot;policies&quot;: [
+      { &quot;effect&quot;: &quot;deny&quot;, &quot;action&quot;: &quot;provider.use&quot;, &quot;resource&quot;: &quot;openai&quot; },
+      { &quot;effect&quot;: &quot;deny&quot;, &quot;action&quot;: &quot;provider.use&quot;, &quot;resource&quot;: &quot;google&quot; }
+    ]
+  }
+}
+</code></pre>
+<p>To replace <code>enabled_providers</code>, deny all providers first and allow the selected providers after it:</p>
+<pre><code class="language-json">{
+  &quot;experimental&quot;: {
+    &quot;policies&quot;: [
+      { &quot;effect&quot;: &quot;deny&quot;, &quot;action&quot;: &quot;provider.use&quot;, &quot;resource&quot;: &quot;*&quot; },
+      { &quot;effect&quot;: &quot;allow&quot;, &quot;action&quot;: &quot;provider.use&quot;, &quot;resource&quot;: &quot;anthropic&quot; },
+      { &quot;effect&quot;: &quot;allow&quot;, &quot;action&quot;: &quot;provider.use&quot;, &quot;resource&quot;: &quot;openai&quot; }
+    ]
+  }
+}
+</code></pre>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

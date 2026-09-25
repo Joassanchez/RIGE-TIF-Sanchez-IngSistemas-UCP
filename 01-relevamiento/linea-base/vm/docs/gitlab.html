@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitLab · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a class="actual" href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>GitLab</h1>
+<p>OpenCode integrates with your GitLab workflow through your GitLab CI/CD pipeline or with GitLab Duo.</p>
+<p>In both cases, OpenCode will run on your GitLab runners.</p>
+<hr />
+<h2 id="gitlab-ci">GitLab CI</h2>
+<p>OpenCode works in a regular GitLab pipeline. You can build it into a pipeline as a <a href="https://docs.gitlab.com/ee/ci/components/">CI component</a></p>
+<p>Here we are using a community-created CI/CD component for OpenCode — <a href="https://gitlab.com/nagyv/gitlab-opencode">nagyv/gitlab-opencode</a>.</p>
+<hr />
+<h3 id="features">Features</h3>
+<ul>
+<li><strong>Use custom configuration per job</strong>: Configure OpenCode with a custom configuration directory, for example <code>./config/#custom-directory</code> to enable or disable functionality per OpenCode invocation.</li>
+<li><strong>Minimal setup</strong>: The CI component sets up OpenCode in the background, you only need to create the OpenCode configuration and the initial prompt.</li>
+<li><strong>Flexible</strong>: The CI component supports several inputs for customizing its behavior</li>
+</ul>
+<hr />
+<h3 id="setup">Setup</h3>
+<ol>
+<li>Store your OpenCode authentication JSON as a File type CI environment variables under <strong>Settings</strong> &gt; <strong>CI/CD</strong> &gt; <strong>Variables</strong>. Make sure to mark them as "Masked and hidden".</li>
+<li>Add the following to your <code>.gitlab-ci.yml</code> file.</li>
+</ol>
+<p><code>yaml
+   include:
+     - component: $CI_SERVER_FQDN/nagyv/gitlab-opencode/opencode@2
+       inputs:
+         config_dir: ${CI_PROJECT_DIR}/opencode-config
+         auth_json: $OPENCODE_AUTH_JSON # The variable name for your OpenCode authentication JSON
+         command: optional-custom-command
+         message: "Your prompt here"</code></p>
+<p>For more inputs and use cases <a href="https://gitlab.com/explore/catalog/nagyv/gitlab-opencode">check out the docs</a> for this component.</p>
+<hr />
+<h2 id="gitlab-duo">GitLab Duo</h2>
+<p>OpenCode integrates with your GitLab workflow.
+Mention <code>@opencode</code> in a comment, and OpenCode will execute tasks within your GitLab CI pipeline.</p>
+<hr />
+<h3 id="features_1">Features</h3>
+<ul>
+<li><strong>Triage issues</strong>: Ask OpenCode to look into an issue and explain it to you.</li>
+<li><strong>Fix and implement</strong>: Ask OpenCode to fix an issue or implement a feature.
+  It will create a new branch and raise a merge request with the changes.</li>
+<li><strong>Secure</strong>: OpenCode runs on your GitLab runners.</li>
+</ul>
+<hr />
+<h3 id="setup_1">Setup</h3>
+<p>OpenCode runs in your GitLab CI/CD pipeline, here's what you'll need to set it up:</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Check out the <a href="https://docs.gitlab.com/user/duo_agent_platform/agent_assistant/"><strong>GitLab docs</strong></a> for up to date instructions.</p>
+</div>
+<ol>
+<li>Configure your GitLab environment</li>
+<li>Set up CI/CD</li>
+<li>Get an AI model provider API key</li>
+<li>Create a service account</li>
+<li>Configure CI/CD variables</li>
+<li>
+<p>Create a flow config file, here's an example:</p>
+<pre><code>&lt;details&gt;
+</code></pre>
+<p><summary>Flow configuration</summary></p>
+<p>```yaml
+image: node:22-slim
+commands:
+  - echo "Installing opencode"
+  - npm install --global opencode-ai
+  - echo "Installing glab"
+  - export GITLAB_TOKEN=$GITLAB_TOKEN_OPENCODE
+  - apt-get update --quiet &amp;&amp; apt-get install --yes curl wget gpg git &amp;&amp; rm --recursive --force /var/lib/apt/lists/*
+  - curl --silent --show-error --location "https://raw.githubusercontent.com/upciti/wakemeops/main/assets/install_repository" | bash
+  - apt-get install --yes glab
+  - echo "Configuring glab"
+  - echo $GITLAB_HOST
+  - echo "Creating OpenCode auth configuration"
+  - mkdir --parents ~/.local/share/opencode
+  - |
+    cat &gt; ~/.local/share/opencode/auth.json &lt;&lt; EOF
+    {
+      "anthropic": {
+        "type": "api",
+        "key": "$ANTHROPIC_API_KEY"
+      }
+    }
+    EOF
+  - echo "Configuring git"
+  - git config --global user.email "opencode@gitlab.com"
+  - git config --global user.name "OpenCode"
+  - echo "Testing glab"
+  - glab issue list
+  - echo "Running OpenCode"
+  - |
+    opencode run "
+    You are an AI assistant helping with GitLab operations.</p>
+<pre><code>Context: $AI_FLOW_CONTEXT
+Task: $AI_FLOW_INPUT
+Event: $AI_FLOW_EVENT
+
+Please execute the requested task using the available GitLab tools.
+Be thorough in your analysis and provide clear explanations.
+
+&lt;important&gt;
+Please use the glab CLI to access data from GitLab. The glab CLI has already been authenticated. You can run the corresponding commands.
+
+If you are asked to summarize an MR or issue or asked to provide more information then please post back a note to the MR/Issue so that the user can see it.
+You don't need to commit or push up changes, those will be done automatically based on the file changes you make.
+&lt;/important&gt;
+"
+</code></pre>
+<ul>
+<li>git checkout --branch $CI_WORKLOAD_REF origin/$CI_WORKLOAD_REF</li>
+<li>echo "Checking for git changes and pushing if any exist"</li>
+<li>|
+    if ! git diff --quiet || ! git diff --cached --quiet || [ --not --zero "$(git ls-files --others --exclude-standard)" ]; then
+      echo "Git changes detected, adding and pushing..."
+      git add .
+      if git diff --cached --quiet; then
+        echo "No staged changes to commit"
+      else
+        echo "Committing changes to branch: $CI_WORKLOAD_REF"
+        git commit --message "Codex changes"
+        echo "Pushing changes up to $CI_WORKLOAD_REF"
+        git push https://gitlab-ci-token:$GITLAB_TOKEN@$GITLAB_HOST/gl-demo-ultimate-dev-ai-epic-17570/test-java-project.git $CI_WORKLOAD_REF
+        echo "Changes successfully pushed"
+      fi
+    else
+      echo "No git changes detected, skipping push"
+    fi
+variables:</li>
+<li>ANTHROPIC_API_KEY</li>
+<li>GITLAB_TOKEN_OPENCODE</li>
+<li>
+<p>GITLAB_HOST
+```</p>
+</details>
+</li>
+</ul>
+</li>
+</ol>
+<p>You can refer to the <a href="https://docs.gitlab.com/user/duo_agent_platform/agent_assistant/">GitLab CLI agents docs</a> for detailed instructions.</p>
+<hr />
+<h3 id="examples">Examples</h3>
+<p>Here are some examples of how you can use OpenCode in GitLab.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>You can configure to use a different trigger phrase than <code>@opencode</code>.</p>
+</div>
+<ul>
+<li><strong>Explain an issue</strong></li>
+</ul>
+<p>Add this comment in a GitLab issue.</p>
+<p><code>@opencode explain this issue</code></p>
+<p>OpenCode will read the issue and reply with a clear explanation.</p>
+<ul>
+<li><strong>Fix an issue</strong></li>
+</ul>
+<p>In a GitLab issue, say:</p>
+<p><code>@opencode fix this</code></p>
+<p>OpenCode will create a new branch, implement the changes, and open a merge request with the changes.</p>
+<ul>
+<li><strong>Review merge requests</strong></li>
+</ul>
+<p>Leave the following comment on a GitLab merge request.</p>
+<p><code>@opencode review this merge request</code></p>
+<p>OpenCode will review the merge request and provide feedback.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

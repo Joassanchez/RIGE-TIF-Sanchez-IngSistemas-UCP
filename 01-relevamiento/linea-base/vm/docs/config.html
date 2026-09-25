@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Config · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a class="actual" href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Config</h1>
+<p>You can configure OpenCode using a JSON config file.</p>
+<hr />
+<h2 id="format">Format</h2>
+<p>OpenCode supports both <strong>JSON</strong> and <strong>JSONC</strong> (JSON with Comments) formats.</p>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;model&quot;: &quot;anthropic/claude-sonnet-4-5&quot;,
+  &quot;autoupdate&quot;: true,
+  &quot;server&quot;: {
+    &quot;port&quot;: 4096,
+  },
+}
+</code></pre>
+<hr />
+<h2 id="locations">Locations</h2>
+<p>You can place your config in a couple of different locations and they have a
+different order of precedence.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Configuration files are <strong>merged together</strong>, not replaced.</p>
+</div>
+<p>Configuration files are merged together, not replaced. Settings from the following config locations are combined. Later configs override earlier ones only for conflicting keys. Non-conflicting settings from all configs are preserved.</p>
+<p>For example, if your global config sets <code>autoupdate: true</code> and your project config sets <code>model: "anthropic/claude-sonnet-4-5"</code>, the final configuration will include both settings.</p>
+<hr />
+<h3 id="precedence-order">Precedence order</h3>
+<p>Config sources are loaded in this order (later sources override earlier ones):</p>
+<ol>
+<li><strong>Remote config</strong> (from <code>.well-known/opencode</code>) - organizational defaults</li>
+<li><strong>Global config</strong> (<code>~/.config/opencode/opencode.json</code>) - user preferences</li>
+<li><strong>Custom config</strong> (<code>OPENCODE_CONFIG</code> env var) - custom overrides</li>
+<li><strong>Project config</strong> (<code>opencode.json</code> in project) - project-specific settings</li>
+<li><strong><code>.opencode</code> directories</strong> - agents, commands, plugins</li>
+<li><strong>Inline config</strong> (<code>OPENCODE_CONFIG_CONTENT</code> env var) - runtime overrides</li>
+<li><strong>Managed config files</strong> (<code>/Library/Application Support/opencode/</code> on macOS) - admin-controlled</li>
+<li><strong>macOS managed preferences</strong> (<code>.mobileconfig</code> via MDM) - highest priority, not user-overridable</li>
+</ol>
+<p>This means project configs can override global defaults, and global configs can override remote organizational defaults. Managed settings override everything.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>The <code>.opencode</code> and <code>~/.config/opencode</code> directories use <strong>plural names</strong> for subdirectories: <code>agents/</code>, <code>commands/</code>, <code>modes/</code>, <code>plugins/</code>, <code>skills/</code>, <code>tools/</code>, and <code>themes/</code>. Singular names (e.g., <code>agent/</code>) are also supported for backwards compatibility.</p>
+</div>
+<hr />
+<h3 id="remote">Remote</h3>
+<p>Organizations can provide default configuration via the <code>.well-known/opencode</code> endpoint. This is fetched automatically when you authenticate with a provider that supports it.</p>
+<p>Remote config is loaded first, serving as the base layer. All other config sources (global, project) can override these defaults.</p>
+<p>For example, if your organization provides MCP servers that are disabled by default:</p>
+<pre><code class="language-json">{
+  &quot;mcp&quot;: {
+    &quot;jira&quot;: {
+      &quot;type&quot;: &quot;remote&quot;,
+      &quot;url&quot;: &quot;https://jira.example.com/mcp&quot;,
+      &quot;enabled&quot;: false
+    }
+  }
+}
+</code></pre>
+<p>You can enable specific servers in your local config:</p>
+<pre><code class="language-json">{
+  &quot;mcp&quot;: {
+    &quot;jira&quot;: {
+      &quot;type&quot;: &quot;remote&quot;,
+      &quot;url&quot;: &quot;https://jira.example.com/mcp&quot;,
+      &quot;enabled&quot;: true
+    }
+  }
+}
+</code></pre>
+<hr />
+<h3 id="global">Global</h3>
+<p>Place your global OpenCode config in <code>~/.config/opencode/opencode.json</code>. Use global config for user-wide server/runtime preferences like providers, models, and permissions.</p>
+<p>For TUI-specific settings, use <code>~/.config/opencode/tui.json</code>.</p>
+<p>Global config overrides remote organizational defaults.</p>
+<hr />
+<h3 id="per-project">Per project</h3>
+<p>Add <code>opencode.json</code> in your project root. Project config has the highest precedence among standard config files - it overrides both global and remote configs.</p>
+<p>For project-specific TUI settings, add <code>tui.json</code> alongside it.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Place project specific config in the root of your project.</p>
+</div>
+<p>When OpenCode starts up, it first looks for a config file in the current directory, then traverses up to the nearest Git directory.</p>
+<p>This is also safe to be checked into Git and uses the same schema as the global one.</p>
+<hr />
+<h3 id="custom-path">Custom path</h3>
+<p>Specify a custom config file path using the <code>OPENCODE_CONFIG</code> environment variable.</p>
+<pre><code class="language-bash">export OPENCODE_CONFIG=/path/to/my/custom-config.json
+opencode run &quot;Hello world&quot;
+</code></pre>
+<p>Custom config is loaded between global and project configs in the precedence order.</p>
+<hr />
+<h3 id="custom-directory">Custom directory</h3>
+<p>Specify a custom config directory using the <code>OPENCODE_CONFIG_DIR</code>
+environment variable. This directory will be searched for agents, commands,
+modes, and plugins just like the standard <code>.opencode</code> directory, and should
+follow the same structure.</p>
+<pre><code class="language-bash">export OPENCODE_CONFIG_DIR=/path/to/my/config-directory
+opencode run &quot;Hello world&quot;
+</code></pre>
+<p>The custom directory is loaded after the global config and <code>.opencode</code> directories, so it <strong>can override</strong> their settings.</p>
+<hr />
+<h3 id="managed-settings">Managed settings</h3>
+<p>Organizations can enforce configuration that users cannot override. Managed settings are loaded at the highest priority tier.</p>
+<h4 id="file-based">File-based</h4>
+<p>Drop an <code>opencode.json</code> or <code>opencode.jsonc</code> file in the system managed config directory:</p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>macOS</td>
+<td><code>/Library/Application Support/opencode/</code></td>
+</tr>
+<tr>
+<td>Linux</td>
+<td><code>/etc/opencode/</code></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td><code>%ProgramData%\opencode</code></td>
+</tr>
+</tbody>
+</table>
+<p>These directories require admin/root access to write, so users cannot modify them.</p>
+<h4 id="macos-managed-preferences">macOS managed preferences</h4>
+<p>On macOS, OpenCode reads managed preferences from the <code>ai.opencode.managed</code> preference domain. Deploy a <code>.mobileconfig</code> via MDM (Jamf, Kandji, FleetDM) and the settings are enforced automatically.</p>
+<p>OpenCode checks these paths:</p>
+<ol>
+<li><code>/Library/Managed Preferences/&lt;user&gt;/ai.opencode.managed.plist</code></li>
+<li><code>/Library/Managed Preferences/ai.opencode.managed.plist</code></li>
+</ol>
+<p>The plist keys map directly to <code>opencode.json</code> fields. MDM metadata keys (<code>PayloadUUID</code>, <code>PayloadType</code>, etc.) are stripped automatically.</p>
+<p><strong>Creating a <code>.mobileconfig</code></strong></p>
+<p>Use the <code>ai.opencode.managed</code> PayloadType. The OpenCode config keys go directly in the payload dict:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;
+  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+  &lt;key&gt;PayloadContent&lt;/key&gt;
+  &lt;array&gt;
+    &lt;dict&gt;
+      &lt;key&gt;PayloadType&lt;/key&gt;
+      &lt;string&gt;ai.opencode.managed&lt;/string&gt;
+      &lt;key&gt;PayloadIdentifier&lt;/key&gt;
+      &lt;string&gt;com.example.opencode.config&lt;/string&gt;
+      &lt;key&gt;PayloadUUID&lt;/key&gt;
+      &lt;string&gt;GENERATE-YOUR-OWN-UUID&lt;/string&gt;
+      &lt;key&gt;PayloadVersion&lt;/key&gt;
+      &lt;integer&gt;1&lt;/integer&gt;
+      &lt;key&gt;share&lt;/key&gt;
+      &lt;string&gt;disabled&lt;/string&gt;
+      &lt;key&gt;server&lt;/key&gt;
+      &lt;dict&gt;
+        &lt;key&gt;hostname&lt;/key&gt;
+        &lt;string&gt;127.0.0.1&lt;/string&gt;
+      &lt;/dict&gt;
+      &lt;key&gt;permission&lt;/key&gt;
+      &lt;dict&gt;
+        &lt;key&gt;*&lt;/key&gt;
+        &lt;string&gt;ask&lt;/string&gt;
+        &lt;key&gt;bash&lt;/key&gt;
+        &lt;dict&gt;
+          &lt;key&gt;*&lt;/key&gt;
+          &lt;string&gt;ask&lt;/string&gt;
+          &lt;key&gt;rm -rf *&lt;/key&gt;
+          &lt;string&gt;deny&lt;/string&gt;
+        &lt;/dict&gt;
+      &lt;/dict&gt;
+    &lt;/dict&gt;
+  &lt;/array&gt;
+  &lt;key&gt;PayloadType&lt;/key&gt;
+  &lt;string&gt;Configuration&lt;/string&gt;
+  &lt;key&gt;PayloadIdentifier&lt;/key&gt;
+  &lt;string&gt;com.example.opencode&lt;/string&gt;
+  &lt;key&gt;PayloadUUID&lt;/key&gt;
+  &lt;string&gt;GENERATE-YOUR-OWN-UUID&lt;/string&gt;
+  &lt;key&gt;PayloadVersion&lt;/key&gt;
+  &lt;integer&gt;1&lt;/integer&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+<p>Generate unique UUIDs with <code>uuidgen</code>. Customize the settings to match your organization's requirements.</p>
+<p><strong>Deploying via MDM</strong></p>
+<ul>
+<li><strong>Jamf Pro:</strong> Computers &gt; Configuration Profiles &gt; Upload &gt; scope to target devices or smart groups</li>
+<li><strong>FleetDM:</strong> Add the <code>.mobileconfig</code> to your gitops repo under <code>mdm.macos_settings.custom_settings</code> and run <code>fleetctl apply</code></li>
+</ul>
+<p><strong>Verifying on a device</strong></p>
+<p>Double-click the <code>.mobileconfig</code> to install locally for testing (shows in System Settings &gt; Privacy &amp; Security &gt; Profiles), then run:</p>
+<pre><code class="language-bash">opencode debug config
+</code></pre>
+<p>All managed preference keys appear in the resolved config and cannot be overridden by user or project configuration.</p>
+<hr />
+<h2 id="schema">Schema</h2>
+<p>The server/runtime config schema is defined in <a href="https://opencode.ai/config.json"><strong><code>opencode.ai/config.json</code></strong></a>.</p>
+<p>TUI config uses <a href="https://opencode.ai/tui.json"><strong><code>opencode.ai/tui.json</code></strong></a>.</p>
+<p>Your editor should be able to validate and autocomplete based on the schema.</p>
+<hr />
+<h3 id="tui">TUI</h3>
+<p>Use a dedicated <code>tui.json</code> (or <code>tui.jsonc</code>) file for TUI-specific settings.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/tui.json&quot;,
+  &quot;scroll_speed&quot;: 3,
+  &quot;scroll_acceleration&quot;: {
+    &quot;enabled&quot;: true
+  },
+  &quot;diff_style&quot;: &quot;auto&quot;,
+  &quot;cursor&quot;: {
+    &quot;style&quot;: &quot;block&quot;,
+    &quot;blinking&quot;: true
+  },
+  &quot;mouse&quot;: true,
+  &quot;attention&quot;: {
+    &quot;enabled&quot;: true,
+    &quot;notifications&quot;: true,
+    &quot;sound&quot;: true,
+    &quot;volume&quot;: 0.4
+  }
+}
+</code></pre>
+<p>Use <code>OPENCODE_TUI_CONFIG</code> to point to a custom TUI config file.</p>
+<p>When <code>cursor.style</code> is <code>"default"</code>, the terminal default cursor is restored, so <code>cursor.blinking</code> has no effect.</p>
+<p>Set <code>attention.enabled</code> to turn on TUI desktop notifications and sounds. See <a href="tui.html#attention">TUI attention</a>.</p>
+<p>Legacy <code>theme</code>, <code>keybinds</code>, and <code>tui</code> keys in <code>opencode.json</code> are deprecated and automatically migrated when possible.</p>
+<hr />
+<h3 id="server">Server</h3>
+<p>You can configure server settings for the <code>opencode serve</code> and <code>opencode web</code> commands through the <code>server</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;server&quot;: {
+    &quot;port&quot;: 4096,
+    &quot;hostname&quot;: &quot;0.0.0.0&quot;,
+    &quot;mdns&quot;: true,
+    &quot;mdnsDomain&quot;: &quot;myproject.local&quot;,
+    &quot;cors&quot;: [&quot;http://localhost:5173&quot;]
+  }
+}
+</code></pre>
+<p>Available options:</p>
+<ul>
+<li><code>port</code> - Port to listen on.</li>
+<li><code>hostname</code> - Hostname to listen on. When <code>mdns</code> is enabled and no hostname is set, defaults to <code>0.0.0.0</code>.</li>
+<li><code>mdns</code> - Enable mDNS service discovery. This allows other devices on the network to discover your OpenCode server.</li>
+<li><code>mdnsDomain</code> - Custom domain name for mDNS service. Defaults to <code>opencode.local</code>. Useful for running multiple instances on the same network.</li>
+<li><code>cors</code> - Additional origins to allow for CORS when using the HTTP server from a browser-based client. Values must be full origins (scheme + host + optional port), eg <code>https://app.example.com</code>.</li>
+</ul>
+<p><a href="server.html">Learn more about the server here</a>.</p>
+<hr />
+<h3 id="shell">Shell</h3>
+<p>You can configure the shell used for the interactive terminal using the <code>shell</code> option. Compatible shells are also used for agent tool calls.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;shell&quot;: &quot;pwsh&quot;
+}
+</code></pre>
+<p>If not specified, OpenCode will automatically discover and use a sensible default based on your operating system (e.g. <code>pwsh</code> or <code>cmd.exe</code> on Windows, <code>/bin/zsh</code> or <code>/bin/bash</code> on macOS/Linux). You can provide an absolute path or a short name.</p>
+<hr />
+<h3 id="tools">Tools</h3>
+<p>You can manage the tools an LLM can use through the <code>tools</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;tools&quot;: {
+    &quot;write&quot;: false,
+    &quot;bash&quot;: false
+  }
+}
+</code></pre>
+<p><a href="tools.html">Learn more about tools here</a>.</p>
+<hr />
+<h3 id="models">Models</h3>
+<p>You can configure the providers and models you want to use in your OpenCode config through the <code>provider</code>, <code>model</code> and <code>small_model</code> options.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;provider&quot;: {},
+  &quot;model&quot;: &quot;anthropic/claude-sonnet-4-5&quot;,
+  &quot;small_model&quot;: &quot;anthropic/claude-haiku-4-5&quot;
+}
+</code></pre>
+<p>The <code>small_model</code> option configures a separate model for lightweight tasks like title generation. By default, OpenCode tries to use a cheaper model if one is available from your provider, otherwise it falls back to your main model.</p>
+<p>Provider options can include <code>timeout</code>, <code>chunkTimeout</code>, and <code>setCacheKey</code>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;provider&quot;: {
+    &quot;anthropic&quot;: {
+      &quot;options&quot;: {
+        &quot;timeout&quot;: 600000,
+        &quot;chunkTimeout&quot;: 30000,
+        &quot;setCacheKey&quot;: true
+      }
+    }
+  }
+}
+</code></pre>
+<ul>
+<li><code>timeout</code> - Request timeout in milliseconds (default: 300000). Set to <code>false</code> to disable.</li>
+<li><code>chunkTimeout</code> - Timeout in milliseconds between streamed response chunks. If no chunk arrives in time, the request is aborted.</li>
+<li><code>setCacheKey</code> - Ensure a cache key is always set for designated provider.</li>
+</ul>
+<p>You can also configure <a href="models.html#local">local models</a>. <a href="models.html">Learn more</a>.</p>
+<hr />
+<h3 id="policies">Policies</h3>
+<p>Use the <code>experimental.policies</code> option to allow or deny OpenCode actions on configured resources. Currently, policies can control which providers OpenCode may use.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;experimental&quot;: {
+    &quot;policies&quot;: [
+      {
+        &quot;effect&quot;: &quot;deny&quot;,
+        &quot;action&quot;: &quot;provider.use&quot;,
+        &quot;resource&quot;: &quot;openai&quot;
+      }
+    ]
+  }
+}
+</code></pre>
+<p><a href="policies.html">Learn more about policies here</a>.</p>
+<hr />
+<h3 id="image-attachments">Image attachments</h3>
+<p>OpenCode normalizes image attachments before sending them to the model. By default, images are resized when they exceed <code>2000x2000</code> pixels or <code>5242880</code> base64 bytes.</p>
+<p>Configure image attachment limits with the <code>attachment.image</code> option:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;attachment&quot;: {
+    &quot;image&quot;: {
+      &quot;auto_resize&quot;: true,
+      &quot;max_width&quot;: 2000,
+      &quot;max_height&quot;: 2000,
+      &quot;max_base64_bytes&quot;: 5242880
+    }
+  }
+}
+</code></pre>
+<ul>
+<li><code>auto_resize</code> - Resize images that exceed the configured limits before provider requests. Set to <code>false</code> to reject oversized images instead.</li>
+<li><code>max_width</code> - Maximum image width in pixels before resizing or rejection.</li>
+<li><code>max_height</code> - Maximum image height in pixels before resizing or rejection.</li>
+<li><code>max_base64_bytes</code> - Maximum encoded image payload size. This is the base64 payload size, not the original file size.</li>
+</ul>
+<p>If an image still cannot fit after resizing, OpenCode omits oversized tool-result images or fails oversized user-provided images with an image size error.</p>
+<hr />
+<h4 id="provider-specific-options">Provider-Specific Options</h4>
+<p>Some providers support additional configuration options beyond the generic <code>timeout</code> and <code>apiKey</code> settings.</p>
+<h5 id="amazon-bedrock">Amazon Bedrock</h5>
+<p>Amazon Bedrock supports AWS-specific configuration:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;provider&quot;: {
+    &quot;amazon-bedrock&quot;: {
+      &quot;options&quot;: {
+        &quot;region&quot;: &quot;us-east-1&quot;,
+        &quot;profile&quot;: &quot;my-aws-profile&quot;,
+        &quot;endpoint&quot;: &quot;https://bedrock-runtime.us-east-1.vpce-xxxxx.amazonaws.com&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<ul>
+<li><code>region</code> - AWS region for Bedrock (defaults to <code>AWS_REGION</code> env var or <code>us-east-1</code>)</li>
+<li><code>profile</code> - AWS named profile from <code>~/.aws/credentials</code> (defaults to <code>AWS_PROFILE</code> env var)</li>
+<li><code>endpoint</code> - Custom endpoint URL for VPC endpoints. This is an alias for the generic <code>baseURL</code> option using AWS-specific terminology. If both are specified, <code>endpoint</code> takes precedence.</li>
+</ul>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Bearer tokens (<code>AWS_BEARER_TOKEN_BEDROCK</code> or <code>/connect</code>) take precedence over profile-based authentication. See <a href="providers.html#authentication-precedence">authentication precedence</a> for details.</p>
+</div>
+<p><a href="providers.html#amazon-bedrock">Learn more about Amazon Bedrock configuration</a>.</p>
+<hr />
+<h3 id="themes">Themes</h3>
+<p>Set your UI theme in <code>tui.json</code>.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/tui.json&quot;,
+  &quot;theme&quot;: &quot;tokyonight&quot;
+}
+</code></pre>
+<p><a href="themes.html">Learn more here</a>.</p>
+<hr />
+<h3 id="agents">Agents</h3>
+<p>You can configure specialized agents for specific tasks through the <code>agent</code> option.</p>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;agent&quot;: {
+    &quot;code-reviewer&quot;: {
+      &quot;description&quot;: &quot;Reviews code for best practices and potential issues&quot;,
+      &quot;model&quot;: &quot;anthropic/claude-sonnet-4-5&quot;,
+      &quot;prompt&quot;: &quot;You are a code reviewer. Focus on security, performance, and maintainability.&quot;,
+      &quot;tools&quot;: {
+        // Disable file modification tools for review-only agent
+        &quot;write&quot;: false,
+        &quot;edit&quot;: false,
+      },
+    },
+  },
+}
+</code></pre>
+<p>You can also define agents using markdown files in <code>~/.config/opencode/agents/</code> or <code>.opencode/agents/</code>. <a href="agents.html">Learn more here</a>.</p>
+<hr />
+<h3 id="default-agent">Default agent</h3>
+<p>You can set the default agent using the <code>default_agent</code> option. This determines which agent is used when none is explicitly specified.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;default_agent&quot;: &quot;plan&quot;
+}
+</code></pre>
+<p>The default agent must be a primary agent (not a subagent). This can be a built-in agent like <code>"build"</code> or <code>"plan"</code>, or a <a href="agents.html">custom agent</a> you've defined. If the specified agent doesn't exist or is a subagent, OpenCode will fall back to <code>"build"</code> with a warning.</p>
+<p>This setting applies across all interfaces: TUI, CLI (<code>opencode run</code>), desktop app, and GitHub Action.</p>
+<hr />
+<h3 id="subagent-depth">Subagent depth</h3>
+<p>You can control how deeply subagents can invoke other subagents using the <code>subagent_depth</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;subagent_depth&quot;: 2
+}
+</code></pre>
+<p>The default is <code>1</code>, which allows primary agents to launch subagents but prevents those subagents from launching additional subagents. Set it to <code>2</code> to allow one additional level of nested subagents, or <code>0</code> to prevent all subagent launches.</p>
+<hr />
+<h3 id="sharing">Sharing</h3>
+<p>You can configure the <a href="share.html">share</a> feature through the <code>share</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;share&quot;: &quot;manual&quot;
+}
+</code></pre>
+<p>This takes:</p>
+<ul>
+<li><code>"manual"</code> - Allow manual sharing via commands (default)</li>
+<li><code>"auto"</code> - Automatically share new conversations</li>
+<li><code>"disabled"</code> - Disable sharing entirely</li>
+</ul>
+<p>By default, sharing is set to manual mode where you need to explicitly share conversations using the <code>/share</code> command.</p>
+<hr />
+<h3 id="commands">Commands</h3>
+<p>You can configure custom commands for repetitive tasks through the <code>command</code> option.</p>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;command&quot;: {
+    &quot;test&quot;: {
+      &quot;template&quot;: &quot;Run the full test suite with coverage report and show any failures.\nFocus on the failing tests and suggest fixes.&quot;,
+      &quot;description&quot;: &quot;Run tests with coverage&quot;,
+      &quot;agent&quot;: &quot;build&quot;,
+      &quot;model&quot;: &quot;anthropic/claude-haiku-4-5&quot;,
+    },
+    &quot;component&quot;: {
+      &quot;template&quot;: &quot;Create a new React component named $ARGUMENTS with TypeScript support.\nInclude proper typing and basic structure.&quot;,
+      &quot;description&quot;: &quot;Create a new component&quot;,
+    },
+  },
+}
+</code></pre>
+<p>You can also define commands using markdown files in <code>~/.config/opencode/commands/</code> or <code>.opencode/commands/</code>. <a href="commands.html">Learn more here</a>.</p>
+<hr />
+<h3 id="keybinds">Keybinds</h3>
+<p>Customize TUI keyboard shortcuts in <code>tui.json</code> with <code>keybinds</code>.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/tui.json&quot;,
+  &quot;keybinds&quot;: {
+    &quot;command_list&quot;: &quot;ctrl+p&quot;
+  }
+}
+</code></pre>
+<p><code>keybinds</code> is merged with built-in defaults, so you only need to configure the shortcuts you want to change.</p>
+<p><a href="keybinds.html">Learn more here</a>.</p>
+<hr />
+<h3 id="snapshot">Snapshot</h3>
+<p>OpenCode uses snapshots to track file changes during agent operations, enabling you to undo and revert changes within a session. Snapshots are enabled by default.</p>
+<p>For large repositories or projects with many submodules, the snapshot system can cause slow indexing and significant disk usage as it tracks all changes using an internal git repository. You can disable snapshots using the <code>snapshot</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;snapshot&quot;: false
+}
+</code></pre>
+<p>Note that disabling snapshots means changes made by the agent cannot be rolled back through the UI.</p>
+<hr />
+<h3 id="autoupdate">Autoupdate</h3>
+<p>OpenCode will automatically download any new updates when it starts up. You can disable this with the <code>autoupdate</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;autoupdate&quot;: false
+}
+</code></pre>
+<p>If you don't want updates but want to be notified when a new version is available, set <code>autoupdate</code> to <code>"notify"</code>.
+Notice that this only works if it was not installed using a package manager such as Homebrew.</p>
+<hr />
+<h3 id="formatters">Formatters</h3>
+<p>You can enable and configure code formatters through the <code>formatter</code> option. Omit it to keep formatters disabled.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;formatter&quot;: true
+}
+</code></pre>
+<p>Use an object to keep built-ins enabled while configuring overrides or custom formatters.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;formatter&quot;: {
+    &quot;prettier&quot;: {
+      &quot;disabled&quot;: true
+    },
+    &quot;custom-prettier&quot;: {
+      &quot;command&quot;: [&quot;npx&quot;, &quot;prettier&quot;, &quot;--write&quot;, &quot;$FILE&quot;],
+      &quot;environment&quot;: {
+        &quot;NODE_ENV&quot;: &quot;development&quot;
+      },
+      &quot;extensions&quot;: [&quot;.js&quot;, &quot;.ts&quot;, &quot;.jsx&quot;, &quot;.tsx&quot;]
+    }
+  }
+}
+</code></pre>
+<p><a href="formatters.html">Learn more about formatters here</a>.</p>
+<hr />
+<h3 id="lsp-servers">LSP Servers</h3>
+<p>You can enable and configure LSP servers through the <code>lsp</code> option. Omit it to keep LSP disabled.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;lsp&quot;: true
+}
+</code></pre>
+<p>Use an object to keep built-ins enabled while configuring overrides or custom LSP servers.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;lsp&quot;: {
+    &quot;typescript&quot;: {
+      &quot;disabled&quot;: true
+    }
+  }
+}
+</code></pre>
+<p><a href="lsp.html">Learn more about LSP servers here</a>.</p>
+<hr />
+<h3 id="permissions">Permissions</h3>
+<p>By default, opencode <strong>allows all operations</strong> without requiring explicit approval. You can change this using the <code>permission</code> option.</p>
+<p>For example, to ensure that the <code>edit</code> and <code>bash</code> tools require user approval:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;edit&quot;: &quot;ask&quot;,
+    &quot;bash&quot;: &quot;ask&quot;
+  }
+}
+</code></pre>
+<p><a href="permissions.html">Learn more about permissions here</a>.</p>
+<hr />
+<h3 id="compaction">Compaction</h3>
+<p>You can control context compaction behavior through the <code>compaction</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;compaction&quot;: {
+    &quot;auto&quot;: true,
+    &quot;prune&quot;: false,
+    &quot;reserved&quot;: 10000
+  }
+}
+</code></pre>
+<ul>
+<li><code>auto</code> - Automatically compact the session when context is full (default: <code>true</code>).</li>
+<li><code>prune</code> - Remove old tool outputs to save tokens (default: <code>false</code>). Set to <code>true</code> to enable pruning.</li>
+<li><code>reserved</code> - Token buffer for compaction. Leaves enough window to avoid overflow during compaction.</li>
+</ul>
+<hr />
+<h3 id="watcher">Watcher</h3>
+<p>You can configure file watcher ignore patterns through the <code>watcher</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;watcher&quot;: {
+    &quot;ignore&quot;: [&quot;node_modules/**&quot;, &quot;dist/**&quot;, &quot;.git/**&quot;]
+  }
+}
+</code></pre>
+<p>Patterns follow glob syntax. Use this to exclude noisy directories from file watching.</p>
+<hr />
+<h3 id="mcp-servers">MCP servers</h3>
+<p>You can configure MCP servers you want to use through the <code>mcp</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;mcp&quot;: {}
+}
+</code></pre>
+<p><a href="mcp-servers.html">Learn more here</a>.</p>
+<hr />
+<h3 id="plugins">Plugins</h3>
+<p><a href="plugins.html">Plugins</a> extend OpenCode with custom tools, hooks, and integrations.</p>
+<p>Place plugin files in <code>.opencode/plugins/</code> or <code>~/.config/opencode/plugins/</code>. You can also load plugins from npm through the <code>plugin</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;plugin&quot;: [&quot;opencode-helicone-session&quot;, &quot;@my-org/custom-plugin&quot;]
+}
+</code></pre>
+<p><a href="plugins.html">Learn more here</a>.</p>
+<hr />
+<h3 id="instructions">Instructions</h3>
+<p>You can configure the instructions for the model you're using through the <code>instructions</code> option.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;instructions&quot;: [&quot;CONTRIBUTING.md&quot;, &quot;docs/guidelines.md&quot;, &quot;.cursor/rules/*.md&quot;]
+}
+</code></pre>
+<p>This takes an array of paths and glob patterns to instruction files. <a href="rules.html">Learn more
+about rules here</a>.</p>
+<hr />
+<h3 id="disabled-providers">Disabled providers</h3>
+<p>You can disable providers that are loaded automatically through the <code>disabled_providers</code> option. This is useful when you want to prevent certain providers from being loaded even if their credentials are available.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;disabled_providers&quot;: [&quot;openai&quot;, &quot;gemini&quot;]
+}
+</code></pre>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>The <code>disabled_providers</code> takes priority over <code>enabled_providers</code>.</p>
+</div>
+<p>The <code>disabled_providers</code> option accepts an array of provider IDs. When a provider is disabled:</p>
+<ul>
+<li>It won't be loaded even if environment variables are set.</li>
+<li>It won't be loaded even if API keys are configured through the <code>/connect</code> command.</li>
+<li>The provider's models won't appear in the model selection list.</li>
+</ul>
+<hr />
+<h3 id="enabled-providers">Enabled providers</h3>
+<p>You can specify an allowlist of providers through the <code>enabled_providers</code> option. When set, only the specified providers will be enabled and all others will be ignored.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;enabled_providers&quot;: [&quot;anthropic&quot;, &quot;openai&quot;]
+}
+</code></pre>
+<p>This is useful when you want to restrict OpenCode to only use specific providers rather than disabling them one by one.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>The <code>disabled_providers</code> takes priority over <code>enabled_providers</code>.</p>
+</div>
+<p>If a provider appears in both <code>enabled_providers</code> and <code>disabled_providers</code>, the <code>disabled_providers</code> takes priority for backwards compatibility.</p>
+<hr />
+<h3 id="experimental">Experimental</h3>
+<p>The <code>experimental</code> key contains options that are under active development.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;experimental&quot;: {}
+}
+</code></pre>
+<div class="aside">
+<div class="aside-t">Caution</div>
+<p>Experimental options are not stable. They may change or be removed without notice.</p>
+</div>
+<hr />
+<h2 id="variables">Variables</h2>
+<p>You can use variable substitution in your config files to reference environment variables and file contents.</p>
+<hr />
+<h3 id="env-vars">Env vars</h3>
+<p>Use <code>{env:VARIABLE_NAME}</code> to substitute environment variables:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;model&quot;: &quot;{env:OPENCODE_MODEL}&quot;,
+  &quot;provider&quot;: {
+    &quot;anthropic&quot;: {
+      &quot;models&quot;: {},
+      &quot;options&quot;: {
+        &quot;apiKey&quot;: &quot;{env:ANTHROPIC_API_KEY}&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p>If the environment variable is not set, it will be replaced with an empty string.</p>
+<hr />
+<h3 id="files">Files</h3>
+<p>Use <code>{file:path/to/file}</code> to substitute the contents of a file:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;instructions&quot;: [&quot;./custom-instructions.md&quot;],
+  &quot;provider&quot;: {
+    &quot;openai&quot;: {
+      &quot;options&quot;: {
+        &quot;apiKey&quot;: &quot;{file:~/.secrets/openai-key}&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p>File paths can be:</p>
+<ul>
+<li>Relative to the config file directory</li>
+<li>Or absolute paths starting with <code>/</code> or <code>~</code></li>
+</ul>
+<p>These are useful for:</p>
+<ul>
+<li>Keeping sensitive data like API keys in separate files.</li>
+<li>Including large instruction files without cluttering your config.</li>
+<li>Sharing common configuration snippets across multiple config files.</li>
+</ul>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

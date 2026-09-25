@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rules · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a class="actual" href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Rules</h1>
+<p>You can provide custom instructions to opencode by creating an <code>AGENTS.md</code> file. This is similar to Cursor's rules. It contains instructions that will be included in the LLM's context to customize its behavior for your specific project.</p>
+<hr />
+<h2 id="initialize">Initialize</h2>
+<p>To create a new <code>AGENTS.md</code> file, you can run the <code>/init</code> command in opencode.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>You should commit your project's <code>AGENTS.md</code> file to Git.</p>
+</div>
+<p><code>/init</code> scans the important files in your repo, may ask a couple of targeted questions when the codebase cannot answer them, and then creates or updates <code>AGENTS.md</code> with concise project-specific guidance.</p>
+<p>It focuses on the things future agent sessions are most likely to need:</p>
+<ul>
+<li>build, lint, and test commands</li>
+<li>command order and focused verification steps when they matter</li>
+<li>architecture and repo structure that are not obvious from filenames alone</li>
+<li>project-specific conventions, setup quirks, and operational gotchas</li>
+<li>references to existing instruction sources like Cursor or Copilot rules</li>
+</ul>
+<p>If you already have an <code>AGENTS.md</code>, <code>/init</code> will improve it in place instead of blindly replacing it.</p>
+<hr />
+<h2 id="example">Example</h2>
+<p>You can also just create this file manually. Here's an example of some things you can put into an <code>AGENTS.md</code> file.</p>
+<pre><code class="language-markdown"># SST v3 Monorepo Project
+
+This is an SST v3 monorepo with TypeScript. The project uses bun workspaces for package management.
+
+## Project Structure
+
+- `packages/` - Contains all workspace packages (functions, core, web, etc.)
+- `infra/` - Infrastructure definitions split by service (storage.ts, api.ts, web.ts)
+- `sst.config.ts` - Main SST configuration with dynamic imports
+
+## Code Standards
+
+- Use TypeScript with strict mode enabled
+- Shared code goes in `packages/core/` with proper exports configuration
+- Functions go in `packages/functions/`
+- Infrastructure should be split into logical files in `infra/`
+
+## Monorepo Conventions
+
+- Import shared modules using workspace names: `@my-app/core/example`
+</code></pre>
+<p>We are adding project-specific instructions here and this will be shared across your team.</p>
+<hr />
+<h2 id="types">Types</h2>
+<p>opencode also supports reading the <code>AGENTS.md</code> file from multiple locations. And this serves different purposes.</p>
+<h3 id="project">Project</h3>
+<p>Place an <code>AGENTS.md</code> in your project root for project-specific rules. These only apply when you are working in this directory or its sub-directories.</p>
+<h3 id="global">Global</h3>
+<p>You can also have global rules in a <code>~/.config/opencode/AGENTS.md</code> file. This gets applied across all opencode sessions.</p>
+<p>Since this isn't committed to Git or shared with your team, we recommend using this to specify any personal rules that the LLM should follow.</p>
+<h3 id="claude-code-compatibility">Claude Code Compatibility</h3>
+<p>For users migrating from Claude Code, OpenCode supports Claude Code's file conventions as fallbacks:</p>
+<ul>
+<li><strong>Project rules</strong>: <code>CLAUDE.md</code> in your project directory (used if no <code>AGENTS.md</code> exists)</li>
+<li><strong>Global rules</strong>: <code>~/.claude/CLAUDE.md</code> (used if no <code>~/.config/opencode/AGENTS.md</code> exists)</li>
+<li><strong>Skills</strong>: <code>~/.claude/skills/</code> — see <a href="skills.html">Agent Skills</a> for details</li>
+</ul>
+<p>To disable Claude Code compatibility, set one of these environment variables:</p>
+<pre><code class="language-bash">export OPENCODE_DISABLE_CLAUDE_CODE=1        # Disable all .claude support
+export OPENCODE_DISABLE_CLAUDE_CODE_PROMPT=1 # Disable only ~/.claude/CLAUDE.md
+export OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1 # Disable only .claude/skills
+</code></pre>
+<hr />
+<h2 id="precedence">Precedence</h2>
+<p>When opencode starts, it looks for rule files in this order:</p>
+<ol>
+<li><strong>Local files</strong> by traversing up from the current directory (<code>AGENTS.md</code>, <code>CLAUDE.md</code>)</li>
+<li><strong>Global file</strong> at <code>~/.config/opencode/AGENTS.md</code></li>
+<li><strong>Claude Code file</strong> at <code>~/.claude/CLAUDE.md</code> (unless disabled)</li>
+</ol>
+<p>The first matching file wins in each category. For example, if you have both <code>AGENTS.md</code> and <code>CLAUDE.md</code>, only <code>AGENTS.md</code> is used. Similarly, <code>~/.config/opencode/AGENTS.md</code> takes precedence over <code>~/.claude/CLAUDE.md</code>.</p>
+<hr />
+<h2 id="custom-instructions">Custom Instructions</h2>
+<p>You can specify custom instruction files in your <code>opencode.json</code> or the global <code>~/.config/opencode/opencode.json</code>. This allows you and your team to reuse existing rules rather than having to duplicate them to AGENTS.md.</p>
+<p>Example:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;instructions&quot;: [&quot;CONTRIBUTING.md&quot;, &quot;docs/guidelines.md&quot;, &quot;.cursor/rules/*.md&quot;]
+}
+</code></pre>
+<p>You can also use remote URLs to load instructions from the web.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;instructions&quot;: [&quot;https://raw.githubusercontent.com/my-org/shared-rules/main/style.md&quot;]
+}
+</code></pre>
+<p>Remote instructions are fetched with a 5 second timeout.</p>
+<p>All instruction files are combined with your <code>AGENTS.md</code> files.</p>
+<hr />
+<h2 id="referencing-external-files">Referencing External Files</h2>
+<p>While opencode doesn't automatically parse file references in <code>AGENTS.md</code>, you can achieve similar functionality in two ways:</p>
+<h3 id="using-opencodejson">Using opencode.json</h3>
+<p>The recommended approach is to use the <code>instructions</code> field in <code>opencode.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;instructions&quot;: [&quot;docs/development-standards.md&quot;, &quot;test/testing-guidelines.md&quot;, &quot;packages/*/AGENTS.md&quot;]
+}
+</code></pre>
+<h3 id="manual-instructions-in-agentsmd">Manual Instructions in AGENTS.md</h3>
+<p>You can teach opencode to read external files by providing explicit instructions in your <code>AGENTS.md</code>. Here's a practical example:</p>
+<pre><code class="language-markdown"># TypeScript Project Rules
+
+## External File Loading
+
+CRITICAL: When you encounter a file reference (e.g., @rules/general.md), use your Read tool to load it on a need-to-know basis. They're relevant to the SPECIFIC task at hand.
+
+Instructions:
+
+- Do NOT preemptively load all references - use lazy loading based on actual need
+- When loaded, treat content as mandatory instructions that override defaults
+- Follow references recursively when needed
+
+## Development Guidelines
+
+For TypeScript code style and best practices: @docs/typescript-guidelines.md
+For React component architecture and hooks patterns: @docs/react-patterns.md
+For REST API design and error handling: @docs/api-standards.md
+For testing strategies and coverage requirements: @test/testing-guidelines.md
+
+## General Guidelines
+
+Read the following file immediately as it's relevant to all workflows: @rules/general-guidelines.md.
+</code></pre>
+<p>This approach allows you to:</p>
+<ul>
+<li>Create modular, reusable rule files</li>
+<li>Share rules across projects via symlinks or git submodules</li>
+<li>Keep AGENTS.md concise while referencing detailed guidelines</li>
+<li>Ensure opencode loads files only when needed for the specific task</li>
+</ul>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>For monorepos or projects with shared standards, using <code>opencode.json</code> with glob patterns (like <code>packages/*/AGENTS.md</code>) is more maintainable than manual instructions.</p>
+</div>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

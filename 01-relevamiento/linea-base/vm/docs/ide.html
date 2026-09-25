@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDE · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a class="actual" href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>IDE</h1>
+<p>OpenCode integrates with VS Code, Cursor, or any IDE that supports a terminal. Just run <code>opencode</code> in the terminal to get started.</p>
+<hr />
+<h2 id="usage">Usage</h2>
+<ul>
+<li><strong>Quick Launch</strong>: Use <code>Cmd+Esc</code> (Mac) or <code>Ctrl+Esc</code> (Windows/Linux) to open OpenCode in a split terminal view, or focus an existing terminal session if one is already running.</li>
+<li><strong>New Session</strong>: Use <code>Cmd+Shift+Esc</code> (Mac) or <code>Ctrl+Shift+Esc</code> (Windows/Linux) to start a new OpenCode terminal session, even if one is already open. You can also click the OpenCode button in the UI.</li>
+<li><strong>Context Awareness</strong>: Automatically share your current selection or tab with OpenCode.</li>
+<li><strong>File Reference Shortcuts</strong>: Use <code>Cmd+Option+K</code> (Mac) or <code>Alt+Ctrl+K</code> (Linux/Windows) to insert file references. For example, <code>@File#L37-42</code>.</li>
+</ul>
+<hr />
+<h2 id="installation">Installation</h2>
+<p>To install OpenCode on VS Code and popular forks like Cursor, Windsurf, VSCodium:</p>
+<ol>
+<li>Open VS Code</li>
+<li>Open the integrated terminal</li>
+<li>Run <code>opencode</code> - the extension installs automatically</li>
+</ol>
+<p>If on the other hand you want to use your own IDE when you run <code>/editor</code> or <code>/export</code> from the TUI, you'll need to set <code>export EDITOR="code --wait"</code>. <a href="tui.html#editor-setup">Learn more</a>.</p>
+<hr />
+<h3 id="manual-install">Manual Install</h3>
+<p>Search for <strong>OpenCode</strong> in the Extension Marketplace and click <strong>Install</strong>.</p>
+<hr />
+<h3 id="troubleshooting">Troubleshooting</h3>
+<p>If the extension fails to install automatically:</p>
+<ul>
+<li>Ensure you’re running <code>opencode</code> in the integrated terminal.</li>
+<li>Confirm the CLI for your IDE is installed:</li>
+<li>For VS Code: <code>code</code> command</li>
+<li>For Cursor: <code>cursor</code> command</li>
+<li>For Windsurf: <code>windsurf</code> command</li>
+<li>For VSCodium: <code>codium</code> command</li>
+<li>If not, run <code>Cmd+Shift+P</code> (Mac) or <code>Ctrl+Shift+P</code> (Windows/Linux) and search for "Shell Command: Install 'code' command in PATH" (or the equivalent for your IDE)</li>
+<li>Ensure VS Code has permission to install extensions</li>
+</ul>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enterprise · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a class="actual" href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Enterprise</h1>
+<p>export const enterprise = "https://opencode.ai/enterprise"</p>
+<p>OpenCode Enterprise is for organizations that want to ensure that their code and data never leaves their infrastructure. It can do this by using a centralized config that integrates with your SSO and internal AI gateway.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>OpenCode does not store any of your code or context data.</p>
+</div>
+<p>To get started with OpenCode Enterprise:</p>
+<ol>
+<li>Do a trial internally with your team.</li>
+<li><strong><a href={enterprise}>Contact us</a></strong> to discuss pricing and implementation options.</li>
+</ol>
+<hr />
+<h2 id="trial">Trial</h2>
+<p>OpenCode is open source and does not store any of your code or context data, so your developers can simply <a href="index.html">get started</a> and carry out a trial.</p>
+<hr />
+<h3 id="data-handling">Data handling</h3>
+<p><strong>OpenCode does not store your code or context data.</strong> All processing happens locally or through direct API calls to your AI provider.</p>
+<p>This means that as long as you are using a provider you trust, or an internal
+AI gateway, you can use OpenCode securely.</p>
+<p>The only caveat here is the optional <code>/share</code> feature.</p>
+<hr />
+<h4 id="sharing-conversations">Sharing conversations</h4>
+<p>If a user enables the <code>/share</code> feature, the conversation and the data associated with it are sent to the service we use to host these share pages at opencode.ai.</p>
+<p>The data is currently served through our CDN's edge network, and is cached on the edge near your users.</p>
+<p>We recommend you disable this for your trial.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;share&quot;: &quot;disabled&quot;
+}
+</code></pre>
+<p><a href="share.html">Learn more about sharing</a>.</p>
+<hr />
+<h3 id="code-ownership">Code ownership</h3>
+<p><strong>You own all code produced by OpenCode.</strong> There are no licensing restrictions or ownership claims.</p>
+<hr />
+<h2 id="pricing">Pricing</h2>
+<p>We use a per-seat model for OpenCode Enterprise. If you have your own LLM gateway, we do not charge for tokens used. For further details about pricing and implementation options, <strong><a href={enterprise}>contact us</a></strong>.</p>
+<hr />
+<h2 id="deployment">Deployment</h2>
+<p>Once you have completed your trial and you are ready to use OpenCode at
+your organization, you can <strong><a href={enterprise}>contact us</a></strong> to discuss
+pricing and implementation options.</p>
+<hr />
+<h3 id="central-config">Central Config</h3>
+<p>We can set up OpenCode to use a single central config for your entire organization.</p>
+<p>This centralized config can integrate with your SSO provider and ensures all users access only your internal AI gateway.</p>
+<hr />
+<h3 id="sso-integration">SSO integration</h3>
+<p>Through the central config, OpenCode can integrate with your organization's SSO provider for authentication.</p>
+<p>This allows OpenCode to obtain credentials for your internal AI gateway through your existing identity management system.</p>
+<hr />
+<h3 id="internal-ai-gateway">Internal AI gateway</h3>
+<p>With the central config, OpenCode can also be configured to use only your internal AI gateway.</p>
+<p>You can also disable all other AI providers, ensuring all requests go through your organization's approved infrastructure.</p>
+<hr />
+<h3 id="self-hosting">Self-hosting</h3>
+<p>While we recommend disabling the share pages to ensure your data never leaves
+your organization, we can also help you self-host them on your infrastructure.</p>
+<p>This is currently on our roadmap. If you're interested, <strong><a href={enterprise}>let us know</a></strong>.</p>
+<hr />
+<h2 id="faq">FAQ</h2>
+<details>
+<summary>What is OpenCode Enterprise?</summary>
+
+OpenCode Enterprise is for organizations that want to ensure that their code and data never leaves their infrastructure. It can do this by using a centralized config that integrates with your SSO and internal AI gateway.
+
+</details>
+
+<details>
+<summary>How do I get started with OpenCode Enterprise?</summary>
+
+Simply start with an internal trial with your team. OpenCode by default does not store your code or context data, making it easy to get started.
+
+Then **<a href={enterprise}>contact us</a>** to discuss pricing and implementation options.
+
+</details>
+
+<details>
+<summary>How does enterprise pricing work?</summary>
+
+We offer per-seat enterprise pricing. If you have your own LLM gateway, we do not charge for tokens used. For further details, **<a href={enterprise}>contact us</a>** for a custom quote based on your organization's needs.
+
+</details>
+
+<details>
+<summary>Is my data secure with OpenCode Enterprise?</summary>
+
+Yes. OpenCode does not store your code or context data. All processing happens locally or through direct API calls to your AI provider. With central config and SSO integration, your data remains secure within your organization's infrastructure.
+
+</details>
+
+<details>
+<summary>Can we use our own private NPM registry?</summary>
+
+OpenCode supports private npm registries through Bun's native `.npmrc` file support. If your organization uses a private registry, such as JFrog Artifactory, Nexus, or similar, ensure developers are authenticated before running OpenCode.
+
+To set up authentication with your private registry:
+
+
+<pre><code class="language-bash">npm login --registry=https://your-company.jfrog.io/api/npm/npm-virtual/
+</code></pre>
+
+
+This creates `~/.npmrc` with authentication details. OpenCode will automatically
+pick this up.
+
+<div class="aside" markdown="1"><div class="aside-t">Caution</div>
+
+You must be logged into the private registry before running OpenCode.
+
+</div>
+
+Alternatively, you can manually configure a `.npmrc` file:
+
+
+<pre><code class="language-bash">registry=https://your-company.jfrog.io/api/npm/npm-virtual/
+//your-company.jfrog.io/api/npm/npm-virtual/:_authToken=${NPM_AUTH_TOKEN}
+</code></pre>
+
+
+Developers must be logged into the private registry before running OpenCode to ensure packages can be installed from your enterprise registry.
+
+</details>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

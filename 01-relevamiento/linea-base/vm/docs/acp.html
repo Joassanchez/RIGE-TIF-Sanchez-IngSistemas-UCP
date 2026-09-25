@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ACP Support · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a class="actual" href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>ACP Support</h1>
+<p>OpenCode supports the <a href="https://agentclientprotocol.com">Agent Client Protocol</a> or (ACP), allowing you to use it directly in compatible editors and IDEs.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>For a list of editors and tools that support ACP, check out the <a href="https://zed.dev/blog/acp-progress-report#available-now">ACP progress report</a>.</p>
+</div>
+<p>ACP is an open protocol that standardizes communication between code editors and AI coding agents.</p>
+<hr />
+<h2 id="configure">Configure</h2>
+<p>To use OpenCode via ACP, configure your editor to run the <code>opencode acp</code> command.</p>
+<p>The command starts OpenCode as an ACP-compatible subprocess that communicates with your editor over JSON-RPC via stdio.</p>
+<p>Below are examples for popular editors that support ACP.</p>
+<hr />
+<h3 id="zed">Zed</h3>
+<p>Install OpenCode from the <a href="https://zed.dev/docs/ai/external-agents#registry">Zed ACP Registry</a> by running <code>zed: acp registry</code> in the Command Palette.</p>
+<p>To use a custom OpenCode executable instead, add it to your <a href="https://zed.dev">Zed</a> configuration (<code>~/.config/zed/settings.json</code>):</p>
+<pre><code class="language-json">{
+  &quot;agent_servers&quot;: {
+    &quot;OpenCode&quot;: {
+      &quot;type&quot;: &quot;custom&quot;,
+      &quot;command&quot;: &quot;opencode&quot;,
+      &quot;args&quot;: [&quot;acp&quot;]
+    }
+  }
+}
+</code></pre>
+<p>To open it, use the <code>agent: new thread</code> action in the <strong>Command Palette</strong>.</p>
+<p>You can also bind a keyboard shortcut by editing your <code>keymap.json</code>:</p>
+<pre><code class="language-json">[
+  {
+    &quot;bindings&quot;: {
+      &quot;cmd-alt-o&quot;: [
+        &quot;agent::NewExternalAgentThread&quot;,
+        {
+          &quot;agent&quot;: {
+            &quot;custom&quot;: {
+              &quot;name&quot;: &quot;OpenCode&quot;,
+              &quot;command&quot;: {
+                &quot;command&quot;: &quot;opencode&quot;,
+                &quot;args&quot;: [&quot;acp&quot;]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+]
+</code></pre>
+<hr />
+<h3 id="jetbrains-ides">JetBrains IDEs</h3>
+<p>Add to your <a href="https://www.jetbrains.com/">JetBrains IDE</a> acp.json according to the <a href="https://www.jetbrains.com/help/ai-assistant/acp.html">documentation</a>:</p>
+<pre><code class="language-json">{
+  &quot;agent_servers&quot;: {
+    &quot;OpenCode&quot;: {
+      &quot;command&quot;: &quot;/absolute/path/bin/opencode&quot;,
+      &quot;args&quot;: [&quot;acp&quot;]
+    }
+  }
+}
+</code></pre>
+<p>To open it, use the new 'OpenCode' agent in the AI Chat agent selector.</p>
+<hr />
+<h3 id="avantenvim">Avante.nvim</h3>
+<p>Add to your <a href="https://github.com/yetone/avante.nvim">Avante.nvim</a> configuration:</p>
+<pre><code class="language-lua">{
+  acp_providers = {
+    [&quot;opencode&quot;] = {
+      command = &quot;opencode&quot;,
+      args = { &quot;acp&quot; }
+    }
+  }
+}
+</code></pre>
+<p>If you need to pass environment variables:</p>
+<pre><code class="language-lua">{
+  acp_providers = {
+    [&quot;opencode&quot;] = {
+      command = &quot;opencode&quot;,
+      args = { &quot;acp&quot; },
+      env = {
+        OPENCODE_API_KEY = os.getenv(&quot;OPENCODE_API_KEY&quot;)
+      }
+    }
+  }
+}
+</code></pre>
+<hr />
+<h3 id="codecompanionnvim">CodeCompanion.nvim</h3>
+<p>To use OpenCode as an ACP agent in <a href="https://github.com/olimorris/codecompanion.nvim">CodeCompanion.nvim</a>, add the following to your Neovim config:</p>
+<pre><code class="language-lua">require(&quot;codecompanion&quot;).setup({
+  interactions = {
+    chat = {
+      adapter = {
+        name = &quot;opencode&quot;,
+        model = &quot;claude-sonnet-4&quot;,
+      },
+    },
+  },
+})
+</code></pre>
+<p>This config sets up CodeCompanion to use OpenCode as the ACP agent for chat.</p>
+<p>If you need to pass environment variables (like <code>OPENCODE_API_KEY</code>), refer to <a href="https://codecompanion.olimorris.dev/getting-started#setting-an-api-key">Configuring Adapters: Environment Variables</a> in the CodeCompanion.nvim documentation for full details.</p>
+<h2 id="support">Support</h2>
+<p>OpenCode works the same via ACP as it does in the terminal. All features are supported:</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Some built-in slash commands like <code>/undo</code> and <code>/redo</code> are currently unsupported.</p>
+</div>
+<ul>
+<li>Built-in tools (file operations, terminal commands, etc.)</li>
+<li>Custom tools and slash commands</li>
+<li>MCP servers configured in your OpenCode config</li>
+<li>Project-specific rules from <code>AGENTS.md</code></li>
+<li>Custom formatters and linters</li>
+<li>Agents and permissions system</li>
+</ul>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

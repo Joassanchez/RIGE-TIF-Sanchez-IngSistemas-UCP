@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a class="actual" href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Share</h1>
+<p>OpenCode's share feature allows you to create public links to your OpenCode conversations, so you can collaborate with teammates or get help from others.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Shared conversations are publicly accessible to anyone with the link.</p>
+</div>
+<hr />
+<h2 id="how-it-works">How it works</h2>
+<p>When you share a conversation, OpenCode:</p>
+<ol>
+<li>Creates a unique public URL for your session</li>
+<li>Syncs your conversation history to our servers</li>
+<li>Makes the conversation accessible via the shareable link — <code>opncd.ai/s/&lt;share-id&gt;</code></li>
+</ol>
+<hr />
+<h2 id="sharing">Sharing</h2>
+<p>OpenCode supports three sharing modes that control how conversations are shared:</p>
+<hr />
+<h3 id="manual-default">Manual (default)</h3>
+<p>By default, OpenCode uses manual sharing mode. Sessions are not shared automatically, but you can manually share them using the <code>/share</code> command:</p>
+<pre><code>/share
+</code></pre>
+<p>This will generate a unique URL that'll be copied to your clipboard.</p>
+<p>To explicitly set manual mode in your <a href="config.html">config file</a>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;share&quot;: &quot;manual&quot;
+}
+</code></pre>
+<hr />
+<h3 id="auto-share">Auto-share</h3>
+<p>You can enable automatic sharing for all new conversations by setting the <code>share</code> option to <code>"auto"</code> in your <a href="config.html">config file</a>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;share&quot;: &quot;auto&quot;
+}
+</code></pre>
+<p>With auto-share enabled, every new conversation will automatically be shared and a link will be generated.</p>
+<hr />
+<h3 id="disabled">Disabled</h3>
+<p>You can disable sharing entirely by setting the <code>share</code> option to <code>"disabled"</code> in your <a href="config.html">config file</a>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;share&quot;: &quot;disabled&quot;
+}
+</code></pre>
+<p>To enforce this across your team for a given project, add it to the <code>opencode.json</code> in your project and check into Git.</p>
+<hr />
+<h2 id="un-sharing">Un-sharing</h2>
+<p>To stop sharing a conversation and remove it from public access:</p>
+<pre><code>/unshare
+</code></pre>
+<p>This will remove the share link and delete the data related to the conversation.</p>
+<hr />
+<h2 id="privacy">Privacy</h2>
+<p>There are a few things to keep in mind when sharing a conversation.</p>
+<hr />
+<h3 id="data-retention">Data retention</h3>
+<p>Shared conversations remain accessible until you explicitly unshare them. This
+includes:</p>
+<ul>
+<li>Full conversation history</li>
+<li>All messages and responses</li>
+<li>Session metadata</li>
+</ul>
+<hr />
+<h3 id="recommendations">Recommendations</h3>
+<ul>
+<li>Only share conversations that don't contain sensitive information.</li>
+<li>Review conversation content before sharing.</li>
+<li>Unshare conversations when collaboration is complete.</li>
+<li>Avoid sharing conversations with proprietary code or confidential data.</li>
+<li>For sensitive projects, disable sharing entirely.</li>
+</ul>
+<hr />
+<h2 id="for-enterprises">For enterprises</h2>
+<p>For enterprise deployments, the share feature can be:</p>
+<ul>
+<li><strong>Disabled</strong> entirely for security compliance</li>
+<li><strong>Restricted</strong> to users authenticated through SSO only</li>
+<li><strong>Self-hosted</strong> on your own infrastructure</li>
+</ul>
+<p><a href="enterprise.html">Learn more</a> about using opencode in your organization.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

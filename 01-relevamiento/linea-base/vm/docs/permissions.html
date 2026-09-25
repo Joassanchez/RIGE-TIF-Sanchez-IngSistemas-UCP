@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Permissions · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a class="actual" href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Permissions</h1>
+<p>OpenCode uses the <code>permission</code> config to decide whether a given action should run automatically, prompt you, or be blocked.</p>
+<p>As of <code>v1.1.1</code>, the legacy <code>tools</code> boolean config is deprecated and has been merged into <code>permission</code>. The old <code>tools</code> config is still supported for backwards compatibility.</p>
+<hr />
+<h2 id="actions">Actions</h2>
+<p>Each permission rule resolves to one of:</p>
+<ul>
+<li><code>"allow"</code> — run without approval</li>
+<li><code>"ask"</code> — prompt for approval</li>
+<li><code>"deny"</code> — block the action</li>
+</ul>
+<hr />
+<h2 id="auto-mode">Auto mode</h2>
+<p>Start OpenCode with <code>--auto</code> to automatically approve permission requests that are not explicitly denied.</p>
+<pre><code class="language-bash">opencode --auto
+</code></pre>
+<p>You can also use auto mode with <a href="cli.html#run"><code>opencode run</code></a>.</p>
+<pre><code class="language-bash">opencode run --auto &quot;Refactor this module&quot;
+</code></pre>
+<p>Explicit <code>"deny"</code> rules are still enforced. Auto mode only changes requests that would otherwise ask for approval.</p>
+<p>In the TUI, open the command palette and select <strong>Enable auto-approve permissions</strong> or <strong>Disable auto-approve permissions</strong> to change modes. When auto mode is active, the prompt displays a muted <code>auto</code> indicator next to the current agent.</p>
+<hr />
+<h2 id="configuration">Configuration</h2>
+<p>You can set permissions globally (with <code>*</code>), and override specific tools.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;*&quot;: &quot;ask&quot;,
+    &quot;bash&quot;: &quot;allow&quot;,
+    &quot;edit&quot;: &quot;deny&quot;
+  }
+}
+</code></pre>
+<p>You can also set all permissions at once:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: &quot;allow&quot;
+}
+</code></pre>
+<hr />
+<h2 id="granular-rules-object-syntax">Granular Rules (Object Syntax)</h2>
+<p>For most permissions, you can use an object to apply different actions based on the tool input.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;bash&quot;: {
+      &quot;*&quot;: &quot;ask&quot;,
+      &quot;git *&quot;: &quot;allow&quot;,
+      &quot;npm *&quot;: &quot;allow&quot;,
+      &quot;rm *&quot;: &quot;deny&quot;,
+      &quot;grep *&quot;: &quot;allow&quot;
+    },
+    &quot;edit&quot;: {
+      &quot;*&quot;: &quot;deny&quot;,
+      &quot;packages/web/src/content/docs/*.mdx&quot;: &quot;allow&quot;
+    }
+  }
+}
+</code></pre>
+<p>Rules are evaluated by pattern match, with the <strong>last matching rule winning</strong>. A common pattern is to put the catch-all <code>"*"</code> rule first, and more specific rules after it.</p>
+<h3 id="wildcards">Wildcards</h3>
+<p>Permission patterns use simple wildcard matching:</p>
+<ul>
+<li><code>*</code> matches zero or more of any character</li>
+<li><code>?</code> matches exactly one character</li>
+<li>All other characters match literally</li>
+</ul>
+<h3 id="home-directory-expansion">Home Directory Expansion</h3>
+<p>You can use <code>~</code> or <code>$HOME</code> at the start of a pattern to reference your home directory. This is particularly useful for <a href="#external-directories"><code>external_directory</code></a> rules.</p>
+<ul>
+<li><code>~/projects/*</code> -&gt; <code>/Users/username/projects/*</code></li>
+<li><code>$HOME/projects/*</code> -&gt; <code>/Users/username/projects/*</code></li>
+<li><code>~</code> -&gt; <code>/Users/username</code></li>
+</ul>
+<h3 id="external-directories">External Directories</h3>
+<p>Use <code>external_directory</code> to allow tool calls that touch paths outside the working directory where OpenCode was started. This applies to any tool that takes a path as input (for example <code>read</code>, <code>edit</code>, <code>glob</code>, <code>grep</code>, and many <code>bash</code> commands).</p>
+<p>Home expansion (like <code>~/...</code>) only affects how a pattern is written. It does not make an external path part of the current workspace, so paths outside the working directory must still be allowed via <code>external_directory</code>.</p>
+<p>For example, this allows access to everything under <code>~/projects/personal/</code>:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;external_directory&quot;: {
+      &quot;~/projects/personal/**&quot;: &quot;allow&quot;
+    }
+  }
+}
+</code></pre>
+<p>Any directory allowed here inherits the same defaults as the current workspace. Since <a href="#defaults"><code>read</code> defaults to <code>allow</code></a>, reads are also allowed for entries under <code>external_directory</code> unless overridden. Add explicit rules when a tool should be restricted in these paths, such as blocking edits while keeping reads:</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;external_directory&quot;: {
+      &quot;~/projects/personal/**&quot;: &quot;allow&quot;
+    },
+    &quot;edit&quot;: {
+      &quot;~/projects/personal/**&quot;: &quot;deny&quot;
+    }
+  }
+}
+</code></pre>
+<p>Keep the list focused on trusted paths, and layer extra allow or deny rules as needed for other tools (for example <code>bash</code>).</p>
+<hr />
+<h2 id="available-permissions">Available Permissions</h2>
+<p>OpenCode permissions are keyed by tool name, plus a couple of safety guards:</p>
+<ul>
+<li><code>read</code> — reading a file (matches the file path)</li>
+<li><code>edit</code> — all file modifications (covers <code>edit</code>, <code>write</code>, <code>patch</code>)</li>
+<li><code>glob</code> — file globbing (matches the glob pattern)</li>
+<li><code>grep</code> — content search (matches the regex pattern)</li>
+<li><code>bash</code> — running shell commands (matches parsed commands like <code>git status --porcelain</code>)</li>
+<li><code>task</code> — launching subagents (matches the subagent type)</li>
+<li><code>skill</code> — loading a skill (matches the skill name)</li>
+<li><code>lsp</code> — running LSP queries (currently non-granular)</li>
+<li><code>question</code> — asking the user questions during execution</li>
+<li><code>webfetch</code> — fetching a URL (matches the URL)</li>
+<li><code>websearch</code> — web search (matches the query)</li>
+<li><code>external_directory</code> — triggered when a tool touches paths outside the project working directory</li>
+<li><code>doom_loop</code> — triggered when the same tool call repeats 3 times with identical input</li>
+</ul>
+<hr />
+<h2 id="defaults">Defaults</h2>
+<p>If you don’t specify anything, OpenCode starts from permissive defaults:</p>
+<ul>
+<li>Most permissions default to <code>"allow"</code>.</li>
+<li><code>doom_loop</code> and <code>external_directory</code> default to <code>"ask"</code>.</li>
+<li><code>read</code> is <code>"allow"</code>, but <code>.env</code> files are denied by default:</li>
+</ul>
+<pre><code class="language-json">{
+  &quot;permission&quot;: {
+    &quot;read&quot;: {
+      &quot;*&quot;: &quot;allow&quot;,
+      &quot;*.env&quot;: &quot;deny&quot;,
+      &quot;*.env.*&quot;: &quot;deny&quot;,
+      &quot;*.env.example&quot;: &quot;allow&quot;
+    }
+  }
+}
+</code></pre>
+<hr />
+<h2 id="what-ask-does">What “Ask” Does</h2>
+<p>When OpenCode prompts for approval, the UI offers three outcomes:</p>
+<ul>
+<li><code>once</code> — approve just this request</li>
+<li><code>always</code> — approve future requests matching the suggested patterns (for the rest of the current OpenCode session)</li>
+<li><code>reject</code> — deny the request</li>
+</ul>
+<p>The set of patterns that <code>always</code> would approve is provided by the tool (for example, bash approvals typically whitelist a safe command prefix like <code>git status*</code>).</p>
+<hr />
+<h2 id="agents">Agents</h2>
+<p>You can override permissions per agent. Agent permissions are merged with the global config, and agent rules take precedence. <a href="agents.html#permissions">Learn more</a> about agent permissions.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Refer to the <a href="#granular-rules-object-syntax">Granular Rules (Object Syntax)</a> section above for more detailed pattern matching examples.</p>
+</div>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;permission&quot;: {
+    &quot;bash&quot;: {
+      &quot;*&quot;: &quot;ask&quot;,
+      &quot;git *&quot;: &quot;allow&quot;,
+      &quot;git commit *&quot;: &quot;deny&quot;,
+      &quot;git push *&quot;: &quot;deny&quot;,
+      &quot;grep *&quot;: &quot;allow&quot;
+    }
+  },
+  &quot;agent&quot;: {
+    &quot;build&quot;: {
+      &quot;permission&quot;: {
+        &quot;bash&quot;: {
+          &quot;*&quot;: &quot;ask&quot;,
+          &quot;git *&quot;: &quot;allow&quot;,
+          &quot;git commit *&quot;: &quot;ask&quot;,
+          &quot;git push *&quot;: &quot;deny&quot;,
+          &quot;grep *&quot;: &quot;allow&quot;
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>You can also configure agent permissions in Markdown:</p>
+<pre><code class="language-markdown">---
+description: Code review without edits
+mode: subagent
+permission:
+  edit: deny
+  bash: ask
+  webfetch: deny
+---
+
+Only analyze code and suggest changes.
+</code></pre>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Use pattern matching for commands with arguments. <code>"grep *"</code> allows <code>grep pattern file.txt</code>, while <code>"grep"</code> alone would block it. Commands like <code>git status</code> work for default behavior but require explicit permission (like <code>"git status *"</code>) when arguments are passed.</p>
+</div>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

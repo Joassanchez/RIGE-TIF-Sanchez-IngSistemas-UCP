@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Skills · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a class="actual" href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Agent Skills</h1>
+<p>Agent skills let OpenCode discover reusable instructions from your repo or home directory.
+Skills are loaded on-demand via the native <code>skill</code> tool—agents see available skills and can load the full content when needed.</p>
+<hr />
+<h2 id="place-files">Place files</h2>
+<p>Create one folder per skill name and put a <code>SKILL.md</code> inside it.
+OpenCode searches these locations:</p>
+<ul>
+<li>Project config: <code>.opencode/skills/&lt;name&gt;/SKILL.md</code></li>
+<li>Global config: <code>~/.config/opencode/skills/&lt;name&gt;/SKILL.md</code></li>
+<li>Project Claude-compatible: <code>.claude/skills/&lt;name&gt;/SKILL.md</code></li>
+<li>Global Claude-compatible: <code>~/.claude/skills/&lt;name&gt;/SKILL.md</code></li>
+<li>Project agent-compatible: <code>.agents/skills/&lt;name&gt;/SKILL.md</code></li>
+<li>Global agent-compatible: <code>~/.agents/skills/&lt;name&gt;/SKILL.md</code></li>
+</ul>
+<hr />
+<h2 id="understand-discovery">Understand discovery</h2>
+<p>For project-local paths, OpenCode walks up from your current working directory until it reaches the git worktree.
+It loads any matching <code>skills/*/SKILL.md</code> in <code>.opencode/</code> and any matching <code>.claude/skills/*/SKILL.md</code> or <code>.agents/skills/*/SKILL.md</code> along the way.</p>
+<p>Global definitions are also loaded from <code>~/.config/opencode/skills/*/SKILL.md</code>, <code>~/.claude/skills/*/SKILL.md</code>, and <code>~/.agents/skills/*/SKILL.md</code>.</p>
+<hr />
+<h2 id="write-frontmatter">Write frontmatter</h2>
+<p>Each <code>SKILL.md</code> must start with YAML frontmatter.
+Only these fields are recognized:</p>
+<ul>
+<li><code>name</code> (required)</li>
+<li><code>description</code> (required)</li>
+<li><code>license</code> (optional)</li>
+<li><code>compatibility</code> (optional)</li>
+<li><code>metadata</code> (optional, string-to-string map)</li>
+</ul>
+<p>Unknown frontmatter fields are ignored.</p>
+<hr />
+<h2 id="validate-names">Validate names</h2>
+<p><code>name</code> must:</p>
+<ul>
+<li>Be 1–64 characters</li>
+<li>Be lowercase alphanumeric with single hyphen separators</li>
+<li>Not start or end with <code>-</code></li>
+<li>Not contain consecutive <code>--</code></li>
+<li>Match the directory name that contains <code>SKILL.md</code></li>
+</ul>
+<p>Equivalent regex:</p>
+<pre><code class="language-text">^[a-z0-9]+(-[a-z0-9]+)*$
+</code></pre>
+<hr />
+<h2 id="follow-length-rules">Follow length rules</h2>
+<p><code>description</code> must be 1-1024 characters.
+Keep it specific enough for the agent to choose correctly.</p>
+<hr />
+<h2 id="use-an-example">Use an example</h2>
+<p>Create <code>.opencode/skills/git-release/SKILL.md</code> like this:</p>
+<pre><code class="language-markdown">---
+name: git-release
+description: Create consistent releases and changelogs
+license: MIT
+compatibility: opencode
+metadata:
+  audience: maintainers
+  workflow: github
+---
+
+## What I do
+
+- Draft release notes from merged PRs
+- Propose a version bump
+- Provide a copy-pasteable `gh release create` command
+
+## When to use me
+
+Use this when you are preparing a tagged release.
+Ask clarifying questions if the target versioning scheme is unclear.
+</code></pre>
+<hr />
+<h2 id="recognize-tool-description">Recognize tool description</h2>
+<p>OpenCode lists available skills in the <code>skill</code> tool description.
+Each entry includes the skill name and description:</p>
+<pre><code class="language-xml">&lt;available_skills&gt;
+  &lt;skill&gt;
+    &lt;name&gt;git-release&lt;/name&gt;
+    &lt;description&gt;Create consistent releases and changelogs&lt;/description&gt;
+  &lt;/skill&gt;
+&lt;/available_skills&gt;
+</code></pre>
+<p>The agent loads a skill by calling the tool:</p>
+<pre><code>skill({ name: &quot;git-release&quot; })
+</code></pre>
+<hr />
+<h2 id="configure-permissions">Configure permissions</h2>
+<p>Control which skills agents can access using pattern-based permissions in <code>opencode.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;permission&quot;: {
+    &quot;skill&quot;: {
+      &quot;*&quot;: &quot;allow&quot;,
+      &quot;pr-review&quot;: &quot;allow&quot;,
+      &quot;internal-*&quot;: &quot;deny&quot;,
+      &quot;experimental-*&quot;: &quot;ask&quot;
+    }
+  }
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Permission</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>allow</code></td>
+<td>Skill loads immediately</td>
+</tr>
+<tr>
+<td><code>deny</code></td>
+<td>Skill hidden from agent, access rejected</td>
+</tr>
+<tr>
+<td><code>ask</code></td>
+<td>User prompted for approval before loading</td>
+</tr>
+</tbody>
+</table>
+<p>Patterns support wildcards: <code>internal-*</code> matches <code>internal-docs</code>, <code>internal-tools</code>, etc.</p>
+<hr />
+<h2 id="override-per-agent">Override per agent</h2>
+<p>Give specific agents different permissions than the global defaults.</p>
+<p><strong>For custom agents</strong> (in agent frontmatter):</p>
+<pre><code class="language-yaml">---
+permission:
+  skill:
+    &quot;documents-*&quot;: &quot;allow&quot;
+---
+</code></pre>
+<p><strong>For built-in agents</strong> (in <code>opencode.json</code>):</p>
+<pre><code class="language-json">{
+  &quot;agent&quot;: {
+    &quot;plan&quot;: {
+      &quot;permission&quot;: {
+        &quot;skill&quot;: {
+          &quot;internal-*&quot;: &quot;allow&quot;
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<hr />
+<h2 id="disable-the-skill-tool">Disable the skill tool</h2>
+<p>Completely disable skills for agents that shouldn't use them:</p>
+<p><strong>For custom agents</strong>:</p>
+<pre><code class="language-yaml">---
+tools:
+  skill: false
+---
+</code></pre>
+<p><strong>For built-in agents</strong>:</p>
+<pre><code class="language-json">{
+  &quot;agent&quot;: {
+    &quot;plan&quot;: {
+      &quot;tools&quot;: {
+        &quot;skill&quot;: false
+      }
+    }
+  }
+}
+</code></pre>
+<p>When disabled, the <code>&lt;available_skills&gt;</code> section is omitted entirely.</p>
+<hr />
+<h2 id="troubleshoot-loading">Troubleshoot loading</h2>
+<p>If a skill does not show up:</p>
+<ol>
+<li>Verify <code>SKILL.md</code> is spelled in all caps</li>
+<li>Check that frontmatter includes <code>name</code> and <code>description</code></li>
+<li>Ensure skill names are unique across all locations</li>
+<li>Check permissions—skills with <code>deny</code> are hidden from agents</li>
+</ol>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

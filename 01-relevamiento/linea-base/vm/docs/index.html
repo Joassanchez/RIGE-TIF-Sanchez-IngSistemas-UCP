@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introduction · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a class="actual" href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Introduction</h1>
+<p>export const console = config.console</p>
+<p><a href="/"><strong>OpenCode</strong></a> is an open source AI coding agent. It's available as a terminal-based interface, desktop app, or IDE extension.</p>
+<p><img alt="OpenCode TUI with the opencode theme" src="../../assets/lander/screenshot.png" /></p>
+<p>Let's get started.</p>
+<hr />
+<h4 id="prerequisites">Prerequisites</h4>
+<p>To use OpenCode in your terminal, you'll need:</p>
+<ol>
+<li>
+<p>A modern terminal emulator like:
+   - <a href="https://wezterm.org">WezTerm</a>, cross-platform
+   - <a href="https://alacritty.org">Alacritty</a>, cross-platform
+   - <a href="https://ghostty.org">Ghostty</a>, Linux and macOS
+   - <a href="https://sw.kovidgoyal.net/kitty/">Kitty</a>, Linux and macOS</p>
+</li>
+<li>
+<p>API keys for the LLM providers you want to use.</p>
+</li>
+</ol>
+<hr />
+<h2 id="install">Install</h2>
+<p>The easiest way to install OpenCode is through the install script.</p>
+<pre><code class="language-bash">curl -fsSL https://opencode.ai/install | bash
+</code></pre>
+<p>You can also install it with the following commands:</p>
+<ul>
+<li><strong>Using Node.js</strong></li>
+</ul>
+<div class="tab-t">npm</div>
+
+<pre><code>  ```bash
+  npm install -g opencode-ai
+  ```
+</code></pre>
+<div class="tab-t">Bun</div>
+
+<pre><code>    ```bash
+    bun install -g opencode-ai
+    ```
+</code></pre>
+<div class="tab-t">pnpm</div>
+
+<pre><code>    ```bash
+    pnpm install -g opencode-ai
+    ```
+</code></pre>
+<div class="tab-t">Yarn</div>
+
+<pre><code>    ```bash
+    yarn global add opencode-ai
+    ```
+</code></pre>
+<ul>
+<li><strong>Using Homebrew on macOS and Linux</strong></li>
+</ul>
+<p><code>bash
+  brew install anomalyco/tap/opencode</code></p>
+<blockquote>
+<p>We recommend using the OpenCode tap for the most up to date releases. The official <code>brew install opencode</code> formula is maintained by the Homebrew team and is updated less frequently.</p>
+</blockquote>
+<ul>
+<li><strong>Installing on Arch Linux</strong></li>
+</ul>
+<p><code>bash
+  sudo pacman -S opencode           # Arch Linux (Stable)
+  paru -S opencode-bin              # Arch Linux (Latest from AUR)</code></p>
+<h4 id="windows">Windows</h4>
+<div class="aside">
+<div class="aside-t">Recommended: Use WSL</div>
+<p>For the best experience on Windows, we recommend using <a href="windows-wsl.html">Windows Subsystem for Linux (WSL)</a>. It provides better performance and full compatibility with OpenCode's features.</p>
+</div>
+<ul>
+<li><strong>Using Chocolatey</strong></li>
+</ul>
+<p><code>bash
+  choco install opencode</code></p>
+<ul>
+<li><strong>Using Scoop</strong></li>
+</ul>
+<p><code>bash
+  scoop install opencode</code></p>
+<ul>
+<li><strong>Using NPM</strong></li>
+</ul>
+<p><code>bash
+  npm install -g opencode-ai</code></p>
+<ul>
+<li><strong>Using Mise</strong></li>
+</ul>
+<p><code>bash
+  mise use -g github:anomalyco/opencode</code></p>
+<ul>
+<li><strong>Using Docker</strong></li>
+</ul>
+<p><code>bash
+  docker run -it --rm ghcr.io/anomalyco/opencode</code></p>
+<p>Support for installing OpenCode on Windows using Bun is currently in progress.</p>
+<p>You can also grab the binary from the <a href="https://github.com/anomalyco/opencode/releases">Releases</a>.</p>
+<hr />
+<h2 id="configure">Configure</h2>
+<p>With OpenCode you can use any LLM provider by configuring their API keys.</p>
+<p>If you are new to using LLM providers, we recommend using <a href="zen.html">OpenCode Zen</a>.
+It's a curated list of models that have been tested and verified by the OpenCode
+team.</p>
+<ol>
+<li>Run the <code>/connect</code> command in the TUI, select opencode, and head to <a href="https://opencode.ai/auth">opencode.ai/auth</a>.</li>
+</ol>
+<p><code>txt
+   /connect</code></p>
+<ol start="2">
+<li>
+<p>Sign in, add your billing details, and copy your API key.</p>
+</li>
+<li>
+<p>Paste your API key.</p>
+</li>
+</ol>
+<p><code>txt
+   ┌ API key
+   │
+   │
+   └ enter</code></p>
+<p>Alternatively, you can select one of the other providers. <a href="providers.html#directory">Learn more</a>.</p>
+<hr />
+<h2 id="initialize">Initialize</h2>
+<p>Now that you've configured a provider, you can navigate to a project that
+you want to work on.</p>
+<pre><code class="language-bash">cd /path/to/project
+</code></pre>
+<p>And run OpenCode.</p>
+<pre><code class="language-bash">opencode
+</code></pre>
+<p>Next, initialize OpenCode for the project by running the following command.</p>
+<pre><code class="language-bash">/init
+</code></pre>
+<p>This will get OpenCode to analyze your project and create an <code>AGENTS.md</code> file in
+the project root.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>You should commit your project's <code>AGENTS.md</code> file to Git.</p>
+</div>
+<p>This helps OpenCode understand the project structure and the coding patterns
+used.</p>
+<hr />
+<h2 id="usage">Usage</h2>
+<p>You are now ready to use OpenCode to work on your project. Feel free to ask it
+anything!</p>
+<p>If you are new to using an AI coding agent, here are some examples that might
+help.</p>
+<hr />
+<h3 id="ask-questions">Ask questions</h3>
+<p>You can ask OpenCode to explain the codebase to you.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Use the <code>@</code> key to fuzzy search for files in the project.</p>
+</div>
+<pre><code class="language-txt">How is authentication handled in @packages/functions/src/api/index.ts
+</code></pre>
+<p>This is helpful if there's a part of the codebase that you didn't work on.</p>
+<hr />
+<h3 id="add-features">Add features</h3>
+<p>You can ask OpenCode to add new features to your project. Though we first recommend asking it to create a plan.</p>
+<ol>
+<li><strong>Create a plan</strong></li>
+</ol>
+<p>OpenCode has a <em>Plan mode</em> that disables its ability to make changes and
+   instead suggest <em>how</em> it'll implement the feature.</p>
+<p>Switch to it using the <strong>Tab</strong> key. You'll see an indicator for this in the lower right corner.</p>
+<p><code>bash
+   &lt;TAB&gt;</code></p>
+<p>Now let's describe what we want it to do.</p>
+<p><code>txt
+   When a user deletes a note, we'd like to flag it as deleted in the database.
+   Then create a screen that shows all the recently deleted notes.
+   From this screen, the user can undelete a note or permanently delete it.</code></p>
+<p>You want to give OpenCode enough details to understand what you want. It helps
+   to talk to it like you are talking to a junior developer on your team.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Give OpenCode plenty of context and examples to help it understand what you
+   want.</p>
+</div>
+<ol start="2">
+<li><strong>Iterate on the plan</strong></li>
+</ol>
+<p>Once it gives you a plan, you can give it feedback or add more details.</p>
+<p><code>txt
+   We'd like to design this new screen using a design I've used before.
+   [Image #1] Take a look at this image and use it as a reference.</code></p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Drag and drop images into the terminal to add them to the prompt.</p>
+</div>
+<p>OpenCode can scan any images you give it and add them to the prompt. You can
+   do this by dragging and dropping an image into the terminal.</p>
+<ol start="3">
+<li><strong>Build the feature</strong></li>
+</ol>
+<p>Once you feel comfortable with the plan, switch back to <em>Build mode</em> by
+   hitting the <strong>Tab</strong> key again.</p>
+<p><code>bash
+   &lt;TAB&gt;</code></p>
+<p>And asking it to make the changes.</p>
+<p><code>bash
+   Sounds good! Go ahead and make the changes.</code></p>
+<hr />
+<h3 id="make-changes">Make changes</h3>
+<p>For more straightforward changes, you can ask OpenCode to directly build it
+without having to review the plan first.</p>
+<pre><code class="language-txt">We need to add authentication to the /settings route. Take a look at how this is
+handled in the /notes route in @packages/functions/src/notes.ts and implement
+the same logic in @packages/functions/src/settings.ts
+</code></pre>
+<p>You want to make sure you provide a good amount of detail so OpenCode makes the right
+changes.</p>
+<hr />
+<h3 id="undo-changes">Undo changes</h3>
+<p>Let's say you ask OpenCode to make some changes.</p>
+<pre><code class="language-txt">Can you refactor the function in @packages/functions/src/api/index.ts?
+</code></pre>
+<p>But you realize that it is not what you wanted. You <strong>can undo</strong> the changes
+using the <code>/undo</code> command.</p>
+<pre><code class="language-bash">/undo
+</code></pre>
+<p>OpenCode will now revert the changes you made and show your original message
+again.</p>
+<pre><code class="language-txt">Can you refactor the function in @packages/functions/src/api/index.ts?
+</code></pre>
+<p>From here you can tweak the prompt and ask OpenCode to try again.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>You can run <code>/undo</code> multiple times to undo multiple changes.</p>
+</div>
+<p>Or you <strong>can redo</strong> the changes using the <code>/redo</code> command.</p>
+<pre><code class="language-bash">/redo
+</code></pre>
+<hr />
+<h2 id="share">Share</h2>
+<p>The conversations that you have with OpenCode can be <a href="share.html">shared with your
+team</a>.</p>
+<pre><code class="language-bash">/share
+</code></pre>
+<p>This will create a link to the current conversation and copy it to your clipboard.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Conversations are not shared by default.</p>
+</div>
+<p>Here's an <a href="https://opencode.ai/s/4XP1fce5">example conversation</a> with OpenCode.</p>
+<hr />
+<h2 id="customize">Customize</h2>
+<p>And that's it! You are now a pro at using OpenCode.</p>
+<p>To make it your own, we recommend <a href="themes.html">picking a theme</a>, <a href="keybinds.html">customizing the keybinds</a>, <a href="formatters.html">configuring code formatters</a>, <a href="commands.html">creating custom commands</a>, or playing around with the <a href="config.html">OpenCode config</a>.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

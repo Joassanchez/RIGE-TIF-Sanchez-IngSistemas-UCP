@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom Tools · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a class="actual" href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Custom Tools</h1>
+<p>Custom tools are functions you create that the LLM can call during conversations. They work alongside opencode's <a href="tools.html">built-in tools</a> like <code>read</code>, <code>write</code>, and <code>bash</code>.</p>
+<hr />
+<h2 id="creating-a-tool">Creating a tool</h2>
+<p>Tools are defined as <strong>TypeScript</strong> or <strong>JavaScript</strong> files. However, the tool definition can invoke scripts written in <strong>any language</strong> — TypeScript or JavaScript is only used for the tool definition itself.</p>
+<hr />
+<h3 id="location">Location</h3>
+<p>They can be defined:</p>
+<ul>
+<li>Locally by placing them in the <code>.opencode/tools/</code> directory of your project.</li>
+<li>Or globally, by placing them in <code>~/.config/opencode/tools/</code>.</li>
+</ul>
+<hr />
+<h3 id="structure">Structure</h3>
+<p>The easiest way to create tools is using the <code>tool()</code> helper which provides type-safety and validation.</p>
+<pre><code class="language-ts">import { tool } from &quot;@opencode-ai/plugin&quot;
+
+export default tool({
+  description: &quot;Query the project database&quot;,
+  args: {
+    query: tool.schema.string().describe(&quot;SQL query to execute&quot;),
+  },
+  async execute(args) {
+    // Your database logic here
+    return `Executed query: ${args.query}`
+  },
+})
+</code></pre>
+<p>The <strong>filename</strong> becomes the <strong>tool name</strong>. The above creates a <code>database</code> tool.</p>
+<hr />
+<h4 id="multiple-tools-per-file">Multiple tools per file</h4>
+<p>You can also export multiple tools from a single file. Each export becomes <strong>a separate tool</strong> with the name <strong><code>&lt;filename&gt;_&lt;exportname&gt;</code></strong>:</p>
+<pre><code class="language-ts">import { tool } from &quot;@opencode-ai/plugin&quot;
+
+export const add = tool({
+  description: &quot;Add two numbers&quot;,
+  args: {
+    a: tool.schema.number().describe(&quot;First number&quot;),
+    b: tool.schema.number().describe(&quot;Second number&quot;),
+  },
+  async execute(args) {
+    return (args.a + args.b).toString()
+  },
+})
+
+export const multiply = tool({
+  description: &quot;Multiply two numbers&quot;,
+  args: {
+    a: tool.schema.number().describe(&quot;First number&quot;),
+    b: tool.schema.number().describe(&quot;Second number&quot;),
+  },
+  async execute(args) {
+    return (args.a * args.b).toString()
+  },
+})
+</code></pre>
+<p>This creates two tools: <code>math_add</code> and <code>math_multiply</code>.</p>
+<hr />
+<h4 id="name-collisions-with-built-in-tools">Name collisions with built-in tools</h4>
+<p>Custom tools are keyed by tool name. If a custom tool uses the same name as a built-in tool, the custom tool takes precedence.</p>
+<p>For example, this file replaces the built-in <code>bash</code> tool:</p>
+<pre><code class="language-ts">import { tool } from &quot;@opencode-ai/plugin&quot;
+
+export default tool({
+  description: &quot;Restricted bash wrapper&quot;,
+  args: {
+    command: tool.schema.string(),
+  },
+  async execute(args) {
+    return `blocked: ${args.command}`
+  },
+})
+</code></pre>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Prefer unique names unless you intentionally want to replace a built-in tool. If you want to disable a built in tool but not override it, use <a href="permissions.html">permissions</a>.</p>
+</div>
+<hr />
+<h3 id="arguments">Arguments</h3>
+<p>You can use <code>tool.schema</code>, which is just <a href="https://zod.dev">Zod</a>, to define argument types.</p>
+<pre><code class="language-ts">args: {
+  query: tool.schema.string().describe(&quot;SQL query to execute&quot;)
+}
+</code></pre>
+<p>You can also import <a href="https://zod.dev">Zod</a> directly and return a plain object:</p>
+<pre><code class="language-ts">import { z } from &quot;zod&quot;
+
+export default {
+  description: &quot;Tool description&quot;,
+  args: {
+    param: z.string().describe(&quot;Parameter description&quot;),
+  },
+  async execute(args, context) {
+    // Tool implementation
+    return &quot;result&quot;
+  },
+}
+</code></pre>
+<hr />
+<h3 id="context">Context</h3>
+<p>Tools receive context about the current session:</p>
+<pre><code class="language-ts">import { tool } from &quot;@opencode-ai/plugin&quot;
+
+export default tool({
+  description: &quot;Get project information&quot;,
+  args: {},
+  async execute(args, context) {
+    // Access context information
+    const { agent, sessionID, messageID, directory, worktree } = context
+    return `Agent: ${agent}, Session: ${sessionID}, Message: ${messageID}, Directory: ${directory}, Worktree: ${worktree}`
+  },
+})
+</code></pre>
+<p>Use <code>context.directory</code> for the session working directory.
+Use <code>context.worktree</code> for the git worktree root.</p>
+<hr />
+<h2 id="examples">Examples</h2>
+<h3 id="write-a-tool-in-python">Write a tool in Python</h3>
+<p>You can write your tools in any language you want. Here's an example that adds two numbers using Python.</p>
+<p>First, create the tool as a Python script:</p>
+<pre><code class="language-python">import sys
+
+a = int(sys.argv[1])
+b = int(sys.argv[2])
+print(a + b)
+</code></pre>
+<p>Then create the tool definition that invokes it:</p>
+<pre><code class="language-ts">import { tool } from &quot;@opencode-ai/plugin&quot;
+import path from &quot;path&quot;
+
+export default tool({
+  description: &quot;Add two numbers using Python&quot;,
+  args: {
+    a: tool.schema.number().describe(&quot;First number&quot;),
+    b: tool.schema.number().describe(&quot;Second number&quot;),
+  },
+  async execute(args, context) {
+    const script = path.join(context.worktree, &quot;.opencode/tools/add.py&quot;)
+    const result = await Bun.$`python3 ${script} ${args.a} ${args.b}`.text()
+    return result.trim()
+  },
+})
+</code></pre>
+<p>Here we are using the <a href="https://bun.com/docs/runtime/shell"><code>Bun.$</code></a> utility to run the Python script.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

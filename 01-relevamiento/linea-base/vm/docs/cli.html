@@ -1,0 +1,1167 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLI · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a class="actual" href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>CLI</h1>
+<p>The OpenCode CLI by default starts the <a href="tui.html">TUI</a> when run without any arguments.</p>
+<pre><code class="language-bash">opencode
+</code></pre>
+<p>But it also accepts commands as documented on this page. This allows you to interact with OpenCode programmatically.</p>
+<pre><code class="language-bash">opencode run &quot;Explain how closures work in JavaScript&quot;
+</code></pre>
+<hr />
+<h3 id="tui">tui</h3>
+<p>Start the OpenCode terminal user interface.</p>
+<pre><code class="language-bash">opencode [project]
+</code></pre>
+<h4 id="flags">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--continue"}</code></nobr></td>
+<td><code>-c</code></td>
+<td>Continue the last session</td>
+</tr>
+<tr>
+<td><nobr><code>{"--session"}</code></nobr></td>
+<td><code>-s</code></td>
+<td>Session ID to continue</td>
+</tr>
+<tr>
+<td><nobr><code>{"--fork"}</code></nobr></td>
+<td></td>
+<td>Fork the session when continuing (use with <code>--continue</code> or <code>--session</code>)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--prompt"}</code></nobr></td>
+<td></td>
+<td>Prompt to use</td>
+</tr>
+<tr>
+<td><nobr><code>{"--model"}</code></nobr></td>
+<td><code>-m</code></td>
+<td>Model to use in the form of provider/model</td>
+</tr>
+<tr>
+<td><nobr><code>{"--agent"}</code></nobr></td>
+<td></td>
+<td>Agent to use</td>
+</tr>
+<tr>
+<td><nobr><code>{"--auto"}</code></nobr></td>
+<td></td>
+<td>Auto-approve permissions that are not explicitly denied</td>
+</tr>
+<tr>
+<td><nobr><code>{"--port"}</code></nobr></td>
+<td></td>
+<td>Port to listen on</td>
+</tr>
+<tr>
+<td><nobr><code>{"--hostname"}</code></nobr></td>
+<td></td>
+<td>Hostname to listen on</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mdns"}</code></nobr></td>
+<td></td>
+<td>Enable mDNS discovery</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mdns-domain"}</code></nobr></td>
+<td></td>
+<td>Custom mDNS domain name</td>
+</tr>
+<tr>
+<td><nobr><code>{"--cors"}</code></nobr></td>
+<td></td>
+<td>Additional browser origin(s) to allow CORS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="commands">Commands</h2>
+<p>The OpenCode CLI also has the following commands.</p>
+<hr />
+<h3 id="agent">agent</h3>
+<p>Manage agents for OpenCode.</p>
+<pre><code class="language-bash">opencode agent [command]
+</code></pre>
+<hr />
+<h4 id="create">create</h4>
+<p>Create a new agent with custom configuration.</p>
+<pre><code class="language-bash">opencode agent create
+</code></pre>
+<p>This command will guide you through creating a new agent with a custom system prompt and permission configuration. Anything you don't allow is denied in the generated agent's frontmatter.</p>
+<h4 id="flags_1">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--path"}</code></nobr></td>
+<td></td>
+<td>Directory to write the agent file to (defaults to global or <code>.opencode/agent</code> based on the prompt)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--description"}</code></nobr></td>
+<td></td>
+<td>What the agent should do</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mode"}</code></nobr></td>
+<td></td>
+<td>Agent mode: <code>all</code>, <code>primary</code>, or <code>subagent</code></td>
+</tr>
+<tr>
+<td><nobr><code>{"--permissions"}</code></nobr></td>
+<td></td>
+<td>Comma-separated list of permissions to allow (default: all). Available: <code>bash</code>, <code>read</code>, <code>edit</code>, <code>glob</code>, <code>grep</code>, <code>webfetch</code>, <code>task</code>, <code>todowrite</code>, <code>websearch</code>, <code>lsp</code>, <code>skill</code>. Anything omitted is denied. Alias: <code>--tools</code></td>
+</tr>
+<tr>
+<td><nobr><code>{"--model"}</code></nobr></td>
+<td><code>-m</code></td>
+<td>Model to use, in <code>provider/model</code> format</td>
+</tr>
+</tbody>
+</table>
+<p>Passing all of <code>--path</code>, <code>--description</code>, <code>--mode</code>, and <code>--permissions</code> runs the command non-interactively.</p>
+<hr />
+<h4 id="list">list</h4>
+<p>List all available agents.</p>
+<pre><code class="language-bash">opencode agent list
+</code></pre>
+<hr />
+<h3 id="attach">attach</h3>
+<p>Attach a terminal to an already running OpenCode backend server started via <code>serve</code> or <code>web</code> commands.</p>
+<pre><code class="language-bash">opencode attach [url]
+</code></pre>
+<p>This allows using the TUI with a remote OpenCode backend. For example:</p>
+<pre><code class="language-bash"># Start the backend server for web/mobile access
+opencode web --port 4096 --hostname 0.0.0.0
+
+# In another terminal, attach the TUI to the running backend
+opencode attach http://10.20.30.40:4096
+</code></pre>
+<h4 id="flags_2">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--dir"}</code></nobr></td>
+<td></td>
+<td>Working directory to start TUI in</td>
+</tr>
+<tr>
+<td><nobr><code>{"--continue"}</code></nobr></td>
+<td><code>-c</code></td>
+<td>Continue the last session</td>
+</tr>
+<tr>
+<td><nobr><code>{"--session"}</code></nobr></td>
+<td><code>-s</code></td>
+<td>Session ID to continue</td>
+</tr>
+<tr>
+<td><nobr><code>{"--fork"}</code></nobr></td>
+<td></td>
+<td>Fork the session when continuing (use with <code>--continue</code> or <code>--session</code>)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--password"}</code></nobr></td>
+<td><code>-p</code></td>
+<td>Basic auth password (defaults to <code>OPENCODE_SERVER_PASSWORD</code>)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--username"}</code></nobr></td>
+<td><code>-u</code></td>
+<td>Basic auth username (defaults to <code>OPENCODE_SERVER_USERNAME</code> or <code>opencode</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="auth">auth</h3>
+<p>Command to manage credentials and login for providers.</p>
+<pre><code class="language-bash">opencode auth [command]
+</code></pre>
+<hr />
+<h4 id="login">login</h4>
+<p>OpenCode is powered by the provider list at <a href="https://models.dev">Models.dev</a>, so you can use <code>opencode auth login</code> to configure API keys for any provider you'd like to use. This is stored in <code>~/.local/share/opencode/auth.json</code>.</p>
+<pre><code class="language-bash">opencode auth login
+</code></pre>
+<p>When OpenCode starts up it loads the providers from the credentials file. And if there are any keys defined in your environments or a <code>.env</code> file in your project.</p>
+<h5 id="flags_3">Flags</h5>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--provider"}</code></nobr></td>
+<td><code>-p</code></td>
+<td>Provider ID or name to log in to</td>
+</tr>
+<tr>
+<td><nobr><code>{"--method"}</code></nobr></td>
+<td><code>-m</code></td>
+<td>Login method label to use, skipping method selection</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="list_1">list</h4>
+<p>Lists all the authenticated providers as stored in the credentials file.</p>
+<pre><code class="language-bash">opencode auth list
+</code></pre>
+<p>Or the short version.</p>
+<pre><code class="language-bash">opencode auth ls
+</code></pre>
+<hr />
+<h4 id="logout">logout</h4>
+<p>Logs you out of a provider by clearing it from the credentials file.</p>
+<pre><code class="language-bash">opencode auth logout
+</code></pre>
+<hr />
+<h3 id="github">github</h3>
+<p>Manage the GitHub agent for repository automation.</p>
+<pre><code class="language-bash">opencode github [command]
+</code></pre>
+<hr />
+<h4 id="install">install</h4>
+<p>Install the GitHub agent in your repository.</p>
+<pre><code class="language-bash">opencode github install
+</code></pre>
+<p>This sets up the necessary GitHub Actions workflow and guides you through the configuration process. <a href="github.html">Learn more</a>.</p>
+<hr />
+<h4 id="run">run</h4>
+<p>Run the GitHub agent. This is typically used in GitHub Actions.</p>
+<pre><code class="language-bash">opencode github run
+</code></pre>
+<h5 id="flags_4">Flags</h5>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--event"}</code></nobr></td>
+<td>GitHub mock event to run the agent for</td>
+</tr>
+<tr>
+<td><nobr><code>{"--token"}</code></nobr></td>
+<td>GitHub personal access token</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="mcp">mcp</h3>
+<p>Manage Model Context Protocol servers.</p>
+<pre><code class="language-bash">opencode mcp [command]
+</code></pre>
+<hr />
+<h4 id="add">add</h4>
+<p>Add an MCP server to your configuration.</p>
+<pre><code class="language-bash">opencode mcp add
+</code></pre>
+<p>This command will guide you through adding either a local or remote MCP server.</p>
+<hr />
+<h4 id="list_2">list</h4>
+<p>List all configured MCP servers and their connection status.</p>
+<pre><code class="language-bash">opencode mcp list
+</code></pre>
+<p>Or use the short version.</p>
+<pre><code class="language-bash">opencode mcp ls
+</code></pre>
+<hr />
+<h4 id="auth_1">auth</h4>
+<p>Authenticate with an OAuth-enabled MCP server.</p>
+<pre><code class="language-bash">opencode mcp auth [name]
+</code></pre>
+<p>If you don't provide a server name, you'll be prompted to select from available OAuth-capable servers.</p>
+<p>You can also list OAuth-capable servers and their authentication status.</p>
+<pre><code class="language-bash">opencode mcp auth list
+</code></pre>
+<p>Or use the short version.</p>
+<pre><code class="language-bash">opencode mcp auth ls
+</code></pre>
+<hr />
+<h4 id="logout_1">logout</h4>
+<p>Remove OAuth credentials for an MCP server.</p>
+<pre><code class="language-bash">opencode mcp logout [name]
+</code></pre>
+<hr />
+<h4 id="debug">debug</h4>
+<p>Debug OAuth connection issues for an MCP server.</p>
+<pre><code class="language-bash">opencode mcp debug &lt;name&gt;
+</code></pre>
+<hr />
+<h3 id="models">models</h3>
+<p>List all available models from configured providers.</p>
+<pre><code class="language-bash">opencode models [provider]
+</code></pre>
+<p>This command displays all models available across your configured providers in the format <code>provider/model</code>.</p>
+<p>This is useful for figuring out the exact model name to use in <a href="config.html">your config</a>.</p>
+<p>You can optionally pass a provider ID to filter models by that provider.</p>
+<pre><code class="language-bash">opencode models anthropic
+</code></pre>
+<h4 id="flags_5">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--refresh"}</code></nobr></td>
+<td>Refresh the models cache from models.dev</td>
+</tr>
+<tr>
+<td><nobr><code>{"--verbose"}</code></nobr></td>
+<td>Use more verbose model output (includes metadata like costs)</td>
+</tr>
+</tbody>
+</table>
+<p>Use the <code>--refresh</code> flag to update the cached model list. This is useful when new models have been added to a provider and you want to see them in OpenCode.</p>
+<pre><code class="language-bash">opencode models --refresh
+</code></pre>
+<hr />
+<h3 id="run_1">run</h3>
+<p>Run opencode in non-interactive mode by passing a prompt directly.</p>
+<pre><code class="language-bash">opencode run [message..]
+</code></pre>
+<p>This is useful for scripting, automation, or when you want a quick answer without launching the full TUI. For example.</p>
+<pre><code class="language-bash">opencode run Explain the use of context in Go
+</code></pre>
+<p>You can also attach to a running <code>opencode serve</code> instance to avoid MCP server cold boot times on every run:</p>
+<pre><code class="language-bash"># Start a headless server in one terminal
+opencode serve
+
+# In another terminal, run commands that attach to it
+opencode run --attach http://localhost:4096 &quot;Explain async/await in JavaScript&quot;
+</code></pre>
+<h4 id="flags_6">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--command"}</code></nobr></td>
+<td></td>
+<td>The command to run, use message for args</td>
+</tr>
+<tr>
+<td><nobr><code>{"--continue"}</code></nobr></td>
+<td><code>-c</code></td>
+<td>Continue the last session</td>
+</tr>
+<tr>
+<td><nobr><code>{"--session"}</code></nobr></td>
+<td><code>-s</code></td>
+<td>Session ID to continue</td>
+</tr>
+<tr>
+<td><nobr><code>{"--fork"}</code></nobr></td>
+<td></td>
+<td>Fork the session when continuing (use with <code>--continue</code> or <code>--session</code>)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--share"}</code></nobr></td>
+<td></td>
+<td>Share the session</td>
+</tr>
+<tr>
+<td><nobr><code>{"--model"}</code></nobr></td>
+<td><code>-m</code></td>
+<td>Model to use in the form of provider/model</td>
+</tr>
+<tr>
+<td><nobr><code>{"--agent"}</code></nobr></td>
+<td></td>
+<td>Agent to use</td>
+</tr>
+<tr>
+<td><nobr><code>{"--file"}</code></nobr></td>
+<td><code>-f</code></td>
+<td>File(s) to attach to message</td>
+</tr>
+<tr>
+<td><nobr><code>{"--format"}</code></nobr></td>
+<td></td>
+<td>Format: default (formatted) or json (raw JSON events)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--title"}</code></nobr></td>
+<td></td>
+<td>Title for the session (uses truncated prompt if no value provided)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--attach"}</code></nobr></td>
+<td></td>
+<td>Attach to a running opencode server (e.g., http://localhost:4096)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--password"}</code></nobr></td>
+<td><code>-p</code></td>
+<td>Basic auth password (defaults to <code>OPENCODE_SERVER_PASSWORD</code>)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--username"}</code></nobr></td>
+<td><code>-u</code></td>
+<td>Basic auth username (defaults to <code>OPENCODE_SERVER_USERNAME</code> or <code>opencode</code>)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--dir"}</code></nobr></td>
+<td></td>
+<td>Directory to run in, or path on the remote server when attaching</td>
+</tr>
+<tr>
+<td><nobr><code>{"--port"}</code></nobr></td>
+<td></td>
+<td>Port for the local server (defaults to random port)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--variant"}</code></nobr></td>
+<td></td>
+<td>Model variant (provider-specific reasoning effort)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--thinking"}</code></nobr></td>
+<td></td>
+<td>Show thinking blocks</td>
+</tr>
+<tr>
+<td><nobr><code>{"--auto"}</code></nobr></td>
+<td></td>
+<td>Auto-approve permissions that are not explicitly denied</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="serve">serve</h3>
+<p>Start a headless OpenCode server for API access. Check out the <a href="server.html">server docs</a> for the full HTTP interface.</p>
+<pre><code class="language-bash">opencode serve
+</code></pre>
+<p>This starts an HTTP server that provides API access to opencode functionality without the TUI interface. Set <code>OPENCODE_SERVER_PASSWORD</code> to enable HTTP basic auth (username defaults to <code>opencode</code>).</p>
+<h4 id="flags_7">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--port"}</code></nobr></td>
+<td>Port to listen on</td>
+</tr>
+<tr>
+<td><nobr><code>{"--hostname"}</code></nobr></td>
+<td>Hostname to listen on</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mdns"}</code></nobr></td>
+<td>Enable mDNS discovery</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mdns-domain"}</code></nobr></td>
+<td>Custom mDNS domain name</td>
+</tr>
+<tr>
+<td><nobr><code>{"--cors"}</code></nobr></td>
+<td>Additional browser origin(s) to allow CORS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="session">session</h3>
+<p>Manage OpenCode sessions.</p>
+<pre><code class="language-bash">opencode session [command]
+</code></pre>
+<hr />
+<h4 id="list_3">list</h4>
+<p>List all OpenCode sessions.</p>
+<pre><code class="language-bash">opencode session list
+</code></pre>
+<h5 id="flags_8">Flags</h5>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--max-count"}</code></nobr></td>
+<td><code>-n</code></td>
+<td>Limit to N most recent sessions</td>
+</tr>
+<tr>
+<td><nobr><code>{"--format"}</code></nobr></td>
+<td></td>
+<td>Output format: table or json (table)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="delete">delete</h4>
+<p>Delete an OpenCode session.</p>
+<pre><code class="language-bash">opencode session delete &lt;sessionID&gt;
+</code></pre>
+<hr />
+<h3 id="stats">stats</h3>
+<p>Show token usage and cost statistics for your OpenCode sessions.</p>
+<pre><code class="language-bash">opencode stats
+</code></pre>
+<h4 id="flags_9">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--days"}</code></nobr></td>
+<td>Show stats for the last N days (all time)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--tools"}</code></nobr></td>
+<td>Number of tools to show (all)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--models"}</code></nobr></td>
+<td>Show model usage breakdown (hidden by default). Pass a number to show top N</td>
+</tr>
+<tr>
+<td><nobr><code>{"--project"}</code></nobr></td>
+<td>Filter by project (all projects, empty string: current project)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="export">export</h3>
+<p>Export session data as JSON.</p>
+<pre><code class="language-bash">opencode export [sessionID]
+</code></pre>
+<p>If you don't provide a session ID, you'll be prompted to select from available sessions.</p>
+<h4 id="flags_10">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--sanitize"}</code></nobr></td>
+<td>Redact sensitive transcript/file data</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="import">import</h3>
+<p>Import session data from a JSON file or OpenCode share URL.</p>
+<pre><code class="language-bash">opencode import &lt;file&gt;
+</code></pre>
+<p>You can import from a local file or an OpenCode share URL.</p>
+<pre><code class="language-bash">opencode import session.json
+opencode import https://opncd.ai/s/abc123
+</code></pre>
+<hr />
+<h3 id="web">web</h3>
+<p>Start a headless OpenCode server with a web interface.</p>
+<pre><code class="language-bash">opencode web
+</code></pre>
+<p>This starts an HTTP server and opens a web browser to access OpenCode through a web interface. Set <code>OPENCODE_SERVER_PASSWORD</code> to enable HTTP basic auth (username defaults to <code>opencode</code>).</p>
+<h4 id="flags_11">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--port"}</code></nobr></td>
+<td>Port to listen on</td>
+</tr>
+<tr>
+<td><nobr><code>{"--hostname"}</code></nobr></td>
+<td>Hostname to listen on</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mdns"}</code></nobr></td>
+<td>Enable mDNS discovery</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mdns-domain"}</code></nobr></td>
+<td>Custom mDNS domain name</td>
+</tr>
+<tr>
+<td><nobr><code>{"--cors"}</code></nobr></td>
+<td>Additional browser origin(s) to allow CORS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="acp">acp</h3>
+<p>Start an ACP (Agent Client Protocol) server.</p>
+<pre><code class="language-bash">opencode acp
+</code></pre>
+<p>This command starts an ACP server that communicates via stdin/stdout using nd-JSON.</p>
+<h4 id="flags_12">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--cwd"}</code></nobr></td>
+<td>Working directory</td>
+</tr>
+<tr>
+<td><nobr><code>{"--port"}</code></nobr></td>
+<td>Port to listen on</td>
+</tr>
+<tr>
+<td><nobr><code>{"--hostname"}</code></nobr></td>
+<td>Hostname to listen on</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mdns"}</code></nobr></td>
+<td>Enable mDNS discovery</td>
+</tr>
+<tr>
+<td><nobr><code>{"--mdns-domain"}</code></nobr></td>
+<td>Custom mDNS domain name</td>
+</tr>
+<tr>
+<td><nobr><code>{"--cors"}</code></nobr></td>
+<td>Additional browser origin(s) to allow CORS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="plugin">plugin</h3>
+<p>Install a plugin and update your config.</p>
+<pre><code class="language-bash">opencode plugin &lt;module&gt;
+</code></pre>
+<p>Or use the alias.</p>
+<pre><code class="language-bash">opencode plug &lt;module&gt;
+</code></pre>
+<h4 id="flags_13">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--global"}</code></nobr></td>
+<td><code>-g</code></td>
+<td>Install in global config</td>
+</tr>
+<tr>
+<td><nobr><code>{"--force"}</code></nobr></td>
+<td><code>-f</code></td>
+<td>Replace existing plugin version</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="pr">pr</h3>
+<p>Fetch and checkout a GitHub PR branch, then run OpenCode.</p>
+<pre><code class="language-bash">opencode pr &lt;number&gt;
+</code></pre>
+<hr />
+<h3 id="db">db</h3>
+<p>Database tools.</p>
+<pre><code class="language-bash">opencode db [query]
+</code></pre>
+<h4 id="flags_14">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--format"}</code></nobr></td>
+<td>Output format: <code>json</code> or <code>tsv</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="path">path</h4>
+<p>Print the database path.</p>
+<pre><code class="language-bash">opencode db path
+</code></pre>
+<hr />
+<h3 id="debug_1">debug</h3>
+<p>Debugging and troubleshooting tools.</p>
+<pre><code class="language-bash">opencode debug [command]
+</code></pre>
+<hr />
+<h3 id="uninstall">uninstall</h3>
+<p>Uninstall OpenCode and remove all related files.</p>
+<pre><code class="language-bash">opencode uninstall
+</code></pre>
+<h4 id="flags_15">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--keep-config"}</code></nobr></td>
+<td><code>-c</code></td>
+<td>Keep configuration files</td>
+</tr>
+<tr>
+<td><nobr><code>{"--keep-data"}</code></nobr></td>
+<td><code>-d</code></td>
+<td>Keep session data and snapshots</td>
+</tr>
+<tr>
+<td><nobr><code>{"--dry-run"}</code></nobr></td>
+<td></td>
+<td>Show what would be removed without removing</td>
+</tr>
+<tr>
+<td><nobr><code>{"--force"}</code></nobr></td>
+<td><code>-f</code></td>
+<td>Skip confirmation prompts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="upgrade">upgrade</h3>
+<p>Updates opencode to the latest version or a specific version.</p>
+<pre><code class="language-bash">opencode upgrade [target]
+</code></pre>
+<p>To upgrade to the latest version.</p>
+<pre><code class="language-bash">opencode upgrade
+</code></pre>
+<p>To upgrade to a specific version.</p>
+<pre><code class="language-bash">opencode upgrade v0.1.48
+</code></pre>
+<h4 id="flags_16">Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--method"}</code></nobr></td>
+<td><code>-m</code></td>
+<td>The installation method that was used; curl, npm, pnpm, bun, brew</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="global-flags">Global Flags</h2>
+<p>The opencode CLI takes the following global flags.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><code>{"--help"}</code></nobr></td>
+<td><code>-h</code></td>
+<td>Display help</td>
+</tr>
+<tr>
+<td><nobr><code>{"--version"}</code></nobr></td>
+<td><code>-v</code></td>
+<td>Print version number</td>
+</tr>
+<tr>
+<td><nobr><code>{"--print-logs"}</code></nobr></td>
+<td></td>
+<td>Print logs to stderr</td>
+</tr>
+<tr>
+<td><nobr><code>{"--log-level"}</code></nobr></td>
+<td></td>
+<td>Log level (DEBUG, INFO, WARN, ERROR)</td>
+</tr>
+<tr>
+<td><nobr><code>{"--pure"}</code></nobr></td>
+<td></td>
+<td>Run without external plugins</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="environment-variables">Environment variables</h2>
+<p>OpenCode can be configured using environment variables.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OPENCODE_AUTO_SHARE</code></td>
+<td>boolean</td>
+<td>Automatically share sessions</td>
+</tr>
+<tr>
+<td><code>OPENCODE_GIT_BASH_PATH</code></td>
+<td>string</td>
+<td>Path to Git Bash executable on Windows</td>
+</tr>
+<tr>
+<td><code>OPENCODE_CONFIG</code></td>
+<td>string</td>
+<td>Path to config file</td>
+</tr>
+<tr>
+<td><code>OPENCODE_TUI_CONFIG</code></td>
+<td>string</td>
+<td>Path to TUI config file</td>
+</tr>
+<tr>
+<td><code>OPENCODE_CONFIG_DIR</code></td>
+<td>string</td>
+<td>Path to config directory</td>
+</tr>
+<tr>
+<td><code>OPENCODE_CONFIG_CONTENT</code></td>
+<td>string</td>
+<td>Inline json config content</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_AUTOUPDATE</code></td>
+<td>boolean</td>
+<td>Disable automatic update checks</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_PRUNE</code></td>
+<td>boolean</td>
+<td>Disable pruning of old data</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_TERMINAL_TITLE</code></td>
+<td>boolean</td>
+<td>Disable automatic terminal title updates</td>
+</tr>
+<tr>
+<td><code>OPENCODE_PERMISSION</code></td>
+<td>string</td>
+<td>Inlined json permissions config</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_DEFAULT_PLUGINS</code></td>
+<td>boolean</td>
+<td>Disable default plugins</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_LSP_DOWNLOAD</code></td>
+<td>boolean</td>
+<td>Disable automatic LSP server downloads</td>
+</tr>
+<tr>
+<td><code>OPENCODE_ENABLE_EXPERIMENTAL_MODELS</code></td>
+<td>boolean</td>
+<td>Enable experimental models</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_AUTOCOMPACT</code></td>
+<td>boolean</td>
+<td>Disable automatic context compaction</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_CLAUDE_CODE</code></td>
+<td>boolean</td>
+<td>Disable reading from <code>.claude</code> (prompt + skills)</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_CLAUDE_CODE_PROMPT</code></td>
+<td>boolean</td>
+<td>Disable reading <code>~/.claude/CLAUDE.md</code></td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_CLAUDE_CODE_SKILLS</code></td>
+<td>boolean</td>
+<td>Disable loading <code>.claude/skills</code></td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_MODELS_FETCH</code></td>
+<td>boolean</td>
+<td>Disable fetching models from remote sources</td>
+</tr>
+<tr>
+<td><code>OPENCODE_DISABLE_MOUSE</code></td>
+<td>boolean</td>
+<td>Disable mouse capture in the TUI</td>
+</tr>
+<tr>
+<td><code>OPENCODE_FAKE_VCS</code></td>
+<td>string</td>
+<td>Fake VCS provider for testing purposes</td>
+</tr>
+<tr>
+<td><code>OPENCODE_CLIENT</code></td>
+<td>string</td>
+<td>Client identifier (defaults to <code>cli</code>)</td>
+</tr>
+<tr>
+<td><code>OPENCODE_ENABLE_EXA</code></td>
+<td>boolean</td>
+<td>Enable Exa web search tools</td>
+</tr>
+<tr>
+<td><code>OPENCODE_ENABLE_PARALLEL</code></td>
+<td>boolean</td>
+<td>Enable Parallel web search tools</td>
+</tr>
+<tr>
+<td><code>OPENCODE_SERVER_PASSWORD</code></td>
+<td>string</td>
+<td>Enable basic auth for <code>serve</code>/<code>web</code></td>
+</tr>
+<tr>
+<td><code>OPENCODE_SERVER_USERNAME</code></td>
+<td>string</td>
+<td>Override basic auth username (default <code>opencode</code>)</td>
+</tr>
+<tr>
+<td><code>OPENCODE_MODELS_URL</code></td>
+<td>string</td>
+<td>Custom URL for fetching models configuration</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="experimental">Experimental</h3>
+<p>These environment variables enable experimental features that may change or be removed.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL</code></td>
+<td>boolean</td>
+<td>Enable the experimental umbrella flag</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_ICON_DISCOVERY</code></td>
+<td>boolean</td>
+<td>Enable icon discovery</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT</code></td>
+<td>boolean</td>
+<td>Disable copy on select in TUI</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS</code></td>
+<td>number</td>
+<td>Default timeout for bash commands in ms</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX</code></td>
+<td>number</td>
+<td>Max output tokens for LLM responses</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_FILEWATCHER</code></td>
+<td>boolean</td>
+<td>Enable file watcher for entire dir</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_OXFMT</code></td>
+<td>boolean</td>
+<td>Enable oxfmt formatter</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_LSP_TOOL</code></td>
+<td>boolean</td>
+<td>Enable experimental LSP tool</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER</code></td>
+<td>boolean</td>
+<td>Disable file watcher</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_EXA</code></td>
+<td>boolean</td>
+<td>Enable experimental Exa features</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_LSP_TY</code></td>
+<td>boolean</td>
+<td>Enable TY LSP for python files</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_PLAN_MODE</code></td>
+<td>boolean</td>
+<td>Enable plan mode</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS</code></td>
+<td>boolean</td>
+<td>Enable background subagent tasks</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_EVENT_SYSTEM</code></td>
+<td>boolean</td>
+<td>Enable experimental event system</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_NATIVE_LLM</code></td>
+<td>boolean</td>
+<td>Enable native LLM request path</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_PARALLEL</code></td>
+<td>boolean</td>
+<td>Enable parallel web search execution</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_SCOUT</code></td>
+<td>boolean</td>
+<td>Enable Scout subagent</td>
+</tr>
+<tr>
+<td><code>OPENCODE_EXPERIMENTAL_WORKSPACES</code></td>
+<td>boolean</td>
+<td>Enable workspace support</td>
+</tr>
+</tbody>
+</table>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

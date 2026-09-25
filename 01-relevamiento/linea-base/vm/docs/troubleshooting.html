@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Troubleshooting · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a class="actual" href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Troubleshooting</h1>
+<p>To debug issues with OpenCode, start by checking the logs and local data it stores on disk.</p>
+<hr />
+<h2 id="logs">Logs</h2>
+<p>Log files are written to:</p>
+<ul>
+<li><strong>macOS/Linux</strong>: <code>~/.local/share/opencode/log/</code></li>
+<li><strong>Windows</strong>: Press <code>WIN+R</code> and paste <code>%USERPROFILE%\.local\share\opencode\log</code></li>
+</ul>
+<p>Log files are named with timestamps (e.g., <code>2025-01-09T123456.log</code>) and the most recent 10 log files are kept.</p>
+<p>You can set the log level with the <code>--log-level</code> command-line option to get more detailed debug information. For example, <code>opencode --log-level DEBUG</code>.</p>
+<hr />
+<h2 id="storage">Storage</h2>
+<p>opencode stores session data and other application data on disk at:</p>
+<ul>
+<li><strong>macOS/Linux</strong>: <code>~/.local/share/opencode/</code></li>
+<li><strong>Windows</strong>: Press <code>WIN+R</code> and paste <code>%USERPROFILE%\.local\share\opencode</code></li>
+</ul>
+<p>This directory contains:</p>
+<ul>
+<li><code>auth.json</code> - Authentication data like API keys, OAuth tokens</li>
+<li><code>log/</code> - Application logs</li>
+<li><code>project/</code> - Project-specific data like session and message data</li>
+<li>If the project is within a Git repo, it is stored in <code>./&lt;project-slug&gt;/storage/</code></li>
+<li>If it is not a Git repo, it is stored in <code>./global/storage/</code></li>
+</ul>
+<hr />
+<h2 id="uninstall">Uninstall</h2>
+<p>To uninstall the OpenCode CLI and remove its related files, run:</p>
+<pre><code class="language-bash">opencode uninstall
+</code></pre>
+<p>The command shows what will be removed and asks for confirmation. See the <a href="cli.html#uninstall">CLI reference</a> for options to keep your configuration or application data.</p>
+<p>To remove OpenCode Desktop, uninstall the application through your operating system's app management tools.</p>
+<hr />
+<h2 id="desktop-app">Desktop app</h2>
+<p>OpenCode Desktop runs a local OpenCode server (the <code>opencode-cli</code> sidecar) in the background. Most issues are caused by a misbehaving plugin, a corrupted cache, or a bad server setting.</p>
+<h3 id="quick-checks">Quick checks</h3>
+<ul>
+<li>Fully quit and relaunch the app.</li>
+<li>If the app shows an error screen, click <strong>Restart</strong> and copy the error details.</li>
+<li>macOS only: <code>OpenCode</code> menu -&gt; <strong>Reload Webview</strong> (helps if the UI is blank/frozen).</li>
+</ul>
+<hr />
+<h3 id="disable-plugins">Disable plugins</h3>
+<p>If the desktop app is crashing on launch, hanging, or behaving strangely, start by disabling plugins.</p>
+<h4 id="check-the-global-config">Check the global config</h4>
+<p>Open your global config file and look for a <code>plugin</code> key.</p>
+<ul>
+<li><strong>macOS/Linux</strong>: <code>~/.config/opencode/opencode.jsonc</code> (or <code>~/.config/opencode/opencode.json</code>)</li>
+<li><strong>macOS/Linux</strong> (older installs): <code>~/.local/share/opencode/opencode.jsonc</code></li>
+<li><strong>Windows</strong>: Press <code>WIN+R</code> and paste <code>%USERPROFILE%\.config\opencode\opencode.jsonc</code></li>
+</ul>
+<p>If you have plugins configured, temporarily disable them by removing the key or setting it to an empty array:</p>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;plugin&quot;: [],
+}
+</code></pre>
+<h4 id="check-plugin-directories">Check plugin directories</h4>
+<p>OpenCode can also load local plugins from disk. Temporarily move these out of the way (or rename the folder) and restart the desktop app:</p>
+<ul>
+<li><strong>Global plugins</strong></li>
+<li><strong>macOS/Linux</strong>: <code>~/.config/opencode/plugins/</code></li>
+<li><strong>Windows</strong>: Press <code>WIN+R</code> and paste <code>%USERPROFILE%\.config\opencode\plugins</code></li>
+<li><strong>Project plugins</strong> (only if you use per-project config)</li>
+<li><code>&lt;your-project&gt;/.opencode/plugins/</code></li>
+</ul>
+<p>If the app starts working again, re-enable plugins one at a time to find which one is causing the issue.</p>
+<hr />
+<h3 id="clear-the-cache">Clear the cache</h3>
+<p>If disabling plugins doesn't help (or a plugin install is stuck), clear the cache so OpenCode can rebuild it.</p>
+<ol>
+<li>Quit OpenCode Desktop completely.</li>
+<li>Delete the cache directory:</li>
+</ol>
+<ul>
+<li><strong>macOS</strong>: Finder -&gt; <code>Cmd+Shift+G</code> -&gt; paste <code>~/.cache/opencode</code></li>
+<li><strong>Linux</strong>: delete <code>~/.cache/opencode</code> (or run <code>rm -rf ~/.cache/opencode</code>)</li>
+<li><strong>Windows</strong>: Press <code>WIN+R</code> and paste <code>%USERPROFILE%\.cache\opencode</code></li>
+</ul>
+<ol start="3">
+<li>Restart OpenCode Desktop.</li>
+</ol>
+<hr />
+<h3 id="fix-server-connection-issues">Fix server connection issues</h3>
+<p>OpenCode Desktop can either start its own local server (default) or connect to a server URL you configured.</p>
+<p>If you see a <strong>"Connection Failed"</strong> dialog (or the app never gets past the splash screen), check for a custom server URL.</p>
+<h4 id="clear-the-desktop-default-server-url">Clear the desktop default server URL</h4>
+<p>From the Home screen, click the server name (with the status dot) to open the Server picker. In the <strong>Default server</strong> section, click <strong>Clear</strong>.</p>
+<h4 id="remove-serverport-serverhostname-from-your-config">Remove <code>server.port</code> / <code>server.hostname</code> from your config</h4>
+<p>If your <code>opencode.json(c)</code> contains a <code>server</code> section, temporarily remove it and restart the desktop app.</p>
+<h4 id="check-environment-variables">Check environment variables</h4>
+<p>If you have <code>OPENCODE_PORT</code> set in your environment, the desktop app will try to use that port for the local server.</p>
+<ul>
+<li>Unset <code>OPENCODE_PORT</code> (or pick a free port) and restart.</li>
+</ul>
+<hr />
+<h3 id="linux-wayland-x11-issues">Linux: Wayland / X11 issues</h3>
+<p>On Linux, some Wayland setups can cause blank windows or compositor errors.</p>
+<ul>
+<li>If you're on Wayland and the app is blank/crashing, try launching with <code>OC_ALLOW_WAYLAND=1</code>.</li>
+<li>If that makes things worse, remove it and try launching under an X11 session instead.</li>
+</ul>
+<hr />
+<h3 id="windows-webview2-runtime">Windows: WebView2 runtime</h3>
+<p>On Windows, OpenCode Desktop requires the Microsoft Edge <strong>WebView2 Runtime</strong>. If the app opens to a blank window or won't start, install/update WebView2 and try again.</p>
+<hr />
+<h3 id="windows-general-performance-issues">Windows: General performance issues</h3>
+<p>If you're experiencing slow performance, file access issues, or terminal problems on Windows, try using <a href="windows-wsl.html">WSL (Windows Subsystem for Linux)</a>. WSL provides a Linux environment that works more seamlessly with OpenCode's features.</p>
+<hr />
+<h3 id="notifications-not-showing">Notifications not showing</h3>
+<p>OpenCode Desktop only shows system notifications when:</p>
+<ul>
+<li>notifications are enabled for OpenCode in your OS settings, and</li>
+<li>the app window is not focused.</li>
+</ul>
+<hr />
+<h3 id="reset-desktop-app-storage-last-resort">Reset desktop app storage (last resort)</h3>
+<p>If the app won't start and you can't clear settings from inside the UI, reset the desktop app's saved state.</p>
+<ol>
+<li>Quit OpenCode Desktop.</li>
+<li>Find and delete these files (they live in the OpenCode Desktop app data directory):</li>
+</ol>
+<ul>
+<li><code>opencode.settings.dat</code> (desktop default server URL)</li>
+<li><code>opencode.global.dat</code> and <code>opencode.workspace.*.dat</code> (UI state like recent servers/projects)</li>
+</ul>
+<p>To find the directory quickly:</p>
+<ul>
+<li><strong>macOS</strong>: Finder -&gt; <code>Cmd+Shift+G</code> -&gt; <code>~/Library/Application Support</code> (then search for the filenames above)</li>
+<li><strong>Linux</strong>: search under <code>~/.local/share</code> for the filenames above</li>
+<li><strong>Windows</strong>: Press <code>WIN+R</code> -&gt; <code>%APPDATA%</code> (then search for the filenames above)</li>
+</ul>
+<hr />
+<h2 id="getting-help">Getting help</h2>
+<p>If you're experiencing issues with OpenCode:</p>
+<ol>
+<li><strong>Report issues on GitHub</strong></li>
+</ol>
+<p>The best way to report bugs or request features is through our GitHub repository:</p>
+<p><a href="https://github.com/anomalyco/opencode/issues"><strong>github.com/anomalyco/opencode/issues</strong></a></p>
+<p>Before creating a new issue, search existing issues to see if your problem has already been reported.</p>
+<ol start="2">
+<li><strong>Join our Discord</strong></li>
+</ol>
+<p>For real-time help and community discussion, join our Discord server:</p>
+<p><a href="https://opencode.ai/discord"><strong>opencode.ai/discord</strong></a></p>
+<hr />
+<h2 id="common-issues">Common issues</h2>
+<p>Here are some common issues and how to resolve them.</p>
+<hr />
+<h3 id="opencode-wont-start">OpenCode won't start</h3>
+<ol>
+<li>Check the logs for error messages</li>
+<li>Try running with <code>--print-logs</code> to see output in the terminal</li>
+<li>Ensure you have the latest version with <code>opencode upgrade</code></li>
+</ol>
+<hr />
+<h3 id="authentication-issues">Authentication issues</h3>
+<ol>
+<li>Try re-authenticating with the <code>/connect</code> command in the TUI</li>
+<li>Check that your API keys are valid</li>
+<li>Ensure your network allows connections to the provider's API</li>
+</ol>
+<hr />
+<h3 id="model-not-available">Model not available</h3>
+<ol>
+<li>Check that you've authenticated with the provider</li>
+<li>Verify the model name in your config is correct</li>
+<li>Some models may require specific access or subscriptions</li>
+</ol>
+<p>If you encounter <code>ProviderModelNotFoundError</code> you are most likely incorrectly
+referencing a model somewhere.
+Models should be referenced like so: <code>&lt;providerId&gt;/&lt;modelId&gt;</code></p>
+<p>Examples:</p>
+<ul>
+<li><code>openai/gpt-4.1</code></li>
+<li><code>openrouter/google/gemini-2.5-flash</code></li>
+<li><code>opencode/kimi-k2</code></li>
+</ul>
+<p>To figure out what models you have access to, run <code>opencode models</code></p>
+<hr />
+<h3 id="provideriniterror">ProviderInitError</h3>
+<p>If you encounter a ProviderInitError, you likely have an invalid or corrupted configuration.</p>
+<p>To resolve this:</p>
+<ol>
+<li>First, verify your provider is set up correctly by following the <a href="providers.html">providers guide</a></li>
+<li>If the issue persists, try clearing your stored configuration:</li>
+</ol>
+<p><code>bash
+   rm -rf ~/.local/share/opencode</code></p>
+<p>On Windows, press <code>WIN+R</code> and delete: <code>%USERPROFILE%\.local\share\opencode</code></p>
+<ol start="3">
+<li>Re-authenticate with your provider using the <code>/connect</code> command in the TUI.</li>
+</ol>
+<hr />
+<h3 id="ai_apicallerror-and-provider-package-issues">AI_APICallError and provider package issues</h3>
+<p>If you encounter API call errors, this may be due to outdated provider packages. opencode dynamically installs provider packages (OpenAI, Anthropic, Google, etc.) as needed and caches them locally.</p>
+<p>To resolve provider package issues:</p>
+<ol>
+<li>Clear the provider package cache:</li>
+</ol>
+<p><code>bash
+   rm -rf ~/.cache/opencode</code></p>
+<p>On Windows, press <code>WIN+R</code> and delete: <code>%USERPROFILE%\.cache\opencode</code></p>
+<ol start="2">
+<li>Restart opencode to reinstall the latest provider packages</li>
+</ol>
+<p>This will force opencode to download the most recent versions of provider packages, which often resolves compatibility issues with model parameters and API changes.</p>
+<hr />
+<h3 id="copypaste-not-working-on-linux">Copy/paste not working on Linux</h3>
+<p>Linux users need to have one of the following clipboard utilities installed for copy/paste functionality to work:</p>
+<p><strong>For X11 systems:</strong></p>
+<pre><code class="language-bash">apt install -y xclip
+# or
+apt install -y xsel
+</code></pre>
+<p><strong>For Wayland systems:</strong></p>
+<pre><code class="language-bash">apt install -y wl-clipboard
+</code></pre>
+<p><strong>For headless environments:</strong></p>
+<pre><code class="language-bash">apt install -y xvfb
+# and run:
+Xvfb :99 -screen 0 1024x768x24 &gt; /dev/null 2&gt;&amp;1 &amp;
+export DISPLAY=:99.0
+</code></pre>
+<p>opencode will detect if you're using Wayland and prefer <code>wl-clipboard</code>, otherwise it will try to find clipboard tools in order of: <code>xclip</code> and <code>xsel</code>.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

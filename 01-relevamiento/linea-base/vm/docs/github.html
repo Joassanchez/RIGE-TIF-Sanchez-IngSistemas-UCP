@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a class="actual" href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>GitHub</h1>
+<p>OpenCode integrates with your GitHub workflow. Mention <code>/opencode</code> or <code>/oc</code> in your comment, and OpenCode will execute tasks within your GitHub Actions runner.</p>
+<hr />
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Triage issues</strong>: Ask OpenCode to look into an issue and explain it to you.</li>
+<li><strong>Fix and implement</strong>: Ask OpenCode to fix an issue or implement a feature. And it will work in a new branch and submits a PR with all the changes.</li>
+<li><strong>Secure</strong>: OpenCode runs inside your GitHub's runners.</li>
+</ul>
+<hr />
+<h2 id="installation">Installation</h2>
+<p>Run the following command in a project that is in a GitHub repo:</p>
+<pre><code class="language-bash">opencode github install
+</code></pre>
+<p>This will walk you through installing the GitHub app, creating the workflow, and setting up secrets.</p>
+<hr />
+<h3 id="manual-setup">Manual Setup</h3>
+<p>Or you can set it up manually.</p>
+<ol>
+<li><strong>Install the GitHub app</strong></li>
+</ol>
+<p>Head over to <a href="https://github.com/apps/opencode-agent"><strong>github.com/apps/opencode-agent</strong></a>. Make sure it's installed on the target repository.</p>
+<ol start="2">
+<li><strong>Add the workflow</strong></li>
+</ol>
+<p>Add the following workflow file to <code>.github/workflows/opencode.yml</code> in your repo. Make sure to set the appropriate <code>model</code> and required API keys in <code>env</code>.</p>
+<p>```yml
+   name: opencode</p>
+<p>on:
+     issue_comment:
+       types: [created]
+     pull_request_review_comment:
+       types: [created]</p>
+<p>jobs:
+     opencode:
+       if: |
+         contains(github.event.comment.body, '/oc') ||
+         contains(github.event.comment.body, '/opencode')
+       runs-on: ubuntu-latest
+       permissions:
+         id-token: write
+       steps:
+         - name: Checkout repository
+           uses: actions/checkout@v6
+           with:
+             fetch-depth: 1
+             persist-credentials: false</p>
+<pre><code>     - name: Run OpenCode
+       uses: anomalyco/opencode/github@latest
+       env:
+         ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+       with:
+         model: anthropic/claude-sonnet-4-20250514
+         # share: true
+</code></pre>
+<p>```</p>
+<ol start="3">
+<li><strong>Store the API keys in secrets</strong></li>
+</ol>
+<p>In your organization or project <strong>settings</strong>, expand <strong>Secrets and variables</strong> on the left and select <strong>Actions</strong>. And add the required API keys.</p>
+<hr />
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li><code>model</code>: The model to use with OpenCode. Takes the format of <code>provider/model</code>. This is <strong>required</strong>.</li>
+<li><code>agent</code>: The agent to use. Must be a primary agent. Falls back to <code>default_agent</code> from config or <code>"build"</code> if not found.</li>
+<li><code>share</code>: Whether to share the OpenCode session. Defaults to <strong>true</strong> for public repositories.</li>
+<li><code>prompt</code>: Optional custom prompt to override the default behavior. Use this to customize how OpenCode processes requests.</li>
+<li><code>mentions</code>: Comma-separated list of trigger phrases, case-insensitive. Defaults to <code>/opencode,/oc</code>.</li>
+<li><code>variant</code>: Model variant for provider-specific reasoning effort, for example <code>high</code>, <code>max</code>, or <code>minimal</code>.</li>
+<li><code>oidc_base_url</code>: Base URL for the OIDC token exchange API. Only needed when running a custom GitHub App install. Defaults to <code>https://api.opencode.ai</code>.</li>
+<li><code>use_github_token</code>: Set to <code>true</code> to use a caller-provided <code>GITHUB_TOKEN</code> instead of exchanging an OIDC token for an OpenCode App installation token. Defaults to <code>false</code>.</li>
+</ul>
+<p>Use this mode to run without installing the OpenCode GitHub App. Pass the token through <code>env</code> and grant the permissions required by your workflow:</p>
+<p>```yaml
+  permissions:
+    contents: write
+    pull-requests: write
+    issues: write</p>
+<p>steps:
+    - uses: anomalyco/opencode/github@latest
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        model: anthropic/claude-sonnet-4-20250514
+        use_github_token: true
+  ```</p>
+<p><code>id-token: write</code> is not required in this mode because OIDC exchange is skipped. To use a <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">personal access token</a> or another GitHub App token, store it as a secret and pass that secret as <code>GITHUB_TOKEN</code> instead.</p>
+<hr />
+<h2 id="supported-events">Supported Events</h2>
+<p>OpenCode can be triggered by the following GitHub events:</p>
+<table>
+<thead>
+<tr>
+<th>Event Type</th>
+<th>Triggered By</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>issue_comment</code></td>
+<td>Comment on an issue or PR</td>
+<td>Mention <code>/opencode</code> or <code>/oc</code> in your comment. OpenCode reads context and can create branches, open PRs, or reply.</td>
+</tr>
+<tr>
+<td><code>pull_request_review_comment</code></td>
+<td>Comment on specific code lines in a PR</td>
+<td>Mention <code>/opencode</code> or <code>/oc</code> while reviewing code. OpenCode receives file path, line numbers, and diff context.</td>
+</tr>
+<tr>
+<td><code>issues</code></td>
+<td>Issue opened or edited</td>
+<td>Automatically trigger OpenCode when issues are created or modified. Requires <code>prompt</code> input.</td>
+</tr>
+<tr>
+<td><code>pull_request</code></td>
+<td>PR opened or updated</td>
+<td>Automatically trigger OpenCode when PRs are opened, synchronized, or reopened. Useful for automated reviews.</td>
+</tr>
+<tr>
+<td><code>schedule</code></td>
+<td>Cron-based schedule</td>
+<td>Run OpenCode on a schedule. Requires <code>prompt</code> input. Output goes to logs and PRs (no issue to comment on).</td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code></td>
+<td>Manual trigger from GitHub UI</td>
+<td>Trigger OpenCode on demand via Actions tab. Requires <code>prompt</code> input. Output goes to logs and PRs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="schedule-example">Schedule Example</h3>
+<p>Run OpenCode on a schedule to perform automated tasks:</p>
+<pre><code class="language-yaml">name: Scheduled OpenCode Task
+
+on:
+  schedule:
+    - cron: &quot;0 9 * * 1&quot; # Every Monday at 9am UTC
+
+jobs:
+  opencode:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@latest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          model: anthropic/claude-sonnet-4-20250514
+          prompt: |
+            Review the codebase for any TODO comments and create a summary.
+            If you find issues worth addressing, open an issue to track them.
+</code></pre>
+<p>For scheduled events, the <code>prompt</code> input is <strong>required</strong> since there's no comment to extract instructions from. Scheduled workflows run without a user context to permission-check, so the workflow must grant <code>contents: write</code> and <code>pull-requests: write</code> if you expect OpenCode to create branches or PRs.</p>
+<hr />
+<h3 id="pull-request-example">Pull Request Example</h3>
+<p>Automatically review PRs when they are opened or updated:</p>
+<pre><code class="language-yaml">name: opencode-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: read
+      issues: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: anomalyco/opencode/github@latest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: anthropic/claude-sonnet-4-20250514
+          use_github_token: true
+          prompt: |
+            Review this pull request:
+            - Check for code quality issues
+            - Look for potential bugs
+            - Suggest improvements
+</code></pre>
+<p>For <code>pull_request</code> events, if no <code>prompt</code> is provided, OpenCode defaults to reviewing the pull request.</p>
+<hr />
+<h3 id="issues-triage-example">Issues Triage Example</h3>
+<p>Automatically triage new issues. This example filters to accounts older than 30 days to reduce spam:</p>
+<pre><code class="language-yaml">name: Issue Triage
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Check account age
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const user = await github.rest.users.getByUsername({
+              username: context.payload.issue.user.login
+            });
+            const created = new Date(user.data.created_at);
+            const days = (Date.now() - created) / (1000 * 60 * 60 * 24);
+            return days &gt;= 30;
+          result-encoding: string
+
+      - uses: actions/checkout@v6
+        if: steps.check.outputs.result == 'true'
+        with:
+          persist-credentials: false
+
+      - uses: anomalyco/opencode/github@latest
+        if: steps.check.outputs.result == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          model: anthropic/claude-sonnet-4-20250514
+          prompt: |
+            Review this issue. If there's a clear fix or relevant docs:
+            - Provide documentation links
+            - Add error handling guidance for code examples
+            Otherwise, do not comment.
+</code></pre>
+<p>For <code>issues</code> events, the <code>prompt</code> input is <strong>required</strong> since there's no comment to extract instructions from.</p>
+<hr />
+<h2 id="custom-prompts">Custom prompts</h2>
+<p>Override the default prompt to customize OpenCode's behavior for your workflow.</p>
+<pre><code class="language-yaml">- uses: anomalyco/opencode/github@latest
+  with:
+    model: anthropic/claude-sonnet-4-5
+    prompt: |
+      Review this pull request:
+      - Check for code quality issues
+      - Look for potential bugs
+      - Suggest improvements
+</code></pre>
+<p>This is useful for enforcing specific review criteria, coding standards, or focus areas relevant to your project.</p>
+<hr />
+<h2 id="examples">Examples</h2>
+<p>Here are some examples of how you can use OpenCode in GitHub.</p>
+<ul>
+<li><strong>Explain an issue</strong></li>
+</ul>
+<p>Add this comment in a GitHub issue.</p>
+<p><code>/opencode explain this issue</code></p>
+<p>OpenCode will read the entire thread, including all comments, and reply with a clear explanation.</p>
+<ul>
+<li><strong>Fix an issue</strong></li>
+</ul>
+<p>In a GitHub issue, say:</p>
+<p><code>/opencode fix this</code></p>
+<p>And OpenCode will create a new branch, implement the changes, and open a PR with the changes.</p>
+<ul>
+<li><strong>Review PRs and make changes</strong></li>
+</ul>
+<p>Leave the following comment on a GitHub PR.</p>
+<p><code>Delete the attachment from S3 when the note is removed /oc</code></p>
+<p>OpenCode will implement the requested change and commit it to the same PR.</p>
+<ul>
+<li><strong>Review specific code lines</strong></li>
+</ul>
+<p>Leave a comment directly on code lines in the PR's "Files" tab. OpenCode automatically detects the file, line numbers, and diff context to provide precise responses.</p>
+<p><code>[Comment on specific lines in Files tab]
+  /oc add error handling here</code></p>
+<p>When commenting on specific lines, OpenCode receives:
+  - The exact file being reviewed
+  - The specific lines of code
+  - The surrounding diff context
+  - Line number information</p>
+<p>This allows for more targeted requests without needing to specify file paths or line numbers manually.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

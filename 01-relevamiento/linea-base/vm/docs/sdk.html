@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SDK · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a class="actual" href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>SDK</h1>
+<p>export const typesUrl = <code>$https://github.com/anomalyco/opencode/blob/dev/packages/sdk/js/src/gen/types.gen.ts</code></p>
+<p>The opencode JS/TS SDK provides a type-safe client for interacting with the server.
+Use it to build integrations and control opencode programmatically.</p>
+<p><a href="server.html">Learn more</a> about how the server works. For examples, check out the <a href="ecosystem.html#projects">projects</a> built by the community.</p>
+<hr />
+<h2 id="install">Install</h2>
+<p>Install the SDK from npm:</p>
+<pre><code class="language-bash">npm install @opencode-ai/sdk
+</code></pre>
+<hr />
+<h2 id="create-client">Create client</h2>
+<p>Create an instance of opencode:</p>
+<pre><code class="language-javascript">import { createOpencode } from &quot;@opencode-ai/sdk&quot;
+
+const { client } = await createOpencode()
+</code></pre>
+<p>This starts both a server and a client</p>
+<h4 id="options">Options</h4>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hostname</code></td>
+<td><code>string</code></td>
+<td>Server hostname</td>
+<td><code>127.0.0.1</code></td>
+</tr>
+<tr>
+<td><code>port</code></td>
+<td><code>number</code></td>
+<td>Server port</td>
+<td><code>4096</code></td>
+</tr>
+<tr>
+<td><code>signal</code></td>
+<td><code>AbortSignal</code></td>
+<td>Abort signal for cancellation</td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td><code>number</code></td>
+<td>Timeout in ms for server start</td>
+<td><code>5000</code></td>
+</tr>
+<tr>
+<td><code>config</code></td>
+<td><code>Config</code></td>
+<td>Configuration object</td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="config">Config</h2>
+<p>You can pass a configuration object to customize behavior. The instance still picks up your <code>opencode.json</code>, but you can override or add configuration inline:</p>
+<pre><code class="language-javascript">import { createOpencode } from &quot;@opencode-ai/sdk&quot;
+
+const opencode = await createOpencode({
+  hostname: &quot;127.0.0.1&quot;,
+  port: 4096,
+  config: {
+    model: &quot;anthropic/claude-3-5-sonnet-20241022&quot;,
+  },
+})
+
+console.log(`Server running at ${opencode.server.url}`)
+
+opencode.server.close()
+</code></pre>
+<h2 id="client-only">Client only</h2>
+<p>If you already have a running instance of opencode, you can create a client instance to connect to it:</p>
+<pre><code class="language-javascript">import { createOpencodeClient } from &quot;@opencode-ai/sdk&quot;
+
+const client = createOpencodeClient({
+  baseUrl: &quot;http://localhost:4096&quot;,
+})
+</code></pre>
+<h4 id="options_1">Options</h4>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>baseUrl</code></td>
+<td><code>string</code></td>
+<td>URL of the server</td>
+<td><code>http://localhost:4096</code></td>
+</tr>
+<tr>
+<td><code>fetch</code></td>
+<td><code>function</code></td>
+<td>Custom fetch implementation</td>
+<td><code>globalThis.fetch</code></td>
+</tr>
+<tr>
+<td><code>parseAs</code></td>
+<td><code>string</code></td>
+<td>Response parsing method</td>
+<td><code>auto</code></td>
+</tr>
+<tr>
+<td><code>responseStyle</code></td>
+<td><code>string</code></td>
+<td>Return style: <code>data</code> or <code>fields</code></td>
+<td><code>fields</code></td>
+</tr>
+<tr>
+<td><code>throwOnError</code></td>
+<td><code>boolean</code></td>
+<td>Throw errors instead of return</td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="types">Types</h2>
+<p>The SDK includes TypeScript definitions for all API types. Import them directly:</p>
+<pre><code class="language-typescript">import type { Session, Message, Part } from &quot;@opencode-ai/sdk&quot;
+</code></pre>
+<p>All types are generated from the server's OpenAPI specification and available in the <a href={typesUrl}>types file</a>.</p>
+<hr />
+<h2 id="errors">Errors</h2>
+<p>The SDK can throw errors that you can catch and handle:</p>
+<pre><code class="language-typescript">try {
+  await client.session.get({ path: { id: &quot;invalid-id&quot; } })
+} catch (error) {
+  console.error(&quot;Failed to get session:&quot;, (error as Error).message)
+}
+</code></pre>
+<hr />
+<h2 id="structured-output">Structured Output</h2>
+<p>You can request structured JSON output from the model by specifying an <code>format</code> with a JSON schema. The model will use a <code>StructuredOutput</code> tool to return validated JSON matching your schema.</p>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="language-typescript">const result = await client.session.prompt({
+  path: { id: sessionId },
+  body: {
+    parts: [{ type: &quot;text&quot;, text: &quot;Research Anthropic and provide company info&quot; }],
+    format: {
+      type: &quot;json_schema&quot;,
+      schema: {
+        type: &quot;object&quot;,
+        properties: {
+          company: { type: &quot;string&quot;, description: &quot;Company name&quot; },
+          founded: { type: &quot;number&quot;, description: &quot;Year founded&quot; },
+          products: {
+            type: &quot;array&quot;,
+            items: { type: &quot;string&quot; },
+            description: &quot;Main products&quot;,
+          },
+        },
+        required: [&quot;company&quot;, &quot;founded&quot;],
+      },
+    },
+  },
+})
+
+// Access the structured output
+console.log(result.data.info.structured_output)
+// { company: &quot;Anthropic&quot;, founded: 2021, products: [&quot;Claude&quot;, &quot;Claude API&quot;] }
+</code></pre>
+<h3 id="output-format-types">Output Format Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td>Default. Standard text response (no structured output)</td>
+</tr>
+<tr>
+<td><code>json_schema</code></td>
+<td>Returns validated JSON matching the provided schema</td>
+</tr>
+</tbody>
+</table>
+<h3 id="json-schema-format">JSON Schema Format</h3>
+<p>When using <code>type: 'json_schema'</code>, provide:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td><code>'json_schema'</code></td>
+<td>Required. Specifies JSON schema mode</td>
+</tr>
+<tr>
+<td><code>schema</code></td>
+<td><code>object</code></td>
+<td>Required. JSON Schema object defining the output structure</td>
+</tr>
+<tr>
+<td><code>retryCount</code></td>
+<td><code>number</code></td>
+<td>Optional. Number of validation retries (default: 2)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="error-handling">Error Handling</h3>
+<p>If the model fails to produce valid structured output after all retries, the response will include a <code>StructuredOutputError</code>:</p>
+<pre><code class="language-typescript">if (result.data.info.error?.name === &quot;StructuredOutputError&quot;) {
+  console.error(&quot;Failed to produce structured output:&quot;, result.data.info.error.message)
+  console.error(&quot;Attempts:&quot;, result.data.info.error.retries)
+}
+</code></pre>
+<h3 id="best-practices">Best Practices</h3>
+<ol>
+<li><strong>Provide clear descriptions</strong> in your schema properties to help the model understand what data to extract</li>
+<li><strong>Use <code>required</code></strong> to specify which fields must be present</li>
+<li><strong>Keep schemas focused</strong> - complex nested schemas may be harder for the model to fill correctly</li>
+<li><strong>Set appropriate <code>retryCount</code></strong> - increase for complex schemas, decrease for simple ones</li>
+</ol>
+<hr />
+<h2 id="apis">APIs</h2>
+<p>The SDK exposes all server APIs through a type-safe client.</p>
+<hr />
+<h3 id="global">Global</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>global.health()</code></td>
+<td>Check server health and version</td>
+<td><code>{ healthy: true, version: string }</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples">Examples</h4>
+<pre><code class="language-javascript">const health = await client.global.health()
+console.log(health.data.version)
+</code></pre>
+<hr />
+<h3 id="app">App</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app.log()</code></td>
+<td>Write a log entry</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>app.agents()</code></td>
+<td>List all available agents</td>
+<td><a href={typesUrl}><code>Agent[]</code></a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples_1">Examples</h4>
+<pre><code class="language-javascript">// Write a log entry
+await client.app.log({
+  body: {
+    service: &quot;my-app&quot;,
+    level: &quot;info&quot;,
+    message: &quot;Operation completed&quot;,
+  },
+})
+
+// List available agents
+const agents = await client.app.agents()
+</code></pre>
+<hr />
+<h3 id="project">Project</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>project.list()</code></td>
+<td>List all projects</td>
+<td><a href={typesUrl}><code>Project[]</code></a></td>
+</tr>
+<tr>
+<td><code>project.current()</code></td>
+<td>Get current project</td>
+<td><a href={typesUrl}><code>Project</code></a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples_2">Examples</h4>
+<pre><code class="language-javascript">// List all projects
+const projects = await client.project.list()
+
+// Get current project
+const currentProject = await client.project.current()
+</code></pre>
+<hr />
+<h3 id="path">Path</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>path.get()</code></td>
+<td>Get current path</td>
+<td><a href={typesUrl}><code>Path</code></a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples_3">Examples</h4>
+<pre><code class="language-javascript">// Get current path information
+const pathInfo = await client.path.get()
+</code></pre>
+<hr />
+<h3 id="config_1">Config</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config.get()</code></td>
+<td>Get config info</td>
+<td><a href={typesUrl}><code>Config</code></a></td>
+</tr>
+<tr>
+<td><code>config.providers()</code></td>
+<td>List providers and default models</td>
+<td><code>{ providers:</code><a href={typesUrl}><code>Provider[]</code></a><code>, default: { [key: string]: string } }</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples_4">Examples</h4>
+<pre><code class="language-javascript">const config = await client.config.get()
+
+const { providers, default: defaults } = await client.config.providers()
+</code></pre>
+<hr />
+<h3 id="sessions">Sessions</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>session.list()</code></td>
+<td>List sessions</td>
+<td>Returns <a href={typesUrl}><code>Session[]</code></a></td>
+</tr>
+<tr>
+<td><code>session.get({ path })</code></td>
+<td>Get session</td>
+<td>Returns <a href={typesUrl}><code>Session</code></a></td>
+</tr>
+<tr>
+<td><code>session.children({ path })</code></td>
+<td>List child sessions</td>
+<td>Returns <a href={typesUrl}><code>Session[]</code></a></td>
+</tr>
+<tr>
+<td><code>session.create({ body })</code></td>
+<td>Create session</td>
+<td>Returns <a href={typesUrl}><code>Session</code></a></td>
+</tr>
+<tr>
+<td><code>session.delete({ path })</code></td>
+<td>Delete session</td>
+<td>Returns <code>boolean</code></td>
+</tr>
+<tr>
+<td><code>session.update({ path, body })</code></td>
+<td>Update session properties</td>
+<td>Returns <a href={typesUrl}><code>Session</code></a></td>
+</tr>
+<tr>
+<td><code>session.init({ path, body })</code></td>
+<td>Analyze app and create <code>AGENTS.md</code></td>
+<td>Returns <code>boolean</code></td>
+</tr>
+<tr>
+<td><code>session.abort({ path })</code></td>
+<td>Abort a running session</td>
+<td>Returns <code>boolean</code></td>
+</tr>
+<tr>
+<td><code>session.share({ path })</code></td>
+<td>Share session</td>
+<td>Returns <a href={typesUrl}><code>Session</code></a></td>
+</tr>
+<tr>
+<td><code>session.unshare({ path })</code></td>
+<td>Unshare session</td>
+<td>Returns <a href={typesUrl}><code>Session</code></a></td>
+</tr>
+<tr>
+<td><code>session.summarize({ path, body })</code></td>
+<td>Summarize session</td>
+<td>Returns <code>boolean</code></td>
+</tr>
+<tr>
+<td><code>session.messages({ path })</code></td>
+<td>List messages in a session</td>
+<td>Returns <code>{ info:</code><a href={typesUrl}><code>Message</code></a><code>, parts:</code><a href={typesUrl}><code>Part[]</code></a><code>}[]</code></td>
+</tr>
+<tr>
+<td><code>session.message({ path })</code></td>
+<td>Get message details</td>
+<td>Returns <code>{ info:</code><a href={typesUrl}><code>Message</code></a><code>, parts:</code><a href={typesUrl}><code>Part[]</code></a><code>}</code></td>
+</tr>
+<tr>
+<td><code>session.prompt({ path, body })</code></td>
+<td>Send prompt message</td>
+<td><code>body.noReply: true</code> returns UserMessage (context only). Default returns <a href={typesUrl}><code>AssistantMessage</code></a> with AI response. Supports <code>body.outputFormat</code> for <a href="#structured-output">structured output</a></td>
+</tr>
+<tr>
+<td><code>session.command({ path, body })</code></td>
+<td>Send command to session</td>
+<td>Returns <code>{ info:</code><a href={typesUrl}><code>AssistantMessage</code></a><code>, parts:</code><a href={typesUrl}><code>Part[]</code></a><code>}</code></td>
+</tr>
+<tr>
+<td><code>session.shell({ path, body })</code></td>
+<td>Run a shell command</td>
+<td>Returns <a href={typesUrl}><code>AssistantMessage</code></a></td>
+</tr>
+<tr>
+<td><code>session.revert({ path, body })</code></td>
+<td>Revert a message</td>
+<td>Returns <a href={typesUrl}><code>Session</code></a></td>
+</tr>
+<tr>
+<td><code>session.unrevert({ path })</code></td>
+<td>Restore reverted messages</td>
+<td>Returns <a href={typesUrl}><code>Session</code></a></td>
+</tr>
+<tr>
+<td><code>postSessionByIdPermissionsByPermissionId({ path, body })</code></td>
+<td>Respond to a permission request</td>
+<td>Returns <code>boolean</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples_5">Examples</h4>
+<pre><code class="language-javascript">// Create and manage sessions
+const session = await client.session.create({
+  body: { title: &quot;My session&quot; },
+})
+
+const sessions = await client.session.list()
+
+// Send a prompt message
+const result = await client.session.prompt({
+  path: { id: session.id },
+  body: {
+    model: { providerID: &quot;anthropic&quot;, modelID: &quot;claude-3-5-sonnet-20241022&quot; },
+    parts: [{ type: &quot;text&quot;, text: &quot;Hello!&quot; }],
+  },
+})
+
+// Inject context without triggering AI response (useful for plugins)
+await client.session.prompt({
+  path: { id: session.id },
+  body: {
+    noReply: true,
+    parts: [{ type: &quot;text&quot;, text: &quot;You are a helpful assistant.&quot; }],
+  },
+})
+</code></pre>
+<hr />
+<h3 id="files">Files</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>find.text({ query })</code></td>
+<td>Search for text in files</td>
+<td>Array of match objects with <code>path</code>, <code>lines</code>, <code>line_number</code>, <code>absolute_offset</code>, <code>submatches</code></td>
+</tr>
+<tr>
+<td><code>find.files({ query })</code></td>
+<td>Find files and directories by name</td>
+<td><code>string[]</code> (paths)</td>
+</tr>
+<tr>
+<td><code>find.symbols({ query })</code></td>
+<td>Find workspace symbols</td>
+<td><a href={typesUrl}><code>Symbol[]</code></a></td>
+</tr>
+<tr>
+<td><code>file.read({ query })</code></td>
+<td>Read a file</td>
+<td><code>{ type: "raw" \| "patch", content: string }</code></td>
+</tr>
+<tr>
+<td><code>file.status({ query? })</code></td>
+<td>Get status for tracked files</td>
+<td><a href={typesUrl}><code>File[]</code></a></td>
+</tr>
+</tbody>
+</table>
+<p><code>find.files</code> supports a few optional query fields:</p>
+<ul>
+<li><code>type</code>: <code>"file"</code> or <code>"directory"</code></li>
+<li><code>directory</code>: override the project root for the search</li>
+<li><code>limit</code>: max results (1–200)</li>
+</ul>
+<hr />
+<h4 id="examples_6">Examples</h4>
+<pre><code class="language-javascript">// Search and read files
+const textResults = await client.find.text({
+  query: { pattern: &quot;function.*opencode&quot; },
+})
+
+const files = await client.find.files({
+  query: { query: &quot;*.ts&quot;, type: &quot;file&quot; },
+})
+
+const directories = await client.find.files({
+  query: { query: &quot;packages&quot;, type: &quot;directory&quot;, limit: 20 },
+})
+
+const content = await client.file.read({
+  query: { path: &quot;src/index.ts&quot; },
+})
+</code></pre>
+<hr />
+<h3 id="tui">TUI</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tui.appendPrompt({ body })</code></td>
+<td>Append text to the prompt</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>tui.openHelp()</code></td>
+<td>Open the help dialog</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>tui.openSessions()</code></td>
+<td>Open the session selector</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>tui.openThemes()</code></td>
+<td>Open the theme selector</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>tui.openModels()</code></td>
+<td>Open the model selector</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>tui.submitPrompt()</code></td>
+<td>Submit the current prompt</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>tui.clearPrompt()</code></td>
+<td>Clear the prompt</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>tui.executeCommand({ body })</code></td>
+<td>Execute a command</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>tui.showToast({ body })</code></td>
+<td>Show toast notification</td>
+<td><code>boolean</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples_7">Examples</h4>
+<pre><code class="language-javascript">// Control TUI interface
+await client.tui.appendPrompt({
+  body: { text: &quot;Add this to prompt&quot; },
+})
+
+await client.tui.showToast({
+  body: { message: &quot;Task completed&quot;, variant: &quot;success&quot; },
+})
+</code></pre>
+<hr />
+<h3 id="auth">Auth</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auth.set({ ... })</code></td>
+<td>Set authentication credentials</td>
+<td><code>boolean</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples_8">Examples</h4>
+<pre><code class="language-javascript">await client.auth.set({
+  path: { id: &quot;anthropic&quot; },
+  body: { type: &quot;api&quot;, key: &quot;your-api-key&quot; },
+})
+</code></pre>
+<hr />
+<h3 id="events">Events</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>event.subscribe()</code></td>
+<td>Server-sent events stream</td>
+<td>Server-sent events stream</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="examples_9">Examples</h4>
+<pre><code class="language-javascript">// Listen to real-time events
+const events = await client.event.subscribe()
+for await (const event of events.stream) {
+  console.log(&quot;Event:&quot;, event.type, event.properties)
+}
+</code></pre>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

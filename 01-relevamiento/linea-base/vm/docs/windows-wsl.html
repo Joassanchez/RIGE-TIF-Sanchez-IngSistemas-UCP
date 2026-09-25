@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Windows (WSL) · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a class="actual" href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Windows (WSL)</h1>
+<p>While OpenCode can run directly on Windows, we recommend using <a href="https://learn.microsoft.com/en-us/windows/wsl/install">Windows Subsystem for Linux (WSL)</a> for the best experience. WSL provides a Linux environment that works seamlessly with OpenCode's features.</p>
+<div class="aside">
+<div class="aside-t">Why WSL?</div>
+<p>WSL offers better file system performance, full terminal support, and compatibility with development tools that OpenCode relies on.</p>
+</div>
+<hr />
+<h2 id="setup">Setup</h2>
+<ol>
+<li><strong>Install WSL</strong></li>
+</ol>
+<p>If you haven't already, <a href="https://learn.microsoft.com/en-us/windows/wsl/install">install WSL</a> using the official Microsoft guide.</p>
+<ol start="2">
+<li><strong>Install OpenCode in WSL</strong></li>
+</ol>
+<p>Once WSL is set up, open your WSL terminal and install OpenCode using one of the <a href="index.html">installation methods</a>.</p>
+<p><code>bash
+   curl -fsSL https://opencode.ai/install | bash</code></p>
+<ol start="3">
+<li><strong>Use OpenCode from WSL</strong></li>
+</ol>
+<p>Navigate to your project directory (access Windows files via <code>/mnt/c/</code>, <code>/mnt/d/</code>, etc.) and run OpenCode.</p>
+<p><code>bash
+   cd /mnt/c/Users/YourName/project
+   opencode</code></p>
+<hr />
+<h2 id="desktop-app-wsl-server">Desktop App + WSL Server</h2>
+<p>If you prefer using the OpenCode Desktop app but want to run the server in WSL:</p>
+<ol>
+<li><strong>Start the server in WSL</strong> with <code>--hostname 0.0.0.0</code> to allow external connections:</li>
+</ol>
+<p><code>bash
+   opencode serve --hostname 0.0.0.0 --port 4096</code></p>
+<ol start="2">
+<li><strong>Connect the Desktop app</strong> to <code>http://localhost:4096</code></li>
+</ol>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>If <code>localhost</code> does not work in your setup, connect using the WSL IP address instead (from WSL: <code>hostname -I</code>) and use <code>http://&lt;wsl-ip&gt;:4096</code>.</p>
+</div>
+<div class="aside">
+<div class="aside-t">Caution</div>
+<p>When using <code>--hostname 0.0.0.0</code>, set <code>OPENCODE_SERVER_PASSWORD</code> to secure the server.</p>
+</div>
+<pre><code class="language-bash">OPENCODE_SERVER_PASSWORD=your-password opencode serve --hostname 0.0.0.0
+</code></pre>
+<hr />
+<h2 id="web-client-wsl">Web Client + WSL</h2>
+<p>For the best web experience on Windows:</p>
+<ol>
+<li><strong>Run <code>opencode web</code> in the WSL terminal</strong> rather than PowerShell:</li>
+</ol>
+<p><code>bash
+   opencode web --hostname 0.0.0.0</code></p>
+<ol start="2">
+<li><strong>Access from your Windows browser</strong> at <code>http://localhost:&lt;port&gt;</code> (OpenCode prints the URL)</li>
+</ol>
+<p>Running <code>opencode web</code> from WSL ensures proper file system access and terminal integration while still being accessible from your Windows browser.</p>
+<hr />
+<h2 id="accessing-windows-files">Accessing Windows Files</h2>
+<p>WSL can access all your Windows files through the <code>/mnt/</code> directory:</p>
+<ul>
+<li><code>C:</code> drive → <code>/mnt/c/</code></li>
+<li><code>D:</code> drive → <code>/mnt/d/</code></li>
+<li>And so on...</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-bash">cd /mnt/c/Users/YourName/Documents/project
+opencode
+</code></pre>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>For the smoothest experience, consider cloning/copying your repo into the WSL filesystem (for example under <code>~/code/</code>) and running OpenCode there.</p>
+</div>
+<hr />
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Keep OpenCode running in WSL for projects stored on Windows drives - file access is seamless</li>
+<li>Use VS Code's <a href="https://code.visualstudio.com/docs/remote/wsl">WSL extension</a> alongside OpenCode for an integrated development workflow</li>
+<li>Your OpenCode config and sessions are stored within the WSL environment at <code>~/.local/share/opencode/</code></li>
+</ul>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

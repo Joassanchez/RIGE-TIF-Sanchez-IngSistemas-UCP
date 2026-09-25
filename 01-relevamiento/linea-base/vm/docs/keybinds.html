@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keybinds · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a class="actual" href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Keybinds</h1>
+<p>OpenCode has a list of keybinds that you can customize through <code>tui.json</code>.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/tui.json&quot;,
+  &quot;leader_timeout&quot;: 2000,
+  &quot;keybinds&quot;: {
+    &quot;leader&quot;: &quot;ctrl+x&quot;,
+    &quot;app_exit&quot;: &quot;ctrl+c,ctrl+d,&lt;leader&gt;q&quot;,
+    &quot;app_debug&quot;: &quot;none&quot;,
+    &quot;app_console&quot;: &quot;none&quot;,
+    &quot;app_heap_snapshot&quot;: &quot;none&quot;,
+    &quot;app_toggle_animations&quot;: &quot;none&quot;,
+    &quot;app_toggle_file_context&quot;: &quot;none&quot;,
+    &quot;app_toggle_diffwrap&quot;: &quot;none&quot;,
+    &quot;app_toggle_paste_summary&quot;: &quot;none&quot;,
+    &quot;app_toggle_session_directory_filter&quot;: &quot;none&quot;,
+    &quot;command_list&quot;: &quot;ctrl+p&quot;,
+    &quot;help_show&quot;: &quot;none&quot;,
+    &quot;docs_open&quot;: &quot;none&quot;,
+
+    &quot;editor_open&quot;: &quot;&lt;leader&gt;e&quot;,
+    &quot;theme_list&quot;: &quot;&lt;leader&gt;t&quot;,
+    &quot;theme_switch_mode&quot;: &quot;none&quot;,
+    &quot;theme_mode_lock&quot;: &quot;none&quot;,
+    &quot;sidebar_toggle&quot;: &quot;&lt;leader&gt;b&quot;,
+    &quot;scrollbar_toggle&quot;: &quot;none&quot;,
+    &quot;status_view&quot;: &quot;&lt;leader&gt;s&quot;,
+
+    &quot;session_export&quot;: &quot;&lt;leader&gt;x&quot;,
+    &quot;session_copy&quot;: &quot;none&quot;,
+    &quot;session_move&quot;: &quot;none&quot;,
+    &quot;session_new&quot;: &quot;&lt;leader&gt;n&quot;,
+    &quot;session_list&quot;: &quot;&lt;leader&gt;l&quot;,
+    &quot;session_timeline&quot;: &quot;&lt;leader&gt;g&quot;,
+    &quot;session_fork&quot;: &quot;none&quot;,
+    &quot;session_rename&quot;: &quot;ctrl+r&quot;,
+    &quot;session_delete&quot;: &quot;ctrl+d&quot;,
+    &quot;session_share&quot;: &quot;none&quot;,
+    &quot;session_unshare&quot;: &quot;none&quot;,
+    &quot;session_interrupt&quot;: &quot;escape&quot;,
+    &quot;session_compact&quot;: &quot;&lt;leader&gt;c&quot;,
+    &quot;session_toggle_timestamps&quot;: &quot;none&quot;,
+    &quot;session_toggle_generic_tool_output&quot;: &quot;none&quot;,
+    &quot;session_child_first&quot;: &quot;&lt;leader&gt;down&quot;,
+    &quot;session_child_cycle&quot;: &quot;right&quot;,
+    &quot;session_child_cycle_reverse&quot;: &quot;left&quot;,
+    &quot;session_parent&quot;: &quot;up&quot;,
+
+    &quot;stash_delete&quot;: &quot;ctrl+d&quot;,
+    &quot;model_provider_list&quot;: &quot;ctrl+a&quot;,
+    &quot;model_favorite_toggle&quot;: &quot;ctrl+f&quot;,
+    &quot;model_list&quot;: &quot;&lt;leader&gt;m&quot;,
+    &quot;model_cycle_recent&quot;: &quot;f2&quot;,
+    &quot;model_cycle_recent_reverse&quot;: &quot;shift+f2&quot;,
+    &quot;model_cycle_favorite&quot;: &quot;none&quot;,
+    &quot;model_cycle_favorite_reverse&quot;: &quot;none&quot;,
+    &quot;mcp_list&quot;: &quot;none&quot;,
+    &quot;provider_connect&quot;: &quot;none&quot;,
+    &quot;console_org_switch&quot;: &quot;none&quot;,
+    &quot;agent_list&quot;: &quot;&lt;leader&gt;a&quot;,
+    &quot;agent_cycle&quot;: &quot;tab&quot;,
+    &quot;agent_cycle_reverse&quot;: &quot;shift+tab&quot;,
+    &quot;variant_cycle&quot;: &quot;ctrl+t&quot;,
+    &quot;variant_list&quot;: &quot;none&quot;,
+
+    &quot;messages_page_up&quot;: &quot;pageup,ctrl+alt+b&quot;,
+    &quot;messages_page_down&quot;: &quot;pagedown,ctrl+alt+f&quot;,
+    &quot;messages_line_up&quot;: &quot;ctrl+alt+y&quot;,
+    &quot;messages_line_down&quot;: &quot;ctrl+alt+e&quot;,
+    &quot;messages_half_page_up&quot;: &quot;ctrl+alt+u&quot;,
+    &quot;messages_half_page_down&quot;: &quot;ctrl+alt+d&quot;,
+    &quot;messages_first&quot;: &quot;ctrl+g,home&quot;,
+    &quot;messages_last&quot;: &quot;ctrl+alt+g,end&quot;,
+    &quot;messages_next&quot;: &quot;none&quot;,
+    &quot;messages_previous&quot;: &quot;none&quot;,
+    &quot;messages_last_user&quot;: &quot;none&quot;,
+    &quot;messages_copy&quot;: &quot;&lt;leader&gt;y&quot;,
+    &quot;messages_undo&quot;: &quot;&lt;leader&gt;u&quot;,
+    &quot;messages_redo&quot;: &quot;&lt;leader&gt;r&quot;,
+    &quot;messages_toggle_conceal&quot;: &quot;&lt;leader&gt;h&quot;,
+    &quot;tool_details&quot;: &quot;none&quot;,
+    &quot;display_thinking&quot;: &quot;none&quot;,
+
+    &quot;prompt_submit&quot;: &quot;none&quot;,
+    &quot;prompt_editor_context_clear&quot;: &quot;none&quot;,
+    &quot;prompt_skills&quot;: &quot;none&quot;,
+    &quot;prompt_stash&quot;: &quot;none&quot;,
+    &quot;prompt_stash_pop&quot;: &quot;none&quot;,
+    &quot;prompt_stash_list&quot;: &quot;none&quot;,
+    &quot;workspace_set&quot;: &quot;none&quot;,
+
+    &quot;input_clear&quot;: &quot;ctrl+c&quot;,
+    &quot;input_paste&quot;: {
+      &quot;key&quot;: &quot;ctrl+v&quot;,
+      &quot;preventDefault&quot;: false
+    },
+    &quot;input_submit&quot;: &quot;return&quot;,
+    &quot;input_newline&quot;: &quot;shift+return,ctrl+return,alt+return,ctrl+j&quot;,
+    &quot;input_move_left&quot;: &quot;left,ctrl+b&quot;,
+    &quot;input_move_right&quot;: &quot;right,ctrl+f&quot;,
+    &quot;input_move_up&quot;: &quot;up&quot;,
+    &quot;input_move_down&quot;: &quot;down&quot;,
+    &quot;input_select_left&quot;: &quot;shift+left&quot;,
+    &quot;input_select_right&quot;: &quot;shift+right&quot;,
+    &quot;input_select_up&quot;: &quot;shift+up&quot;,
+    &quot;input_select_down&quot;: &quot;shift+down&quot;,
+    &quot;input_line_home&quot;: &quot;ctrl+a&quot;,
+    &quot;input_line_end&quot;: &quot;ctrl+e&quot;,
+    &quot;input_select_line_home&quot;: &quot;ctrl+shift+a&quot;,
+    &quot;input_select_line_end&quot;: &quot;ctrl+shift+e&quot;,
+    &quot;input_visual_line_home&quot;: &quot;alt+a&quot;,
+    &quot;input_visual_line_end&quot;: &quot;alt+e&quot;,
+    &quot;input_select_visual_line_home&quot;: &quot;alt+shift+a&quot;,
+    &quot;input_select_visual_line_end&quot;: &quot;alt+shift+e&quot;,
+    &quot;input_buffer_home&quot;: &quot;home&quot;,
+    &quot;input_buffer_end&quot;: &quot;end&quot;,
+    &quot;input_select_buffer_home&quot;: &quot;shift+home&quot;,
+    &quot;input_select_buffer_end&quot;: &quot;shift+end&quot;,
+    &quot;input_delete_line&quot;: &quot;ctrl+shift+d&quot;,
+    &quot;input_delete_to_line_end&quot;: &quot;ctrl+k&quot;,
+    &quot;input_delete_to_line_start&quot;: &quot;ctrl+u&quot;,
+    &quot;input_backspace&quot;: &quot;backspace,shift+backspace&quot;,
+    &quot;input_delete&quot;: &quot;ctrl+d,delete,shift+delete&quot;,
+    &quot;input_undo&quot;: &quot;ctrl+-,super+z&quot;,
+    &quot;input_redo&quot;: &quot;ctrl+.,super+shift+z&quot;,
+    &quot;input_word_forward&quot;: &quot;alt+f,alt+right,ctrl+right&quot;,
+    &quot;input_word_backward&quot;: &quot;alt+b,alt+left,ctrl+left&quot;,
+    &quot;input_select_word_forward&quot;: &quot;alt+shift+f,alt+shift+right&quot;,
+    &quot;input_select_word_backward&quot;: &quot;alt+shift+b,alt+shift+left&quot;,
+    &quot;input_delete_word_forward&quot;: &quot;alt+d,alt+delete,ctrl+delete&quot;,
+    &quot;input_delete_word_backward&quot;: &quot;ctrl+w,ctrl+backspace,alt+backspace&quot;,
+    &quot;input_select_all&quot;: &quot;super+a&quot;,
+    &quot;history_previous&quot;: &quot;up&quot;,
+    &quot;history_next&quot;: &quot;down&quot;,
+
+    &quot;dialog.select.prev&quot;: &quot;up,ctrl+p&quot;,
+    &quot;dialog.select.next&quot;: &quot;down,ctrl+n&quot;,
+    &quot;dialog.select.page_up&quot;: &quot;pageup&quot;,
+    &quot;dialog.select.page_down&quot;: &quot;pagedown&quot;,
+    &quot;dialog.select.home&quot;: &quot;home&quot;,
+    &quot;dialog.select.end&quot;: &quot;end&quot;,
+    &quot;dialog.select.submit&quot;: &quot;return&quot;,
+    &quot;dialog.prompt.submit&quot;: &quot;return&quot;,
+    &quot;dialog.mcp.toggle&quot;: &quot;space&quot;,
+    &quot;prompt.autocomplete.prev&quot;: &quot;up,ctrl+p&quot;,
+    &quot;prompt.autocomplete.next&quot;: &quot;down,ctrl+n&quot;,
+    &quot;prompt.autocomplete.hide&quot;: &quot;escape&quot;,
+    &quot;prompt.autocomplete.select&quot;: &quot;return&quot;,
+    &quot;prompt.autocomplete.complete&quot;: &quot;tab&quot;,
+    &quot;permission.prompt.fullscreen&quot;: &quot;ctrl+f&quot;,
+    &quot;plugins.toggle&quot;: &quot;space&quot;,
+    &quot;dialog.plugins.install&quot;: &quot;shift+i&quot;,
+
+    &quot;terminal_suspend&quot;: &quot;ctrl+z&quot;,
+    &quot;terminal_title_toggle&quot;: &quot;none&quot;,
+    &quot;tips_toggle&quot;: &quot;&lt;leader&gt;h&quot;,
+    &quot;plugin_manager&quot;: &quot;none&quot;,
+    &quot;plugin_install&quot;: &quot;none&quot;,
+
+    &quot;which_key_toggle&quot;: &quot;ctrl+alt+k&quot;,
+    &quot;which_key_layout_toggle&quot;: &quot;ctrl+alt+shift+k&quot;,
+    &quot;which_key_pending_toggle&quot;: &quot;ctrl+alt+shift+p&quot;,
+    &quot;which_key_group_previous&quot;: &quot;ctrl+alt+left,ctrl+alt+[&quot;,
+    &quot;which_key_group_next&quot;: &quot;ctrl+alt+right,ctrl+alt+]&quot;,
+    &quot;which_key_scroll_up&quot;: &quot;ctrl+alt+up,ctrl+alt+p&quot;,
+    &quot;which_key_scroll_down&quot;: &quot;ctrl+alt+down,ctrl+alt+n&quot;,
+    &quot;which_key_page_up&quot;: &quot;ctrl+alt+pageup&quot;,
+    &quot;which_key_page_down&quot;: &quot;ctrl+alt+pagedown&quot;,
+    &quot;which_key_home&quot;: &quot;ctrl+alt+home&quot;,
+    &quot;which_key_end&quot;: &quot;ctrl+alt+end&quot;
+  }
+}
+</code></pre>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>On Windows, the defaults for <code>input_undo</code> and <code>terminal_suspend</code> are different:</p>
+<ul>
+<li><code>input_undo</code> defaults to <code>ctrl+z,ctrl+-,super+z</code> when it is not explicitly configured. The <code>ctrl+z</code> binding is added because Windows terminals do not support POSIX suspend.</li>
+<li><code>terminal_suspend</code> is forced to <code>none</code> because native Windows terminals do not support POSIX suspend.</li>
+</ul>
+</div>
+<hr />
+<h2 id="leader-key">Leader Key</h2>
+<p>OpenCode uses a <code>leader</code> key for many keybinds. This avoids conflicts in your terminal.</p>
+<p>By default, <code>ctrl+x</code> is the leader key and many actions require you to first press the leader key and then the shortcut. For example, to start a new session you first press <code>ctrl+x</code> and then press <code>n</code>.</p>
+<p>You don't need to use a leader key for your keybinds but we recommend doing so.</p>
+<p>Some navigation keybinds intentionally do not use the leader key by default. For subagent sessions, the defaults are <code>session_child_first</code> = <code>&lt;leader&gt;down</code>, <code>session_child_cycle</code> = <code>right</code>, <code>session_child_cycle_reverse</code> = <code>left</code>, and <code>session_parent</code> = <code>up</code>.</p>
+<p><code>leader_timeout</code> controls how long OpenCode waits for the next key after the leader key. It defaults to <code>2000</code> milliseconds.</p>
+<hr />
+<h2 id="binding-values">Binding Values</h2>
+<p>A string can contain one shortcut or multiple comma-separated shortcuts. You can also use an array for multiple shortcuts.</p>
+<p>For advanced cases, use an object with <code>key</code>, <code>event</code>, <code>preventDefault</code>, or <code>fallthrough</code>.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/tui.json&quot;,
+  &quot;keybinds&quot;: {
+    &quot;messages_copy&quot;: [&quot;&lt;leader&gt;y&quot;, &quot;ctrl+shift+c&quot;],
+    &quot;input_paste&quot;: {
+      &quot;key&quot;: &quot;ctrl+v&quot;,
+      &quot;preventDefault&quot;: false
+    }
+  }
+}
+</code></pre>
+<hr />
+<h2 id="disable-keybind">Disable Keybind</h2>
+<p>You can disable a keybind by adding the key to <code>tui.json</code> with a value of <code>"none"</code> or <code>false</code>.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/tui.json&quot;,
+  &quot;keybinds&quot;: {
+    &quot;session_compact&quot;: &quot;none&quot;
+  }
+}
+</code></pre>
+<hr />
+<h2 id="desktop-prompt-shortcuts">Desktop Prompt Shortcuts</h2>
+<p>The OpenCode desktop app prompt input supports common Readline/Emacs-style shortcuts for editing text. These are built-in and currently not configurable via <code>opencode.json</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ctrl+a</code></td>
+<td>Move to start of current line</td>
+</tr>
+<tr>
+<td><code>ctrl+e</code></td>
+<td>Move to end of current line</td>
+</tr>
+<tr>
+<td><code>ctrl+b</code></td>
+<td>Move cursor back one character</td>
+</tr>
+<tr>
+<td><code>ctrl+f</code></td>
+<td>Move cursor forward one character</td>
+</tr>
+<tr>
+<td><code>alt+b</code></td>
+<td>Move cursor back one word</td>
+</tr>
+<tr>
+<td><code>alt+f</code></td>
+<td>Move cursor forward one word</td>
+</tr>
+<tr>
+<td><code>ctrl+d</code></td>
+<td>Delete character under cursor</td>
+</tr>
+<tr>
+<td><code>ctrl+k</code></td>
+<td>Kill to end of line</td>
+</tr>
+<tr>
+<td><code>ctrl+u</code></td>
+<td>Kill to start of line</td>
+</tr>
+<tr>
+<td><code>ctrl+w</code></td>
+<td>Kill previous word</td>
+</tr>
+<tr>
+<td><code>alt+d</code></td>
+<td>Kill next word</td>
+</tr>
+<tr>
+<td><code>ctrl+t</code></td>
+<td>Transpose characters</td>
+</tr>
+<tr>
+<td><code>ctrl+g</code></td>
+<td>Cancel popovers / abort running response</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="shiftenter">Shift+Enter</h2>
+<p>Some terminals don't send modifier keys with Enter by default. You may need to configure your terminal to send <code>Shift+Enter</code> as an escape sequence.</p>
+<h3 id="windows-terminal">Windows Terminal</h3>
+<p>Open your <code>settings.json</code> at:</p>
+<pre><code>%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json
+</code></pre>
+<p>Add this to the root-level <code>actions</code> array:</p>
+<pre><code class="language-json">&quot;actions&quot;: [
+  {
+    &quot;command&quot;: {
+      &quot;action&quot;: &quot;sendInput&quot;,
+      &quot;input&quot;: &quot;\u001b[13;2u&quot;
+    },
+    &quot;id&quot;: &quot;User.sendInput.ShiftEnterCustom&quot;
+  }
+]
+</code></pre>
+<p>Add this to the root-level <code>keybindings</code> array:</p>
+<pre><code class="language-json">&quot;keybindings&quot;: [
+  {
+    &quot;keys&quot;: &quot;shift+enter&quot;,
+    &quot;id&quot;: &quot;User.sendInput.ShiftEnterCustom&quot;
+  }
+]
+</code></pre>
+<p>Save the file and restart Windows Terminal or open a new tab.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

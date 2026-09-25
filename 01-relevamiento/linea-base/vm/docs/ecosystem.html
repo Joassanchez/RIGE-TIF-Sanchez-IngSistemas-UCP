@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecosystem · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a class="actual" href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Ecosystem</h1>
+<p>A collection of community projects built on OpenCode.</p>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Want to add your OpenCode related project to this list? Submit a PR.</p>
+</div>
+<p>You can also check out <a href="https://github.com/awesome-opencode/awesome-opencode">awesome-opencode</a> and <a href="https://opencode.cafe">opencode.cafe</a>, a community that aggregates the ecosystem and community.</p>
+<hr />
+<h2 id="plugins">Plugins</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/daytona/integrations/tree/main/packages/opencode-plugin">opencode-daytona</a></td>
+<td>Automatically run OpenCode sessions in isolated Daytona sandboxes with git sync and live previews</td>
+</tr>
+<tr>
+<td><a href="https://github.com/H2Shami/opencode-helicone-session">opencode-helicone-session</a></td>
+<td>Automatically inject Helicone session headers for request grouping</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nick-vi/opencode-type-inject">opencode-type-inject</a></td>
+<td>Auto-inject TypeScript/Svelte types into file reads with lookup tools</td>
+</tr>
+<tr>
+<td><a href="https://github.com/numman-ali/opencode-openai-codex-auth">opencode-openai-codex-auth</a></td>
+<td>Use your ChatGPT Plus/Pro subscription instead of API credits</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jenslys/opencode-gemini-auth">opencode-gemini-auth</a></td>
+<td>Use your existing Gemini plan instead of API billing</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NoeFabris/opencode-antigravity-auth">opencode-antigravity-auth</a></td>
+<td>Use Antigravity's free models instead of API billing</td>
+</tr>
+<tr>
+<td><a href="https://github.com/athal7/opencode-devcontainers">opencode-devcontainers</a></td>
+<td>Multi-branch devcontainer isolation with shallow clones and auto-assigned ports</td>
+</tr>
+<tr>
+<td><a href="https://github.com/shekohex/opencode-google-antigravity-auth">opencode-google-antigravity-auth</a></td>
+<td>Google Antigravity OAuth Plugin, with support for Google Search, and more robust API handling</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Tarquinen/opencode-dynamic-context-pruning">opencode-dynamic-context-pruning</a></td>
+<td>Optimize token usage by pruning obsolete tool outputs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/inkdust2021/opencode-vibeguard">opencode-vibeguard</a></td>
+<td>Redact secrets/PII into VibeGuard-style placeholders before LLM calls; restore locally</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ghoulr/opencode-websearch-cited.git">opencode-websearch-cited</a></td>
+<td>Add native websearch support for supported providers with Google grounded style</td>
+</tr>
+<tr>
+<td><a href="https://github.com/shekohex/opencode-pty.git">opencode-pty</a></td>
+<td>Enables AI agents to run background processes in a PTY, send interactive input to them.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/JRedeker/opencode-shell-strategy">opencode-shell-strategy</a></td>
+<td>Instructions for non-interactive shell commands - prevents hangs from TTY-dependent operations</td>
+</tr>
+<tr>
+<td><a href="https://github.com/angristan/opencode-wakatime">opencode-wakatime</a></td>
+<td>Track OpenCode usage with Wakatime</td>
+</tr>
+<tr>
+<td><a href="https://github.com/franlol/opencode-md-table-formatter/tree/main">opencode-md-table-formatter</a></td>
+<td>Clean up markdown tables produced by LLMs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/JRedeker/opencode-morph-fast-apply">opencode-morph-fast-apply</a></td>
+<td>10x faster code editing with Morph Fast Apply API and lazy edit markers</td>
+</tr>
+<tr>
+<td><a href="https://github.com/morphllm/opencode-morph-plugin">opencode-morph-plugin</a></td>
+<td>Fast Apply editing, WarpGrep codebase search, and context compaction via Morph</td>
+</tr>
+<tr>
+<td><a href="https://github.com/code-yeongyu/oh-my-opencode">oh-my-opencode</a></td>
+<td>Background agents, pre-built LSP/AST/MCP tools, curated agents, Claude Code compatible</td>
+</tr>
+<tr>
+<td><a href="https://github.com/panta82/opencode-notificator">opencode-notificator</a></td>
+<td>Desktop notifications and sound alerts for OpenCode sessions</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mohak34/opencode-notifier">opencode-notifier</a></td>
+<td>Desktop notifications and sound alerts for permission, completion, and error events</td>
+</tr>
+<tr>
+<td><a href="https://github.com/24601/opencode-zellij-namer">opencode-zellij-namer</a></td>
+<td>AI-powered automatic Zellij session naming based on OpenCode context</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zenobi-us/opencode-skillful">opencode-skillful</a></td>
+<td>Allow OpenCode agents to lazy load prompts on demand with skill discovery and injection</td>
+</tr>
+<tr>
+<td><a href="https://github.com/supermemoryai/opencode-supermemory">opencode-supermemory</a></td>
+<td>Persistent memory across sessions using Supermemory</td>
+</tr>
+<tr>
+<td><a href="https://github.com/backnotprop/plannotator/tree/main/apps/opencode-plugin">@plannotator/opencode</a></td>
+<td>Interactive plan review with visual annotation and private/offline sharing</td>
+</tr>
+<tr>
+<td><a href="https://github.com/spoons-and-mirrors/subtask2">@openspoon/subtask2</a></td>
+<td>Extend opencode /commands into a powerful orchestration system with granular flow control</td>
+</tr>
+<tr>
+<td><a href="https://github.com/different-ai/opencode-scheduler">opencode-scheduler</a></td>
+<td>Schedule recurring jobs using launchd (Mac) or systemd (Linux) with cron syntax</td>
+</tr>
+<tr>
+<td><a href="https://github.com/derekbar90/opencode-conductor">opencode-conductor</a></td>
+<td>Protocol-Driven Workflow: Automation of the Context -&gt; Spec -&gt; Plan -&gt; Implement lifecycle.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/vtemian/micode">micode</a></td>
+<td>Structured Brainstorm → Plan → Implement workflow with session continuity</td>
+</tr>
+<tr>
+<td><a href="https://github.com/vtemian/octto">octto</a></td>
+<td>Interactive browser UI for AI brainstorming with multi-question forms</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kdcokenny/opencode-background-agents">opencode-background-agents</a></td>
+<td>Claude Code-style background agents with async delegation and context persistence</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kdcokenny/opencode-notify">opencode-notify</a></td>
+<td>Native OS notifications for OpenCode – know when tasks complete</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kdcokenny/opencode-workspace">opencode-workspace</a></td>
+<td>Bundled multi-agent orchestration harness – 16 components, one install</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kdcokenny/opencode-worktree">opencode-worktree</a></td>
+<td>Zero-friction git worktrees for OpenCode</td>
+</tr>
+<tr>
+<td><a href="https://github.com/stolinski/opencode-sentry-monitor">opencode-sentry-monitor</a></td>
+<td>Trace and debug your AI agents with Sentry AI Monitoring</td>
+</tr>
+<tr>
+<td><a href="https://github.com/firecrawl/opencode-firecrawl">opencode-firecrawl</a></td>
+<td>Web scraping, crawling, and search via the Firecrawl CLI</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jfrog/opencode-jfrog-plugin">opencode-jfrog-plugin</a></td>
+<td>JFrog Plugin for seamless integration of Opencode users to JFrog platform</td>
+</tr>
+<tr>
+<td><a href="https://github.com/willytop8/OpenCode-goal-plugin">opencode-goal-plugin</a></td>
+<td>Session-scoped <code>/goal</code> workflow that keeps objectives in context and auto-continues until complete</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tavily-ai/opencode-tavily">opencode-tavily</a></td>
+<td>Web search, extraction, crawling, and deep research via the Tavily CLI</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="projects">Projects</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/remorses/kimaki">kimaki</a></td>
+<td>Discord bot to control OpenCode sessions, built on the SDK</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NickvanDyke/opencode.nvim">opencode.nvim</a></td>
+<td>Neovim plugin for editor-aware prompts, built on the API</td>
+</tr>
+<tr>
+<td><a href="https://github.com/hosenur/portal">portal</a></td>
+<td>Mobile-first web UI for OpenCode over Tailscale/VPN</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zenobi-us/opencode-plugin-template/">opencode plugin template</a></td>
+<td>Template for building OpenCode plugins</td>
+</tr>
+<tr>
+<td><a href="https://github.com/sudo-tee/opencode.nvim">opencode.nvim</a></td>
+<td>Neovim frontend for opencode - a terminal-based AI coding agent</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ben-vargas/ai-sdk-provider-opencode-sdk">ai-sdk-provider-opencode-sdk</a></td>
+<td>Vercel AI SDK provider for using OpenCode via @opencode-ai/sdk</td>
+</tr>
+<tr>
+<td><a href="https://github.com/btriapitsyn/openchamber">OpenChamber</a></td>
+<td>Web / Desktop App and VS Code Extension for OpenCode</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mtymek/opencode-obsidian">OpenCode-Obsidian</a></td>
+<td>Obsidian plugin that embeds OpenCode in Obsidian's UI</td>
+</tr>
+<tr>
+<td><a href="https://github.com/different-ai/openwork">OpenWork</a></td>
+<td>An open-source alternative to Claude Cowork, powered by OpenCode</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kdcokenny/ocx">ocx</a></td>
+<td>OpenCode extension manager with portable, isolated profiles.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NeuralNomadsAI/CodeNomad">CodeNomad</a></td>
+<td>Desktop, Web, Mobile and Remote Client App for OpenCode</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="agents">Agents</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/Cluster444/agentic">Agentic</a></td>
+<td>Modular AI agents and commands for structured development</td>
+</tr>
+<tr>
+<td><a href="https://github.com/darrenhinde/opencode-agents">opencode-agents</a></td>
+<td>Configs, prompts, agents, and plugins for enhanced workflows</td>
+</tr>
+</tbody>
+</table>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a class="actual" href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Web</h1>
+<p>OpenCode can run as a web application in your browser, providing the same powerful AI coding experience without needing a terminal.</p>
+<p><img alt="OpenCode Web - New Session" src="../../assets/web/web-homepage-new-session.png" /></p>
+<h2 id="getting-started">Getting Started</h2>
+<p>Start the web interface by running:</p>
+<pre><code class="language-bash">opencode web
+</code></pre>
+<p>This starts a local server on <code>127.0.0.1</code> with a random available port and automatically opens OpenCode in your default browser.</p>
+<div class="aside">
+<div class="aside-t">Caution</div>
+<p>If <code>OPENCODE_SERVER_PASSWORD</code> is not set, the server will be unsecured. This is fine for local use but should be set for network access.</p>
+</div>
+<div class="aside">
+<div class="aside-t">Windows Users</div>
+<p>For the best experience, run <code>opencode web</code> from <a href="windows-wsl.html">WSL</a> rather than PowerShell. This ensures proper file system access and terminal integration.</p>
+</div>
+<hr />
+<h2 id="configuration">Configuration</h2>
+<p>You can configure the web server using command line flags or in your <a href="config.html">config file</a>.</p>
+<h3 id="port">Port</h3>
+<p>By default, OpenCode picks an available port. You can specify a port:</p>
+<pre><code class="language-bash">opencode web --port 4096
+</code></pre>
+<h3 id="hostname">Hostname</h3>
+<p>By default, the server binds to <code>127.0.0.1</code> (localhost only). To make OpenCode accessible on your network:</p>
+<pre><code class="language-bash">opencode web --hostname 0.0.0.0
+</code></pre>
+<p>When using <code>0.0.0.0</code>, OpenCode will display both local and network addresses:</p>
+<pre><code>  Local access:       http://localhost:4096
+  Network access:     http://192.168.1.100:4096
+</code></pre>
+<h3 id="mdns-discovery">mDNS Discovery</h3>
+<p>Enable mDNS to make your server discoverable on the local network:</p>
+<pre><code class="language-bash">opencode web --mdns
+</code></pre>
+<p>This automatically sets the hostname to <code>0.0.0.0</code> and advertises the server as <code>opencode.local</code>.</p>
+<p>You can customize the mDNS domain name to run multiple instances on the same network:</p>
+<pre><code class="language-bash">opencode web --mdns --mdns-domain myproject.local
+</code></pre>
+<h3 id="cors">CORS</h3>
+<p>To allow additional domains for CORS (useful for custom frontends):</p>
+<pre><code class="language-bash">opencode web --cors https://example.com
+</code></pre>
+<h3 id="authentication">Authentication</h3>
+<p>To protect access, set a password using the <code>OPENCODE_SERVER_PASSWORD</code> environment variable:</p>
+<pre><code class="language-bash">OPENCODE_SERVER_PASSWORD=secret opencode web
+</code></pre>
+<p>The username defaults to <code>opencode</code> but can be changed with <code>OPENCODE_SERVER_USERNAME</code>.</p>
+<hr />
+<h2 id="using-the-web-interface">Using the Web Interface</h2>
+<p>Once started, the web interface provides access to your OpenCode sessions.</p>
+<h3 id="sessions">Sessions</h3>
+<p>View and manage your sessions from the homepage. You can see active sessions and start new ones.</p>
+<p><img alt="OpenCode Web - Active Session" src="../../assets/web/web-homepage-active-session.png" /></p>
+<h3 id="server-status">Server Status</h3>
+<p>Click "See Servers" to view connected servers and their status.</p>
+<p><img alt="OpenCode Web - See Servers" src="../../assets/web/web-homepage-see-servers.png" /></p>
+<hr />
+<h2 id="attaching-a-terminal">Attaching a Terminal</h2>
+<p>You can attach a terminal TUI to a running web server:</p>
+<pre><code class="language-bash"># Start the web server
+opencode web --port 4096
+
+# In another terminal, attach the TUI
+opencode attach http://localhost:4096
+</code></pre>
+<p>This allows you to use both the web interface and terminal simultaneously, sharing the same sessions and state.</p>
+<hr />
+<h2 id="config-file">Config File</h2>
+<p>You can also configure server settings in your <code>opencode.json</code> config file:</p>
+<pre><code class="language-json">{
+  &quot;server&quot;: {
+    &quot;port&quot;: 4096,
+    &quot;hostname&quot;: &quot;0.0.0.0&quot;,
+    &quot;mdns&quot;: true,
+    &quot;cors&quot;: [&quot;https://example.com&quot;]
+  }
+}
+</code></pre>
+<p>Command line flags take precedence over config file settings.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

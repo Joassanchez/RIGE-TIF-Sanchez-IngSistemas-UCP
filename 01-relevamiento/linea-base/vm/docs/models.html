@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Models · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a class="actual" href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>Models</h1>
+<p>OpenCode uses the <a href="https://ai-sdk.dev/">AI SDK</a> and <a href="https://models.dev">Models.dev</a> to support <strong>75+ LLM providers</strong> and it supports running local models.</p>
+<hr />
+<h2 id="providers">Providers</h2>
+<p>Most popular providers are preloaded by default. If you've added the credentials for a provider through the <code>/connect</code> command, they'll be available when you start OpenCode.</p>
+<p>Learn more about <a href="providers.html">providers</a>.</p>
+<hr />
+<h2 id="select-a-model">Select a model</h2>
+<p>Once you've configured your provider you can select the model you want by typing in:</p>
+<pre><code class="language-bash">/models
+</code></pre>
+<hr />
+<h2 id="recommended-models">Recommended models</h2>
+<p>There are a lot of models out there, with new models coming out every week.</p>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>Consider using one of the models we recommend.</p>
+</div>
+<p>However, there are only a few of them that are good at both generating code and tool calling.</p>
+<p>Here are several models that work well with OpenCode, in no particular order. (This is not an exhaustive list nor is it necessarily up to date):</p>
+<ul>
+<li>GPT 5.2</li>
+<li>GPT 5.1 Codex</li>
+<li>Claude Opus 4.5</li>
+<li>Claude Sonnet 4.5</li>
+<li>Minimax M2.1</li>
+<li>Gemini 3 Pro</li>
+</ul>
+<hr />
+<h2 id="set-a-default">Set a default</h2>
+<p>To set one of these as the default model, you can set the <code>model</code> key in your
+OpenCode config.</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;model&quot;: &quot;lmstudio/google/gemma-3n-e4b&quot;
+}
+</code></pre>
+<p>Here the full ID is <code>provider_id/model_id</code>. For example, if you're using <a href="zen.html">OpenCode Zen</a>, you would use <code>opencode/gpt-5.1-codex</code> for GPT 5.1 Codex.</p>
+<p>If you've configured a <a href="providers.html#custom">custom provider</a>, the <code>provider_id</code> is key from the <code>provider</code> part of your config, and the <code>model_id</code> is the key from <code>provider.models</code>.</p>
+<hr />
+<h2 id="configure-models">Configure models</h2>
+<p>You can globally configure a model's options through the config.</p>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;provider&quot;: {
+    &quot;openai&quot;: {
+      &quot;models&quot;: {
+        &quot;gpt-5&quot;: {
+          &quot;options&quot;: {
+            &quot;reasoningEffort&quot;: &quot;high&quot;,
+            &quot;textVerbosity&quot;: &quot;low&quot;,
+            &quot;reasoningSummary&quot;: &quot;auto&quot;,
+            &quot;include&quot;: [&quot;reasoning.encrypted_content&quot;],
+          },
+        },
+      },
+    },
+    &quot;anthropic&quot;: {
+      &quot;models&quot;: {
+        &quot;claude-sonnet-4-5-20250929&quot;: {
+          &quot;options&quot;: {
+            &quot;thinking&quot;: {
+              &quot;type&quot;: &quot;enabled&quot;,
+              &quot;budgetTokens&quot;: 16000,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+</code></pre>
+<p>Here we're configuring global settings for two built-in models: <code>gpt-5</code> when accessed via the <code>openai</code> provider, and <code>claude-sonnet-4-20250514</code> when accessed via the <code>anthropic</code> provider.
+The built-in provider and model names can be found on <a href="https://models.dev">Models.dev</a>.</p>
+<p>You can also configure these options for any agents that you are using. The agent config overrides any global options here. <a href="agents.html#additional">Learn more</a>.</p>
+<p>You can also define custom variants that extend built-in ones. Variants let you configure different settings for the same model without creating duplicate entries:</p>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;provider&quot;: {
+    &quot;opencode&quot;: {
+      &quot;models&quot;: {
+        &quot;gpt-5&quot;: {
+          &quot;variants&quot;: {
+            &quot;high&quot;: {
+              &quot;reasoningEffort&quot;: &quot;high&quot;,
+              &quot;textVerbosity&quot;: &quot;low&quot;,
+              &quot;reasoningSummary&quot;: &quot;auto&quot;,
+            },
+            &quot;low&quot;: {
+              &quot;reasoningEffort&quot;: &quot;low&quot;,
+              &quot;textVerbosity&quot;: &quot;low&quot;,
+              &quot;reasoningSummary&quot;: &quot;auto&quot;,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+</code></pre>
+<hr />
+<h2 id="variants">Variants</h2>
+<p>Many models support multiple variants with different configurations. OpenCode ships with built-in default variants for popular providers.</p>
+<h3 id="built-in-variants">Built-in variants</h3>
+<p>OpenCode ships with default variants for many providers:</p>
+<p><strong>Anthropic</strong>:</p>
+<ul>
+<li><code>high</code> - High thinking budget (default)</li>
+<li><code>max</code> - Maximum thinking budget</li>
+</ul>
+<p><strong>OpenAI</strong>:</p>
+<p>Varies by model but roughly:</p>
+<ul>
+<li><code>none</code> - No reasoning</li>
+<li><code>minimal</code> - Minimal reasoning effort</li>
+<li><code>low</code> - Low reasoning effort</li>
+<li><code>medium</code> - Medium reasoning effort</li>
+<li><code>high</code> - High reasoning effort</li>
+<li><code>xhigh</code> - Extra high reasoning effort</li>
+</ul>
+<p><strong>Google</strong>:</p>
+<ul>
+<li><code>low</code> - Lower effort/token budget</li>
+<li><code>high</code> - Higher effort/token budget</li>
+</ul>
+<div class="aside">
+<div class="aside-t">Tip</div>
+<p>This list is not comprehensive. Many other providers have built-in defaults too.</p>
+</div>
+<h3 id="custom-variants">Custom variants</h3>
+<p>You can override existing variants or add your own:</p>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;provider&quot;: {
+    &quot;openai&quot;: {
+      &quot;models&quot;: {
+        &quot;gpt-5&quot;: {
+          &quot;variants&quot;: {
+            &quot;thinking&quot;: {
+              &quot;reasoningEffort&quot;: &quot;high&quot;,
+              &quot;textVerbosity&quot;: &quot;low&quot;,
+            },
+            &quot;fast&quot;: {
+              &quot;disabled&quot;: true,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+</code></pre>
+<h3 id="cycle-variants">Cycle variants</h3>
+<p>Use the keybind <code>variant_cycle</code> to quickly switch between variants. <a href="keybinds.html">Learn more</a>.</p>
+<hr />
+<h2 id="loading-models">Loading models</h2>
+<p>When OpenCode starts up, it checks for models in the following priority order:</p>
+<ol>
+<li>
+<p>The <code>--model</code> or <code>-m</code> command line flag. The format is the same as in the config file: <code>provider_id/model_id</code>.</p>
+</li>
+<li>
+<p>The model list in the OpenCode config.</p>
+</li>
+</ol>
+<p><code>json
+   {
+     "$schema": "https://opencode.ai/config.json",
+     "model": "anthropic/claude-sonnet-4-20250514"
+   }</code></p>
+<p>The format here is <code>provider/model</code>.</p>
+<ol start="3">
+<li>
+<p>The last used model.</p>
+</li>
+<li>
+<p>The first model using an internal priority.</p>
+</li>
+</ol>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>

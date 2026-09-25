@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>References · OpenCode 1.18.25 (offline)</title>
+<style>
+:root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --accent:#0969da; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#3d444d; --code:#151b23; --accent:#4493f8; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+.wrap { display:flex; min-height:100vh; }
+nav { width:240px; flex:none; border-right:1px solid var(--line); padding:16px; font-size:14px;
+      position:sticky; top:0; height:100vh; overflow-y:auto; }
+nav a { display:block; padding:3px 6px; color:var(--fg); text-decoration:none; border-radius:4px; }
+nav a:hover, nav a.actual { background:var(--code); }
+nav .marca { font-weight:700; margin-bottom:12px; display:block; }
+main { flex:1; max-width:860px; padding:24px 40px; min-width:0; }
+a { color:var(--accent); }
+pre { background:var(--code); padding:12px; overflow-x:auto; border-radius:6px; }
+code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:90%; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+.aside { border-left:4px solid var(--accent); background:var(--code); padding:8px 14px; margin:16px 0; border-radius:4px; }
+.aside-t { font-weight:700; }
+.tab-t { font-weight:700; margin-top:12px; }
+.pie { color:var(--muted); font-size:13px; border-top:1px solid var(--line); margin-top:40px; padding-top:12px; }
+</style></head>
+<body><div class="wrap">
+<nav><a class="marca" href="index.html">OpenCode 1.18.25 docs</a>
+<a href="index.html">Introduction</a>
+<a href="acp.html">ACP Support</a>
+<a href="skills.html">Agent Skills</a>
+<a href="agents.html">Agents</a>
+<a href="cli.html">CLI</a>
+<a href="commands.html">Commands</a>
+<a href="config.html">Config</a>
+<a href="custom-tools.html">Custom Tools</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="enterprise.html">Enterprise</a>
+<a href="formatters.html">Formatters</a>
+<a href="github.html">GitHub</a>
+<a href="gitlab.html">GitLab</a>
+<a href="go.html">Go</a>
+<a href="ide.html">IDE</a>
+<a href="keybinds.html">Keybinds</a>
+<a href="lsp.html">LSP Servers</a>
+<a href="mcp-servers.html">MCP servers</a>
+<a href="models.html">Models</a>
+<a href="network.html">Network</a>
+<a href="permissions.html">Permissions</a>
+<a href="plugins.html">Plugins</a>
+<a href="policies.html">Policies</a>
+<a href="providers.html">Providers</a>
+<a class="actual" href="references.html">References</a>
+<a href="rules.html">Rules</a>
+<a href="sdk.html">SDK</a>
+<a href="server.html">Server</a>
+<a href="share.html">Share</a>
+<a href="themes.html">Themes</a>
+<a href="tools.html">Tools</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="tui.html">TUI</a>
+<a href="web.html">Web</a>
+<a href="windows-wsl.html">Windows (WSL)</a>
+<a href="zen.html">Zen</a></nav>
+<main><h1>References</h1>
+<p>References give OpenCode access to directories outside the current project. Use them to make documentation, shared libraries, examples, or another repository available while you work.</p>
+<p>References are configured by alias in <code>opencode.json</code> or <code>opencode.jsonc</code>.</p>
+<pre><code class="language-jsonc">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;references&quot;: {
+    &quot;docs&quot;: {
+      &quot;path&quot;: &quot;../product-docs&quot;,
+      &quot;description&quot;: &quot;Use for product behavior and documentation conventions&quot;,
+    },
+    &quot;sdk&quot;: {
+      &quot;repository&quot;: &quot;anomalyco/opencode-sdk-js&quot;,
+      &quot;branch&quot;: &quot;main&quot;,
+      &quot;description&quot;: &quot;Use for JavaScript SDK implementation details&quot;,
+    },
+  },
+}
+</code></pre>
+<hr />
+<h2 id="local-directories">Local directories</h2>
+<p>Use <code>path</code> to reference a local directory.</p>
+<pre><code class="language-jsonc">{
+  &quot;references&quot;: {
+    &quot;docs&quot;: {
+      &quot;path&quot;: &quot;../docs&quot;,
+    },
+  },
+}
+</code></pre>
+<p>Paths can be:</p>
+<ul>
+<li>Relative to the config file that defines the reference</li>
+<li>Absolute, such as <code>/home/user/docs</code></li>
+<li>Relative to your home directory, such as <code>~/docs</code></li>
+</ul>
+<p>You can also use a string shorthand:</p>
+<pre><code class="language-jsonc">{
+  &quot;references&quot;: {
+    &quot;docs&quot;: &quot;../docs&quot;,
+  },
+}
+</code></pre>
+<hr />
+<h2 id="git-repositories">Git repositories</h2>
+<p>Use <code>repository</code> to reference a Git repository. OpenCode materializes the repository in its local repository cache and makes the checked-out source available as a reference directory.</p>
+<pre><code class="language-jsonc">{
+  &quot;references&quot;: {
+    &quot;effect&quot;: {
+      &quot;repository&quot;: &quot;Effect-TS/effect&quot;,
+      &quot;branch&quot;: &quot;main&quot;,
+    },
+  },
+}
+</code></pre>
+<p><code>repository</code> accepts Git URLs, host/path references, and GitHub <code>owner/repo</code> shorthand. The optional <code>branch</code> field selects a branch or ref. Without <code>branch</code>, OpenCode uses the repository's default branch.</p>
+<p>You can use string shorthand when you do not need a branch, description, or other options:</p>
+<pre><code class="language-jsonc">{
+  &quot;references&quot;: {
+    &quot;effect&quot;: &quot;Effect-TS/effect&quot;,
+  },
+}
+</code></pre>
+<div class="aside">
+<div class="aside-t">Note</div>
+<p>Git references are refreshed asynchronously. A newly configured repository may take a moment to finish cloning or updating.</p>
+</div>
+<hr />
+<h2 id="describe-usage">Describe usage</h2>
+<p>Add <code>description</code> to explain when an agent should use a reference.</p>
+<pre><code class="language-jsonc">{
+  &quot;references&quot;: {
+    &quot;design-system&quot;: {
+      &quot;path&quot;: &quot;../design-system&quot;,
+      &quot;description&quot;: &quot;Use when implementing UI components or design tokens&quot;,
+    },
+  },
+}
+</code></pre>
+<p>OpenCode includes references with descriptions in agent context. Descriptions should be short and specific enough to distinguish references with similar content. References without descriptions remain available through autocomplete and direct use, but are not advertised to agents.</p>
+<hr />
+<h2 id="hide-autocomplete-entries">Hide autocomplete entries</h2>
+<p>Set <code>hidden</code> to <code>true</code> to omit a reference from <code>@</code> autocomplete in the TUI.</p>
+<pre><code class="language-jsonc">{
+  &quot;references&quot;: {
+    &quot;internal&quot;: {
+      &quot;path&quot;: &quot;../internal&quot;,
+      &quot;description&quot;: &quot;Use for internal implementation details&quot;,
+      &quot;hidden&quot;: true,
+    },
+  },
+}
+</code></pre>
+<p><code>hidden</code> only affects autocomplete. A hidden reference with a description remains included in agent context.</p>
+<hr />
+<h2 id="use-references">Use references</h2>
+<p>Configured references appear in TUI <code>@</code> autocomplete. Type <code>@alias</code> to attach the reference root, or <code>@alias/</code> to search for files inside it.</p>
+<pre><code class="language-text">Compare this implementation with @sdk/src/client.ts
+</code></pre>
+<p>Agents also receive the resolved paths and descriptions of configured references that have descriptions in their system context, so they can inspect a reference when it is relevant without you attaching it manually.</p>
+<p>OpenCode automatically allows reference directories through its external-directory permission boundary. Normal tool permissions still apply; for example, an agent that cannot edit files does not gain edit access because a directory is configured as a reference.</p>
+<hr />
+<h2 id="configure-fields">Configure fields</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Local</th>
+<th>Git</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>path</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>Local reference directory</td>
+</tr>
+<tr>
+<td><code>repository</code></td>
+<td>No</td>
+<td>Yes</td>
+<td>Git URL, host/path, or GitHub <code>owner/repo</code> value</td>
+</tr>
+<tr>
+<td><code>branch</code></td>
+<td>No</td>
+<td>Yes</td>
+<td>Optional Git branch or ref</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Guidance describing when to use the reference</td>
+</tr>
+<tr>
+<td><code>hidden</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Hide the reference from TUI <code>@</code> autocomplete</td>
+</tr>
+</tbody>
+</table>
+<p>Reference aliases cannot be empty or contain <code>/</code>, whitespace, backticks, or commas.</p>
+<div class="pie">OpenCode 1.18.25 · offline documentation generated from tag v1.18.25 (commit cb7d8b2f5e44)</div>
+</main></div></body></html>
