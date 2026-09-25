@@ -1,6 +1,6 @@
 # RIGE · Prototipo v1
 
-> Archivo de lectura exigido por la Guía de comprobación del prototipo v1 (`catedra/consignas/AE2-guia-comprobacion-v1.md`). La cátedra lo sigue al pie de la letra, sin suplir pasos. Completar las ocho secciones antes de crear la etiqueta `v1`.
+> Archivo de lectura exigido por la Guía de comprobación del prototipo v1 (`catedra/AE2-guia-comprobacion-v1.md`). La cátedra lo sigue al pie de la letra, sin suplir pasos. Completar las ocho secciones antes de crear la etiqueta `v1`.
 
 ## 1. Identificación
 

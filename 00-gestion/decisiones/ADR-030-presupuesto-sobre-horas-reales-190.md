@@ -7,7 +7,7 @@
 - Revisión: 24/09/2026, análisis ampliado, cálculo verificado e inconsistencias detectadas; la decisión no cambia
 
 ### Contexto
-El proyecto es de autoría individual. Las horas semanales reales del autor constan en el Instrumento 24 (`03-requisitos/instrumento-34-recursos.md` y `03-requisitos/libro/iteraciones.md` lo citan) y determinan qué requisitos Must caben en el período de ocho semanas (21/09–14/11/2026).
+El proyecto es de autoría individual. Las horas semanales reales del autor constan en el Instrumento 24 (`instrumentos/instrumento-34-recursos.md` y `03-requisitos/libro/iteraciones.md` lo citan) y determinan qué requisitos Must caben en el período de ocho semanas (21/09–14/11/2026).
 
 ### Alternativas evaluadas
 - **Adoptada:** Presupuesto sobre 28 h semanales reales, en dos líneas —20 técnicas y 8 de reserva documental y de validación—, con una reducción del 15 % por exámenes y el feriado del 12/10, y una cláusula de contingencia ante la caída de un tercio de la capacidad técnica.

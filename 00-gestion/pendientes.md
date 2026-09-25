@@ -7,8 +7,8 @@ Correcciones arrastradas y tareas abiertas. Formato: origen · sección · descr
 | # | Origen | Sección | Pendiente | Severidad |
 |---|---|---|---|---|
 | U-01 | Cap. V, Tabla 14 | `src/` | La iteración 1 cierra el 01/10 con el **prototipo v1 ejecutable**: caso de uso vertical, README de ocho secciones, CI con corrida exitosa y etiqueta `v1` publicada. `src/` está vacío. | bloqueante |
-| U-02 | Plantilla AE2 | Cap. X | Redactar el **Capítulo X · Recursos del proyecto** y completar `03-requisitos/libro/recursos.md` (Instrumento 34). | bloqueante |
-| U-03 | Cuadernillo de instrumentos | `02-analisis/` | Instrumentos 32 y 33 (lienzo y rivalidad) con plazo 24/09; Instrumento 34 con plazo 01/10; Instrumento 35 al cerrar la etiqueta `v1`. Hoy son plantillas vacías. | bloqueante |
+| U-02 | Plantilla AE2 | Cap. X | Redactar el **Capítulo X · Recursos del proyecto** y completar `instrumentos/instrumento-34-recursos.md` (fuente única del Instrumento 34 y de la hoja «Recursos» del libro). | bloqueante |
+| U-03 | Cuadernillo de instrumentos | `instrumentos/` | Instrumentos 32 y 33 (lienzo y rivalidad) con plazo 24/09; Instrumento 34 con plazo 01/10; Instrumento 35 al cerrar la etiqueta `v1`. Hoy son plantillas vacías. | bloqueante |
 | U-04 | Guía AE2, objeto 4 | Portafolio | Constancia de validación de requisitos (acta con fecha, participantes, observaciones y conformidad del referente). | bloqueante |
 | U-05 | Guía AE2, objeto 3 | — | Enlace al tablero de gestión actualizado, organizado por la iteración del Cap. V. Completar `tablero` y `repositorio` en `informe/datos-autor.yaml`. | importante |
 
@@ -41,6 +41,26 @@ Correcciones arrastradas y tareas abiertas. Formato: origen · sección · descr
 | AD-04 | Anexo III | `00-gestion/anexo-III.md` llega hasta D-18. Faltan las filas de D-19 en adelante para las decisiones de la AE2 (sin ADR-024 ni ADR-026). | importante |
 | AD-05 | ADR-024 y ADR-026 | Eliminación aprobada por el autor y no ejecutada (permiso denegado al ingeniero): borrar ambos archivos y sus filas en `INDICE.md`, y agregar la nota de números retirados. | menor |
 | AD-06 | Decisiones técnicas | No hay ADR sobre el stack del prototipo, la tecnología del almacén, la integración del evaluador de permisos (ADR-006) ni la herramienta de CI. Abrir con `/decidir` antes de construir el v1. | bloqueante |
+
+## Reorganización del repositorio (ADR-031, 24/09/2026)
+
+| # | Sección | Pendiente | Severidad |
+|---|---|---|---|
+| R-01 | `catedra/` | ~~**Ejecución manual del autor** (escritura denegada al agente): mover `catedra/consignas/*.md` → `catedra/`; `catedra/consignas/originales/*.pdf` y `catedra/plantillas/0*` (docx y xlsx) → `catedra/originales/`; `catedra/plantillas/apa.csl` y `reference.docx` → `tools/`; borrar `catedra/plantillas/locales-es-ES.xml` (sin uso) y `catedra/devoluciones/`. Hasta hacerlo, `armar.py` y `exportar_libro.py` no encuentran estilos ni plantilla.~~ Ejecutado por el autor el 24/09/2026. | ~~bloqueante~~ |
+| R-02 | `catedra/originales/` | Subir el PDF de la guía de la AE2 (la extracción `AE2-guia.md` es «versión sin página 29»). El autor indica (25/09/2026) que la «Guía rápida N.º 1» es la propia consigna de la AE2; la guía la cita como documento distinto (`catedra/AE2-guia.md`, 10.2), por lo que conviene confirmarlo con el docente, dado que V.3 la invoca como respaldo de la autoría individual. | importante |
+| R-03 | Prototipo v0 | Trasladado desde el `prototipo/README.md` eliminado: enlace a la maqueta y constancia de validación con la referente (AE1, I.6.6 y Anexo II, A.II.4). | importante |
+| R-04 | `tools/` | ~~Verificar el armado de punta a punta.~~ Pandoc 3.11 instalado y `.docx` verificado el 24/09/2026 (A4, márgenes, carátula, figura, leyendas). Se corrigió `construir_reference.py`: el `reference.docx` salía con dos `sectPr` y el documento generado quedaba **sin tamaño de hoja** (riesgo de hoja carta, observación del AE1). Decisión del autor (25/09/2026): sin LibreOffice; el PDF de `05-entregas/` (Guía AE2, 10.2) se exporta desde Word con el mismo nombre que el `.docx`. | ~~importante~~ |
+| R-05 | Decisiones | La consigna ubica las decisiones de arquitectura en `/04-diseno` (Guía AE2, 10.2); los ADR están en `00-gestion/decisiones/`. Tratar con `/decidir`. | importante |
+| R-06 | Git | Agregar `.gitattributes` (`* text=auto eol=lf`) para las advertencias LF/CRLF. | menor |
+| R-07 | Nombres | Slugs truncados de ADR (p. ej. ADR-004, 011, 014, 026) y nombre del repositorio «TIF» frente a «PIF» de la consigna; resolver antes de la etiqueta `v1`. | menor |
+
+## Control de los agentes (25/09/2026)
+
+| # | Sección | Pendiente | Severidad |
+|---|---|---|---|
+| G-01 | AE2 · Cap. III, V.5, Anexos I y V | `armar.py` ahora bloquea la entrega con marcadores residuales. La AE2 tiene **38**: `\[fecha\]` del acta de validación (III.1, III.2, III.4, Anexos I y V; ver A-05), `\[enlace\]` y `\[estado\]` en V.5, `\[N\]` y `\[equipo\]` en el Anexo I. Completarlos antes del 01/10 o la AE2 no se arma. | bloqueante |
+| G-02 | `informe/bibliografia.md` | El redactor no escribe fuera de su sección: las fuentes nuevas que cite (p. ej. en el Cap. X) las informa en su nota y el ingeniero las agrega a la bibliografía. Resolver M-07 elimina este paso manual. | importante |
+| G-03 | Revisión de instrumentos | ~~`/revisar` solo contemplaba secciones del informe.~~ Resuelto el 25/09/2026: `/revisar instrumento N` (revisor de consigna, consistencia y, si hay cifras externas, fuentes) y tabla «Instrumentos» en `estado.md`. | ~~importante~~ |
 
 ## Arrastrados de sesiones anteriores
 

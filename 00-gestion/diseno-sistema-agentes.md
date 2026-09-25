@@ -102,9 +102,7 @@ CLAUDE.md                        ← rol y reglas del ingeniero
   revisiones/                    ← informes consolidados de los revisores
 01-relevamiento/                 ← instrumentos, evidencia de contacto, datos en bruto
   fuentes.md                     ← registro de fuentes con las tres preguntas
-02-analisis/                     ← PESTEL, cadena de valor, FODA, rivalidad
-  instrumento-32-lienzo.md
-  instrumento-33-rivalidad.md
+02-analisis/                     ← PESTEL, cadena de valor, FODA, rivalidad; .docx de los Instrumentos 32 y 33
 03-requisitos/
   libro/                         ← Libro de trabajo en Markdown (fuente del .xlsx)
     catalogo/                    ← una ficha por requisito (RF-01.md, RNF-01.md…)
@@ -113,13 +111,11 @@ CLAUDE.md                        ← rol y reglas del ingeniero
     reglas.md                    ← Instrumento 29
     glosario.md                  ← Instrumento 30 (glosario único del TIF)
     iteraciones.md
-    recursos.md
-  instrumento-34-recursos.md
 04-diseno/
-catedra/
-  consignas/                     ← guías y consignas en Markdown (+ originales)
-  plantillas/                    ← plantillas oficiales, reference.docx, estilo APA (CSL)
-  devoluciones/
+catedra/                         ← consignas y plantillas en Markdown (lo que leen los agentes)
+  devolucion-AEn.md              ← devoluciones docentes, una por AE
+  originales/                    ← PDF, DOCX y XLSX tal como los emite la cátedra (prevalecen)
+instrumentos/                    ← fuente única en Markdown de los instrumentos (32 a 35…)
 informe/
   00-resumen.md
   cap-01/ … cap-13/              ← un archivo por apartado (p. ej. cap-03/III.2-dominio.md)
@@ -129,17 +125,15 @@ informe/
   referencias.bib                ← datos bibliográficos; la bibliografía se genera sola
   datos-autor.yaml               ← fuente única de nombre, DNI, carrera, comisión, repositorio
 05-entregas/                     ← artefactos generados, versionados, nunca se modifican
-prototipo/                       ← prototipo v0 (maqueta)
 src/                             ← código de RIGE (prototipo v1 en adelante)
   AGENTS.md / CLAUDE.md          ← reglas de programación, separadas de las de redacción
   README.md                      ← archivo de lectura del v1 (ocho secciones)
-  instrumento-35-ficha-v1.md
-tools/                           ← scripts de armado, exportación y migración
+tools/                           ← armar.py, exportar_libro.py, construir_reference.py, informe.lua, apa.csl, reference.docx
 ```
 
 **Reglas de ubicación:**
 - `informe/` es el documento vivo; `05-entregas/` solo guarda artefactos generados. Cada generación crea un archivo nuevo con su `vN`; nunca se sobrescribe uno existente.
-- Instrumentos: 32 y 33 en `02-analisis/`, 34 en `03-requisitos/`, 35 en `src/` (fijado por la cátedra). Se copian además al Portafolio.
+- Instrumentos: la fuente vive en `instrumentos/`. Los scripts no fijan destinos: el agente elige la carpeta según la tabla de ubicación de artefactos (`reglas-catedra.md`, sección 8), que deriva de la consigna (32 y 33 en `02-analisis/`, 34 en `03-requisitos/`, 35 en `src/`). Se copian además al Portafolio.
 - `00-gestion/anexo-III.md` conserva su ruta porque la cita la bitácora ya entregada; el armado lo incorpora como Anexo III.
 - Nomenclatura de artefactos: `AAAAMMDD_InformeAEn_Equipo_vN`, `AAAAMMDD_CatalogoRequisitos_Equipo_vN.xlsx`.
 - Si RIGE se publica como proyecto abierto, `src/` se extrae con su historial (`git subtree split`).
@@ -177,7 +171,7 @@ Es la sesión principal de Claude Code. Es el único rol que conversa con el aut
 |---------|-----------|-----------------|
 | `CLAUDE.md` | Rol y postura · método · reglas de oro · protocolo de sesión · mapa del repo · idioma y registro | Siempre |
 | `00-gestion/reglas-catedra.md` | Sección 11 de este documento | Siempre (importado con `@00-gestion/reglas-catedra.md`) |
-| `catedra/consignas/<AE>.md` | Exigencias de la entrega en curso | Solo al trabajar esa entrega |
+| `catedra/<AE>-guia.md` | Exigencias de la entrega en curso | Solo al trabajar esa entrega |
 
 **Reglas de oro del `CLAUDE.md`:** no inventar datos · no adelantar capítulos · el redactor solo usa ADR aceptados · ningún commit ni etiqueta · orden de prelación del principio 5.
 
@@ -329,7 +323,7 @@ Commit (autor)
 
 ### 7.4 Después de la devolución
 
-1. La devolución se guarda en `catedra/devoluciones/`.
+1. La devolución se guarda como `catedra/devolucion-AEn.md`.
 2. `/devolucion` la convierte en ítems de `pendientes.md` con la sección afectada.
 3. Las correcciones siguen el ciclo 7.2 dentro de la Ventana de Mejora.
 
@@ -367,7 +361,7 @@ Archivos en `.claude/commands/`. Los marcados con ★ cambian un estado y los ej
 
 | Comando | Qué hace |
 |---------|----------|
-| `/armar <AE> <docx\|pdf>` | Controles previos (9.1) y generación del informe en `05-entregas/`. |
+| `/armar <AE> <docx\|pdf>` | Controles previos (9.1) y generación del informe en la carpeta que fija la consigna (`05-entregas/`). |
 | `/exportar <libro\|instrumento N>` | Genera el `.xlsx` del Libro de trabajo o el `.docx` de un instrumento, con la nomenclatura de la cátedra. |
 | `/comprobar-v1` | Clona el repositorio en una carpeta limpia con `git clone --branch v1`, sigue el README al pie de la letra sin suplir pasos y completa la grilla de la Guía de comprobación. No reemplaza la autocomprobación exigida (otra persona, otra máquina). |
 | `/devolucion <archivo>` | Convierte una devolución en ítems de `pendientes.md`. |
@@ -399,7 +393,7 @@ informe/*.md ──pandoc──► .docx ──LibreOffice──► .pdf
                (reference.docx + filtros + citas APA)
 ```
 
-**`reference.docx`:** se arma a partir de la plantilla oficial (`02_Plantilla_Modelo_Informe_AE2.docx`). La plantilla trae A4, márgenes correctos y el estilo Normal en Times New Roman 12, doble y justificado; el resto de su formato (tablas en Calibri 9,5, carátulas) está aplicado en forma directa, por lo que el `reference.docx` define esos estilos para que pandoc los aplique. Todos los estilos usan texto **negro** (la plantilla trae el cuerpo en gris azulado `#1C2430`).
+**`reference.docx`** (`tools/`, generado por `construir_reference.py`): reproduce el formato de la plantilla oficial (`catedra/originales/02_Plantilla_Modelo_Informe_AE2.docx`). La plantilla trae A4, márgenes correctos y el estilo Normal en Times New Roman 12, doble y justificado; el resto de su formato (tablas en Calibri 9,5, carátulas) está aplicado en forma directa, por lo que el `reference.docx` define esos estilos para que pandoc los aplique. Todos los estilos usan texto **negro** (la plantilla trae el cuerpo en gris azulado `#1C2430`).
 
 | Necesidad | Solución |
 |-----------|----------|
@@ -529,7 +523,7 @@ Configurados en `.claude/settings.json`, para que no dependan de que el agente r
 |------|---------|
 | Git denegado | `commit`, `push`, `tag`, `add`, `reset`, `checkout`, `switch`, `restore`, `rebase`, `merge`, `stash`, `clean` |
 | Git permitido | `status`, `diff`, `log`, `show`, y `clone` (solo para `/comprobar-v1`, en carpeta temporal) |
-| Edición denegada | `05-entregas/` (lo escriben solo los scripts, creando archivos nuevos), `catedra/consignas/`, `catedra/plantillas/` |
+| Edición denegada | `05-entregas/` (lo escriben solo los scripts, creando archivos nuevos), `catedra/` (salvo las devoluciones, que carga el autor) |
 
 **Límite técnico:** Claude Code no permite restringir por carpeta la escritura de un subagente particular. Que solo el redactor escriba en `informe/` y solo el ingeniero en `00-gestion/` queda como instrucción; el control efectivo es la revisión del diff por parte del autor antes de cada commit.
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Genera catedra/plantillas/reference.docx: estilos del informe según la plantilla
+"""Genera tools/reference.docx: estilos del informe según la plantilla
 oficial de la AE2 y los Arts. 20.º y 21.º (A4, márgenes 2,5/3 cm, Times New Roman 12,
 interlineado doble, justificado, notas en 10, tablas en Calibri 9,5, todo en negro)."""
 import subprocess, zipfile, re, pathlib, tempfile, shutil
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
-DEST = RAIZ / "catedra" / "plantillas" / "reference.docx"
+DEST = RAIZ / "tools" / "reference.docx"
 
 TNR = '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>'
 CAL = '<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/>'
@@ -77,7 +77,8 @@ def main():
     st = st.replace("</w:styles>", "".join(NUEVOS) + "</w:styles>")
     (d / "word/styles.xml").write_text(st, encoding="utf-8")
     doc = (d / "word/document.xml").read_text(encoding="utf-8")
-    doc = re.sub(r"<w:sectPr.*?</w:sectPr>", "", doc, flags=re.S).replace("</w:body>", SECT + "</w:body>")
+    # La plantilla de pandoc 3.x trae el sectPr autocerrado (<w:sectPr />): se quitan ambas formas.
+    doc = re.sub(r"<w:sectPr\s*/>|<w:sectPr\b.*?</w:sectPr>", "", doc, flags=re.S).replace("</w:body>", SECT + "</w:body>")
     (d / "word/document.xml").write_text(doc, encoding="utf-8")
     (d / "word/footer1.xml").write_text(PIE, encoding="utf-8")
     rels = (d / "word/_rels/document.xml.rels").read_text(encoding="utf-8")

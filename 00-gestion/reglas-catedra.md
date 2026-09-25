@@ -78,3 +78,18 @@ Un requisito sin criterio de aceptación comprobable no se computa.
 - Caso de uso vertical de interfaz a persistencia y retorno, con una regla de negocio validada.
 - CI en `.github/workflows/ci.yml`: instala, construye y ejecuta al menos una prueba ligada a un criterio de aceptación; al menos una corrida exitosa con fecha anterior o igual a la entrega.
 - Etiqueta `v1` anotada y publicada; correcciones posteriores como `v1.1`, sin mover la publicada.
+
+## 8. Ubicación de artefactos
+
+Los scripts de `tools/` no fijan destinos: el agente elige la carpeta con esta tabla y la pasa con `--destino`. Cuando una consigna nueva exige otro artefacto, se agrega aquí su fila con la cita correspondiente.
+
+| Artefacto | Fuente en el repositorio | Destino del generado | Tipo (nombre de archivo) | Consigna |
+|---|---|---|---|---|
+| Informe de la AE | `informe/` | `05-entregas/` | `InformeAEn` | Guía AE2, 10.2 |
+| Libro de trabajo | `03-requisitos/libro/` + Instrumento 34 | `03-requisitos/` | `CatalogoRequisitos` | Guía AE2, 10.2 |
+| Instrumento 32 · Lienzo | `instrumentos/instrumento-32-lienzo.md` | `02-analisis/` | `Instrumento32` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
+| Instrumento 33 · Rivalidad | `instrumentos/instrumento-33-rivalidad.md` | `02-analisis/` | `Instrumento33` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
+| Instrumento 34 · Recursos | `instrumentos/instrumento-34-recursos.md` | `03-requisitos/` | `Instrumento34` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
+| Instrumento 35 · Ficha del v1 | `instrumentos/instrumento-35-ficha-v1.md` | `src/` | `Instrumento35` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
+
+Nomenclatura: `AAAAMMDD_TipoDocumento_Equipo_vN.ext` (Guía AE2, 10.2). Los scripts la aplican y nunca sobrescriben un archivo existente.

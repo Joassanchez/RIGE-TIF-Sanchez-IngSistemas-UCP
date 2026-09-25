@@ -36,3 +36,14 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | Capítulo | Estado |
 |---|---|
 | X · Recursos del proyecto | no iniciado |
+
+## Instrumentos
+
+Estados: `plantilla` → `completado` (por el autor) → `revisado` (`/revisar instrumento N`) → `aprobado` (solo el autor, `/aprobar instrumento N`). Plazos según `00-gestion/pendientes.md`, U-03.
+
+| Instrumento | Fuente | Estado | Plazo | Fecha |
+|---|---|---|---|---|
+| 32 · Lienzo | `instrumentos/instrumento-32-lienzo.md` | plantilla | 24/09/2026 | 25/09/2026 |
+| 33 · Rivalidad | `instrumentos/instrumento-33-rivalidad.md` | plantilla | 24/09/2026 | 25/09/2026 |
+| 34 · Recursos | `instrumentos/instrumento-34-recursos.md` | plantilla | 01/10/2026 | 25/09/2026 |
+| 35 · Ficha del v1 | `instrumentos/instrumento-35-ficha-v1.md` | plantilla | con la etiqueta `v1` | 25/09/2026 |

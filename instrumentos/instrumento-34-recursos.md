@@ -1,6 +1,6 @@
 # Instrumento 34 · Planilla de dimensionamiento de recursos
 
-> Plantilla oficial migrada desde `catedra/plantillas/03_Plantillas_Instrumentos_AE2.docx`. Completar sobre esta estructura; `/exportar instrumento 34` genera el `.docx`.
+> Plantilla oficial migrada desde `catedra/originales/03_Plantillas_Instrumentos_AE2.docx`. Completar sobre esta estructura; `/exportar instrumento 34` genera el `.docx` en la carpeta que fija la consigna.
 
 <!-- [PENDIENTE U-03: completar el instrumento] -->
 

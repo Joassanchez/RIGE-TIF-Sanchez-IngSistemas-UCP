@@ -1,6 +1,6 @@
 # Instrumento 32 · Lienzo de modelo de negocio del Sistema de Información
 
-> Plantilla oficial migrada desde `catedra/plantillas/03_Plantillas_Instrumentos_AE2.docx`. Completar sobre esta estructura; `/exportar instrumento 32` genera el `.docx`.
+> Plantilla oficial migrada desde `catedra/originales/03_Plantillas_Instrumentos_AE2.docx`. Completar sobre esta estructura; `/exportar instrumento 32` genera el `.docx` en la carpeta que fija la consigna.
 
 <!-- [PENDIENTE U-03: completar el instrumento] -->
 

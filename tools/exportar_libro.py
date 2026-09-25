@@ -3,16 +3,20 @@
 
 Copia la plantilla de la cátedra, borra las filas de ejemplo (ocre), carga las filas
 desde el Markdown solo en celdas de datos (nunca en columnas con fórmula) y guarda en
-03-requisitos/ con la nomenclatura AAAAMMDD_CatalogoRequisitos_Equipo_vN.xlsx.
+la carpeta indicada con la nomenclatura AAAAMMDD_CatalogoRequisitos_Equipo_vN.xlsx.
+La hoja «Recursos» se toma del Instrumento 34 (instrumentos/), su fuente única.
 La hoja «Panel» se recalcula al abrir el archivo en Excel: es el control final del autor.
+
+Uso: python tools/exportar_libro.py --destino 03-requisitos
 """
-import datetime, pathlib, re, shutil, sys, unicodedata
+import argparse, datetime, pathlib, re, shutil, sys, unicodedata
 import openpyxl
 from openpyxl.styles import PatternFill
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 LIBRO = RAIZ / "03-requisitos" / "libro"
-PLANTILLA = RAIZ / "catedra" / "plantillas" / "04_Libro_de_Trabajo_AE2.xlsx"
+RECURSOS = RAIZ / "instrumentos" / "instrumento-34-recursos.md"
+PLANTILLA = RAIZ / "catedra" / "originales" / "04_Libro_de_Trabajo_AE2.xlsx"
 PRIMERA = 5
 OCRE = "FFFDF4E2"
 BLANCO = PatternFill(fill_type=None)
@@ -65,7 +69,7 @@ def escribir(ws, filas):
 def desde_tabla(archivo, alias, filtro=None):
     """alias: lista (una por columna del xlsx) de claves normalizadas aceptadas del encabezado Markdown."""
     filas = []
-    for enc, cuerpo in tablas_md((LIBRO / archivo).read_text(encoding="utf-8")):
+    for enc, cuerpo in tablas_md((LIBRO / archivo).read_text(encoding="utf-8")):  # una ruta absoluta (RECURSOS) ignora LIBRO
         idx = []
         for claves in alias:
             k = next((enc.index(h) for h in enc if any(h.startswith(a) for a in claves)), None) if claves else None
@@ -97,9 +101,12 @@ def iteraciones():
     return filas
 
 def main():
+    ap = argparse.ArgumentParser(description="Genera el Libro de trabajo .xlsx.")
+    ap.add_argument("--destino", required=True, help="carpeta de salida relativa a la raíz, según la consigna")
+    carpeta = RAIZ / ap.parse_args().destino; carpeta.mkdir(parents=True, exist_ok=True)
     hoy = datetime.date.today().strftime("%Y%m%d"); eq = yaml_equipo(); n = 1
-    while list((RAIZ / "03-requisitos").glob(f"*_CatalogoRequisitos_{eq}_v{n}.xlsx")): n += 1
-    destino = RAIZ / "03-requisitos" / f"{hoy}_CatalogoRequisitos_{eq}_v{n}.xlsx"
+    while list(carpeta.glob(f"*_CatalogoRequisitos_{eq}_v{n}.xlsx")): n += 1
+    destino = carpeta / f"{hoy}_CatalogoRequisitos_{eq}_v{n}.xlsx"
     shutil.copy(PLANTILLA, destino)
     wb = openpyxl.load_workbook(destino)
     informe = {
@@ -116,8 +123,8 @@ def main():
         "Glosario": escribir(wb["Glosario"], desde_tabla("glosario.md",
             [["termino"], ["definicion"], ["falsos amigos", "sinonimos"], ["fuente"], ["en disputa"]])),
         "Iteraciones": escribir(wb["Iteraciones"], iteraciones()),
-        "Recursos": escribir(wb["Recursos"], desde_tabla("recursos.md",
-            [["tipo", "clase"], ["recurso", "concepto"], ["cantidad"], ["unidad"], ["costo unitario"], [], ["fuente"]])),
+        "Recursos": escribir(wb["Recursos"], [f for f in desde_tabla(RECURSOS,
+            [["tipo", "clase"], ["recurso", "concepto"], ["cantidad"], ["unidad"], ["costo unitario"], [], ["fuente"]]) if f[1]]),
     }
     wb.save(destino)
     print(destino.relative_to(RAIZ))
