@@ -39,8 +39,29 @@ El estado de cada sección no cambia hasta que se aplica `/corregir`, que la dev
 |---|---|---|
 | I.3 (I.3.1 a I.3.4) | ADR-040 (línea de base con agentes, criterio 8 de 12) | Ventana del AE1 |
 | II.2, II.3, II.6.3 | ADR-040 (instrumento, encuesta, amenazas) | Ventana del AE1 |
-| III.4 (L-06), III.5 · RF-03 | ADR-041 (línea de comandos con permisos) | Antes del 01/10 |
-| V.1, V.4, V.5 | ADR-041; ADR-042 si se acepta | Antes del 01/10 |
+| III.1, III.2 (Tabla 4, Figura 1) | V-01 (estado real de la validación); V-02 (Figura 1 inexistente) | Después de la sesión de validación |
+| III.4 (L-06, L-10 a L-13), III.5 (RF-03, RF-07, RF-10, RNF-06, RNF-07, RNF-08) | ADR-036, ADR-037, ADR-041, ADR-042, ADR-044; V-01 | Después de la sesión de validación |
+| IV.1 | ADR-037 (plataformas, contenedor solo para el oráculo) | Después de la sesión de validación |
+| V.1, V.2, V.4, V.5 | ADR-041, ADR-042 (Tablas 18 y 19), ADR-037 y ADR-044 (estabilización) | Después de la sesión de validación |
+
+El orden acordado es: decisiones cerradas (25/09/2026) → sesión de validación con la referente → una sola pasada de `/corregir` sobre el libro y los Caps. III, IV y V → Cap. X → prototipo v1 (Guía AE2, sección 14: validar antes de redactar).
+
+## Sesión de validación con la referente (Instrumento 31)
+
+| Elemento | Estado |
+|---|---|
+| Guía y acta | `01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md` (v2); antecedente v1 del 22/09 en la misma carpeta |
+| Contenido | Entorno (E-01, E-02) · límites L-01 a L-13 · decisiones de ingeniería (conocimiento) · 23 requisitos · 9 entidades y 11 relaciones · 13 reglas · vocabulario · prototipo v0 · consultas |
+| Faltan antes de enviarla | Herramienta y enlace de la maqueta del v0 (sección 7) |
+| Sesión | No realizada; fecha, canal y duración pendientes |
+
+## Diseño (`04-diseno/`, ADR-043)
+
+| Sección de `04-diseno/README.md` | Estado |
+|---|---|
+| 1 · Decisiones de arquitectura | Completa (14 ADR) |
+| 2 · Modelo de datos | Pendiente del diseño del v1 (R-08) |
+| 3 · Canal de integración continua | Pendiente del diseño del v1 (R-08) |
 
 ## Medición de la línea base (ADR-040)
 

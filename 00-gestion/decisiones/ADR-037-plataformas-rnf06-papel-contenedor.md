@@ -1,10 +1,10 @@
 # ADR-037 — Plataformas de RNF-06: Ubuntu 26.04 de referencia, Windows 11 declarada y macOS diferida; el contenedor solo regenera el oráculo
 
-- Estado: propuesto
-- Fecha: 25/09/2026
+- Estado: aceptado (25/09/2026), alternativa C con las precisiones 1 a 3
+- Fecha: 25/09/2026 (precisiones 1 a 3 agregadas el mismo día)
 - Capítulos afectados: Cap. III (III.5, segunda precisión); Cap. IV (IV.1, fila «Canales» de la Tabla 10 y párrafo de la segunda decisión modificada por el lienzo); Cap. X (X.2, recursos físicos); Anexo I (ficha RNF-06); `03-requisitos/libro/catalogo/RNF-06.md`; `.gitattributes`; `.github/workflows/ci.yml` (al construir el v1)
 - Origen: pendiente AD-02 y A-04 (`00-gestion/pendientes.md`); análisis integral del 25/09/2026, hallazgos III-07, IV-01 e IV-03 (`00-gestion/revisiones/20260925-analisis-integral.md`); traspaso de sesión, grupo B, decisión 5
-- Relacionado: ADR-029 (oráculo), ADR-032 (stack; recomendación sobre el contenedor), ADR-035 (recuento de Must, sin cambios)
+- Relacionado: ADR-029 (oráculo), ADR-032 (stack; recomendación sobre el contenedor), ADR-035 (recuento de Must, sin cambios), ADR-036 (salida de RF-03), ADR-042 (horas de la iteración 4)
 
 ### Contexto
 
@@ -51,11 +51,24 @@ Recomendación del ingeniero: **C**, con la estrategia de verificación siguient
 
 El detalle de los escenarios, de las pruebas y del archivo de CI corresponde al diseño del v1 y se discute al final, conforme a la regla del autor.
 
-**Condición que invalidaría la decisión:** que el oráculo reducido en Windows muestre diferencias que el presupuesto no absorba (se pasa a B y Windows se declara no acreditado, con su fundamento), o que la cátedra compruebe el v1 en Windows y falle (Windows pasa a condición de la entrega y RNF-06 sube a Must con horas asignadas).
+**Precisiones agregadas al aceptar (25/09/2026).**
+
+- **P1 · Rutas: lo que se muestra frente a lo que se compara.**
+  - RIGE muestra la ruta absoluta, en el formato del sistema operativo, y la línea de cada declaración. Es lo que el desarrollador o el agente necesitan para abrir el archivo, y la configuración global (`~/.config/opencode`) está fuera del proyecto.
+  - Las pruebas, los resultados de referencia versionados (ADR-029) y el criterio de RNF-06 comparan rutas normalizadas a la raíz del escenario, con `/` como separador.
+  - El criterio de RF-03 («ruta absoluta y línea») no cambia y no contradice este ADR.
+- **P2 · Aislamiento del oráculo (AD-08).**
+  - Al arrancar, OpenCode escribe: crea el archivo global, agrega `.gitignore` e instala `@opencode-ai/plugin` (`01-relevamiento/opencode-como-funciona.md`, §3). Por eso cada ejecución del oráculo usa una copia descartable del escenario, y RIGE se ejecuta siempre sobre otra copia limpia, nunca sobre una que OpenCode haya tocado.
+  - En Windows, el directorio `state` no se redirige con `HOME` y sigue apuntando a `%APPDATA%\ai.opencode.desktop\opencode` (misma fuente, línea 85). Windows Sandbox no está disponible en Windows 11 Home (conocimiento general). Por eso el oráculo en Windows se ejecuta con una **cuenta local de Windows dedicada**, verificada con `opencode debug paths` antes de cada corrida.
+- **P3 · Horas: RNF-06 sigue siendo Should.** Los Should no reciben horas (V.4, línea 49), así que la estrategia se reparte así:
+  - **Matriz de CI** con Ubuntu y Windows (puntos 1 a 4): desde la iteración 1, en cada push. Cuesta casi nada y protege la comprobación del v1 si la cátedra la hace en Windows (suposición: escenario probable).
+  - **Corrida manual y oráculo reducido en Windows** (puntos 5 y 6): una sola vez, en la iteración 4, con cargo a las 17 h de estabilización, y no al cierre de cada iteración. Si la contingencia recorta la estabilización (ADR-042), se cae la acreditación de Windows y no un Must.
+
+**Condición que invalidaría la decisión:** que el oráculo reducido en Windows muestre diferencias que el presupuesto no absorba, o que la CI en Windows falle de manera sostenida por diferencias de plataforma que no se resuelvan dentro de las horas de la tarea afectada. En ambos casos se pasa a B y Windows se declara no acreditado, con su fundamento. También la invalida que la cátedra compruebe el v1 en Windows y falle: en ese caso Windows pasa a condición de la entrega y RNF-06 sube a Must con horas asignadas.
 
 ### Decisión del autor
 
-El autor acepta la alternativa **C** con la estrategia de verificación recomendada (25/09/2026). Pendiente el cambio de estado por el autor (`/aceptar`).
+**Aceptado por el autor el 25/09/2026: alternativa C, con la estrategia de verificación recomendada y las precisiones P1 a P3.**
 
 ### Consecuencias
 
@@ -64,14 +77,17 @@ Se aplican con `/corregir` en la pasada por cada capítulo (grupo C):
 - **RNF-06** (`03-requisitos/libro/catalogo/RNF-06.md` y Anexo I):
   - Enunciado: acotarlo a las entradas de la frontera individual y a las plataformas declaradas.
   - Criterio: sobre el mismo escenario ejecutado en Ubuntu 26.04 y en Windows 11, el conjunto de entradas descubiertas y los valores efectivos coinciden, con las rutas comparadas en forma relativa a la raíz del escenario; los valores de los escenarios de rutas coinciden además con los de OpenCode 1.18.25 ejecutado en Windows 11. Las decisiones de permiso quedan fuera de esta comparación.
+  - **Instalación sin privilegios** (agregado por el autor el 25/09/2026, pendiente V-03): el enunciado incorpora que RIGE se instala sin privilegios administrativos. El criterio agrega que la instalación, siguiendo el `README.md`, se completa con una cuenta sin privilegios administrativos en ambas plataformas. Así queda expresada como requisito la condición de adopción de IV.3, sin agregar un requisito nuevo.
   - Prioridad Should, iteración y MVP sin cambios. Cierra la parte de RNF-06 de A-04.
 - **IV.1:** fila «Canales» de la Tabla 10 y párrafo de la línea 29. La ejecución por terceros, incluida la comprobación del v1, se realiza por instalación nativa sin privilegios; la imagen de contenedor queda como vía de reproducción del oráculo. Ubuntu 26.04 es la plataforma de referencia (mediciones y oráculo), no «el entorno de desarrollo»: el desarrollo se realiza en Windows 11 y en Ubuntu 26.04. Windows 11 es la segunda plataforma declarada y macOS queda sin acreditar en el período. Cierra IV-01 e IV-03.
 - **III.5, segunda precisión:** registrar las plataformas fijadas.
 - **X.2, recursos físicos:** equipo Windows 11 del autor y máquina virtual Ubuntu 26.04, con sus especificaciones.
 - **`.gitattributes`:** `eol=lf` (R-06), necesario para los escenarios.
 - **Anexo III:** fila de la decisión cuando se complete AD-04.
-- **Diseño del v1** (grupo D): matriz de CI, aislamiento de escenarios y registro del oráculo reducido en Windows.
+- **Diseño del v1** (grupo D): matriz de CI desde la iteración 1 y aislamiento de escenarios (P2).
+- **V.4, Tabla 18:** la tarea de estabilización de la iteración 4 incorpora la corrida manual y el oráculo reducido en Windows (P3). Se aplica en `/corregir` de V.4, junto con ADR-042.
+- **RF-03:** sin cambio por este ADR (P1).
 
 ### Evidencia
 
-`informe/cap-04/IV.1-definicion-negocios.md` (Tabla 10, línea 29); `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md`; `informe/cap-03/III.4-limites-sistema.md`; `informe/cap-03/III.5-catalogo-requisitos.md`; `03-requisitos/libro/catalogo/RNF-06.md`; `01-relevamiento/opencode-como-funciona.md` (§3; líneas 19, 85, 347 y 355); `catedra/AE2-guia-comprobacion-v1.md`; ADR-029, ADR-032, ADR-035.
+`informe/cap-04/IV.1-definicion-negocios.md` (Tabla 10, línea 29); `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md`; `informe/cap-03/III.4-limites-sistema.md`; `informe/cap-03/III.5-catalogo-requisitos.md`; `03-requisitos/libro/catalogo/RNF-06.md`; `01-relevamiento/opencode-como-funciona.md` (§3; líneas 19, 85, 347 y 355); `catedra/AE2-guia-comprobacion-v1.md`; `informe/cap-05/V.4-cronograma.md` (línea 49, Tabla 18); ADR-029, ADR-032, ADR-035, ADR-036 y ADR-042; pendiente AD-08.

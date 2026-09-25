@@ -1,6 +1,6 @@
 # ADR-021 — Explicación en lenguaje natural mediante plantillas deterministas, sin modelo de lenguaje, limitada a decisiones de permiso y hallazgos
 
-- Estado: aceptado (retroactivo)
+- Estado: aceptado (retroactivo); reemplazado parcialmente por ADR-036 (25/09/2026) en el límite de la explicación a la interfaz gráfica
 - Fecha: AE2 (septiembre de 2026)
 - Capítulos afectados: Cap. III (III.5), RF-02, RF-07; Cap. IV (IV.1, Tabla 10); Cap. V (V.4, Tabla 18); corrige la función F2 del informe de la AE1
 - Origen: Cap. III, III.5 («Dos precisiones…»); chat «Capitulo III - AE1»

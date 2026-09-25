@@ -25,6 +25,51 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
 
 ## Entradas de la AE2
 
+### Entrada · Viernes 25 de septiembre de 2026 (continuación) — Papel de cada interfaz, decisiones pendientes y guía de la sesión de validación
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - Decidí cerrar todas las decisiones y preparar la validación con la referente antes de corregir el informe y de construir el prototipo v1.
+   - Fijé el papel de cada interfaz (ADR-042, alternativa B'):
+     - la línea de comandos es la interfaz completa (valores, permisos y hallazgos) y se construye en la iteración 2;
+     - la interfaz web queda limitada a formularios y vistas mínimas, y sobre ella se acredita el v1.
+   - Acepté cuatro decisiones más:
+     - el esquema publicado y versionado de la salida, con la explicación a pedido mediante `--explicar` (ADR-036);
+     - las plataformas Ubuntu 26.04 y Windows 11, con instalación sin privilegios administrativos (ADR-037);
+     - la remisión desde `04-diseno/` a las decisiones de arquitectura (ADR-043);
+     - los valores de RNF-07: consulta por línea de comandos en menos de 2 s (ADR-044).
+   - Preparé la guía v2 de la sesión de validación (Instrumento 31). Cubre entorno, límites, catálogo, modelo del dominio, reglas, vocabulario y el prototipo v0, cuya validación seguía pendiente.
+2. **Alternativas evaluadas y criterio de descarte.**
+   - Excluí ofrecer solo la línea de comandos durante todo el proyecto, aunque es la vía que usa el agente en la medición. Obligaba a reescribir objetivos aprobados en la AE1 («por ambas interfaces») y dejaba al desarrollador, único actor humano, sin la interfaz que representa el v0.
+   - Excluí de la interfaz web la exploración libre, los filtros y la navegación entre elementos. El criterio fue no agregar funciones que la línea de comandos no tenga.
+   - Pasé la pantalla web de permisos a la iteración 3 y saqué RF-10 de las horas por ser Should. El criterio fue no superar la capacidad de la iteración 2.
+   - Descarté entregar la explicación en prosa siempre, porque suma tokens y el criterio de éxito exige que la mediana no aumente. También descarté no entregarla nunca por línea de comandos, porque dejaba sin explicación al desarrollador que trabaja en la terminal.
+   - Dejé macOS sin acreditar y concentré la acreditación en Windows en una sola corrida de la iteración 4, para no esconder horas en un requisito Should. Descarté los contenedores Windows y macOS porque no son viables sobre Windows 11 Home.
+   - Descarté mover los registros de decisión a `04-diseno/`, porque mezclaba decisiones de método con las de arquitectura y rompía la fuente única.
+   - En RNF-07 descarté:
+     - un umbral relativo al comando nativo, porque resuelve un solo agente y no es comparable;
+     - la medición en el ejecutor de la CI, porque su rendimiento variable daría fallos que no provienen de RIGE.
+   - Dejé fuera de la confirmación de la referente las ocho exclusiones técnicas de III.4, porque derivan de una imposibilidad técnica o de la frontera individual. Se le presentan solo para conocimiento.
+3. **Evidencia que sostiene la decisión.**
+   - Guía AE2: 10.2 (contenido de `/04-diseno`) y sección 14 (sesión de validación del modelo del dominio y del catálogo, y validar antes de redactar).
+   - Guía de comprobación del v1, pasos 7 y 8.
+   - Tablas 18 y 19 de V.4 (capacidad por iteración y contingencia).
+   - Diseño de la medición con agentes (el agente solo dispone del comando de RIGE).
+   - Criterio de tokens del resultado (AD-22).
+   - `01-relevamiento/opencode-como-funciona.md` (escrituras de OpenCode al arrancar; directorio `state` en Windows).
+   - Anexo I, A.I.3, resultados 12, 13 y 15 (verificaciones que el borrador del 22/09 daba por pendientes).
+4. **Aporte personal.**
+   - Definí el orden de trabajo.
+   - Planteé y después descarté la opción de solo línea de comandos, y elegí la combinación de interfaz web limitada y línea de comandos amplia.
+   - Decidí cada alternativa.
+   - Aporté el borrador de decisiones de delimitación del 22/09 y la modalidad acordada con la referente: el autor decide y ella confirma o discute.
+   - Informé que la maqueta del v0 no se había validado.
+
+   Artefactos: ADR-036, 037 y 042 a 044; `04-diseno/README.md`; `01-relevamiento/validacion/` (v1 del 22/09 y v2 del 25/09).
+5. **Desacuerdos y resolución.** Sin desacuerdos que registrar, conforme al criterio declarado en el preámbulo.
+6. **Herramienta auxiliar y alcance.** Asistencia conforme al criterio general declarado, para el contraste de alternativas y la comprobación de coherencia entre ADR, informe y libro. [REVISAR POR EL AUTOR: en esta jornada el asistente también redactó el análisis de los ADR 036, 037 y 042 a 044, y la guía v2 del Instrumento 31 sobre el borrador propio y el contenido del libro de trabajo. El preámbulo declara que el diseño de los instrumentos y las decisiones de diseño se realizan de manera propia. Declarar aquí ese alcance concreto (herramienta, función y artefacto afectado) o ajustar el preámbulo; ver AD-24.]
+
 ### Entrada · Viernes 25 de septiembre de 2026 — Línea de base con agentes y prioridad de la línea de comandos
 
 <!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
