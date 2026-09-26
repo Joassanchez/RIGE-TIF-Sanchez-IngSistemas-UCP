@@ -9,11 +9,8 @@ Electricidad de Misiones S. A. participa como referente de validación y fuente 
 | Constancia de participación del referente                                      | \[ \]                                                                       | Acredita la exigencia de contacto documentado                             |
 | Registro de contactos: persona, canal, fecha y motivo                          | Portafolio Digital                                                          | Apartados I.1.2 y II.1.1                                                  |
 | Frecuencia de consulta y vías de consumo de tokens declaradas                  | Entrevista, A.I.5                                                           | Apartados I.3.1 y II.3.3                                                  |
-| Representación manual de la arquitectura de agentes elaborada por el referente | Entrevista, A.I.5; \[captura pendiente de incorporación, con autorización\] | Hallazgo 3 del apartado II.6.1 y estado de la demanda del apartado II.6.2 |
 
 *Tabla A.II.1. Material de la organización consultada. Fuente: elaboración propia.*
-
-La representación manual de la arquitectura de agentes se incorpora por su valor probatorio y no por su contenido técnico: acredita que una persona ya invirtió su tiempo en reconstruir a mano información que la herramienta no expone, que es la forma más directa de demanda revelada que el relevamiento obtuvo de la organización consultada.
 
 ## A.II.2 · Normativa pertinente
 

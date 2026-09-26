@@ -51,6 +51,7 @@ Se aplican con `/corregir` en la pasada por cada capítulo:
 - **V.5:** «quince requisitos Must» → «catorce»; quitar RF-10 de la enumeración de extensiones de flujo (línea 16) y de lo que satisface CU-03 en la Tabla 20.
 - **V.4, Tabla 19:** la fila 4 se rotula como Should.
 - **I.2.4, Tabla 1, OE-1:** «para cada elemento del ecosistema declarado en las fuentes ejercitables» → «para cada agente y cada clave de configuración declarada en las fuentes ejercitables». Se combina con los cambios de ADR-034.
+  - **Redacción aplicada (25/09/2026, elegida por el autor; `00-gestion/revisiones/20260925-correcciones-grupo-A.md`, C-1, opción B):** «Determinar, sobre las entradas ejercitables, el valor efectivo de cada clave de configuración de cada agente, declarado por el usuario o incorporado por la herramienta, con su procedencia, las declaraciones desplazadas o la indicación de valor implícito, y la localización de la declaración determinante en su archivo de origen.» Conserva el eje de la decisión (agente y clave). Cambia la redacción propuesta por dos motivos: «fuentes» pasa a «entradas» (ADR-020), y «clave declarada» excluía las claves con valor implícito, que el mismo enunciado pide informar.
 
 **Punto a confirmar en la pasada por el Cap. V:** si RF-10 conserva sus 4 h en la iteración 2 (Should planificado, Tabla 18 sin cambios) o las cede a la estabilización. Recomendación: conservarlas, para no mover la Tabla 18 ni V.2.
 

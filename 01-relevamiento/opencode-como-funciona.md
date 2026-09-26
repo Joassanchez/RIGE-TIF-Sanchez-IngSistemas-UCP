@@ -117,7 +117,7 @@ La propia herramienta lo dice, tanto en la documentación web (`permissions.mdx`
 | # | Fuente | Ruta o variable | Notas |
 |---|---|---|---|
 | 1 | Configuración remota `.well-known` | Una URL | Requiere red |
-| 2 | **Configuración global** | `~/.config/opencode/opencode.jsonc`, luego `opencode.json`, luego `config.json` | Primer candidato que exista |
+| 2 | **Configuración global** | `~/.config/opencode/config.json`, `opencode.json` y `opencode.jsonc` | Se fusionan en ese orden; en la misma clave gana el último (`loadGlobal`) `[CÓDIGO]`. "Primer candidato que exista" es solo el criterio para crear el archivo inicial. Corregido el 25/09/2026 (AD-08) |
 | 3 | Archivo apuntado por variable | `OPENCODE_CONFIG` | **Pierde contra el proyecto** `[EJECUCIÓN]` |
 | 4 | **Archivos `opencode.json` / `.jsonc` del proyecto** | Ascendiendo desde el directorio actual hasta la raíz del worktree | Gana el más cercano |
 | 5 | **Directorios `.opencode/`** | El global, los del ascenso, el de `$HOME`, y `OPENCODE_CONFIG_DIR` | Gana el más lejano (sección 5). `OPENCODE_CONFIG_DIR` **le gana al proyecto** `[EJECUCIÓN]` |
@@ -130,6 +130,8 @@ La propia herramienta lo dice, tanto en la documentación web (`permissions.mdx`
 | 12 | Traducción del bloque `tools` heredado | `tools: { x: false }` → `permission.x: "deny"` | Mismo nivel: gana `permission`. Niveles distintos: gana el más profundo `[EJECUCIÓN]` |
 
 `OPENCODE_DISABLE_PROJECT_CONFIG` desactiva la configuración del proyecto `[POR VERIFICAR limpiamente]`.
+
+**OpenCode escribe al arrancar** `[POR VERIFICAR: método de verificación no registrado]`: crea el archivo global si no existe, agrega un `.gitignore` e instala `@opencode-ai/plugin` en los directorios de configuración (AD-08, 25/09/2026). Consecuencia para los experimentos: un escenario ya ejecutado no queda como estaba; cada corrida parte de una copia limpia (ADR-029, ADR-037 P2).
 
 Además, **las claves desconocidas en el nivel superior se rechazan** con `ConfigInvalidError` y el proceso no arranca. En particular, escribir `permissions` (plural, esquema V2) en lugar de `permission` es un **error fatal**, con el mensaje *V2 permissions are not supported by OpenCode V1* `[EJECUCIÓN]`. No es una declaración ignorada en silencio.
 

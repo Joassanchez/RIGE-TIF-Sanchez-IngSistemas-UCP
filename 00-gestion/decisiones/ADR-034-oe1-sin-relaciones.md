@@ -46,7 +46,7 @@ Los cambios se aplican con `/corregir` en la pasada por el Capítulo I. Estas so
 - **I.6.2, Tabla 7:**
   - la fila F3 deja de verificar OE-1: su columna «Objetivo» pasa a «— (capacidad diferida, apartado III.3)»;
   - la fila F6 deja de citar «OE-1 a OE-4», porque F6 también está diferida: se revisa en la misma pasada.
-- **I.2.2 (visión):** se evalúa mencionar la representación de relaciones entre las capacidades diferidas, sin nombrar herramientas (ADR-026).
+- **I.2.2 (visión):** se evalúa mencionar la representación de relaciones entre las capacidades diferidas, sin nombrar herramientas (ADR-026, retirado el 25/09/2026; ver la nota de números retirados en `INDICE.md`).
 - **IV.3, párrafo final:** se elimina la oración sobre las representaciones manuales (cambio P-12).
 - **RF-13:** sin cambios. Su motivo de prioridad ya sostiene la postergación.
 
