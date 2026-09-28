@@ -33,7 +33,7 @@ Publicar RIGE como software de código abierto bajo licencia MIT, sin costo de u
 
 ### Consecuencias
 - El repositorio publica el archivo de licencia MIT y la atribución a OpenCode desde el v1.
-- El Capítulo X declara los recursos financieros como nulos durante el período y las horas del autor como recurso principal (ADR-030).
+- El Capítulo X declara los recursos financieros como nulos durante el período y las horas del autor como recurso principal (ADR-030). **Reemplazada el 28/09/2026 por ADR-048** en lo relativo a los recursos financieros: el período incluye el gasto de API de la medición (ADR-040), con tope, y la suscripción del asistente de programación. La decisión de licencia MIT sin explotación comercial no cambia.
 - **Inconsistencia detectada en la revisión:** la Tabla 10 del IV.1 («Estructura de costos») cita un presupuesto efectivo de 153 h, mientras V.4 y ADR-030 declaran 190 h (136 técnicas). Ver pendientes.
 - **Condición que invalidaría la decisión** (observación del ingeniero): que surja una organización dispuesta a financiar el desarrollo con condiciones sobre la licencia, o que el código reutilizado cambie a una licencia incompatible con MIT.
 

@@ -25,6 +25,71 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
 
 ## Entradas de la AE2
 
+### Entrada · Lunes 28 de septiembre de 2026 (continuación) — Capítulo X, Instrumento 34 y entorno de medición
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **Capítulo X.** Diseñé el capítulo, lo hice redactar sobre el esquema que aprobé, pasó por cuatro revisores y apliqué las correcciones.
+   - **Horas.** 190 h (136 técnicas y 54 de reserva), las mismas del Cap. V. Las 48 h de cierre se declaran aparte y se valorizan en X.3 como estimación.
+   - **Costo de hora.** $21.565, derivado del salario promedio bruto del sector software a marzo de 2026 ($3.738.000; OPSSI, 2026) con un divisor de 173,33 h.
+   - **Recursos financieros (ADR-048):**
+     - el consumo de API de las dos mediciones con agentes tiene un tope de USD 50, con una carga de USD 20 para el piloto;
+     - la estimación de orden de magnitud (unos USD 75) se presenta por separado y prevé aplicar la regla de recorte;
+     - Claude Pro, que pago desde julio de 2026, se declara sin costo atribuible.
+   - **Entorno Linux de referencia (ADR-049 y ADR-050).** Una imagen de contenedor común para el oráculo, la medición con agentes y RNF-07, con Docker Desktop sobre WSL 2.
+   - **Repositorio.** Pasa a privado, con el docente como colaborador. Se publica bajo MIT tras la aprobación.
+   - **Prueba de clonado.** La hace un compañero, en su equipo.
+   - **Instrumento 34.** Completado como fuente única de la hoja «Recursos».
+   - **Anexo III.** Completado con D-19 a D-49.
+2. **Alternativas evaluadas y criterio de descarte (recortes).**
+   - **Cifras del encuadre grupal, descartadas.** Los $2.290.000 y los $3.790.000 no figuran en el reporte del OPSSI que las respaldaría. Además, el encuadre ponderaba cifras de universos distintos, lo que la consigna prohíbe. Adopté una sola fuente, verificable.
+   - **Parámetro de costo horario de la entrevista, excluido.** El Cap. I ya estableció que el costo de hora debe provenir de una fuente sectorial ajena a la organización consultada.
+   - **Excluido del capítulo:**
+     - la valoración monetaria del problema;
+     - el retorno de la inversión;
+     - las horas de la referente sumadas al presupuesto: figura como recurso externo, sin costo;
+     - el punto de equilibrio: no hay explotación comercial;
+     - la migración de datos: RIGE es de solo lectura.
+   - **Costo de la suscripción del asistente, no atribuido.** Es un gasto personal preexistente; el criterio es el costo incremental.
+   - **Entorno de medición:**
+     - la distribución de desarrollo tal como estaba quedó descartada: el disco de Windows montado deja alcanzable la hoja de respuestas;
+     - la distribución WSL dedicada, reemplazada: aísla por configuración y solo se reproduce en Windows;
+     - la máquina virtual completa, descartada: corre sobre una capa adicional del hipervisor que sesga RNF-07;
+     - el arranque dual, descartado: la instalación nativa en Ubuntu se acredita en la CI.
+   - **Tope sin límite, descartado.** No dimensiona el recurso.
+   - **Libro de trabajo en `instrumentos/`, descartado.** La consigna fija `03-requisitos/`. El libro se genera una sola vez, completo.
+3. **Evidencia.**
+   - `01-relevamiento/documentos/opssi2026-reporte-industria-software-1T2026.pdf`, pp. 17 y 25.
+   - Especificaciones del equipo medidas el 28/09/2026 (PV-01).
+   - Guía AE2, §2.3 (repositorio privado) y §7.
+   - Revisión consolidada: `00-gestion/revisiones/20260928-cap-X.md`.
+   - Fuentes verificadas en `01-relevamiento/fuentes.md`: precios de Anthropic, términos de Docker Desktop y facturación de GitHub Actions.
+4. **Aporte personal.**
+   - Aporté el reporte del OPSSI y los datos de recursos: plan y fecha de Claude Pro, tope y carga de la API, y que la estimación de horas no supone el uso del asistente.
+   - Decidí sobre cada alternativa y aprobé el esquema del capítulo.
+   - Artefactos:
+     - `informe/cap-10/`;
+     - `instrumentos/instrumento-34-recursos.md`;
+     - `00-gestion/anexo-III.md`;
+     - ADR-048 a ADR-050;
+     - `tools/exportar_libro.py`;
+     - IV.1 y V.2.
+5. **Desacuerdo y resolución.** Proyecto individual; en el Informe Grupal de Encuadre Común llevo al grupo la corrección de la descripción de RIGE y de las cifras del costo de hora (AD-27).
+6. **Herramientas auxiliares.** Asistencia conforme al criterio general declarado.
+   - **Asistente de programación Claude Code (Anthropic).**
+     - *Función:*
+       - contraste de alternativas y redacción de los ADR 048 a 050;
+       - redacción del capítulo y de sus correcciones mediante un subagente redactor, sobre el esquema y las decisiones del autor;
+       - revisión con cuatro subagentes revisores;
+       - completado del Instrumento 34 y del Anexo III;
+       - verificación de fuentes en la web;
+       - medición de las especificaciones del equipo;
+       - corrección y prueba del exportador del libro.
+     - *Artefactos:* los listados en el punto 4, más `01-relevamiento/fuentes.md`, `informe/bibliografia.md` y `00-gestion/`.
+   - [REVISAR POR EL AUTOR: el preámbulo excluye de la asistencia «el diseño de los instrumentos». En esta jornada el Instrumento 34 lo completó el asistente sobre las decisiones del autor. Declararlo aquí o ajustar el preámbulo (AD-24).]
+   - Todo resultado lo verifiqué antes de incorporarlo al informe.
+
 ### Entrada · Lunes 28 de septiembre de 2026 — Pasada posterior a la validación con la referente y revisión crítica
 
 <!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->

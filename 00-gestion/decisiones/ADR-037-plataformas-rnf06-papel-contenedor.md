@@ -1,6 +1,6 @@
 # ADR-037 — Plataformas de RNF-06: Ubuntu 26.04 de referencia, Windows 11 declarada y macOS diferida; el contenedor solo regenera el oráculo
 
-- Estado: aceptado (25/09/2026), alternativa C con las precisiones 1 a 3
+- Estado: aceptado (25/09/2026), alternativa C con las precisiones 1 a 3. **Ampliado por ADR-050 (28/09/2026):** el contenedor aloja también la medición con agentes y la de RNF-07; la ejecución nativa sigue siendo la vía de uso y de comprobación
 - Fecha: 25/09/2026 (precisiones 1 a 3 agregadas el mismo día)
 - Capítulos afectados: Cap. III (III.5, segunda precisión); Cap. IV (IV.1, fila «Canales» de la Tabla 10 y párrafo de la segunda decisión modificada por el lienzo); Cap. X (X.2, recursos físicos); Anexo I (ficha RNF-06); `03-requisitos/libro/catalogo/RNF-06.md`; `.gitattributes`; `.github/workflows/ci.yml` (al construir el v1)
 - Origen: pendiente AD-02 y A-04 (`00-gestion/pendientes.md`); análisis integral del 25/09/2026, hallazgos III-07, IV-01 e IV-03 (`00-gestion/revisiones/20260925-analisis-integral.md`); traspaso de sesión, grupo B, decisión 5

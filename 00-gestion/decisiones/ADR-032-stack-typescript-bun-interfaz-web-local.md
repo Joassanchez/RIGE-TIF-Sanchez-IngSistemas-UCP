@@ -168,3 +168,13 @@ El autor acepta la recomendación en sus cinco ejes (25/09/2026): TypeScript sob
 ### Evidencia
 
 `catedra/AE2-guia-comprobacion-v1.md` (pasos 3, 6 y 7; causas de fallo; §5 CI); `00-gestion/reglas-catedra.md` §7; ADR-006; ADR-021; ADR-023; ADR-029; `informe/anexos/anexo-I-ae1-datos-relevados.md` (A.I.3, resultado 10); `informe/cap-01/I.6-descripcion-detallada-sistema-informacion.md` (Tabla 9); `informe/cap-04/IV.1-definicion-negocios.md`; `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md`; `informe/cap-05/V.4-cronograma.md` (Tabla 18); `informe/datos-autor.yaml`; `00-gestion/revisiones/20260925-analisis-integral.md` (T-05, IV-01, V-01).
+
+### Precisiones de fundamento (28/09/2026, revisión del Cap. X, R-05 y R-15)
+
+No cambian la decisión; corrigen cómo se la fundamenta.
+
+- **Criterio contra Node.js (L-B).** La suposición de que el evaluador usa interfaces propias de Bun quedó refutada por la propia verificación sobre la etiqueta: son funciones puras. El criterio que se sostiene es otro. OpenCode se construye con Bun, cuyo motor de JavaScript difiere del de Node.js (conocimiento general), y `match` traduce comodines a expresiones regulares. Ejecutar la copia en el mismo motor elimina una fuente de divergencia respecto del oráculo. A eso se suma el prerrequisito único.
+- **Persistencia en archivos**, alternativa no evaluada originalmente. Se descarta porque la estación de persistencia del prototipo exige un esquema creado por guion o migración en un motor real (`00-gestion/reglas-catedra.md` §7; guía de comprobación, paso 6).
+- **Alcance de la copia.** Se copian cinco funciones puras (`evaluate`, `match`, `fromConfig`, `expand` y `disabled`) y la lógica de agregación sin su servicio. Las reglas nativas se **transcriben** como datos. La conversión de forma v1 a v2 sigue pendiente. La fidelidad se verifica contra el oráculo (ADR-029), no se presume por la copia.
+
+Anexo III: D-42 a D-46.

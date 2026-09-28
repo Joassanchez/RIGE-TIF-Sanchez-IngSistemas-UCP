@@ -29,6 +29,12 @@ def limpiar(v):
     v = re.sub(r"\\([\\`*_{}\[\]()#+\-.!|<>~\"'])", r"\1", (v or "").strip()).strip("*").strip()
     return "" if re.fullmatch(r"\[(DATO|DECISIÓN) PENDIENTE[^\]]*\]", v) else v
 
+def numero(v):
+    """Convierte un valor puramente numérico (sin separador de miles, coma decimal) para que Excel lo sume."""
+    if isinstance(v, str) and re.fullmatch(r"\d+(,\d+)?", v):
+        return float(v.replace(",", ".")) if "," in v else int(v)
+    return v
+
 def tablas_md(texto):
     """Devuelve lista de tablas pipe: (encabezados, filas)."""
     res, act = [], []
@@ -49,21 +55,26 @@ def columnas_formula(ws):
            {c.column for c in ws[PRIMERA + 1] if isinstance(c.value, str) and c.value.startswith("=")}
 
 def vaciar_ejemplos(ws, formulas):
+    """Vacía las celdas de ejemplo (ocre) y la tabla de datos, que termina en la primera fila con la columna A vacía.
+    Conserva las fórmulas y los bloques posteriores de la plantilla (presupuesto, totales, contingencia)."""
+    fin = PRIMERA
+    while ws.cell(row=fin + 1, column=1).value not in (None, ""): fin += 1
     for fila in ws.iter_rows(min_row=PRIMERA, max_row=ws.max_row):
         for c in fila:
             if c.column in formulas or type(c).__name__ == "MergedCell": continue
-            if c.fill and c.fill.fgColor and c.fill.fgColor.rgb == OCRE:
-                c.fill = BLANCO
-            c.value = None
+            if isinstance(c.value, str) and c.value.startswith("="): continue
+            ocre = c.fill and c.fill.fgColor and c.fill.fgColor.rgb == OCRE
+            if ocre: c.fill = BLANCO
+            if ocre or c.row <= fin: c.value = None
 
 def escribir(ws, filas):
     formulas = columnas_formula(ws); vaciar_ejemplos(ws, formulas)
     for i, fila in enumerate(filas):
         for j, v in enumerate(fila, start=1):
-            if j in formulas or v in (None, ""): continue
+            if j in formulas or v in (None, "", "—"): continue  # «—» declara en el Markdown una celda sin valor
             celda = ws.cell(row=PRIMERA + i, column=j)
             if type(celda).__name__ == "MergedCell": continue
-            celda.value = v
+            celda.value = numero(v)
     return len(filas)
 
 def desde_tabla(archivo, alias, filtro=None):
@@ -92,13 +103,40 @@ def catalogo():
                       "" if it == "Sin asignar" else it, g("¿Integra el MVP?")])
     return filas
 
+def horas_por_iteracion():
+    """Suma las horas de la tabla de tareas (Iteración | Tarea | … | Horas), sin las filas de subtotal."""
+    horas = {}
+    for enc, cuerpo in tablas_md((LIBRO / "iteraciones.md").read_text(encoding="utf-8")):
+        if "tarea" not in enc or not any(h.startswith("horas") for h in enc): continue
+        k = next(i for i, h in enumerate(enc) if h.startswith("horas"))
+        for f in cuerpo:
+            it, h = limpiar(f[0]), limpiar(f[k]) if k < len(f) else ""
+            if re.fullmatch(r"\d+", it) and re.fullmatch(r"\d+", h): horas[it] = horas.get(it, 0) + int(h)
+    return horas
+
 def iteraciones():
-    filas = []
+    filas, horas = [], horas_por_iteracion()
     for f in desde_tabla("iteraciones.md", [["iteracion"], ["fechas"], ["objetivo"], ["requisitos"], ["entregable"], ["horas"]],
                          filtro=lambda enc: "fechas" in enc):
         m = re.match(r"(\S+)\s+al\s+(\S+)", f[1] or "")
-        filas.append([f[0], m.group(1) if m else f[1], m.group(2) if m else "", f[2], f[3], f[4], f[5]])
+        filas.append([f[0], m.group(1) if m else f[1], m.group(2) if m else "", f[2], f[3], f[4], f[5] or horas.get(f[0], "")])
     return filas
+
+def presupuesto(ws):
+    """Carga el bloque de presupuesto de la hoja Iteraciones (B16 a B18 y B20) desde la tabla de iteraciones.md."""
+    d = {}
+    for enc, cuerpo in tablas_md((LIBRO / "iteraciones.md").read_text(encoding="utf-8")):
+        if enc and enc[0].startswith("presupuesto de horas-persona"):
+            d = {norm(f[0]): limpiar(f[1]) for f in cuerpo if len(f) > 1}
+    primero = lambda clave, patron=r"(\d+)": next((int(m.group(1)) for k, v in d.items() if k.startswith(clave)
+                                                   for m in [re.search(patron, v)] if m), None)
+    integrantes, horas = primero("integrantes"), primero("horas semanales")
+    total, reduccion = primero("presupuesto total"), primero("reduccion", r"(\d+)\s*h\b")
+    semanas = total // (integrantes * horas) if None not in (total, integrantes, horas) and total % (integrantes * horas) == 0 else None
+    valores = {16: integrantes, 17: horas, 18: semanas, 20: reduccion}
+    for fila, v in valores.items():
+        if v is not None: ws.cell(row=fila, column=2).value = v
+    return sum(v is not None for v in valores.values())
 
 def main():
     ap = argparse.ArgumentParser(description="Genera el Libro de trabajo .xlsx.")
@@ -126,8 +164,9 @@ def main():
         "Recursos": escribir(wb["Recursos"], [f for f in desde_tabla(RECURSOS,
             [["tipo", "clase"], ["recurso", "concepto"], ["cantidad"], ["unidad"], ["costo unitario"], [], ["fuente"]]) if f[1]]),
     }
+    informe["Iteraciones (presupuesto)"] = presupuesto(wb["Iteraciones"])
     wb.save(destino)
-    print(destino.relative_to(RAIZ))
+    print(destino.relative_to(RAIZ) if RAIZ in destino.parents else destino)
     for hoja, k in informe.items(): print(f"  {hoja}: {k} filas")
     print("Abrí el archivo en Excel y revisá la hoja «Panel».")
 

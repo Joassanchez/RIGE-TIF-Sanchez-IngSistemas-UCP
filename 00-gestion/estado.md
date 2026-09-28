@@ -30,6 +30,11 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | aprobada (migración) | AE2 | 24/09/2026 |
 | V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 28/09/2026 |
 | V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 28/09/2026 |
+| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 28/09/2026 |
+| X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 28/09/2026 |
+| X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 28/09/2026 |
+| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | revisada | AE2 | 28/09/2026 |
+| X.5 | `informe/cap-10/X.5-otros-recursos.md` | revisada | AE2 | 28/09/2026 |
 
 ## Secciones con correcciones pendientes por decisiones aceptadas (25/09/2026)
 
@@ -85,7 +90,7 @@ El orden acordado es: decisiones cerradas (25/09/2026) → sesión de validació
 
 | Capítulo | Estado |
 |---|---|
-| X · Recursos del proyecto | no iniciado |
+| ~~X · Recursos del proyecto~~ | Redactado, revisado y corregido el 28/09/2026 (`informe/cap-10/`, revisión `00-gestion/revisiones/20260928-cap-X.md`); X.1 a X.5 en «revisada» |
 
 ## Instrumentos
 

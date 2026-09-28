@@ -4,6 +4,10 @@
 
 Al-Shaer, E., y Hamed, H. (2004). Discovery of policy anomalies in distributed firewalls. En *IEEE INFOCOM 2004 — Twenty-Third Annual Joint Conference of the IEEE Computer and Communications Societies* (Vol. 4, pp. 2605–2616). IEEE. https://doi.org/10.1109/INFCOM.2004.1354680
 
+Anthropic. (2026a). *Introducing Claude Sonnet 5* [Comunicado]. https://www.anthropic.com/news/claude-sonnet-5
+
+Anthropic. (2026b). *Pricing* [Página web]. https://claude.com/pricing
+
 Chatlatanagulchai, W., Li, H., Kashiwa, Y., Reid, B., Thonglek, K., Leelaprute, P., Rungsawang, A., Manaskasemsak, B., Adams, B., Hassan, A. E., e Iida, H. (2025). *Agent READMEs: An empirical study of context files for agentic coding*. arXiv. https://doi.org/10.48550/arXiv.2511.12884
 
 Clegg, D., y Barker, R. (1994). *Case method fast-track: A RAD approach*. Addison-Wesley.
@@ -14,6 +18,8 @@ Cockburn, A. (2001). *Writing effective use cases*. Addison-Wesley.
 
 Cohn, M. (2005). *Agile estimating and planning*. Prentice Hall.
 
+Docker, Inc. (s. f.). *Docker Subscription Service Agreement*. https://www.docker.com/legal/docker-subscription-service-agreement/
+
 Evans, E. (2003). *Domain-driven design: Tackling complexity in the heart of software*. Addison-Wesley.
 
 Galster, M., Mohsenimofidi, S., Böhme, L., Lulla, J. L., Abubakar, M. A., Treude, C., y Baltes, S. (2026). A dataset of agentic AI coding tool configurations. En *Proceedings of the 3rd ACM International Conference on AI-Powered Software (AIware '26)* (pp. 314–322). ACM. https://doi.org/10.1145/3805760.3814922
@@ -21,6 +27,8 @@ Galster, M., Mohsenimofidi, S., Böhme, L., Lulla, J. L., Abubakar, M. A., Treud
 Galster, M., Mohsenimofidi, S., Lulla, J. L., Abubakar, M. A., Treude, C., y Baltes, S. (2026). Configuring agentic AI coding tools: An exploratory study. En *Proceedings of the 3rd ACM International Conference on AI-Powered Software (AIware '26)* (pp. 11–20). ACM. https://doi.org/10.1145/3805760.3814887
 
 icysaintdx. (2026). *OpenCode Config Manager (OCCM)* \[Software\]. GitHub. https://github.com/icysaintdx/OpenCode-Config-Manager
+
+GitHub, Inc. (s. f.). *GitHub Actions billing* [Documentación]. https://docs.github.com/en/billing/concepts/product-billing/github-actions
 
 International Organization for Standardization. (2023). *Systems and software engineering — Systems and software quality requirements and evaluation (SQuaRE) — Product quality model* (ISO/IEC 25010:2023). https://www.iso.org/standard/78176.html
 
@@ -37,6 +45,8 @@ Ley N.º 27.506. Régimen de Promoción de la Economía del Conocimiento. (2019,
 Naciones Unidas. (2015). *Transformar nuestro mundo: la Agenda 2030 para el Desarrollo Sostenible* (Resolución A/RES/70/1). Asamblea General de las Naciones Unidas.
 
 NLnet. (2026). *Apply for a grant*. https://nlnet.nl/propose/
+
+Observatorio Permanente de la Industria del Software y Servicios Informáticos de la Argentina. (2026). *Industria del software en Argentina al 1er trimestre de 2026* [Reporte]. Cámara de la Industria Argentina del Software. https://cessi.org.ar/wp-content/uploads/2026/07/OPSSI-Reporte-Industria-Software-1er.-trim.-2026.pdf
 
 Onufriichuk, A. (2026). *Claude Code Config Manager* (Versión 0.10.0) \[Extensión de VS Code\]. Visual Studio Marketplace. https://marketplace.visualstudio.com/items?itemName=agnislav.claude-code-config-manager
 
