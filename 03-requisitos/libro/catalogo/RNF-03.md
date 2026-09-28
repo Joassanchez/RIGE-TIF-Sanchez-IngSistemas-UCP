@@ -10,7 +10,7 @@
 | Motivo de la prioridad | Constituye la decisión arquitectónica que hace posible incorporar otras herramientas sin rehacer el sistema |
 | Criterio de aceptación | El análisis estático de dependencias registra cero dependencias del núcleo hacia el adaptador, y ninguna identificación de la herramienta aparece en el código del núcleo |
 | Trazabilidad | HA-4 |
-| Estado de validación | [DATO PENDIENTE] |
+| Estado de validación | Validado |
 | Iteración prevista | 1 |
 | ¿Integra el MVP? | Sí |
 

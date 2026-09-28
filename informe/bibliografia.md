@@ -6,11 +6,15 @@ Al-Shaer, E., y Hamed, H. (2004). Discovery of policy anomalies in distributed f
 
 Chatlatanagulchai, W., Li, H., Kashiwa, Y., Reid, B., Thonglek, K., Leelaprute, P., Rungsawang, A., Manaskasemsak, B., Adams, B., Hassan, A. E., e Iida, H. (2025). *Agent READMEs: An empirical study of context files for agentic coding*. arXiv. https://doi.org/10.48550/arXiv.2511.12884
 
+Clegg, D., y Barker, R. (1994). *Case method fast-track: A RAD approach*. Addison-Wesley.
+
 Cockburn, A. (2004). *Crystal Clear: A human-powered methodology for small teams*. Addison-Wesley.
 
 Cockburn, A. (2001). *Writing effective use cases*. Addison-Wesley.
 
 Cohn, M. (2005). *Agile estimating and planning*. Prentice Hall.
+
+Evans, E. (2003). *Domain-driven design: Tackling complexity in the heart of software*. Addison-Wesley.
 
 Galster, M., Mohsenimofidi, S., Böhme, L., Lulla, J. L., Abubakar, M. A., Treude, C., y Baltes, S. (2026). A dataset of agentic AI coding tool configurations. En *Proceedings of the 3rd ACM International Conference on AI-Powered Software (AIware '26)* (pp. 314–322). ACM. https://doi.org/10.1145/3805760.3814922
 
@@ -18,7 +22,11 @@ Galster, M., Mohsenimofidi, S., Lulla, J. L., Abubakar, M. A., Treude, C., y Bal
 
 icysaintdx. (2026). *OpenCode Config Manager (OCCM)* \[Software\]. GitHub. https://github.com/icysaintdx/OpenCode-Config-Manager
 
+International Organization for Standardization. (2023). *Systems and software engineering — Systems and software quality requirements and evaluation (SQuaRE) — Product quality model* (ISO/IEC 25010:2023). https://www.iso.org/standard/78176.html
+
 Kendall, K. E., y Kendall, J. E. (2005). *Análisis y diseño de sistemas* (6.ª ed.; A. Núñez Ramos, Trad.). Pearson Educación.
+
+Larman, C. (2004). *Applying UML and patterns: An introduction to object-oriented analysis and design and iterative development* (3.ª ed.). Prentice Hall.
 
 Ley N.º 25.326 de Protección de los Datos Personales. (2000). Boletín Oficial de la República Argentina \[VERIFICAR fecha de publicación\].
 

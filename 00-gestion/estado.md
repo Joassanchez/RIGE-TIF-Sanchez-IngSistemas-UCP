@@ -16,20 +16,20 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | II.4 | `informe/cap-02/II.4-graficos-variables-analisis.md` | aprobada (migración) | AE1 | 24/09/2026 |
 | II.5 | `informe/cap-02/II.5-analisis-informacion.md` | borrador | AE1 | 25/09/2026 |
 | II.6 | `informe/cap-02/II.6-conclusiones-relevamiento.md` | borrador | AE1 | 25/09/2026 |
-| III.1 | `informe/cap-03/III.1-entorno-sistema-informacion.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| III.2 | `informe/cap-03/III.2-dominio-sistema-informacion.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| III.4 | `informe/cap-03/III.4-limites-sistema.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | aprobada (migración) | AE2 | 24/09/2026 |
+| III.1 | `informe/cap-03/III.1-entorno-sistema-informacion.md` | borrador | AE2 | 28/09/2026 |
+| III.2 | `informe/cap-03/III.2-dominio-sistema-informacion.md` | borrador | AE2 | 28/09/2026 |
+| III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | borrador | AE2 | 28/09/2026 |
+| III.4 | `informe/cap-03/III.4-limites-sistema.md` | borrador | AE2 | 28/09/2026 |
+| III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | borrador | AE2 | 28/09/2026 |
+| IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | borrador | AE2 | 28/09/2026 |
 | IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | aprobada (migración) | AE2 | 24/09/2026 |
+| IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | borrador | AE2 | 28/09/2026 |
 | IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | aprobada (migración) | AE2 | 24/09/2026 |
+| V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | borrador | AE2 | 28/09/2026 |
+| V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | borrador | AE2 | 28/09/2026 |
 | V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| V.4 | `informe/cap-05/V.4-cronograma.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | aprobada (migración) | AE2 | 24/09/2026 |
+| V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 28/09/2026 |
+| V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 28/09/2026 |
 
 ## Secciones con correcciones pendientes por decisiones aceptadas (25/09/2026)
 
@@ -42,10 +42,11 @@ El estado de cada sección no cambia hasta que se aplica `/corregir`, que la dev
 | I.2.3 y OE-4 (Tabla 1) | ADR-040 (IB-1 e IB-2, tiempo de resolución y «protocolo con participantes»); ADR-040 no lista I.2 (grupo A, sección 6) | Ventana del AE1, con I.3 |
 | I.1.2 (exclusión de la referente) e I.6.5 (razón de la medición con agentes) | ADR-040; ADR-041 (grupo A, C-7) | Ventana del AE1, con I.3 |
 | Resumen, II.2.3, II.3, II.6 (Hallazgo 3, II.6.2, Tabla 19) | P-03, P-04, P-06, P-08 a P-10; AD-07 en el resumen («plataforma de escritorio») | Ventana del AE1 (grupo C) |
-| III.1, III.2 (Tabla 4, Figura 1) | V-01 (estado real de la validación); V-02 (Figura 1 inexistente) | Después de la sesión de validación |
-| III.4 (L-06, L-10 a L-13), III.5 (RF-03, RF-07, RF-10, RNF-06, RNF-07, RNF-08) | ADR-036, ADR-037, ADR-041, ADR-042, ADR-044; V-01 | Después de la sesión de validación |
-| IV.1 | ADR-037 (plataformas, contenedor solo para el oráculo) | Después de la sesión de validación |
-| V.1, V.2, V.4, V.5 | ADR-041, ADR-042 (Tablas 18 y 19), ADR-037 y ADR-044 (estabilización) | Después de la sesión de validación |
+| ~~III.1, III.2 (Tabla 4, Figura 1)~~ | ~~V-01~~ aplicado el 28/09/2026 (fase 3); ~~V-02~~ Figura 1 incorporada el 28/09/2026 | Después de la sesión de validación |
+| ~~III.4 (L-06, L-10 a L-13), III.5 (RF-03, RF-07, RF-10, RNF-06, RNF-07, RNF-08)~~ | Aplicado el 28/09/2026 (fase 3, `00-gestion/revisiones/20260928-pasada-validacion-cap3.md`), con ADR-045 | Después de la sesión de validación |
+| ~~IV.1~~ | ADR-037, aplicado el 28/09/2026 (fase 4) | Después de la sesión de validación |
+| ~~V.1, V.2, V.4, V.5~~ | Aplicado el 28/09/2026 (fase 5, ADR-046); Figura 3 regenerada con `tools/figura_cronograma.py` | Después de la sesión de validación |
+| ~~III.1 a III.5, IV.1, IV.3, V.1, V.2, V.4, V.5, I.6.6, Anexos I y V, bibliografía~~ | Revisión consolidada del crítico y del verificador de consistencia (`00-gestion/revisiones/20260928-pasada-validacion-revision.md`, P-01 a P-28), aplicada el 28/09/2026 con ADR-047; Figuras 1 y 3 regeneradas. Las secciones siguen en «borrador» | Después de la sesión de validación |
 
 El orden acordado es: decisiones cerradas (25/09/2026) → sesión de validación con la referente → una sola pasada de `/corregir` sobre el libro y los Caps. III, IV y V → Cap. X → prototipo v1 (Guía AE2, sección 14: validar antes de redactar).
 
@@ -55,8 +56,10 @@ El orden acordado es: decisiones cerradas (25/09/2026) → sesión de validació
 |---|---|
 | Guía y acta | `01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md` (v2); antecedente v1 del 22/09 en la misma carpeta |
 | Contenido | Entorno (E-01, E-02) · límites L-01 a L-13 · decisiones de ingeniería (conocimiento) · 23 requisitos · 9 entidades y 11 relaciones · 13 reglas · vocabulario · prototipo v0 · consultas |
-| Faltan antes de enviarla | Herramienta y enlace de la maqueta del v0 (sección 7) |
-| Sesión | No realizada; fecha, canal y duración pendientes |
+| Sesión | Realizada el 26/09/2026, 17:00, presencial, 35 minutos. Los 82 puntos confirmados sin observaciones. Acta completada el 28/09/2026 (`00-gestion/revisiones/20260928-pasada-validacion-acta.md`) |
+| Constancia de conformidad | Pendiente de firma (U-04) |
+| Correcciones posteriores a la sesión | Enunciado de RNF-07 (ADR-045), tres correcciones del modelo del dominio y la iteración de RNF-02. Se informan a la referente (PV-03) |
+| Datos que quedaron abiertos | Tamaño del proyecto real (la referente no dispone del dato; decisión abierta sobre RNF-07); enlace de la maqueta; asistentes usados en la maqueta; archivo del agente del equipo (confirmado, no recibido) |
 
 ## Diseño (`04-diseno/`, ADR-043)
 

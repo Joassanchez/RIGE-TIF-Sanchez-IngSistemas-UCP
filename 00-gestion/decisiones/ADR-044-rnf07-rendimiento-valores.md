@@ -1,6 +1,6 @@
 # ADR-044 — Valores de RNF-07: invocación completa por línea de comandos en menos de 2 s, sobre un proyecto dimensionado con el de la referente y medida en la máquina virtual Ubuntu 26.04
 
-- Estado: aceptado (25/09/2026), P-B + Q-A + T-A
+- Estado: aceptado (25/09/2026), P-B + Q-A + T-A; reemplazado parcialmente por ADR-045 (28/09/2026) en el eje P y en la cláusula «si la referente no informa el tamaño»
 - Fecha: 25/09/2026
 - Capítulos afectados: Cap. III (III.5); Anexo I (ficha RNF-07); libro (RNF-07); Cap. X (X.2, equipo de referencia); Cap. V (V.4, estabilización)
 - Origen: pendiente A-04 (`00-gestion/pendientes.md`), parte de RNF-07; sesión del 25/09/2026, preparación de la validación con la referente

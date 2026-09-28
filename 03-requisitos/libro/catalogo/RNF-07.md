@@ -3,14 +3,14 @@
 | Campo | Valor |
 |---|---|
 | ID | RNF-07 |
-| Enunciado | RIGE completa la resolución de un proyecto dentro de un tiempo acotado sobre un equipo de referencia |
+| Enunciado | Una consulta por línea de comandos finaliza en menos de 2 segundos sobre un proyecto del doble de tamaño que un proyecto real de referencia, en el equipo de referencia del proyecto |
 | Tipo | No funcional |
 | Categoría (si es no funcional) | Rendimiento |
 | Prioridad | Should |
 | Motivo de la prioridad | El uso por un agente externo, que invoca de manera repetida, vuelve relevante el tiempo de respuesta |
-| Criterio de aceptación | Sobre un proyecto de \[N\] entradas y \[N\] elementos, en el equipo de referencia \[equipo\], la resolución completa finaliza en menos de \[N\] segundos, medido sobre diez corridas y tomando el peor caso |
-| Trazabilidad | HA-3 |
-| Estado de validación | [DATO PENDIENTE] |
+| Criterio de aceptación | Sobre un proyecto sintético con el doble de agentes, entradas y elementos que el mayor entre el proyecto público de referencia —[DATO PENDIENTE: repositorio, commit y recuentos, tras la búsqueda]— y el proyecto del equipo de la referente, si lo informa, en la máquina virtual Ubuntu 26.04 de referencia —[DATO PENDIENTE: procesador, núcleos y memoria asignados]—, la invocación completa por línea de comandos de la consulta de valores de un agente finaliza en menos de 2 s, medida sobre diez corridas y tomando el peor caso |
+| Trazabilidad | HA-3; acta del 26/09/2026, sección 3.2 |
+| Estado de validación | Validado |
 | Iteración prevista | Sin asignar |
 | ¿Integra el MVP? | No |
 

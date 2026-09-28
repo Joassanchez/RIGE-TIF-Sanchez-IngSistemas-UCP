@@ -3,14 +3,14 @@
 | Campo | Valor |
 |---|---|
 | ID | RNF-08 |
-| Enunciado | La salida por línea de comandos se ajusta a un esquema versionado, y todo cambio incompatible incrementa la versión mayor del esquema |
+| Enunciado | Todo cambio incompatible del esquema de salida de la línea de comandos incrementa su versión mayor, de modo que un consumidor sabe cuándo debe adaptarse |
 | Tipo | No funcional |
-| Categoría (si es no funcional) | Compatibilidad |
+| Categoría (si es no funcional) | Mantenibilidad |
 | Prioridad | Should |
-| Motivo de la prioridad | Constituye la contrapartida de exponer una interfaz destinada a otro software |
-| Criterio de aceptación | La salida valida contra el esquema publicado y declara su versión; un conjunto de salidas de referencia de la versión anterior continúa validando mientras la versión mayor no cambie |
-| Trazabilidad | HA-3; acta del \[fecha\], decisión L-06 |
-| Estado de validación | [DATO PENDIENTE] |
+| Motivo de la prioridad | Constituye la contrapartida de exponer una interfaz destinada a otro software. El compromiso solo se ejercita cuando existe una segunda versión del esquema, que el período no prevé |
+| Criterio de aceptación | Publicada una nueva versión del esquema sin cambio de versión mayor, las salidas de referencia de la versión anterior continúan validando contra ella. Ante un cambio incompatible, la versión mayor declarada en la salida se incrementa |
+| Trazabilidad | HA-3; acta del 26/09/2026, decisión L-06 |
+| Estado de validación | Validado |
 | Iteración prevista | Sin asignar |
 | ¿Integra el MVP? | No |
 

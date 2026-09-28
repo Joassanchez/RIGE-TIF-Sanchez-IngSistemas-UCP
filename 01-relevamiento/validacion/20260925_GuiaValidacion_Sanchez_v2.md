@@ -4,7 +4,7 @@
 **Autor:** Sánchez, Joaquín Sebastián
 **Instrumento:** 31 · Guía y acta de la sesión de validación
 **Capítulos del informe que alimenta:** III · Entorno y Dominio del Sistema de Información (III.2 a III.5) y Libro de trabajo (catálogo, entidades, reglas y glosario)
-**Versión:** v2 · 25 de septiembre de 2026. Reemplaza a la v1 del 22 de septiembre de 2026 (`20260922_DecisionesDelimitacion_RIGE_v1.md`); los cambios constan al final.
+**Versión:** v2 · 25 de septiembre de 2026. Reemplaza a la v1 del 22 de septiembre de 2026 (`20260922_DecisionesDelimitacion_RIGE_v1.md`); los cambios constan al final. Acta completada con los resultados de la sesión del 26/09/2026.
 
 ---
 
@@ -14,9 +14,9 @@
 | --- | --- |
 | Referente | Valeria Areco — Desarrolladora, equipo de Sistemas de EMSA |
 | Participantes | Valeria Areco (referente) · Joaquín Sebastián Sánchez (autor) |
-| Fecha y hora | |
-| Canal | |
-| Duración | |
+| Fecha y hora | 26/09/2026, 17:00 |
+| Canal | Presencial |
+| Duración | 35 minutos |
 | Modalidad acordada | El autor adopta las decisiones y las presenta por escrito; la referente confirma, rechaza u observa cada una |
 
 ---
@@ -42,9 +42,9 @@ Dos elementos del entorno surgen de lo relevado con la referente y condicionan e
 
 **Motivo.** El equipo ya consulta su configuración mediante un agente (entrevista). Ese uso impone condiciones que una interfaz pensada solo para personas no necesita.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -54,9 +54,9 @@ Observaciones:
 
 **Motivo.** Sin esa identificación, un resultado obtenido antes de un cambio podría tomarse como vigente después de él.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -72,9 +72,9 @@ Una exclusión confirmada constituye una frontera del sistema. Cada límite decl
 
 **Consecuencia.** El desarrollador localiza la declaración que determina un valor y la modifica en su editor, fuera de RIGE.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -88,11 +88,11 @@ Observaciones:
 
 **Consulta.** ¿Qué proporción de los comandos que el equipo usa habitualmente son compuestos?
 
-Respuesta:
+Respuesta: depende del caso; la referente no informa una proporción.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -104,9 +104,9 @@ Observaciones:
 
 **Consecuencia.** El sistema no permite diagnosticar problemas de autenticación.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -118,9 +118,9 @@ Observaciones:
 
 **Consecuencia.** Cada integrante del equipo puede usar RIGE en su propio entorno. No existe un estado compartido ni una vista conjunta del equipo.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -132,9 +132,9 @@ Observaciones:
 
 **Consecuencia.** Otras herramientas de programación agéntica y otras versiones de OpenCode quedan fuera del alcance comprometido.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -157,9 +157,9 @@ Quedan diferidos como trabajo posterior los listados de elementos, la exportaci�
 
 **Consecuencia.** El agente obtiene por esta vía valores, permisos y hallazgos. No obtiene listados ni la exportación completa.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -171,9 +171,9 @@ Observaciones:
 
 **Consecuencia.** Si el agente aplica un cambio incorrecto, RIGE no lo impide ni lo advierte en el momento. Un análisis posterior muestra el estado efectivo resultante.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -185,9 +185,9 @@ Observaciones:
 
 **Consecuencia.** El sistema no responde qué cambió entre dos momentos ni actúa como validador de sintaxis de la configuración.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -203,11 +203,11 @@ Observaciones:
 
 **Consulta.** ¿El equipo consultaría RIGE principalmente desde la terminal, desde el navegador o a través de su agente?
 
-Respuesta:
+Respuesta: desde la línea de comandos.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -221,11 +221,11 @@ Observaciones:
 
 **Consulta.** ¿Qué sistemas operativos usa el equipo para programar con OpenCode?
 
-Respuesta:
+Respuesta: Windows.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -237,9 +237,9 @@ Observaciones:
 
 **Consecuencia.** RIGE informa cada elemento y su procedencia, pero no dibuja ni lista cómo se conectan entre sí.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -255,9 +255,9 @@ Observaciones:
 
 **Consecuencia.** Las explicaciones son más rígidas que las de un asistente conversacional, pero idénticas ante la misma configuración.
 
-☐ Confirma ☐ Rechaza
+☒ Confirma ☐ Rechaza
 
-Observaciones:
+Observaciones: sin observaciones.
 
 ---
 
@@ -267,14 +267,14 @@ Estas exclusiones derivan de una imposibilidad técnica o de la frontera individ
 
 | Qué se incluye | Qué queda fuera | Motivo | Observaciones |
 | --- | --- | --- | --- |
-| Entradas del entorno individual del desarrollador | Configuración remota y la administrada a nivel de sistema operativo | Requieren privilegios administrativos y son ajenas a la frontera individual | |
-| Elementos que determinan el comportamiento de los agentes | Configuración de la interfaz de la herramienta | No altera lo que un agente hace ni lo que puede hacer | |
-| Permisos declarados y reglas nativas | Aprobaciones permanentes concedidas por el desarrollador | Se guardan fuera de las entradas de configuración, asociadas al texto literal de cada acción. RIGE declara esta condición junto a cada decisión | |
-| Instrucciones de alcance global y de proyecto | Instrucciones declaradas en subdirectorios del proyecto | Se incorporan durante la sesión según los archivos que lee el agente, de modo que no constituyen un dato estático de la configuración | |
-| Plugins como elementos declarados, con su origen | Efecto del código de los plugins sobre la configuración | Determinarlo exige ejecutar código de terceros, contrario al modo de solo lectura | |
-| Declaración y habilitación de servidores MCP | Disponibilidad, contenido y seguridad de esos servidores | Corresponden a los escáneres de seguridad relevados | |
-| Instrucciones como entrada de configuración | Evaluación de la calidad de su contenido | Aborda qué dicen las instrucciones y no qué configuración rige | |
-| Variables de entorno del proceso de RIGE | Entorno de una sesión concreta de OpenCode y diferencias entre sus modos de ejecución | RIGE no se conecta con la ejecución de la herramienta; la condición se advierte junto a los resultados | |
+| Entradas del entorno individual del desarrollador | Configuración remota y la administrada a nivel de sistema operativo | Requieren privilegios administrativos y son ajenas a la frontera individual | Sin observaciones |
+| Elementos que determinan el comportamiento de los agentes | Configuración de la interfaz de la herramienta | No altera lo que un agente hace ni lo que puede hacer | Sin observaciones |
+| Permisos declarados y reglas nativas | Aprobaciones permanentes concedidas por el desarrollador | Se guardan fuera de las entradas de configuración, asociadas al texto literal de cada acción. RIGE declara esta condición junto a cada decisión | Sin observaciones |
+| Instrucciones de alcance global y de proyecto | Instrucciones declaradas en subdirectorios del proyecto | Se incorporan durante la sesión según los archivos que lee el agente, de modo que no constituyen un dato estático de la configuración | Sin observaciones |
+| Plugins como elementos declarados, con su origen | Efecto del código de los plugins sobre la configuración | Determinarlo exige ejecutar código de terceros, contrario al modo de solo lectura | Sin observaciones |
+| Declaración y habilitación de servidores MCP | Disponibilidad, contenido y seguridad de esos servidores | Corresponden a los escáneres de seguridad relevados | Sin observaciones |
+| Instrucciones como entrada de configuración | Evaluación de la calidad de su contenido | Aborda qué dicen las instrucciones y no qué configuración rige | Sin observaciones |
+| Variables de entorno del proceso de RIGE | Entorno de una sesión concreta de OpenCode y diferencias entre sus modos de ejecución | RIGE no se conecta con la ejecución de la herramienta; la condición se advierte junto a los resultados | Sin observaciones |
 
 ---
 
@@ -292,48 +292,48 @@ El criterio de aceptación de cada requisito consta en el catálogo del Libro de
 
 | ID | Enunciado | Confirma | Rechaza | Observaciones |
 | --- | --- | --- | --- | --- |
-| RF-01 | Dado un agente y una clave de configuración, RIGE informa el valor efectivo, la declaración que lo determina con su entrada, archivo y posición, y las declaraciones desplazadas | ☐ | ☐ | |
-| RF-02 | Dado un agente y una acción, RIGE informa la decisión de permiso, la cadena ordenada de reglas coincidentes, la regla determinante con su carácter nativo o declarado y su procedencia, y una explicación del motivo por el cual esa regla prevalece | ☐ | ☐ | |
-| RF-03 † | RIGE expone por línea de comandos, dado un proyecto y un agente, los valores efectivos con su procedencia, archivo y posición y, dada una acción, la decisión de permiso con su regla determinante. La salida es estructurada, determinista y se ajusta a un esquema publicado que declara su versión; a pedido, incluye la explicación | ☐ | ☐ | |
-| RF-04 | RIGE localiza las entradas de configuración aplicables al proyecto, con su tipo, su orden de precedencia y su estado de legibilidad | ☐ | ☐ | |
-| RF-05 | RIGE advierte cuando la versión de OpenCode instalada difiere de la 1.18.25 y no presenta sus resultados como válidos | ☐ | ☐ | |
-| RF-06 | RIGE distingue los valores que ninguna entrada declara y las reglas de permiso que la herramienta incorpora, identificándolos como implícitos o nativos | ☐ | ☐ | |
-| RF-07 † | RIGE detecta referencias no resueltas, reglas de permiso sin efecto, elementos sin uso, sustituciones sin valor, entradas ilegibles y entradas descartadas sin error visible, con la localización de la declaración que los origina y una explicación de su causa, por ambas interfaces | ☐ | ☐ | |
-| RF-08 | Ante un comando de terminal compuesto, RIGE emite una advertencia en lugar de informar una decisión de permiso | ☐ | ☐ | |
-| RF-09 | RIGE advierte cuando una declaración del usuario desactiva una regla nativa de protección del agente | ☐ | ☐ | |
-| RNF-01 | RIGE no modifica ninguna entrada de configuración; escribe únicamente en su propio almacén | ☐ | ☐ | |
-| RNF-02 | El valor efectivo y la decisión de permiso que informa RIGE coinciden con los de OpenCode 1.18.25 | ☐ | ☐ | |
-| RNF-03 | El núcleo no depende del adaptador de OpenCode: los tipos de elemento, el orden de precedencia, la estrategia de fusión y la forma de evaluar permisos los declara el adaptador | ☐ | ☐ | |
-| RNF-04 | RIGE informa el nombre de cada variable de entorno y su condición de definida o no definida, y nunca su contenido | ☐ | ☐ | |
-| RNF-05 | RIGE opera sin conexión a servicios externos durante el análisis | ☐ | ☐ | |
+| RF-01 | Dado un agente y una clave de configuración, RIGE informa el valor efectivo, la declaración que lo determina con su entrada, archivo y posición, y las declaraciones desplazadas | ☒ | ☐ | Sin observaciones |
+| RF-02 | Dado un agente y una acción, RIGE informa la decisión de permiso, la cadena ordenada de reglas coincidentes, la regla determinante con su carácter nativo o declarado y su procedencia, y una explicación del motivo por el cual esa regla prevalece | ☒ | ☐ | Sin observaciones |
+| RF-03 † | RIGE expone por línea de comandos, dado un proyecto y un agente, los valores efectivos con su procedencia, archivo y posición y, dada una acción, la decisión de permiso con su regla determinante. La salida es estructurada, determinista y se ajusta a un esquema publicado que declara su versión; a pedido, incluye la explicación | ☒ | ☐ | Sin observaciones |
+| RF-04 | RIGE localiza las entradas de configuración aplicables al proyecto, con su tipo, su orden de precedencia y su estado de legibilidad | ☒ | ☐ | Sin observaciones |
+| RF-05 | RIGE advierte cuando la versión de OpenCode instalada difiere de la 1.18.25 y no presenta sus resultados como válidos | ☒ | ☐ | Sin observaciones |
+| RF-06 | RIGE distingue los valores que ninguna entrada declara y las reglas de permiso que la herramienta incorpora, identificándolos como implícitos o nativos | ☒ | ☐ | Sin observaciones |
+| RF-07 † | RIGE detecta referencias no resueltas, reglas de permiso sin efecto, elementos sin uso, sustituciones sin valor, entradas ilegibles y entradas descartadas sin error visible, con la localización de la declaración que los origina y una explicación de su causa, por ambas interfaces | ☒ | ☐ | Sin observaciones |
+| RF-08 | Ante un comando de terminal compuesto, RIGE emite una advertencia en lugar de informar una decisión de permiso | ☒ | ☐ | Sin observaciones |
+| RF-09 | RIGE advierte cuando una declaración del usuario desactiva una regla nativa de protección del agente | ☒ | ☐ | Sin observaciones |
+| RNF-01 | RIGE no modifica ninguna entrada de configuración; escribe únicamente en su propio almacén | ☒ | ☐ | Sin observaciones |
+| RNF-02 | El valor efectivo y la decisión de permiso que informa RIGE coinciden con los de OpenCode 1.18.25 | ☒ | ☐ | Sin observaciones |
+| RNF-03 | El núcleo no depende del adaptador de OpenCode: los tipos de elemento, el orden de precedencia, la estrategia de fusión y la forma de evaluar permisos los declara el adaptador | ☒ | ☐ | Sin observaciones |
+| RNF-04 | RIGE informa el nombre de cada variable de entorno y su condición de definida o no definida, y nunca su contenido | ☒ | ☐ | Sin observaciones |
+| RNF-05 | RIGE opera sin conexión a servicios externos durante el análisis | ☒ | ☐ | Sin observaciones |
 
 ### 3.2 · Requisitos Should (5)
 
 | ID | Enunciado | Confirma | Rechaza | Observaciones |
 | --- | --- | --- | --- | --- |
-| RF-10 † | RIGE informa, junto con la decisión de permiso, si la herramienta queda disponible para el modelo o si la configuración la retira por completo. *Pasa de Must a Should* | ☐ | ☐ | |
-| RF-11 | RIGE presenta un resumen del ecosistema con la cantidad de elementos por tipo y la cantidad de hallazgos por tipo | ☐ | ☐ | |
-| RNF-06 † | RIGE resuelve las rutas de configuración según el sistema operativo, opera sobre Ubuntu 26.04 y Windows 11 y se instala sin privilegios administrativos (L-11) | ☐ | ☐ | |
-| RNF-07 † | Una consulta por línea de comandos finaliza en menos de 2 segundos sobre un proyecto del doble de tamaño que el del equipo de la referente, en el equipo de referencia del proyecto. *Ver la consulta siguiente* | ☐ | ☐ | |
-| RNF-08 † | Todo cambio incompatible del esquema de salida de la línea de comandos incrementa su versión mayor, de modo que un consumidor sabe cuándo debe adaptarse | ☐ | ☐ | |
+| RF-10 † | RIGE informa, junto con la decisión de permiso, si la herramienta queda disponible para el modelo o si la configuración la retira por completo. *Pasa de Must a Should* | ☒ | ☐ | Sin observaciones |
+| RF-11 | RIGE presenta un resumen del ecosistema con la cantidad de elementos por tipo y la cantidad de hallazgos por tipo | ☒ | ☐ | Sin observaciones |
+| RNF-06 † | RIGE resuelve las rutas de configuración según el sistema operativo, opera sobre Ubuntu 26.04 y Windows 11 y se instala sin privilegios administrativos (L-11) | ☒ | ☐ | Sin observaciones |
+| RNF-07 † | Una consulta por línea de comandos finaliza en menos de 2 segundos sobre un proyecto del doble de tamaño que el del equipo de la referente, en el equipo de referencia del proyecto. *Ver la consulta siguiente* | ☒ | ☐ | Sin observaciones |
+| RNF-08 † | Todo cambio incompatible del esquema de salida de la línea de comandos incrementa su versión mayor, de modo que un consumidor sabe cuándo debe adaptarse | ☒ | ☐ | Sin observaciones |
 
 **Consulta (RNF-07).** Para dimensionar el proyecto de referencia:
 
 | Dato del proyecto real del equipo | Respuesta |
 | --- | --- |
-| Cantidad aproximada de agentes y subagentes | |
-| Cantidad de entradas de configuración: archivos globales, de proyecto, variables y otras | |
-| Cantidad aproximada de elementos: comandos, skills, servidores MCP y otros | |
-| ¿2 segundos por consulta resulta aceptable para el uso del agente del equipo? | |
+| Cantidad aproximada de agentes y subagentes | No informada: la referente no dispone del dato en la sesión |
+| Cantidad de entradas de configuración: archivos globales, de proyecto, variables y otras | No informada: la referente no dispone del dato en la sesión |
+| Cantidad aproximada de elementos: comandos, skills, servidores MCP y otros | No informada: la referente no dispone del dato en la sesión |
+| ¿2 segundos por consulta resulta aceptable para el uso del agente del equipo? | Sí |
 
 ### 3.3 · Requisitos Could (3) y Won't (1)
 
 | ID | Enunciado | Prioridad | Confirma | Rechaza | Observaciones |
 | --- | --- | --- | --- | --- | --- |
-| RF-12 | RIGE abre en el editor configurado el archivo y la posición de la declaración que determina un valor | Could | ☐ | ☐ | |
-| RF-13 | RIGE representa los vínculos entre los elementos del ecosistema (L-12) | Could | ☐ | ☐ | |
-| RF-14 | RIGE exporta el estado resuelto del ecosistema a un archivo | Could | ☐ | ☐ | |
-| RF-15 | RIGE presenta la matriz de agentes por tipo de permiso y responde la consulta inversa de los agentes que pueden realizar una acción determinada | Won't | ☐ | ☐ | |
+| RF-12 | RIGE abre en el editor configurado el archivo y la posición de la declaración que determina un valor | Could | ☒ | ☐ | Sin observaciones |
+| RF-13 | RIGE representa los vínculos entre los elementos del ecosistema (L-12) | Could | ☒ | ☐ | Sin observaciones |
+| RF-14 | RIGE exporta el estado resuelto del ecosistema a un archivo | Could | ☒ | ☐ | Sin observaciones |
+| RF-15 | RIGE presenta la matriz de agentes por tipo de permiso y responde la consulta inversa de los agentes que pueden realizar una acción determinada | Won't | ☒ | ☐ | Sin observaciones |
 
 ---
 
@@ -343,37 +343,37 @@ Las entidades son las nociones con identidad propia sobre las que el sistema tra
 
 | Entidad | Definición | Confirma | Rechaza | Observaciones |
 | --- | --- | --- | --- | --- |
-| Proyecto analizado | Contexto sobre el cual se resuelve el estado efectivo de la configuración | ☐ | ☐ | |
-| Resolución | Estado efectivo del ecosistema obtenido en un momento determinado | ☐ | ☐ | |
-| Entrada de configuración | Vía por la cual OpenCode incorpora configuración al resolver el estado efectivo, sea o no un archivo | ☐ | ☐ | |
-| Declaración | Asignación concreta escrita dentro de una entrada | ☐ | ☐ | |
-| Sustitución | Reemplazo de una variable de entorno o de un archivo dentro de una declaración | ☐ | ☐ | |
-| Elemento | Unidad de configuración que RIGE resuelve y relaciona, cuyo tipo declara el adaptador | ☐ | ☐ | |
-| Agente | Elemento sobre el cual se manifiesta el efecto de toda la configuración; evalúa una cadena de reglas de permiso e invoca subagentes | ☐ | ☐ | |
-| Regla de permiso | Declaración que produce una decisión de permiso, de carácter nativo o declarado por el usuario | ☐ | ☐ | |
-| Hallazgo | Defecto detectado en el ecosistema, con su localización | ☐ | ☐ | |
+| Proyecto analizado | Contexto sobre el cual se resuelve el estado efectivo de la configuración | ☒ | ☐ | Sin observaciones |
+| Resolución | Estado efectivo del ecosistema obtenido en un momento determinado | ☒ | ☐ | Sin observaciones |
+| Entrada de configuración | Vía por la cual OpenCode incorpora configuración al resolver el estado efectivo, sea o no un archivo | ☒ | ☐ | Sin observaciones |
+| Declaración | Asignación concreta escrita dentro de una entrada | ☒ | ☐ | Sin observaciones |
+| Sustitución | Reemplazo de una variable de entorno o de un archivo dentro de una declaración | ☒ | ☐ | Sin observaciones |
+| Elemento | Unidad de configuración que RIGE resuelve y relaciona, cuyo tipo declara el adaptador | ☒ | ☐ | Sin observaciones |
+| Agente | Elemento sobre el cual se manifiesta el efecto de toda la configuración; evalúa una cadena de reglas de permiso e invoca subagentes | ☒ | ☐ | Sin observaciones |
+| Regla de permiso | Declaración que produce una decisión de permiso, de carácter nativo o declarado por el usuario | ☒ | ☐ | Sin observaciones |
+| Hallazgo | Defecto detectado en el ecosistema, con su localización | ☒ | ☐ | Sin observaciones |
 
 Las relaciones entre entidades se enuncian como frases. Se valida si cada frase resulta verdadera dicha en voz alta.
 
 | Relación | Cardinalidad | Confirma | Rechaza | Observaciones |
 | --- | --- | --- | --- | --- |
-| Un proyecto analizado se resuelve en muchas resoluciones sucesivas | 1 a N | ☐ | ☐ | |
-| Una resolución lee muchas entradas de configuración | 1 a N | ☐ | ☐ | |
-| Una entrada contiene muchas declaraciones | 1 a N | ☐ | ☐ | |
-| Una declaración contiene ninguna o muchas sustituciones | 1 a N | ☐ | ☐ | |
-| Una declaración puede quedar desplazada por otra declaración de mayor precedencia | 1 a 1, opcional | ☐ | ☐ | |
-| Un elemento se compone de muchas declaraciones, de las cuales una resulta determinante | 1 a N | ☐ | ☐ | |
-| Un elemento se relaciona con muchos otros elementos, con un tipo de relación declarado | N a N | ☐ | ☐ | |
-| Un agente evalúa una cadena ordenada de muchas reglas de permiso | 1 a N | ☐ | ☐ | |
-| Un agente puede invocar muchos subagentes, y cada subagente hereda de aquel sus reglas de denegación | 1 a N | ☐ | ☐ | |
-| Una resolución produce ninguno o muchos hallazgos | 1 a N | ☐ | ☐ | |
-| Un hallazgo recae sobre un elemento o sobre una declaración | 1 a 1 | ☐ | ☐ | |
+| Un proyecto analizado se resuelve en muchas resoluciones sucesivas | 1 a N | ☒ | ☐ | Sin observaciones |
+| Una resolución lee muchas entradas de configuración | 1 a N | ☒ | ☐ | Sin observaciones |
+| Una entrada contiene muchas declaraciones | 1 a N | ☒ | ☐ | Sin observaciones |
+| Una declaración contiene ninguna o muchas sustituciones | 1 a N | ☒ | ☐ | Sin observaciones |
+| Una declaración puede quedar desplazada por otra declaración de mayor precedencia | 1 a 1, opcional | ☒ | ☐ | Sin observaciones |
+| Un elemento se compone de muchas declaraciones, de las cuales una resulta determinante | 1 a N | ☒ | ☐ | Sin observaciones |
+| Un elemento se relaciona con muchos otros elementos, con un tipo de relación declarado | N a N | ☒ | ☐ | Sin observaciones |
+| Un agente evalúa una cadena ordenada de muchas reglas de permiso | 1 a N | ☒ | ☐ | Sin observaciones |
+| Un agente puede invocar muchos subagentes, y cada subagente hereda de aquel sus reglas de denegación | 1 a N | ☒ | ☐ | Sin observaciones |
+| Una resolución produce ninguno o muchos hallazgos | 1 a N | ☒ | ☐ | Sin observaciones |
+| Un hallazgo recae sobre un elemento o sobre una declaración | 1 a 1 | ☒ | ☐ | Sin observaciones |
 
 La relación entre elementos forma parte del modelo aunque su representación en el sistema quede diferida (L-12).
 
 **Consulta.** ¿Hay alguna noción que el equipo use al hablar de su configuración y que no figure en las tablas?
 
-Respuesta:
+Respuesta: ninguna.
 
 ---
 
@@ -383,19 +383,19 @@ Las reglas de **derivación** y de **existencia** describen cómo se comporta Op
 
 | Cód. | Tipo | Enunciado | Confirma | Rechaza | Observaciones |
 | --- | --- | --- | --- | --- | --- |
-| RD-01 | Derivación | El valor efectivo de una clave resulta de aplicar las entradas en su orden de precedencia; prevalece la declaración de la última entrada que la declara | ☐ | ☐ | |
-| RD-02 | Derivación | En la fusión profunda, la posición de una clave la determina la primera entrada que la declara, y su valor, la última | ☐ | ☐ | |
-| RD-03 | Derivación | La decisión de permiso resulta de evaluar la cadena ordenada de reglas —nativas generales, nativas del agente, declaradas globales y declaradas del agente— y la determina la última coincidencia | ☐ | ☐ | |
-| RD-04 | Derivación | Si ninguna declaración del usuario alcanza una clave, rige el valor implícito de la herramienta | ☐ | ☐ | |
-| RD-05 | Derivación | El subagente hereda del agente que lo invoca únicamente las reglas de denegación y las de directorio externo; el resto proviene de su propio conjunto, al que se agregan denegaciones implícitas | ☐ | ☐ | |
-| RD-06 | Derivación | Si la última regla coincidente para una herramienta declara patrón general y efecto de denegación, la herramienta no se ofrece al modelo; una excepción posterior vuelve a exponerla por completo | ☐ | ☐ | |
-| RD-07 | Derivación | Una declaración del usuario que alcanza una acción denegada por una regla nativa del agente prevalece sobre ella, dado que las declaradas se concatenan después de las nativas | ☐ | ☐ | |
-| RE-01 | Existencia | Un elemento ingresa a la resolución solo si proviene de una entrada legible; si la entrada es ilegible, su carga se detiene con error y se registra el hallazgo | ☐ | ☐ | |
-| RE-02 | Existencia | Una regla se marca sin efecto solo si existe una regla posterior del mismo tipo que abarca todos los casos que ella cubre | ☐ | ☐ | |
-| RE-03 | Existencia | Un elemento se marca sin uso solo si ningún agente puede utilizarlo y ninguna declaración lo referencia | ☐ | ☐ | |
-| RR-01 | Restricción | RIGE no modifica ninguna entrada de configuración; escribe únicamente en su propio almacén (L-01) | ☐ | ☐ | |
-| RR-02 | Restricción | RIGE no expone el contenido de una variable de entorno; informa su nombre y su condición de definida o no definida (L-03) | ☐ | ☐ | |
-| RR-03 | Restricción | RIGE resuelve únicamente sobre OpenCode 1.18.25; ante otra versión instalada advierte y no presenta sus resultados como válidos (L-05) | ☐ | ☐ | |
+| RD-01 | Derivación | El valor efectivo de una clave resulta de aplicar las entradas en su orden de precedencia; prevalece la declaración de la última entrada que la declara | ☒ | ☐ | Sin observaciones |
+| RD-02 | Derivación | En la fusión profunda, la posición de una clave la determina la primera entrada que la declara, y su valor, la última | ☒ | ☐ | Sin observaciones |
+| RD-03 | Derivación | La decisión de permiso resulta de evaluar la cadena ordenada de reglas —nativas generales, nativas del agente, declaradas globales y declaradas del agente— y la determina la última coincidencia | ☒ | ☐ | Sin observaciones |
+| RD-04 | Derivación | Si ninguna declaración del usuario alcanza una clave, rige el valor implícito de la herramienta | ☒ | ☐ | Sin observaciones |
+| RD-05 | Derivación | El subagente hereda del agente que lo invoca únicamente las reglas de denegación y las de directorio externo; el resto proviene de su propio conjunto, al que se agregan denegaciones implícitas | ☒ | ☐ | Sin observaciones |
+| RD-06 | Derivación | Si la última regla coincidente para una herramienta declara patrón general y efecto de denegación, la herramienta no se ofrece al modelo; una excepción posterior vuelve a exponerla por completo | ☒ | ☐ | Sin observaciones |
+| RD-07 | Derivación | Una declaración del usuario que alcanza una acción denegada por una regla nativa del agente prevalece sobre ella, dado que las declaradas se concatenan después de las nativas | ☒ | ☐ | Sin observaciones |
+| RE-01 | Existencia | Un elemento ingresa a la resolución solo si proviene de una entrada legible; si la entrada es ilegible, su carga se detiene con error y se registra el hallazgo | ☒ | ☐ | Sin observaciones |
+| RE-02 | Existencia | Una regla se marca sin efecto solo si existe una regla posterior del mismo tipo que abarca todos los casos que ella cubre | ☒ | ☐ | Sin observaciones |
+| RE-03 | Existencia | Un elemento se marca sin uso solo si ningún agente puede utilizarlo y ninguna declaración lo referencia | ☒ | ☐ | Sin observaciones |
+| RR-01 | Restricción | RIGE no modifica ninguna entrada de configuración; escribe únicamente en su propio almacén (L-01) | ☒ | ☐ | Sin observaciones |
+| RR-02 | Restricción | RIGE no expone el contenido de una variable de entorno; informa su nombre y su condición de definida o no definida (L-03) | ☒ | ☐ | Sin observaciones |
+| RR-03 | Restricción | RIGE resuelve únicamente sobre OpenCode 1.18.25; ante otra versión instalada advierte y no presenta sus resultados como válidos (L-05) | ☒ | ☐ | Sin observaciones |
 
 ---
 
@@ -405,13 +405,13 @@ La documentación de la herramienta y el uso corriente emplean términos distint
 
 | Término | Definición | Confirma | Rechaza | Término que usa el equipo |
 | --- | --- | --- | --- | --- |
-| Entrada de configuración | Cada una de las vías por las que OpenCode incorpora configuración al resolver el estado efectivo, sea o no un archivo | ☐ | ☐ | |
-| Archivo de configuración | Entrada que se materializa en un archivo del disco, con ruta y posición | ☐ | ☐ | |
-| Declaración | Cada asignación concreta escrita dentro de una entrada | ☐ | ☐ | |
-| Procedencia | Cadena que conduce al valor efectivo: entrada, archivo y posición de la declaración determinante y, si esta contiene una sustitución, el origen de su contenido | ☐ | ☐ | |
-| Permiso | Decisión resultante para un agente y una acción: permitida, sujeta a confirmación o denegada | ☐ | ☐ | |
-| Regla de permiso | Declaración que produce esa decisión, de carácter nativo o declarado por el usuario | ☐ | ☐ | |
-| Entrada ilegible | Entrada que no puede interpretarse, por errores de sintaxis o por referenciar una sustitución de archivo inexistente, lo que detiene su carga con error | ☐ | ☐ | |
+| Entrada de configuración | Cada una de las vías por las que OpenCode incorpora configuración al resolver el estado efectivo, sea o no un archivo | ☒ | ☐ | Sin diferencia |
+| Archivo de configuración | Entrada que se materializa en un archivo del disco, con ruta y posición | ☒ | ☐ | Sin diferencia |
+| Declaración | Cada asignación concreta escrita dentro de una entrada | ☒ | ☐ | Sin diferencia |
+| Procedencia | Cadena que conduce al valor efectivo: entrada, archivo y posición de la declaración determinante y, si esta contiene una sustitución, el origen de su contenido | ☒ | ☐ | Sin diferencia |
+| Permiso | Decisión resultante para un agente y una acción: permitida, sujeta a confirmación o denegada | ☒ | ☐ | Sin diferencia |
+| Regla de permiso | Declaración que produce esa decisión, de carácter nativo o declarado por el usuario | ☒ | ☐ | Sin diferencia |
+| Entrada ilegible | Entrada que no puede interpretarse, por errores de sintaxis o por referenciar una sustitución de archivo inexistente, lo que detiene su carga con error | ☒ | ☐ | Sin diferencia |
 
 Si el término del equipo difiere del adoptado, se registra como sinónimo en el glosario del dominio.
 
@@ -421,7 +421,7 @@ Si el término del equipo difiere del adoptado, se registra como sinónimo en el
 
 | Campo | Contenido |
 | --- | --- |
-| Herramienta | [DATO PENDIENTE: herramienta con que se construyó la maqueta] |
+| Herramienta | HTML, construida con asistentes generativos ([DATO PENDIENTE: asistentes utilizados, función y artefacto afectado]) |
 | Enlace | [DATO PENDIENTE: enlace a la maqueta navegable] |
 | Naturaleza | Maqueta navegable de baja fidelidad y no funcional: no calcula, no persiste ni lee archivos, y sus datos son ilustrativos |
 
@@ -429,18 +429,18 @@ La maqueta representa el recorrido de consulta del desarrollador. Se valida el *
 
 | N.º | Pantalla | Qué muestra | En la versión comprometida | Confirma | Rechaza | Observaciones |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Selección del proyecto | Elección del proyecto a analizar | Incluida | ☐ | ☐ | |
-| 2 | Resumen del ecosistema y de sus hallazgos | Cantidad de elementos y de hallazgos por tipo | Condicionada: el resumen es Should (RF-11); los hallazgos, Must (RF-07) | ☐ | ☐ | |
-| 3 | Detalle de un agente | Valores efectivos, procedencia, declaraciones desplazadas y elementos relacionados | Incluida, salvo los elementos relacionados, que quedan diferidos (L-12) | ☐ | ☐ | |
-| 4 | Consulta de permiso | Decisión, cadena de reglas y regla determinante, con su explicación | Incluida (RF-02) | ☐ | ☐ | |
-| 5 | Detalle de un hallazgo | Localización de la declaración que lo origina y explicación de su causa | Incluida (RF-07) | ☐ | ☐ | |
+| 1 | Selección del proyecto | Elección del proyecto a analizar | Incluida | ☒ | ☐ | Sin observaciones |
+| 2 | Resumen del ecosistema y de sus hallazgos | Cantidad de elementos y de hallazgos por tipo | Condicionada: el resumen es Should (RF-11); los hallazgos, Must (RF-07) | ☒ | ☐ | Sin observaciones |
+| 3 | Detalle de un agente | Valores efectivos, procedencia, declaraciones desplazadas y elementos relacionados | Incluida, salvo los elementos relacionados, que quedan diferidos (L-12) | ☒ | ☐ | Sin observaciones |
+| 4 | Consulta de permiso | Decisión, cadena de reglas y regla determinante, con su explicación | Incluida (RF-02) | ☒ | ☐ | Sin observaciones |
+| 5 | Detalle de un hallazgo | Localización de la declaración que lo origina y explicación de su causa | Incluida (RF-07) | ☒ | ☐ | Sin observaciones |
 
 **Preguntas para la referente:**
 - ¿El recorrido responde las preguntas que el equipo se hace sobre su configuración?
 - ¿Falta alguna pantalla o alguna información que el equipo necesitaría ver?
 - ¿El orden de las pantallas es el que el equipo seguiría?
 
-Respuestas:
+Respuestas: sin observaciones. El recorrido responde las preguntas del equipo, no faltan pantallas y el orden es el que el equipo seguiría.
 
 ---
 
@@ -448,13 +448,13 @@ Respuestas:
 
 | Tema | Detalle | Respuesta |
 | --- | --- | --- |
-| Comandos compuestos (L-02) | Proporción de comandos compuestos en el uso habitual | |
-| Interfaz preferida (L-10) | Terminal, navegador o agente | |
-| Sistemas operativos (L-11) | Sistemas en uso en el equipo | |
-| Tamaño del proyecto (RNF-07) | Agentes, entradas y elementos; aceptación del umbral de 2 segundos | |
-| Nociones faltantes (sección 4) | Términos del dominio no incluidos | |
-| Prototipo v0 (sección 7) | Recorrido, pantallas faltantes y orden | |
-| Agente del equipo | Pedido enviado: definición del agente con que el equipo consulta su configuración y, si existe, la del agente con que crea otros agentes; fecha de su última modificación y autorización para citarlo como aporte del equipo de Sistemas de EMSA | |
+| Comandos compuestos (L-02) | Proporción de comandos compuestos en el uso habitual | Depende del caso; sin proporción informada |
+| Interfaz preferida (L-10) | Terminal, navegador o agente | Línea de comandos |
+| Sistemas operativos (L-11) | Sistemas en uso en el equipo | Windows |
+| Tamaño del proyecto (RNF-07) | Agentes, entradas y elementos; aceptación del umbral de 2 segundos | Cifras no informadas: la referente no dispone del dato en la sesión. Umbral de 2 s: aceptable |
+| Nociones faltantes (sección 4) | Términos del dominio no incluidos | Ninguno |
+| Prototipo v0 (sección 7) | Recorrido, pantallas faltantes y orden | Sin observaciones |
+| Agente del equipo | Pedido enviado: definición del agente con que el equipo consulta su configuración y, si existe, la del agente con que crea otros agentes; fecha de su última modificación y autorización para citarlo como aporte del equipo de Sistemas de EMSA | Entrega confirmada por la referente; archivo pendiente de recepción |
 
 ---
 
@@ -462,13 +462,13 @@ Respuestas:
 
 Los puntos de las secciones 0, 1 y 3 a 7 fueron presentados, leídos y tratados en la fecha consignada al inicio de este documento.
 
-Puntos confirmados:
+Puntos confirmados: todos. E-01 y E-02; L-01 a L-07 y L-09 a L-13; los 23 requisitos; las 9 entidades y las 11 relaciones; las 13 reglas; los 7 términos del vocabulario; las 5 pantallas del prototipo v0 (82 puntos).
 
-Puntos rechazados o con observación:
+Puntos rechazados o con observación: ninguno.
 
-Observaciones generales:
+Observaciones generales: sin observaciones.
 
-Constancia de conformidad de la referente (firma o correo de conformidad):
+Constancia de conformidad de la referente (firma o correo de conformidad): pendiente de firma.
 
 ---
 ---

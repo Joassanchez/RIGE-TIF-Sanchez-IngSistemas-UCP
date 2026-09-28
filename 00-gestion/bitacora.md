@@ -25,6 +25,47 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
 
 ## Entradas de la AE2
 
+### Entrada · Lunes 28 de septiembre de 2026 — Pasada posterior a la validación con la referente y revisión crítica
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **Acta.** Registré el acta de la sesión del 26/09/2026 (presencial, 17:00, 35 minutos): 82 puntos confirmados sin observaciones. La constancia de conformidad sigue pendiente (U-04).
+   - **Correcciones.** Apliqué las consecuencias de la sesión en seis fases: acta, Libro de trabajo, Cap. III con los Anexos I y V, Cap. IV, Cap. V e I.6.6.
+   - **RNF-07.** Como la referente no dispuso del tamaño de su proyecto, adopté ADR-045: el proyecto de referencia tiene el doble del mayor entre un proyecto público y el del equipo de la referente, con medición por etapas en Ubuntu (con umbral) y en Windows 11 (informativa).
+   - **Presupuesto.** Cerré el presupuesto en 136 h y la cláusula de contingencia en 45 h (ADR-046).
+   - **Revisión crítica.** Después pasé una revisión crítica y una de consistencia. Adopté ADR-047: la vista web de permisos vuelve a la iteración 2 y la capacidad por iteración se calcula por días (28/59/33/16), con un exceso declarado de 6 h en la iteración 1.
+   - **Otras decisiones:**
+     - el lienzo no modificó decisiones y lo declaro así;
+     - el costo de los tokens de las mediciones con agentes lo afronto yo, sin tope; el monto se registra al ejecutar la línea de base;
+     - la CI corre en Ubuntu y en Windows (ADR-037).
+2. **Alternativas evaluadas y criterio de descarte.**
+   - **RNF-07.** Volver a preguntar a la referente y esperar su dato: descartado porque deja el requisito sin condición de medición hasta la iteración 1. En su lugar, un proyecto público verificable y el procedimiento de conteo para la referente (PV-03).
+   - **Vista web de permisos.** Cerrar RF-02 y RF-03 en la iteración 3, o separar la paridad con la web de sus criterios: descartado porque modifica iteraciones y criterios que confirmó la referente.
+   - **Reparto de horas por semanas nominales:** descartado porque no coincide con las fechas de las iteraciones.
+3. **Evidencia.**
+   - Acta: `01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md`.
+   - Informes de la pasada: `00-gestion/revisiones/20260928-*.md`.
+   - ADR-045, ADR-046 y ADR-047.
+   - Métodos de verificación del Anexo I del AE1: sostienen que cinco de las siete reglas de derivación se verificaron por ejecución.
+   - Anexo VI: ocho incidencias en siete exclusiones.
+4. **Aporte personal.**
+   - Conduje la sesión con la referente, respondí los datos de la sesión y elegí entre las alternativas de cada ADR y de la revisión consolidada (P-01, P-15, P-16 y P-21).
+   - Artefactos:
+     - el Libro (`03-requisitos/libro/`);
+     - la Figura 1 (`03-requisitos/modelo-dominio.mmd`);
+     - la Figura 3 (`tools/figura_cronograma.py`);
+     - los Caps. III, IV y V, I.6.6 y los Anexos I y V.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdo dentro del equipo. La revisión crítica objetó que la validación fue breve (82 puntos en 35 minutos, sin observaciones). Se registra como pregunta probable de la defensa.
+6. **Herramientas auxiliares (AD-24).**
+   - **Asistente de programación Claude Code (Anthropic):**
+     - *Función:* contraste de razonamientos, redacción asistida de ADR, informes de revisión y secciones del informe sobre contenido y decisiones propias, verificación de cálculos y de fuentes.
+     - *Artefactos:* los listados en el punto 4 y `00-gestion/`.
+   - **Figura 1:** fuente Mermaid redactada con asistencia y exportada con `@mermaid-js/mermaid-cli`.
+   - **Figura 3:** generada con matplotlib mediante un script propio del repositorio.
+   - **Maqueta del prototipo v0:** HTML construido con asistentes generativos [DATO PENDIENTE: nombre de los asistentes usados en la maqueta (R-03)].
+   - Todo resultado lo verifiqué antes de incorporarlo al informe.
+
 ### Entrada · Viernes 25 de septiembre de 2026 (continuación) — Papel de cada interfaz, decisiones pendientes y guía de la sesión de validación
 
 <!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
