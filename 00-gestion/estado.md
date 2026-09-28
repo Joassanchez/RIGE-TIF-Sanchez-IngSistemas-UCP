@@ -38,7 +38,7 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 
 ## Correcciones pendientes del AE1
 
-Las secciones del AE1 afectadas por ADR-040, por los cambios aprobados sobre la entrevista (P-03 a P-10) y por los demás hallazgos del grupo C se corrigen en la Ventana. La lista de trabajo está en `00-gestion/ventana-ae1.md`. Cada sección corregida vuelve a `borrador`.
+Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la entrevista (P-03 a P-10) y por los demás hallazgos del grupo C se corrigen en la Ventana. La lista de trabajo está en `00-gestion/ventana-ae1.md`. Cada sección corregida vuelve a `borrador`.
 
 ## Sesión de validación con la referente (Instrumento 31)
 
@@ -48,10 +48,10 @@ Las secciones del AE1 afectadas por ADR-040, por los cambios aprobados sobre la 
 | Contenido | Entorno (E-01, E-02) · límites L-01 a L-13 · decisiones de ingeniería (conocimiento) · 23 requisitos · 9 entidades y 11 relaciones · 13 reglas · vocabulario · prototipo v0 · consultas |
 | Sesión | Realizada el 26/09/2026, 17:00, presencial, 35 minutos. Los 82 puntos confirmados sin observaciones. Acta completada el 28/09/2026 |
 | Constancia de conformidad | Pendiente de firma (U-04) |
-| Correcciones posteriores a la sesión | Enunciado de RNF-07 (ADR-045), tres correcciones del modelo del dominio y la iteración de RNF-02. Se informan a la referente (PV-03) |
-| Datos que quedaron abiertos | Tamaño del proyecto real (la referente no dispone del dato; resuelto por ADR-045 con un proyecto público, PV-02); enlace de la maqueta; asistentes usados en la maqueta; archivo del agente del equipo (confirmado, no recibido) |
+| Correcciones posteriores a la sesión | Enunciado de RNF-07 (ADR-055), tres correcciones del modelo del dominio y la iteración de RNF-02. Se informan a la referente (PV-03) |
+| Datos que quedaron abiertos | Tamaño del proyecto real (la referente no dispone del dato; resuelto por ADR-055 con un proyecto público, PV-02); enlace de la maqueta; asistentes usados en la maqueta; archivo del agente del equipo (confirmado, no recibido) |
 
-## Diseño (`04-diseno/`, ADR-043)
+## Diseño (`04-diseno/`, D-23 del diseño del sistema)
 
 | Sección de `04-diseno/README.md` | Estado |
 |---|---|
@@ -59,7 +59,7 @@ Las secciones del AE1 afectadas por ADR-040, por los cambios aprobados sobre la 
 | 2 · Modelo de datos | Pendiente del diseño del v1 (R-08) |
 | 3 · Canal de integración continua | Pendiente del diseño del v1 (R-08) |
 
-## Medición de la línea base (ADR-040)
+## Medición de la línea base (ADR-053)
 
 | Elemento | Estado |
 |---|---|

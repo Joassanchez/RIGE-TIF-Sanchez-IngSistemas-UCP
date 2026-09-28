@@ -44,6 +44,8 @@
 | D-19 | Bitácora en **un único archivo** `00-gestion/bitacora.md`, entrada más reciente arriba. | 10 |
 | D-20 | La **migración inicial** la realiza Claude al armar el repositorio, en forma fiel (**migrar no es corregir**), con ADR retroactivos confirmados por el autor. | cumplida el 24/09/2026 |
 | D-21 | Todo el texto del documento generado en **color negro**, en lugar del gris azulado de la plantilla. | 9.1 |
+| D-22 | **Fuente única por artefacto** y destinos fijados por la consigna, no por los scripts: los instrumentos viven en `instrumentos/`; los scripts de `tools/` reciben `--destino` (tabla de `reglas-catedra.md`, sección 8) y nunca sobrescriben. `.claude/` y `CLAUDE.md` **no se versionan** (decisión del autor, 28/09/2026, que corrige lo previsto el 24/09). Condición que la invalida: que la cátedra exija la fuente de los instrumentos en las carpetas normalizadas. Antes ADR-031 (24/09/2026). | 4 |
+| D-23 | Los ADR se mantienen en `00-gestion/decisiones/`; `04-diseno/README.md` reúne **por remisión** las decisiones de arquitectura, el modelo de datos y el canal de CI. `/decidir` y `/aceptar` actualizan su fila cuando el ADR es de arquitectura. Antes ADR-043 (25/09/2026). | 4, 8 |
 
 ---
 

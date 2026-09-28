@@ -2,7 +2,7 @@
 
 Lista de trabajo autocontenida para corregir el Resumen, los Caps. I y II y los Anexos I y II del AE1 con `/corregir`, capítulo por capítulo. Reúne lo que quedó abierto de las revisiones del 25/09 y el 28/09/2026 (eliminadas el 28/09/2026; recuperables en el historial de git). Cada sección corregida vuelve a «borrador» en `estado.md`.
 
-## 1. Línea de base con agentes (ADR-040, Anexo III D-41)
+## 1. Línea de base con agentes (ADR-053, Anexo III D-41)
 
 | Dónde | Cambio |
 |---|---|
@@ -11,7 +11,7 @@ Lista de trabajo autocontenida para corregir el Resumen, los Caps. I y II y los 
 | I.1.2, línea 17 | La exclusión de la referente de la muestra pierde objeto respecto de la medición. |
 | I.6.5 | Agregar la razón de la medición con agentes (la CLI es la única vía por la que un agente usa RIGE). |
 | II.2 (incluida II.2.1, línea 13), II.3, II.6.3 | Instrumento, encuesta de práctica y amenazas. II.2.1:13 describe el mecanismo con personas y una VM con instantánea que no existe. Ventana del 02/10 al 16/10 como deuda del AE1, con cargo a la reserva (16 a 23 h, sin efecto de práctica). |
-| A.I.1 (líneas 11 a 16), A.I.7 (líneas 175 y 179) | Los reescribe ADR-040. |
+| A.I.1 (líneas 11 a 16), A.I.7 (líneas 175 y 179) | Los reescribe ADR-053. |
 | A.I.5 | Uniformar «la informante» (hoy alterna con «el informante», líneas 124 a 150). |
 
 ## 2. Valor probatorio de la entrevista (cambios aprobados por el autor el 25/09/2026)

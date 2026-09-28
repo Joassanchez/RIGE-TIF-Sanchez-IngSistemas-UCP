@@ -15,8 +15,8 @@ Severidad: **B** bloqueante · **I** importante · **M** menor.
 | U-05 | **Tablero y repositorio.** Enlace al tablero organizado por las iteraciones del Cap. V; completar `tablero` y `repositorio` en `informe/datos-autor.yaml`. | I |
 | AD-28 | **Acceso al repositorio (acción del autor).** Pasar el repositorio de GitHub a privado y agregar la cuenta del docente como colaboradora (Guía AE2 §2.3). Se publica bajo MIT después de la aprobación. | B |
 | G-01 | **Marcadores residuales** (`armar.py` bloquea la entrega). Quedan 5 en los Caps. III a V: `\[enlace\]`, `\[estado\]` y `\[fecha\]` en V.5 (dependen de U-01) y dos `[DATO PENDIENTE]` en RNF-07 del Anexo I (PV-01, PV-02). | B |
-| PV-01 | **RNF-07 · equipo de referencia.** Construir la imagen de ADR-050 y registrar su resumen; precisar «máquina virtual» como «contenedor Ubuntu 26.04 sobre Docker Desktop y WSL 2» en la ficha de RNF-07 y el Anexo I. Datos del anfitrión ya relevados: Samsung Galaxy Book3 (750XFG), Intel Core i7-1355U (10 núcleos, 12 hilos), 16 GB, SSD NVMe 512 GB, Windows 11 Home 10.0.26200. | I |
-| PV-02 | **RNF-07 · proyecto público.** Búsqueda con el criterio de ADR-045 (búsqueda de código de GitHub, fecha, repositorio con más agentes que resuelva con OpenCode 1.18.25), recuentos y alta con `/fuente`. | I |
+| PV-01 | **RNF-07 · equipo de referencia.** Construir la imagen de ADR-054 y registrar su resumen; precisar «máquina virtual» como «contenedor Ubuntu 26.04 sobre Docker Desktop y WSL 2» en la ficha de RNF-07 y el Anexo I. Datos del anfitrión ya relevados: Samsung Galaxy Book3 (750XFG), Intel Core i7-1355U (10 núcleos, 12 hilos), 16 GB, SSD NVMe 512 GB, Windows 11 Home 10.0.26200. | I |
+| PV-02 | **RNF-07 · proyecto público.** Búsqueda con el criterio de ADR-055 (búsqueda de código de GitHub, fecha, repositorio con más agentes que resuelva con OpenCode 1.18.25), recuentos y alta con `/fuente`. | I |
 | M-09 | Revisar la legibilidad de la Figura 3 en el `.docx`. | M |
 
 ## 2. Prototipo v1
@@ -24,17 +24,17 @@ Severidad: **B** bloqueante · **I** importante · **M** menor.
 | # | Pendiente | Sev. |
 |---|---|---|
 | U-01 | **Prototipo v1 ejecutable** (cierre de la iteración 1): caso de uso vertical, README de ocho secciones, CI con corrida exitosa y etiqueta `v1` publicada. `src/` solo tiene `README.md` y `AGENTS.md`. El diseño se discute antes de implementar. | B |
-| R-08 | `04-diseno/README.md`: completar las secciones 2 (esquema SQLite) y 3 (canal de CI, `.github/workflows/ci.yml`, con la matriz de plataformas de ADR-037). | I |
-| R-06 | Agregar `.gitattributes` (`* text=auto eol=lf`): lo exigen los escenarios de prueba (posición por línea, ADR-037). | I |
+| R-08 | `04-diseno/README.md`: completar las secciones 2 (esquema SQLite) y 3 (canal de CI, `.github/workflows/ci.yml`, con la matriz de plataformas de ADR-054). | I |
+| R-06 | Agregar `.gitattributes` (`* text=auto eol=lf`): lo exigen los escenarios de prueba (posición por línea, ADR-054). | I |
 | R-07 | Nombre del repositorio «TIF» frente a «PIF» de la consigna; resolver antes de la etiqueta `v1`. | M |
 
-## 3. Medición de la línea de base (ADR-040; ventana del 02/10 al 16/10)
+## 3. Medición de la línea de base (ADR-053; ventana del 02/10 al 16/10)
 
 | # | Pendiente | Sev. |
 |---|---|---|
 | AD-19 | Construir y ejecutar según `01-relevamiento/linea-base/DISENO-medicion-agentes.md` (fases 0 a 7; piloto → k, tiempo límite y costo). Registrar las horas reales en la bitácora. | B |
-| AD-26 | Aplicar ADR-050 antes de la fase 1: `Dockerfile` con la base fijada por su resumen, OpenCode 1.18.25 verificado por SHA-256 y usuarios de la medición; reorganizar `vm/`; reescribir la regla 1 y las fases 1, 6 y 8 del diseño con `docker run`; verificar la condición de validez (sin rutas del anfitrión, sin socket, sin `--privileged`, ejecutor no root, scripts sin systemd); crear `.wslconfig` (`memory=8GB`, `processors=12`). | B |
-| AD-25 | Incorporar al diseño de la medición el tope de API (USD 50, carga inicial de USD 20 para el piloto) y la regla de recorte de ADR-048, antes del piloto. Falta la fecha de carga. | I |
+| AD-26 | Aplicar ADR-054 antes de la fase 1: `Dockerfile` con la base fijada por su resumen, OpenCode 1.18.25 verificado por SHA-256 y usuarios de la medición; reorganizar `vm/`; reescribir la regla 1 y las fases 1, 6 y 8 del diseño con `docker run`; verificar la condición de validez (sin rutas del anfitrión, sin socket, sin `--privileged`, ejecutor no root, scripts sin systemd); crear `.wslconfig` (`memory=8GB`, `processors=12`). | B |
+| AD-25 | Incorporar al diseño de la medición el tope de API (USD 50, carga inicial de USD 20 para el piloto) y la regla de recorte de ADR-057, antes del piloto. Falta la fecha de carga. | I |
 | AD-17 | Recibir el archivo del agente de la referente (confirmado en la sesión del 26/09; no recibido): consentimiento, limpieza y alta en `01-relevamiento/fuentes.md`. | I |
 | AD-18 | Revisar la encuesta de práctica (`01-relevamiento/linea-base/borrador-encuesta-practica.md`), traducirla al inglés y difundirla antes del 02/10. | I |
 | AD-20 | `01-relevamiento/linea-base/`: reemplazar `antecedente-diseno-personas-v0.3.md` por la v0.3 real; reescribir en forma impersonal la síntesis del laboratorio que vaya al Anexo I y subir sus evidencias; declarar la herramienta auxiliar. | I |
@@ -43,7 +43,7 @@ Severidad: **B** bloqueante · **I** importante · **M** menor.
 
 | # | Pendiente | Sev. |
 |---|---|---|
-| LI-01 | **Consolidación de ADR** (limpieza del 28/09/2026, aprobada por el autor). Redactar, uno por vez, los ADR consolidados propuestos: interfaces y salida (017, 021, 022, 036, 041, 042); planificación (028, 030, 046, 047); línea de base (038, 039, 040); entorno y plataformas (037, 049, 050); RNF-07 (044, 045); alcance del OE-1 (034, 035); sostenimiento y recursos financieros (025, 048). Pasar 031 y 043 a `diseno-sistema-agentes.md` §2. Al aceptarse cada uno, borrar los absorbidos y actualizar el índice y `04-diseno/README.md`. | I |
+| LI-01 | **Consolidación de ADR: cerrada el 28/09/2026** (ADR-051 a ADR-057 aceptados; ADR-031 y 043 pasados a `diseno-sistema-agentes.md` §2). **Falta:** (1) borrar los archivos absorbidos (comando en la sesión del 28/09/2026); (2) el autor cambia las menciones a números viejos en `src/AGENTS.md` (ADR-006 → D-06, 021 y 022 → 051), `.claude/commands/aceptar.md` y `decidir.md` (ADR-043 → D-23 del diseño del sistema) y los comentarios de `tools/figura_cronograma.py` (046 y 047 → 052). Las menciones en otros ADR y en la bitácora se leen con la tabla de equivalencias de `INDICE.md`. | M |
 | AD-24 | **Declaración de herramientas en la bitácora.** Resolver la tensión con el preámbulo, que declara fuera de la asistencia «el diseño de los instrumentos» y «las decisiones metodológicas y de diseño». Declarar con herramienta, función y artefacto: la redacción asistida del diseño de la medición, de los casos, de los ADR 036 a 050 y de la guía de validación; la maqueta del v0 (HTML con asistentes generativos; falta nombrarlos); la fuente Mermaid de la Figura 1; las correcciones del 28/09/2026. Incluye si se actualiza la frase «asistente conversacional». | I |
 | AD-27 | **Encuadre grupal** (el autor lo lleva al grupo): descripción de RIGE (web local, solo lectura, sin IA), sin ponderar universos, un valor por fuente, costo horario con divisor declarado y retiro del parámetro «Sánchez, 2026» del 29/08. Las cifras de $2.290.000 y $3.790.000 no están en `opssi2026` y se retiran; el costo de referencia es $3.738.000 a marzo de 2026. | I |
 | M-07 | Convertir las citas literales a `[@clave]` y cargar `informe/referencias.bib`, para que la bibliografía se genere sola. Elimina el paso manual de G-02 (el ingeniero agrega a la bibliografía las fuentes nuevas que informa el redactor). | I |

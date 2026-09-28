@@ -2,7 +2,7 @@
 
 Esta carpeta reúne los tres elementos de diseño que fija la Guía de la AE2 (10.2): las decisiones de arquitectura con sus alternativas, el modelo de datos y la configuración del canal de integración continua.
 
-Cada elemento se presenta por remisión a su fuente única (ADR-043). Los registros de decisión (ADR) se mantienen en [`00-gestion/decisiones/`](../00-gestion/decisiones/INDICE.md), junto con las decisiones de método y de gestión del proyecto. La configuración del canal reside en `.github/workflows/`, única ubicación que ejecuta el servicio de integración continua.
+Cada elemento se presenta por remisión a su fuente única (diseño del sistema, D-23). Los registros de decisión (ADR) se mantienen en [`00-gestion/decisiones/`](../00-gestion/decisiones/INDICE.md), junto con las decisiones de método y de gestión del proyecto. La configuración del canal reside en `.github/workflows/`, única ubicación que ejecuta el servicio de integración continua.
 
 ## 1. Decisiones de arquitectura
 
@@ -15,15 +15,11 @@ Cada registro contiene el contexto, las alternativas evaluadas con su criterio d
 | [D-08](../00-gestion/anexo-III.md) (antes ADR-008) | Adoptar el agente como eje de la representación | aceptado | Organización del estado resuelto y de las consultas en torno al agente |
 | [D-17](../00-gestion/anexo-III.md) (antes ADR-017) | Incorporar una interfaz de línea de comandos de solo lectura, con salida estructurada | aceptado | Existencia de la interfaz programática y su carácter de solo lectura |
 | [ADR-019](../00-gestion/decisiones/ADR-019-modelo-dominio-mixto-agente-entidad.md) | Modelo del dominio mixto: Agente como entidad de primera clase y Elemento genérico con subtipos | aceptado | Estructura del modelo del dominio sobre la que se deriva el modelo de datos |
-| [ADR-021](../00-gestion/decisiones/ADR-021-explicacion-lenguaje-natural-mediante-plantillas.md) | Explicación en lenguaje natural mediante plantillas deterministas, sin modelo de lenguaje | aceptado; reemplazado parcialmente por ADR-036 | Mecanismo de explicación de decisiones de permiso y hallazgos, determinista y sin conexión |
-| [ADR-022](../00-gestion/decisiones/ADR-022-salida-linea-comandos-version-minima.md) | Salida por línea de comandos en versión mínima | aceptado; reemplazado parcialmente por ADR-041 | Consulta de valores efectivos con procedencia; salida estructurada y determinista |
 | [ADR-023](../00-gestion/decisiones/ADR-023-persistencia-almacen-propio-cache-hash.md) | Persistencia: almacén propio, con la caché por hash diferida | aceptado (opción B) | Almacén propio de la resolución, sin caché en el período |
 | [ADR-029](../00-gestion/decisiones/ADR-029-estrategia-oraculo-hibrida-resultados-referencia.md) | Estrategia de oráculo híbrida | aceptado | Resultados de referencia versionados y regeneración completa con OpenCode 1.18.25 al cierre de cada iteración |
 | [ADR-032](../00-gestion/decisiones/ADR-032-stack-typescript-bun-interfaz-web-local.md) | Stack del prototipo | aceptado | TypeScript sobre Bun 1.3.14; interfaz web local en `127.0.0.1`; SQLite embebido; evaluador incorporado por copia atribuida; GitHub Actions |
-| [ADR-036](../00-gestion/decisiones/ADR-036-esquema-salida-cli-rf03-compatibilidad-rnf08.md) | Esquema de la salida por línea de comandos | aceptado (C y E3) | Esquema publicado y versionado; explicación a pedido con `--explicar` |
-| [ADR-037](../00-gestion/decisiones/ADR-037-plataformas-rnf06-papel-contenedor.md) | Plataformas de RNF-06 y papel del contenedor | aceptado (C, P1 a P3) | Ubuntu 26.04 de referencia y Windows 11 declarada; matriz de CI; rutas normalizadas en las pruebas; aislamiento del oráculo |
-| [ADR-041](../00-gestion/decisiones/ADR-041-cli-consulta-permisos-medicion-agentes.md) | La línea de comandos incorpora la consulta de decisiones de permiso | aceptado | Consulta de decisiones de permiso por línea de comandos |
-| [ADR-042](../00-gestion/decisiones/ADR-042-linea-comandos-iteracion-2.md) | Línea de comandos completa e interfaz web limitada | aceptado (B') | Papel de cada interfaz: línea de comandos completa; interfaz web limitada a formularios y vistas mínimas |
+| [ADR-051](../00-gestion/decisiones/ADR-051-interfaces-salida-explicacion-consolidado.md) | Interfaces: línea de comandos completa y web local limitada | aceptado | CLI con valores, permisos y hallazgos; esquema de salida publicado y versionado; `--explicar` a pedido; web limitada a formularios y vistas; explicación por plantillas deterministas |
+| [ADR-054](../00-gestion/decisiones/ADR-054-plataformas-entorno-referencia-consolidado.md) | Plataformas y entorno de referencia | aceptado | Ubuntu 26.04 de referencia y Windows 11 declarada; matriz de CI; rutas normalizadas en las pruebas; imagen de contenedor común para el oráculo y las mediciones |
 
 ## 2. Modelo de datos
 
@@ -33,4 +29,4 @@ El modelo del dominio del que se deriva se encuentra en [`03-requisitos/libro/en
 
 ## 3. Canal de integración continua
 
-[DECISIÓN PENDIENTE: configuración del canal en `.github/workflows/ci.yml`; se define con el diseño del prototipo v1, con la matriz de plataformas de ADR-037.]
+[DECISIÓN PENDIENTE: configuración del canal en `.github/workflows/ci.yml`; se define con el diseño del prototipo v1, con la matriz de plataformas de ADR-054.]
