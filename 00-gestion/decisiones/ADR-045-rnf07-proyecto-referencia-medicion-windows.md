@@ -3,7 +3,7 @@
 - Estado: aceptado (28/09/2026), P-F + W-C
 - Fecha: 28/09/2026
 - Capítulos afectados: Cap. III (III.5); Anexo I (ficha RNF-07); libro (RNF-07); Cap. V (V.4, tarea de estabilización de la iteración 4); Cap. X (X.2, equipo de referencia); `01-relevamiento/fuentes.md`; diseño del v1 (opción de tiempos por etapa)
-- Origen: sesión de validación del 26/09/2026 (`01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md`, sección 3.2 y L-11); pasada posterior a la validación, fase 1, observación O-1 (`00-gestion/revisiones/20260928-pasada-validacion-acta.md`); pendiente A-04
+- Origen: sesión de validación del 26/09/2026 (`01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md`, sección 3.2 y L-11); pasada posterior a la validación, fase 1, observación O-1 (revisión «pasada-validacion-acta» del 28/09/2026 (eliminada el 28/09/2026; en el historial de git)); pendiente A-04
 - Relacionado: reemplaza parcialmente a ADR-044 (eje P y la cláusula «si la referente no informa el tamaño»); ADR-023 (condición de la caché); ADR-037 (plataformas, P3); ADR-042 (la línea de comandos es la interfaz del agente); ADR-036 (salida determinista)
 
 ### Contexto
@@ -112,4 +112,4 @@ Criterio de aceptación propuesto para RNF-07:
 
 ### Evidencia
 
-`01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md` (sección 3.2, L-11, sección 8); `00-gestion/revisiones/20260928-pasada-validacion-acta.md` (B-2, O-1); `03-requisitos/libro/catalogo/RNF-07.md`; ADR-023, ADR-036, ADR-037 y ADR-044; `00-gestion/reglas-catedra.md` (sección 6).
+`01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md` (sección 3.2, L-11, sección 8); revisión «pasada-validacion-acta» del 28/09/2026 (eliminada el 28/09/2026; en el historial de git) (B-2, O-1); `03-requisitos/libro/catalogo/RNF-07.md`; ADR-023, ADR-036, ADR-037 y ADR-044; `00-gestion/reglas-catedra.md` (sección 6).

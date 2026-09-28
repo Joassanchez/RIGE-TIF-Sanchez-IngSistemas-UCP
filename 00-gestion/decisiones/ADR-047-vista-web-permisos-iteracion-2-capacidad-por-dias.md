@@ -6,7 +6,7 @@
   - Cap. V: V.1 (Tabla 14 y párrafo del orden); V.2; V.4 (línea 16, Tablas 18 y 19, párrafos de las líneas 49, 51 y 67); Figura 3.
   - Libro: `iteraciones.md`.
   - `tools/figura_cronograma.py`.
-- Origen: `00-gestion/revisiones/20260928-pasada-validacion-revision.md`, P-01 (A-1 del crítico y C-1 del verificador) y P-04 (M-1 del crítico).
+- Origen: revisión «pasada-validacion-revision» del 28/09/2026 (eliminada el 28/09/2026; en el historial de git), P-01 (A-1 del crítico y C-1 del verificador) y P-04 (M-1 del crítico).
 - Relacionado:
   - Reemplaza parcialmente a ADR-042 (B', punto 2: la pantalla web de permisos pasaba a la iteración 3).
   - Reemplaza parcialmente a ADR-046 (A1: la capacidad 34/51/34/17 «en proporción a sus semanas»).
@@ -83,4 +83,4 @@ Redondeado, la capacidad queda en 28, 59, 33 y 16 h (136). La proporción es un 
 - `informe/cap-05/V.4-cronograma.md`: líneas 3, 16, 20 a 45 y 55 a 67.
 - `informe/anexos/anexo-I-cap3-catalogo-requisitos-matriz-trazabilidad.md`: líneas 20 y 28.
 - ADR-042, ADR-046.
-- `00-gestion/revisiones/20260928-revision-critico.md` (A-1, M-1) y `20260928-revision-consistencia.md` (C-1).
+- revisión «revision-critico» del 28/09/2026 (eliminada el 28/09/2026; en el historial de git) (A-1, M-1) y `20260928-revision-consistencia.md` (C-1).

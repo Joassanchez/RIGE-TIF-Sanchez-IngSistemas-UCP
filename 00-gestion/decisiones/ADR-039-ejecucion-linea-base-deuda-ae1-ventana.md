@@ -3,7 +3,7 @@
 - Estado: reemplazado parcialmente por ADR-040 (25/09/2026): se conserva la ventana del 02/10 al 16/10; cambian la estimación de horas y la consecuencia R-B
 - Fecha: 25/09/2026
 - Capítulos afectados: Cap. V (V.1, línea 16; V.4, distribución de la reserva); Cap. I (I.3.2); Cap. II (II.2.1, premisa de la forma única; II.2.4 o II.6.3, amenaza de práctica); Anexo III (D-11)
-- Origen: análisis integral del 25/09/2026, hallazgo T-06 (`00-gestion/revisiones/20260925-analisis-integral.md`); traspaso de sesión, grupo B, decisión 7
+- Origen: análisis integral del 25/09/2026, hallazgo T-06 (revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git)); traspaso de sesión, grupo B, decisión 7
 - Relacionado: complementa ADR-011 (forma única del instrumento; se corrige su premisa, no la decisión); ADR-027 y Tabla 13 del IV.3 (criterio fijado antes de medir); ADR-030 (presupuesto); ADR-038 (umbral del criterio principal)
 
 ### Contexto

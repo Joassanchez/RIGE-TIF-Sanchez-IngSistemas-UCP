@@ -3,7 +3,7 @@
 - Estado: aceptado (25/09/2026)
 - Fecha: 25/09/2026
 - Capítulos afectados: todos los que remiten a anexos (I, II, III, IV y V); `informe/anexos/`; `00-gestion/anexo-III.md`
-- Origen: pendiente M-02; análisis integral del 25/09/2026, hallazgo T-07 (`00-gestion/revisiones/20260925-analisis-integral.md`)
+- Origen: pendiente M-02; análisis integral del 25/09/2026, hallazgo T-07 (revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git))
 
 ### Contexto
 
@@ -85,4 +85,4 @@ Alternativa **A** (25/09/2026).
 
 ### Evidencia
 
-`informe/anexos/` (encabezados de cada anexo); `00-gestion/anexo-III.md`; `catedra/AE2-plantilla-informe.md` (tabla de anexos); `00-gestion/pendientes.md` (M-02); `00-gestion/revisiones/20260925-analisis-integral.md` (T-07).
+`informe/anexos/` (encabezados de cada anexo); `00-gestion/anexo-III.md`; `catedra/AE2-plantilla-informe.md` (tabla de anexos); `00-gestion/pendientes.md` (M-02); revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git) (T-07).

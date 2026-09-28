@@ -3,7 +3,7 @@
 > **Proyecto:** Proyecto Integrador Final — Ingeniería en Sistemas de Información (UCP, Sede Posadas)
 > **Autor:** Joaquín Sebastián Sánchez
 > **Vigente al:** 24/09/2026
-> **Propósito:** fijar en un único lugar cómo se organiza, redacta, revisa y entrega la documentación del TIF con asistencia de agentes. Lo que todavía no está decidido figura en la sección 14.
+> **Propósito:** fijar en un único lugar cómo se organiza, redacta, revisa y entrega la documentación del TIF con asistencia de agentes. Lo que todavía no está decidido figura en `00-gestion/pendientes.md`.
 
 ---
 
@@ -13,7 +13,7 @@
 2. **El autor decide.** Los agentes proponen, redactan y revisan; las decisiones, las aprobaciones y los commits son del autor.
 3. **Nada se inventa.** Datos, cifras, fechas, interlocutores y resultados provienen de archivos del repositorio. Si falta un dato se marca `[DATO PENDIENTE: …]`; si falta una decisión, `[DECISIÓN PENDIENTE: …]`.
 4. **Los revisores no escriben.** Producen informes, no cambios.
-5. **La consigna manda.** Orden de prelación: aclaraciones del docente (11.4) en el punto aclarado → Resolución Rectoral UCP N.º 97/23 → consigna oficial de la AE → guía de consignas y plantillas.
+5. **La consigna manda.** Orden de prelación: aclaraciones del docente (`reglas-catedra.md`, sección 4) en el punto aclarado → Resolución Rectoral UCP N.º 97/23 → consigna oficial de la AE → guía de consignas y plantillas.
 6. **Tareas acotadas.** Una sección por vez, una revisión por vez: cuida el cupo y reduce errores.
 7. **Markdown como fuente; artefactos a pedido.** Todo se trabaja en Markdown; `.docx`, PDF y `.xlsx` se generan por script solo cuando el autor lo pide.
 
@@ -28,7 +28,7 @@
 | D-03 | Código, prototipos y documentación en **un único repositorio**. | 4 |
 | D-04 | **Todo en Markdown**: informe, Libro de trabajo e instrumentos. Los artefactos (`.docx`, PDF, `.xlsx`) se generan por script **a pedido del autor**. | 9 |
 | D-05 | **Los agentes no hacen commits ni etiquetas.** Los hace el autor. | 12 |
-| D-06 | El uso de IA **no se menciona en los commits**; se declara en la bitácora (declaración general ya entregada) y en la sección 8 del README del v1. | 10, 11.7 |
+| D-06 | El uso de IA **no se menciona en los commits**; se declara en la bitácora (declaración general ya entregada) y en la sección 8 del README del v1. | 10; `reglas-catedra.md` 7 |
 | D-07 | El **ingeniero** propone decisiones y redacta sus fundamentos; el **redactor** escribe los capítulos completos. | 5 |
 | D-08 | El ingeniero opera en modo **muy exigente**: discute propuestas débiles y reabre decisiones aceptadas ante evidencia nueva. | 5.1 |
 | D-09 | Los comandos que **cambian un estado** (ADR o sección) los ejecuta **solo el autor**. Un ADR solo se acepta con `/aceptar`. | 6, 8 |
@@ -39,10 +39,10 @@
 | D-14 | `CLAUDE.md` corto; reglas de la cátedra en `00-gestion/reglas-catedra.md` (importado); consigna de cada AE solo al trabajar esa entrega. | 5.1 |
 | D-15 | Modelos: **Opus 5.5** (esfuerzo medio) para ingeniero, redactor y crítico; **Sonnet 5** para los tres revisores de reglas. Plan Pro; el autor ajusta según consumo. | 3.2 |
 | D-16 | Pipeline: Markdown → **pandoc** (`reference.docx`, filtros, citas APA) → `.docx` → **LibreOffice** → PDF. | 9.1 |
-| D-17 | **Extensión libre** por aclaración expresa del docente; no se controla ni se objeta. | 11.4 |
+| D-17 | **Extensión libre** por aclaración expresa del docente; no se controla ni se objeta. | `reglas-catedra.md` 4 |
 | D-18 | Corchetes, marcadores y restos de texto de asistente **los controla el autor manualmente**; el pipeline no los detecta ni los elimina. | 9.1 |
 | D-19 | Bitácora en **un único archivo** `00-gestion/bitacora.md`, entrada más reciente arriba. | 10 |
-| D-20 | La **migración inicial** la realiza Claude al armar el repositorio, en forma fiel (**migrar no es corregir**), con ADR retroactivos confirmados por el autor. | 13 |
+| D-20 | La **migración inicial** la realiza Claude al armar el repositorio, en forma fiel (**migrar no es corregir**), con ADR retroactivos confirmados por el autor. | cumplida el 24/09/2026 |
 | D-21 | Todo el texto del documento generado en **color negro**, en lugar del gris azulado de la plantilla. | 9.1 |
 
 ---
@@ -222,7 +222,7 @@ Controla el informe **contra sí mismo, contra los ADR y contra el Libro de trab
 - Terminología respecto del glosario; identificadores (RF, RNF, H-xx, R-xx); contradicciones de alcance; referencias cruzadas.
 - Replica los controles del Libro de trabajo:
   - cada requisito tiene todos sus campos y un criterio de aceptación comprobable;
-  - los valores de los campos son solo los permitidos (11.6);
+  - los valores de los campos son solo los permitidos (`reglas-catedra.md`, sección 6);
   - la trazabilidad cierra en doble vía (hallazgo H-xx ↔ requisito);
   - los requisitos **Must** coinciden con el producto mínimo viable del apartado V.5.
 - **Devuelve** los hallazgos en el formato común.
@@ -434,84 +434,7 @@ Instrumentos 32 a 35 a `.docx` con el mismo pipeline.
 
 ## 11. Reglas de la cátedra
 
-Esta sección es el contenido de `00-gestion/reglas-catedra.md`.
-
-### 11.1 Redacción
-
-- Impersonal, verbos en presente y en afirmativo (Art. 21.º).
-- Sin desarrollos teóricos ni discusiones ajenas al proyecto; las alternativas propias se consignan en forma sintética, con la deliberación en el Anexo III.
-- Ortografía y redacción descuentan hasta un punto sobre diez (0,50 desde el sexto error de ortografía; 0,50 desde el cuarto de redacción).
-- Criterio de formato uniforme.
-
-### 11.2 Contenido transversal
-
-- Problema con **cinco componentes** y **línea de base numérica**; criterio de éxito derivado de ella.
-- **Tres preguntas** junto a todo dato estadístico.
-- **Implicancia decisoria** en cada elemento de análisis.
-- Separación entre **sector del problema** y **sector de los recursos**.
-- Contactos con **persona, canal y motivo**.
-- Cifras solo si existen en el repositorio; citas solo de fuentes registradas.
-
-### 11.3 Formato (Arts. 20.º y 21.º)
-
-| Aspecto | Exigencia |
-|---------|-----------|
-| Hoja | A4 |
-| Márgenes | Superior e inferior 2,5 cm · izquierdo y derecho 3 cm |
-| Interlineado | Doble |
-| Tipografía | Times New Roman: cuerpo 12, justificado; notas y citas al pie 10; títulos, encabezado y pie a elección; texto en negro |
-| Tablas e instrumentos | Calibri 9,5, interlineado simple (formato de la plantilla) |
-| Carátulas | Cada capítulo en hoja aparte, numeral romano y título en mayúsculas, centrados; el texto empieza en la hoja siguiente sin repetir el título |
-| Numeración | Correlativa; los anexos aparte, «página X de Y» |
-| Láminas | Dentro del capítulo, numeradas como una página; normas IRAM |
-| Unidades | SIMELA (Ley N.º 19.511) y recomendaciones del SI |
-| Bibliografía | APA, con todas las fuentes citadas |
-| Resumen | Máximo 600 palabras (Art. 22.2) |
-| Nombre de archivo | `AAAAMMDD_InformeAEn_Equipo_vN` |
-
-### 11.4 Aclaraciones del docente
-
-Prevalecen sobre guías y plantillas en el punto aclarado. Los agentes las aplican sin volver a discutirlas.
-
-| Tema | Aclaración |
-|------|-----------|
-| Extensión | La cantidad de páginas es libre, a criterio del autor. La extensión orientativa de guías y plantillas no se controla ni se objeta. |
-
-### 11.5 Observaciones del AE1 que no deben reaparecer
-
-Su reiteración se pondera negativamente en la dimensión 6:
-- hoja carta en lugar de A4;
-- capítulos sin la estructura de apartados de la plantilla;
-- marcadores residuales de asistentes generativos (control manual del autor);
-- campos de identificación sin completar;
-- datos de identidad con valores distintos entre documentos (se previene con `datos-autor.yaml`);
-- nombres de archivo ajenos a la nomenclatura.
-
-### 11.6 Valores permitidos del Libro de trabajo
-
-| Campo | Valores |
-|-------|---------|
-| Catálogo · Tipo | Funcional · No funcional |
-| Catálogo · Categoría (no funcional) | Rendimiento · Fiabilidad · Seguridad · Usabilidad · Mantenibilidad · Portabilidad · Cumplimiento normativo |
-| Catálogo · Prioridad | Must · Should · Could · Won't |
-| Catálogo · Estado de validación | Validado · Pendiente · Rechazado por el referente |
-| Catálogo · ¿Integra el MVP? | Sí · No |
-| Entidades · Reclasificación | Entidad · Atributo de otra entidad · Rol de una entidad · Producto del sistema · Elemento del entorno |
-| Reglas · Tipo | Restricción · Derivación · Existencia |
-| Reglas · Estado | Validada · Pendiente · En disputa |
-| Recursos · Tipo | Humanos · Físicos y materiales · Financieros · Tecnológicos · Otros |
-
-Campos de cada ficha del catálogo: ID · Enunciado · Tipo · Categoría · Prioridad · Motivo de la prioridad · Criterio de aceptación (condición, acción, resultado con valores) · Trazabilidad (H-xx o acta) · Estado de validación · Iteración prevista · ¿Integra el MVP?
-
-Un requisito sin criterio de aceptación comprobable no se computa.
-
-### 11.7 Prototipo v1 (Guía de comprobación)
-
-- `README.md` con ocho secciones: identificación · qué hace el prototipo · requisitos previos con versiones exactas · instalación · configuración · ejecución y verificación · estado del canal de construcción · declaración de herramientas auxiliares (herramienta, función y artefacto afectado).
-- Archivo de variables de ejemplo sin credenciales reales; esquema de base reproducible por guion o migración.
-- Caso de uso vertical de interfaz a persistencia y retorno, con una regla de negocio validada.
-- CI en `.github/workflows/ci.yml`: instala, construye y ejecuta al menos una prueba ligada a un criterio de aceptación; al menos una corrida exitosa con fecha anterior o igual a la entrega.
-- Etiqueta `v1` anotada y publicada; correcciones posteriores como `v1.1`, sin mover la publicada.
+Fuente única: `00-gestion/reglas-catedra.md` (importado en `CLAUDE.md`). La copia que había aquí se eliminó el 28/09/2026 para no mantener dos versiones.
 
 ---
 
@@ -527,56 +450,3 @@ Configurados en `.claude/settings.json`, para que no dependan de que el agente r
 
 **Límite técnico:** Claude Code no permite restringir por carpeta la escritura de un subagente particular. Que solo el redactor escriba en `informe/` y solo el ingeniero en `00-gestion/` queda como instrucción; el control efectivo es la revisión del diff por parte del autor antes de cada commit.
 
----
-
-## 13. Migración inicial (una sola vez, al armar el repo)
-
-**Regla:** migrar no es corregir. El contenido se pasa tal cual está en la versión entregada o aceptada; las correcciones se hacen después, en commits separados.
-
-**Material de partida** (provisto por el autor el 24/09/2026):
-
-| Documento | Palabras aprox. | Nota |
-|-----------|----------------:|------|
-| AE1 (Resumen, Capítulos I y II, anexos) | 26 900 | Títulos con formato directo: corte por numeración. |
-| Capítulo III | 10 700 | Títulos con formato directo; muchas tablas. |
-| Capítulo IV | 4 600 | Títulos con estilo. Sirve como prueba de fidelidad. |
-| Capítulo V | 4 700 | Títulos con formato directo; dos figuras. |
-
-**Orden:**
-1. Inventario del repositorio existente, para fusionar sin pisar nada.
-2. Capítulo IV y prueba de fidelidad del pipeline.
-3. Capítulos III y V.
-4. AE1: Resumen y Capítulos I y II.
-5. Bitácora del AE1 y `anexo-III.md`.
-6. Libro de trabajo: catálogo desde III.5, trazabilidad desde los H-xx del Capítulo II, glosario, entidades, reglas, iteraciones y recursos.
-7. `referencias.bib` y `fuentes.md` desde las bibliografías existentes.
-8. ADR retroactivos.
-9. Configuración: `CLAUDE.md`, subagentes, comandos, `settings.json`, `reglas-catedra.md`, `reference.docx` y scripts.
-
-**Método:**
-- Conversión por script (pandoc): Markdown, figuras extraídas, un archivo por apartado.
-- Limpieza sin alterar contenido: tablas, notas al pie, estructura de apartados de la plantilla, citas `[@clave]`.
-- Control: apartados, palabras por apartado, tablas y figuras contra el original; con el Capítulo IV, regeneración del `.docx` y comparación lado a lado.
-
-**ADR retroactivos:**
-- Fuentes: documentos migrados, bitácora del AE1, `anexo-III.md` y chats del Proyecto.
-- Estado `aceptado (retroactivo)` con la fecha original; cada ADR indica su origen.
-- Lo que no tenga respaldo documental queda **propuesto** para que el autor lo confirme o lo descarte.
-- Prioridad: los que condicionan los capítulos pendientes del AE2.
-
-**Resultado:** todos los cambios quedan sin confirmar; el autor los revisa y hace los commits (se recomienda uno por paso).
-
-**Convenciones adoptadas en la migración:**
-- Las secciones migradas figuran en `estado.md` como `aprobada (migración)`: son las versiones entregadas o aceptadas.
-- ADR-001 a ADR-018 corresponden a los códigos D-01 a D-18 del Anexo III; la numeración continúa sin reiniciarse.
-- Mientras las citas no pasen al formato `[@clave]`, el armado usa `informe/bibliografia.md`.
-- Lo detectado durante la migración quedó en `00-gestion/pendientes.md` (serie M-xx), sin corregir.
-
----
-
-## 14. Temas abiertos
-
-| # | Tema |
-|---|------|
-| A-01 | **Ficha de defensa:** contenido, ubicación y comando. Se define más adelante. |
-| A-02 | **Declaración de herramientas** en la bitácora del AE2: si se actualiza la frase «asistente conversacional» para describir el uso de agentes (a criterio del autor). |

@@ -63,7 +63,7 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
    - `01-relevamiento/documentos/opssi2026-reporte-industria-software-1T2026.pdf`, pp. 17 y 25.
    - Especificaciones del equipo medidas el 28/09/2026 (PV-01).
    - Guía AE2, §2.3 (repositorio privado) y §7.
-   - Revisión consolidada: `00-gestion/revisiones/20260928-cap-X.md`.
+   - Revisión consolidada: revisión «cap-X» del 28/09/2026 (eliminada el 28/09/2026; en el historial de git).
    - Fuentes verificadas en `01-relevamiento/fuentes.md`: precios de Anthropic, términos de Docker Desktop y facturación de GitHub Actions.
 4. **Aporte personal.**
    - Aporté el reporte del OPSSI y los datos de recursos: plan y fecha de Claude Pro, tope y carga de la API, y que la estimación de horas no supone el uso del asistente.
@@ -110,7 +110,7 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
    - **Reparto de horas por semanas nominales:** descartado porque no coincide con las fechas de las iteraciones.
 3. **Evidencia.**
    - Acta: `01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md`.
-   - Informes de la pasada: `00-gestion/revisiones/20260928-*.md`.
+   - Informes de la pasada: revisiones del 28/09/2026 (eliminadas en la limpieza del mismo día; en el historial de git).
    - ADR-045, ADR-046 y ADR-047.
    - Métodos de verificación del Anexo I del AE1: sostienen que cinco de las siete reglas de derivación se verificaron por ejecución.
    - Anexo VI: ocho incidencias en siete exclusiones.
@@ -189,8 +189,8 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
    - Excluí dos criterios de construcción del diseño con personas, la equivalencia entre casos a y b y la no repetición entre casos, porque controlaban el aprendizaje humano, que un agente no tiene.
    - Descarté un v1 solo de línea de comandos, porque la guía de comprobación exige que la aplicación responda en una dirección y muestre el dato.
    - Descarté mantener RF-03 en la iteración 3, por su cercanía con la congelación y la medición final.
-3. **Evidencia que sostiene la decisión.** Agente de permisos elevados declarado por la referente (Anexo I, A.I.5); motivo de prioridad de RF-03; guía del AE1, 3.3 (funciones de la línea de base); guía de comprobación del v1, pasos 7 y 8; laboratorio de verificación del 19/09/2026 (E-00, E-03, E-14, E-18); incidencias #36663, #36416 y #39715. Revisión del material: `00-gestion/revisiones/20260925-material-linea-base.md`.
-4. **Aporte personal.** Planteé el cambio de método por la dificultad de reunir participantes, solicité a la referente su agente, elegí la familia de modelos y el presupuesto, cuestioné la cantidad de casos y propuse priorizar la línea de comandos. Aporté el diseño v0.3, los escenarios y el laboratorio, que se reutilizan. Artefactos: `01-relevamiento/linea-base/`, ADR-040 a ADR-042, `00-gestion/borrador-encuesta-practica.md`.
+3. **Evidencia que sostiene la decisión.** Agente de permisos elevados declarado por la referente (Anexo I, A.I.5); motivo de prioridad de RF-03; guía del AE1, 3.3 (funciones de la línea de base); guía de comprobación del v1, pasos 7 y 8; laboratorio de verificación del 19/09/2026 (E-00, E-03, E-14, E-18); incidencias #36663, #36416 y #39715. Revisión del material: revisión «material-linea-base» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git).
+4. **Aporte personal.** Planteé el cambio de método por la dificultad de reunir participantes, solicité a la referente su agente, elegí la familia de modelos y el presupuesto, cuestioné la cantidad de casos y propuse priorizar la línea de comandos. Aporté el diseño v0.3, los escenarios y el laboratorio, que se reutilizan. Artefactos: `01-relevamiento/linea-base/`, ADR-040 a ADR-042, `01-relevamiento/linea-base/borrador-encuesta-practica.md`.
 5. **Desacuerdos y resolución.** Sin desacuerdos que registrar, conforme al criterio declarado en el preámbulo.
 6. **Herramienta auxiliar y alcance.** Asistencia conforme al criterio general declarado, para el contraste de alternativas y la revisión del material existente. [REVISAR POR EL AUTOR: en esta jornada el asistente también redactó el diseño de la medición, los ocho escenarios nuevos y la hoja de respuestas, y corrigió `caso.sh` y `verificar.sh`. El preámbulo declara que el diseño de los instrumentos se realiza de manera propia; declarar aquí ese alcance concreto (herramienta, función y artefacto afectado) o ajustar el preámbulo.]
 

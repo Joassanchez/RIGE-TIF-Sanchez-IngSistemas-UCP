@@ -3,7 +3,7 @@
 - Estado: reemplazado parcialmente por ADR-040 (25/09/2026): el umbral por participante pasa a un umbral por caso
 - Fecha: 25/09/2026
 - Capítulos afectados: Cap. I (I.3.4, criterio principal); Anexo III
-- Origen: análisis integral del 25/09/2026, hallazgo I-04 (`00-gestion/revisiones/20260925-analisis-integral.md`); traspaso de sesión, grupo B, decisión 6
+- Origen: análisis integral del 25/09/2026, hallazgo I-04 (revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git)); traspaso de sesión, grupo B, decisión 6
 - Relacionado: complementa ADR-005 (criterio anclado en el valor observado y comparación pareada)
 
 ### Contexto

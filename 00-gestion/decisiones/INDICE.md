@@ -1,27 +1,9 @@
 # Índice de decisiones (ADR)
 
-El ingeniero lee este índice al abrir cada sesión y abre solo los ADR que el tema requiere. Los ADR-001 a ADR-018 corresponden a los códigos D-01 a D-18 del Anexo III; la numeración continúa sin reiniciarse.
+El ingeniero lee este índice al abrir cada sesión y abre solo los ADR que el tema requiere. Las decisiones del AE1 (antes ADR-001 a ADR-018, retroactivos) se consultan en `00-gestion/anexo-III.md`, D-01 a D-18: ADR-0NN equivale a D-NN. Sus archivos se eliminaron en la limpieza del 28/09/2026 porque duplicaban el Anexo III; para el redactor cuentan como decisiones aceptadas. La numeración de los ADR no se reinicia. La consolidación de las cadenas de reemplazo parcial está en curso (pendiente LI-01).
 
 | ADR | Decisión | Estado | Afecta |
 |---|---|---|---|
-| [ADR-001](ADR-001-relevar-referente-tecnico-individual.md) | Relevar a un referente técnico individual | aceptado (retroactivo) | apartado I.1.2 |
-| [ADR-002](ADR-002-verificar-oe-1-contra-resolucion.md) | Verificar el OE-1 contra la resolución por agente de la herramienta | aceptado (retroactivo) | apartado I.2.4 |
-| [ADR-003](ADR-003-determinar-limite-observacion-prueba-piloto.md) | Determinar el límite de observación en la prueba piloto, por criterio de censura | aceptado (retroactivo) | apartado I.3.2 |
-| [ADR-004](ADR-004-aplicar-tipologia-kendall-kendall-tipos.md) | Aplicar la tipología de Kendall y Kendall a los tipos de decisión sobre la configuración | aceptado (retroactivo) | apartado I.3.3 |
-| [ADR-005](ADR-005-anclar-criterio-exito-valor-observado.md) | Anclar el criterio de éxito en el valor observado y sostenerlo en la comparación pareada | aceptado (retroactivo) | apartado I.3.4 |
-| [ADR-006](ADR-006-incorporar-funciones-evaluacion-permisos-herramienta.md) | Incorporar las funciones de evaluación de permisos de la herramienta, bajo su licencia | aceptado (retroactivo) | apartado I.3.5 |
-| [ADR-007](ADR-007-asociar-proyecto-unicamente-ods-8.md) | Asociar el proyecto únicamente al ODS 8, meta 8.2 | aceptado (retroactivo) | apartado I.4.1 |
-| [ADR-008](ADR-008-adoptar-agente-como-eje-representacion.md) | Adoptar el agente como eje de la representación | aceptado (retroactivo) | apartado I.6.1 |
-| [ADR-009](ADR-009-construir-prototipo-v0-como-maqueta.md) | Construir el prototipo v0 como maqueta de baja fidelidad | aceptado (retroactivo) | apartado I.6.6 |
-| [ADR-010](ADR-010-ampliar-poblacion-usuarios-cualquier-herramienta.md) | Ampliar la población a usuarios de cualquier herramienta agéntica, con dos perfiles | aceptado (retroactivo) | apartado II.2.1 |
-| [ADR-011](ADR-011-emplear-forma-unica-instrumento-ambas.md) | Emplear una forma única de instrumento en ambas mediciones | aceptado (retroactivo) | apartado II.2.1 |
-| [ADR-012](ADR-012-admitir-totalidad-comandos-nativos-introspeccion.md) | Admitir la totalidad de los comandos nativos de introspección | aceptado (retroactivo) | apartado II.2.1 |
-| [ADR-013](ADR-013-relevar-incidencias-mediante-filtro-titulo.md) | Relevar las incidencias mediante filtro por título | aceptado (retroactivo) | apartado II.2.2 |
-| [ADR-014](ADR-014-presentar-desagregacion-perfil-condiciones-c.md) | Presentar la desagregación por perfil con las condiciones C-2 a C-4 agrupadas | aceptado (retroactivo) | apartado II.3.2 |
-| [ADR-015](ADR-015-aplicar-cadena-valor-desarrollo-software.md) | Aplicar la cadena de valor al desarrollo de software asistido por agentes | aceptado (retroactivo) | apartado II.5.3 |
-| [ADR-016](ADR-016-excluir-referente-muestra-linea-base.md) | Excluir al referente de la muestra de la línea de base | aceptado (retroactivo) | apartado II.2.4 |
-| [ADR-017](ADR-017-incorporar-interfaz-linea-comandos-solo.md) | Incorporar una interfaz de línea de comandos de solo lectura, con salida estructurada | aceptado (retroactivo) | apartado I.6.5 |
-| [ADR-018](ADR-018-no-producir-valoracion-monetaria-problema.md) | No producir una valoración monetaria del problema y establecer su magnitud con los indicadores de la línea de base | aceptado (retroactivo) | apartado I.3.1 |
 | [ADR-019](ADR-019-modelo-dominio-mixto-agente-entidad.md) | Modelo del dominio mixto: Agente como entidad de primera clase y Elemento genérico con subtipos | aceptado (retroactivo) | Cap. III (III.2) |
 | [ADR-020](ADR-020-adoptar-entrada-configuracion-denominacion-unica.md) | Adoptar «entrada de configuración» como denominación única de las vías por las que llega la configuración | aceptado (retroactivo) | Cap. III (III.2.4) y glosario; propaga al AE1 |
 | [ADR-021](ADR-021-explicacion-lenguaje-natural-mediante-plantillas.md) | Explicación en lenguaje natural mediante plantillas deterministas, sin modelo de lenguaje, limitada a decisiones de permiso y hallazgos | aceptado (retroactivo); reemplazado parcialmente por ADR-036 | Cap. III (III.5), RF-02, RF-07; corrige la función F2 del AE1 |

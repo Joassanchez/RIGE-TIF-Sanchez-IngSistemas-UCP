@@ -122,7 +122,7 @@ Amenaza declarada (validez de constructo): el desempeño humano en el procedimie
 
 ### Ajuste tras revisar el material existente (25/09/2026)
 
-Revisión: `00-gestion/revisiones/20260925-material-linea-base.md`. Diseño de ejecución resultante: `01-relevamiento/linea-base/DISENO-medicion-agentes.md`.
+Revisión: revisión «material-linea-base» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git). Diseño de ejecución resultante: `01-relevamiento/linea-base/DISENO-medicion-agentes.md`.
 
 - **Se reutiliza** el material del diseño con personas (v0.3): los ocho escenarios y los scripts de `01-relevamiento/linea-base/vm/`, la hoja de referencia, la documentación sin conexión y los criterios de construcción y de corrección. La hoja de respuestas se reconstruyó a partir de la v0.3 (`01-relevamiento/linea-base/respuestas.md`).
 - **Separación entre escenario y ejecutor:** el agente que responde corre como otro usuario, con su propia configuración y fuera del proyecto. Si corriera dentro del escenario, la configuración del caso lo gobernaría a él mismo (en C-4b ni siquiera podría usar la terminal).
@@ -169,4 +169,4 @@ Detalle: `01-relevamiento/linea-base/DISENO-medicion-agentes.md` v1.1, sección 
 
 ### Evidencia
 
-`catedra/AE1-guia.md` (3.3 y 4.1); `informe/cap-01/I.3-necesidad-problema-responde-proyecto.md` (líneas 5 a 11, 37 a 48, 71 y 83); `informe/cap-02/II.2-instrumentos-dinamicas-aplicadas-alcance.md` (líneas 7 a 13, 17, 37 y 39); `informe/anexos/anexo-I-ae1-datos-relevados.md` (línea 139); `03-requisitos/libro/catalogo/RF-03.md`; ADR-003, ADR-005, ADR-011, ADR-016, ADR-017, ADR-018, ADR-038, ADR-039. Borrador de la encuesta y del pedido a la referente: `00-gestion/borrador-encuesta-practica.md`.
+`catedra/AE1-guia.md` (3.3 y 4.1); `informe/cap-01/I.3-necesidad-problema-responde-proyecto.md` (líneas 5 a 11, 37 a 48, 71 y 83); `informe/cap-02/II.2-instrumentos-dinamicas-aplicadas-alcance.md` (líneas 7 a 13, 17, 37 y 39); `informe/anexos/anexo-I-ae1-datos-relevados.md` (línea 139); `03-requisitos/libro/catalogo/RF-03.md`; ADR-003, ADR-005, ADR-011, ADR-016, ADR-017, ADR-018, ADR-038, ADR-039. Borrador de la encuesta y del pedido a la referente: `01-relevamiento/linea-base/borrador-encuesta-practica.md`.

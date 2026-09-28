@@ -1,6 +1,6 @@
 # Reglas de la cátedra
 
-Reglas transversales que aplican el redactor y controlan los revisores. Fuente: diseño del sistema, sección 11. Se actualizan cuando la cátedra publica una consigna nueva o el docente aclara algo (sección 4).
+Reglas transversales que aplican el redactor y controlan los revisores. Es la fuente única (el diseño del sistema, sección 11, remite aquí). Se actualizan cuando la cátedra publica una consigna nueva o el docente aclara algo (sección 4).
 
 ## 1. Redacción
 

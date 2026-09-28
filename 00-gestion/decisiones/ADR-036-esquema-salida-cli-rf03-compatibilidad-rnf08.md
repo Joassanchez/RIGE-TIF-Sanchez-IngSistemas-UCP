@@ -3,7 +3,7 @@
 - Estado: aceptado (25/09/2026), alternativas C y E3; reemplaza parcialmente a ADR-021 (límite de la explicación a la interfaz gráfica)
 - Fecha: 25/09/2026 (ampliado el mismo día con el eje de la explicación, tras ADR-041 y ADR-042)
 - Capítulos afectados: Cap. III (III.1, III.5 Tabla 9 y párrafo final); Anexo I (fichas RF-02, RF-03, RF-07 y RNF-08); `03-requisitos/libro/catalogo/` (RF-02, RF-03, RF-07, RNF-08); Cap. V (V.4, Tabla 18)
-- Origen: análisis integral del 25/09/2026, hallazgo III-05 (`00-gestion/revisiones/20260925-analisis-integral.md`); traspaso de sesión, grupo B, decisión 4 (`00-gestion/revisiones/20260925-traspaso-sesion.md`)
+- Origen: análisis integral del 25/09/2026, hallazgo III-05 (revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git)); traspaso de sesión, grupo B, decisión 4 (revisión «traspaso-sesion» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git))
 - Relacionado: complementa ADR-022 (comando único de la CLI); respeta el recuento de ADR-035 (14 Must de 23); se ajusta a ADR-041 (permisos por línea de comandos) y ADR-042 (línea de comandos completa); reemplaza parcialmente a ADR-021
 
 ### Contexto

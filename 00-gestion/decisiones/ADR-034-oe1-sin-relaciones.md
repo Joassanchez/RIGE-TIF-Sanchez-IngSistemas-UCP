@@ -3,13 +3,13 @@
 - Estado: aceptado (25/09/2026)
 - Fecha: 25/09/2026
 - Capítulos afectados: Cap. I (I.2.4, Tabla 1; I.6.2, Tabla 7); Cap. III (III.3, coherente); Cap. IV (IV.3, párrafo final)
-- Origen: análisis integral del 25/09/2026, hallazgo T-04 (`00-gestion/revisiones/20260925-analisis-integral.md`)
+- Origen: análisis integral del 25/09/2026, hallazgo T-04 (revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git))
 
 ### Contexto
 
 OE-1 (I.2.4, Tabla 1) incluye «sus relaciones con los demás elementos», y su indicador exige que «las relaciones coinciden con las definidas en cada escenario». La función F3 (relaciones) quedó diferida en III.3 (Tabla 7), y RF-13 tiene prioridad Could y ninguna iteración asignada. Tal como está, el objetivo no puede declararse cumplido con el alcance del proyecto.
 
-La evidencia que podía justificar subir las relaciones al período era la representación manual de la arquitectura de agentes (la pizarra) relatada por la referente. El autor confirma que es un dato cierto, pero sin constancia más allá de la entrevista, y resuelve quitarle peso probatorio (`00-gestion/revisiones/20260925-evidencia-entrevista.md`, cambios P-01 a P-12).
+La evidencia que podía justificar subir las relaciones al período era la representación manual de la arquitectura de agentes (la pizarra) relatada por la referente. El autor confirma que es un dato cierto, pero sin constancia más allá de la entrevista, y resuelve quitarle peso probatorio (revisión «evidencia-entrevista» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git), cambios P-01 a P-12).
 
 ### Alternativas evaluadas
 

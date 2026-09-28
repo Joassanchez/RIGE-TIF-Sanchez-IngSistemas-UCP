@@ -3,7 +3,7 @@
 - Estado: aceptado (25/09/2026)
 - Fecha: 25/09/2026
 - Capítulos afectados: Cap. X (X.4, íntegro); Cap. V (V.4, Tabla 18; V.5, prototipo v1); Cap. I (I.5, I.6.2, I.6.4) y Cap. III (III.3, RF-03) por la denominación «aplicación de escritorio»; Cap. IV (IV.1, canales; IV.3, clientes); `src/README.md`
-- Origen: análisis integral del 25/09/2026 (`00-gestion/revisiones/20260925-analisis-integral.md`, hallazgos T-05 y V-01); pendiente AD-06
+- Origen: análisis integral del 25/09/2026 (revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git), hallazgos T-05 y V-01); pendiente AD-06
 - Relacionado: **concreta ADR-006** (cómo se incorpora el evaluador) y **fija la tecnología del almacén** que ADR-023 dejó pendiente. No reemplaza ningún ADR: la «aplicación de escritorio» figura en el informe sin ADR propio.
 
 ### Contexto
@@ -167,7 +167,7 @@ El autor acepta la recomendación en sus cinco ejes (25/09/2026): TypeScript sob
 
 ### Evidencia
 
-`catedra/AE2-guia-comprobacion-v1.md` (pasos 3, 6 y 7; causas de fallo; §5 CI); `00-gestion/reglas-catedra.md` §7; ADR-006; ADR-021; ADR-023; ADR-029; `informe/anexos/anexo-I-ae1-datos-relevados.md` (A.I.3, resultado 10); `informe/cap-01/I.6-descripcion-detallada-sistema-informacion.md` (Tabla 9); `informe/cap-04/IV.1-definicion-negocios.md`; `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md`; `informe/cap-05/V.4-cronograma.md` (Tabla 18); `informe/datos-autor.yaml`; `00-gestion/revisiones/20260925-analisis-integral.md` (T-05, IV-01, V-01).
+`catedra/AE2-guia-comprobacion-v1.md` (pasos 3, 6 y 7; causas de fallo; §5 CI); `00-gestion/reglas-catedra.md` §7; ADR-006; ADR-021; ADR-023; ADR-029; `informe/anexos/anexo-I-ae1-datos-relevados.md` (A.I.3, resultado 10); `informe/cap-01/I.6-descripcion-detallada-sistema-informacion.md` (Tabla 9); `informe/cap-04/IV.1-definicion-negocios.md`; `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md`; `informe/cap-05/V.4-cronograma.md` (Tabla 18); `informe/datos-autor.yaml`; revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git) (T-05, IV-01, V-01).
 
 ### Precisiones de fundamento (28/09/2026, revisión del Cap. X, R-05 y R-15)
 
