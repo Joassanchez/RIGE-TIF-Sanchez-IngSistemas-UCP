@@ -8,7 +8,7 @@
 | Categoría (si es no funcional) | Seguridad |
 | Prioridad | Must |
 | Motivo de la prioridad | Las variables de entorno suelen contener credenciales |
-| Criterio de aceptación | Definida una variable con un valor conocido, ese valor no aparece en ninguna salida del sistema —interfaz, línea de comandos ni almacén propio—, verificado por búsqueda textual del valor |
+| Criterio de aceptación | CA-1: Definida una variable con un valor conocido, ese valor no aparece en ninguna salida del sistema —interfaz, línea de comandos ni almacén propio—, verificado por búsqueda textual del valor |
 | Trazabilidad | Acta del 26/09/2026, decisión L-03 |
 | Estado de validación | Validado |
 | Iteración prevista | 3 |

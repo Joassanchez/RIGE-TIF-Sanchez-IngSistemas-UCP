@@ -81,7 +81,7 @@ La relación reflexiva entre elementos representa los vínculos declarados en la
 
 *Tabla 5. Tipos de elemento que declara el adaptador de OpenCode 1.18.25, con el requisito que cubre su resolución. Fuente: elaboración propia sobre el Anexo I, A.I.3 del informe de la AE1 y el catálogo de requisitos del Anexo I.*
 
-Las skills integran el modelo del dominio, pero ningún requisito compromete su resolución en este período: su disponibilidad para cada agente forma parte de la representación de vínculos diferida como capacidad posterior (RF-13), conforme a la decisión L-12, y su ubicación queda fuera del compromiso del período.
+Las skills integran el modelo del dominio, pero ningún requisito compromete su resolución en este período: su disponibilidad para cada agente forma parte de la representación de vínculos diferida como capacidad posterior (RF-13), conforme a la decisión L-12, y su ubicación queda fuera del compromiso del período. RF-01 compromete la resolución de los demás tipos de elemento en la medida en que integran el estado efectivo de un agente, y su consulta independiente corresponde a RF-14.
 
 ### III.2.4 · Reglas de negocio y glosario
 

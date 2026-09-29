@@ -6,6 +6,7 @@
 - Origen: consolidación del 28/09/2026 (pendiente LI-01). No es una decisión nueva: reúne lo vigente de ADR-028, ADR-030, ADR-046 y ADR-047, todos aceptados.
 - Reemplaza: ADR-028, ADR-030, ADR-046 y ADR-047. Sus archivos se eliminaron el 28/09/2026 (quedan en el historial de git).
 - Relacionado: ADR-051 (qué ofrece cada interfaz), ADR-056 (14 Must de 23), ADR-053 (la línea de base se ejecuta con cargo a la reserva de la Ventana), ADR-054 y ADR-055 (acreditaciones de Should dentro de la estabilización).
+- **Modificado por ADR-064** (aceptado el 29/09/2026): horas de RF-16 (+3 h), RNF-09 (+1 h) y RNF-10 (dentro de la tarea del evaluador), financiadas con la estabilización (15 h → 11 h); la fila 7 de la Tabla 19 pasa a «reducida de 11 h a 1 h». Presupuesto, capacidad por días y contingencia de un tercio sin cambios.
 
 ### Contexto
 
@@ -119,7 +120,7 @@ La planificación se ajustó tres veces después de aceptada:
 - CU-01 mínimo, con la advertencia de versión;
 - CU-02;
 - CU-03, con la decisión de RF-02 (no su explicación), RF-06, RF-08 y RF-09;
-- CU-05: valores y permisos por CLI, que es la vía del agente en la medición final.
+- RF-03 (antes CU-05, retirado como caso de uso por ADR-059; el número CU-05 designa hoy «Explorar los agentes del proyecto»): valores y permisos por CLI, que es la vía del agente en la medición final.
 
 **Anexo III:** sin cambios. Sus filas D-33, D-35, D-38, D-39 y D-40 siguen siendo la deliberación del informe.
 

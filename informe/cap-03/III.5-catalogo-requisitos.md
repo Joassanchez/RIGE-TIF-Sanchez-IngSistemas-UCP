@@ -1,12 +1,12 @@
 ## III.5 · Catálogo de requisitos
 
-El catálogo comprende veintitrés requisitos: quince funcionales y ocho no funcionales, estos últimos distribuidos en las categorías de seguridad, fiabilidad, mantenibilidad, portabilidad y rendimiento. Catorce llevan prioridad Must, cinco Should, tres Could y uno Won't; el conjunto de los Must coincide de manera exacta con el producto mínimo viable descrito en el apartado V.5. La escala de prioridad es MoSCoW (Clegg y Barker, 1994), y las capacidades que el apartado III.3 declara diferidas se incorporan con prioridad Could o Won't en lugar de omitirse, de modo que el catálogo cubra la totalidad de las funciones declaradas en el informe de la AE1 y haga explícito qué queda fuera del período. Los veintitrés requisitos se validaron con la referente en la sesión del 26/09/2026, con una excepción: la condición de tamaño del RNF-07 se revisó después de la sesión (ADR-045) y se informa a la referente.
+El catálogo comprende veintiséis requisitos: dieciséis funcionales y diez no funcionales, estos últimos distribuidos en las categorías de seguridad, fiabilidad, mantenibilidad, portabilidad, rendimiento y cumplimiento normativo. Diecisiete llevan prioridad Must, seis Should, dos Could y uno Won't; el conjunto de los Must coincide de manera exacta con el producto mínimo viable descrito en el apartado V.5. La escala de prioridad es MoSCoW (Clegg y Barker, 1994), y las capacidades que el apartado III.3 declara diferidas se incorporan con prioridad Could o Won't en lugar de omitirse, de modo que el catálogo cubra la totalidad de las funciones declaradas en el informe de la AE1 y haga explícito qué queda fuera del período. Veintiuno de los veintiséis requisitos se validaron con la referente en la sesión del 26/09/2026; los cinco restantes —RF-12 y RF-14, reformulados, y RF-16, RNF-09 y RNF-10, incorporados con posterioridad— se informan a la referente y figuran como pendientes de validación. Entre los validados rige una excepción: la condición de tamaño del RNF-07 se revisó después de la sesión (ADR-045) y se informa a la referente.
 
-Cada requisito enuncia una sola capacidad o una sola restricción y se construyó a partir de un resultado verificado del relevamiento técnico, de un hallazgo del análisis o de un acuerdo del acta de validación. Once se trazan a resultados del relevamiento técnico, siete a hallazgos del análisis, once a acuerdos del acta de validación y ocho a funciones o apartados del informe de la AE1; varios concurren a más de un origen. La totalidad de las fronteras que delimitan el catálogo, declaradas en el apartado III.4, se validó en esa misma sesión. Las fichas, que sintetizan seis campos por requisito de los once que fija la cátedra y que el Libro de trabajo contiene completos, y la matriz de trazabilidad en doble vía constan en el Anexo I.
+Cada requisito enuncia una sola capacidad o una sola restricción y se construyó a partir de un resultado verificado del relevamiento técnico, de un hallazgo del análisis o de un acuerdo del acta de validación. Doce se trazan a resultados del relevamiento técnico, siete a hallazgos del análisis, doce a acuerdos del acta de validación, diez a funciones o apartados del informe de la AE1 y uno a una decisión del Anexo III; varios concurren a más de un origen. La totalidad de las fronteras que delimitan el catálogo, declaradas en el apartado III.4, se validó en esa misma sesión. Las fichas, que sintetizan seis campos por requisito de los once que fija la cátedra y que el Libro de trabajo contiene completos, con los criterios de aceptación presentados numerados, y la matriz de trazabilidad en doble vía constan en el Anexo I.
 
 | **Cód.** | **Enunciado sintético**                                                                        | **Tipo**       | **Prioridad** |
 |----------|------------------------------------------------------------------------------------------------|----------------|---------------|
-| RF-01    | Valor efectivo de una clave, con su procedencia y las declaraciones desplazadas                | Funcional      | Must          |
+| RF-01    | Valor efectivo de cada clave de un agente, o de la solicitada, con su procedencia y las declaraciones desplazadas | Funcional      | Must          |
 | RF-02    | Decisión de permiso para una acción, con la cadena de reglas, la determinante y su explicación | Funcional      | Must          |
 | RF-03    | Consulta de valores y de permisos por línea de comandos, con salida estructurada, determinista y versionada | Funcional      | Must          |
 | RF-04    | Descubrimiento de las entradas aplicables, con precedencia y legibilidad                       | Funcional      | Must          |
@@ -17,10 +17,11 @@ Cada requisito enuncia una sola capacidad o una sola restricción y se construy�
 | RF-09    | Advertencia cuando una declaración del usuario desactiva una protección nativa                 | Funcional      | Must          |
 | RF-10    | Efecto de la decisión sobre la disponibilidad de la herramienta                                | Funcional      | Should        |
 | RF-11    | Resumen del ecosistema por tipo de elemento y por tipo de hallazgo                             | Funcional      | Should        |
-| RF-12    | Apertura de la declaración determinante en el editor                                           | Funcional      | Could         |
+| RF-12    | Localización de cada declaración en el formato ruta:línea:columna                              | Funcional      | Should        |
 | RF-13    | Relaciones entre los elementos del ecosistema                                                  | Funcional      | Could         |
-| RF-14    | Exportación del estado resuelto a un archivo                                                   | Funcional      | Could         |
+| RF-14    | Estado resuelto completo por línea de comandos                                                 | Funcional      | Could         |
 | RF-15    | Matriz de agentes por tipo de permiso y consulta inversa por acción                            | Funcional      | Won't         |
+| RF-16    | Listado de los agentes del proyecto, declarados e incorporados por la herramienta              | Funcional      | Must          |
 | RNF-01   | Solo lectura sobre las entradas de configuración                                               | Seguridad      | Must          |
 | RNF-02   | Fidelidad de la resolución respecto de OpenCode 1.18.25                                        | Fiabilidad     | Must          |
 | RNF-03   | Independencia del núcleo respecto del adaptador                                                | Mantenibilidad | Must          |
@@ -29,6 +30,8 @@ Cada requisito enuncia una sola capacidad o una sola restricción y se construy�
 | RNF-06   | Resolución de rutas en Ubuntu 26.04 y Windows 11, con instalación sin privilegios              | Portabilidad   | Should        |
 | RNF-07   | Tiempo máximo de una consulta por línea de comandos                                            | Rendimiento    | Should        |
 | RNF-08   | Compatibilidad del esquema de salida entre versiones                                           | Mantenibilidad | Should        |
+| RNF-09   | Atención exclusiva de solicitudes dirigidas a la dirección local por la interfaz web           | Seguridad      | Must          |
+| RNF-10   | Conservación del aviso y la licencia del código incorporado                                    | Cumplimiento normativo | Must          |
 
 *Tabla 9. Síntesis del catálogo de requisitos. Fichas completas en el Anexo I. Fuente: elaboración propia.*
 

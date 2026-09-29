@@ -24,23 +24,24 @@ D = lambda s: dt.datetime.strptime(s + "/2026", "%d/%m/%Y")
 
 # Iteraciones: (nombre, inicio, fin, [(id, tarea, horas, depende_de)])
 # Las tareas sin dependencia dentro de la iteración arrancan al inicio; las demás, al
-# terminar su predecesora. Horas: Tabla 18 corregida (ADR-046).
+# terminar su predecesora. Horas: Tabla 18 corregida (ADR-046; ADR-064: RNF-09, RNF-10, RF-16 y estabilización de 11 h).
 ITERACIONES = [
     ("Iteración 1", "21/09", "01/10", [
         ("repo", "Repositorio, canal de CI y entorno", 8, None),
         ("adap", "Adaptador mínimo (RF-01)", 8, "repo"),
         ("nucleo", "Núcleo y almacén (RF-01, RNF-01, RNF-03)", 10, "adap"),
-        ("ui1", "Interfaz y pruebas de aceptación", 8, "nucleo"),
+        ("ui1", "Interfaz, seguridad web (RNF-09) y pruebas de aceptación", 9, "nucleo"),
     ]),
     # Iteración 2 (ADR-047): hasta el resultado de la línea de base (16/10) avanzan las tareas que no
     # dependen de él; después, el orden que fija la Tabla 13 («Confirma»: explicación y vista web antes
     # que RF-06, RF-08 y RF-09; «Reordena»: RF-06 al frente).
     ("Iteración 2", "02/10", "24/10", [
-        ("evalu", "Incorporación del evaluador de permisos (RF-02)", 10, "ui1"),
+        ("evalu", "Incorporación del evaluador de permisos (RF-02, RNF-10)", 10, "ui1"),
         ("cadena", "Cadena de reglas y herencia (RF-02)", 10, "evalu"),
         ("cli", "Línea de comandos: valores y permisos (RF-03)", 10, "cadena"),
         ("h18", "Verificación de H-18 y trabajo de oráculo", 4, "cli"),
-        ("expl", "Explicación de permisos (RF-02)", 5, "h18"),
+        ("agentes", "Listado de agentes (RF-16)", 3, "h18"),
+        ("expl", "Explicación de permisos (RF-02)", 5, "agentes"),
         ("webp", "Vista web de permisos (RF-02)", 4, "expl"),
         ("ext", "RF-06, RF-08 y RF-09", 14, "webp"),
     ]),
@@ -50,7 +51,7 @@ ITERACIONES = [
         ("esc", "Escenarios completos (RNF-02, RNF-04, RNF-05)", 4, "hall"),
     ]),
     ("Iteración 4", "09/11", "14/11", [
-        ("estab", "Estabilización, clonado y acreditación de RNF-06 y RNF-07", 15, "esc"),
+        ("estab", "Estabilización, clonado y acreditación de RNF-06 y RNF-07", 11, "esc"),
     ]),
 ]
 # Dependencias adicionales entre iteraciones (origen → destino).

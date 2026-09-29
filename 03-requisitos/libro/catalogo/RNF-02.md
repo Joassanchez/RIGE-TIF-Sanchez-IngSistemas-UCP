@@ -8,7 +8,7 @@
 | Categoría (si es no funcional) | Fiabilidad |
 | Prioridad | Must |
 | Motivo de la prioridad | Constituye la mitigación del riesgo principal del proyecto: informar con precisión aparente un resultado erróneo agravaría el problema en lugar de reducirlo |
-| Criterio de aceptación | Sobre el conjunto de escenarios del entorno controlado, el valor efectivo por agente coincide con el comando nativo de resolución por agente en el 100 % de los casos, y la decisión de permiso coincide con la del evaluador vigente en el 100 % de los casos, con identificación correcta de la regla determinante |
+| Criterio de aceptación | CA-1: Sobre el conjunto de escenarios del entorno controlado, el valor efectivo por agente coincide con el comando nativo de resolución por agente en el 100 % de los casos. CA-2: Sobre el mismo conjunto, la decisión de permiso coincide con la del evaluador vigente en el 100 % de los casos, con identificación correcta de la regla determinante |
 | Trazabilidad | H-01, H-05, H-10 |
 | Estado de validación | Validado |
 | Iteración prevista | 3 |

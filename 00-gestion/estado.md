@@ -17,20 +17,20 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | II.5 | `informe/cap-02/II.5-analisis-informacion.md` | borrador | AE1 | 25/09/2026 |
 | II.6 | `informe/cap-02/II.6-conclusiones-relevamiento.md` | borrador | AE1 | 25/09/2026 |
 | III.1 | `informe/cap-03/III.1-entorno-sistema-informacion.md` | borrador | AE2 | 28/09/2026 |
-| III.2 | `informe/cap-03/III.2-dominio-sistema-informacion.md` | borrador | AE2 | 28/09/2026 |
-| III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | borrador | AE2 | 28/09/2026 |
-| III.4 | `informe/cap-03/III.4-limites-sistema.md` | borrador | AE2 | 28/09/2026 |
-| III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | borrador | AE2 | 28/09/2026 |
+| III.2 | `informe/cap-03/III.2-dominio-sistema-informacion.md` | borrador | AE2 | 29/09/2026 |
+| III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | borrador | AE2 | 29/09/2026 |
+| III.4 | `informe/cap-03/III.4-limites-sistema.md` | borrador | AE2 | 29/09/2026 |
+| III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | borrador | AE2 | 29/09/2026 |
 | IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | borrador | AE2 | 28/09/2026 |
 | IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | aprobada (migración) | AE2 | 24/09/2026 |
 | IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | borrador | AE2 | 28/09/2026 |
 | IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | borrador | AE2 | 28/09/2026 |
-| V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | borrador | AE2 | 28/09/2026 |
+| V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | borrador | AE2 | 29/09/2026 |
+| V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | borrador | AE2 | 29/09/2026 |
 | V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 28/09/2026 |
-| V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 28/09/2026 |
-| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 28/09/2026 |
+| V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 29/09/2026 |
+| V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 29/09/2026 |
+| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 29/09/2026 |
 | X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 28/09/2026 |
 | X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 28/09/2026 |
 | X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | revisada | AE2 | 28/09/2026 |
@@ -55,7 +55,7 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 
 | Sección de `04-diseno/README.md` | Estado |
 |---|---|
-| 1 · Decisiones de arquitectura | Completa (14 ADR) |
+| 1 · Decisiones de arquitectura | 14 ADR aceptados; ADR-058 (arquitectura y estructura de `src/`) propuesto el 29/09/2026; ADR-059 (catálogo y casos de uso) aceptado el 29/09/2026; ADR-060 a 063 por discutir (AR-01 a AR-04) |
 | 2 · Modelo de datos | Pendiente del diseño del v1 (R-08) |
 | 3 · Canal de integración continua | Pendiente del diseño del v1 (R-08) |
 

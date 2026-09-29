@@ -60,3 +60,10 @@ Hoy el AE1 numera Tablas 1 a 19 y Figuras 1 y 2, y la AE2 reinicia desde 1: en e
 - Recomendación del ingeniero: **por capítulo**, una sola vez, después del grupo C; declarar los códigos H-nn en A.I.3 y HA-n en II.6.1, y reservar «hallazgo» para el producto de RIGE en el glosario.
 - Condición que la invalidaría: que la cátedra exija «Tabla N» simple (`[DATO PENDIENTE: confirmar el formato de leyendas del Art. 21.º o la plantilla final]`).
 - Decidir con `/decidir A-03`.
+
+## Tipos de hallazgo (ADR-059, 29/09/2026)
+
+| Dónde | Cambio |
+|---|---|
+| I.2, OE-3 (Tabla 1) | Agregar el sexto tipo de hallazgo, «entradas descartadas sin error visible», alineado con RF-07. |
+| I.6.3, Tabla 8 | Agregar la definición de «Entrada descartada sin error visible»: entrada de configuración que la herramienta descarta sin emitir error, como una variable de entorno de configuración con contenido inválido (H-14). |

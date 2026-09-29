@@ -25,6 +25,81 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
 
 ## Entradas de la AE2
 
+### Entrada · Martes 29 de septiembre de 2026 — Arquitectura de RIGE, revisión del catálogo y de los casos de uso, y horas de los requisitos nuevos
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **Arquitectura (ADR-058, propuesto).** Diseñé la arquitectura más allá del prototipo v1:
+     - puertos y adaptadores, con un núcleo sin dependencias;
+     - tres paquetes con instalación aislada: `nucleo`, `opencode` y `rige`;
+     - la política propia de OpenCode (precedencia, fusión, permisos y plantillas de sus reglas) en el adaptador;
+     - RNF-01, RNF-04 y RNF-05 garantizados por la forma de los puertos y por pruebas de arquitectura;
+     - errores por categorías, con el principio de falla visible;
+     - contrato de canales y códigos de salida de la línea de comandos.
+     El ADR queda propuesto hasta que lo acepte.
+   - **Revisión del catálogo y de los casos de uso (ADR-059, aceptado).** Antes de seguir diseñando revisé si los requisitos y los casos de uso eran correctos, para que las prioridades del período no condicionaran el diseño.
+     - CU-01 pasa a ser una subfunción.
+     - El CU-05 anterior se retira: era un canal, no un objetivo. Su número pasa al caso nuevo «Explorar los agentes del proyecto».
+     - Se agregan RF-16 (listado de agentes, Must), RNF-09 (seguridad de la web local) y RNF-10 (conservación de la licencia).
+     - RF-12 y RF-14 se reformulan.
+     - Numeré los criterios de aceptación de todo el catálogo.
+     - El catálogo pasa a 17 Must sobre 26 requisitos.
+   - **Horas (ADR-064, aceptado).**
+     - RNF-10 queda dentro de la tarea del evaluador; RNF-09 suma 1 h y RF-16 suma 3 h.
+     - Las financio con la estabilización, que pasa de 15 h a 11 h.
+     - Se conservan las 136 h técnicas y la contingencia de un tercio.
+   - **Propagación.** Llevé los cambios al Libro de trabajo, a las secciones afectadas de los Caps. III, V y X, al Anexo I, al Instrumento 34 y al script de la Figura 3.
+2. **Alternativas evaluadas y criterio de descarte (recortes).**
+   - **Casos de uso: se descartó conservar el CU-05 anterior** como caso del agente externo. Duplicaba objetivos y metía una decisión de interfaz en el modelo de casos de uso.
+   - **Casos de uso: se descartó numerar el caso nuevo como CU-06.** Preferí la serie continua para el lector. Verifiqué que el CU-05 anterior no había llegado a ningún lector externo.
+   - **Recortes que se revierten:**
+     - la exclusión de listados por línea de comandos (L-06) se revisa en parte, solo para los agentes, porque toda consulta parte de un agente determinado;
+     - la exportación a un archivo y la apertura en el editor se reformulan como capacidades de la línea de comandos, sin integrarse con un editor.
+   - **Recortes que se mantienen:**
+     - la matriz y la consulta inversa (RF-15, Won't);
+     - las relaciones (RF-13);
+     - los listados de otros elementos.
+   - **Arquitectura:**
+     - se descartó un paquete único: la instalación aislada de Bun 1.3.14 hace fallar las dependencias no declaradas, lo que convierte RNF-03 en una propiedad de la estructura;
+     - se descartaron las excepciones con un manejador global, porque convierten errores en valores plausibles, el riesgo principal del proyecto;
+     - se descartó poner la política de permisos en el núcleo, porque contradice el texto de RNF-03.
+   - **Horas:**
+     - se descartó absorber los requisitos nuevos sin horas, porque ajusta la estimación para que la cuenta cierre (D-38);
+     - se descartó usar la reserva documental, que está comprometida;
+     - se descartó elevar el total, porque declara horas que no tengo.
+   - **Diferido:** el contrato del adaptador, el modelo de datos, la distribución y las pruebas metamórficas quedan para ADR-060 a ADR-063.
+3. **Evidencia.**
+   - Criterios de aceptación del catálogo: RF-03, RF-04, RF-05, RF-07 y RNF-01 a RNF-04.
+   - I.6.1, I.6.4 y Tabla 9 del informe de la AE1.
+   - Tabla 20 de V.5.
+   - Acuerdos E-01 y E-02 y fila de H-18 de la matriz de trazabilidad.
+   - ADR-052 y D-38.
+   - Documentación de Bun sobre instalación aislada, consultada el 29/09/2026.
+   - Informes de propagación en `00-gestion/revisiones/20260929_propagacion-ADR-059*.md`.
+4. **Aporte personal.**
+   - Pedí revisar los requisitos y los casos de uso antes de diseñar, para que la formulación heredada no condicionara el diseño.
+   - Decidí la numeración del caso nuevo como CU-05 y acepté la revisión completa.
+   - Acepté la estimación de horas y su financiamiento.
+   - Artefactos:
+     - ADR-058, ADR-059 y ADR-064;
+     - `03-requisitos/libro/`;
+     - `informe/cap-03/`, `informe/cap-05/`, `informe/cap-10/X.1` y el Anexo I;
+     - `instrumentos/instrumento-34-recursos.md`;
+     - `tools/figura_cronograma.py`;
+     - `00-gestion/anexo-III.md` (D-50 a D-55).
+5. **Desacuerdo y resolución.** Proyecto individual. Sin desacuerdo en la jornada: la numeración del caso nuevo la resolví por preferencia del autor sobre la propuesta del asistente.
+6. **Herramientas auxiliares.** Asistencia conforme al criterio general declarado.
+   - **Asistente de programación Claude Code (Anthropic).**
+     - *Función:*
+       - propuesta y contraste de alternativas de arquitectura y redacción de ADR-058, ADR-059 y ADR-064;
+       - revisión crítica del catálogo y de los casos de uso;
+       - verificación de documentación externa (Bun);
+       - actualización del Libro de trabajo por script, con recuentos verificados;
+       - propagación al informe mediante subagentes redactores, sobre listas de cambios que aprobé;
+       - actualización del script de la Figura 3.
+     - *Artefactos:* los listados en el punto 4, más `00-gestion/`.
+
 ### Entrada · Lunes 28 de septiembre de 2026 (continuación) — Capítulo X, Instrumento 34 y entorno de medición
 
 <!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->

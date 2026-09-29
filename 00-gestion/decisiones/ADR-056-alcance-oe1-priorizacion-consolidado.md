@@ -6,6 +6,7 @@
 - Origen: consolidación del 28/09/2026 (pendiente LI-01). No es una decisión nueva: reúne ADR-034 y ADR-035, ambos aceptados el 25/09/2026. Se unen porque las dos decisiones reescriben el mismo objetivo (OE-1) y la segunda nació como cuestión abierta de la primera.
 - Reemplaza: ADR-034 y ADR-035. Sus archivos se eliminaron el 28/09/2026 (quedan en el historial de git).
 - Relacionado: D-08 (el agente como eje), ADR-020 («entrada» en lugar de «fuente»), ADR-052 (contingencia), ADR-051 (RF-03 sigue siendo Must).
+- **Recuento modificado por ADR-059** (aceptado el 29/09/2026): con RF-16, RNF-09 y RNF-10, el conjunto Must pasa a diecisiete sobre veintiséis requisitos. Las decisiones sobre el OE-1, RF-13 y RF-10 siguen vigentes.
 
 ### Contexto
 
