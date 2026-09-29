@@ -25,6 +25,96 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
 
 ## Entradas de la AE2
 
+### Entrada · Martes 29 de septiembre de 2026 (cierre) — Diseño para empezar a programar el v1: modelo de datos, distribución, método con gentle-ai y entorno
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **Inventario de la guía de comprobación del v1 contra los ADR** y orden de las discusiones: primero el alcance del caso vertical, después ADR-061 y ADR-062, el primer incremento y el README.
+   - **Caso vertical del v1:**
+     - RF-01 CA-1 con la regla RD-01;
+     - agente `build` y una clave escalar;
+     - escenario con tres archivos en el proyecto: `opencode.json` → `opencode.jsonc` → `.opencode/opencode.json`, orden verificado en el tag;
+     - dos rutas web (`/resolver` y `/resoluciones/:id`) para que el dato persista y se recupere aun después de reiniciar;
+     - el resultado de referencia se genera una vez con OpenCode 1.18.25 en WSL.
+   - **ADR-061 (aceptado):**
+     - el Proyecto se identifica por su ruta canónica;
+     - la Resolución es inmutable y se guarda como documento JSON versionado, con las tablas `proyecto`, `resolucion` y `entrada_leida`;
+     - el resumen E-02 es informativo y sin caché;
+     - se retienen las últimas 20 resoluciones por Proyecto;
+     - la prueba de RNF-04 recorre `.db`, `-wal` y `-shm`;
+     - el esquema se crea con un guion explícito y `user_version`;
+     - el almacén crea su propio directorio.
+   - **ADR-062 (aceptado y revisado el mismo día):**
+     - ejecución con `bun run`;
+     - HTML generado en el servidor, con escape por defecto;
+     - dependencias exactas: en ejecución solo las que OpenCode usa en la misma versión;
+     - **TypeScript 7.0.2, `@types/bun` 1.3.14 y Bun 1.3.14**;
+     - configuración propia en `rige.env`, puerto 4747;
+     - tres versiones independientes (RIGE, esquema de salida, base);
+     - pruebas aisladas por subproceso;
+     - rechazo de solicitudes de otro sitio (`Sec-Fetch-Site`);
+     - el adaptador del v1 observa todas las vías locales, y falla de forma visible ante las de contenido en variables.
+   - **ADR-065 (reescrito por excepción):**
+     - el código lo escribe OpenCode con gentle-ai 3.7 en modo ODD;
+     - un documento por incremento, que propone el agente a partir de un prompt de contexto y que se revisa en iteraciones hasta la conformidad antes de programar;
+     - TDD estricto;
+     - commits del agente solo en la rama del incremento, y yo uno con `main`;
+     - gentle-ai no se instala en Claude Code.
+   - **Entorno:**
+     - instalé Bun 1.3.14, verificado por SHA-256;
+     - gentle-ai 3.7.0, compilado con Go, y lo desinstalé de Claude Code, restaurando su configuración;
+     - asigné un modelo de OpenCode Go a cada agente según su capacidad (escribe MiMo-V2.6-Pro; revisan modelos de otras familias);
+     - activé la revisión RDD;
+     - borré un `opencode.json` suelto en la carpeta temporal.
+   - **Repositorio:**
+     - README de la raíz dedicado al proyecto, y la maquinaria del TIF pasada a `tools/README.md`;
+     - `.github/workflows/ci.yml` con la matriz Ubuntu/Windows;
+     - `04-diseno/README.md` §2 y §3 completas;
+     - `src/AGENTS.md` actualizado;
+     - X.4 y el Instrumento 34 con TypeScript 7.0.2, y X.4 con los dos criterios de RNF-03.
+2. **Alternativas evaluadas y criterio de descarte (recortes).**
+   - **Bun 1.4.2**, la última: descartado. La 1.4 reescribe el runtime en Rust y cambia el motor de expresiones regulares, mientras que OpenCode 1.18.25 y su rama actual compilan con Bun 1.3.14.
+   - **TypeScript 5.8.2**, el de la configuración de OpenCode: reemplazado por 7.0.2. TypeScript solo verifica tipos, y la 7 es estable y compatible, lo que medí en mi equipo.
+   - **Docker para desarrollar y para la comprobación:** descartado. Exige privilegios de administrador, choca con RNF-09 (escuchar solo en `127.0.0.1`) y oculta el disco real. Queda para el oráculo y la medición.
+   - **Ciclo SDD completo de gentle-ai:** descartado, porque genera unos seis artefactos por cambio que duplican el catálogo y los ADR.
+   - **Solo Claude Code:** evaluado y descartado por puntaje. El mismo proveedor escribe y revisa, y no hay continuidad si se agota el plan.
+   - **Agentes propios:** descartados, porque obligan a mantener herramientas en vez de construir RIGE, y en `.opencode/` contaminarían los escenarios.
+   - **gentle-ai en Claude Code:** desinstalado. Traía instrucciones en conflicto con el sistema del TIF y quitaba las confirmaciones de permisos.
+   - **Modelos preliminares, gratuitos o «contributor»:** excluidos de la asignación, por el riesgo de uso de los datos.
+   - **Caché por resumen E-02 y ejecutable único:** fuera, por ADR-023 y por SmartScreen, respectivamente.
+   - **Diferido:** ADR-063 (pruebas metamórficas), la versión real de `.gitattributes` en la raíz y los documentos de los incrementos 1 a 5.
+3. **Evidencia.**
+   - `catedra/AE2-guia-comprobacion-v1.md`.
+   - Código de OpenCode, tag `v1.18.25` (`config/paths.ts`, `config.ts`, `project/project.ts`, `.github/actions/setup-bun/action.yml`, `script/build.ts`) y rama `dev`.
+   - Documentación oficial de Bun (`typescript`, `typescript-6`, anuncio de la 1.4.0, instalación), de TypeScript (blog), de gentle-ai (`usage.md`, `intended-usage.md`, `quickstart.md`, versiones 3.x) y de OpenCode Go.
+   - Registro de npm.
+   - Puntajes de programación de BenchLM (una sola fuente, usada como indicio).
+   - Pruebas de compatibilidad y verificaciones SHA-256 en mi equipo.
+4. **Aporte personal.**
+   - Rechacé que el README de la raíz mezclara el proyecto con las herramientas del TIF.
+   - Pedí investigar e instalar la versión compatible más nueva.
+   - Cuestioné quedarme con SDD e introduje ODD.
+   - Pedí un análisis sin atarse a lo decidido, elegí O7 e instalé gentle-ai 3.7.0 por mi cuenta.
+   - Pedí quitarlo de Claude Code, decidí usar OpenCode Go hasta que venza, y después mi membresía de Codex.
+   - Definí el método de trabajo en iteraciones con el agente.
+   - Acepté ADR-061 y ADR-062 y autoricé las reescrituras de ADR-062 y ADR-065.
+   - Artefactos: ADR-061, ADR-062, ADR-065; `INDICE.md`; Anexo III (D-56); `04-diseno/README.md`; `README.md`; `tools/README.md`; `.github/workflows/ci.yml`; `src/AGENTS.md`; X.4; Instrumento 34; `00-gestion/revisiones/20260929_inc0-base-contexto.md`.
+5. **Desacuerdo y resolución.** Proyecto individual. Discrepé con el asistente sobre el README de la raíz, sobre SDD y sobre quedarme solo con Claude Code. En los tres casos se rehízo el análisis y se adoptó mi posición o una alternativa mejor fundamentada.
+6. **Herramientas auxiliares.** Asistencia conforme al criterio general declarado.
+   - **Asistente de programación Claude Code (Anthropic).**
+     - *Función:*
+       - inventario de la guía;
+       - propuesta de alternativas y redacción de ADR-061, ADR-062 y ADR-065;
+       - investigación de documentación oficial y verificación del código de OpenCode;
+       - instalación y verificación de Bun;
+       - pruebas de compatibilidad;
+       - configuración de los modelos de OpenCode y desinstalación de gentle-ai en Claude Code;
+       - redacción de los README, `ci.yml` y `src/AGENTS.md`;
+       - corrección de X.4 mediante un subagente redactor, sobre los cambios que aprobé.
+     - *Artefactos:* los del punto 4.
+   - **OpenCode con gentle-ai:** en esta jornada no se usó para producir artefactos.
+
 ### Entrada · Martes 29 de septiembre de 2026 (continuación) — Verificación del código de OpenCode, contrato del adaptador y método de programación
 
 <!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->

@@ -33,7 +33,7 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 29/09/2026 |
 | X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 28/09/2026 |
 | X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 28/09/2026 |
-| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | revisada | AE2 | 28/09/2026 |
+| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | revisada | AE2 | 29/09/2026 |
 | X.5 | `informe/cap-10/X.5-otros-recursos.md` | revisada | AE2 | 28/09/2026 |
 
 ## Correcciones pendientes del AE1
@@ -55,9 +55,10 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 
 | Sección de `04-diseno/README.md` | Estado |
 |---|---|
-| 1 · Decisiones de arquitectura | 13 registros aceptados en la tabla (incluidos ADR-058, arquitectura y estructura de `src/`, y ADR-060, contrato del adaptador y modelo del rastro, aceptados el 29/09/2026); ADR-061 a 063 por discutir (AR-02 a AR-04). Método de programación: ADR-065, aceptado el 29/09/2026 (fuera de la tabla por ser de método) |
-| 2 · Modelo de datos | Pendiente del diseño del v1 (R-08) |
-| 3 · Canal de integración continua | Pendiente del diseño del v1 (R-08) |
+| 1 · Decisiones de arquitectura | 15 registros aceptados en la tabla (incluidos ADR-061, modelo de datos, y ADR-062, distribución, web y dependencias, aceptados el 29/09/2026; ADR-062 revisado el mismo día: TypeScript 7.0.2). ADR-063 por discutir (AR-04). Método: ADR-065, reescrito el 29/09/2026 (OpenCode con gentle-ai 3.7 en modo ODD; documento por incremento propuesto por el agente y revisado hasta la conformidad) |
+| 2 · Modelo de datos | Completa por remisión a ADR-061 (29/09/2026) |
+| 3 · Canal de integración continua | Completa por remisión a ADR-062; `.github/workflows/ci.yml` creado (matriz Ubuntu/Windows). Sin corridas todavía |
+| Prototipo v1 | Diseño listo para el incremento 0. Entorno: Bun 1.3.14 instalado y verificado por SHA-256; gentle-ai 3.7.0 en OpenCode con modelos asignados por agente; `src/` sin código. Base del prompt de contexto: `00-gestion/revisiones/20260929_inc0-base-contexto.md` |
 
 ## Medición de la línea base (ADR-053)
 
