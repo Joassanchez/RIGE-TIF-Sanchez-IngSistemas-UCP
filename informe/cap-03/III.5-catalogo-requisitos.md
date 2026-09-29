@@ -25,7 +25,7 @@ Cada requisito enuncia una sola capacidad o una sola restricción y se construy�
 | RNF-01   | Solo lectura sobre las entradas de configuración                                               | Seguridad      | Must          |
 | RNF-02   | Fidelidad de la resolución respecto de OpenCode 1.18.25                                        | Fiabilidad     | Must          |
 | RNF-03   | Independencia del núcleo respecto del adaptador                                                | Mantenibilidad | Must          |
-| RNF-04   | No exposición del contenido de las variables de entorno                                        | Seguridad      | Must          |
+| RNF-04   | No exposición del contenido incorporado por sustitución de variables de entorno o de archivos | Seguridad      | Must          |
 | RNF-05   | Ausencia de conexiones salientes durante el análisis                                           | Seguridad      | Must          |
 | RNF-06   | Resolución de rutas en Ubuntu 26.04 y Windows 11, con instalación sin privilegios              | Portabilidad   | Should        |
 | RNF-07   | Tiempo máximo de una consulta por línea de comandos                                            | Rendimiento    | Should        |

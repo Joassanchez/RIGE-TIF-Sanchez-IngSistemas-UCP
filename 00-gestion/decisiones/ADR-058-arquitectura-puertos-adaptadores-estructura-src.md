@@ -1,9 +1,9 @@
 # ADR-058 — Arquitectura de RIGE: puertos y adaptadores con núcleo sin dependencias, tres paquetes aislados, manejo de errores por categorías y contrato de salida de la línea de comandos
 
-- Estado: propuesto
+- Estado: aceptado (29/09/2026)
 - Fecha: 29/09/2026
 - Capítulos afectados: ninguno del cuerpo del AE2. Alimenta el capítulo de diseño de una entrega posterior (no se adelanta). Afecta `04-diseno/README.md` (sección 1), `src/` (estructura, `AGENTS.md`, `README.md`) y el esquema de salida de RF-03 (se agrega la respuesta de error)
-- Origen: sesión de diseño del 29/09/2026 (tres pasadas de discusión con el autor sobre la arquitectura más allá del prototipo v1). Ajustado el mismo día tras la revisión de los impulsores de la arquitectura: identificación de la herramienta fuera del núcleo (RNF-03), RNF-04 aplicado al almacén, lectura de variables de entorno acreditada en el informe y renumeración de los registros previstos (ADR-059 pasa a ser la revisión del catálogo)
+- Origen: sesión de diseño del 29/09/2026 (tres pasadas de discusión con el autor sobre la arquitectura más allá del prototipo v1). Ajustado el mismo día tras la revisión de los impulsores de la arquitectura: identificación de la herramienta fuera del núcleo (RNF-03), RNF-04 aplicado al almacén, lectura de variables de entorno acreditada en el informe y renumeración de los registros previstos (ADR-059 pasa a ser la revisión del catálogo). Ajustado de nuevo antes de su aceptación: alcance de la protección de RNF-04 (eje 8), convenciones sujetas a AR-05 e idioma de los identificadores confirmado por el autor
 - Relacionado: **concreta y refina** la estructura enumerada en las consecuencias de ADR-032, sin reemplazarlo. **Completa** ADR-051 (el esquema describe una cuarta respuesta, la de error). Aplica ADR-019 (Elemento genérico y Agente), ADR-023 (almacén propio, opción B), ADR-029 (oráculo) y ADR-054 (plataformas; rutas normalizadas)
 
 ### Contexto
@@ -15,6 +15,10 @@ Restricciones que salen del repositorio:
 - **RNF-03:** el núcleo no depende del adaptador de OpenCode. «Los tipos de elemento, el orden de precedencia, la estrategia de fusión y la forma de evaluar permisos los declara el adaptador» (`03-requisitos/libro/catalogo/RNF-03.md`).
 - **ADR-019:** Elemento genérico con Agente como única especialización. El descriptor de capacidades del adaptador es el contrato entre adaptador y núcleo (III.2.3).
 - **RNF-01, RNF-04 y RNF-05:** solo lectura sobre las entradas, sin exponer el contenido de las variables de entorno, sin conexiones salientes. `src/AGENTS.md` las declara no negociables.
+- **Tensión en RNF-04 detectada durante la discusión.** Su criterio exige que el valor de una variable definida no aparezca «en ninguna salida del sistema». Tomado literalmente, choca con dos exigencias del catálogo:
+  - RF-03 (CA-3) y RF-12 exigen informar la ruta absoluta de cada declaración, y la ruta de la configuración global se construye con variables como `HOME`, `XDG_CONFIG_HOME` o `APPDATA`;
+  - RF-01 exige informar el valor efectivo, que puede provenir de una variable de entorno que contiene una configuración completa (el criterio de RF-07 menciona «una variable de entorno de configuración»).
+  El motivo de RNF-04 («las variables de entorno suelen contener credenciales») y L-03 muestran que lo protegido son las credenciales. I.6.3 ya circunscribe la regla a las sustituciones («Las sustituciones de variables de entorno se informan con el nombre de la variable y su condición de definida o no definida»), y la Tabla 8 define la procedencia de una sustitución como «la variable de entorno o el archivo del que se toma el contenido».
 - **ADR-051:** la CLI es la interfaz completa y la web queda limitada, pero la web no ofrece nada que falte en la CLI. OE-1 y OE-2 exigen que ambas interfaces coincidan.
 - **Criterio de aceptación de RF-03:** salida idéntica en dos ejecuciones, validada contra el esquema publicado. El error va por el canal de error y no por el de salida, con código distinto de 0.
 - **Criterio de aceptación de RF-05:** la advertencia va antes de presentar cualquier resultado, por el canal de error y con código distinto de 0.
@@ -41,7 +45,7 @@ Restricciones que salen del repositorio:
 
 **Eje 4 · Garantía de RNF-01, RNF-04 y RNF-05**
 - **G-1:** Convención y revisión de código.
-- **G-2:** Por construcción, con la forma de los puertos, un tipo opaco para los valores de entorno y pruebas de arquitectura.
+- **G-2:** Por construcción, con la forma de los puertos, un tipo opaco para el contenido incorporado por sustitución (eje 8) y pruebas de arquitectura.
 
 **Eje 5 · Manejo de errores**
 - **M-1:** Excepciones en todo el código, con un manejador global.
@@ -54,6 +58,10 @@ Restricciones que salen del repositorio:
 **Eje 7 · Política de la copia atribuida del evaluador**
 - **V-1:** Copia sin ninguna modificación.
 - **V-2:** Extracción literal de las funciones, con cambios limitados a imports y envoltorio, registrados con el hash del original y el de la versión propia.
+
+**Eje 8 · Alcance de la protección de RNF-04**
+- **E-A:** Mantener RNF-04 literal. Las rutas se muestran con el nombre de la variable en lugar de su valor (`$HOME/…`), y los valores efectivos provenientes de una variable que contiene configuración se muestran como referencia a esa variable.
+- **E-B:** Circunscribir la protección al contenido que una sustitución incorpora a una declaración, sea de una variable de entorno (`{env:…}`) o de un archivo (`{file:…}`). Las variables que solo ubican entradas aparecen dentro de las rutas, y el contenido de una variable que constituye una entrada se trata como el de cualquier otra entrada, con sus propias sustituciones protegidas.
 
 ### Análisis (trade-offs)
 
@@ -79,10 +87,10 @@ Restricciones que salen del repositorio:
 - **G-1** no deja evidencia verificable.
 - **G-2** convierte cada restricción en una propiedad de la estructura:
   - el puerto de lectura no ofrece operaciones de escritura (RNF-01);
-  - un valor que proviene del entorno se representa con un tipo opaco que los serializadores de salida **y el del almacén** solo emiten como nombre y condición. El criterio de RNF-04 alcanza expresamente al «almacén propio», así que la prueba busca el valor también en el archivo de la base;
+  - el contenido que una sustitución incorpora se representa con un tipo opaco (`ValorSustituido`) que los serializadores de salida **y el del almacén** solo emiten como origen y condición (eje 8). El criterio de RNF-04 alcanza expresamente al «almacén propio», así que la prueba busca el valor también en el archivo de la base;
   - una prueba prohíbe importar módulos de red, y las pruebas reemplazan `fetch` por una función que falla (RNF-05);
   - las reglas de dependencia se escriben como datos, y la prueba busca además identificadores de la herramienta (`opencode`, `OPENCODE_`, …) en el código del núcleo, conforme a la segunda condición del criterio de RNF-03.
-- Precisión surgida de la discusión: el puerto de entorno no puede limitarse a informar si una variable está definida. OpenCode incorpora configuración desde variables de entorno (suposición a verificar sobre el tag 1.18.25: `OPENCODE_CONFIG`, `OPENCODE_CONFIG_DIR`, `OPENCODE_CONFIG_CONTENT`), y la entidad «Entrada de configuración» admite vías que no son archivos (`03-requisitos/libro/entidades.md`). Por eso la protección se ubica en el tipo del valor y no en la prohibición de leerlo. La lectura del contenido está además comprometida en el informe: la Tabla 9 de I.6.4 declara las variables de entorno como «entrada de solo lectura, limitada a las variables que OpenCode utiliza en su configuración», y el criterio de RF-07 incluye «una variable de entorno de configuración con contenido inválido, que la herramienta descarta sin emitir error». Queda por verificar sobre el tag solo el nombre exacto de cada variable (AR-05).
+- Precisión surgida de la discusión: el puerto de entorno no puede limitarse a informar si una variable está definida. OpenCode incorpora configuración desde variables de entorno (`OPENCODE_CONFIG`, `OPENCODE_CONFIG_DIR`, `OPENCODE_CONFIG_CONTENT` y `OPENCODE_PERMISSION`, confirmadas sobre el tag 1.18.25 el 29/09/2026; ADR-060, verificación, punto 2), y la entidad «Entrada de configuración» admite vías que no son archivos (`03-requisitos/libro/entidades.md`). Por eso la protección se ubica en el tipo del valor y no en la prohibición de leerlo. La lectura del contenido está además comprometida en el informe: la Tabla 9 de I.6.4 declara las variables de entorno como «entrada de solo lectura, limitada a las variables que OpenCode utiliza en su configuración», y el criterio de RF-07 incluye «una variable de entorno de configuración con contenido inválido, que la herramienta descarta sin emitir error». El nombre exacto de cada variable quedó verificado sobre el tag (ADR-060).
 
 **Errores.**
 - **M-1** mezcla dos cosas que el sistema tiene que distinguir. Una entrada con error de sintaxis es un hallazgo que el criterio de RF-04 exige informar con su localización, no una falla.
@@ -97,9 +105,16 @@ Restricciones que salen del repositorio:
 - **V-1** no es realizable: ADR-032 ya establece que se copia la lógica sin su servicio, y los imports internos del monorepo de OpenCode (por ejemplo, el de `Wildcard`) hay que reescribirlos.
 - **V-2** hace visible y verificable cada divergencia.
 
+**Alcance de RNF-04.**
+- **E-A** rompe RF-03 (CA-3) y RF-12: una ruta con `$HOME` no es absoluta ni la reconocen el editor o la terminal como enlace. Además, RF-01 no podría informar valores efectivos que la herramienta sí aplica, de modo que RIGE mostraría menos que el propio OpenCode.
+- **E-B** protege exactamente lo que motiva el requisito, porque las credenciales llegan por sustitución.
+  - Incluye las sustituciones de archivo, patrón habitual para guardar claves fuera de la configuración (confirmado sobre el tag 1.18.25: `packages/opencode/src/config/variable.ts`; ADR-060, verificación, punto 1). Es una ampliación respecto del texto vigente de RNF-04, coherente con L-03 y con la Tabla 8.
+  - Obliga a precisar el enunciado y el criterio de RNF-04 y la regla RR-02, ambos validados, y a informarlo a la referente.
+- Con E-B queda resuelta la segunda cuestión abierta de AR-06: un valor efectivo que proviene de una sustitución se informa de forma simbólica («sustitución de `API_KEY`, definida»), en la salida y en el almacén.
+
 ### Recomendación y fundamento
 
-**A-2 + P-2 + U-2 + G-2 + M-2 + I-1 + V-2**, con la estructura y las convenciones que siguen.
+**A-2 + P-2 + U-2 + G-2 + M-2 + I-1 + V-2 + E-B**, con la estructura y las convenciones que siguen.
 
 **Estructura de `src/`** (raíz del proyecto de código):
 
@@ -114,7 +129,7 @@ src/
 │   └── almacen/            guiones de esquema numerados (001_inicial.sql, …)
 ├── paquetes/
 │   ├── nucleo/             sin dependencias ni E/S
-│   │   ├── dominio/        entidades de ADR-019 y tipos de valor (posición, procedencia, ValorDeEntorno)
+│   │   ├── dominio/        entidades de ADR-019 y tipos de valor (posición, procedencia, ValorSustituido)
 │   │   ├── contrato/       descriptor de capacidades, AdaptadorHerramienta, LectorSoloLectura
 │   │   ├── resolucion/     motor genérico que aplica la precedencia y la fusión declaradas, con rastro
 │   │   ├── hallazgos/      interfaz Detector y detectores genéricos
@@ -165,7 +180,7 @@ Las pruebas unitarias van junto al código (`*.test.ts`). La carpeta del adaptad
    - la fecha y la hora de la Resolución y su identificador se guardan en el almacén, pero no integran la respuesta de la CLI;
    - el orden de las claves es estable;
    - las rutas se normalizan (ADR-054);
-   - las posiciones se expresan en línea y columna con base 1, y la columna se cuenta en unidades UTF-16. Es la unidad nativa de las cadenas del runtime y la que usan los editores; se confirma frente a la que informe el lector que use OpenCode;
+   - las posiciones se expresan en línea y columna con base 1, y la columna se cuenta en unidades UTF-16. Es la unidad nativa de las cadenas del runtime y la que usan los editores. **Confirmada** el 29/09/2026 sobre el tag 1.18.25: OpenCode usa `jsonc-parser` 3.3.1 y calcula la columna sobre índices de cadena de JavaScript (ADR-060, verificación, punto 1). RIGE calcula las posiciones sobre el texto original, antes de las sustituciones (ADR-060, D4);
    - `\r\n` cuenta como un solo fin de línea. Se relaciona con R-06 (`.gitattributes`).
 5. **Almacén:**
    - se ubica fuera del proyecto analizado, en el directorio de datos del usuario (`$XDG_DATA_HOME/rige` o `~/.local/share/rige`; `%LOCALAPPDATA%\rige`), o en el que indique la configuración propia de RIGE;
@@ -177,7 +192,11 @@ Las pruebas unitarias van junto al código (`*.test.ts`). La carpeta del adaptad
    - `conErrores`: traduce los errores a código HTTP y a una página.
 7. **Plataforma como parámetro.** El comparador de patrones copiado ignora las mayúsculas en Windows (ADR-032). La plataforma se le pasa como parámetro para poder probar ambos comportamientos desde el CI en Ubuntu, y los resultados de referencia se guardan por plataforma cuando difieren.
 8. **Un solo comando `rige`,** con subcomandos: `valor`, `permiso`, `hallazgos` y `servir`. Los argumentos se leen con `util.parseArgs` del runtime.
-9. **Diagnóstico.** La opción `--depurar` escribe en el canal de error el rastro y el stack de los errores internos. No se escriben logs a disco. El tipo opaco de entorno protege también este canal.
+9. **Diagnóstico.** La opción `--depurar` escribe en el canal de error el rastro y el stack de los errores internos. No se escriben logs a disco. El tipo `ValorSustituido` protege también este canal.
+10. **Contenido sustituido (RNF-04, eje 8).**
+   - Solo el paso de sustituciones del adaptador (`politica/sustituciones`) produce valores `ValorSustituido`. El tipo no puede convertirse a texto: los serializadores de salida, de diagnóstico y del almacén solo emiten su origen (nombre de la variable o ruta del archivo) y su condición de definido o no definido.
+   - El puerto de entorno devuelve texto común para ubicar entradas y para leer el contenido de una variable que constituye una entrada. **Confirmado** el 29/09/2026: los nombres de las variables son los del punto 2 de la verificación de ADR-060.
+   - La prueba de RNF-04 define una variable y un archivo con valores conocidos, los referencia por sustitución y busca esos valores en la salida estándar, en la de error (incluido `--depurar`), en las respuestas web y en el archivo SQLite.
 
 **Contrato de salida de la CLI** (completa ADR-051 con la respuesta de error):
 
@@ -208,7 +227,7 @@ Dos interpretaciones de criterios de aceptación que este registro fija:
 
 ### Decisión del autor
 
-Pendiente de formalizar con `/aceptar`. En la sesión del 29/09/2026 el autor manifestó conformidad con la propuesta en su conjunto, incluidos el manejo de errores y el contrato de salida, y pidió registrarla.
+Aceptado por el autor el 29/09/2026 (`/aceptar ADR-058`). En la sesión del 29/09/2026 el autor manifestó conformidad con la propuesta en su conjunto, incluidos el manejo de errores y el contrato de salida, y pidió registrarla. Antes de la aceptación confirmó además el español en los identificadores (I-1) y el alcance E-B de RNF-04, incluidas las sustituciones de archivo.
 
 ### Consecuencias
 
@@ -220,6 +239,12 @@ Pendiente de formalizar con `/aceptar`. En la sesión del 29/09/2026 el autor ma
 - **`04-diseno/README.md`, sección 1:** actualizar el estado de la fila de este registro.
 - **Anexo III:** se agrega la deliberación cuando el capítulo de diseño la requiera.
 - **R-06 (`.gitattributes`):** se relaciona con la convención 4. La normalización del repositorio no exime a RIGE de leer `\r\n` en los proyectos de los usuarios.
+- **RNF-04 y RR-02** (eje 8), en el Libro y en el informe (Anexo I; III.5, Tabla 9; Anexo V, A.V.2):
+  - RNF-04, enunciado: «RIGE nunca expone el contenido que una sustitución incorpora a una declaración; informa su origen —el nombre de la variable de entorno o la ruta del archivo— y su condición de definido o no definido».
+  - RNF-04, criterio: «CA-1: Definida una variable con un valor conocido y referenciada por una sustitución en una declaración, ese valor no aparece en ninguna salida del sistema —interfaz, línea de comandos, diagnóstico ni almacén propio—, verificado por búsqueda textual del valor. CA-2: La misma condición se cumple para el contenido de un archivo incorporado por sustitución y para una sustitución contenida en una variable de entorno que constituye una entrada de configuración. CA-3: Para cada sustitución, el sistema informa su origen y su condición de definido o no definido».
+  - RR-02: «RIGE no expone el contenido que una sustitución incorpora; informa su origen y su condición de definido o no definido».
+  - Ambos pasan a «Pendiente» y se informan a la referente junto con la revisión parcial de L-06 (PV-03).
+- **AR-06:** su segunda cuestión queda resuelta por el eje 8.
 
 **Decisiones que este registro no toma** (se abren como pendientes AR-01 a AR-06):
 
@@ -230,7 +255,7 @@ Pendiente de formalizar con `/aceptar`. En la sesión del 29/09/2026 el autor ma
 | Distribución e invocación (`bun run` o ejecutable único), construcción de la web (HTML del servidor o JSON a una ruta interna), política de dependencias, configuración propia y versionado de RIGE, del esquema de salida y del esquema de base | ADR-062 |
 | Pruebas metamórficas para verificar la procedencia contra el oráculo, como complemento de ADR-029 | ADR-063 |
 | Puntos de medición por etapas en la resolución (ADR-055) | ADR-060 o ADR-062 |
-| Cómo se detecta la versión instalada sin ejecutar OpenCode (RF-05 frente a la Tabla 9 de I.6); cómo se informa un valor efectivo que proviene de una sustitución de entorno | a decidir antes de la iteración 3 |
+| Cómo se detecta la versión instalada sin ejecutar OpenCode (RF-05 frente a la Tabla 9 de I.6) | a decidir antes de la iteración 3 |
 
 ### Evidencia
 
@@ -239,6 +264,7 @@ Pendiente de formalizar con `/aceptar`. En la sesión del 29/09/2026 el autor ma
 - ADR-019, ADR-023, ADR-029, ADR-032, ADR-051, ADR-054, ADR-055
 - `src/AGENTS.md`
 - `catedra/AE2-guia-comprobacion-v1.md` (pasos 6 a 8)
-- `informe/cap-01/I.6-descripcion-detallada-sistema-informacion.md` (Tabla 9)
+- `informe/cap-01/I.6-descripcion-detallada-sistema-informacion.md` (I.6.3 y Tabla 8; Tabla 9)
+- `03-requisitos/libro/catalogo/RNF-04.md` (motivo y criterio); `03-requisitos/libro/reglas.md` (RR-02); III.4 (L-03)
 - Documentación de Bun, «Isolated installs», https://bun.com/docs/pm/isolated-installs (consultada el 29/09/2026)
 - Sesión de diseño del 29/09/2026

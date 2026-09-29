@@ -55,7 +55,7 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 
 | Sección de `04-diseno/README.md` | Estado |
 |---|---|
-| 1 · Decisiones de arquitectura | 14 ADR aceptados; ADR-058 (arquitectura y estructura de `src/`) propuesto el 29/09/2026; ADR-059 (catálogo y casos de uso) aceptado el 29/09/2026; ADR-060 a 063 por discutir (AR-01 a AR-04) |
+| 1 · Decisiones de arquitectura | 13 registros aceptados en la tabla (incluidos ADR-058, arquitectura y estructura de `src/`, y ADR-060, contrato del adaptador y modelo del rastro, aceptados el 29/09/2026); ADR-061 a 063 por discutir (AR-02 a AR-04). Método de programación: ADR-065, aceptado el 29/09/2026 (fuera de la tabla por ser de método) |
 | 2 · Modelo de datos | Pendiente del diseño del v1 (R-08) |
 | 3 · Canal de integración continua | Pendiente del diseño del v1 (R-08) |
 

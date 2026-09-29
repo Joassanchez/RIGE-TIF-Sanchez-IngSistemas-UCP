@@ -109,4 +109,3 @@ Agregar una dependencia externa requiere autorización del autor.
 - **Sin commits ni etiquetas.** Los hace el autor después de revisar el diff.
 - **Todo comando** necesario para instalar, configurar, ejecutar o probar figura en `src/README.md`.
 - **No se escribe fuera de `src/`.**
-

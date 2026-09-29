@@ -25,6 +25,74 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
 
 ## Entradas de la AE2
 
+### Entrada · Martes 29 de septiembre de 2026 (continuación) — Verificación del código de OpenCode, contrato del adaptador y método de programación
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **Verificación sobre el tag 1.18.25.** Hice verificar el código fuente de OpenCode sin ejecutarlo (pendiente AR-05). Resultados:
+     - usa `jsonc-parser` y cuenta las columnas en unidades UTF-16;
+     - identifica las variables de entorno que aportan configuración y su lugar en el orden de precedencia;
+     - existe el comando nativo `opencode agent list`;
+     - quedaron identificadas las estrategias de combinación y los agentes nativos que la herramienta invoca sin declaración.
+   - **Contrato del adaptador y modelo del rastro (ADR-060, aceptado):**
+     - el adaptador declara una secuencia ordenada de aplicaciones y aporta el evaluador de permisos, y el núcleo las ejecuta con estrategias intercambiables;
+     - hay dos rastros, uno de valor y uno de decisión;
+     - un valor tiene tres orígenes: declarado, implícito y nativo;
+     - las posiciones se calculan sobre el texto original;
+     - la medición es a pedido y sale por el canal de error;
+     - cada resultado incluye un resumen de las entradas leídas (acuerdo E-02).
+   - **Método de programación (ADR-065, aceptado):** un esquema mixto.
+     - Las reglas de RIGE quedan en el repositorio (`src/AGENTS.md` y las pruebas).
+     - Programo en OpenCode con gentle-ai, abierto en `src/`.
+     - El diseño y la revisión se hacen en el sistema de agentes del TIF.
+   - **Aceptación de ADR-058** y propagación al libro y al informe:
+     - RNF-04 y RR-02 quedan acotados al contenido que incorpora una sustitución;
+     - se precisaron RF-07 (CA-1) y RF-16 (CA-2).
+     - RNF-04, RR-02 y RF-07 vuelven a «Pendiente» hasta informarlos a la referente.
+   - **`src/AGENTS.md`:** lo reemplacé por el borrador que reúne ADR-058, ADR-060 y ADR-065.
+2. **Alternativas evaluadas y criterio de descarte (recortes).**
+   - **Contrato:**
+     - se descartó un descriptor puramente declarativo, porque no expresa las derivaciones posteriores a la fusión que muestra el código;
+     - se descartó que el adaptador resuelva y devuelva el rastro, porque vacía el núcleo y vuelve trivial la prueba del adaptador ficticio;
+     - se descartó un rastro genérico único, porque oculta la posición efectiva de las reglas de permiso (RD-02 y RD-03).
+   - **Medición y resumen:**
+     - se descartó incluir la medición en la respuesta, porque rompe el determinismo de RF-03;
+     - se excluyó del resumen de entradas el contenido de las variables de entorno, para no exponer secretos de baja entropía. El costo aceptado es que un cambio solo en el contenido de una variable no altera el resumen.
+   - **Entradas remotas:** quedan fuera del análisis por RNF-05 y se declaran como no observadas.
+   - **Método de programación:**
+     - se descartó Gentle Shell, porque sumaba un tercer runtime sin ventaja demostrada sobre OpenCode con gentle-ai;
+     - se descartó construir un flujo de programación propio en el sistema del TIF, porque reinventaba una disciplina genérica que ya existe curada.
+   - **Diferido:** el modelo de datos (ADR-061), la distribución y las dependencias (ADR-062) y las pruebas metamórficas (ADR-063). La invocación del agente nativo `summary` se verifica en la iteración 2.
+3. **Evidencia.**
+   - Código fuente de OpenCode, tag `v1.18.25`, descargado de `codeload.github.com` con su resumen SHA-256 registrado en ADR-060.
+   - `01-relevamiento/linea-base/laboratorio-verificacion.md`: aislamiento, E-12 y E-18.
+   - Reglas RD-01 a RD-07 del libro; RNF-03; acuerdo E-02.
+   - Documentación de gentle-ai y de Gentle Shell, consultada el 29/09/2026.
+   - `00-gestion/revisiones/20260929_propagacion-ADR-058-060.md`.
+4. **Aporte personal.**
+   - Pedí la verificación sobre el tag antes de diseñar el contrato.
+   - Acepté las recomendaciones D1 a D6 del ADR-060.
+   - Planteé programar con gentle-ai y aporté que los estudios sobre OpenCode se habían hecho aislados de mi configuración, lo que corrigió una objeción del asistente.
+   - Elegí el esquema mixto, acepté ADR-058, ADR-060 y ADR-065 y reemplacé `src/AGENTS.md`.
+   - Artefactos:
+     - ADR-058, ADR-060 y ADR-065;
+     - `03-requisitos/libro/` (RNF-04, RR-02, RF-07, RF-16);
+     - `informe/anexos/` (Anexos I y V), `informe/cap-03/III.5` y `informe/cap-05/V.5`;
+     - `src/AGENTS.md`;
+     - `04-diseno/README.md`.
+5. **Desacuerdo y resolución.** Proyecto individual. Sin desacuerdo en la jornada.
+6. **Herramientas auxiliares.** Asistencia conforme al criterio general declarado.
+   - **Asistente de programación Claude Code (Anthropic).**
+     - *Función:*
+       - lectura y resumen del código fuente de OpenCode con remisión a archivo y línea;
+       - propuesta y contraste de alternativas, y redacción de ADR-060 y ADR-065;
+       - borrador de `src/AGENTS.md`;
+       - actualización del Libro de trabajo;
+       - propagación al informe mediante un subagente redactor, sobre una lista de cambios que aprobé.
+     - *Artefactos:* los listados en el punto 4, más `00-gestion/`.
+   - **OpenCode con gentle-ai:** en esta jornada no se usó para producir artefactos. Su uso para programar se declara a partir del primer incremento (ADR-065).
+
 ### Entrada · Martes 29 de septiembre de 2026 — Arquitectura de RIGE, revisión del catálogo y de los casos de uso, y horas de los requisitos nuevos
 
 <!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->

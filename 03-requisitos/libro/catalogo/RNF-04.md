@@ -3,14 +3,14 @@
 | Campo | Valor |
 |---|---|
 | ID | RNF-04 |
-| Enunciado | RIGE informa el nombre de cada variable de entorno y su condición de definida o no definida, y nunca su contenido |
+| Enunciado | RIGE nunca expone el contenido que una sustitución incorpora a una declaración; informa su origen —el nombre de la variable de entorno o la ruta del archivo— y su condición de definido o no definido |
 | Tipo | No funcional |
 | Categoría (si es no funcional) | Seguridad |
 | Prioridad | Must |
 | Motivo de la prioridad | Las variables de entorno suelen contener credenciales |
-| Criterio de aceptación | CA-1: Definida una variable con un valor conocido, ese valor no aparece en ninguna salida del sistema —interfaz, línea de comandos ni almacén propio—, verificado por búsqueda textual del valor |
-| Trazabilidad | Acta del 26/09/2026, decisión L-03 |
-| Estado de validación | Validado |
+| Criterio de aceptación | CA-1: Definida una variable con un valor conocido y referenciada por una sustitución en una declaración, ese valor no aparece en ninguna salida del sistema —interfaz, línea de comandos, diagnóstico ni almacén propio—, verificado por búsqueda textual del valor. CA-2: La misma condición se cumple para el contenido de un archivo incorporado por sustitución y para una sustitución contenida en una variable de entorno que constituye una entrada de configuración. CA-3: Para cada sustitución, el sistema informa su origen y su condición de definido o no definido |
+| Trazabilidad | Acta del 26/09/2026, decisión L-03; ADR-058, eje 8 |
+| Estado de validación | Pendiente |
 | Iteración prevista | 3 |
 | ¿Integra el MVP? | Sí |
 
