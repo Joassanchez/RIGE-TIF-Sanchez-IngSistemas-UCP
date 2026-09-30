@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | Approved; current delegation executes only T0-01–T0-03 and records documentary evidence. T0-01 verified; no implementation started. |
+| Estado | Approved; current delegation executes only T0-01–T0-03 and records documentary evidence. T0-01/T0-02 verified; no implementation started. |
 | Fecha | Propuesta: 29/09/2026; revisión documental y aplicación de correcciones aprobadas: 30/09/2026 |
 | Rama | `inc0-esqueleto`, already created; initial document commit `d9e7dee` |
 | TDD | Estricto. Fuente: `src/AGENTS.md` §7 y ADR-065 (regla 4). Ejecutor: `bun test` |
@@ -67,7 +67,7 @@ src/
 
 - **`nucleo` con `"types": []`** y sin `DOM` en `lib`: una referencia a `Bun`, `fetch` o `process` en el núcleo falla en la verificación de tipos (ADR-062, C3).
 - **Workspace:** un manifiesto y un `tsconfig.json` por paquete (ADR-058 P-2); `nucleo` sin dependencias, `opencode` declara únicamente `@rige/nucleo` y `rige` declara los paquetes locales que ensambla. No son bibliotecas externas. `tsconfig.base.json` fija `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `moduleResolution: "bundler"` y `module: "Preserve"`; los paquetes con runtime usan `"types": ["bun"]`. T0-04 conecta las referencias raíz con la verificación efectiva de los tres paquetes, sin `skipLibCheck`.
-- **`bunfig.toml`:** `[install] linker = "isolated"`; además `hoist = false` si Bun 1.3.14 lo admite, pendiente de T0-02. `[test] preload = ["./pruebas/preparar-entorno.ts"]`. T0-03 verifica la defensa adicional contra la carga automática de `.env`; aquí no se afirma compatibilidad medida.
+- **`bunfig.toml`:** `[install] linker = "isolated"`; T0-02 verified this key in Bun 1.3.14. Do not add `hoist = false`: that version ignores the key (§11.2). `[test] preload = ["./pruebas/preparar-entorno.ts"]`. T0-03 remains pending. No repository bunfig is created before T0-04.
 - **Casos de uso y paridad:** `preparar-almacen` crea o verifica explícitamente el esquema mediante el puerto; `consultar-estado` consulta la ruta del almacén y la versión de su esquema, y devuelve `Resultado` con el objeto de respuesta de `aplicacion/respuestas/estado.ts` (`esquema: 1`, versión de RIGE, ruta y versión del esquema de base). No confundir esos números (ADR-062 C5). La CLI serializa ese objeto y la página de inicio lo presenta, sin recalcular estado ni acceder a puertos. No se crea una Resolución ni se ejecuta lógica de resolución.
 - **Ensamblado y E/S:** `arranque/rige.ts` solo construye adaptadores, inyecta puertos en los casos de uso y conecta las interfaces. No coordina casos de uso ni lee archivos ni abre SQLite. La lectura de `rige.env` y del entorno ocurre en `adaptadores/sistema`, con entorno inyectado en las unitarias; la creación del directorio y toda E/S de SQLite, en `adaptadores/almacen-sqlite`. Los puertos no exponen SQLite ni capacidades de escritura sobre entradas. La E/S propia de las interfaces (argumentos con `node:util.parseArgs`, canales de CLI y servidor local con `Bun.serve`) no es un cliente saliente. Los errores de uso son `Resultado`; las excepciones de infraestructura se capturan una sola vez en el borde de la CLI o en `conErrores`, nunca como estado plausible del dominio (ADR-058 M-2 y convenciones 1, 3, 6 y 8).
 - **El guion SQL se importa como texto** (`import guion from "…/001_inicial.sql" with { type: "text" }`), compatibilidad medida en el equipo del autor con Bun 1.3.14 (ADR-062, verificación sobre el tag).
@@ -112,7 +112,7 @@ Cada tarea de código se hace en TDD estricto (§5) y se marca `[x]` solo con la
 ### Verificaciones previas (no code; one documentary evidence commit per task)
 
 - [x] **T0-01 · Bun no carga `rige.env`.** Crear un `rige.env` con `RIGE_PRUEBA=1` en un directorio temporal del sistema y ejecutar `bun -e "console.log(process.env.RIGE_PRUEBA)"` con ese directorio como cwd. *Criterio:* imprime `undefined`. Si imprime `1`, detenerse: ADR-062 C4 prevé cambiar el nombre del archivo y el asunto pasa al autor.
-- [ ] **T0-02 · Instalación aislada en Bun 1.3.14.** Fijar explícitamente `[install] linker = "isolated"` y añadir `hoist = false` si esa versión lo admite. *Criterio:* verificar las claves en Bun 1.3.14 y comprobar que un import no declarado falla; registrar el resultado y la compatibilidad de `hoist`. La comprobación sigue pendiente; esta revisión no consultó documentación de Bun ni ejecutó el experimento. Si no se obtiene aislamiento efectivo o surge contradicción con ADR-058, detenerse.
+- [x] **T0-02 · Instalación aislada en Bun 1.3.14.** Fijar explícitamente `[install] linker = "isolated"` y añadir `hoist = false` si esa versión lo admite. *Criterio:* verificar las claves en Bun 1.3.14 y comprobar que un import no declarado falla; registrar el resultado y la compatibilidad de `hoist`. Verified twice with local packages; `linker` is recognized, `hoist` is ignored (§11.2). Si no se obtiene aislamiento efectivo o surge contradicción con ADR-058, detenerse.
 - [ ] **T0-03 · Desactivar la carga automática de `.env`.** *Criterio:* se sabe si `bunfig.toml` de Bun 1.3.14 lo admite. Si lo admite, se configura como defensa adicional; si no, se anota y se sigue (ADR-062 C4).
 
 ### Pruebas y código (en este orden)
@@ -203,7 +203,7 @@ El CI existente (`../.github/workflows/ci.yml`) ejecuta instalación congelada, 
 
 ## 10. Progreso
 
-T0-01 verified twice; T0-02/T0-03 pending. Implementation T0-04–T0-13 remains unstarted. Pre-code experiments are TDD N/A, not RED/GREEN cycles. No CI execution is claimed.
+T0-01/T0-02 verified twice; T0-03 pending. Implementation T0-04–T0-13 remains unstarted. Pre-code experiments are TDD N/A, not RED/GREEN cycles. No CI execution is claimed.
 
 ## 11. Evidencia
 
@@ -221,8 +221,8 @@ T0-01 verified twice; T0-02/T0-03 pending. Implementation T0-04–T0-13 remains 
 
 | Tarea | Ruta | Agente | Modelo | Rojo (prueba y salida) | Verde | Refactor | Commit |
 |---|---|---|---|---|---|---|---|
-| T0-01 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: `undefined\n`, stderr empty, exit 0; §11.1 | N/A | Pending documentary checkpoint commit; hash recorded in next update |
-| T0-02 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Pending | N/A | Pending documentary evidence commit |
+| T0-01 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: `undefined\n`, stderr empty, exit 0; §11.1 | N/A | `f15bdc8e7a26815730762da1bcb732f1308434e3` |
+| T0-02 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: isolated undeclared import exit 1; hoisted control exit 0; `hoist` ignored; §11.2 | N/A | Pending documentary checkpoint commit; hash recorded in next update |
 | T0-03 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Pending | N/A | Pending documentary evidence commit |
 | T0-04 | delegada | general | openai/gpt-6.1-sol | | | | |
 | T0-05 | delegada | general | openai/gpt-6.1-sol | | | | |
@@ -251,6 +251,27 @@ Las columnas de ejecución se completan al implementar; los valores de ruta, age
 - Command: `python "C:/Users/Joa/AppData/Local/Temp/opencode/rige-inc0-experiments.py" T001`. Each fresh fixture contains only `rige.env` with `RIGE_PRUEBA=1`; Bun command: `bun -e "console.log(process.env.RIGE_PRUEBA)"` with fixture cwd.
 - Run 1 cwd: `rige-T001-1-dci0qn8h`; run 2: `rige-T001-2-4zowm3vq`. Both exact stdout `undefined\n`, stderr `""`, exit 0. Each `--version`: `1.3.14\n`, stderr `""`, exit 0. Both directories deleted: `CLEANED=True`.
 - Checkpoint: T0-01 satisfied; ADR-062 C4 filename assumption confirmed. Rationale: explicit RIGE loading remains necessary. Rollback boundary: this document's T0-01 evidence only, no application behavior. `git diff --check` is required before the documentary commit.
+
+### 11.2 T0-02 checkpoint: recognized linker, ignored hoist
+
+- Sources: Context7 `/oven-sh/bun` returned current **main** documentation for `linker`, `hoist` and `env`; not evidence of 1.3.14 compatibility. Exact-tag sources: [parser](https://raw.githubusercontent.com/oven-sh/bun/bun-v1.3.14/src/cli/bunfig.zig), [isolated installs](https://raw.githubusercontent.com/oven-sh/bun/bun-v1.3.14/docs/pm/isolated-installs.mdx). Tag commit `0d9b296af33f2b851fcbf4df3e9ec89751734ba4` matches the runtime's `0d9b296a`. Parser reads `install_obj.get("linker")`, but has no `install_obj.get("hoist")`; it separately recognizes `hoistPattern` and `publicHoistPattern`. Those are not substitutes authorized by this task.
+- Command: `python "C:/Users/Joa/AppData/Local/Temp/opencode/rige-inc0-experiments.py" T002`. Root manifest: private workspace `packages/*`, no root dependencies. `fixture-owner@1.0.0` declares `fixture-payload: "../../payload.tgz"`; `fixture-consumer@1.0.0` declares none. Locally generated archive contains `package/package.json` (`fixture-payload@1.0.0`, `type: module`, `exports: ./index.js`) and `index.js` exporting `"LOCAL_PAYLOAD"`. Both workspace scripts import `fixture-payload`. No registry packages or project dependencies are used.
+- Each variant removes installed fixture modules and its lock before reinstalling. Bun commands: `install --ignore-scripts --registry=http://127.0.0.1:1`, then `run ./packages/owner/index.js` and `run ./packages/consumer/index.js`. The registry destination is deliberately unusable and local; the generic `Resolved, downloaded and extracted [1]` message refers to the local archive, not a fetched registry dependency.
+- Final repeated runs: cwd `rige-T002-1-pu7jwns2` and `rige-T002-2-zj8oruep`. Successful install stdout is exactly `bun install v1.3.14 (0d9b296a)\n\n<N> packages installed [<time>.00ms]\n`; stderr exactly `Resolving dependencies\nResolved, downloaded and extracted [1]\nSaved lockfile\n`, exit 0. Times/N by variant:
+
+| bunfig variant | Run 1 N/time | Run 2 N/time | Owner / undeclared consumer |
+|---|---|---|---|
+| `linker = "isolated"`, `hoist = false` | 2/22 | 2/20 | 0 / 1 |
+| `linker = "isolated"` only | 2/20 | 2/20 | 0 / 1 |
+| isolated, `hoist = true` | 2/21 | 2/22 | 0 / 1 |
+| isolated, `hoist = "not-a-boolean"` | 2/17 | 2/18 | 0 / 1 |
+| `linker = "hoisted"`, `hoist = false` | 3/18 | 3/18 | 0 / 0 |
+
+- Owner and hoisted consumer: exact stdout `LOCAL_PAYLOAD\n`, stderr `""`, exit 0. Isolated consumer: stdout `""`, exit 1; exact stderr `error: Cannot find package 'fixture-payload' from '<cwd>\packages\consumer\index.js'\n\nBun v1.3.14 (Windows x64)\n` (substitute the recorded absolute cwd). Extra undeclared `import "fixture-owner"` from `packages/consumer/workspace.js` also exits 1 with the same error format naming `fixture-owner` and `workspace.js`, in both runs; no broader isolation guarantee is inferred.
+- Invalid-linker control: `[install] linker = "invalid"`, stdout `""`, exit 1. Exact stderr `2 | linker = "invalid"\n             ^\nerror: Expected one of "isolated" or "hoisted"\n    at <cwd>\bunfig.toml:2:10\n\nInvalid Bunfig: failed to load bunfig\n`. This demonstrates that the config is loaded, not silently skipped.
+- In both base isolated cases: `ROOT_PAYLOAD_EXISTS=False`, `FALLBACK_EXISTS=True`. This further disproves the current docs' `hoist = false` fallback-removal behavior in 1.3.14. Both full final runs completed; temporary fixture directories removed (`CLEANED=True`).
+- Exploratory harness corrections, not TDD red: local folder `file:../../fixtures/payload` isolated imports failed as expected, but its hoisted control also failed (harness assertion; cleaned). `file:../../payload.tgz` was interpreted as a link and failed with `ENOENT: No such file or directory: failed to link package: fixture-payload@..\\..\\payload.tgz (link)` (exit 1; cleaned). Switching only the fixture specification to `../../payload.tgz` produced the meaningful hoisted positive control, repeated successfully. No repository dependency or criterion was changed.
+- Checkpoint: T0-02 satisfied. Apply **only** `[install] linker = "isolated"` in future T0-04. The approved task explicitly makes `hoist` conditional; omitting an ignored key does not relax the effective-isolation criterion. The literal ADR-058 claim attributing behavior to `install.hoist` is not confirmed; no ADR is edited and no stronger enforcement claim is made. Rollback: this task's documentary evidence only. No source/bunfig/lock written to the repository.
 
 ## 12. Siguiente paso
 
