@@ -80,6 +80,8 @@ La lectura explícita y la configuración del producto siguen pendientes de T0-1
 
 ## 6. Ejecución y verificación
 
+**T0-05:** con el aislamiento de §4 ya preparado, ejecutar `bun test ./pruebas/arquitectura/dependencias.test.ts ./pruebas/aceptacion/RNF-03.test.ts`, luego `bun test` y `bun run verificar`. Arquitectura y RNF-03 CA-1 importan directamente el mismo análisis; las guardas no lanzan subprocesos ni ejecutan sus fuentes sintéticas. Se controlan dependencias explícitas de valor y tipo, aliases y manifiestos. Las formas calculadas no soportadas fallan visiblemente; no es un sandbox ni una prueba del destino usado por mkdirSync. Las unitarias de paquetes se verifican desde el tsconfig raíz con tipos Bun; el núcleo de producto mantiene types=[] y sin DOM.
+
 En T0-04, las pruebas verifican aislamiento, bloqueo de `fetch`, subprocesos y tsconfigs mediante fuentes temporales con errores intencionales y controles válidos. Solo la precarga modifica `process.env`; las pruebas usan objetos de entorno y eliminan sus temporales.
 
 `bun run verificar` sigue las referencias raíz para comprobar cada paquete con fuentes, además de las pruebas. Ejecuta `tsc --noEmit` con configuraciones derivadas temporales, sin exigir artefactos de referencias ni generar `tsbuildinfo`. Informa los paquetes aún vacíos como pendientes. Finalmente intenta `bun build ./paquetes/rige/arranque/rige.ts --target=bun`, sin archivo de salida: hoy falla porque ese arranque pertenece a T0-11a. **El resultado parcial no acredita la construcción completa ni el CI.**
@@ -101,5 +103,6 @@ T0-04 acredita verificaciones locales en Windows con Bun 1.3.14; no se ejecutó 
 | Período | Agente / modelo efectivo | Función y artefactos |
 |---|---|---|
 | T0-04, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Implementación delegada del workspace y arnés, pruebas TDD, README parcial y evidencia ODD; sin agentes hijos, RDD desactivado |
+| T0-05, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Guardas compartidas de dependencias, contratos mínimos, aceptación RNF-03 CA-1 y evidencia ODD; sin agentes hijos, RDD desactivado |
 
 Conforme al Protocolo de Uso Autorizado. Si no hubo uso, se consigna de manera expresa.
