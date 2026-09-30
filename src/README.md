@@ -15,30 +15,91 @@
 
 ## 3. Requisitos previos
 
-[DATO PENDIENTE: versiones exactas de lenguaje, motor de base de datos y herramientas. «Última versión» no es una versión.]
+- Bun **1.3.14**, sin actualizar a 1.4; `bun --version` debe informar `1.3.14`.
+- TypeScript **7.0.2** y `@types/bun` **1.3.14**, dependencias de desarrollo exactas instaladas mediante el lock.
+- SQLite integrado en Bun; no se requiere servidor externo. Su comprobación funcional corresponde a T0-09.
+
+Estado T0-04: solo workspace y arnés; no existen todavía esquema, CLI ni servidor.
 
 ## 4. Instalación
 
-```bash
-# [DATO PENDIENTE: comandos en el orden en que se ejecutan, copiables tal cual]
+Ejecutar desde `src/`, con Bun 1.3.14 en `PATH`. El agente usa siempre ubicaciones de usuario y almacén temporales. Los subprocesos del arnés construyen su entorno desde cero y solo heredan `PATH` y `SystemRoot`.
+
+**Windows (PowerShell):** preparar aislamiento, instalar, verificar, restaurar el entorno y limpiar temporales.
+
+```powershell
+$original = @{}
+Get-ChildItem Env: | ForEach-Object { $original[$_.Name] = $_.Value }
+$padre = "C:/Users/Joa/AppData/Local/Temp/opencode"
+if (-not (Test-Path -LiteralPath $padre -PathType Container)) { throw "Falta el directorio temporal" }
+$temporal = Join-Path $padre ([guid]::NewGuid().ToString())
+New-Item -ItemType Directory -Path $temporal | Out-Null
+try {
+    Get-ChildItem Env: | ForEach-Object { Remove-Item -LiteralPath "Env:$($_.Name)" }
+    $env:PATH = "C:/Users/Joa/.bun/bin;" + $original["PATH"]
+    $env:SystemRoot = $original["SystemRoot"]
+    foreach ($nombre in @("HOME", "USERPROFILE", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME", "LOCALAPPDATA", "APPDATA", "RIGE_ALMACEN", "TEMP", "TMP")) {
+        Set-Item -LiteralPath "Env:$nombre" -Value $temporal
+    }
+    bun --version
+    bun install --frozen-lockfile
+    bun test ./pruebas/arquitectura/entorno.test.ts
+    bun test
+    bun run verificar  # T0-04: salida 1 por arranque aun inexistente; no es PASS completo
+} finally {
+    Get-ChildItem Env: | ForEach-Object { Remove-Item -LiteralPath "Env:$($_.Name)" }
+    foreach ($nombre in $original.Keys) { Set-Item -LiteralPath "Env:$nombre" -Value $original[$nombre] }
+    Remove-Item -LiteralPath $temporal -Recurse -Force
+}
 ```
+
+**Ubuntu (Bash):** mismos comandos con entorno limpio. No se afirma una corrida Ubuntu en T0-04.
+
+```bash
+temporal=$(mktemp -d)
+trap 'rm -rf "$temporal"' EXIT
+env -i PATH="$PATH" HOME="$temporal" USERPROFILE="$temporal" \
+  XDG_CONFIG_HOME="$temporal" XDG_DATA_HOME="$temporal" XDG_STATE_HOME="$temporal" \
+  XDG_CACHE_HOME="$temporal" LOCALAPPDATA="$temporal" APPDATA="$temporal" \
+  RIGE_ALMACEN="$temporal" TMPDIR="$temporal" bash -c '
+    bun --version
+    bun install --frozen-lockfile
+    bun test ./pruebas/arquitectura/entorno.test.ts
+    bun test
+    bun run verificar
+  '
+```
+
+**Desarrollo del lock:** la primera generación usa `bun install`, bajo el mismo aislamiento; luego se usa `bun install --frozen-lockfile`. Para comprobar el compilador: `bun run tsc --version` (esperado: `Version 7.0.2`). No se agregan dependencias ni se actualiza el runtime durante la verificación.
 
 ## 5. Configuración
 
-[DATO PENDIENTE: cómo se genera el archivo de variables a partir de `.env.example` y qué significa cada variable. Sin credenciales reales.]
+`rige.env.example` contiene solo `RIGE_PUERTO=4747` y `RIGE_ALMACEN=`. La segunda variable designa un **directorio**, no una base; vacía seleccionará la ubicación normal del usuario cuando T0-10 implemente el lector. El agente siempre la sobrescribe con un temporal. `rige.env` queda ignorado y no es un archivo `.env`; Bun deshabilita la carga automática mediante `env = false`.
+
+La lectura explícita y la configuración del producto siguen pendientes de T0-10. No se necesita crear `rige.env` para verificar el arnés. La guía completa se termina en T0-13.
 
 ## 6. Ejecución y verificación
 
-[DATO PENDIENTE: cómo se arranca, en qué dirección responde y qué pasos concretos reproducen el caso de uso vertical, con el resultado esperado.]
+En T0-04, las pruebas verifican aislamiento, bloqueo de `fetch`, subprocesos y tsconfigs mediante fuentes temporales con errores intencionales y controles válidos. Solo la precarga modifica `process.env`; las pruebas usan objetos de entorno y eliminan sus temporales.
+
+`bun run verificar` sigue las referencias raíz para comprobar cada paquete con fuentes, además de las pruebas. Ejecuta `tsc --noEmit` con configuraciones derivadas temporales, sin exigir artefactos de referencias ni generar `tsbuildinfo`. Informa los paquetes aún vacíos como pendientes. Finalmente intenta `bun build ./paquetes/rige/arranque/rige.ts --target=bun`, sin archivo de salida: hoy falla porque ese arranque pertenece a T0-11a. **El resultado parcial no acredita la construcción completa ni el CI.**
+
+`bun run esquema`, `bun run servir` y `bun run rige -- <subcomando>` apuntan al arranque futuro; no son operativos ni se ejecutan en T0-04. La dirección prevista es `http://127.0.0.1:4747`; no hay servidor implementado. Los pasos finales se completarán en sus tareas, no mediante stubs.
 
 ## 7. Estado del canal de construcción
 
 [DATO PENDIENTE: dónde se consulta el registro de corridas (`.github/workflows/ci.yml`) y qué verifica el canal: instalación, construcción y al menos una prueba ligada a un criterio de aceptación del catálogo.]
+
+T0-04 acredita verificaciones locales en Windows con Bun 1.3.14; no se ejecutó el CI ni se declara construcción completa. El canal existente no se modifica.
 
 ## 8. Declaración de herramientas auxiliares
 
 | Herramienta | Función | Artefacto afectado |
 |---|---|---|
 | [DATO PENDIENTE] | | |
+
+| Período | Agente / modelo efectivo | Función y artefactos |
+|---|---|---|
+| T0-04, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Implementación delegada del workspace y arnés, pruebas TDD, README parcial y evidencia ODD; sin agentes hijos, RDD desactivado |
 
 Conforme al Protocolo de Uso Autorizado. Si no hubo uso, se consigna de manera expresa.

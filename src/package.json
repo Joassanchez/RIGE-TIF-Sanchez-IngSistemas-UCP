@@ -1,0 +1,18 @@
+{
+  "name": "rige",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.3.14",
+  "workspaces": ["paquetes/*"],
+  "scripts": {
+    "esquema": "bun ./paquetes/rige/arranque/rige.ts esquema",
+    "servir": "bun ./paquetes/rige/arranque/rige.ts servir",
+    "rige": "bun ./paquetes/rige/arranque/rige.ts",
+    "verificar": "bun -e 'import {mkdtempSync,writeFileSync,rmSync} from \"node:fs\"; import {tmpdir} from \"node:os\"; import {join,resolve} from \"node:path\"; const temporal=mkdtempSync(join(tmpdir(),\"rige-verificar-\")); let codigo=0; try { const raiz=await Bun.file(\"tsconfig.json\").json(); for (const ruta of [\".\",...raiz.references.map(ref=>ref.path)]) { const original=resolve(ruta,\"tsconfig.json\"); const fuentes=[...new Bun.Glob(\"**/*.ts\").scanSync({cwd:resolve(ruta===\".\"?\"pruebas\":ruta),onlyFiles:true})]; if (!fuentes.length) { console.error(\"Typecheck pendiente (sin fuentes): \"+ruta); continue; } const config=join(temporal,\"tsconfig.json\"); writeFileSync(config,JSON.stringify({extends:original,references:[],compilerOptions:{composite:false,incremental:false,noEmit:true,typeRoots:[resolve(\"node_modules/@types\")]}})); const resultado=Bun.spawnSync([process.execPath,\"run\",\"tsc\",\"--noEmit\",\"-p\",config],{stdout:\"inherit\",stderr:\"inherit\"}); if (resultado.exitCode) { codigo=resultado.exitCode; break; } } if (!codigo) codigo=Bun.spawnSync([process.execPath,\"build\",\"./paquetes/rige/arranque/rige.ts\",\"--target=bun\"],{stdout:\"inherit\",stderr:\"inherit\"}).exitCode; } finally { rmSync(temporal,{recursive:true,force:true}); } process.exit(codigo);'"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "@types/bun": "1.3.14"
+  }
+}
