@@ -80,6 +80,8 @@ La lectura explícita y la configuración del producto siguen pendientes de T0-1
 
 ## 6. Ejecución y verificación
 
+**T0-07:** bajo el mismo aislamiento, ejecutar `bun test ./pruebas/arquitectura/red.test.ts`, luego `bun test` y `bun run verificar`. Los imports de clientes se controlan en producto y pruebas; únicamente la ruta futura `pruebas/utilidades/cliente-http-local.ts` admite `node:http`. No se habilitan clientes por carpeta ni por extensión de prueba, y no se implementa todavía el cliente. Los globals de producto se inspeccionan sin ejecutar fuentes; RNF-05 CA-1/CA-2 siguen pendientes del análisis funcional completo.
+
 **T0-06:** bajo el aislamiento de §4, ejecutar `bun test ./pruebas/arquitectura/identificaciones.test.ts ./pruebas/aceptacion/RNF-03.test.ts`, luego `bun test` y `bun run verificar`. CA-2 inspecciona la fuente original del núcleo, incluidos comentarios, cadenas y unitarias, sin distinguir mayúsculas; CA-3 sigue fuera de este incremento.
 
 **T0-05:** con el aislamiento de §4 ya preparado, ejecutar `bun test ./pruebas/arquitectura/dependencias.test.ts ./pruebas/aceptacion/RNF-03.test.ts`, luego `bun test` y `bun run verificar`. Arquitectura y RNF-03 CA-1 importan directamente el mismo análisis; las guardas no lanzan subprocesos ni ejecutan sus fuentes sintéticas. Se controlan dependencias explícitas de valor y tipo, aliases y manifiestos. Las formas calculadas no soportadas fallan visiblemente; no es un sandbox ni una prueba del destino usado por mkdirSync. Las unitarias de paquetes se verifican desde el tsconfig raíz con tipos Bun; el núcleo de producto mantiene types=[] y sin DOM.
