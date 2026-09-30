@@ -1,4 +1,5 @@
 import { builtinModules } from "node:module";
+import { existsSync, realpathSync, statSync } from "node:fs";
 import { posix, resolve } from "node:path";
 import { createScanner, SyntaxKind } from "typescript/unstable/ast";
 
@@ -19,6 +20,7 @@ interface Token {
 
 const raiz = resolve(import.meta.dir, "../..");
 const normalizar = (ruta: string) => posix.normalize(ruta.replaceAll("\\", "/"));
+const directorioEsquemas = normalizar(resolve(raiz, "esquemas/almacen"));
 const modulo = (ruta: string) => {
   const partes = normalizar(ruta).split("/");
   if (partes[0] !== "paquetes") return "fuera";
@@ -175,6 +177,17 @@ function nombresImportados(clausula: Token[]): string[] {
     .map((nombre) => nombre.trim().replace(/^type\s+/, "").split(/\s+as\s+/)[0]!).filter(Boolean);
 }
 
+function permitidoSql(origen: string, destino: string, literal: string): boolean {
+  if (!origen.startsWith("paquetes/rige/adaptadores/almacen-sqlite/")
+    || !/^esquemas\/almacen\/.+\.sql$/.test(destino)
+    || (!literal.startsWith(".") && literal === destino)) return false;
+  const ruta = resolve(raiz, destino);
+  if (!existsSync(ruta)) return false;
+  // El destino fisico tambien debe quedar dentro del directorio autorizado.
+  const real = normalizar(realpathSync(ruta));
+  return real.startsWith(`${directorioEsquemas}/`) && real.endsWith(".sql") && statSync(real).isFile();
+}
+
 export function analizarFuente(archivo: string, codigo: string, opciones: OpcionesAnalisis = {}): HallazgoDependencia[] {
   archivo = normalizar(archivo);
   if (/\.test\.[cm]?[jt]sx?$/.test(archivo)) return [];
@@ -190,7 +203,9 @@ export function analizarFuente(archivo: string, codigo: string, opciones: Opcion
     for (const destino of destinos(archivo, entrada.destino, opciones)) {
       let permitido = false;
       const nombreRuntime = destino.replace(/^node:/, "");
-      if (destino.startsWith("paquetes/")) {
+      if (destino.endsWith(".sql") || entrada.destino.endsWith(".sql")) {
+        permitido = permitidoSql(archivo, destino, entrada.destino);
+      } else if (destino.startsWith("paquetes/")) {
         permitido = permitidoLocal(archivo, destino);
         const origenPaquete = archivo.split("/")[1];
         const destinoPaquete = destino.split("/")[1];

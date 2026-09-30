@@ -19,7 +19,7 @@
 - TypeScript **7.0.2** y `@types/bun` **1.3.14**, dependencias de desarrollo exactas instaladas mediante el lock.
 - SQLite integrado en Bun; no se requiere servidor externo. Su comprobación funcional corresponde a T0-09.
 
-Estado T0-04: solo workspace y arnés; no existen todavía esquema, CLI ni servidor.
+Estado actual: esquema y preparación de T0-09 probados localmente; CLI y servidor todavía pendientes. La tarea no está cerrada porque la verificación completa sigue sin el arranque de T0-11a.
 
 ## 4. Instalación
 
@@ -80,6 +80,8 @@ La lectura explícita y la configuración del producto siguen pendientes de T0-1
 
 ## 6. Ejecución y verificación
 
+**T0-09 sin cerrar:** bajo el aislamiento de §4, ejecutar `bun test ./paquetes/rige/adaptadores/almacen-sqlite/esquema.test.ts ./paquetes/rige/aplicacion/casos-uso/preparar-almacen.test.ts ./pruebas/arquitectura/dependencias.test.ts`, luego `bun test` y `bun run verificar`. Las unitarias usan SQLite real en temporales y dobles de puertos en memoria; no escriben Resoluciones desde el producto. `via` solo exige texto obligatorio y no vacío: la validación contra el catálogo del adaptador queda para el incremento de escritura. La declaración `guion.d.ts` autorizada solo exporta `string` para SQL; `esquema.ts` la referencia también para el proyecto de pruebas. Para comprobar su inclusión sin emitir archivos: `bun run tsc --noEmit --listFilesOnly -p ./paquetes/rige/tsconfig.json`. La guarda permite únicamente SQL real bajo `esquemas/almacen/` desde el adaptador de almacén, incluidos aliases normalizados; no habilita otros destinos ni capas. La suite completa pasa y los tipos son correctos, pero `bun run verificar` aún sale 1 por el arranque pendiente T0-11a. El autor exige PASS completo: no hay commit ni cierre de T0-09 hasta resolver ese conflicto; no se omite el build.
+
 **T0-08:** bajo el aislamiento de §4, ejecutar `bun test ./pruebas/arquitectura/repositorio.test.ts`, luego `bun test` y `bun run verificar`. La guarda inspecciona solo los nombres de las entradas en `pruebas/escenarios/` y sus ancestros hasta la raíz explícita del repositorio, inclusive; no lee configuraciones ni recorre fixtures descendientes o carpetas ajenas. Los controles adversarios se crean exclusivamente en temporales del sistema y se eliminan incluso ante fallos. Las rutas inválidas y los enlaces de directorio fallan visiblemente antes de recorrer destinos externos.
 
 **T0-07:** bajo el mismo aislamiento, ejecutar `bun test ./pruebas/arquitectura/red.test.ts`, luego `bun test` y `bun run verificar`. Los imports de clientes se controlan en producto y pruebas; únicamente la ruta futura `pruebas/utilidades/cliente-http-local.ts` admite `node:http`. No se habilitan clientes por carpeta ni por extensión de prueba, y no se implementa todavía el cliente. Los globals de producto se inspeccionan sin ejecutar fuentes; RNF-05 CA-1/CA-2 siguen pendientes del análisis funcional completo.
@@ -113,5 +115,6 @@ T0-04 acredita verificaciones locales en Windows con Bun 1.3.14; no se ejecutó 
 | T0-04, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Implementación delegada del workspace y arnés, pruebas TDD, README parcial y evidencia ODD; sin agentes hijos, RDD desactivado |
 | T0-05, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Guardas compartidas de dependencias, contratos mínimos, aceptación RNF-03 CA-1 y evidencia ODD; sin agentes hijos, RDD desactivado |
 | T0-08, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Preparación delegada, guarda acotada del repositorio, pruebas TDD temporales, README y evidencia ODD; sin agentes hijos, RDD desactivado |
+| T0-09 parcial y continuación, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | SQL genérico, adaptador, preparación, unitarias, declaración de tipos autorizada y guarda SQL con infracción revertida; suite verde y tipos correctos, sin commit por build pendiente T0-11a y requisito de cierre completo; sin agentes hijos, RDD desactivado |
 
 Conforme al Protocolo de Uso Autorizado. Si no hubo uso, se consigna de manera expresa.

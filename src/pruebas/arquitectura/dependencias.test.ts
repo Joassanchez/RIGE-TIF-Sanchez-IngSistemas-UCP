@@ -170,3 +170,65 @@ describe("T0-05 analisis de dependencias", () => {
     }
   });
 });
+
+describe("T0-09 excepcion SQL limitada al almacen", () => {
+  const origen = "paquetes/rige/adaptadores/almacen-sqlite/esquema.ts";
+  const esquema = "esquemas/almacen/001_inicial.sql";
+
+  test.each(["../../../../esquemas/almacen/001_inicial.sql",
+    "../../../../esquemas/almacen/../almacen/001_inicial.sql"])(
+    "admite import como texto de archivo real normalizado: %s", (destino) => {
+      expect(analizarFuente(origen, `import guion from "${destino}" with { type: "text" };`)).toEqual([]);
+    },
+  );
+
+  test("admite alias exacto y comodin solo cuando resuelven al SQL autorizado", () => {
+    expect(analizarFuente(origen, 'import guion from "@guion" with { type: "text" };', {
+      aliases: { "@guion": [esquema] },
+    })).toEqual([]);
+    expect(analizarFuente(origen, 'import guion from "@sql/001_inicial.sql" with { type: "text" };', {
+      aliases: { "@sql/*": ["esquemas/almacen/*"] },
+    })).toEqual([]);
+  });
+
+  test.each(["nucleo", "opencode", "rige/aplicacion", "rige/adaptadores/sistema",
+    "rige/interfaces/cli", "rige/arranque", "rige/adaptadores/almacen-sqlite-ajeno"])(
+    "rechaza SQL desde otro origen: %s", (capa) => {
+      expect(analizarFuente(`paquetes/${capa}/sonda.ts`, 'import guion from "@guion" with { type: "text" };', {
+        aliases: { "@guion": [esquema] },
+      }).length).toBeGreaterThan(0);
+    },
+  );
+
+  test.each(["./ajeno.sql", "./../sistema/ajeno.sql", "../../../../esquemas/salida/ajeno.sql",
+    "../../../../esquemas/almacen/../../ajeno.sql", "../../../../esquemas/almacen/inexistente.sql",
+    "../../../../esquemas/almacen/001_inicial.sql/", "sql-externo", "esquemas/almacen/001_inicial.sql"])(
+    "rechaza destino SQL no autorizado: %s", (destino) => {
+      expect(analizarFuente(origen, `import guion from "${destino}" with { type: "text" };`).length).toBeGreaterThan(0);
+    },
+  );
+
+  test.each(["esquemas/almacen/../../ajeno.sql", "../esquemas/almacen/001_inicial.sql",
+    "paquetes/rige/adaptadores/almacen-sqlite/esquema.ts", "esquemas/almacen"])(
+    "rechaza alias SQL que escapa o apunta a otro tipo de destino: %s", (destino) => {
+      expect(analizarFuente(origen, 'import guion from "@sql/guion.sql" with { type: "text" };', {
+        aliases: { "@sql/*": [destino] },
+      }).length).toBeGreaterThan(0);
+    },
+  );
+
+  test("ningun destino alternativo del alias puede eludir el limite", () => {
+    expect(analizarFuente(origen, 'import guion from "@guion" with { type: "text" };', {
+      aliases: { "@guion": [esquema, "esquemas/salida/ajeno.sql"] },
+    }).length).toBeGreaterThan(0);
+  });
+
+  test("la declaracion solo exporta string para SQL y no se interpreta como import", async () => {
+    const archivo = "paquetes/rige/adaptadores/almacen-sqlite/guion.d.ts";
+    const codigo = await Bun.file(new URL(`../../${archivo}`, import.meta.url)).text();
+    expect(codigo).toBe('declare module "*.sql" {\n  const guion: string;\n  export default guion;\n}\n');
+    expect(analizarFuente(archivo, codigo)).toEqual([]);
+    const adaptador = await Bun.file(new URL(`../../${origen}`, import.meta.url)).text();
+    expect(adaptador.startsWith('/// <reference path="./guion.d.ts" />\n')).toBe(true);
+  });
+});
