@@ -137,7 +137,7 @@ Todas las rutas se expresan desde `src/`. Las unitarias se escriben antes que el
 
 | Archivo o conjunto enumerado | Tarea responsable |
 |---|---|
-| `odd/tasks/inc0-esqueleto.md` | Revisión actual; primer commit documental futuro; evidencia actualizada por cada tarea |
+| `odd/tasks/inc0-esqueleto.md` | Initial commit `d9e7dee`; documentary evidence updated per task |
 | `package.json`, `bun.lock`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.json`, `rige.env.example`, `.gitignore`, `.gitattributes` | T0-04, con resultados previos T0-01–T0-03 |
 | `paquetes/nucleo/package.json`, `paquetes/nucleo/tsconfig.json` | T0-04 |
 | `paquetes/opencode/package.json`, `paquetes/opencode/tsconfig.json` | T0-04 |
@@ -224,7 +224,7 @@ T0-01–T0-03 verified sequentially, twice each. Implementation T0-04–T0-13 re
 |---|---|---|---|---|---|---|---|
 | T0-01 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: `undefined\n`, stderr empty, exit 0; §11.1 | N/A | `f15bdc8e7a26815730762da1bcb732f1308434e3` |
 | T0-02 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: isolated undeclared import exit 1; hoisted control exit 0; `hoist` ignored; §11.2 | N/A | `1c94bf6a3fd58a85df54c74b031aff9f459acb78` |
-| T0-03 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: root `env = false` prevents automatic dotenv loading in eval/run/script/test; §11.3 | N/A | Pending documentary checkpoint commit; hash recorded in follow-up evidence commit |
+| T0-03 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: root `env = false` prevents automatic dotenv loading in eval/run/script/test; §11.3 | N/A | `8a2b8db0487f4b2b52e67b861f62756868ae291a` |
 | T0-04 | delegada | general | openai/gpt-6.1-sol | | | | |
 | T0-05 | delegada | general | openai/gpt-6.1-sol | | | | |
 | T0-06 | delegada | general | openai/gpt-6.1-sol | | | | |
@@ -283,6 +283,13 @@ Las columnas de ejecución se completan al implementar; los valores de ruta, age
 - Explicit-file control with `env = false`: `bun --env-file=.env ./probe.js` still prints exactly `1\n`, stderr `""`, exit 0 in both runs. Defense disables **automatic** files, not explicit loading or inherited environment; preserve the separate environment isolation and explicit `rige.env` reader.
 - Preliminary harness assertion incorrectly omitted the `bun test` stdout version banner; baseline test itself passed (`1 pass`, `0 fail`), but Python stopped with `AssertionError`. Corrected only output expectation, then repeated the complete experiment twice. Preliminary and final fixture directories were cleaned by the temporary-directory context.
 - Checkpoint: T0-03 satisfied, root `env = false` configured and observed in temporary bunfig; carry it into repository bunfig in T0-04, which was not executed. Rationale: ADR-062 C4 defense in depth without relying on it for `rige.env` semantics. Rollback: this task's documentary evidence only. Both final fixtures deleted (`CLEANED=True`).
+
+### 11.4 Documentary delivery boundary
+
+- Checkpoint commits: T0-01 `f15bdc8e7a26815730762da1bcb732f1308434e3`; T0-02 `1c94bf6a3fd58a85df54c74b031aff9f459acb78`; T0-03 `8a2b8db0487f4b2b52e67b861f62756868ae291a`. Follow-up documentation records the last hash without amend or a self-referential hash.
+- Only `src/odd/tasks/inc0-esqueleto.md` was staged in each commit. Other concurrent changes observed in `00-gestion/bitacora.md`, `estado.md`, `pendientes.md` and `informe/datos-autor.yaml` are outside this delegation and preserved. `AGENTS.md`, ADR-066 and the decision index were not edited.
+- Each checkpoint passed `git diff --check` (exit 0); Git emitted existing LF→CRLF working-copy warnings, not whitespace errors. No hooks skipped, amend, push, merge or tags.
+- All fixture directories were removed by the harness; the temporary harness itself was deleted after the repeated experiments. README remains unchanged, because experiment commands are not end-user setup steps. No workspace sources, runtime data or installed modules remain in the repository from this delegation.
 
 ## 12. Siguiente paso
 
