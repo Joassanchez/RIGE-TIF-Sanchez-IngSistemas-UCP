@@ -146,5 +146,5 @@ Workspaces de Bun 1.3.14 con instalación aislada: `paquetes/nucleo`, `paquetes/
 - **TDD estricto**, ejecutor `bun test`. Por cada tarea: prueba primero y verla fallar, mínimo código para que pase, refactorización. La evidencia (rojo, verde, refactorización, commit) se registra en el documento del incremento.
 - **Commits solo en la rama del incremento**, uno por tarea, con Conventional Commits. **Nunca** subir, unir con `main` ni crear etiquetas: eso lo hace el autor después de la revisión.
 - **Todo comando** necesario para instalar, configurar, ejecutar o probar figura en `src/README.md`.
-- **No se escribe fuera de `src/`.**
+- **No se escriben archivos del repositorio fuera de `src/`.** Los datos de ejecución van a temporales del sistema; en toda ejecución del agente, `RIGE_ALMACEN` apunta a un temporal (ADR-066).
 
