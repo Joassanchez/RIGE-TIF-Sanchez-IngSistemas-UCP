@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | Aprobado por el autor con las correcciones aquí aplicadas y autorización expresa para implementar (ADR-065, regla 3). Implementación todavía sin iniciar; esta delegación solo edita el documento. |
+| Estado | Approved; current delegation executes only T0-01–T0-03 and records documentary evidence. T0-01 verified; no implementation started. |
 | Fecha | Propuesta: 29/09/2026; revisión documental y aplicación de correcciones aprobadas: 30/09/2026 |
-| Rama | `inc0-esqueleto`, a crear desde `main` en la ejecución autorizada de implementación, no en esta delegación |
+| Rama | `inc0-esqueleto`, already created; initial document commit `d9e7dee` |
 | TDD | Estricto. Fuente: `src/AGENTS.md` §7 y ADR-065 (regla 4). Ejecutor: `bun test` |
 | Entrega | Una sola rama, sin solicitudes de integración. El agente nunca sube, une con `main` ni crea etiquetas (ADR-065, regla 5) |
 | Fuentes | Plan `../00-gestion/revisiones/20260929_inc0-base-contexto.md` (propuesta, no orden); ADR-032, ADR-054, ADR-058, ADR-061, ADR-062, ADR-065, ADR-066 aceptado (`../00-gestion/decisiones/`); fichas `../03-requisitos/libro/catalogo/RNF-03.md`, `RNF-05.md`, `RNF-09.md`; guía `../catedra/AE2-guia-comprobacion-v1.md` (pasos 4 a 7 y §5); `../.github/workflows/ci.yml` (existente, no se modifica) |
@@ -109,9 +109,9 @@ Lógica del núcleo; adaptador (lectura, vías, secuencia); `jsonc-parser`; copi
 
 Cada tarea de código se hace en TDD estricto (§5) y se marca `[x]` solo con la evidencia observada de §11.
 
-### Verificaciones previas (sin código, sin commit)
+### Verificaciones previas (no code; one documentary evidence commit per task)
 
-- [ ] **T0-01 · Bun no carga `rige.env`.** Crear un `rige.env` con `RIGE_PRUEBA=1` en un directorio temporal del sistema y ejecutar `bun -e "console.log(process.env.RIGE_PRUEBA)"` con ese directorio como cwd. *Criterio:* imprime `undefined`. Si imprime `1`, detenerse: ADR-062 C4 prevé cambiar el nombre del archivo y el asunto pasa al autor.
+- [x] **T0-01 · Bun no carga `rige.env`.** Crear un `rige.env` con `RIGE_PRUEBA=1` en un directorio temporal del sistema y ejecutar `bun -e "console.log(process.env.RIGE_PRUEBA)"` con ese directorio como cwd. *Criterio:* imprime `undefined`. Si imprime `1`, detenerse: ADR-062 C4 prevé cambiar el nombre del archivo y el asunto pasa al autor.
 - [ ] **T0-02 · Instalación aislada en Bun 1.3.14.** Fijar explícitamente `[install] linker = "isolated"` y añadir `hoist = false` si esa versión lo admite. *Criterio:* verificar las claves en Bun 1.3.14 y comprobar que un import no declarado falla; registrar el resultado y la compatibilidad de `hoist`. La comprobación sigue pendiente; esta revisión no consultó documentación de Bun ni ejecutó el experimento. Si no se obtiene aislamiento efectivo o surge contradicción con ADR-058, detenerse.
 - [ ] **T0-03 · Desactivar la carga automática de `.env`.** *Criterio:* se sabe si `bunfig.toml` de Bun 1.3.14 lo admite. Si lo admite, se configura como defensa adicional; si no, se anota y se sigue (ADR-062 C4).
 
@@ -174,7 +174,7 @@ Dependencias: T0-09 y T0-10 → T0-11a → T0-11b → T0-12. T0-11a ensambla CLI
 
 ## 7. Alcance autorizado
 
-**En esta delegación documental:** únicamente lectura de las fuentes y edición de `src/odd/tasks/inc0-esqueleto.md`, más inspección local del diff y del estado de git y copia completa del documento en Engram. Sin código, pruebas runtime, instalaciones, indexación, archivos auxiliares, ramas, staging, commits, remoto ni lectura de configuración personal.
+**Current delegation:** only T0-01, T0-02 and T0-03, sequentially, with local experiments under `C:/Users/Joa/AppData/Local/Temp/opencode`, isolated subprocess environments, and documentary commits on the existing branch. Only this repository document is edited/staged. No T0-04 or later, source changes, personal configuration, downloads, runtime upgrades, indexing, remote execution, push, merge or tags. README experiments remain deferred to T0-13. The latest author instruction supersedes the earlier documentary-only delegation and the obsolete no-commit wording, without changing task criteria.
 
 **Implementación aprobada y expresamente autorizada por el autor, fuera de esta delegación:** crear `inc0-esqueleto` desde `main`; primer commit solo de este documento con `docs: documento ODD del incremento 0`; escribir los archivos reconciliados de §6.1; ejecutar las verificaciones T0-01–T0-03 y los comandos necesarios de §9 documentados en README; cerrar cada tarea de implementación con un commit en esa rama. Staging solo de rutas explícitas dentro de `src/`, nunca `git add -A` ni `git add .`. Los temporales del arnés y los archivos del almacén de prueba son datos de ejecución aislados, no nuevos artefactos versionados: van a temporales del sistema, se fija `RIGE_ALMACEN` temporal en toda ejecución runtime del agente y se limpian al terminar (§5, ADR-066; D-4 resuelta). `rige.env` es una copia local ignorada para configurar la ejecución, no un archivo versionado. Todo lo demás requiere acuerdo nuevo. El autor confirmó ADR-066 aceptado: T0-10 y T0-11a/T0-11b no mantienen bloqueos documentales.
 
@@ -203,7 +203,7 @@ El CI existente (`../.github/workflows/ci.yml`) ejecuta instalación congelada, 
 
 ## 10. Progreso
 
-Implementación sin iniciar; todas las tareas siguen pendientes. Documento aprobado por el autor con correcciones aplicadas y autorización expresa para implementar; ADR-066 aceptado y confirmado, D-1/D-4 resueltas. Las marcas `[x]` de §6 se activan solo con la evidencia observada de §11. No hay RED/GREEN, resultado de runtime ni corrida de CI de esta revisión.
+T0-01 verified twice; T0-02/T0-03 pending. Implementation T0-04–T0-13 remains unstarted. Pre-code experiments are TDD N/A, not RED/GREEN cycles. No CI execution is claimed.
 
 ## 11. Evidencia
 
@@ -217,13 +217,13 @@ Implementación sin iniciar; todas las tareas siguen pendientes. Documento aprob
 | Implementación futura | `gentle-orchestrator` y `general` | `openai/gpt-6.1-sol` | Orquestación e implementación de tareas autorizadas | Previsto, no ejecutado |
 | Exploración futura | `explore` | `openai/gpt-6-luna` | Exploración acotada para tareas autorizadas | Previsto, no ejecutado |
 
-**Registro de ejecución futuro** (no es la autoría histórica; todos los resultados pendientes):
+**Execution record** (actual evidence for executed tasks; other rows remain forecasts):
 
 | Tarea | Ruta | Agente | Modelo | Rojo (prueba y salida) | Verde | Refactor | Commit |
 |---|---|---|---|---|---|---|---|
-| T0-01 | inline | gentle-orchestrator | openai/gpt-6.1-sol | | | — | — |
-| T0-02 | inline | gentle-orchestrator | openai/gpt-6.1-sol | | | — | — |
-| T0-03 | inline | gentle-orchestrator | openai/gpt-6.1-sol | | | — | — |
+| T0-01 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: `undefined\n`, stderr empty, exit 0; §11.1 | N/A | Pending documentary checkpoint commit; hash recorded in next update |
+| T0-02 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Pending | N/A | Pending documentary evidence commit |
+| T0-03 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Pending | N/A | Pending documentary evidence commit |
 | T0-04 | delegada | general | openai/gpt-6.1-sol | | | | |
 | T0-05 | delegada | general | openai/gpt-6.1-sol | | | | |
 | T0-06 | delegada | general | openai/gpt-6.1-sol | | | | |
@@ -241,6 +241,16 @@ Las columnas de ejecución se completan al implementar; los valores de ruta, age
 **Antecedente, no resultado de esta revisión:** ADR-062 y el plan de referencia atribuyen al sistema de agentes del TIF, sobre el equipo del autor el 29/09/2026, Bun 1.3.14 (ZIP y binario cotejados con `SHASUMS256.txt`), TypeScript 7.0.2 con `@types/bun` 1.3.14 y `"types": ["bun"]` sin `skipLibCheck`, SQLite 3.53.0 con `json_valid` e importación SQL como texto. Se conserva esa atribución; no se repitieron las mediciones ni se verificó aquí la compatibilidad de `hoist`.
 
 **Cierre:** salida de `bun run verificar` y `bun test` en el equipo del autor, y enlace a la corrida del CI una vez que el autor suba la rama (el agente nunca sube).
+
+### 11.1 Temporary experiment conditions and T0-01 checkpoint
+
+- Effective writer: runtime role `general`, model `openai/gpt-6.1-sol`; delegated route, no child agents, RDD clone off.
+- Read the complete `src/AGENTS.md`, approved document, ADR-058/062/066 and both requested skills. Initial `git status --short` was empty; no author files were edited or staged.
+- Verified parent with `Test-Path -LiteralPath "C:/Users/Joa/AppData/Local/Temp/opencode"` → `True`. PATH resolved `C:/Users/Joa/.bun/bin/bun.exe`; isolated `--version` → `1.3.14`, exit 0. No download/install of Bun; Glob found no `bun.exe` under the authorized temporary parent.
+- Temporary harness `rige-inc0-experiments.py` constructs each Bun environment from scratch: only inherited `PATH`/`SystemRoot`; `HOME`, `USERPROFILE`, all four `XDG_*` directories, `LOCALAPPDATA`, `APPDATA`, `RIGE_ALMACEN`, `TEMP` and `TMP` point to the experiment directory. `OPENCODE_*` and probe variables are absent. No personal configuration is read.
+- Command: `python "C:/Users/Joa/AppData/Local/Temp/opencode/rige-inc0-experiments.py" T001`. Each fresh fixture contains only `rige.env` with `RIGE_PRUEBA=1`; Bun command: `bun -e "console.log(process.env.RIGE_PRUEBA)"` with fixture cwd.
+- Run 1 cwd: `rige-T001-1-dci0qn8h`; run 2: `rige-T001-2-4zowm3vq`. Both exact stdout `undefined\n`, stderr `""`, exit 0. Each `--version`: `1.3.14\n`, stderr `""`, exit 0. Both directories deleted: `CLEANED=True`.
+- Checkpoint: T0-01 satisfied; ADR-062 C4 filename assumption confirmed. Rationale: explicit RIGE loading remains necessary. Rollback boundary: this document's T0-01 evidence only, no application behavior. `git diff --check` is required before the documentary commit.
 
 ## 12. Siguiente paso
 
