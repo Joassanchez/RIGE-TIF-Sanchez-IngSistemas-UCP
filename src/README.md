@@ -80,6 +80,8 @@ La lectura explícita y la configuración del producto siguen pendientes de T0-1
 
 ## 6. Ejecución y verificación
 
+**T0-08:** bajo el aislamiento de §4, ejecutar `bun test ./pruebas/arquitectura/repositorio.test.ts`, luego `bun test` y `bun run verificar`. La guarda inspecciona solo los nombres de las entradas en `pruebas/escenarios/` y sus ancestros hasta la raíz explícita del repositorio, inclusive; no lee configuraciones ni recorre fixtures descendientes o carpetas ajenas. Los controles adversarios se crean exclusivamente en temporales del sistema y se eliminan incluso ante fallos. Las rutas inválidas y los enlaces de directorio fallan visiblemente antes de recorrer destinos externos.
+
 **T0-07:** bajo el mismo aislamiento, ejecutar `bun test ./pruebas/arquitectura/red.test.ts`, luego `bun test` y `bun run verificar`. Los imports de clientes se controlan en producto y pruebas; únicamente la ruta futura `pruebas/utilidades/cliente-http-local.ts` admite `node:http`. No se habilitan clientes por carpeta ni por extensión de prueba, y no se implementa todavía el cliente. Los globals de producto se inspeccionan sin ejecutar fuentes; RNF-05 CA-1/CA-2 siguen pendientes del análisis funcional completo.
 
 **T0-06:** bajo el aislamiento de §4, ejecutar `bun test ./pruebas/arquitectura/identificaciones.test.ts ./pruebas/aceptacion/RNF-03.test.ts`, luego `bun test` y `bun run verificar`. CA-2 inspecciona la fuente original del núcleo, incluidos comentarios, cadenas y unitarias, sin distinguir mayúsculas; CA-3 sigue fuera de este incremento.
@@ -110,5 +112,6 @@ T0-04 acredita verificaciones locales en Windows con Bun 1.3.14; no se ejecutó 
 |---|---|---|
 | T0-04, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Implementación delegada del workspace y arnés, pruebas TDD, README parcial y evidencia ODD; sin agentes hijos, RDD desactivado |
 | T0-05, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Guardas compartidas de dependencias, contratos mínimos, aceptación RNF-03 CA-1 y evidencia ODD; sin agentes hijos, RDD desactivado |
+| T0-08, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Preparación delegada, guarda acotada del repositorio, pruebas TDD temporales, README y evidencia ODD; sin agentes hijos, RDD desactivado |
 
 Conforme al Protocolo de Uso Autorizado. Si no hubo uso, se consigna de manera expresa.
