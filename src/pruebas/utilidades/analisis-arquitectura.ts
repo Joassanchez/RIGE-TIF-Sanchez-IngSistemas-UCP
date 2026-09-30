@@ -278,3 +278,20 @@ export async function comprobarDependencias(): Promise<HallazgoDependencia[]> {
   }
   return hallazgos.sort((a, b) => a.archivo.localeCompare(b.archivo) || a.motivo.localeCompare(b.motivo));
 }
+
+export function analizarIdentificaciones(archivo: string, codigo: string): HallazgoDependencia[] {
+  archivo = normalizar(archivo);
+  return archivo.startsWith("paquetes/nucleo/") && /opencode/i.test(codigo)
+    ? [{ archivo, motivo: "Identificacion de herramienta en la fuente original del nucleo" }] : [];
+}
+
+export async function comprobarIdentificaciones(): Promise<HallazgoDependencia[]> {
+  const hallazgos: HallazgoDependencia[] = [];
+  for (const ruta of new Bun.Glob("**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}").scanSync({ cwd: resolve(raiz, "paquetes/nucleo") })) {
+    const relativa = normalizar(ruta);
+    if (relativa.split("/").includes("node_modules")) continue;
+    const archivo = `paquetes/nucleo/${relativa}`;
+    hallazgos.push(...analizarIdentificaciones(archivo, await Bun.file(resolve(raiz, archivo)).text()));
+  }
+  return hallazgos.sort((a, b) => a.archivo.localeCompare(b.archivo));
+}

@@ -80,6 +80,8 @@ La lectura explícita y la configuración del producto siguen pendientes de T0-1
 
 ## 6. Ejecución y verificación
 
+**T0-06:** bajo el aislamiento de §4, ejecutar `bun test ./pruebas/arquitectura/identificaciones.test.ts ./pruebas/aceptacion/RNF-03.test.ts`, luego `bun test` y `bun run verificar`. CA-2 inspecciona la fuente original del núcleo, incluidos comentarios, cadenas y unitarias, sin distinguir mayúsculas; CA-3 sigue fuera de este incremento.
+
 **T0-05:** con el aislamiento de §4 ya preparado, ejecutar `bun test ./pruebas/arquitectura/dependencias.test.ts ./pruebas/aceptacion/RNF-03.test.ts`, luego `bun test` y `bun run verificar`. Arquitectura y RNF-03 CA-1 importan directamente el mismo análisis; las guardas no lanzan subprocesos ni ejecutan sus fuentes sintéticas. Se controlan dependencias explícitas de valor y tipo, aliases y manifiestos. Las formas calculadas no soportadas fallan visiblemente; no es un sandbox ni una prueba del destino usado por mkdirSync. Las unitarias de paquetes se verifican desde el tsconfig raíz con tipos Bun; el núcleo de producto mantiene types=[] y sin DOM.
 
 La corrección de T0-05 conserva `Bun.Transpiler.scanImports` y lo complementa con el scanner oficial en proceso de TypeScript 7.0.2, exclusivamente en las pruebas. No usa el parser AST nativo, que requiere un subproceso; el análisis no se presenta como AST completo y rechaza visiblemente contextos ambiguos de regex/división. La evidencia inicial de `5107696` se conserva como entrega rechazada por la verificación independiente; las regresiones de comillas y funciones flecha quedan permanentes.
