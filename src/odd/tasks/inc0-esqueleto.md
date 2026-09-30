@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | Approved; current delegation executes only T0-01–T0-03 and records documentary evidence. T0-01/T0-02 verified; no implementation started. |
+| Estado | Approved; T0-01–T0-03 verified sequentially, twice each. Documentary evidence only; T0-04 and later unstarted. |
 | Fecha | Propuesta: 29/09/2026; revisión documental y aplicación de correcciones aprobadas: 30/09/2026 |
 | Rama | `inc0-esqueleto`, already created; initial document commit `d9e7dee` |
 | TDD | Estricto. Fuente: `src/AGENTS.md` §7 y ADR-065 (regla 4). Ejecutor: `bun test` |
@@ -61,13 +61,13 @@ src/
 
 `bun.lock` se genera con `bun install` y se versiona (ADR-062, C3). `package.json` raíz: `name "rige"`, `version "0.1.0"`, `private`, `workspaces ["paquetes/*"]` y los scripts de ADR-062 C1.
 
-`README.md` ya existe y se modifica en T0-13; `AGENTS.md` y `CLAUDE.md` ya existen y no se modifican. Este documento se conserva como primer commit futuro de la rama. El mapa exhaustivo archivo → tarea está en §6.1; la implementación está autorizada, pero esta delegación documental no crea esos archivos.
+`README.md` ya existe y se modifica en T0-13; `AGENTS.md` y `CLAUDE.md` ya existen y no se modifican. Initial documentary commit: `d9e7dee`. El mapa exhaustivo archivo → tarea está en §6.1; this delegation creates none of those implementation files.
 
 ### 4.2 Precisiones
 
 - **`nucleo` con `"types": []`** y sin `DOM` en `lib`: una referencia a `Bun`, `fetch` o `process` en el núcleo falla en la verificación de tipos (ADR-062, C3).
 - **Workspace:** un manifiesto y un `tsconfig.json` por paquete (ADR-058 P-2); `nucleo` sin dependencias, `opencode` declara únicamente `@rige/nucleo` y `rige` declara los paquetes locales que ensambla. No son bibliotecas externas. `tsconfig.base.json` fija `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `moduleResolution: "bundler"` y `module: "Preserve"`; los paquetes con runtime usan `"types": ["bun"]`. T0-04 conecta las referencias raíz con la verificación efectiva de los tres paquetes, sin `skipLibCheck`.
-- **`bunfig.toml`:** `[install] linker = "isolated"`; T0-02 verified this key in Bun 1.3.14. Do not add `hoist = false`: that version ignores the key (§11.2). `[test] preload = ["./pruebas/preparar-entorno.ts"]`. T0-03 remains pending. No repository bunfig is created before T0-04.
+- **`bunfig.toml`:** `[install] linker = "isolated"`; T0-02 verified this key in Bun 1.3.14. Do not add `hoist = false`: that version ignores the key (§11.2). Root-level `env = false` is supported and verified by T0-03 (§11.3); write it before any table header. `[test] preload = ["./pruebas/preparar-entorno.ts"]`. No repository bunfig is created before T0-04.
 - **Casos de uso y paridad:** `preparar-almacen` crea o verifica explícitamente el esquema mediante el puerto; `consultar-estado` consulta la ruta del almacén y la versión de su esquema, y devuelve `Resultado` con el objeto de respuesta de `aplicacion/respuestas/estado.ts` (`esquema: 1`, versión de RIGE, ruta y versión del esquema de base). No confundir esos números (ADR-062 C5). La CLI serializa ese objeto y la página de inicio lo presenta, sin recalcular estado ni acceder a puertos. No se crea una Resolución ni se ejecuta lógica de resolución.
 - **Ensamblado y E/S:** `arranque/rige.ts` solo construye adaptadores, inyecta puertos en los casos de uso y conecta las interfaces. No coordina casos de uso ni lee archivos ni abre SQLite. La lectura de `rige.env` y del entorno ocurre en `adaptadores/sistema`, con entorno inyectado en las unitarias; la creación del directorio y toda E/S de SQLite, en `adaptadores/almacen-sqlite`. Los puertos no exponen SQLite ni capacidades de escritura sobre entradas. La E/S propia de las interfaces (argumentos con `node:util.parseArgs`, canales de CLI y servidor local con `Bun.serve`) no es un cliente saliente. Los errores de uso son `Resultado`; las excepciones de infraestructura se capturan una sola vez en el borde de la CLI o en `conErrores`, nunca como estado plausible del dominio (ADR-058 M-2 y convenciones 1, 3, 6 y 8).
 - **El guion SQL se importa como texto** (`import guion from "…/001_inicial.sql" with { type: "text" }`), compatibilidad medida en el equipo del autor con Bun 1.3.14 (ADR-062, verificación sobre el tag).
@@ -92,7 +92,7 @@ Lógica del núcleo; adaptador (lectura, vías, secuencia); `jsonc-parser`; copi
 - Commits solo en la rama `inc0-esqueleto`, uno por tarea, con Conventional Commits. Nunca subir, unir con `main` ni crear etiquetas.
 - No crear `opencode.json`, `opencode.jsonc` ni `.opencode/` en los ancestros entre `pruebas/escenarios/` y la raíz del repositorio (ADR-062 C6); nunca en `src/`. Los escenarios anidados quedan para incrementos posteriores y se copian a un temporal antes de analizarse.
 - No agregar bibliotecas externas fuera de las declaradas en §4.2. Toda dependencia nueva requiere autorización del autor y registro en un ADR (ADR-062 C3).
-- Primer commit futuro de la rama: solo este documento, mensaje exacto `docs: documento ODD del incremento 0`. Después, un commit por tarea de implementación. Staging siempre de rutas explícitas dentro de `src/`; nunca `git add -A` ni `git add .`. Esta revisión no crea rama, staging ni commits.
+- Initial branch commit already created: `d9e7dee`, only this document, message `docs: documento ODD del incremento 0`. Latest author authorization requires one documentary evidence commit per T0-01–T0-03, then one commit per future implementation task. Staging only explicit authorized paths within `src/`; never `git add -A` or `git add .`. This delegation does not create a branch or implement T0-04 and later.
 - No se modifica `../.github/workflows/ci.yml`.
 - **Método TDD:** por cada tarea de código, la prueba se escribe primero, se la ve fallar, se escribe el mínimo código que la hace pasar y se refactoriza (ADR-065, regla 4; `src/AGENTS.md` §7). La evidencia (rojo, verde, refactorización, commit) se registra en §11.
   - *Precisión:* cuando el código existente ya satisface la prueba (típico en pruebas de arquitectura), el rojo se observa con una mutación temporal revertida y así se registra.
@@ -113,7 +113,7 @@ Cada tarea de código se hace en TDD estricto (§5) y se marca `[x]` solo con la
 
 - [x] **T0-01 · Bun no carga `rige.env`.** Crear un `rige.env` con `RIGE_PRUEBA=1` en un directorio temporal del sistema y ejecutar `bun -e "console.log(process.env.RIGE_PRUEBA)"` con ese directorio como cwd. *Criterio:* imprime `undefined`. Si imprime `1`, detenerse: ADR-062 C4 prevé cambiar el nombre del archivo y el asunto pasa al autor.
 - [x] **T0-02 · Instalación aislada en Bun 1.3.14.** Fijar explícitamente `[install] linker = "isolated"` y añadir `hoist = false` si esa versión lo admite. *Criterio:* verificar las claves en Bun 1.3.14 y comprobar que un import no declarado falla; registrar el resultado y la compatibilidad de `hoist`. Verified twice with local packages; `linker` is recognized, `hoist` is ignored (§11.2). Si no se obtiene aislamiento efectivo o surge contradicción con ADR-058, detenerse.
-- [ ] **T0-03 · Desactivar la carga automática de `.env`.** *Criterio:* se sabe si `bunfig.toml` de Bun 1.3.14 lo admite. Si lo admite, se configura como defensa adicional; si no, se anota y se sigue (ADR-062 C4).
+- [x] **T0-03 · Desactivar la carga automática de `.env`.** *Criterio:* se sabe si `bunfig.toml` de Bun 1.3.14 lo admite. Si lo admite, se configura como defensa adicional; si no, se anota y se sigue (ADR-062 C4). Root-level `env = false` verified twice in temporary bunfig; repository application deferred to T0-04 under this delegation's no-source-write limit (§11.3).
 
 ### Pruebas y código (en este orden)
 
@@ -203,7 +203,7 @@ El CI existente (`../.github/workflows/ci.yml`) ejecuta instalación congelada, 
 
 ## 10. Progreso
 
-T0-01/T0-02 verified twice; T0-03 pending. Implementation T0-04–T0-13 remains unstarted. Pre-code experiments are TDD N/A, not RED/GREEN cycles. No CI execution is claimed.
+T0-01–T0-03 verified sequentially, twice each. Implementation T0-04–T0-13 remains unstarted. Pre-code experiments are TDD N/A, not RED/GREEN cycles. No CI execution is claimed.
 
 ## 11. Evidencia
 
@@ -214,6 +214,7 @@ T0-01/T0-02 verified twice; T0-03 pending. Implementation T0-04–T0-13 remains 
 | Autoría original, 29/09/2026 | `gentle-orchestrator` | `opencode-go/mimo-v2.6-pro` | Propuesta de este documento ODD | Antecedente atribuido por el autor |
 | Revisión documental inicial, 30/09/2026 | `gentle-orchestrator` y `general` | `openai/gpt-6.1-sol` | Revisión y corrección documental independiente | Antecedente declarado; solo documento, sin implementación |
 | Aplicación de correcciones aprobadas, 30/09/2026 | `gentle-orchestrator` / `general`; escritor delegado `general` | `openai/gpt-6.1-sol` | Actualizar este documento, releerlo completo, verificar diff y conservar copia en Engram | Orquestación declarada por el autor; rol general y modelo del escritor informados por el runtime; sin implementación |
+| Pre-code verification, 30/09/2026 | delegated `general` | `openai/gpt-6.1-sol` | T0-01–T0-03 temporary experiments, repeated verification, documentary commits and Engram mirror | Effective role/model confirmed by runtime; no child agents or source implementation |
 | Implementación futura | `gentle-orchestrator` y `general` | `openai/gpt-6.1-sol` | Orquestación e implementación de tareas autorizadas | Previsto, no ejecutado |
 | Exploración futura | `explore` | `openai/gpt-6-luna` | Exploración acotada para tareas autorizadas | Previsto, no ejecutado |
 
@@ -222,8 +223,8 @@ T0-01/T0-02 verified twice; T0-03 pending. Implementation T0-04–T0-13 remains 
 | Tarea | Ruta | Agente | Modelo | Rojo (prueba y salida) | Verde | Refactor | Commit |
 |---|---|---|---|---|---|---|---|
 | T0-01 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: `undefined\n`, stderr empty, exit 0; §11.1 | N/A | `f15bdc8e7a26815730762da1bcb732f1308434e3` |
-| T0-02 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: isolated undeclared import exit 1; hoisted control exit 0; `hoist` ignored; §11.2 | N/A | Pending documentary checkpoint commit; hash recorded in next update |
-| T0-03 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Pending | N/A | Pending documentary evidence commit |
+| T0-02 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: isolated undeclared import exit 1; hoisted control exit 0; `hoist` ignored; §11.2 | N/A | `1c94bf6a3fd58a85df54c74b031aff9f459acb78` |
+| T0-03 | delegated | general | openai/gpt-6.1-sol | N/A: pre-code experiment | Twice: root `env = false` prevents automatic dotenv loading in eval/run/script/test; §11.3 | N/A | Pending documentary checkpoint commit; hash recorded in follow-up evidence commit |
 | T0-04 | delegada | general | openai/gpt-6.1-sol | | | | |
 | T0-05 | delegada | general | openai/gpt-6.1-sol | | | | |
 | T0-06 | delegada | general | openai/gpt-6.1-sol | | | | |
@@ -273,11 +274,21 @@ Las columnas de ejecución se completan al implementar; los valores de ruta, age
 - Exploratory harness corrections, not TDD red: local folder `file:../../fixtures/payload` isolated imports failed as expected, but its hoisted control also failed (harness assertion; cleaned). `file:../../payload.tgz` was interpreted as a link and failed with `ENOENT: No such file or directory: failed to link package: fixture-payload@..\\..\\payload.tgz (link)` (exit 1; cleaned). Switching only the fixture specification to `../../payload.tgz` produced the meaningful hoisted positive control, repeated successfully. No repository dependency or criterion was changed.
 - Checkpoint: T0-02 satisfied. Apply **only** `[install] linker = "isolated"` in future T0-04. The approved task explicitly makes `hoist` conditional; omitting an ignored key does not relax the effective-isolation criterion. The literal ADR-058 claim attributing behavior to `install.hoist` is not confirmed; no ADR is edited and no stronger enforcement claim is made. Rollback: this task's documentary evidence only. No source/bunfig/lock written to the repository.
 
+### 11.3 T0-03 checkpoint: root-level env = false
+
+- Exact tag parser (§11.2) reads root `json.get("env")` and `loadEnvConfig` sets `disable_default_env_files = true` for boolean false. Current Context7 documentation agrees, but compatibility is established by the tag and runtime, not current docs alone.
+- Command: `python "C:/Users/Joa/AppData/Local/Temp/opencode/rige-inc0-experiments.py" T003`. Cwds: `rige-T003-1-9ajdz5j6`, `rige-T003-2-216zd_zs`; environment as §11.1. Fixture `.env`: `RIGE_PRUEBA_DOTENV=1`; `probe.js`: `console.log(process.env.RIGE_PRUEBA_DOTENV);`. Manifest script `probe`: `bun ./probe.js`. Temporary test imports `test, expect` from `bun:test`, prints the variable, and asserts its string equals `1` for baseline or `undefined` for disabled loading.
+- For each fresh fixture, first `env = true`, then `env = false` in root bunfig. Commands `bun -e "console.log(process.env.RIGE_PRUEBA_DOTENV)"`, `bun run ./probe.js`, `bun run probe`, `bun test ./probe.test.ts` all exit 0 twice for each condition. Baseline stdout `1\n`; disabled stdout `undefined\n`. Eval/file stderr `""`; script stderr exactly `$ bun ./probe.js\n`. Test stdout adds the exact prefix `bun test v1.3.14 (0d9b296a)\n` to the printed value.
+- Exact test stderr template: `\nprobe.test.ts:\n(pass) dotenv configuration [<case>ms]\n\n 1 pass\n 0 fail\n 1 expect() calls\nRan 1 test across 1 file. [<total>.00ms]\n`. Run 1: baseline case/total `0.44/28`, disabled `0.40/24`; run 2: baseline `0.39/28`, disabled `0.39/24`. These fixture tests are experiment diagnostics, not acceptance tests or a fabricated project TDD cycle.
+- Explicit-file control with `env = false`: `bun --env-file=.env ./probe.js` still prints exactly `1\n`, stderr `""`, exit 0 in both runs. Defense disables **automatic** files, not explicit loading or inherited environment; preserve the separate environment isolation and explicit `rige.env` reader.
+- Preliminary harness assertion incorrectly omitted the `bun test` stdout version banner; baseline test itself passed (`1 pass`, `0 fail`), but Python stopped with `AssertionError`. Corrected only output expectation, then repeated the complete experiment twice. Preliminary and final fixture directories were cleaned by the temporary-directory context.
+- Checkpoint: T0-03 satisfied, root `env = false` configured and observed in temporary bunfig; carry it into repository bunfig in T0-04, which was not executed. Rationale: ADR-062 C4 defense in depth without relying on it for `rige.env` semantics. Rollback: this task's documentary evidence only. Both final fixtures deleted (`CLEANED=True`).
+
 ## 12. Siguiente paso
 
-1. Devolver al orquestador este documento con las correcciones aprobadas aplicadas; esta delegación no implementa ni crea rama.
-2. En la ejecución de implementación ya autorizada, crear `inc0-esqueleto` desde `main`, registrar primero este documento con el mensaje exacto de §5 y empezar por T0-01. T0-10 y T0-11a/T0-11b están desbloqueadas por la confirmación de ADR-066 aceptado; se respetan las dependencias de §6.1.
-3. Al cerrar, el sistema de agentes del TIF revisa el diff de la rama y entrega el prompt de correcciones (ADR-065, regla 3).
+1. Return T0-01–T0-03 evidence and documentary commit IDs to the parent. No implementation or runtime execution of T0-04 and later in this delegation.
+2. Future T0-04 on the existing branch: apply `[install] linker = "isolated"`, omit ignored `hoist`, and set root-level `env = false` before table headers; preserve the approved isolation/preload criteria and TDD requirements.
+3. Parent/author reviews the current documentary checkpoints; no RDD review started here. T0-10/T0-11a/T0-11b retain their approved dependency ordering and ADR-066 status.
 
 ## 13. Diferencias con el plan de referencia
 
