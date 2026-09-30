@@ -144,4 +144,29 @@ describe("T0-05 analisis de dependencias", () => {
     expect(analizarFuente("paquetes/nucleo/sonda.ts", 'const patron = /import "externo"/;')).toEqual([]);
     expect(analizarFuente("paquetes/nucleo/sonda.ts", 'const valor = a / (b as import("@rige/opencode").Tipo) / c;').length).toBeGreaterThan(0);
   });
+
+  for (const regex of ['/"/', "/'/"]) {
+    for (const dependencia of ["import type {X} from '@rige/opencode';", "type X = import('@rige/opencode').X;",
+      'import type {X} from "@rige/opencode";', 'type X = import("@rige/opencode").X;']) {
+      test(`regresion: no pierde tipos despues de ${regex}: ${dependencia}`, () => {
+        const codigo = `const pattern = ${regex}; ${dependencia}`;
+        expect(new Bun.Transpiler({ loader: "ts" }).scanImports(codigo)).toEqual([]);
+        expect(analizarFuente("paquetes/nucleo/x.ts", codigo).length).toBeGreaterThan(0);
+      });
+    }
+  }
+
+  test("regresion: regex de una funcion flecha no declara un import", () => {
+    const codigo = 'const pattern = () => /import "external"/;';
+    expect(new Bun.Transpiler({ loader: "ts" }).scanImports(codigo)).toEqual([]);
+    expect(analizarFuente("paquetes/nucleo/x.ts", codigo)).toEqual([]);
+  });
+
+  test("no interpreta silenciosamente una regex con contexto gramatical ambiguo", () => {
+    for (const codigo of ['if (condicion) /"/.test(texto); import type {X} from "@rige/opencode";',
+      'if (condicion) /import "external"/.test(texto);']) {
+      expect(new Bun.Transpiler({ loader: "ts" }).scanImports(codigo)).toEqual([]);
+      expect(() => analizarFuente("paquetes/nucleo/x.ts", codigo)).toThrow("no analizable");
+    }
+  });
 });

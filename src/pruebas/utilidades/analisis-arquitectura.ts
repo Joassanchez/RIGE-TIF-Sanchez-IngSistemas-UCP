@@ -1,5 +1,6 @@
 import { builtinModules } from "node:module";
 import { posix, resolve } from "node:path";
+import { createScanner, SyntaxKind } from "typescript/unstable/ast";
 
 export interface HallazgoDependencia {
   archivo: string;
@@ -30,37 +31,56 @@ const auxiliaresRuntime = new Set(["assert", "buffer", "constants", "crypto", "e
 const lecturas = new Set(["readFileSync", "readFile", "readdirSync", "readdir", "statSync", "stat",
   "lstatSync", "lstat", "realpathSync", "realpath", "existsSync", "accessSync", "access", "readlinkSync", "readlink"]);
 
-// Bun valida sintaxis y descubre runtime; el recorrido léxico conserva los tipos borrados.
+// El scanner oficial avanza desde cada token; no consume comillas de una regex como cadenas.
 function tokens(codigo: string): Token[] {
   const resultado: Token[] = [];
-  let omitirHasta = 0;
-  const patron = /\/\*[\s\S]*?\*\/|\/\/[^\r\n]*|"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'|`(?:\\[\s\S]|[^`\\])*`|[\p{L}\p{N}_$]+|[^\s]/gu;
-  for (const coincidencia of codigo.matchAll(patron)) {
-    if (coincidencia.index < omitirHasta) continue;
-    const valor = coincidencia[0];
-    if (valor.startsWith("//") || valor.startsWith("/*")) continue;
-    if (valor === "/" && [undefined, "=", "(", "[", "{", ",", ":", "!", "return"].includes(resultado.at(-1)?.valor)) {
-      let clase = false;
-      for (let cursor = coincidencia.index + 1; cursor < codigo.length; cursor++) {
-        const caracter = codigo[cursor];
-        if (caracter === "\\") { cursor++; continue; }
-        if (caracter === "[") clase = true;
-        if (caracter === "]") clase = false;
-        if (caracter === "/" && !clase) {
-          omitirHasta = cursor + 1;
-          break;
-        }
-      }
-      if (omitirHasta > coincidencia.index) {
-        resultado.push({ valor: "regex", cadena: false });
-        continue;
+  const scanner = createScanner(true, undefined, codigo);
+  const inicioExpresion = new Set<SyntaxKind | undefined>([
+    undefined, SyntaxKind.EqualsToken, SyntaxKind.EqualsGreaterThanToken, SyntaxKind.OpenParenToken,
+    SyntaxKind.OpenBracketToken, SyntaxKind.OpenBraceToken, SyntaxKind.CommaToken, SyntaxKind.ColonToken,
+    SyntaxKind.ExclamationToken, SyntaxKind.ReturnKeyword, SyntaxKind.ThrowKeyword, SyntaxKind.CaseKeyword,
+    SyntaxKind.SemicolonToken, SyntaxKind.QuestionToken, SyntaxKind.BarBarToken, SyntaxKind.AmpersandAmpersandToken,
+    SyntaxKind.TypeOfKeyword, SyntaxKind.VoidKeyword, SyntaxKind.DeleteKeyword, SyntaxKind.AwaitKeyword,
+    SyntaxKind.YieldKeyword, SyntaxKind.ElseKeyword, SyntaxKind.DoKeyword, SyntaxKind.PlusToken, SyntaxKind.MinusToken,
+    SyntaxKind.AsteriskToken, SyntaxKind.AsteriskAsteriskToken, SyntaxKind.PercentToken, SyntaxKind.TildeToken,
+    SyntaxKind.BarToken, SyntaxKind.AmpersandToken, SyntaxKind.CaretToken, SyntaxKind.QuestionQuestionToken,
+  ]);
+  const finExpresion = new Set<SyntaxKind>([
+    SyntaxKind.Identifier, SyntaxKind.NumericLiteral, SyntaxKind.BigIntLiteral, SyntaxKind.StringLiteral,
+    SyntaxKind.RegularExpressionLiteral, SyntaxKind.NoSubstitutionTemplateLiteral, SyntaxKind.TemplateTail,
+    SyntaxKind.CloseBracketToken, SyntaxKind.PlusPlusToken, SyntaxKind.MinusMinusToken,
+  ]);
+  const plantillas: number[] = [];
+  let llaves = 0;
+  let anterior: SyntaxKind | undefined;
+  for (let clase = scanner.scan(); clase !== SyntaxKind.EndOfFile; clase = scanner.scan()) {
+    if (clase === SyntaxKind.SlashToken || clase === SyntaxKind.SlashEqualsToken) {
+      if (inicioExpresion.has(anterior)) {
+        clase = scanner.reScanSlashToken();
+      } else if (anterior !== undefined && !finExpresion.has(anterior) && scanner.lookAhead(() => {
+        return scanner.reScanSlashToken() === SyntaxKind.RegularExpressionLiteral && !scanner.isUnterminated();
+      })) {
+        // Sin parser AST en proceso no se adivina si un cierre pertenece a un bloque o una expresion.
+        throw new Error("Dependencia no analizable: contexto ambiguo de regex o division");
       }
     }
-    if (valor.startsWith("`") && valor.includes("${") && /\b(import|require)\b/.test(valor)) {
-      throw new Error("Dependencia no analizable dentro de una plantilla");
+    if (clase === SyntaxKind.CloseBraceToken && plantillas.at(-1) === llaves) {
+      clase = scanner.reScanTemplateToken(false);
+      if (clase === SyntaxKind.TemplateTail) plantillas.pop();
+    } else if (clase === SyntaxKind.OpenBraceToken) {
+      llaves++;
+    } else if (clase === SyntaxKind.CloseBraceToken) {
+      llaves--;
     }
-    const cadena = valor.startsWith('"') || valor.startsWith("'");
-    resultado.push({ valor: cadena ? valor.slice(1, -1) : valor, cadena });
+    if (clase === SyntaxKind.TemplateHead) plantillas.push(llaves);
+    if (scanner.isUnterminated() || clase === SyntaxKind.Unknown) {
+      throw new Error("Dependencia no analizable: token incompleto o desconocido");
+    }
+    const cadena = clase === SyntaxKind.StringLiteral;
+    const valor = cadena ? scanner.getTokenText().slice(1, -1)
+      : clase === SyntaxKind.Identifier ? scanner.getTokenValue() : scanner.getTokenText();
+    resultado.push({ valor, cadena });
+    anterior = clase;
   }
   return resultado;
 }
