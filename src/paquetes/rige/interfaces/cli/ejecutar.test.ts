@@ -1,10 +1,45 @@
 import { describe, expect, test } from "bun:test";
-import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
+import { versionRige, type RespuestaEstado } from "../../aplicacion/respuestas/estado";
 import { errorAlmacenSinEsquema, errorConfiguracionInvalida, errorPuertoOcupado } from "../../aplicacion/errores";
 import { ejecutarCli, type Ensamblado } from "./ejecutar";
+import { analizarFuente, tokenizar } from "../../../../pruebas/utilidades/analisis-arquitectura";
+import { resolve } from "node:path";
+
+describe("V-1", () => {
+  test("la version coincide con el manifiesto y solo se declara en estado.ts", async () => {
+    const raiz = resolve(import.meta.dir, "../../../..");
+    const manifiesto = await Bun.file(resolve(raiz, "package.json")).json();
+    expect(versionRige).toBe(manifiesto.version);
+    const duplicados: string[] = [];
+    for (const carpeta of ["paquetes", "pruebas"]) {
+      for (const ruta of new Bun.Glob("**/*.ts").scanSync({ cwd: resolve(raiz, carpeta) })) {
+        const relativa = `${carpeta}/${ruta.replaceAll("\\", "/")}`;
+        if (relativa === "paquetes/rige/aplicacion/respuestas/estado.ts") continue;
+        if ((await Bun.file(resolve(raiz, relativa)).text()).includes(manifiesto.version)) duplicados.push(relativa);
+      }
+    }
+    expect(duplicados.sort()).toEqual([]);
+  });
+});
+
+describe("CLI-7", () => {
+  test("todos los imports, incluidos los de tipos, proceden de aplicacion o del runtime", async () => {
+    const codigo = await Bun.file(new URL("./ejecutar.ts", import.meta.url)).text();
+    const tokens = tokenizar(codigo);
+    const imports = tokens.filter((token, indice) => token.cadena &&
+      (tokens[indice - 1]?.valor === "from" || tokens[indice - 1]?.valor === "import"))
+      .map((token) => token.valor);
+    expect(imports.length).toBeGreaterThan(0);
+    expect(imports.filter((destino) => !destino.startsWith("../../aplicacion/") && destino !== "node:util")).toEqual([]);
+    const resultado = await Bun.file(new URL("../../aplicacion/respuestas/resultado.ts", import.meta.url)).text();
+    expect(analizarFuente("paquetes/rige/aplicacion/respuestas/resultado.ts", resultado, {
+      dependencias: { "@rige/nucleo": "workspace:*" },
+    })).toEqual([]);
+  });
+});
 
 const respuesta: RespuestaEstado = {
-  esquema: 1, versionRige: "0.1.0", almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
+  esquema: 1, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
 const noWeb = {
   consultarEstado: () => { throw new Error("No debe consultar estado"); },

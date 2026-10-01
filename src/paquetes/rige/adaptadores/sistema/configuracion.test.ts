@@ -52,9 +52,9 @@ describe("C4-2", () => {
 
 describe("C4-3", () => {
   test("formato literal, comentarios, espacios y error con numero de linea", () => {
-    const { rutaArchivo } = escenario(" \r\n  # comentario\r\n RIGE_PUERTO = 5100 \r\n RIGE_ALMACEN = \"${HOME}=datos\" ");
+    const { rutaArchivo } = escenario(" \r\n  # comentario\r\n RIGE_PUERTO = 5100 \r\n RIGE_ALMACEN = ${HOME}=datos ");
     expect(new ConfiguracionSistema({ rutaArchivo, plataforma: "linux", entorno: {} }).leer())
-      .toEqual({ exito: true, valor: { puerto: 5100, directorioAlmacen: resolve('"${HOME}=datos"') } });
+      .toEqual({ exito: true, valor: { puerto: 5100, directorioAlmacen: resolve("${HOME}=datos") } });
     writeFileSync(rutaArchivo, "# comentario\n\nsin separador");
     comprobarError(new ConfiguracionSistema({ rutaArchivo, plataforma: "linux", entorno: {} }).leer(), "3");
     writeFileSync(rutaArchivo, 'RIGE_PUERTO="5100"');
@@ -136,5 +136,20 @@ describe("C4-8", () => {
     rmSync(rutaArchivo);
     expect(lector.leer().exito).toBe(true);
     expect(readdirSync(temporal)).toEqual([]);
+  });
+});
+
+describe("C4-9", () => {
+  test("rechaza comillas simples y dobles en los valores del archivo y nombra la clave", () => {
+    const { temporal, rutaArchivo } = escenario();
+    for (const [clave, valor] of [["RIGE_ALMACEN", '"C:\\x"'], ["RIGE_ALMACEN", "'x'"], ["RIGE_PUERTO", '"4747"']] as const) {
+      writeFileSync(rutaArchivo, `${clave}=${valor}`);
+      for (const entorno of [{ HOME: temporal }, { RIGE_ALMACEN: temporal, RIGE_PUERTO: "6000" }]) {
+        const resultado = new ConfiguracionSistema({ rutaArchivo, plataforma: "linux", entorno }).leer();
+        comprobarError(resultado, clave);
+        if (resultado.exito) throw new Error("Se esperaba error de comillas");
+        expect(resultado.error.mensaje).toContain("comillas");
+      }
+    }
   });
 });

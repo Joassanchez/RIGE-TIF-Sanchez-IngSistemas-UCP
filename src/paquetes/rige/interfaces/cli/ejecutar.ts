@@ -1,25 +1,39 @@
-import type { prepararAlmacen } from "../../aplicacion/casos-uso/preparar-almacen";
+import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
 import type { ErrorUso } from "../../aplicacion/errores";
-import type { ConsultarEstado, iniciarServidor } from "../web/servidor";
+import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
+import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { parseArgs } from "node:util";
 
 export interface CasosUsoCli {
-  readonly prepararAlmacen: () => ReturnType<typeof prepararAlmacen>;
+  readonly prepararAlmacen: () => Resultado<RespuestaEstado, ErrorUso>;
   readonly consultarEstado: ConsultarEstado;
-  readonly iniciarServidor: () => ReturnType<typeof iniciarServidor>;
+  readonly iniciarServidor: () => Resultado<{ readonly direccion: string }, ErrorUso>;
 }
 
-export type Ensamblado =
-  | { readonly exito: true; readonly valor: CasosUsoCli }
-  | { readonly exito: false; readonly error: ErrorUso };
+export type Ensamblado = Resultado<CasosUsoCli, ErrorUso>;
+
+const subcomandos = {
+  esquema: (casos) => casos.prepararAlmacen(),
+  servir: (casos) => {
+    const estado = casos.consultarEstado();
+    if (!estado.exito) return estado;
+    const servidor = casos.iniciarServidor();
+    if (!servidor.exito) return servidor;
+    return { exito: true, valor: { esquema: 1, direccion: servidor.valor.direccion } };
+  },
+} satisfies Record<string, (casos: CasosUsoCli) => Resultado<object, ErrorUso>>;
 
 export interface CanalesCli {
   escribirSalida(texto: string): void;
   escribirError(texto: string): void;
 }
 
+function escribirError(canales: CanalesCli, error: { readonly codigo: string; readonly mensaje: string; readonly stack?: string | undefined }): void {
+  canales.escribirError(JSON.stringify({ esquema: 1, error }) + "\n");
+}
+
 function argumentosInvalidos(canales: CanalesCli, mensaje: string): number {
-  canales.escribirError(JSON.stringify({ esquema: 1, error: { codigo: "argumentos-invalidos", mensaje } }) + "\n");
+  escribirError(canales, { codigo: "argumentos-invalidos", mensaje });
   return 2;
 }
 
@@ -33,34 +47,20 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: () => Ensa
     return argumentosInvalidos(canales, `Argumentos invalidos: ${argumentos.join(" ")}.`);
   }
   const posicionales = opciones.positionals;
-  if (posicionales.length === 0) return argumentosInvalidos(canales, "Falta el subcomando esquema o servir.");
+  if (posicionales.length === 0) return argumentosInvalidos(canales, `Falta el subcomando ${Object.keys(subcomandos).join(" o ")}.`);
   if (posicionales.length > 1) return argumentosInvalidos(canales, `Posicionales invalidos: ${posicionales.join(" ")}.`);
-  if (posicionales[0] !== "esquema" && posicionales[0] !== "servir") {
+  if (!Object.hasOwn(subcomandos, posicionales[0]!)) {
     return argumentosInvalidos(canales, `Subcomando desconocido: ${posicionales[0]}.`);
   }
   try {
     const casos = ensamblar();
     if (!casos.exito) {
-      canales.escribirError(JSON.stringify({ esquema: 1, error: casos.error }) + "\n");
+      escribirError(canales, casos.error);
       return 1;
     }
-    if (posicionales[0] === "servir") {
-      const estado = casos.valor.consultarEstado();
-      if (!estado.exito) {
-        canales.escribirError(JSON.stringify({ esquema: 1, error: estado.error }) + "\n");
-        return 1;
-      }
-      const servidor = casos.valor.iniciarServidor();
-      if (!servidor.exito) {
-        canales.escribirError(JSON.stringify({ esquema: 1, error: servidor.error }) + "\n");
-        return 1;
-      }
-      canales.escribirSalida(JSON.stringify({ esquema: 1, direccion: servidor.valor.direccion }) + "\n");
-      return 0;
-    }
-    const resultado = casos.valor.prepararAlmacen();
+    const resultado = subcomandos[posicionales[0] as keyof typeof subcomandos](casos.valor);
     if (!resultado.exito) {
-      canales.escribirError(JSON.stringify({ esquema: 1, error: resultado.error }) + "\n");
+      escribirError(canales, resultado.error);
       return 1;
     }
     canales.escribirSalida(JSON.stringify(resultado.valor) + "\n");
@@ -70,7 +70,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: () => Ensa
       codigo: "interno", mensaje: "Falla interna de RIGE.",
       ...(opciones.values.depurar && falla instanceof Error ? { stack: falla.stack } : {}),
     };
-    canales.escribirError(JSON.stringify({ esquema: 1, error }) + "\n");
+    escribirError(canales, error);
     return 70;
   }
 }

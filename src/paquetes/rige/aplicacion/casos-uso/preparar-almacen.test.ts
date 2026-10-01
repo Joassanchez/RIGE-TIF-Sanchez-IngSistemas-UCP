@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { PuertoAlmacen } from "../puertos/almacen";
 import { errorAlmacenSinEsquema } from "../errores";
 import { prepararAlmacen } from "./preparar-almacen";
+import { versionRige } from "../respuestas/estado";
 
 describe("T0-09 preparacion por puerto en memoria", () => {
   test("devuelve una respuesta unica y determinista sin consultar otro puerto", () => {
@@ -13,7 +14,7 @@ describe("T0-09 preparacion por puerto en memoria", () => {
     };
     const esperado = {
       exito: true,
-      valor: { esquema: 1, versionRige: "0.1.0", almacen: estado },
+      valor: { esquema: 1, versionRige, almacen: estado },
     } as const;
     expect(prepararAlmacen(almacen)).toEqual(esperado);
     expect(prepararAlmacen(almacen)).toEqual(esperado);

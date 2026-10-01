@@ -1,11 +1,11 @@
 import { describe, expect, spyOn, test } from "bun:test";
 import { errorAlmacenSinEsquema } from "../../aplicacion/errores";
-import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
+import { versionRige, type RespuestaEstado } from "../../aplicacion/respuestas/estado";
 import { paginaInicio } from "./paginas/inicio";
 import { crearManejador, iniciarServidor } from "./servidor";
 
 const respuesta: RespuestaEstado = {
-  esquema: 1, versionRige: "0.1.0", almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
+  esquema: 1, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
 
 describe("W-4", () => {

@@ -4,6 +4,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { crearEntornoAislado, variablesAisladas } from "../utilidades/entorno-aislado";
 import { lanzar } from "../utilidades/subproceso";
+import { versionRige } from "../../paquetes/rige/aplicacion/respuestas/estado";
 
 const variables = variablesAisladas;
 
@@ -215,7 +216,7 @@ describe("T0-04 andamiaje", () => {
   const raiz = join(import.meta.dir, "../..");
   test("manifiestos exactos y dependencias locales declaradas", async () => {
     const manifiesto = await Bun.file(join(raiz, "package.json")).json();
-    expect(manifiesto).toMatchObject({ name: "rige", version: "0.1.0", private: true,
+    expect(manifiesto).toMatchObject({ name: "rige", version: versionRige, private: true,
       packageManager: "bun@1.3.14", workspaces: ["paquetes/*"],
       devDependencies: { typescript: "7.0.2", "@types/bun": "1.3.14" } });
     expect(Object.keys(manifiesto.scripts).sort()).toEqual(["esquema", "rige", "servir", "verificar"]);

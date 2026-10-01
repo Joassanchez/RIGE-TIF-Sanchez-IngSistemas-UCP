@@ -4,6 +4,8 @@ import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, 
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { AlmacenSqlite, abrirConexion } from "./esquema";
+import { versionRige } from "../../aplicacion/respuestas/estado";
+import * as erroresAlmacen from "../../aplicacion/puertos/almacen";
 
 const temporales: string[] = [];
 const conexiones: Database[] = [];
@@ -30,7 +32,7 @@ function inventario(base: Database) {
 function resolucion(base: Database, cambios: Record<string, string | number | null> = {}) {
   const valores = {
     id: 1, proyecto_id: 1, instante: "2026-09-30T00:00:00Z", resumen_entradas: "a".repeat(64),
-    herramienta: "herramienta-ficticia", version_herramienta: "1", version_rige: "0.1.0",
+    herramienta: "herramienta-ficticia", version_herramienta: "1", version_rige: versionRige,
     formato_documento: 1, documento: "{}", ...cambios,
   };
   const claves = Object.keys(valores);
@@ -56,6 +58,69 @@ function conResolucion() {
 afterEach(() => {
   for (const base of conexiones.splice(0)) base.close();
   for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
+});
+
+describe("AL-1", () => {
+  test("preparar distingue el esquema incompatible y consultar pide preparacion sin alterar la base", () => {
+    const { directorio, ruta, almacen } = escenario();
+    mkdirSync(directorio, { recursive: true });
+    const base = new Database(ruta, { create: true });
+    base.exec("CREATE TABLE ajena (dato TEXT); INSERT INTO ajena VALUES ('conservar'); PRAGMA user_version = 2");
+    base.close();
+    const bytes = readFileSync(ruta);
+    const incompatible = erroresAlmacen.errorAlmacenIncompatible;
+    expect(almacen.preparar()).toEqual({ exito: false, error: incompatible });
+    expect(incompatible.codigo).toBe("almacen-sin-esquema");
+    expect(incompatible.mensaje).toContain("incompatible");
+    expect(incompatible.mensaje).toContain("bun run esquema");
+    expect(readFileSync(ruta)).toEqual(bytes);
+    expect(almacen.consultar()).toEqual({ exito: false, error: erroresAlmacen.errorAlmacenSinEsquema });
+    expect(readFileSync(ruta)).toEqual(bytes);
+    expect(abrir(ruta).query("PRAGMA user_version").get()).toEqual({ user_version: 2 });
+    expect(abrir(ruta).query("SELECT dato FROM ajena").all()).toEqual([{ dato: "conservar" }]);
+  });
+});
+
+describe("AL-2", () => {
+  test("lee la version del guion en la referencia en memoria sin fijarla en el adaptador", () => {
+    const guion = readFileSync(new URL("../../../../esquemas/almacen/001_inicial.sql", import.meta.url), "utf8");
+    const guionPrueba = guion.replace(/PRAGMA user_version = \d+;/, "PRAGMA user_version = 7;");
+    const original = Database.prototype.exec;
+    const sonda = spyOn(Database.prototype, "exec").mockImplementation(function (this: Database, sql, ...parametros) {
+      return original.call(this, sql === guion ? guionPrueba : sql, ...parametros);
+    });
+    try {
+      const { ruta, almacen } = escenario();
+      const esperado = { exito: true, valor: { ruta: resolve(ruta).replaceAll("\\", "/"), versionEsquema: 7 } } as const;
+      expect(almacen.preparar()).toEqual(esperado);
+      expect(abrir(ruta).query("PRAGMA user_version").get()).toEqual({ user_version: 7 });
+      expect(almacen.preparar()).toEqual(esperado);
+      expect(almacen.consultar()).toEqual(esperado);
+    } finally {
+      sonda.mockRestore();
+    }
+  });
+});
+
+describe("AL-3", () => {
+  test("consultar solo puede dejar la base y los auxiliares WAL sin cambiar el inventario", () => {
+    const { base, directorio, ruta, almacen } = preparada();
+    const antes = inventario(base);
+    const version = base.query("PRAGMA schema_version").get();
+    base.close();
+    conexiones.pop();
+    const bytes = readFileSync(ruta);
+    expect(almacen.consultar().exito).toBe(true);
+    const archivos = readdirSync(directorio);
+    expect(archivos).toContain("rige.db");
+    expect(archivos.filter((nombre) => !["rige.db", "rige.db-wal", "rige.db-shm"].includes(nombre))).toEqual([]);
+    expect(readFileSync(ruta)).toEqual(bytes);
+    const despues = abrir(ruta);
+    expect(inventario(despues)).toEqual(antes);
+    expect(despues.query("PRAGMA schema_version").get()).toEqual(version);
+    const puerto = readFileSync(new URL("../../aplicacion/puertos/almacen.ts", import.meta.url), "utf8");
+    expect(puerto).not.toContain("consultar nunca crea archivos");
+  });
 });
 
 describe("T0-09 preparacion explicita SQLite", () => {
@@ -97,9 +162,7 @@ describe("T0-09 preparacion explicita SQLite", () => {
     base.exec(`CREATE TABLE ajena (dato TEXT); INSERT INTO ajena VALUES ('conservar'); PRAGMA user_version = ${version}`);
     base.close();
     const bytes = readFileSync(ruta);
-    expect(almacen.preparar()).toEqual({ exito: false, error: {
-      codigo: "almacen-sin-esquema", mensaje: "El almacen no tiene el esquema esperado. Ejecute bun run esquema.",
-    } });
+    expect(almacen.preparar()).toEqual({ exito: false, error: erroresAlmacen.errorAlmacenIncompatible });
     expect(readFileSync(ruta)).toEqual(bytes);
   });
 

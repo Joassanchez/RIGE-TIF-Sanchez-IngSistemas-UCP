@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
+import { versionRige } from "../../paquetes/rige/aplicacion/respuestas/estado";
 
 function prepararServidor(carpeta = "almacen") {
   let temporal: string;
@@ -44,7 +45,7 @@ describe("RNF-09 CA-1", () => {
       const respuesta = await solicitar(puerto, { ruta: "/", cabeceras: { Host } });
       expect(respuesta.estado).toBe(403);
       expect(respuesta.cuerpo).toContain("Solicitud rechazada.");
-      expect(respuesta.cuerpo).not.toContain("RIGE 0.1.0");
+      expect(respuesta.cuerpo).not.toContain(`RIGE ${versionRige}`);
       expect(respuesta.cuerpo).not.toContain(almacen);
     }
     expect((await solicitar(puerto, { ruta: "/", cabeceras: { Host: `localhost:${puerto}` } })).estado).toBe(200);

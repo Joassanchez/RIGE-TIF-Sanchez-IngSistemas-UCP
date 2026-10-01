@@ -29,7 +29,11 @@ export class ConfiguracionSistema implements PuertoConfiguracion {
         if (clave !== "RIGE_PUERTO" && clave !== "RIGE_ALMACEN") {
           return { exito: false, error: errorConfiguracionInvalida(clave, "variable no admitida en rige.env") };
         }
-        archivo.set(clave, linea.slice(separador + 1).trim());
+        const valor = linea.slice(separador + 1).trim();
+        if (/^(['"]).*\1$/.test(valor)) {
+          return { exito: false, error: errorConfiguracionInvalida(clave, "no se admiten valores entre comillas") };
+        }
+        archivo.set(clave, valor);
       }
     }
 

@@ -3,6 +3,7 @@ import type { PuertoAlmacen } from "../puertos/almacen";
 import { errorAlmacenSinEsquema } from "../errores";
 import { consultarEstado } from "./consultar-estado";
 import { prepararAlmacen } from "./preparar-almacen";
+import { versionRige } from "../respuestas/estado";
 
 describe("E-1", () => {
   test("consulta el estado compatible sin preparar el almacen", () => {
@@ -15,7 +16,7 @@ describe("E-1", () => {
     const resultado = consultarEstado(almacen);
     expect(resultado).toEqual({
       exito: true,
-      valor: { esquema: 1, versionRige: "0.1.0", almacen: estado },
+      valor: { esquema: 1, versionRige, almacen: estado },
     });
     if (!resultado.exito) throw new Error("Se esperaba estado compatible");
     expect(resultado.valor.almacen).toBe(estado);

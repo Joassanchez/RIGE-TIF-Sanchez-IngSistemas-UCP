@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { versionRige } from "../../paquetes/rige/aplicacion/respuestas/estado";
 
 const temporales: string[] = [];
 function escenario() {
@@ -25,7 +26,7 @@ describe("A-1", () => {
     expect(primera.codigo).toBe(0);
     expect(primera.error).toBe("");
     const respuesta = {
-      esquema: 1, versionRige: "0.1.0",
+      esquema: 1, versionRige,
       almacen: { ruta: join(directorio, "rige.db").replaceAll("\\", "/"), versionEsquema: 1 },
     };
     expect(JSON.parse(primera.salida)).toEqual(respuesta);

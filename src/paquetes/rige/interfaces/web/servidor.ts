@@ -1,12 +1,11 @@
-import type { consultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
+import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
+import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { errorPuertoOcupado, type ErrorUso } from "../../aplicacion/errores";
 import { conErrores, paginaErrorUso } from "./intermedios/errores";
 import { conVerificacionDeOrigen } from "./intermedios/origen";
 import { paginaInicio } from "./paginas/inicio";
 import { html } from "./plantillas";
 import { responderHtml } from "./respuesta";
-
-export type ConsultarEstado = () => ReturnType<typeof consultarEstado>;
 
 export function crearManejador(puerto: number, consultar: ConsultarEstado): (solicitud: Request) => Response {
   const enrutar = (solicitud: Request): Response => {
@@ -25,9 +24,7 @@ export interface ServidorIniciado {
   detener(): void;
 }
 
-export function iniciarServidor(puerto: number, consultar: ConsultarEstado):
-  | { readonly exito: true; readonly valor: ServidorIniciado }
-  | { readonly exito: false; readonly error: ErrorUso } {
+export function iniciarServidor(puerto: number, consultar: ConsultarEstado): Resultado<ServidorIniciado, ErrorUso> {
   try {
     const servidor = Bun.serve({ hostname: "127.0.0.1", port: puerto, fetch: crearManejador(puerto, consultar) });
     return {
