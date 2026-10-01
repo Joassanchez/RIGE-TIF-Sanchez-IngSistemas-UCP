@@ -1,5 +1,5 @@
 export interface ErrorUso {
-  readonly codigo: "almacen-sin-esquema" | "configuracion-invalida";
+  readonly codigo: "almacen-sin-esquema" | "configuracion-invalida" | "puerto-ocupado";
   readonly mensaje: string;
 }
 
@@ -10,4 +10,8 @@ export const errorAlmacenSinEsquema: ErrorUso = Object.freeze({
 
 export function errorConfiguracionInvalida(variable: string, motivo: string): ErrorUso {
   return { codigo: "configuracion-invalida", mensaje: `Configuracion invalida en ${variable}: ${motivo}.` };
+}
+
+export function errorPuertoOcupado(puerto: number): ErrorUso {
+  return { codigo: "puerto-ocupado", mensaje: `El puerto ${puerto} de RIGE_PUERTO no esta disponible.` };
 }

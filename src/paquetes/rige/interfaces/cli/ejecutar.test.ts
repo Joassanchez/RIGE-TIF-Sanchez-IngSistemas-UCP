@@ -1,13 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
-import { errorAlmacenSinEsquema, errorConfiguracionInvalida } from "../../aplicacion/errores";
+import { errorAlmacenSinEsquema, errorConfiguracionInvalida, errorPuertoOcupado } from "../../aplicacion/errores";
 import { ejecutarCli, type Ensamblado } from "./ejecutar";
 
 const respuesta: RespuestaEstado = {
   esquema: 1, versionRige: "0.1.0", almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
+const noWeb = {
+  consultarEstado: () => { throw new Error("No debe consultar estado"); },
+  iniciarServidor: () => { throw new Error("No debe iniciar servidor"); },
+};
 const exitoso = (): Ensamblado => ({
-  exito: true, valor: { prepararAlmacen: () => ({ exito: true, valor: respuesta }) },
+  exito: true, valor: { ...noWeb, prepararAlmacen: () => ({ exito: true, valor: respuesta }) },
 });
 
 function ejecutar(argumentos: readonly string[], ensamblar: () => Ensamblado = exitoso) {
@@ -36,7 +40,7 @@ describe("CLI-2", () => {
         : errorAlmacenSinEsquema;
       const ensamblar = (): Ensamblado => origen === "ensamblado"
         ? { exito: false, error }
-        : { exito: true, valor: { prepararAlmacen: () => ({ exito: false, error }) } };
+        : { exito: true, valor: { ...noWeb, prepararAlmacen: () => ({ exito: false, error }) } };
       expect(ejecutar(["esquema"], ensamblar)).toEqual({
         codigo: 1, salida: "", error: JSON.stringify({ esquema: 1, error }) + "\n",
       });
@@ -45,6 +49,16 @@ describe("CLI-2", () => {
 });
 
 describe("CLI-3", () => {
+  test("da un mensaje propio en espanol con todos los argumentos recibidos", () => {
+    for (const argumentos of [["--x", "esquema"], ["esquema", "--depurar=si"]]) {
+      expect(ejecutar(argumentos, () => { throw new Error("No debe ensamblar"); })).toEqual({
+        codigo: 2, salida: "",
+        error: JSON.stringify({
+          esquema: 1, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos invalidos: ${argumentos.join(" ")}.` },
+        }) + "\n",
+      });
+    }
+  });
   test("rechaza argumentos invalidos sin ensamblar, incluidos errores de parseArgs", () => {
     const invalidos = [
       { argumentos: [], mencionado: "subcomando" },
@@ -75,7 +89,7 @@ describe("CLI-4", () => {
     falla.stack = "Stack privado de infraestructura";
     const ensamblados: (() => Ensamblado)[] = [
       () => { throw falla; },
-      () => ({ exito: true, valor: { prepararAlmacen: () => { throw falla; } } }),
+      () => ({ exito: true, valor: { ...noWeb, prepararAlmacen: () => { throw falla; } } }),
     ];
     for (const ensamblar of ensamblados) {
       expect(ejecutar(["esquema"], ensamblar)).toEqual({
@@ -93,7 +107,7 @@ describe("CLI-5", () => {
     const errorConfiguracion = errorConfiguracionInvalida("RIGE_PUERTO", "valor de prueba");
     const errorEnsamblado = (): Ensamblado => ({ exito: false, error: errorConfiguracion });
     const errorCaso = (): Ensamblado => ({
-      exito: true, valor: { prepararAlmacen: () => ({ exito: false, error: errorAlmacenSinEsquema }) },
+      exito: true, valor: { ...noWeb, prepararAlmacen: () => ({ exito: false, error: errorAlmacenSinEsquema }) },
     });
     const casos = [
       { argumentos: ["esquema"], ensamblar: exitoso },
@@ -107,12 +121,18 @@ describe("CLI-5", () => {
     ];
     for (const { argumentos, ensamblar } of casos) {
       const normal = ejecutar(argumentos, ensamblar);
-      expect(ejecutar(["--depurar", ...argumentos], ensamblar)).toEqual(normal);
-      expect(ejecutar([...argumentos, "--depurar"], ensamblar)).toEqual(normal);
+      for (const depurados of [["--depurar", ...argumentos], [...argumentos, "--depurar"]]) {
+        const esperado = argumentos.some((argumento) => argumento === "--x" || argumento === "--depurar=si")
+          ? { ...normal, error: JSON.stringify({
+            esquema: 1, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos invalidos: ${depurados.join(" ")}.` },
+          }) + "\n" }
+          : normal;
+        expect(ejecutar(depurados, ensamblar)).toEqual(esperado);
+      }
     }
     const fallas: (() => Ensamblado)[] = [
       () => { throw falla; },
-      () => ({ exito: true, valor: { prepararAlmacen: () => { throw falla; } } }),
+      () => ({ exito: true, valor: { ...noWeb, prepararAlmacen: () => { throw falla; } } }),
     ];
     for (const ensamblar of fallas) {
       for (const argumentos of [["--depurar", "esquema"], ["esquema", "--depurar"]]) {
@@ -124,5 +144,48 @@ describe("CLI-5", () => {
         });
       }
     }
+  });
+});
+
+describe("CLI-6", () => {
+  test("consulta antes de iniciar, serializa direccion y conserva errores y aislamiento de esquema", () => {
+    const direccion = "http://127.0.0.1:12345";
+    const orden: string[] = [];
+    const ensamblado: Ensamblado = {
+      exito: true, valor: {
+        prepararAlmacen: () => { throw new Error("No debe preparar almacen"); },
+        consultarEstado: () => { orden.push("consultar"); return { exito: true, valor: respuesta }; },
+        iniciarServidor: () => { orden.push("iniciar"); return { exito: true, valor: { direccion, detener() {} } }; },
+      },
+    };
+    expect(ejecutar(["servir"], () => { orden.push("ensamblar"); return ensamblado; })).toEqual({
+      codigo: 0, salida: JSON.stringify({ esquema: 1, direccion }) + "\n", error: "",
+    });
+    expect(orden).toEqual(["ensamblar", "consultar", "iniciar"]);
+    if (!ensamblado.exito) throw new Error("Doble invalido");
+    const casos = ensamblado.valor;
+    for (const error of [errorAlmacenSinEsquema, errorPuertoOcupado(12345)]) {
+      const consultarEstado = error.codigo === "almacen-sin-esquema"
+        ? () => ({ exito: false as const, error }) : casos.consultarEstado;
+      const iniciarServidor = error.codigo === "almacen-sin-esquema"
+        ? noWeb.iniciarServidor : () => ({ exito: false as const, error });
+      expect(ejecutar(["servir"], () => ({ exito: true, valor: { ...casos, consultarEstado, iniciarServidor } }))).toEqual({
+        codigo: 1, salida: "", error: JSON.stringify({ esquema: 1, error }) + "\n",
+      });
+    }
+    const falla = new Error("Detalle privado");
+    const fallas: (() => Ensamblado)[] = [
+      () => { throw falla; },
+      () => ({ exito: true, valor: { ...casos, consultarEstado: () => { throw falla; } } }),
+      () => ({ exito: true, valor: { ...casos, iniciarServidor: () => { throw falla; } } }),
+    ];
+    for (const ensamblar of fallas) {
+      expect(ejecutar(["servir"], ensamblar)).toEqual({
+        codigo: 70, salida: "",
+        error: JSON.stringify({ esquema: 1, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
+      });
+    }
+    expect(ejecutar(["servir"], () => ({ exito: false, error: errorAlmacenSinEsquema })).codigo).toBe(1);
+    expect(ejecutar(["esquema"])).toEqual({ codigo: 0, salida: JSON.stringify(respuesta) + "\n", error: "" });
   });
 });
