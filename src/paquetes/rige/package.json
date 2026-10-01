@@ -1,0 +1,7 @@
+{
+  "name": "@rige/rige",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": { "@rige/nucleo": "workspace:*", "@rige/opencode": "workspace:*" }
+}

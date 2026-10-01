@@ -58,7 +58,7 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 | 1 · Decisiones de arquitectura | 15 registros aceptados en la tabla (incluidos ADR-061, modelo de datos, y ADR-062, distribución, web y dependencias, aceptados el 29/09/2026; ADR-062 revisado el mismo día: TypeScript 7.0.2). ADR-063 por discutir (AR-04). Método: ADR-065, reescrito el 29/09/2026 (OpenCode con gentle-ai 3.7 en modo ODD; documento por incremento propuesto por el agente y revisado hasta la conformidad) |
 | 2 · Modelo de datos | Completa por remisión a ADR-061 (29/09/2026) |
 | 3 · Canal de integración continua | Completa por remisión a ADR-062; `.github/workflows/ci.yml` creado (matriz Ubuntu/Windows). Sin corridas todavía |
-| Prototipo v1 | Diseño listo para el incremento 0. Entorno: Bun 1.3.14 instalado y verificado por SHA-256; gentle-ai 3.7.0 en OpenCode con modelos asignados por agente; `src/` sin código. Base del prompt de contexto: `00-gestion/revisiones/20260929_inc0-base-contexto.md` |
+| Prototipo v1 | Incremento 0 en la rama `inc0-esqueleto`: T0-01 a T0-09 hechas con OpenCode y gentle-ai (ADR-065, registro congelado en `src/odd/tasks/inc0-esqueleto.md`); desde T0-10, método de ADR-067 (Codex orquestado por el ingeniero, fichas en `00-gestion/fichas/inc0/`). gentle-ai desinstalado el 30/09/2026 (respaldo en `~/respaldo-gentle-20260930/`). No subir la rama antes de T0-11a (`verificar` necesita `arranque/rige.ts`) |
 
 ## Medición de la línea base (ADR-053)
 
@@ -71,6 +71,16 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 | Agente de la referente | Pedido enviado; archivo no recibido |
 | Encuesta | Borrador; falta plataforma, comunidades y versión en inglés |
 | Ejecución | Fase 0 no iniciada; ventana del 02/10 al 16/10 |
+
+## Tablero de gestión (Guía AE2, objeto 3)
+
+| Elemento | Estado |
+|---|---|
+| Enlace | `https://trello.com/b/BhNydwGK` («RIGE · TIF Sánchez»), creado el 30/09/2026; cargado en `informe/datos-autor.yaml` |
+| Estructura | Kanban por estado (Backlog · Por hacer · En curso, máx. 2 · En revisión) y una columna «Hecho» por iteración de la Tabla 14 (V.1). Prefijo `ItN ·` y etiqueta de color por iteración; rojo = componente bloqueante de la entrega |
+| Contenido | 47 tarjetas: 5 en Hecho · It. 1 (reconstruidas desde el historial, con comentario y commit), 2 en curso, 4 en revisión, 14 por hacer, 22 en el backlog (Tabla 18, medición, condicionados, cierre y reserva) |
+| Visibilidad | Privada durante la carga; vuelve a pública por acción del autor (U-05) |
+| Criterio | Sin ADR todavía (ADR-067 por proponer) |
 
 ## Instrumentos
 

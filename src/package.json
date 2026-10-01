@@ -1,0 +1,18 @@
+{
+  "name": "rige",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.3.14",
+  "workspaces": ["paquetes/*"],
+  "scripts": {
+    "esquema": "bun ./paquetes/rige/arranque/rige.ts esquema",
+    "servir": "bun ./paquetes/rige/arranque/rige.ts servir",
+    "rige": "bun ./paquetes/rige/arranque/rige.ts",
+    "verificar": "bun ./herramientas/verificar.ts"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "@types/bun": "1.3.14"
+  }
+}

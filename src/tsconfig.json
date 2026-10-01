@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": ["bun"] },
+  "include": ["pruebas/**/*.ts", "paquetes/**/*.test.ts", "herramientas/**/*.ts"],
+  "references": [
+    { "path": "./paquetes/nucleo" },
+    { "path": "./paquetes/opencode" },
+    { "path": "./paquetes/rige" }
+  ]
+}

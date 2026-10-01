@@ -16,7 +16,7 @@ RIGE es una herramienta local de **solo lectura** que resuelve y explica la conf
   - ADR-054: plataformas;
   - ADR-061: ciclo de vida de la Resolución y modelo de datos del almacén;
   - ADR-062: distribución, web, dependencias, configuración propia, versionado y arnés de pruebas.
-- **Documento del incremento (ODD, ADR-065):** `odd/tasks/<incremento>.md`. Lo propone el agente a partir del prompt de contexto del autor, y se detiene antes de escribir código. Se ajusta con las correcciones que trae el autor hasta la conformidad. Recién entonces se implementa. Una vez acordado, no se modifican su objetivo, su alcance ni sus restricciones sin volver a acordarlos.
+- **Ficha de la tarea (ADR-067):** `../00-gestion/fichas/<incremento>/<tarea>.md`. Es la especificación de lo que hay que hacer: criterios, archivos, interfaces, pruebas, comandos y condiciones de detención. No se amplía ni se reinterpreta: si no alcanza o contradice un ADR, detenete. `odd/tasks/inc0-esqueleto.md` es un antecedente congelado del incremento 0 (ADR-065): consultalo solo si la ficha remite a él y no lo modifiques.
 - Nada de esto se contradice sin un ADR nuevo aceptado por el autor. Si una tarea lo exige, **detenete y avisá**.
 
 ## 2. Restricciones no negociables
@@ -142,9 +142,10 @@ Workspaces de Bun 1.3.14 con instalación aislada: `paquetes/nucleo`, `paquetes/
 
 ## 7. Forma de trabajo
 
-- **Flujo ODD (gentle-ai 3.7, ADR-065).** Se implementa solo un incremento cuyo documento en `odd/tasks/` esté aprobado por el autor. Si el documento no alcanza o algo contradice un ADR, detenete y preguntá. No se usa el ciclo SDD ni `openspec/`.
-- **TDD estricto**, ejecutor `bun test`. Por cada tarea: prueba primero y verla fallar, mínimo código para que pase, refactorización. La evidencia (rojo, verde, refactorización, commit) se registra en el documento del incremento.
-- **Commits solo en la rama del incremento**, uno por tarea, con Conventional Commits. **Nunca** subir, unir con `main` ni crear etiquetas: eso lo hace el autor después de la revisión.
+- **Una tarea por ejecución (ADR-067).** Hacé solo lo que pide la ficha, vos mismo, sin subagentes. Si la ficha no alcanza o algo contradice un ADR, no escribas código: detenete y dejá la pregunta, con su fundamento, en tu respuesta final.
+- **TDD estricto**, ejecutor `bun test`. Por cada criterio: prueba primero y verla fallar, mínimo código para que pase, refactorización. Mientras trabajás corré solo las pruebas de los archivos que tocás; la suite completa y `bun run verificar`, una vez, antes del commit. Recortá las salidas largas (últimas líneas) para no llenar el contexto.
+- **Evidencia en el mensaje del commit:** una línea por criterio con el comando de la prueba y su resultado en rojo y en verde, y el resultado final de la suite y de `verificar`.
+- **Commits solo en la rama del incremento**, uno por tarea (salvo que la ficha pida otro), con Conventional Commits en español. Agregá solo rutas explícitas dentro de `src/`; nunca `git add -A` ni `git add .`. **Nunca** subir, unir con `main` ni crear etiquetas: eso lo hace el autor después de la revisión.
 - **Todo comando** necesario para instalar, configurar, ejecutar o probar figura en `src/README.md`.
 - **No se escriben archivos del repositorio fuera de `src/`.** Los datos de ejecución van a temporales del sistema; en toda ejecución del agente, `RIGE_ALMACEN` apunta a un temporal (ADR-066).
 
