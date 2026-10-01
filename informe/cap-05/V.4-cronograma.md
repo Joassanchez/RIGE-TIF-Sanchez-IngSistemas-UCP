@@ -22,7 +22,7 @@ La estimación descompone cada iteración en tareas y les asigna horas por juici
 | 1             | Repositorio, canal de integración continua y entorno de ejecución                   | Condición (a) de la definición de terminado | 8         |
 | 1             | Adaptador mínimo: lectura de tres entradas de archivo con su posición               | RF-01                                       | 8         |
 | 1             | Núcleo: resolución con procedencia conforme a RD-01                                 | RF-01, RNF-03                               | 6         |
-| 1             | Almacén propio: esquema, escritura y lectura de la resolución                       | RNF-01                                      | 4         |
+| 1             | Almacén propio: esquema, escritura y lectura de la resolución                       | RF-17, RNF-01                               | 4         |
 | 1             | Interfaz mínima de selección del proyecto y consulta                                | RF-01, RNF-09                               | 5         |
 | 1             | Pruebas de aceptación y primeros resultados de referencia                           | RF-01, RNF-01, RNF-03                       | 4         |
 |               | **Subtotal de la iteración 1**                                                      |                                             | **35**    |

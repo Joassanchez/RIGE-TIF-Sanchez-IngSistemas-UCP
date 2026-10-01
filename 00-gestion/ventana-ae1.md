@@ -67,3 +67,14 @@ Hoy el AE1 numera Tablas 1 a 19 y Figuras 1 y 2, y la AE2 reinicia desde 1: en e
 |---|---|
 | I.2, OE-3 (Tabla 1) | Agregar el sexto tipo de hallazgo, «entradas descartadas sin error visible», alineado con RF-07. |
 | I.6.3, Tabla 8 | Agregar la definición de «Entrada descartada sin error visible»: entrada de configuración que la herramienta descarta sin emitir error, como una variable de entorno de configuración con contenido inválido (H-14). |
+
+## 7. Funciones de I.6.2 desactualizadas por ADR-059 (discusión de III.3, 01/10/2026)
+
+No se rehacen las seis funciones; se corrigen estos puntos para que el AE1 no contradiga la Tabla 7 de III.3.
+
+| Dónde | Cambio |
+|---|---|
+| I.6.2, tabla de funciones, F6 | La columna de objetivo dice «— (capacidad diferida, apartado III.3)»: la exploración de los agentes está comprometida (RF-16, ADR-059) |
+| I.6.2, F6 | «Localizar y abrir en el editor la declaración» pasa a «informar la localización en formato ruta:línea:columna» (RF-12); RIGE no abre el editor |
+| I.6.2, F6 | «Exportar el estado resuelto a un archivo» pasa a «informar por línea de comandos el estado resuelto completo de un proyecto» (RF-14) |
+| I.6.2, F4 | La matriz de agentes por tipo de permiso y la consulta inversa se declaran fuera del período (RF-15, Won't) |

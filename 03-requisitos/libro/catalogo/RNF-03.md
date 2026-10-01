@@ -8,7 +8,7 @@
 | Categoría (si es no funcional) | Mantenibilidad |
 | Prioridad | Must |
 | Motivo de la prioridad | Constituye la decisión arquitectónica que hace posible incorporar otras herramientas sin rehacer el sistema |
-| Criterio de aceptación | CA-1: El análisis estático de dependencias registra cero dependencias del núcleo hacia el adaptador. CA-2: Ninguna identificación de la herramienta aparece en el código del núcleo. CA-3: Un adaptador de una herramienta ficticia, escrito únicamente contra el contrato del núcleo, se resuelve sin modificar el núcleo |
+| Criterio de aceptación | CA-1: El análisis estático de dependencias registra cero importaciones del núcleo hacia el adaptador. CA-2: La búsqueda en el código del núcleo registra cero apariciones de identificaciones de la herramienta. CA-3: Un adaptador de una herramienta ficticia, escrito únicamente contra el contrato del núcleo, se resuelve con cero modificaciones del núcleo |
 | Trazabilidad | HA-4 |
 | Estado de validación | Validado |
 | Iteración prevista | 1 |

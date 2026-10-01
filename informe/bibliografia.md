@@ -30,7 +30,7 @@ icysaintdx. (2026). *OpenCode Config Manager (OCCM)* \[Software\]. GitHub. https
 
 GitHub, Inc. (s. f.). *GitHub Actions billing* [Documentación]. https://docs.github.com/en/billing/concepts/product-billing/github-actions
 
-International Organization for Standardization. (2023). *Systems and software engineering — Systems and software quality requirements and evaluation (SQuaRE) — Product quality model* (ISO/IEC 25010:2023). https://www.iso.org/standard/78176.html
+International Organization for Standardization e International Electrotechnical Commission. (2023). *Systems and software engineering — Systems and software quality requirements and evaluation (SQuaRE) — Product quality model* (ISO/IEC 25010:2023). https://www.iso.org/standard/78176.html
 
 Kendall, K. E., y Kendall, J. E. (2005). *Análisis y diseño de sistemas* (6.ª ed.; A. Núñez Ramos, Trad.). Pearson Educación.
 
@@ -49,6 +49,8 @@ NLnet. (2026). *Apply for a grant*. https://nlnet.nl/propose/
 Observatorio Permanente de la Industria del Software y Servicios Informáticos de la Argentina. (2026). *Industria del software en Argentina al 1er trimestre de 2026* [Reporte]. Cámara de la Industria Argentina del Software. https://cessi.org.ar/wp-content/uploads/2026/07/OPSSI-Reporte-Industria-Software-1er.-trim.-2026.pdf
 
 Onufriichuk, A. (2026). *Claude Code Config Manager* (Versión 0.10.0) \[Extensión de VS Code\]. Visual Studio Marketplace. https://marketplace.visualstudio.com/items?itemName=agnislav.claude-code-config-manager
+
+openchamber. (2026). *openchamber* (commit fc012ae0029fa2ac8d1d52b4af37040fc536258e) [Software]. GitHub. https://github.com/openchamber/openchamber/tree/fc012ae0029fa2ac8d1d52b4af37040fc536258e/.opencode
 
 OpenCode. (2026). *OpenCode* (Versión 1.18.25) \[Software\]. GitHub.
 

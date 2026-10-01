@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Respuesta final del redactor (Codex)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["estado", "archivos", "cambios", "marcadores", "inconsistencias", "pregunta", "notas"],
+  "properties": {
+    "estado": {
+      "type": "string",
+      "enum": ["completada", "detenida", "fallida"],
+      "description": "completada: todas las correcciones de la ficha aplicadas. detenida: falta un dato o una decisión (ver pregunta). fallida: error técnico."
+    },
+    "archivos": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Archivos modificados, relativos a la raíz del repositorio."
+    },
+    "cambios": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Una entrada por corrección de la ficha: '<id>: qué se cambió y dónde' o '<id>: no aplicada, motivo'."
+    },
+    "marcadores": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Marcadores [DATO PENDIENTE] o [DECISIÓN PENDIENTE] que dejaste, con archivo y motivo. Vacío si no hay."
+    },
+    "inconsistencias": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Inconsistencias encontradas fuera del alcance de la ficha, sin resolver: archivo, qué dice y con qué choca."
+    },
+    "pregunta": {
+      "type": "string",
+      "description": "Si estado es detenida: la pregunta concreta y la opción que proponés. Cadena vacía en otro caso."
+    },
+    "notas": {
+      "type": "string",
+      "description": "Suposiciones, ADR utilizados y fuentes nuevas a dar de alta. Cadena vacía si no hay."
+    }
+  }
+}

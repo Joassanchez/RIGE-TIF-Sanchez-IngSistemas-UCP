@@ -470,6 +470,37 @@ Observaciones generales: sin observaciones.
 
 Constancia de conformidad de la referente (firma o correo de conformidad): pendiente de firma.
 
+## Extensión · Requisitos y precisiones posteriores a la sesión
+
+Puntos incorporados o reformulados después de la sesión del 26/09/2026 (ADR-058, ADR-059 y ADR-073), presentados a la referente para su validación.
+
+Fecha: [completar] · Canal: [completar] · Participantes: Joaquín Sebastián Sánchez (autor) y [completar] (referente)
+
+| Cód. | Enunciado | Prioridad | Origen | Valida | Observa | Observaciones |
+| --- | --- | --- | --- | --- | --- | --- |
+| RF-12 | RIGE informa la localización de cada declaración en el formato ruta:línea:columna, con ruta absoluta, por ambas interfaces | Should | Reformulado (ADR-059) | ☐ | ☐ | |
+| RF-14 | RIGE informa por línea de comandos el estado resuelto completo de un proyecto: sus elementos, los valores efectivos con su procedencia y los hallazgos | Could | Reformulado (ADR-059) | ☐ | ☐ | |
+| RF-16 | RIGE lista los agentes del proyecto, declarados por el usuario e incorporados por la herramienta, e identifica cada uno como tal, por ambas interfaces | Must | Nuevo (ADR-059) | ☐ | ☐ | |
+| RF-17 | RIGE conserva cada resolución de un proyecto con su fecha y el resumen de las entradas leídas, y permite recuperarla | Must | Nuevo (ADR-073) | ☐ | ☐ | |
+| RNF-04 | RIGE nunca expone el contenido que una sustitución incorpora a una declaración; informa su origen (el nombre de la variable de entorno o la ruta del archivo) y su condición de definido o no definido | Must | Reformulado (ADR-058) | ☐ | ☐ | |
+| RNF-09 | La interfaz web local atiende únicamente solicitudes dirigidas a la dirección local del equipo y no permite que otro origen lea sus respuestas | Must | Nuevo (ADR-059) | ☐ | ☐ | |
+| RNF-10 | RIGE conserva el aviso de copyright y la licencia MIT de OpenCode en el código que incorpora, y lo declara en su distribución | Must | Nuevo (ADR-059) | ☐ | ☐ | |
+
+**Precisiones posteriores sobre puntos ya validados** (no cambian lo aprobado; se presentan para conocimiento y conformidad):
+
+| Punto | Precisión | Origen | Conforme |
+| --- | --- | --- | --- |
+| L-06 | Se incorpora a la línea de comandos el listado de los agentes del proyecto (RF-16) | ADR-059 | ☐ |
+| Modelo del dominio | Elemento–Declaración pasa a 0..*; el hallazgo puede recaer también sobre una entrada; la regla de permiso puede ser nativa o provenir de una declaración | Corrección del 28/09/2026 | ☐ |
+| Modelo del dominio | La invocación entre agentes es de muchos a muchos: un subagente puede ser invocado por varios agentes (verificado en `task.ts`, OpenCode 1.18.25) | Discusión de III.2, 01/10/2026 | ☐ |
+| RNF-07 | Proyecto de referencia: el doble del mayor entre el proyecto público openchamber y el del equipo de la referente, si lo informa | ADR-055, ADR-071 | ☐ |
+| RR-02 | Restricción reformulada: «RIGE no expone el contenido que una sustitución incorpora; informa su origen y su condición de definido o no definido» (incluye las sustituciones de archivo, además de las variables de entorno) | ADR-058 | ☐ |
+| Modelo del dominio | Agente–Regla de permiso pasa a 1..* a 1..* (una regla global rige sobre varios agentes); Entrada–Declaración pasa a 0..* (una entrada vacía o ilegible no aporta declaraciones); Elemento–Declaración pasa a 1..* a 0..* (una declaración global compone varios elementos); el hallazgo puede recaer también sobre una sustitución; relación nueva: una resolución comprende uno o muchos elementos, declarados o nativos | ADR-074 | ☐ |
+| RE-01 y RE-03 | RE-01: un elemento ingresa a la resolución si proviene de una entrada legible o si la herramienta lo incorpora sin declaración. RE-03: un elemento declarado se marca sin uso solo si ninguna declaración de un agente ni de un comando lo nombra | ADR-074 | ☐ |
+| RF-07 | La detección de referencias no resueltas y de elementos sin uso opera por nombre sobre los elementos de la resolución, sin la representación de vínculos de RF-13 | ADR-074 | ☐ |
+
+Constancia de conformidad de la referente sobre esta extensión (firma o correo de conformidad): [completar].
+
 ---
 ---
 
