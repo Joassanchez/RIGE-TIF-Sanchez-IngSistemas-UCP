@@ -6,7 +6,7 @@
 | DNI | 45.452.416 |
 | Proyecto | RIGE: plataforma local para la resolución y explicación de la configuración efectiva y su procedencia en herramientas de programación basadas en agentes |
 | Equipo e integrantes | Proyecto individual |
-| Repositorio | [DATO PENDIENTE: URL del repositorio] |
+| Repositorio | <https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP> |
 | Período que cubre | AE2 · semanas 5 a 8 del Sprint 2 · del 7 de septiembre al 1.º de octubre de 2026 |
 
 > Entrada más reciente arriba. Se escribe el día en que ocurre lo que se registra. `/cerrar` agrega aquí el borrador de la entrada del día; el autor lo revisa y lo aprueba.
@@ -24,6 +24,116 @@ Declaración general sobre herramientas auxiliares, conforme al Protocolo de Uso
 Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación del problema, el diseño de los instrumentos, la conducción de las sesiones de medición y de la entrevista, la ejecución de los experimentos, las decisiones metodológicas y de diseño, y la verificación de todo resultado antes de incorporarlo al informe. Cada entrada consigna si la jornada se ajusta a este criterio o si no se empleó herramienta auxiliar.
 
 ## Entradas de la AE2
+
+### Entrada · Miércoles 30 de septiembre de 2026 (cierre) — Incremento 0 del prototipo hasta T0-10 y cambio del método de programación (ADR-066 y ADR-067)
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **ADR-066 (aceptado):**
+     - `configuracion-invalida` y `puerto-ocupado` pasan a ser códigos estables de error de uso, con código de salida 1;
+     - «no se escribe fuera de `src/`» rige para los archivos del repositorio. Los datos de ejecución van a temporales del sistema, con `RIGE_ALMACEN` temporal en toda ejecución del agente.
+   - **Incremento 0, tareas T0-01 a T0-09** (rama `inc0-esqueleto`, método de ADR-065: OpenCode con gentle-ai 3.7):
+     - el documento ODD pasó por dos revisiones; en la segunda se incorporó la capa de casos de uso de ADR-058, que faltaba, y se registraron 22 diferencias con el plan;
+     - el catálogo de vías de `entrada_leida.via` no se fija en el esquema SQL: lo valida la aplicación contra el catálogo del adaptador;
+     - la importación del guion `.sql` se tipa con una declaración `*.sql`;
+     - resultado: 225 pruebas en verde.
+   - **Modelos:** dejé OpenCode Go y pasé a `openai/gpt-6.1-sol`. Descarté GitHub Copilot Student.
+   - **ADR-067 (aceptado):**
+     - desinstalé gentle-ai, con respaldo en `~/respaldo-gentle-20260930/`;
+     - el código lo escribe Codex (`gpt-6.1-sol`), en una ejecución por tarea a partir de una ficha y con su commit en la rama;
+     - el sistema de agentes del TIF orquesta, revisa (`revisor-codigo`, Sonnet 5.5) y critica (`critico-codigo`, Opus 5.5);
+     - nuevos comandos `/programar` y `/revisar-codigo`, una plantilla de ficha y una respuesta estructurada del escritor.
+   - **T0-10 (configuración propia) cerrada con el método nuevo:** `5ca3431`, 233 pruebas en verde.
+2. **Alternativas evaluadas y criterio de descarte (recortes).**
+   - **Mantener gentle-ai 3.7:** descartado, porque reproducía el costo medido.
+   - **gentle-ai «afinado» (sin SDD):** descartado. La delegación obligatoria y el espejo en Engram viven en el bloque ODD, que se conservaba (código fuente 3.7.0).
+   - **OpenCode sin gentle-ai:** descartado. Sin gentle-ai no aporta nada frente al arnés propio del modelo.
+   - **Codex en VS Code con el autor como intermediario:** lo rechacé, porque me dejaba orquestando a mano cada tarea.
+   - **Claude Code como escritor:** descartado, porque se pierde la independencia entre quien escribe y quien revisa.
+   - **Copilot Student:** descartado. Desde el 24/06/2026 solo admite selección automática de modelo y trae 200 créditos.
+   - **Recortes:**
+     - `puerto-ocupado` se implementa en T0-11b;
+     - macOS sigue diferido (ADR-054);
+     - el documento ODD del incremento 0 queda congelado como antecedente;
+     - las revisiones de programación ya no se guardan como archivos.
+3. **Evidencia.**
+   - **Base local de OpenCode (`opencode.db`):**
+     - ≈ 590 min de modelo contra menos de 5 min de herramientas;
+     - 459 pasos, con 196 llamadas a Engram;
+     - ≈ 69,5 M de tokens de caché contra ≈ 3 M de entrada.
+   - **Externa:**
+     - issue gentle-shell #1494: 245 s contra 46 s y ≈ 1,30 M contra ≈ 113 k tokens en una tarea trivial;
+     - notas de versión de gentle-ai 3.1 a 3.5.
+   - **Prueba de `codex exec`:** 20.043 tokens con gentle-ai contra 14.488 sin gentle-ai.
+   - **T0-10:**
+     - ≈ 6 min en tres ejecuciones;
+     - ≈ 0,73 M de entrada (≈ 0,67 M en caché);
+     - +1 punto de la cuota semanal de Codex (plan ChatGPT Plus);
+     - línea de base anterior: ≈ 1 h y ≈ 8 M por tarea.
+   - Commits de la rama `inc0-esqueleto`, de `d9e7dee` a `5ca3431`.
+4. **Aporte personal.**
+   - Cuestioné el documento ODD que el ingeniero daba por aprobable y detecté que la estructura de carpetas no coincidía con ADR-058.
+   - Decidí cambiar de modelos y descartar Copilot Student.
+   - Marqué el consumo inaceptable: más de 4 h y más del 25 % de mi cuota semanal.
+   - Pedí que los agentes los orqueste el sistema y no yo, y que haya un agente que discuta y mejore el código.
+   - Decidí desinstalar gentle-ai.
+   - Acepté ADR-066 y ADR-067 y aprobé los commits del incremento.
+   - Artefactos: ADR-066, ADR-067, `00-gestion/fichas/`, `00-gestion/diseno-sistema-agentes.md` y la rama `inc0-esqueleto`.
+5. **Desacuerdo y resolución.** Proyecto individual. Con el ingeniero hubo dos diferencias:
+   - propuso un único agente escritor sin subagentes, y yo pedí subagentes orquestados por el sistema. Se resolvió con ADR-067: escritor externo, más revisor y crítico como subagentes;
+   - consideraba aprobable el documento ODD, y mi objeción sobre la estructura resultó fundada: faltaba la capa de casos de uso.
+6. **Herramientas auxiliares.** Asistencia conforme al criterio general declarado, por período:
+   - **Claude Code** (`claude-opus-5-5`): diseño, ADR, fichas, orquestación, revisión del diff y ejecución de pruebas de control. Artefactos: `00-gestion/`.
+   - **OpenCode con gentle-ai 3.7, hasta T0-09:**
+     - `opencode-go/mimo-v2.6-pro`: propuesta del documento ODD;
+     - `openai/gpt-6.1-sol`: revisión del documento e implementación de T0-01 a T0-09 (`general`, `gentle-orchestrator`);
+     - `openai/gpt-6-luna`: exploración;
+     - artefactos: `src/`.
+   - **Codex CLI (`gpt-6.1-sol`), desde T0-10:** implementación con TDD y commits en la rama. Artefactos: `src/`.
+
+### Entrada · Miércoles 30 de septiembre de 2026 — Tablero de gestión organizado por las iteraciones del Capítulo V
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **Tablero kanban en Trello, «RIGE · TIF Sánchez»** (`https://trello.com/b/BhNydwGK`). Es el objeto 3 de la entrega de la AE2. El docente no fijó una estructura, así que la definí yo.
+   - **Columnas por estado:** Backlog, Por hacer, En curso (máximo 2) y En revisión. Además, una columna «Hecho» por cada iteración de la Tabla 14 (V.1), para que el tablero quede organizado por iteración, como pide la guía.
+   - **Distinción de la iteración en cada tarjeta:** prefijo `ItN ·` en el título y un color fijo (verde It. 1, azul It. 2, violeta It. 3, naranja It. 4, amarillo Cierre). El rojo marca los componentes bloqueantes de la entrega.
+   - **Contenido:**
+     - una tarjeta por cada fila de la Tabla 18 (V.4), con el identificador del requisito primero en el título y las horas estimadas;
+     - tarjetas documentales por entregable (capítulos, instrumentos, libro, constancia, informe, portafolio, bitácora);
+     - la línea de base, los requisitos Should condicionados y la fase de cierre.
+     - En total, 47 tarjetas.
+   - **Trabajo anterior al 30/09:** cargado directamente en «Hecho · It. 1», con la fecha real y un comentario que dice que la tarjeta se reconstruyó desde el historial, junto con el commit que la acredita.
+   - **Criterio de corte:** una tarea que no se termina en su iteración pasa a la siguiente en la misma tarjeta, con cambio de etiqueta y prefijo y un comentario fechado.
+   - `informe/datos-autor.yaml`: completé `tablero` y `repositorio`.
+2. **Alternativas evaluadas y criterio de descarte (recortes).**
+   - **Columna «Hecho · Especificación» para el período del 07/09 al 20/09:** descartada. El repositorio no tiene nada fechado en ese período, y cargarla obligaba a inventar fechas. Además, la validación, el catálogo y los capítulos se hicieron dentro de la iteración 1.
+   - **Una columna por iteración, sin columnas de estado:** descartada, porque se pierde el estado, que es uno de los tres datos que exige la guía.
+   - **Simular fechas de creación anteriores:** excluido. Trello registra la fecha real de cada tarjeta. La reconstrucción se declara en el tablero y en esta entrada.
+   - **Fechas de la fase de cierre, de la Ventana y de la AE3:** quedaron como `[DATO PENDIENTE]`, porque la cátedra no las fijó.
+   - **Etiquetas de tipo, responsable y fecha de inicio:** no se cargaron, porque el conector no lo permite. El tipo va en la descripción de cada tarjeta; el responsable y los nombres de las etiquetas los cargo yo a mano.
+   - **Diferido:** ADR-067 con el criterio del tablero.
+3. **Evidencia.**
+   - `catedra/AE2-guia.md`: objeto 3 (tablero con responsable, estado y fecha, organizado por iteración), la cita de los identificadores en el tablero, la dimensión 6 de la rúbrica y la lista de autoverificación (enlaces que abren en incógnito).
+   - V.1, Tabla 14; V.4, Tablas 18 y 19.
+   - Historial del repositorio (`git log`, del 24/09 al 30/09/2026) y entradas de esta bitácora.
+4. **Aporte personal.**
+   - Confirmé que el docente no dio indicaciones y que la estructura la decidíamos nosotros.
+   - Pedí que las tareas de cada iteración se distinguieran a simple vista, lo que llevó al prefijo y al color por iteración.
+   - Aprobé el diseño.
+   - Pasé el tablero a privado durante la carga y completé `informe/datos-autor.yaml`.
+   - Artefactos: el tablero (`https://trello.com/b/BhNydwGK`) e `informe/datos-autor.yaml`.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos en esta jornada.
+6. **Herramientas auxiliares.** Asistencia conforme al criterio general declarado.
+   - **Asistente de programación Claude Code (Anthropic).**
+     - *Función:*
+       - relevamiento de las exigencias de la guía sobre el tablero;
+       - propuesta del diseño con sus alternativas;
+       - creación del tablero, las columnas, las 47 tarjetas, las etiquetas de color, los comentarios de reconstrucción y el checklist del incremento 0 mediante el conector de Trello;
+       - redacción de este borrador y actualización de `estado.md` y `pendientes.md`.
+     - *Artefactos:* los del punto 4, `00-gestion/estado.md` y `00-gestion/pendientes.md`.
 
 ### Entrada · Martes 29 de septiembre de 2026 (cierre) — Diseño para empezar a programar el v1: modelo de datos, distribución, método con gentle-ai y entorno
 

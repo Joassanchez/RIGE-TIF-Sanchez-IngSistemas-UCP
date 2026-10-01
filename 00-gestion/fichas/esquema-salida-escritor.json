@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Respuesta final del escritor (ADR-067)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["estado", "commits", "pruebas", "verificar", "archivos", "pregunta", "notas"],
+  "properties": {
+    "estado": {
+      "type": "string",
+      "enum": ["completada", "detenida", "fallida"],
+      "description": "completada: commit hecho según la ficha. detenida: falta una decisión o la ficha no alcanza (ver pregunta). fallida: error técnico que impidió avanzar."
+    },
+    "commits": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Hashes cortos y título de cada commit creado, en orden. Vacío si no hubo commits."
+    },
+    "pruebas": {
+      "type": "string",
+      "description": "Resultado de la última corrida de la suite completa: pasan, fallan y comando. 'no ejecutada' si no se corrió."
+    },
+    "verificar": {
+      "type": "string",
+      "description": "Resultado de bun run verificar y motivo si falló. 'no ejecutado' si no se corrió."
+    },
+    "archivos": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Archivos creados o modificados, relativos a src/."
+    },
+    "pregunta": {
+      "type": "string",
+      "description": "Si estado es detenida: la pregunta concreta, su fundamento y la opción que proponés. Cadena vacía en otro caso."
+    },
+    "notas": {
+      "type": "string",
+      "description": "Desvíos respecto de la ficha, suposiciones o advertencias para el revisor. Cadena vacía si no hay."
+    }
+  }
+}

@@ -13,8 +13,8 @@ docente: "PosDr. Darío Ezequiel Díaz"
 comision: "Comisión A · Sede Posadas"
 lugar: "Posadas, Misiones"
 anio: 2026
-repositorio: "[DATO PENDIENTE: URL del repositorio en GitHub]"
-tablero: "[DATO PENDIENTE: URL del tablero de gestión]"
+repositorio: "https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP"
+tablero: "https://trello.com/b/BhNydwGK"
 referente:
   nombre: "Valeria Areco"
   organizacion: "EMSA (Electricidad de Misiones S.A.) — equipo de Sistemas"

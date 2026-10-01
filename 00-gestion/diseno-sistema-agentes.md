@@ -2,7 +2,7 @@
 
 > **Proyecto:** Proyecto Integrador Final — Ingeniería en Sistemas de Información (UCP, Sede Posadas)
 > **Autor:** Joaquín Sebastián Sánchez
-> **Vigente al:** 24/09/2026
+> **Vigente al:** 30/09/2026 (línea de código: ADR-067)
 > **Propósito:** fijar en un único lugar cómo se organiza, redacta, revisa y entrega la documentación del TIF con asistencia de agentes. Lo que todavía no está decidido figura en `00-gestion/pendientes.md`.
 
 ---
@@ -10,7 +10,7 @@
 ## 1. Principios
 
 1. **Fuente de verdad única.** Lo que no está en el repositorio no existe para los agentes. Lo que se decide en una conversación se registra en un ADR.
-2. **El autor decide.** Los agentes proponen, redactan y revisan; las decisiones, las aprobaciones y los commits son del autor.
+2. **El autor decide.** Los agentes proponen, redactan y revisan; las decisiones, las aprobaciones y los commits son del autor. Única excepción: el escritor de código commitea en la rama del incremento (ADR-067).
 3. **Nada se inventa.** Datos, cifras, fechas, interlocutores y resultados provienen de archivos del repositorio. Si falta un dato se marca `[DATO PENDIENTE: …]`; si falta una decisión, `[DECISIÓN PENDIENTE: …]`.
 4. **Los revisores no escriben.** Producen informes, no cambios.
 5. **La consigna manda.** Orden de prelación: aclaraciones del docente (`reglas-catedra.md`, sección 4) en el punto aclarado → Resolución Rectoral UCP N.º 97/23 → consigna oficial de la AE → guía de consignas y plantillas.
@@ -24,10 +24,10 @@
 | # | Decisión | Detalle |
 |---|----------|---------|
 | D-01 | La documentación se gestiona desde un repositorio con agentes. | 4 |
-| D-02 | Herramienta principal: **Claude Code dentro de VS Code**. Auxiliares: **Gemini** (auditoría global) y **OpenCode Go** (programación de `src/`). | 3 |
+| D-02 | Herramienta principal: **Claude Code dentro de VS Code**. Auxiliares: **Gemini** (auditoría global) y **Codex** (escritor de `src/`, orquestado por el ingeniero; ADR-067, que reemplaza a OpenCode con gentle-ai). | 3 |
 | D-03 | Código, prototipos y documentación en **un único repositorio**. | 4 |
 | D-04 | **Todo en Markdown**: informe, Libro de trabajo e instrumentos. Los artefactos (`.docx`, PDF, `.xlsx`) se generan por script **a pedido del autor**. | 9 |
-| D-05 | **Los agentes no hacen commits ni etiquetas.** Los hace el autor. | 12 |
+| D-05 | **Los agentes no hacen commits ni etiquetas.** Los hace el autor. Excepción: el escritor (Codex) commitea en la rama del incremento; `push`, `merge` y `tag` son solo del autor (ADR-067). | 12 |
 | D-06 | El uso de IA **no se menciona en los commits**; se declara en la bitácora (declaración general ya entregada) y en la sección 8 del README del v1. | 10; `reglas-catedra.md` 7 |
 | D-07 | El **ingeniero** propone decisiones y redacta sus fundamentos; el **redactor** escribe los capítulos completos. | 5 |
 | D-08 | El ingeniero opera en modo **muy exigente**: discute propuestas débiles y reabre decisiones aceptadas ante evidencia nueva. | 5.1 |
@@ -37,7 +37,7 @@
 | D-12 | **Verificador de fuentes** con acceso web y **registro de fuentes**; el redactor solo cita fuentes registradas. | 5.6 |
 | D-13 | Glosario único: la **hoja Glosario del Libro de trabajo (Instrumento 30)**. | 4 |
 | D-14 | `CLAUDE.md` corto; reglas de la cátedra en `00-gestion/reglas-catedra.md` (importado); consigna de cada AE solo al trabajar esa entrega. | 5.1 |
-| D-15 | Modelos: **Opus 5.5** (esfuerzo medio) para ingeniero, redactor y crítico; **Sonnet 5** para los tres revisores de reglas. Plan Pro; el autor ajusta según consumo. | 3.2 |
+| D-15 | Modelos: **Opus 5.5** para ingeniero, redactor, crítico y crítico de código; **Sonnet 5.5** para los tres revisores de reglas y el revisor de código; **`gpt-6.1-sol`** (Codex, plan ChatGPT Plus) para el escritor. El criterio está en ADR-067, regla 7. | 3.2 |
 | D-16 | Pipeline: Markdown → **pandoc** (`reference.docx`, filtros, citas APA) → `.docx` → **LibreOffice** → PDF. | 9.1 |
 | D-17 | **Extensión libre** por aclaración expresa del docente; no se controla ni se objeta. | `reglas-catedra.md` 4 |
 | D-18 | Corchetes, marcadores y restos de texto de asistente **los controla el autor manualmente**; el pipeline no los detecta ni los elimina. | 9.1 |
@@ -58,7 +58,7 @@
 | Claude Code (en VS Code) | Sesión principal (ingeniero) y subagentes. |
 | VS Code | Edición, vista previa de Markdown y revisión de diffs antes de cada commit. |
 | Gemini | Auditoría global ocasional antes de cada entrega (contexto largo). |
-| OpenCode Go | Programación de `src/`. |
+| Codex CLI (`codex exec`) | Escritor de `src/`, lanzado por el ingeniero con `/programar`; una ejecución por tarea (ADR-067). Sustituye a OpenCode con gentle-ai (ADR-065), que se desinstaló el 30/09/2026. |
 
 ### 3.2 Modelos por rol
 
@@ -69,16 +69,22 @@ Cada agente fija su modelo con ID completo (no `inherit`, que haría que todos u
 | Ingeniero (sesión principal) | `claude-opus-5-5` | medio | Discusión y decisiones. |
 | Redactor | `claude-opus-5-5` | medio | Produce el texto que se entrega. |
 | Crítico | `claude-opus-5-5` | medio | Evaluar argumentos es juicio. |
-| Revisor de consigna | `claude-sonnet-5` | — | Contraste contra una lista concreta. |
-| Verificador de consistencia | `claude-sonnet-5` | — | Comparación contra glosario, libro y ADR. |
-| Verificador de fuentes | `claude-sonnet-5` | — | Muchas búsquedas y lecturas web. |
+| Revisor de consigna | `claude-sonnet-5-5` | — | Contraste contra una lista concreta. |
+| Verificador de consistencia | `claude-sonnet-5-5` | — | Comparación contra glosario, libro y ADR. |
+| Verificador de fuentes | `claude-sonnet-5-5` | — | Muchas búsquedas y lecturas web. |
+| Revisor de código | `claude-sonnet-5-5` | alto | Conformidad contra ficha, ADR y pruebas; ejecuta y lee pruebas. |
+| Crítico de código | `claude-opus-5-5` | alto | Juicio de diseño; corre solo al cierre del incremento. |
+| Escritor (Codex) | `gpt-6.1-sol` | medio (alto si la ficha lo pide) | Implementa una ficha con TDD; `gpt-6-luna` en tareas mecánicas si la ficha lo indica. |
+
+Para cambiar un modelo: línea `model:` (y `effort:`) del archivo en `.claude/agents/` (solo modelos de Anthropic); para el escritor, el comando `/programar` o el encabezado de la ficha. Toda modificación se refleja en esta tabla, que sostiene la declaración de herramientas.
 
 ### 3.3 Cuidado del cupo (plan Pro)
 
 - `/revisar` solo con la sección completa; admite filtro para un único revisor (`/revisar III.2 fuentes`).
 - Misiones acotadas: cada subagente recibe rutas exactas y no lee el informe entero.
 - Una sección por sesión; `/clear` al cambiar de sección.
-- Auditoría global (Gemini) y `src/` (OpenCode Go) no consumen la suscripción de Claude.
+- Auditoría global (Gemini) y el escritor de `src/` (Codex) no consumen la suscripción de Claude; la orquestación, las revisiones y la crítica de código sí.
+- El escritor corre con `--ignore-user-config` y sin gentle-ai: una ejecución por tarea, sin subagentes, con contexto nuevo. `/programar` informa tiempo, tokens y porcentaje de la cuota semanal de Codex por tarea.
 - Primer ajuste si el consumo es excesivo: ingeniero en Sonnet para el trabajo diario y Opus solo en `/decidir`.
 
 ---
@@ -246,6 +252,24 @@ Controla el informe **contra la evidencia**.
 - Está separado del ingeniero: quien propone no evalúa su propia propuesta.
 - **Devuelve** las debilidades ordenadas por gravedad y las preguntas probables del tribunal.
 
+### 5.8 Escritor de código (Codex, externo)
+
+- No es un subagente de Claude Code: es `codex exec`, lanzado por el ingeniero con `/programar`, una ejecución nueva por tarea (ADR-067).
+- Lee `src/AGENTS.md` (nativo) y la ficha de la tarea (`00-gestion/fichas/<incremento>/<tarea>.md`). Trabaja con TDD estricto y deja un commit en la rama del incremento con la evidencia en el mensaje.
+- Escribe solo en `src/` y `.git`; sin red, sin subagentes, sin MCP. Si la ficha no alcanza o contradice un ADR, se detiene y deja la pregunta.
+
+### 5.9 Revisor de código
+
+- **Pregunta:** ¿cumple? Ficha, ADR, `src/AGENTS.md`, reglas de dependencia, pruebas en verde, criterios de aceptación con prueba.
+- Corre en las tareas de riesgo y al cierre del incremento. Solo lectura; puede ejecutar `bun test` y `bun run verificar`.
+- **Devuelve** un veredicto (conforme · con observaciones · no conforme) y hallazgos en el formato común.
+
+### 5.10 Crítico de código
+
+- **Pregunta:** ¿se puede hacer mejor? Simplicidad, duplicación, acoplamiento, pruebas faltantes o sobrantes, tensiones con los ADR y preguntas probables del tribunal (ISO/IEC 25010, mantenibilidad).
+- Corre al cierre del incremento o a pedido del autor. Solo lectura. Está separado del escritor y del revisor: quien construye o controla no evalúa su propio diseño.
+- **Devuelve** hasta diez hallazgos priorizados, clasificados en mejora local (ficha de refactorización), cambia una decisión (`/decidir`) o pregunta de defensa.
+
 ---
 
 ## 6. Estados
@@ -329,6 +353,17 @@ Commit (autor)
 2. `/devolucion` la convierte en ítems de `pendientes.md` con la sección afectada.
 3. Las correcciones siguen el ciclo 7.2 dentro de la Ventana de Mejora.
 
+### 7.5 Ciclo de un incremento de código (ADR-067)
+
+```
+Planificar (ingeniero + autor) → ADR propuestos → aceptación (autor)
+Ficha de la tarea (ingeniero)                 → 00-gestion/fichas/<incremento>/
+/programar: escritor (Codex) → commit en la rama → pruebas y diff (ingeniero)
+   └─ correcciones: ficha nueva → escritor (nunca edición directa en src/)
+Cierre: /revisar-codigo incremento (revisor + crítico) → el autor elige mejoras
+Push, CI y merge (autor)
+```
+
 ---
 
 ## 8. Comandos
@@ -368,6 +403,13 @@ Archivos en `.claude/commands/`. Los marcados con ★ cambian un estado y los ej
 | `/comprobar-v1` | Clona el repositorio en una carpeta limpia con `git clone --branch v1`, sigue el README al pie de la letra sin suplir pasos y completa la grilla de la Guía de comprobación. No reemplaza la autocomprobación exigida (otra persona, otra máquina). |
 | `/devolucion <archivo>` | Convierte una devolución en ítems de `pendientes.md`. |
 | `/fuente <url o referencia>` | Da de alta una fuente en el registro y en `referencias.bib`, con las tres preguntas para revisión del autor. |
+
+**De código (ADR-067)**
+
+| Comando | Qué hace |
+|---------|----------|
+| `/programar <incremento>/<tarea>` | Verifica la ficha, lanza al escritor (Codex), revisa (pruebas y diff), pide correcciones con fichas nuevas y mide tiempo, tokens y cuota. |
+| `/revisar-codigo <tarea\|incremento>` | Tarea: `revisor-codigo`. Incremento: `revisor-codigo` y `critico-codigo` en paralelo; consolida y pide al autor qué mejoras aplicar. |
 
 **Uso típico**
 
@@ -448,7 +490,9 @@ Configurados en `.claude/settings.json`, para que no dependan de que el agente r
 |------|---------|
 | Git denegado | `commit`, `push`, `tag`, `add`, `reset`, `checkout`, `switch`, `restore`, `rebase`, `merge`, `stash`, `clean` |
 | Git permitido | `status`, `diff`, `log`, `show`, y `clone` (solo para `/comprobar-v1`, en carpeta temporal) |
-| Edición denegada | `05-entregas/` (lo escriben solo los scripts, creando archivos nuevos), `catedra/` (salvo las devoluciones, que carga el autor) |
+| Edición denegada | `05-entregas/` (lo escriben solo los scripts, creando archivos nuevos), `catedra/` (salvo las devoluciones, que carga el autor) y `src/` (lo escribe solo el escritor; ADR-067) |
+| Escritor externo permitido | `codex exec --ignore-user-config …` (ADR-067): commitea solo en la rama del incremento; su sandbox limita la escritura a `src/` y `.git`, sin red |
+| Pruebas permitidas | `bun test` y `bun run verificar`, para la revisión de cada tarea |
 
 **Límite técnico:** Claude Code no permite restringir por carpeta la escritura de un subagente particular. Que solo el redactor escriba en `informe/` y solo el ingeniero en `00-gestion/` queda como instrucción; el control efectivo es la revisión del diff por parte del autor antes de cada commit.
 
