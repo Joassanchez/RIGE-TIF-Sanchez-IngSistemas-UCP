@@ -10,11 +10,9 @@ agentlint. (2026). *agentlint* (Versión 2.3.0) [Software]. GitHub. https://gith
 
 Al-Shaer, E., y Hamed, H. (2004). Discovery of policy anomalies in distributed firewalls. En *IEEE INFOCOM 2004 — Twenty-Third Annual Joint Conference of the IEEE Computer and Communications Societies* (Vol. 4, pp. 2605–2616). IEEE. https://doi.org/10.1109/INFCOM.2004.1354680
 
+anomalyco. (s. f.). *Providers* [Documentación de software]. OpenCode. Recuperado el 1 de octubre de 2026, de https://opencode.ai/docs/providers/
+
 Amp. (s. f.). *How we think about permissions* [Documentación de software]. Recuperado el 1 de octubre de 2026, de https://ampcode.com/notes/permissions
-
-Anthropic. (2026a). *Introducing Claude Sonnet 5* [Comunicado]. https://www.anthropic.com/news/claude-sonnet-5
-
-Anthropic. (2026b). *Pricing* [Página web]. https://claude.com/pricing
 
 Anthropic. (2026c). *Claude Code* (Versión 2.1.286) [Software]. GitHub. https://github.com/anthropics/claude-code/releases/tag/v2.1.286
 
@@ -60,6 +58,8 @@ Highflame AI. (2026). *Ramparts* (Versión 0.8.7) [Software]. GitHub. https://gi
 
 icysaintdx. (2026). *OpenCode Config Manager (OCCM)* \[Software\]. GitHub. https://github.com/icysaintdx/OpenCode-Config-Manager
 
+GitHub. (s. f.). *GitHub Actions runner images* [Repositorio]. GitHub. Recuperado el 1 de octubre de 2026, de https://github.com/actions/runner-images
+
 GitHub, Inc. (s. f.). *GitHub Actions billing* [Documentación]. https://docs.github.com/en/billing/concepts/product-billing/github-actions
 
 International Organization for Standardization e International Electrotechnical Commission. (2023). *Systems and software engineering — Systems and software quality requirements and evaluation (SQuaRE) — Product quality model* (ISO/IEC 25010:2023). https://www.iso.org/standard/78176.html
@@ -94,6 +94,10 @@ Onufriichuk, A. (2026). *Claude Code Config Manager* (Versión 0.10.0) \[Extensi
 
 OpenAI. (2026). *Codex* (Versión 0.159.3) [Software]. GitHub. https://github.com/openai/codex/releases/tag/rust-v0.159.3
 
+OpenAI. (s. f.-a). *Pricing* [Página web]. ChatGPT Learn. Recuperado el 1 de octubre de 2026, de https://learn.chatgpt.com/docs/pricing
+
+OpenAI. (s. f.-b). *Pricing* [Página web]. OpenAI API. Recuperado el 1 de octubre de 2026, de https://developers.openai.com/api/docs/pricing
+
 openchamber. (2026). *openchamber* (commit fc012ae0029fa2ac8d1d52b4af37040fc536258e) [Software]. GitHub. https://github.com/openchamber/openchamber/tree/fc012ae0029fa2ac8d1d52b4af37040fc536258e/.opencode
 
 OpenCode. (2026). *OpenCode* (Versión 1.18.25) \[Software\]. GitHub.
@@ -117,6 +121,8 @@ Sayagh, M., Kerzazi, N., Adams, B., y Petrillo, F. (2020). Software configuratio
 Schwaber, K. y Sutherland, J. (2020). *La Guía de Scrum*. https://scrumguides.org
 
 Snyk. (2026). *snyk-agent-scan* (Versión 0.6.8) [Software]. PyPI. https://pypi.org/project/snyk-agent-scan/
+
+Sysarmy. (2026, 6 de marzo). *Resultados de la encuesta de sueldos 2026.1*. https://sysarmy.com/blog/posts/resultados-de-la-encuesta-de-sueldos-2026-1/
 
 Taiizor. (2026). *agents-md-cookbook: agents-md-lint y agents-md-migrate* (Versión 1.0.0) [Software]. GitHub. https://github.com/Taiizor/agents-md-cookbook
 

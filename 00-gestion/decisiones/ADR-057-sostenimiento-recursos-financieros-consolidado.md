@@ -1,6 +1,6 @@
 # ADR-057 — Sostenimiento y recursos financieros: código abierto bajo MIT sin explotación comercial, publicado tras la aprobación; gasto de API de la medición con tope de USD 50 y regla de recorte que preserva M1; asistente declarado sin costo atribuible
 
-- Estado: aceptado (28/09/2026)
+- Estado: aceptado (28/09/2026). **Eje T reemplazado por ADR-076 (01/10/2026)**; ejes L (precisado por ADR-075) y S vigentes
 - Fecha: 28/09/2026
 - Capítulos afectados: Cap. IV (IV.1, Tabla 10); Cap. X (X.3, X.4, X.5); Instrumento 34; diseño de la medición (piloto)
 - Origen: consolidación del 28/09/2026 (pendiente LI-01). No es una decisión nueva: reúne ADR-025 (retroactivo) y ADR-048 (28/09/2026), ambos aceptados, con la precisión de acceso al repositorio de la revisión del Cap. X (R-02, AD-28).

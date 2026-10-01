@@ -101,3 +101,11 @@ El informe explica el cambio de la línea de base **solo** por la entrevista con
 | II.2 | «Población, muestra y perfiles»: convocatoria de desarrolladores |
 | II.5, amenaza A3 | «Escasez de usuarios de OpenCode disponibles para el reclutamiento» |
 | II.6 | «La muestra de la medición experimental será pequeña y autoseleccionada» |
+
+## 10. Valorización por tokens y modelos de la medición (ADR-076, 01/10/2026)
+
+| Dónde | Cambio |
+|---|---|
+| Cap. I (I.3.1 a I.3.4) | Valorizar el consumo del procedimiento delegado por tokens: tokens por caso y por modelo, con el equivalente a precio de lista de la API de OpenAI como orden de magnitud informativo (corrección del autor sobre el Cap. X). Reemplaza la falta de valoración monetaria de D-18 solo en lo que respecta al consumo |
+| Cap. I y II, Anexo I del AE1 | Modelos de la medición: `gpt-6.1-sol` (principal), `gpt-6-astra` y `gpt-6-luna` sobre ChatGPT Plus, en lugar de Opus 5.5, Sonnet 5 y Haiku 4.5. El criterio de 8 de 12 se reenuncia sobre `gpt-6.1-sol` |
+| Diseño de la medición (`01-relevamiento/linea-base/DISENO-medicion-agentes.md`) | Modelos, autenticación por suscripción en el contenedor sin exponer credenciales ni la hoja de respuestas, y registro de tokens desde las sesiones; sin clave exclusiva ni conciliación por consola |

@@ -25,6 +25,75 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
 
 ## Entradas de la AE2
 
+### Entrada · Jueves 1 de octubre de 2026 (tarde) — Corrección de los Capítulos IV, V y X: modelo de negocio y competidores reales, planificación sintetizada y recursos reestructurados (ADR-075 y ADR-076)
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **Cap. IV (ADR-075, aceptado):**
+     - el diferencial de RIGE pasa a la combinación de la decisión de permiso con su regla determinante y la procedencia por declaración;
+     - RF-02 suma el CA-8, que verifica el archivo y la línea de la regla determinante, y un nuevo motivo de prioridad. Es la decisión de alcance que cambia por el lienzo;
+     - el descarte de la inversión y de otros cinco modelos de sostenimiento se deriva de las fuerzas;
+     - el aporte a OpenCode queda como salida estratégica;
+     - el bloque «Canales» pasa a repositorio privado;
+     - la Tabla 11 se reconstruyó;
+     - la nómina de competidores es real: 33 herramientas (A.I.4);
+     - la Figura 2 se regenera con un script.
+   - **Cap. V:**
+     - la metodología se declara (iterativa e incremental, con elementos de Scrum y de Crystal Clear);
+     - la línea de base queda como preparación y una ejecución de uno o dos días, con el resultado a más tardar el 16/10;
+     - V.1 se sintetizó;
+     - las Tablas 15 y 16 se rehicieron;
+     - V.4 queda en cinco bloques, con la Tabla 18 por incrementos;
+     - la Figura 3 se rediseñó.
+   - **Cap. X (ADR-076, aceptado):**
+     - la medición con agentes se hace sobre ChatGPT Plus (USD 20 mensuales), con `gpt-6.1-sol` como modelo principal y `gpt-6-astra` y `gpt-6-luna` como secundarios;
+     - el consumo se mide en tokens, y su equivalente a precio de lista es solo informativo;
+     - las tarifas quedan congeladas al 01/10/2026 (A.I.10 y archivo versionado);
+     - X.3 se ordena por las partidas de la plantilla;
+     - el costo de hora pasa a la mediana junior de SysArmy 2026.01 ($8.876/h);
+     - el capítulo se reduce a unas 2200 palabras, con el patrón criterio, tabla e implicancia;
+     - X.4 suma Codex, Trello y matplotlib.
+   - El canal de integración continua pasa a ejecutarse en `ubuntu-26.04`.
+2. **Alternativas evaluadas y criterio de descarte (recortes).**
+   - **Diferencial en la explicación sola:** descartado, porque Amp y Codex ya evalúan decisiones en sus herramientas.
+   - **Combinación sin criterio de aceptación:** descartada, porque dejaba el diferencial sin verificar.
+   - **Inversión, núcleo abierto, servicio alojado, licencia dual y soporte pago:** excluidos por las fuerzas del IV.3 (Anexo III, D-31).
+   - **Propuesta de Codex (incidencia n.º 26255) como competidor:** excluida, porque no está implementada. Queda solo como señal de demanda.
+   - **Categorías genéricas sin herramienta con nombre:** excluidas del A.I.4.
+   - **Tope de API de USD 50 y estimación de USD 75:** reemplazados por la suscripción.
+   - **OpenCode Go y Claude Pro como proveedor de la medición:** descartados (Anexo III, D-48).
+   - **Salario promedio del sector (OPSSI):** descartado porque mezcla seniorities.
+   - **Honorarios de colegios profesionales:** descartados porque son tarifas de otras provincias y no salarios (D-60).
+   - **Retirado del informe por decisión mía:**
+     - gentle-ai, que no aportó y solo genera confusión;
+     - pandoc;
+     - el detalle de internet y del lugar de trabajo;
+     - la explicación técnica de la virtualización.
+   - **Fuera de esta jornada:** las correcciones de los Caps. I y II, anotadas en la Ventana del AE1 (§8 a §10).
+3. **Evidencia.**
+   - **Nómina de competidores** (`00-gestion/fichas-redaccion/20261001-cap4-nomina-competidores.md`). Verifiqué en la documentación oficial:
+     - `amp permissions test`, que informa la acción, la regla coincidente y el alcance;
+     - `codex execpolicy check`.
+   - **Precios de OpenAI y de ChatGPT Plus**, verificados en las páginas oficiales el 01/10/2026 (`01-relevamiento/linea-base/tarifas-congeladas-20261001.json`).
+   - **Conexión de OpenCode con ChatGPT Plus**, desde la versión 1.1.11 (documentación de proveedores).
+   - **Ejecutor `ubuntu-26.04`**, disponible desde el 17/09/2026; `ubuntu-latest` sigue en 24.04 (anuncios de `actions/runner-images`).
+   - **SysArmy 2026.01:** 4939 respuestas analizadas; la mediana junior está pendiente de mi verificación directa.
+   - **Fichas:** `20261001-cap4.md`, `20261001-cap5.md` y `20261001-cap10.md`.
+4. **Aporte personal.**
+   - Definí las correcciones de los cuatro capítulos y discutí cada propuesta.
+   - Elegí la suscripción y la familia de modelos, confirmé el perfil junior para el costo de hora y decidí congelar las tarifas para que cualquier medición posterior use los mismos valores.
+   - Fijé cómo explicar la reformulación de la línea de base (la entrevista con la referente y la reorientación del proyecto).
+   - Artefactos: ADR-075, ADR-076 y Anexo III (D-31, D-36, D-41, D-48, D-49, D-59 y D-60).
+5. **Desacuerdo y resolución.** Rechacé la propuesta del ingeniero de nombrar otra causa para la reformulación de la línea de base; el texto se limita a la entrevista y a la reorientación. Sobre gentle-ai, el ingeniero recomendó conservar la fila de `src/README.md` §8, porque declara el código ya escrito; la fila se conserva.
+6. **Herramientas auxiliares.** Asistencia conforme al criterio general declarado, con este alcance:
+   - **Claude Code (`claude-opus-5-5`):** análisis de las correcciones, propuesta de ADR, fichas de redacción, verificación de fuentes clave, scripts de las Figuras 2 y 3 y el cambio de una línea en `ci.yml`.
+   - **Codex (`gpt-6.1-sol`, ChatGPT Plus):**
+     - dos búsquedas web de solo lectura (competidores; costo de hora, suscripción y ejecutores);
+     - la redacción de las correcciones sobre las fichas, revisada contra el diff;
+     - consumo aproximado de la ventana de cinco horas: del 14 % al 49 %.
+   - Las decisiones y la aprobación del texto son mías.
+
 ### Entrada · Miércoles 30 de septiembre (noche) y jueves 1 de octubre de 2026 — Cierre del incremento 0 del prototipo: T0-11a a T0-13, revisión del incremento y unión con `main` (ADR-069 y ADR-070)
 
 <!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->

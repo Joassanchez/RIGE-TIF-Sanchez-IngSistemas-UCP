@@ -1,0 +1,37 @@
+{
+  "descripcion": "Tarifas de referencia congeladas para valorizar el consumo de la medición con agentes (línea de base, medición final y Cap. I). Se aplican estas tarifas aunque el proveedor las cambie después. ADR-076; Anexo I, A.I.10.",
+  "fecha_congelamiento": "2026-10-01",
+  "moneda": "USD",
+  "unidad": "por millón de tokens",
+  "fuente": {
+    "api": "OpenAI. (s. f.). Pricing. OpenAI API. https://developers.openai.com/api/docs/pricing (nivel Standard, consultado y verificado el 01/10/2026)",
+    "suscripcion": "OpenAI. (s. f.). Pricing. ChatGPT Learn. https://learn.chatgpt.com/docs/pricing (consultado y verificado el 01/10/2026)"
+  },
+  "umbral_contexto_largo_tokens_entrada_por_solicitud": 272000,
+  "regla": "Por solicitud: si los tokens de entrada (sin caché más en caché) superan el umbral, se aplica la tarifa de contexto largo; si no, la de contexto corto. Costo = (entrada_sin_cache * entrada + entrada_en_cache * cache + salida * salida) / 1000000. El costo de un caso es la suma de sus solicitudes. Es un equivalente informativo: la medición se paga con la suscripción.",
+  "modelos": [
+    {
+      "modelo": "gpt-6.1-sol",
+      "rol": "principal",
+      "contexto_corto": { "entrada": 2.00, "entrada_en_cache": 0.10, "salida": 10.00 },
+      "contexto_largo": { "entrada": 4.00, "entrada_en_cache": 0.20, "salida": 15.00 },
+      "mensajes_estimados_plus_por_ventana_5h": "15-160"
+    },
+    {
+      "modelo": "gpt-6-astra",
+      "rol": "secundario, mayor capacidad",
+      "contexto_corto": { "entrada": 10.00, "entrada_en_cache": 1.00, "salida": 50.00 },
+      "contexto_largo": { "entrada": 20.00, "entrada_en_cache": 2.00, "salida": 75.00 },
+      "mensajes_estimados_plus_por_ventana_5h": "5-45"
+    },
+    {
+      "modelo": "gpt-6-luna",
+      "rol": "secundario, menor capacidad",
+      "contexto_corto": { "entrada": 0.10, "entrada_en_cache": 0.01, "salida": 0.50 },
+      "contexto_largo": { "entrada": 0.20, "entrada_en_cache": 0.02, "salida": 0.75 },
+      "mensajes_estimados_plus_por_ventana_5h": "350-3000"
+    }
+  ],
+  "suscripcion": { "plan": "ChatGPT Plus", "precio_mensual": 20.00, "incluye": "Codex en la web, la CLI y la extensión del editor; las aplicaciones de terceros comparten el cupo del plan" },
+  "nota_limites": "Los mensajes por ventana de cinco horas son estimaciones del proveedor, no límites garantizados."
+}

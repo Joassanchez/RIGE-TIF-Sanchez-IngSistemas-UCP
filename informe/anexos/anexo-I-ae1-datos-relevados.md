@@ -242,3 +242,21 @@ La composición de las figuras que representan los resultados de la medición qu
 **Figura 3 — Tiempo de resolución por condición.** Diagrama de caja. Eje horizontal: condición (C-1 a C-4). Eje vertical: tiempo de resolución en segundos. Cada caja representa mediana, cuartiles y valores atípicos. Línea horizontal de referencia en el límite de observación. Bajo cada caja, el recuento de observaciones censuradas y el denominador de la categoría. Las observaciones censuradas se incluyen en el cálculo con el valor del límite, criterio que se declara en el pie.
 
 **Figura 4 — Proporción de respuestas erróneas por condición.** Gráfico de barras. Eje horizontal: condición (C-1 a C-4). Eje vertical: proporción de respuestas erróneas, en porcentaje, de 0 a 100. Barra de error correspondiente al intervalo de confianza del 95 % calculado por el método de Clopper-Pearson. Sobre cada barra, el denominador de la categoría.
+
+## A.I.10 · Tarifas de referencia congeladas para la valorización del consumo
+
+Las tarifas quedan fijadas al 01/10/2026 y se aplican a toda valorización del consumo de la medición con agentes, incluida la línea de base, la medición final y el Capítulo I, aunque el proveedor las modifique o retire un modelo, de modo que cualquier repetición use los mismos valores. La medición se paga con la suscripción ChatGPT Plus, de USD 20 mensuales, y la valorización constituye un equivalente informativo.
+
+| Modelo | Rol | Contexto corto (entrada / entrada en caché / salida) | Contexto largo (entrada / entrada en caché / salida) | Mensajes estimados por ventana de cinco horas con ChatGPT Plus |
+|---|---|---|---|---|
+| `gpt-6.1-sol` | Principal | 2,00 / 0,10 / 10,00 | 4,00 / 0,20 / 15,00 | 15 a 160 |
+| `gpt-6-astra` | Secundario, mayor capacidad | 10,00 / 1,00 / 50,00 | 20,00 / 2,00 / 75,00 | 5 a 45 |
+| `gpt-6-luna` | Secundario, menor capacidad | 0,10 / 0,01 / 0,50 | 0,20 / 0,02 / 0,75 | 350 a 3.000 |
+
+*Tabla A.I.10. Tarifas de referencia congeladas al 01/10/2026, en USD por millón de tokens, nivel Standard. Fuente: OpenAI (s. f.-a, s. f.-b), consultado el 01/10/2026.*
+
+Por solicitud, se aplica la tarifa de contexto largo si la entrada total (sin caché más en caché) supera 272 000 tokens y la de contexto corto en caso contrario; el costo = (entrada sin caché × tarifa de entrada + entrada en caché × tarifa de caché + salida × tarifa de salida) / 1 000 000, y el costo de un caso es la suma de sus solicitudes.
+
+Los mensajes por ventana son estimaciones del proveedor y no límites garantizados.
+
+Los datos constan también en el archivo versionado del repositorio `01-relevamiento/linea-base/tarifas-congeladas-20261001.json` y un cambio posterior de tarifas no los modifica.

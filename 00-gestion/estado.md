@@ -30,11 +30,11 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | borrador | AE2 | 01/10/2026 |
 | V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 01/10/2026 |
 | V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 01/10/2026 |
-| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 29/09/2026 |
-| X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 28/09/2026 |
-| X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 28/09/2026 |
-| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | revisada | AE2 | 29/09/2026 |
-| X.5 | `informe/cap-10/X.5-otros-recursos.md` | revisada | AE2 | 28/09/2026 |
+| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | borrador | AE2 | 01/10/2026 |
+| X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | borrador | AE2 | 01/10/2026 |
+| X.3 | `informe/cap-10/X.3-recursos-financieros.md` | borrador | AE2 | 01/10/2026 |
+| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | borrador | AE2 | 01/10/2026 |
+| X.5 | `informe/cap-10/X.5-otros-recursos.md` | borrador | AE2 | 01/10/2026 |
 
 ## Correcciones pendientes del AE1
 
@@ -57,7 +57,7 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 |---|---|
 | 1 · Decisiones de arquitectura | 16 registros aceptados en la tabla (ADR-070, guardas de arquitectura, aceptado el 01/10/2026) (incluidos ADR-061, modelo de datos, y ADR-062, distribución, web y dependencias, aceptados el 29/09/2026; ADR-062 revisado el mismo día: TypeScript 7.0.2). ADR-063 por discutir (AR-04). Método: ADR-065, reescrito el 29/09/2026 (OpenCode con gentle-ai 3.7 en modo ODD; documento por incremento propuesto por el agente y revisado hasta la conformidad) |
 | 2 · Modelo de datos | Completa por remisión a ADR-061 (29/09/2026) |
-| 3 · Canal de integración continua | Completa por remisión a ADR-062; `.github/workflows/ci.yml` (matriz Ubuntu/Windows). Primera corrida verde el 30/09/2026 22:26 (corrida `36801042650`, commit `11c852e`); verde en `main` sobre `b1432eb` (01/10/2026) |
+| 3 · Canal de integración continua | Completa por remisión a ADR-062; `.github/workflows/ci.yml` (matriz Ubuntu/Windows). Primera corrida verde el 30/09/2026 22:26 (corrida `36801042650`, commit `11c852e`); verde en `main` sobre `b1432eb` (01/10/2026). Matriz cambiada a `ubuntu-26.04` y `windows-latest` el 01/10/2026 (ADR-076, búsqueda de ejecutores): falta la primera corrida sobre 26.04 |
 | Prototipo v1 | **Incremento 0 cerrado y unido con `main` el 01/10/2026** (`b1432eb`): instalación congelada, `bun run esquema`, `bun run servir` en `127.0.0.1:4747`, CLI con contrato de salida, RNF-03 CA-1/CA-2 y RNF-09 CA-1 a CA-3; 324 pruebas; README §1 y §3 a §8 (falta §2, caso vertical). T0-01 a T0-09 con OpenCode y gentle-ai (ADR-065); T0-10 en adelante con ADR-067 (fichas y medición en `00-gestion/fichas/inc0/`). Siguiente: incremento 1 (núcleo) |
 
 ## Medición de la línea base (ADR-053)
