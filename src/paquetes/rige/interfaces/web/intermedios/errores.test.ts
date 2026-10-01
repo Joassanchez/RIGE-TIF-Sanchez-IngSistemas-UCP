@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { errorAlmacenSinEsquema } from "../../../aplicacion/errores";
+import { errorAlmacenSinEsquema, errorConfiguracionInvalida, errorPuertoOcupado } from "../../../aplicacion/errores";
 import { conErrores, paginaErrorUso } from "./errores";
 
 describe("W-3", () => {
@@ -21,5 +21,16 @@ describe("W-3", () => {
     expect(await uso.text()).toContain("bun run esquema. &lt;script&gt;&amp;");
     const valida = new Response("respuesta", { status: 201 });
     expect(conErrores(() => valida)(new Request("http://127.0.0.1/"))).toBe(valida);
+  });
+});
+
+describe("W-9", () => {
+  test("asigna el estado HTTP segun el codigo de error de uso", () => {
+    const casos = [
+      [errorAlmacenSinEsquema, 503],
+      [errorConfiguracionInvalida("RIGE_PUERTO", "valor invalido"), 500],
+      [errorPuertoOcupado(12345), 500],
+    ] as const;
+    for (const [error, estado] of casos) expect(paginaErrorUso(error).status).toBe(estado);
   });
 });

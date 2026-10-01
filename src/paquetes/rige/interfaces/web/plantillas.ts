@@ -1,10 +1,8 @@
-export class HtmlSeguro {
+class HtmlSeguro {
   constructor(readonly texto: string) {}
 }
 
-export function sinEscapar(texto: string): HtmlSeguro {
-  return new HtmlSeguro(texto);
-}
+export type { HtmlSeguro };
 
 function presentar(valor: unknown): string {
   if (valor instanceof HtmlSeguro) return valor.texto;

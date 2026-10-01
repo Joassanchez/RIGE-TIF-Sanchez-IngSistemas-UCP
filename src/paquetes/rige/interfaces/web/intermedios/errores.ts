@@ -1,9 +1,16 @@
 import type { ErrorUso } from "../../../aplicacion/errores";
 import { html } from "../plantillas";
+import { responderHtml } from "../respuesta";
+
+const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
+  "almacen-sin-esquema": 503,
+  "configuracion-invalida": 500,
+  "puerto-ocupado": 500,
+};
 
 export function paginaErrorUso(error: ErrorUso): Response {
   const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Error de RIGE</title></head><body><p>${error.mensaje}</p></body></html>`;
-  return new Response(pagina.texto, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } });
+  return responderHtml(estadoPorCodigo[error.codigo], pagina);
 }
 
 export function conErrores(manejador: (solicitud: Request) => Response): (solicitud: Request) => Response {
@@ -12,7 +19,7 @@ export function conErrores(manejador: (solicitud: Request) => Response): (solici
       return manejador(solicitud);
     } catch {
       const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Error de RIGE</title></head><body><p>Falla interna de RIGE.</p></body></html>`;
-      return new Response(pagina.texto, { status: 500, headers: { "Content-Type": "text/html; charset=utf-8" } });
+      return responderHtml(500, pagina);
     }
   };
 }

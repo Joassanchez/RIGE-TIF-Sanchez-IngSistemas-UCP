@@ -1,5 +1,6 @@
 import type { RespuestaEstado } from "../../../aplicacion/respuestas/estado";
 import { html } from "../plantillas";
+import { responderHtml } from "../respuesta";
 
 export function paginaInicio(respuesta: RespuestaEstado): Response {
   const pagina = html`<!doctype html>
@@ -9,5 +10,5 @@ export function paginaInicio(respuesta: RespuestaEstado): Response {
 <p>Almacén: ${respuesta.almacen.ruta}</p>
 <p>Esquema del almacén: ${respuesta.almacen.versionEsquema}</p></body>
 </html>`;
-  return new Response(pagina.texto, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
+  return responderHtml(200, pagina);
 }

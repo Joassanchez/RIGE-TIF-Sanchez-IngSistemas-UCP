@@ -4,6 +4,7 @@ import { conErrores, paginaErrorUso } from "./intermedios/errores";
 import { conVerificacionDeOrigen } from "./intermedios/origen";
 import { paginaInicio } from "./paginas/inicio";
 import { html } from "./plantillas";
+import { responderHtml } from "./respuesta";
 
 export type ConsultarEstado = () => ReturnType<typeof consultarEstado>;
 
@@ -11,7 +12,7 @@ export function crearManejador(puerto: number, consultar: ConsultarEstado): (sol
   const enrutar = (solicitud: Request): Response => {
     if (new URL(solicitud.url).pathname !== "/") {
       const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>RIGE</title></head><body><p>Página no encontrada.</p></body></html>`;
-      return new Response(pagina.texto, { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
+      return responderHtml(404, pagina);
     }
     const resultado = consultar();
     return resultado.exito ? paginaInicio(resultado.valor) : paginaErrorUso(resultado.error);
