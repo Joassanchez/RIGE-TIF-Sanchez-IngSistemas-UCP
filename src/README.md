@@ -15,106 +15,128 @@
 
 ## 3. Requisitos previos
 
-- Bun **1.3.14**, sin actualizar a 1.4; `bun --version` debe informar `1.3.14`.
-- TypeScript **7.0.2** y `@types/bun` **1.3.14**, dependencias de desarrollo exactas instaladas mediante el lock.
-- SQLite integrado en Bun; no se requiere servidor externo. Su comprobación funcional corresponde a T0-09.
+Se requiere Git y uno de estos sistemas: Ubuntu (plataforma de referencia) o Windows 11.
 
-Estado actual: esquema y preparación de T0-09 probados localmente; CLI y servidor todavía pendientes. La tarea no está cerrada porque la verificación completa sigue sin el arranque de T0-11a.
+Se instala Bun **1.3.14** exacto:
+
+**Ubuntu (Bash):**
+
+```bash
+curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.14"
+```
+
+**Windows 11 (PowerShell):**
+
+```powershell
+iex "& {$(irm https://bun.sh/install.ps1)} -Version 1.3.14"
+```
+
+Se abre una terminal nueva para disponer de Bun en `PATH` y se comprueba la versión:
+
+```bash
+bun --version
+```
+
+La salida esperada es `1.3.14`. TypeScript **7.0.2** y `@types/bun` **1.3.14** se instalan desde el lock en el paso siguiente, no a mano. SQLite viene integrado en Bun; no se requiere servidor externo ni conexiones de red durante la ejecución de RIGE.
 
 ## 4. Instalación
 
-Ejecutar desde `src/`, con Bun 1.3.14 en `PATH`. El agente usa siempre ubicaciones de usuario y almacén temporales. Los subprocesos del arnés construyen su entorno desde cero y solo heredan `PATH` y `SystemRoot`.
-
-**Windows (PowerShell):** preparar aislamiento, instalar, verificar, restaurar el entorno y limpiar temporales.
-
-```powershell
-$original = @{}
-Get-ChildItem Env: | ForEach-Object { $original[$_.Name] = $_.Value }
-$padre = "C:/Users/Joa/AppData/Local/Temp/opencode"
-if (-not (Test-Path -LiteralPath $padre -PathType Container)) { throw "Falta el directorio temporal" }
-$temporal = Join-Path $padre ([guid]::NewGuid().ToString())
-New-Item -ItemType Directory -Path $temporal | Out-Null
-try {
-    Get-ChildItem Env: | ForEach-Object { Remove-Item -LiteralPath "Env:$($_.Name)" }
-    $env:PATH = "C:/Users/Joa/.bun/bin;" + $original["PATH"]
-    $env:SystemRoot = $original["SystemRoot"]
-    foreach ($nombre in @("HOME", "USERPROFILE", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME", "LOCALAPPDATA", "APPDATA", "RIGE_ALMACEN", "TEMP", "TMP")) {
-        Set-Item -LiteralPath "Env:$nombre" -Value $temporal
-    }
-    bun --version
-    bun install --frozen-lockfile
-    bun test ./pruebas/arquitectura/entorno.test.ts
-    bun test
-    bun run verificar  # T0-04: salida 1 por arranque aun inexistente; no es PASS completo
-} finally {
-    Get-ChildItem Env: | ForEach-Object { Remove-Item -LiteralPath "Env:$($_.Name)" }
-    foreach ($nombre in $original.Keys) { Set-Item -LiteralPath "Env:$nombre" -Value $original[$nombre] }
-    Remove-Item -LiteralPath $temporal -Recurse -Force
-}
-```
-
-**Ubuntu (Bash):** mismos comandos con entorno limpio. No se afirma una corrida Ubuntu en T0-04.
+Se clona el repositorio, se entra en `src/` y se instalan las dependencias versionadas. Los comandos son iguales en Bash y PowerShell:
 
 ```bash
-temporal=$(mktemp -d)
-trap 'rm -rf "$temporal"' EXIT
-env -i PATH="$PATH" HOME="$temporal" USERPROFILE="$temporal" \
-  XDG_CONFIG_HOME="$temporal" XDG_DATA_HOME="$temporal" XDG_STATE_HOME="$temporal" \
-  XDG_CACHE_HOME="$temporal" LOCALAPPDATA="$temporal" APPDATA="$temporal" \
-  RIGE_ALMACEN="$temporal" TMPDIR="$temporal" bash -c '
-    bun --version
-    bun install --frozen-lockfile
-    bun test ./pruebas/arquitectura/entorno.test.ts
-    bun test
-    bun run verificar
-  '
+git clone https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP.git
+cd RIGE-TIF-Sanchez-IngSistemas-UCP/src
+bun install --frozen-lockfile
 ```
 
-**Desarrollo del lock:** la primera generación usa `bun install`, bajo el mismo aislamiento; luego se usa `bun install --frozen-lockfile`. Para comprobar el compilador: `bun run tsc --version` (esperado: `Version 7.0.2`). No se agregan dependencias ni se actualiza el runtime durante la verificación.
+La instalación termina con código 0. Todos los comandos siguientes se ejecutan desde `src/`.
 
 ## 5. Configuración
 
-`rige.env.example` contiene solo `RIGE_PUERTO=4747` y `RIGE_ALMACEN=`. La segunda variable designa un **directorio**, no una base; vacía seleccionará la ubicación normal del usuario cuando T0-10 implemente el lector. El agente siempre la sobrescribe con un temporal. `rige.env` queda ignorado y no es un archivo `.env`; Bun deshabilita la carga automática mediante `env = false`.
+La copia de `rige.env.example` a `rige.env` es opcional. Sin `rige.env` se usan los valores por defecto, salvo las variables definidas en el entorno.
 
-La lectura explícita y la configuración del producto siguen pendientes de T0-10. No se necesita crear `rige.env` para verificar el arnés. La guía completa se termina en T0-13.
+**Ubuntu (Bash):**
+
+```bash
+cp rige.env.example rige.env
+```
+
+**Windows 11 (PowerShell):**
+
+```powershell
+Copy-Item rige.env.example rige.env
+```
+
+La copia termina sin errores. Se edita `rige.env` si se necesitan valores locales:
+
+| Variable | Significado | Valor por defecto |
+|---|---|---|
+| `RIGE_PUERTO` | Entero de 1 a 65535; puerto del servidor local | `4747` |
+| `RIGE_ALMACEN` | **Directorio** del almacén, no archivo de la base; vacío selecciona la ubicación por defecto | Windows: `%LOCALAPPDATA%\rige`. Ubuntu: `$XDG_DATA_HOME/rige` si está definido, o `~/.local/share/rige` |
+
+La prelación es: variable de entorno → `rige.env` → valor por defecto. El archivo solo admite esas dos claves; cualquier otra produce `configuracion-invalida`. No es un archivo `.env`: RIGE lo lee explícitamente y Bun no lo carga solo.
 
 ## 6. Ejecución y verificación
 
-**T0-09 sin cerrar:** bajo el aislamiento de §4, ejecutar `bun test ./paquetes/rige/adaptadores/almacen-sqlite/esquema.test.ts ./paquetes/rige/aplicacion/casos-uso/preparar-almacen.test.ts ./pruebas/arquitectura/dependencias.test.ts`, luego `bun test` y `bun run verificar`. Las unitarias usan SQLite real en temporales y dobles de puertos en memoria; no escriben Resoluciones desde el producto. `via` solo exige texto obligatorio y no vacío: la validación contra el catálogo del adaptador queda para el incremento de escritura. La declaración `guion.d.ts` autorizada solo exporta `string` para SQL; `esquema.ts` la referencia también para el proyecto de pruebas. Para comprobar su inclusión sin emitir archivos: `bun run tsc --noEmit --listFilesOnly -p ./paquetes/rige/tsconfig.json`. La guarda permite únicamente SQL real bajo `esquemas/almacen/` desde el adaptador de almacén, incluidos aliases normalizados; no habilita otros destinos ni capas. La suite completa pasa y los tipos son correctos, pero `bun run verificar` aún sale 1 por el arranque pendiente T0-11a. El autor exige PASS completo: no hay commit ni cierre de T0-09 hasta resolver ese conflicto; no se omite el build.
+**1. Crear o verificar el esquema:**
 
-**T0-08:** bajo el aislamiento de §4, ejecutar `bun test ./pruebas/arquitectura/repositorio.test.ts`, luego `bun test` y `bun run verificar`. La guarda inspecciona solo los nombres de las entradas en `pruebas/escenarios/` y sus ancestros hasta la raíz explícita del repositorio, inclusive; no lee configuraciones ni recorre fixtures descendientes o carpetas ajenas. Los controles adversarios se crean exclusivamente en temporales del sistema y se eliminan incluso ante fallos. Las rutas inválidas y los enlaces de directorio fallan visiblemente antes de recorrer destinos externos.
+```bash
+bun run esquema
+```
 
-**T0-07:** bajo el mismo aislamiento, ejecutar `bun test ./pruebas/arquitectura/red.test.ts`, luego `bun test` y `bun run verificar`. Los imports de clientes se controlan en producto y pruebas; únicamente la ruta futura `pruebas/utilidades/cliente-http-local.ts` admite `node:http`. No se habilitan clientes por carpeta ni por extensión de prueba, y no se implementa todavía el cliente. Los globals de producto se inspeccionan sin ejecutar fuentes; RNF-05 CA-1/CA-2 siguen pendientes del análisis funcional completo.
+La salida contiene una línea JSON con `esquema: 1`, `versionRige: "0.1.0"`, `almacen.ruta` (ruta del archivo de la base) y `almacen.versionEsquema: 1`. El código de salida es 0. Repetir el comando no cambia el esquema ni los datos.
 
-**T0-06:** bajo el aislamiento de §4, ejecutar `bun test ./pruebas/arquitectura/identificaciones.test.ts ./pruebas/aceptacion/RNF-03.test.ts`, luego `bun test` y `bun run verificar`. CA-2 inspecciona la fuente original del núcleo, incluidos comentarios, cadenas y unitarias, sin distinguir mayúsculas; CA-3 sigue fuera de este incremento.
+**2. Arrancar el servidor:**
 
-**T0-05:** con el aislamiento de §4 ya preparado, ejecutar `bun test ./pruebas/arquitectura/dependencias.test.ts ./pruebas/aceptacion/RNF-03.test.ts`, luego `bun test` y `bun run verificar`. Arquitectura y RNF-03 CA-1 importan directamente el mismo análisis; las guardas no lanzan subprocesos ni ejecutan sus fuentes sintéticas. Se controlan dependencias explícitas de valor y tipo, aliases y manifiestos. Las formas calculadas no soportadas fallan visiblemente; no es un sandbox ni una prueba del destino usado por mkdirSync. Las unitarias de paquetes se verifican desde el tsconfig raíz con tipos Bun; el núcleo de producto mantiene types=[] y sin DOM.
+```bash
+bun run servir
+```
 
-La corrección de T0-05 conserva `Bun.Transpiler.scanImports` y lo complementa con el scanner oficial en proceso de TypeScript 7.0.2, exclusivamente en las pruebas. No usa el parser AST nativo, que requiere un subproceso; el análisis no se presenta como AST completo y rechaza visiblemente contextos ambiguos de regex/división. La evidencia inicial de `5107696` se conserva como entrega rechazada por la verificación independiente; las regresiones de comillas y funciones flecha quedan permanentes.
+Con el puerto por defecto, se escribe `{"esquema":1,"direccion":"http://127.0.0.1:4747"}` y el proceso queda escuchando. En el navegador, `http://127.0.0.1:4747` muestra «RIGE 0.1.0», la ruta del almacén y la versión de su esquema. Si se cambia `RIGE_PUERTO`, se usa el puerto configurado en la dirección. Se detiene con Ctrl+C antes de continuar.
 
-En T0-04, las pruebas verifican aislamiento, bloqueo de `fetch`, subprocesos y tsconfigs mediante fuentes temporales con errores intencionales y controles válidos. Solo la precarga modifica `process.env`; las pruebas usan objetos de entorno y eliminan sus temporales.
+**3. Verificar tipos, construcción y pruebas:**
 
-`bun run verificar` sigue las referencias raíz para comprobar cada paquete con fuentes, además de las pruebas. Ejecuta `tsc --noEmit` con configuraciones derivadas temporales, sin exigir artefactos de referencias ni generar `tsbuildinfo`. Informa los paquetes aún vacíos como pendientes. Finalmente intenta `bun build ./paquetes/rige/arranque/rige.ts --target=bun`, sin archivo de salida: hoy falla porque ese arranque pertenece a T0-11a. **El resultado parcial no acredita la construcción completa ni el CI.**
+```bash
+bun run verificar
+bun test
+```
 
-`bun run esquema`, `bun run servir` y `bun run rige -- <subcomando>` apuntan al arranque futuro; no son operativos ni se ejecutan en T0-04. La dirección prevista es `http://127.0.0.1:4747`; no hay servidor implementado. Los pasos finales se completarán en sus tareas, no mediante stubs.
+`verificar` comprueba los tipos y la construcción y termina con código 0. Todas las pruebas pasan; `bun test` termina con código 0.
+
+Si no se ejecuta previamente `bun run esquema`, `servir` termina con `almacen-sin-esquema` y código 1. Si el puerto está ocupado, termina con `puerto-ocupado` y código 1; se cambia `RIGE_PUERTO` por un puerto disponible.
+
+La forma general es `bun run rige -- <subcomando>`. Para invocar directamente la CLI con el subcomando `esquema`:
+
+```bash
+bun --silent run rige -- esquema
+```
+
+Produce el mismo JSON de estado que `bun run esquema`. Sin `--silent`, `bun run` agrega su propia línea `$ bun …` al canal de error (comprobado el 30/09/2026).
+
+| Código de salida | Situación | Canal de salida | Canal de error |
+|---|---|---|---|
+| 0 | Respuesta válida | JSON de respuesta | Vacío |
+| 1 | Error de uso | Vacío | JSON de error: `almacen-sin-esquema`, `configuracion-invalida` o `puerto-ocupado` |
+| 2 | Argumentos inválidos | Vacío | JSON de error: `argumentos-invalidos` |
+| 70 | Falla interna | Vacío | JSON de error: `interno`; `--depurar` agrega el stack, sin logs a disco |
+
+La forma del error es `{"esquema":1,"error":{"codigo":"…","mensaje":"…"}}`. La tabla describe los canales de la CLI; la línea propia de `bun run` se evita con `--silent`.
+
+Correspondencia prevista: la etiqueta `v1` corresponderá a la versión `0.1.0` de RIGE.
 
 ## 7. Estado del canal de construcción
 
-[DATO PENDIENTE: dónde se consulta el registro de corridas (`.github/workflows/ci.yml`) y qué verifica el canal: instalación, construcción y al menos una prueba ligada a un criterio de aceptación del catálogo.]
+El archivo `.github/workflows/ci.yml` ejecuta en cada push, en `ubuntu-latest` y `windows-latest` con Bun 1.3.14, `bun install --frozen-lockfile`, `bun run verificar` y `bun test`. Las pruebas incluyen criterios del catálogo: `pruebas/aceptacion/RNF-03.test.ts` (CA-1, CA-2) y `pruebas/aceptacion/RNF-09.test.ts` (CA-1 a CA-3).
 
-T0-04 acredita verificaciones locales en Windows con Bun 1.3.14; no se ejecutó el CI ni se declara construcción completa. El canal existente no se modifica.
+El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/workflows/ci.yml) permite consultar los resultados. La primera corrida exitosa en las dos plataformas, comprobada por el ingeniero en la API de GitHub, es del **30/09/2026, 22:26 (UTC−3)**, commit `11c852e`: [corrida 36801042650](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/runs/36801042650).
 
 ## 8. Declaración de herramientas auxiliares
 
-| Herramienta | Función | Artefacto afectado |
-|---|---|---|
-| [DATO PENDIENTE] | | |
+| Período | Herramienta y modelo | Función | Artefacto afectado |
+|---|---|---|---|
+| 29/09/2026–30/09/2026 (T0-01 a T0-09) | OpenCode con gentle-ai 3.7; modelos `opencode-go/mimo-v2.6-pro` y `openai/gpt-6.1-sol` | Escritura del código y de las pruebas por delegación sobre el documento ODD | `src/` hasta el commit `a613de6`; `odd/tasks/inc0-esqueleto.md` |
+| Desde el 30/09/2026 (T0-10 en adelante) | Codex (`gpt-6.1-sol`, plan ChatGPT Plus) como escritor, orquestado por Claude Code (`claude-opus-5-5`) | Escritura del código y de las pruebas sobre fichas del ingeniero; revisión por los subagentes `revisor-codigo` (Sonnet 5.5) y `critico-codigo` (Opus 5.5) | `src/` desde el commit `5ca3431`; este README |
 
-| Período | Agente / modelo efectivo | Función y artefactos |
-|---|---|---|
-| T0-04, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Implementación delegada del workspace y arnés, pruebas TDD, README parcial y evidencia ODD; sin agentes hijos, RDD desactivado |
-| T0-05, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Guardas compartidas de dependencias, contratos mínimos, aceptación RNF-03 CA-1 y evidencia ODD; sin agentes hijos, RDD desactivado |
-| T0-08, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | Preparación delegada, guarda acotada del repositorio, pruebas TDD temporales, README y evidencia ODD; sin agentes hijos, RDD desactivado |
-| T0-09 parcial y continuación, 30/09/2026 | `general` / `openai/gpt-6.1-sol` | SQL genérico, adaptador, preparación, unitarias, declaración de tipos autorizada y guarda SQL con infracción revertida; suite verde y tipos correctos, sin commit por build pendiente T0-11a y requisito de cierre completo; sin agentes hijos, RDD desactivado |
+El diseño, los requisitos y las decisiones (ADR) son del autor; las herramientas escriben y revisan código bajo esas decisiones.
 
 Conforme al Protocolo de Uso Autorizado. Si no hubo uso, se consigna de manera expresa.
