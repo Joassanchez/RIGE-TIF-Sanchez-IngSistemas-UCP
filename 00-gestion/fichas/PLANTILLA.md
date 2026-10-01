@@ -62,6 +62,8 @@ bun run verificar                 # una vez, al final
 - **Pruebas:** `bun test` completo en verde. **`verificar`:** <resultado esperado>.
 - **Commit:** mensaje `<tipo>: <descripción> (<ID>)`, con una línea rojo → verde por regla y el resultado final de `bun test` y `verificar`. Agregá solo los archivos de §2.
 - **Respuesta final:** el JSON del esquema `../00-gestion/fichas/esquema-salida-escritor.json` (lo exige `/programar`).
+<!-- Lección de T0-13: el sandbox puede impedir borrar un temporal propio; eso no bloquea el commit. -->
+- **Temporales:** si el sandbox no te deja borrar un temporal tuyo, no es motivo para detenerte: nombralo en `notas` y commiteá igual (lo borra el ingeniero).
 - **Detenete sin commitear** (estado `detenida`, con la pregunta y la opción que proponés) si:
   - una regla contradice un ADR;
   - hace falta tocar otro archivo o agregar una dependencia;
