@@ -1,6 +1,6 @@
 # RIGE · Prototipo v1
 
-> Archivo de lectura exigido por la Guía de comprobación del prototipo v1 (`catedra/AE2-guia-comprobacion-v1.md`). La cátedra lo sigue al pie de la letra, sin suplir pasos. Completar las ocho secciones antes de crear la etiqueta `v1`.
+> Archivo de lectura exigido por la Guía de comprobación del prototipo v1 (`catedra/AE2-guia-comprobacion-v1.md`). La cátedra lo sigue al pie de la letra, sin suplir pasos.
 
 ## 1. Identificación
 
@@ -37,7 +37,15 @@ Se abre una terminal nueva para disponer de Bun en `PATH` y se comprueba la vers
 bun --version
 ```
 
-La salida esperada es `1.3.14`. TypeScript **7.0.2** y `@types/bun` **1.3.14** se instalan desde el lock en el paso siguiente, no a mano. SQLite viene integrado en Bun; no se requiere servidor externo ni conexiones de red durante la ejecución de RIGE.
+La salida esperada es `1.3.14`. TypeScript **7.0.2** y `@types/bun` **1.3.14** se instalan desde el lock en el paso siguiente, no a mano. SQLite **3.53.0**, integrado en Bun 1.3.14; no se requiere servidor externo ni conexiones de red durante la ejecución de RIGE.
+
+Se comprueba la versión del motor:
+
+```bash
+bun -e "import { Database } from 'bun:sqlite'; console.log(new Database(':memory:').query('select sqlite_version() as v').get().v)"
+```
+
+La salida esperada es `3.53.0`.
 
 ## 4. Instalación
 
@@ -139,4 +147,4 @@ El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSis
 
 El diseño, los requisitos y las decisiones (ADR) son del autor; las herramientas escriben y revisan código bajo esas decisiones.
 
-Conforme al Protocolo de Uso Autorizado. Si no hubo uso, se consigna de manera expresa.
+Uso conforme al Protocolo de Uso Autorizado, en los períodos declarados en la tabla.
