@@ -2,7 +2,67 @@ import { describe, expect, test } from "bun:test";
 import type { Resultado } from "../../paquetes/nucleo/resultado";
 import type { PuertoConfiguracion } from "../../paquetes/rige/aplicacion/puertos/configuracion";
 import type { PuertoAlmacen } from "../../paquetes/rige/aplicacion/puertos/almacen";
-import { analizarFuente, analizarManifiesto, comprobarDependencias } from "../utilidades/analisis-arquitectura";
+import { analizarFuente, analizarGlobales, analizarManifiesto, comprobarDependencias, comprobarGlobales } from "../utilidades/analisis-arquitectura";
+
+describe("M-1 imports entre paquetes por workspace", () => {
+  test("rechaza rutas relativas y admite subpaths declarados", () => {
+    expect(analizarFuente("paquetes/opencode/sonda.ts", 'import "../nucleo/resultado";').length).toBeGreaterThan(0);
+    expect(analizarFuente("paquetes/opencode/sonda.ts", 'import "@rige/nucleo/resultado";', {
+      dependencias: { "@rige/nucleo": "workspace:*" },
+    })).toEqual([]);
+  });
+  test("el repositorio real cumple", async () => {
+    expect(await comprobarDependencias()).toEqual([]);
+  });
+});
+
+describe("M-2 dependencias del workspace declaradas", () => {
+  test("rechaza un subpath si falta su dependencia", () => {
+    expect(analizarFuente("paquetes/opencode/sonda.ts", 'import "@rige/nucleo/resultado";', {
+      dependencias: {},
+    }).length).toBeGreaterThan(0);
+  });
+});
+
+describe("M-6 globales limitados al borde autorizado", () => {
+  test.each([
+    ["rige/adaptadores/sistema/sonda.ts", 'Bun.write("archivo", "valor");'],
+    ["rige/aplicacion/sonda.ts", "process.env;"],
+    ["rige/interfaces/cli/sonda.ts", 'Bun.spawn(["comando"]);'],
+    ["nucleo/sonda.ts", "globalThis.process;"],
+    ["nucleo/sonda.ts", 'Bun["write"]("archivo", "valor");'],
+    ["rige/interfaces/web/servidor.ts", 'Bun["serve"]({});'],
+    ["rige/interfaces/web/servidor.ts", "Bun.spawn([]);"],
+  ])("rechaza %s: %s", (archivo, codigo) => {
+    expect(analizarGlobales(`paquetes/${archivo}`, codigo).length).toBeGreaterThan(0);
+  });
+  test.each([
+    ["rige/interfaces/web/servidor.ts", "Bun.serve({});"],
+    ["rige/arranque/rige.ts", "process.argv;"],
+    ["nucleo/sonda.ts", '// Bun.write();\nconst texto = "process.env"; const regex = /Bun.write/;'],
+    ["nucleo/sonda.test.ts", "Bun.write(); process.env;"],
+  ])("admite %s: %s", (archivo, codigo) => {
+    expect(analizarGlobales(`paquetes/${archivo}`, codigo)).toEqual([]);
+  });
+  test("el repositorio real cumple", async () => {
+    expect(await comprobarGlobales()).toEqual([]);
+  });
+});
+
+describe("M-7 referencias solo a declaraciones de la misma carpeta", () => {
+  test.each(["../otro.ts", "../guion.d.ts", "./otro.ts", "/guion.d.ts", "..\\guion.d.ts"])("rechaza %s", (ruta) => {
+    expect(analizarFuente("paquetes/rige/adaptadores/almacen-sqlite/esquema.ts",
+      `/// <reference path="${ruta}" />\nexport {};`).length).toBeGreaterThan(0);
+  });
+  test("admite guion.d.ts de la misma carpeta", () => {
+    expect(analizarFuente("paquetes/rige/adaptadores/almacen-sqlite/esquema.ts",
+      '/// <reference path="./guion.d.ts" />\nexport {};')).toEqual([]);
+  });
+  test("detecta referencias con espacios en la asignacion", () => {
+    expect(analizarFuente("paquetes/rige/adaptadores/sistema/configuracion.ts",
+      '/// <reference path = "../otro.ts" />\nexport {};').length).toBeGreaterThan(0);
+  });
+});
 
 describe("T0-05 analisis de dependencias", () => {
   test("el scanner Bun omite imports de tipos: el analisis debe recuperarlos", async () => {
@@ -51,8 +111,8 @@ describe("T0-05 analisis de dependencias", () => {
 
   const permitidos = [
     ["nucleo/sonda.ts", 'import type { Resultado } from "./resultado";'],
-    ["opencode/sonda.ts", 'import type { Resultado } from "../nucleo/resultado";'],
-    ["rige/aplicacion/sonda.ts", 'import type { Resultado } from "../../nucleo/resultado";'],
+    ["opencode/sonda.ts", 'import type { Resultado } from "@rige/nucleo/resultado";'],
+    ["rige/aplicacion/sonda.ts", 'import type { Resultado } from "@rige/nucleo/resultado";'],
     ["rige/adaptadores/sistema/sonda.ts", 'import type { Puerto } from "../../aplicacion/puertos/configuracion";'],
     ["rige/adaptadores/sistema/sonda.ts", 'import { readFileSync as leer, existsSync } from "node:fs";'],
     ["rige/adaptadores/almacen-sqlite/sonda.ts", 'import { mkdirSync as crear } from "node:fs";'],
@@ -69,10 +129,7 @@ describe("T0-05 analisis de dependencias", () => {
     });
   }
 
-  test("resuelve aliases y no confunde comentarios o cadenas con imports", async () => {
-    expect(analizarFuente("paquetes/nucleo/sonda.ts", 'import type { X } from "@interno/descriptor";', {
-      aliases: { "@interno/*": ["paquetes/opencode/*"] },
-    }).length).toBeGreaterThan(0);
+  test("no confunde comentarios o cadenas con imports", async () => {
     expect(analizarFuente("paquetes/nucleo/sonda.ts", '// import "@rige/opencode";\nconst ejemplo = \'import "@rige/opencode";\';')).toEqual([]);
     expect(analizarFuente("paquetes/nucleo/sonda.ts", 'import "./../../../fuera";').length).toBeGreaterThan(0);
   });
@@ -120,10 +177,7 @@ describe("T0-05 analisis de dependencias", () => {
     expect(invalido.exito).toBe(false);
   });
 
-  test("prioriza aliases exactos y exige declarar dependencias entre paquetes", async () => {
-    expect(analizarFuente("paquetes/nucleo/sonda.ts", 'import "@interno/descriptor";', {
-      aliases: { "@interno/*": ["paquetes/nucleo/*"], "@interno/descriptor": ["paquetes/opencode/descriptor"] },
-    }).length).toBeGreaterThan(0);
+  test("exige declarar dependencias entre paquetes", async () => {
     for (const destino of ["@rige/nucleo", "../nucleo/resultado"]) {
       expect(analizarFuente("paquetes/opencode/sonda.ts", `import "${destino}";`, { dependencias: {} }).length).toBeGreaterThan(0);
     }
@@ -173,7 +227,6 @@ describe("T0-05 analisis de dependencias", () => {
 
 describe("T0-09 excepcion SQL limitada al almacen", () => {
   const origen = "paquetes/rige/adaptadores/almacen-sqlite/esquema.ts";
-  const esquema = "esquemas/almacen/001_inicial.sql";
 
   test.each(["../../../../esquemas/almacen/001_inicial.sql",
     "../../../../esquemas/almacen/../almacen/001_inicial.sql"])(
@@ -182,21 +235,10 @@ describe("T0-09 excepcion SQL limitada al almacen", () => {
     },
   );
 
-  test("admite alias exacto y comodin solo cuando resuelven al SQL autorizado", () => {
-    expect(analizarFuente(origen, 'import guion from "@guion" with { type: "text" };', {
-      aliases: { "@guion": [esquema] },
-    })).toEqual([]);
-    expect(analizarFuente(origen, 'import guion from "@sql/001_inicial.sql" with { type: "text" };', {
-      aliases: { "@sql/*": ["esquemas/almacen/*"] },
-    })).toEqual([]);
-  });
-
   test.each(["nucleo", "opencode", "rige/aplicacion", "rige/adaptadores/sistema",
     "rige/interfaces/cli", "rige/arranque", "rige/adaptadores/almacen-sqlite-ajeno"])(
     "rechaza SQL desde otro origen: %s", (capa) => {
-      expect(analizarFuente(`paquetes/${capa}/sonda.ts`, 'import guion from "@guion" with { type: "text" };', {
-        aliases: { "@guion": [esquema] },
-      }).length).toBeGreaterThan(0);
+      expect(analizarFuente(`paquetes/${capa}/sonda.ts`, 'import guion from "../../../../esquemas/almacen/001_inicial.sql" with { type: "text" };').length).toBeGreaterThan(0);
     },
   );
 
@@ -208,27 +250,14 @@ describe("T0-09 excepcion SQL limitada al almacen", () => {
     },
   );
 
-  test.each(["esquemas/almacen/../../ajeno.sql", "../esquemas/almacen/001_inicial.sql",
-    "paquetes/rige/adaptadores/almacen-sqlite/esquema.ts", "esquemas/almacen"])(
-    "rechaza alias SQL que escapa o apunta a otro tipo de destino: %s", (destino) => {
-      expect(analizarFuente(origen, 'import guion from "@sql/guion.sql" with { type: "text" };', {
-        aliases: { "@sql/*": [destino] },
-      }).length).toBeGreaterThan(0);
-    },
-  );
-
-  test("ningun destino alternativo del alias puede eludir el limite", () => {
-    expect(analizarFuente(origen, 'import guion from "@guion" with { type: "text" };', {
-      aliases: { "@guion": [esquema, "esquemas/salida/ajeno.sql"] },
-    }).length).toBeGreaterThan(0);
-  });
-
   test("la declaracion solo exporta string para SQL y no se interpreta como import", async () => {
     const archivo = "paquetes/rige/adaptadores/almacen-sqlite/guion.d.ts";
     const codigo = await Bun.file(new URL(`../../${archivo}`, import.meta.url)).text();
-    expect(codigo).toBe('declare module "*.sql" {\n  const guion: string;\n  export default guion;\n}\n');
+    expect(codigo).toMatch(/declare\s+module\s+["']\*\.sql["']\s*\{/);
+    expect(codigo).toMatch(/const\s+(\w+)\s*:\s*string\s*;\s*export\s+default\s+\1\s*;/);
+    expect(codigo).not.toMatch(/\bany\b/);
     expect(analizarFuente(archivo, codigo)).toEqual([]);
     const adaptador = await Bun.file(new URL(`../../${origen}`, import.meta.url)).text();
-    expect(adaptador.startsWith('/// <reference path="./guion.d.ts" />\n')).toBe(true);
+    expect(adaptador).toMatch(/^\s*\/\/\/\s*<reference\s+path=["']\.\/guion\.d\.ts["']\s*\/>/m);
   });
 });

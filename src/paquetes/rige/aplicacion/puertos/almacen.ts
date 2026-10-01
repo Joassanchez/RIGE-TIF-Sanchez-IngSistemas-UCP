@@ -1,4 +1,4 @@
-import type { Resultado } from "../../../nucleo/resultado";
+import type { Resultado } from "@rige/nucleo/resultado";
 import type { ErrorUso } from "../errores";
 
 export { errorAlmacenSinEsquema } from "../errores";

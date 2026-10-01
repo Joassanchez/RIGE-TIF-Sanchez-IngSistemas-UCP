@@ -1,5 +1,5 @@
 import type { PuertoAlmacen } from "../puertos/almacen";
-import type { Resultado } from "../../../nucleo/resultado";
+import type { Resultado } from "@rige/nucleo/resultado";
 import type { ErrorUso } from "../errores";
 import { respuestaEstado, type RespuestaPreparacion } from "../respuestas/estado";
 

@@ -5,7 +5,7 @@ import { join, resolve } from "node:path";
 import guion from "../../../../esquemas/almacen/001_inicial.sql" with { type: "text" };
 import { errorAlmacenSinEsquema } from "../../aplicacion/puertos/almacen";
 import type { EstadoAlmacen, PuertoAlmacen, PuertoExistenciaAlmacen } from "../../aplicacion/puertos/almacen";
-import type { Resultado } from "../../../nucleo/resultado";
+import type { Resultado } from "@rige/nucleo/resultado";
 
 type Estado = Resultado<EstadoAlmacen, typeof errorAlmacenSinEsquema>;
 

@@ -2,11 +2,10 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { crearEntornoAislado } from "../utilidades/entorno-aislado";
+import { join } from "node:path";
+import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal } from "../utilidades/cliente-http-local";
 
-const raiz = resolve(import.meta.dir, "../..");
 const temporales: string[] = [];
 function escenario() {
   const temporal = mkdtempSync(join(tmpdir(), "rige-arranque-"));
@@ -16,21 +15,6 @@ function escenario() {
 afterEach(() => {
   for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
 });
-
-function puertoLibre() {
-  const escucha = Bun.listen({ hostname: "127.0.0.1", port: 0, socket: { data() {} } });
-  const puerto = escucha.port;
-  escucha.stop(true);
-  return puerto;
-}
-
-function lanzar(temporal: string, argumentos: string[], variables: Record<string, string> = {}) {
-  const env = { ...crearEntornoAislado(temporal, process.env), RIGE_PUERTO: String(puertoLibre()), ...variables };
-  const proceso = Bun.spawnSync([process.execPath, "paquetes/rige/arranque/rige.ts", ...argumentos], {
-    cwd: raiz, env, stdout: "pipe", stderr: "pipe",
-  });
-  return { codigo: proceso.exitCode, salida: proceso.stdout.toString(), error: proceso.stderr.toString() };
-}
 
 describe("A-1", () => {
   test("prepara una carpeta nueva y repite la respuesta byte a byte", () => {
@@ -51,62 +35,23 @@ describe("A-1", () => {
   });
 });
 
-async function primeraLinea(salida: ReadableStream<Uint8Array>): Promise<string> {
-  const lector = salida.getReader();
-  const decodificador = new TextDecoder();
-  const limite = setTimeout(() => { void lector.cancel(); }, 2000);
-  try {
-    let texto = "";
-    while (true) {
-      const fragmento = await lector.read();
-      if (fragmento.done) throw new Error("El subproceso termino sin publicar direccion.");
-      texto += decodificador.decode(fragmento.value, { stream: true });
-      const fin = texto.indexOf("\n");
-      if (fin !== -1) return texto.slice(0, fin);
-    }
-  } finally { clearTimeout(limite); lector.releaseLock(); }
-}
-
-async function servirHastaSalir(temporal: string, variables: Record<string, string> = {}) {
-  const proceso = Bun.spawn([process.execPath, "paquetes/rige/arranque/rige.ts", "servir"], {
-    cwd: raiz,
-    env: { ...crearEntornoAislado(temporal, process.env), RIGE_PUERTO: String(puertoLibre()), ...variables },
-    stdout: "pipe", stderr: "pipe",
-  });
-  const limite = setTimeout(() => { proceso.kill(); }, 2000);
-  try {
-    const [codigo, salida, error] = await Promise.all([
-      proceso.exited, new Response(proceso.stdout).text(), new Response(proceso.stderr).text(),
-    ]);
-    return { codigo, salida, error };
-  } finally { clearTimeout(limite); proceso.kill(); await proceso.exited; }
-}
-
 describe("A-5", () => {
   test("sirve el estado preparado con paridad y una pagina 404 por subproceso", async () => {
     const temporal = escenario();
     const preparada = lanzar(temporal, ["esquema"]);
     expect(preparada.codigo).toBe(0);
     const estado = JSON.parse(preparada.salida);
-    const puerto = puertoLibre();
-    const proceso = Bun.spawn([process.execPath, "paquetes/rige/arranque/rige.ts", "servir"], {
-      cwd: raiz, env: { ...crearEntornoAislado(temporal, process.env), RIGE_PUERTO: String(puerto) },
-      stdout: "pipe", stderr: "pipe",
-    });
-    const error = new Response(proceso.stderr).text();
-    const limite = setTimeout(() => { proceso.kill(); }, 3000);
+    const servidor = await lanzarServidor(temporal, {});
+    const { puerto } = servidor;
     try {
-      const linea = await primeraLinea(proceso.stdout);
-      expect(linea).toBe(JSON.stringify({ esquema: 1, direccion: `http://127.0.0.1:${puerto}` }));
-      expect(proceso.exitCode).toBeNull();
+      expect(servidor.direccion).toBe(`http://127.0.0.1:${puerto}`);
       const inicio = await solicitarLocal({ host: "127.0.0.1", puerto, ruta: "/" });
       expect(inicio.estado).toBe(200);
       expect(inicio.cuerpo).toContain(`RIGE ${estado.versionRige}`);
       expect(inicio.cuerpo).toContain(estado.almacen.ruta);
       expect(inicio.cuerpo).toContain(`Esquema del almacén: ${estado.almacen.versionEsquema}`);
       expect((await solicitarLocal({ host: "127.0.0.1", puerto, ruta: "/otra" })).estado).toBe(404);
-    } finally { clearTimeout(limite); proceso.kill(); await proceso.exited; }
-    expect(await error).toBe("");
+    } finally { await servidor.detener(); }
   });
 });
 
@@ -114,7 +59,7 @@ describe("A-6", () => {
   test("servir rechaza el almacen ausente o incompatible sin crearlo ni migrarlo", async () => {
     const temporal = escenario();
     const directorio = join(temporal, "inexistente", "almacen");
-    const ausente = await servirHastaSalir(temporal, { RIGE_ALMACEN: directorio });
+    const ausente = lanzar(temporal, ["servir"], { RIGE_ALMACEN: directorio });
     expect(ausente.codigo).toBe(1);
     expect(ausente.salida).toBe("");
     expect(JSON.parse(ausente.error)).toEqual({
@@ -126,7 +71,7 @@ describe("A-6", () => {
     const base = new Database(ruta, { create: true });
     try { base.exec("PRAGMA user_version = 2"); }
     finally { base.close(); }
-    const incompatible = await servirHastaSalir(temporal);
+    const incompatible = lanzar(temporal, ["servir"]);
     expect(incompatible.codigo).toBe(1);
     expect(incompatible.salida).toBe("");
     expect(JSON.parse(incompatible.error)).toEqual({
@@ -144,7 +89,7 @@ describe("A-7", () => {
     expect(lanzar(temporal, ["esquema"]).codigo).toBe(0);
     const escucha = Bun.listen({ hostname: "127.0.0.1", port: 0, socket: { data() {} } });
     try {
-      const resultado = await servirHastaSalir(temporal, { RIGE_PUERTO: String(escucha.port) });
+      const resultado = lanzar(temporal, ["servir"], { RIGE_PUERTO: String(escucha.port) });
       expect(resultado.codigo).toBe(1);
       expect(resultado.salida).toBe("");
       expect(JSON.parse(resultado.error)).toEqual({

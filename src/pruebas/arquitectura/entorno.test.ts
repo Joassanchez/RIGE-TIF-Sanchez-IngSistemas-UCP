@@ -1,10 +1,83 @@
 import { describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { crearEntornoAislado, variablesAisladas } from "../utilidades/entorno-aislado";
 
 const variables = variablesAisladas;
+
+describe("M-8 subprocesos compartidos", () => {
+  test("aceptacion usa el helper y RNF-09 usa el ciclo de vida de cada describe", async () => {
+    for (const nombre of ["arranque", "RNF-09"]) {
+      const codigo = await Bun.file(resolve(import.meta.dir, `../aceptacion/${nombre}.test.ts`)).text();
+      expect(codigo).toMatch(/from "\.\.\/utilidades\/subproceso"/);
+      expect(codigo).not.toMatch(/Bun\.spawn/);
+      if (nombre === "RNF-09") {
+        expect(codigo).toMatch(/beforeAll\(/);
+        expect(codigo).toMatch(/afterAll\(/);
+        expect(codigo).not.toMatch(/conServidor/);
+      }
+    }
+  });
+});
+
+describe("M-3 verificar legible y efectivo", () => {
+  test("comprueba tipos, falla con un error temporal y no imprime el bundle", async () => {
+    const raiz = resolve(import.meta.dir, "../..");
+    const temporal = mkdtempSync(join(tmpdir(), "rige-verificacion-"));
+    const fuente = join(raiz, "paquetes/rige/aplicacion/puertos/almacen.ts");
+    const original = readFileSync(fuente);
+    const comprobar = () => Bun.spawnSync([process.execPath, "run", "verificar"], {
+      cwd: raiz, env: crearEntornoAislado(temporal, process.env), stdout: "pipe", stderr: "pipe",
+    });
+    try {
+      writeFileSync(fuente, original.toString() + '\nconst sondaTipos: number = "incorrecto";\n');
+      const incorrecto = comprobar();
+      expect(incorrecto.exitCode).not.toBe(0);
+      expect(incorrecto.stdout.toString() + incorrecto.stderr.toString()).toContain("TS2322");
+      writeFileSync(fuente, original);
+      const correcto = comprobar();
+      expect(correcto.exitCode).toBe(0);
+      expect(correcto.stdout.toString().includes("// paquetes/")).toBe(false);
+      const manifiesto = await Bun.file(join(raiz, "package.json")).json();
+      expect(manifiesto.scripts.verificar).toBe("bun ./herramientas/verificar.ts");
+      expect((await Bun.file(join(raiz, "tsconfig.json")).json()).include).toContain("herramientas/**/*.ts");
+    } finally {
+      writeFileSync(fuente, original);
+      rmSync(temporal, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("M-4 tsconfigs sin aliases", () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  async function comprobar() {
+    const hallazgos: string[] = [];
+    for (const archivo of new Bun.Glob("**/tsconfig*.json").scanSync({ cwd: raiz, onlyFiles: true })) {
+      if (archivo.replaceAll("\\", "/").split("/").includes("node_modules")) continue;
+      const opciones = (await Bun.file(join(raiz, archivo)).json()).compilerOptions ?? {};
+      for (const clave of ["paths", "baseUrl"]) {
+        if (Object.hasOwn(opciones, clave)) hallazgos.push(`${archivo}: ${clave}`);
+      }
+    }
+    return hallazgos.sort();
+  }
+  test("el repositorio no define paths ni baseUrl", async () => {
+    expect(await comprobar()).toEqual([]);
+  });
+  test("detecta cada infraccion temporal y la revierte", async () => {
+    const archivo = join(raiz, "tsconfig.json");
+    const original = readFileSync(archivo);
+    try {
+      for (const [clave, valor] of [["paths", {}], ["baseUrl", "."]] as const) {
+        const config = JSON.parse(original.toString());
+        config.compilerOptions[clave] = valor;
+        writeFileSync(archivo, JSON.stringify(config));
+        expect(await comprobar()).toEqual([`tsconfig.json: ${clave}`]);
+      }
+    } finally { writeFileSync(archivo, original); }
+  });
+});
 
 describe("T0-04 aislamiento del arnes", () => {
   test("la precarga redirige todas las ubicaciones a un temporal propio", () => {
@@ -120,8 +193,20 @@ describe("T0-04 andamiaje", () => {
     expect(bunfig.test.preload).toEqual(["./pruebas/preparar-entorno.ts"]);
     expect(await Bun.file(join(raiz, ".gitignore")).text()).toContain("node_modules/");
     expect(await Bun.file(join(raiz, ".gitignore")).text()).toContain("rige.env");
-    expect(await Bun.file(join(raiz, ".gitattributes")).text()).toBe("* text=auto eol=lf\n");
-    expect(await Bun.file(join(raiz, "rige.env.example")).text()).toBe("RIGE_PUERTO=4747\nRIGE_ALMACEN=\n");
+    const atributos = (await Bun.file(join(raiz, ".gitattributes")).text()).split(/\r?\n/)
+      .map((linea) => linea.trim().split(/\s+/));
+    expect(atributos.some(([patron, ...opciones]) => patron === "*" && opciones.includes("eol=lf"))).toBe(true);
+    const ejemplo = (await Bun.file(join(raiz, "rige.env.example")).text()).split(/\r?\n/)
+      .map((linea) => linea.trim()).filter((linea) => linea && !linea.startsWith("#"))
+      .map((linea) => {
+        const separador = linea.indexOf("=");
+        expect(separador).toBeGreaterThan(0);
+        return [linea.slice(0, separador).trim(), linea.slice(separador + 1).trim()] as const;
+      });
+    expect(ejemplo.map(([clave]) => clave).sort()).toEqual(["RIGE_ALMACEN", "RIGE_PUERTO"]);
+    for (const [, valor] of ejemplo) {
+      expect(/(?:sk-|gh[pousr]_|Bearer\s|(?:token|password|secret|api[_-]?key)\s*[:=])|[A-Za-z0-9_\/-]{24,}/i.test(valor)).toBe(false);
+    }
     expect(existsSync(join(raiz, "pruebas/escenarios/.gitkeep"))).toBe(true);
   });
 

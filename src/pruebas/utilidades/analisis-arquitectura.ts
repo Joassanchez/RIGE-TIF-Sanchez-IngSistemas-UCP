@@ -9,11 +9,10 @@ export interface HallazgoDependencia {
 }
 
 interface OpcionesAnalisis {
-  aliases?: Readonly<Record<string, readonly string[]>>;
   dependencias?: Readonly<Record<string, string>>;
 }
 
-interface Token {
+export interface Token {
   valor: string;
   cadena: boolean;
 }
@@ -34,7 +33,7 @@ const lecturas = new Set(["readFileSync", "readFile", "readdirSync", "readdir", 
   "lstatSync", "lstat", "realpathSync", "realpath", "existsSync", "accessSync", "access", "readlinkSync", "readlink"]);
 
 // El scanner oficial avanza desde cada token; no consume comillas de una regex como cadenas.
-function tokens(codigo: string): Token[] {
+export function tokenizar(codigo: string): Token[] {
   const resultado: Token[] = [];
   const scanner = createScanner(true, undefined, codigo);
   const inicioExpresion = new Set<SyntaxKind | undefined>([
@@ -89,7 +88,7 @@ function tokens(codigo: string): Token[] {
 
 function extraerImports(codigo: string): { destino: string; clausula: Token[] }[] {
   const encontrados: { destino: string; clausula: Token[] }[] = [];
-  const lista = tokens(codigo);
+  const lista = tokenizar(codigo);
   for (let indice = 0; indice < lista.length; indice++) {
     const token = lista[indice]!;
     if (token.cadena || !["import", "export", "require"].includes(token.valor)) continue;
@@ -130,22 +129,7 @@ function extraerImports(codigo: string): { destino: string; clausula: Token[] }[
   return encontrados;
 }
 
-function destinos(archivo: string, destino: string, opciones: OpcionesAnalisis): string[] {
-  const aliases = Object.entries(opciones.aliases ?? {}).sort(([a], [b]) => {
-    if (a.includes("*") !== b.includes("*")) return a.includes("*") ? 1 : -1;
-    return b.split("*")[0]!.length - a.split("*")[0]!.length;
-  });
-  for (const [patron, sustituciones] of aliases) {
-    if (patron.split("*").length > 2) throw new Error("Alias no analizable: patron con varios comodines");
-    const [prefijo, sufijo] = patron.split("*");
-    const coincide = sufijo === undefined ? destino === prefijo
-      : destino.startsWith(prefijo!) && destino.endsWith(sufijo);
-    if (coincide) {
-      if (!sustituciones.length) throw new Error("Alias no analizable: sin destinos");
-      const captura = sufijo === undefined ? "" : destino.slice(prefijo!.length, destino.length - sufijo.length);
-      return sustituciones.map((sustitucion) => normalizar(sustitucion.replace("*", captura)));
-    }
-  }
+function destinos(archivo: string, destino: string): string[] {
   if (destino.startsWith(".")) return [posix.join(posix.dirname(archivo), destino)];
   if (destino.startsWith("@rige/")) return [normalizar(destino.replace("@rige/", "paquetes/"))];
   return [destino];
@@ -199,14 +183,23 @@ export function analizarFuente(archivo: string, codigo: string, opciones: Opcion
     }
   }
   const hallazgos: HallazgoDependencia[] = [];
+  for (const referencia of codigo.matchAll(/^\s*\/\/\/\s*<reference\s+path\s*=\s*["']([^"']+)["'][^>]*>/gm)) {
+    const ruta = normalizar(referencia[1]!);
+    const destino = posix.join(posix.dirname(archivo), ruta);
+    if (!ruta.endsWith(".d.ts") || posix.isAbsolute(ruta)
+      || posix.dirname(destino) !== posix.dirname(archivo)) {
+      hallazgos.push({ archivo, motivo: `Referencia no permitida: ${ruta}` });
+    }
+  }
   for (const entrada of imports) {
-    for (const destino of destinos(archivo, entrada.destino, opciones)) {
+    for (const destino of destinos(archivo, entrada.destino)) {
       let permitido = false;
       const nombreRuntime = destino.replace(/^node:/, "");
       if (destino.endsWith(".sql") || entrada.destino.endsWith(".sql")) {
         permitido = permitidoSql(archivo, destino, entrada.destino);
       } else if (destino.startsWith("paquetes/")) {
-        permitido = permitidoLocal(archivo, destino);
+        permitido = permitidoLocal(archivo, destino)
+          && !(entrada.destino.startsWith(".") && archivo.split("/")[1] !== destino.split("/")[1]);
         const origenPaquete = archivo.split("/")[1];
         const destinoPaquete = destino.split("/")[1];
         if (opciones.dependencias && origenPaquete !== destinoPaquete
@@ -254,40 +247,16 @@ export function analizarManifiesto(paquete: string, manifiesto: Manifiesto): Hal
   return hallazgos;
 }
 
-async function aliasesConfiguracion(ruta: string, vistos = new Set<string>()): Promise<{
-  aliases: Record<string, string[]>; base: string | undefined;
-}> {
-  if (vistos.has(ruta)) throw new Error("tsconfig no analizable: herencia circular");
-  vistos.add(ruta);
-  const config = await Bun.file(resolve(raiz, ruta)).json();
-  let aliases: Record<string, string[]> = {};
-  let base: string | undefined;
-  if (config.extends) {
-    const padre = posix.join(posix.dirname(ruta), config.extends);
-    if (padre.startsWith("..") || posix.isAbsolute(padre)) throw new Error("tsconfig no analizable: fuera de src");
-    ({ aliases, base } = await aliasesConfiguracion(padre, vistos));
-  }
-  if (config.compilerOptions?.baseUrl !== undefined) {
-    base = posix.join(posix.dirname(ruta), config.compilerOptions.baseUrl);
-  }
-  if (config.compilerOptions?.paths !== undefined) aliases = {};
-  for (const [patron, rutas] of Object.entries(config.compilerOptions?.paths ?? {}) as [string, string[]][]) {
-    aliases[patron] = rutas.map((destino) => posix.join(base ?? posix.dirname(ruta), destino));
-  }
-  return { aliases, base };
-}
-
 export async function comprobarDependencias(): Promise<HallazgoDependencia[]> {
   const hallazgos: HallazgoDependencia[] = [];
   for (const paquete of ["nucleo", "opencode", "rige"]) {
     const manifiesto: Manifiesto = await Bun.file(resolve(raiz, "paquetes", paquete, "package.json")).json();
     hallazgos.push(...analizarManifiesto(paquete, manifiesto));
-    const { aliases } = await aliasesConfiguracion(`paquetes/${paquete}/tsconfig.json`);
     for (const ruta of new Bun.Glob("**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}").scanSync({ cwd: resolve(raiz, "paquetes", paquete) })) {
       if (ruta.replaceAll("\\", "/").split("/").includes("node_modules")) continue;
       const archivo = `paquetes/${paquete}/${normalizar(ruta)}`;
       hallazgos.push(...analizarFuente(archivo, await Bun.file(resolve(raiz, archivo)).text(), {
-        aliases, dependencias: manifiesto.dependencies ?? {},
+        dependencias: manifiesto.dependencies ?? {},
       }));
     }
   }
@@ -309,4 +278,33 @@ export async function comprobarIdentificaciones(): Promise<HallazgoDependencia[]
     hallazgos.push(...analizarIdentificaciones(archivo, await Bun.file(resolve(raiz, archivo)).text()));
   }
   return hallazgos.sort((a, b) => a.archivo.localeCompare(b.archivo));
+}
+
+export function analizarGlobales(archivo: string, codigo: string): HallazgoDependencia[] {
+  archivo = normalizar(archivo);
+  if (!archivo.startsWith("paquetes/") || /\.test\.[cm]?[jt]sx?$/.test(archivo)) return [];
+  const hallazgos: HallazgoDependencia[] = [];
+  const lista = tokenizar(codigo);
+  for (const [indice, token] of lista.entries()) {
+    if (token.cadena || !["Bun", "process"].includes(token.valor)) continue;
+    const acceso = lista[indice + 1]?.valor;
+    const global = lista[indice - 2]?.valor === "globalThis" && lista[indice - 1]?.valor === ".";
+    if (acceso !== "." && acceso !== "[" && !global) continue;
+    if (token.valor === "process" && archivo === "paquetes/rige/arranque/rige.ts") continue;
+    if (token.valor === "Bun" && acceso === "." && lista[indice + 2]?.valor === "serve"
+      && archivo === "paquetes/rige/interfaces/web/servidor.ts") continue;
+    hallazgos.push({ archivo, motivo: `Global no permitido: ${token.valor}` });
+  }
+  return hallazgos;
+}
+
+export async function comprobarGlobales(): Promise<HallazgoDependencia[]> {
+  const hallazgos: HallazgoDependencia[] = [];
+  for (const ruta of new Bun.Glob("**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}").scanSync({ cwd: resolve(raiz, "paquetes") })) {
+    const relativa = normalizar(ruta);
+    if (relativa.split("/").includes("node_modules")) continue;
+    const archivo = `paquetes/${relativa}`;
+    hallazgos.push(...analizarGlobales(archivo, await Bun.file(resolve(raiz, archivo)).text()));
+  }
+  return hallazgos.sort((a, b) => a.archivo.localeCompare(b.archivo) || a.motivo.localeCompare(b.motivo));
 }

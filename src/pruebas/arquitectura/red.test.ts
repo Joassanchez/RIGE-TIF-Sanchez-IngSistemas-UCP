@@ -1,11 +1,18 @@
 import { describe, expect, test } from "bun:test";
 import { posix, resolve } from "node:path";
-import { createScanner, SyntaxKind } from "typescript/unstable/ast";
-import { analizarFuente, type HallazgoDependencia } from "../utilidades/analisis-arquitectura";
+import { analizarFuente, tokenizar, type HallazgoDependencia } from "../utilidades/analisis-arquitectura";
 
 const raiz = resolve(import.meta.dir, "../..");
 const clienteReservado = "pruebas/utilidades/cliente-http-local.ts";
 const moduloCliente = /^(?:node:)?(?:http|https|http2|net|tls|dgram)(?:\/|$)|^undici(?:\/|$)/;
+
+describe("M-5 tokenizador compartido", () => {
+  test("la guarda de red importa tokenizar sin mantener otro scanner", async () => {
+    const codigo = await Bun.file(import.meta.path).text();
+    expect(/import\s*\{[^}]*\btokenizar\b[^}]*\}\s*from\s*"\.\.\/utilidades\/analisis-arquitectura"/.test(codigo)).toBe(true);
+    expect(/^import.*typescript\/unstable\/ast/m.test(codigo)).toBe(false);
+  });
+});
 
 function analizarRed(archivo: string, codigo: string): HallazgoDependencia[] {
   archivo = posix.normalize(archivo.replaceAll("\\", "/"));
@@ -18,28 +25,11 @@ function analizarRed(archivo: string, codigo: string): HallazgoDependencia[] {
   if (!archivo.startsWith("paquetes/") && archivo !== clienteReservado) return hallazgos;
 
   const transpilado = new Bun.Transpiler({ loader: /\.[jt]sx$/.test(archivo) ? "tsx" : "ts" }).transformSync(codigo);
-  const scanner = createScanner(true, undefined, transpilado);
-  const lista: { clase: SyntaxKind; valor: string }[] = [];
-  const inicioRegex = new Set(["=", "=>", "(", "[", "{", ",", ":", "!", "return", "throw", "case",
-    ";", "?", "||", "&&", "typeof", "void", "delete", "await", "yield", "+", "-", "*", "**", "%", "~", "|", "&", "^", "??"]);
-  let llaves = 0;
-  const plantillas: number[] = [];
-  for (let clase = scanner.scan(); clase !== SyntaxKind.EndOfFile; clase = scanner.scan()) {
-    if (clase === SyntaxKind.SlashToken && (!lista.length || inicioRegex.has(lista.at(-1)!.valor))) clase = scanner.reScanSlashToken();
-    if (clase === SyntaxKind.CloseBraceToken && plantillas.at(-1) === llaves) {
-      clase = scanner.reScanTemplateToken(false);
-      if (clase === SyntaxKind.TemplateTail) plantillas.pop();
-    } else if (clase === SyntaxKind.OpenBraceToken) llaves++;
-    else if (clase === SyntaxKind.CloseBraceToken) llaves--;
-    if (clase === SyntaxKind.TemplateHead) plantillas.push(llaves);
-    if (scanner.isUnterminated() || clase === SyntaxKind.Unknown) throw new Error("Red no analizable: token incompleto");
-    lista.push({ clase, valor: clase === SyntaxKind.Identifier || clase === SyntaxKind.StringLiteral
-      ? scanner.getTokenValue() : scanner.getTokenText() });
-  }
+  const lista = tokenizar(transpilado);
   for (let indice = 0; indice < lista.length; indice++) {
     const token = lista[indice]!;
-    const directa = token.clase === SyntaxKind.Identifier;
-    const calculadaLiteral = token.clase === SyntaxKind.StringLiteral && lista[indice - 1]?.valor === "["
+    const directa = !token.cadena;
+    const calculadaLiteral = token.cadena && lista[indice - 1]?.valor === "["
       && lista[indice + 1]?.valor === "]" && lista[indice + 2]?.valor === "(";
     if ((directa || calculadaLiteral) && (token.valor === "WebSocket"
       || (token.valor === "fetch" && (calculadaLiteral || lista[indice + 1]?.valor !== ":")))) {

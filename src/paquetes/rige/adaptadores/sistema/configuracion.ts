@@ -1,4 +1,4 @@
-import type { Resultado } from "../../../nucleo/resultado";
+import type { Resultado } from "@rige/nucleo/resultado";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { errorConfiguracionInvalida, type ErrorUso } from "../../aplicacion/puertos/configuracion";
