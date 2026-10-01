@@ -27,7 +27,7 @@ try {
     }));
     codigo = Bun.spawnSync([process.execPath, "run", "tsc", "--noEmit", "-p", config], {
       stdout: "inherit", stderr: "inherit",
-    }).exitCode;
+    }).exitCode ?? 1;
     if (codigo) break;
   }
   // El bundle comprueba el ensamblado, pero nunca se imprime ni queda en src/.
@@ -35,7 +35,7 @@ try {
     codigo = Bun.spawnSync([
       process.execPath, "build", "./paquetes/rige/arranque/rige.ts", "--target=bun",
       "--outdir", join(temporal, "bundle"),
-    ], { stdout: "inherit", stderr: "inherit" }).exitCode;
+    ], { stdout: "inherit", stderr: "inherit" }).exitCode ?? 1;
   }
 } finally {
   rmSync(temporal, { recursive: true, force: true });

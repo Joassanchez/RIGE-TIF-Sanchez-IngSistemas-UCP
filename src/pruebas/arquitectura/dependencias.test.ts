@@ -64,6 +64,40 @@ describe("M-7 referencias solo a declaraciones de la misma carpeta", () => {
   });
 });
 
+describe("M-11 accesos indirectos a globales", () => {
+  test.each([
+    ["globalThis['process'];", "process"],
+    ['globalThis["Bun"];', "Bun"],
+    ['globalThis["process"].env;', "process"],
+    ["globalThis['Bun'].write('archivo', 'valor');", "Bun"],
+    ["process?.env;", "process"],
+    ["Bun?.write('archivo', 'valor');", "Bun"],
+    ["const { env } = process;", "process"],
+    ["const { write } = Bun;", "Bun"],
+    ["const entorno = process;", "process"],
+    ["const runtime = Bun;", "Bun"],
+  ])("rechaza %s", (codigo, global) => {
+    const archivo = "paquetes/rige/aplicacion/sonda.ts";
+    expect(analizarGlobales(archivo, codigo)).toEqual([{ archivo, motivo: `Global no permitido: ${global}` }]);
+  });
+  test.each([
+    ["rige/aplicacion/sonda.ts", 'const texto = "globalThis[\'process\']; process?.env; const { write } = Bun";'],
+    ["rige/aplicacion/sonda.ts", "// globalThis['Bun']; process?.env; const { env } = process;"],
+    ["rige/aplicacion/sonda.ts", 'const texto = `globalThis["Bun"]; Bun?.write(); const { env } = process`;'],
+    ["rige/aplicacion/sonda.ts", String.raw`const patron = /globalThis\["process"\]|Bun\?\.write|= process/;`],
+    ["rige/aplicacion/sonda.ts", "const { env } = configuracion; const runtime = objeto['Bun'];"],
+    ["rige/aplicacion/sonda.ts", 'const nombres = ["process", "Bun"];'],
+    ["rige/interfaces/web/servidor.ts", "Bun.serve({});"],
+    ["rige/arranque/rige.ts", 'const { env } = process; process?.argv; globalThis["process"];'],
+    ["rige/aplicacion/sonda.test.ts", 'globalThis["Bun"]; const { env } = process;'],
+  ])("admite %s: %s", (archivo, codigo) => {
+    expect(analizarGlobales(`paquetes/${archivo}`, codigo)).toEqual([]);
+  });
+  test("el repositorio real cumple", async () => {
+    expect(await comprobarGlobales()).toEqual([]);
+  });
+});
+
 describe("T0-05 analisis de dependencias", () => {
   test("el scanner Bun omite imports de tipos: el analisis debe recuperarlos", async () => {
     const codigo = 'import type { Descriptor } from "@rige/opencode"; export type { Otro } from "@rige/opencode";';
@@ -235,13 +269,6 @@ describe("T0-09 excepcion SQL limitada al almacen", () => {
     },
   );
 
-  test.each(["nucleo", "opencode", "rige/aplicacion", "rige/adaptadores/sistema",
-    "rige/interfaces/cli", "rige/arranque", "rige/adaptadores/almacen-sqlite-ajeno"])(
-    "rechaza SQL desde otro origen: %s", (capa) => {
-      expect(analizarFuente(`paquetes/${capa}/sonda.ts`, 'import guion from "../../../../esquemas/almacen/001_inicial.sql" with { type: "text" };').length).toBeGreaterThan(0);
-    },
-  );
-
   test.each(["./ajeno.sql", "./../sistema/ajeno.sql", "../../../../esquemas/salida/ajeno.sql",
     "../../../../esquemas/almacen/../../ajeno.sql", "../../../../esquemas/almacen/inexistente.sql",
     "../../../../esquemas/almacen/001_inicial.sql/", "sql-externo", "esquemas/almacen/001_inicial.sql"])(
@@ -260,4 +287,18 @@ describe("T0-09 excepcion SQL limitada al almacen", () => {
     const adaptador = await Bun.file(new URL(`../../${origen}`, import.meta.url)).text();
     expect(adaptador).toMatch(/^\s*\/\/\/\s*<reference\s+path=["']\.\/guion\.d\.ts["']\s*\/>/m);
   });
+});
+
+describe("M-9 SQL rechazado por origen no autorizado", () => {
+  test.each(["nucleo", "opencode", "rige/aplicacion", "rige/adaptadores/sistema",
+    "rige/interfaces/cli", "rige/arranque", "rige/adaptadores/almacen-sqlite-ajeno"])(
+    "rechaza SQL desde otro origen: %s", (capa) => {
+      const archivo = `paquetes/${capa}/sonda.ts`;
+      const profundidad = `paquetes/${capa}`.split("/").length;
+      const relativo = "../".repeat(profundidad) + "esquemas/almacen/001_inicial.sql";
+      expect(analizarFuente(archivo, `import guion from "${relativo}" with { type: "text" };`)).toEqual([
+        { archivo, motivo: `Origen SQL no autorizado: ${relativo} -> esquemas/almacen/001_inicial.sql` },
+      ]);
+    },
+  );
 });

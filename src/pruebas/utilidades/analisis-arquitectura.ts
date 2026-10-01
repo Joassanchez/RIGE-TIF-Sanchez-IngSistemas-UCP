@@ -194,9 +194,13 @@ export function analizarFuente(archivo: string, codigo: string, opciones: Opcion
   for (const entrada of imports) {
     for (const destino of destinos(archivo, entrada.destino)) {
       let permitido = false;
+      let motivo = `Dependencia no permitida: ${entrada.destino} -> ${destino}`;
       const nombreRuntime = destino.replace(/^node:/, "");
       if (destino.endsWith(".sql") || entrada.destino.endsWith(".sql")) {
         permitido = permitidoSql(archivo, destino, entrada.destino);
+        if (!archivo.startsWith("paquetes/rige/adaptadores/almacen-sqlite/")) {
+          motivo = `Origen SQL no autorizado: ${entrada.destino} -> ${destino}`;
+        }
       } else if (destino.startsWith("paquetes/")) {
         permitido = permitidoLocal(archivo, destino)
           && !(entrada.destino.startsWith(".") && archivo.split("/")[1] !== destino.split("/")[1]);
@@ -218,7 +222,7 @@ export function analizarFuente(archivo: string, codigo: string, opciones: Opcion
       } else if (destino === "jsonc-parser") {
         permitido = modulo(archivo) === "opencode" && opciones.dependencias?.[destino] === "3.3.1";
       }
-      if (!permitido) hallazgos.push({ archivo, motivo: `Dependencia no permitida: ${entrada.destino} -> ${destino}` });
+      if (!permitido) hallazgos.push({ archivo, motivo });
     }
   }
   return hallazgos;
@@ -286,10 +290,15 @@ export function analizarGlobales(archivo: string, codigo: string): HallazgoDepen
   const hallazgos: HallazgoDependencia[] = [];
   const lista = tokenizar(codigo);
   for (const [indice, token] of lista.entries()) {
-    if (token.cadena || !["Bun", "process"].includes(token.valor)) continue;
+    if (!["Bun", "process"].includes(token.valor)) continue;
+    const globalCalculado = token.cadena && lista[indice - 2]?.valor === "globalThis"
+      && lista[indice - 1]?.valor === "[" && lista[indice + 1]?.valor === "]";
+    if (token.cadena && !globalCalculado) continue;
     const acceso = lista[indice + 1]?.valor;
-    const global = lista[indice - 2]?.valor === "globalThis" && lista[indice - 1]?.valor === ".";
-    if (acceso !== "." && acceso !== "[" && !global) continue;
+    const global = globalCalculado || (lista[indice - 2]?.valor === "globalThis"
+      && [".", "?."].includes(lista[indice - 1]?.valor ?? ""));
+    const asignacion = !token.cadena && lista[indice - 1]?.valor === "=";
+    if (![".", "[", "?."].includes(acceso ?? "") && !global && !asignacion) continue;
     if (token.valor === "process" && archivo === "paquetes/rige/arranque/rige.ts") continue;
     if (token.valor === "Bun" && acceso === "." && lista[indice + 2]?.valor === "serve"
       && archivo === "paquetes/rige/interfaces/web/servidor.ts") continue;

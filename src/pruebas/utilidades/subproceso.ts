@@ -15,7 +15,7 @@ export function lanzar(temporal: string, argumentos: readonly string[], variable
   const proceso = Bun.spawnSync([process.execPath, "paquetes/rige/arranque/rige.ts", ...argumentos], {
     cwd: raiz,
     env: { ...crearEntornoAislado(temporal, process.env), RIGE_PUERTO: String(puertoLibre()), ...variables },
-    stdout: "pipe", stderr: "pipe", timeout: 2000,
+    stdout: "pipe", stderr: "pipe", timeout: 10000,
   });
   return { codigo: proceso.exitCode, salida: proceso.stdout.toString(), error: proceso.stderr.toString() };
 }

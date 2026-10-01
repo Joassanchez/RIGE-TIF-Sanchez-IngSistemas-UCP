@@ -1,10 +1,65 @@
-import { describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { describe, expect, spyOn, test } from "bun:test";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { crearEntornoAislado, variablesAisladas } from "../utilidades/entorno-aislado";
+import { lanzar } from "../utilidades/subproceso";
 
 const variables = variablesAisladas;
+
+describe("M-10 timeout de subprocesos", () => {
+  test("lanzar da diez segundos al subproceso", () => {
+    const temporal = mkdtempSync(join(tmpdir(), "rige-timeout-"));
+    const sonda = spyOn(Bun, "spawnSync");
+    try {
+      expect(lanzar(temporal, ["esquema"]).codigo).toBe(0);
+      expect(sonda).toHaveBeenCalledTimes(1);
+      expect(sonda.mock.calls[0]?.[1]).toMatchObject({ timeout: 10000 });
+    } finally {
+      sonda.mockRestore();
+      rmSync(temporal, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("M-12 verificar falla ante terminacion por senal", () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  function comprobar(etapa: "tsc" | "build", codigo: number | null) {
+    const temporal = mkdtempSync(join(tmpdir(), "rige-senal-"));
+    try {
+      const precarga = join(temporal, "precarga.ts");
+      // El doble vive en un subproceso: no altera Bun ni process del ejecutor.
+      writeFileSync(precarga, `
+        Bun.spawnSync = (argumentos) => {
+          const etapa = argumentos[1] === "build" ? "build" : "tsc";
+          console.log(etapa);
+          return { exitCode: etapa === ${JSON.stringify(etapa)} ? ${JSON.stringify(codigo)} : 0 };
+        };
+      `);
+      const resultado = Bun.spawnSync([process.execPath, "--preload", precarga, "./herramientas/verificar.ts"], {
+        cwd: raiz,
+        env: { ...crearEntornoAislado(temporal, process.env), TEMP: temporal, TMP: temporal },
+        stdout: "pipe", stderr: "pipe",
+      });
+      expect(resultado.stderr.toString()).toBe("");
+      expect(readdirSync(temporal)).toEqual(["precarga.ts"]);
+      return { codigo: resultado.exitCode, etapas: resultado.stdout.toString().trim().split(/\r?\n/) };
+    } finally { rmSync(temporal, { recursive: true, force: true }); }
+  }
+  for (const etapa of ["tsc", "build"] as const) {
+    test(`${etapa}: null se traduce a falla y conserva un codigo no cero`, async () => {
+      const proyectos = 1 + (await Bun.file(join(raiz, "tsconfig.json")).json()).references.length;
+      const etapas = etapa === "tsc" ? ["tsc"] : [...Array<string>(proyectos).fill("tsc"), "build"];
+      for (const codigo of [null, 7]) {
+        expect(comprobar(etapa, codigo)).toEqual({ codigo: codigo ?? 1, etapas });
+      }
+    });
+  }
+  test("cero sigue siendo exito tras comprobar tipos y build", async () => {
+    const proyectos = 1 + (await Bun.file(join(raiz, "tsconfig.json")).json()).references.length;
+    expect(comprobar("build", 0)).toEqual({ codigo: 0, etapas: [...Array<string>(proyectos).fill("tsc"), "build"] });
+  });
+});
 
 describe("M-8 subprocesos compartidos", () => {
   test("aceptacion usa el helper y RNF-09 usa el ciclo de vida de cada describe", async () => {
