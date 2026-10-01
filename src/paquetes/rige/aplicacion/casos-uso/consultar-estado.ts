@@ -1,10 +1,10 @@
 import type { PuertoAlmacen } from "../puertos/almacen";
 import type { Resultado } from "../../../nucleo/resultado";
 import type { ErrorUso } from "../errores";
-import { respuestaEstado, type RespuestaPreparacion } from "../respuestas/estado";
+import { respuestaEstado, type RespuestaEstado } from "../respuestas/estado";
 
-export function prepararAlmacen(almacen: PuertoAlmacen): Resultado<RespuestaPreparacion, ErrorUso> {
-  const resultado = almacen.preparar();
+export function consultarEstado(almacen: PuertoAlmacen): Resultado<RespuestaEstado, ErrorUso> {
+  const resultado = almacen.consultar();
   if (!resultado.exito) return resultado;
   return {
     exito: true,
