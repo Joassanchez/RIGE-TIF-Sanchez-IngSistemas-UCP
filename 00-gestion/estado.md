@@ -25,11 +25,11 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | borrador | AE2 | 01/10/2026 |
 | IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | borrador | AE2 | 01/10/2026 |
 | IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | borrador | AE2 | 01/10/2026 |
-| V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | borrador | AE2 | 29/09/2026 |
-| V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | borrador | AE2 | 29/09/2026 |
-| V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 29/09/2026 |
-| V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 29/09/2026 |
+| V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | borrador | AE2 | 01/10/2026 |
+| V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | borrador | AE2 | 01/10/2026 |
+| V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | borrador | AE2 | 01/10/2026 |
+| V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 01/10/2026 |
+| V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 01/10/2026 |
 | X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 29/09/2026 |
 | X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 28/09/2026 |
 | X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 28/09/2026 |

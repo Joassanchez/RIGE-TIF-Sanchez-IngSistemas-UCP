@@ -90,3 +90,14 @@ El relevamiento de competidores del 01/10/2026 (33 herramientas; nómina en `00-
 | Cap. I y II, menciones a «ninguna solución relevada explica una decisión de permiso» | Revisar con el mismo criterio |
 | I.1 | Dice que la extensión para Claude Code no detecta relaciones; el A.I.4 del 01/10/2026 registra solapamientos y duplicados |
 | Anexo I del Cap. III, fila HA-5 | Conserva «ninguna solución explica decisiones de permiso»: alinear con D-59 (no es AE1, pero se corrige junto con el hallazgo 5) |
+
+## 9. Motivo de la reformulación de la línea de base (criterio del autor, 01/10/2026)
+
+El informe explica el cambio de la línea de base **solo** por la entrevista con la referente (la consulta del entorno ya se delega en un agente) y por la reorientación del proyecto. No se menciona la dificultad de reclutar participantes ni que las sesiones con personas no se realizaron. Criterio ya aplicado en V.1 y en D-41 del Anexo III. Revisar con el mismo criterio:
+
+| Dónde | Qué revisar |
+|---|---|
+| Anexo III, D-16 | Exclusión de la referente de la muestra y «objetivo de reclutamiento»: decisión del diseño con personas, superada por D-41 |
+| II.2 | «Población, muestra y perfiles»: convocatoria de desarrolladores |
+| II.5, amenaza A3 | «Escasez de usuarios de OpenCode disponibles para el reclutamiento» |
+| II.6 | «La muestra de la medición experimental será pequeña y autoseleccionada» |

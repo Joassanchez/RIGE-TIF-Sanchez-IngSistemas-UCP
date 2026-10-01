@@ -2,7 +2,7 @@
 """Genera la Figura 3 del Cap. V (cronograma con dependencias) a partir de la Tabla 18.
 
 Fuente de los datos: informe/cap-05/V.4-cronograma.md (Tablas 17 y 18, con ADR-046 y ADR-047) y
-V.2 (hitos y entregables documentales). Las barras técnicas se dimensionan en proporción
+V.2 (hitos y entregables documentales). La iteración 1 se presenta por los incrementos 0 a 5 con que se construye el v1. Las barras técnicas se dimensionan en proporción
 a las horas de cada tarea dentro de las fechas de su iteración; las de la reserva
 documental, por sus fechas declaradas. La fase de cierre se dibuja rayada porque su
 duración se estima.
@@ -26,17 +26,20 @@ D = lambda s: dt.datetime.strptime(s + "/2026", "%d/%m/%Y")
 # Las tareas sin dependencia dentro de la iteración arrancan al inicio; las demás, al
 # terminar su predecesora. Horas: Tabla 18 corregida (ADR-046; ADR-064: RNF-09, RNF-10, RF-16 y estabilización de 11 h).
 ITERACIONES = [
+    # Iteración 1 por incrementos (U-01, tablero): mismas 35 h de la Tabla 18.
     ("Iteración 1", "21/09", "01/10", [
-        ("repo", "Repositorio, canal de CI y entorno", 8, None),
-        ("adap", "Adaptador mínimo (RF-01)", 8, "repo"),
-        ("nucleo", "Núcleo y almacén (RF-01, RNF-01, RNF-03)", 10, "adap"),
-        ("ui1", "Interfaz, seguridad web (RNF-09) y pruebas de aceptación", 9, "nucleo"),
+        ("inc0", "Inc. 0 · Esqueleto: repositorio, CI y entorno (RNF-03, RNF-09)", 8, None),
+        ("inc1", "Inc. 1 · Núcleo: resolución con procedencia (RF-01)", 6, "inc0"),
+        ("inc2", "Inc. 2 · Adaptador y resultados de referencia (RF-01)", 8, "inc1"),
+        ("inc3", "Inc. 3 · Almacén (RF-17, RNF-01)", 4, "inc2"),
+        ("ui1", "Inc. 4 · Web y recorrido de punta a punta", 5, "inc3"),
+        ("inc5", "Inc. 5 · Archivo de lectura, clonado y etiqueta v1", 4, "ui1"),
     ]),
     # Iteración 2 (ADR-047): hasta el resultado de la línea de base (16/10) avanzan las tareas que no
     # dependen de él; después, el orden que fija la Tabla 13 («Confirma»: explicación y vista web antes
     # que RF-06, RF-08 y RF-09; «Reordena»: RF-06 al frente).
     ("Iteración 2", "02/10", "24/10", [
-        ("evalu", "Incorporación del evaluador de permisos (RF-02, RNF-10)", 10, "ui1"),
+        ("evalu", "Incorporación del evaluador de permisos (RF-02, RNF-10)", 10, "inc5"),
         ("cadena", "Cadena de reglas y herencia (RF-02)", 10, "evalu"),
         ("cli", "Línea de comandos: valores y permisos (RF-03)", 10, "cadena"),
         ("h18", "Verificación de H-18 y trabajo de oráculo", 4, "cli"),
@@ -54,8 +57,9 @@ ITERACIONES = [
         ("estab", "Estabilización, clonado y acreditación de RNF-06 y RNF-07", 11, "esc"),
     ]),
 ]
-# Dependencias adicionales entre iteraciones (origen → destino).
-EXTRA = [("nucleo", "hall"), ("cadena", "hall"), ("cadena", "ext")]
+# Las dependencias que no son entre tareas consecutivas (núcleo → hallazgos, cadena → hallazgos y
+# cadena → RF-06) se declaran en el texto de V.4 y no se dibujan, para que la figura se lea.
+EXTRA = []
 LINEA_BASE = ("Resultado de la\nlínea de base", "16/10")  # V.1; Tabla 13 de IV.3
 
 HITOS = [("v1", "01/10"), ("v2", "24/10"), ("v3", "07/11"), ("congelada", "14/11")]
@@ -64,7 +68,8 @@ CIERRE = ("15/11", "28/11")  # fase de cierre estimada (V.4, línea 16: dos sema
 TECNICA_ESTIMADA = [("medfin", "Reverificación de casos y medición final", "estab")]
 RESERVA = [
     ("Informe AE2 (III, IV, V y X)", "21/09", "01/10"),
-    ("Línea de base con agentes", "02/10", "16/10"),
+    ("Línea de base: preparación (arnés, contenedor y piloto)", "02/10", "14/10"),
+    ("Línea de base: ejecución (uno o dos días)", "15/10", "16/10"),
     ("Ventana de Mejora y correcciones del AE1", "09/10", "16/10"),
     ("Capítulos VI y IX", "13/10", "29/10"),
 ]
@@ -95,7 +100,7 @@ def dibujar(salida: pathlib.Path):
     n_tec = len(filas)
 
     plt.rcParams.update({"font.family": "serif", "font.size": 10})
-    fig, ax = plt.subplots(figsize=(11, 6.8), dpi=200)
+    fig, ax = plt.subplots(figsize=(11.5, 7.6), dpi=200)
     y = {}
     for k, (tid, et, a, b) in enumerate(filas):
         y[tid] = k
@@ -124,6 +129,8 @@ def dibujar(salida: pathlib.Path):
                     arrowprops=dict(arrowstyle="-|>", color=ROJO, lw=0.9,
                                     connectionstyle="angle,angleA=0,angleB=90,rad=0"))
 
+    ax.axhline(n_tec - 0.5, color="#bbb", lw=0.8)
+
     # bandas de iteración e hitos
     total = len(etiquetas)
     for k, (nombre, a, b, _) in enumerate(ITERACIONES):
@@ -137,14 +144,15 @@ def dibujar(salida: pathlib.Path):
     et_lb, f_lb = LINEA_BASE
     x_lb = D(f_lb) + dt.timedelta(days=1)
     ax.axvline(x_lb, color=GRIS, ls=":", lw=1.2)
-    ax.text(x_lb, -1.1, et_lb, ha="center", va="center", fontsize=8, color="#555")
+    ax.text(x_lb, -2.0, et_lb, ha="center", va="center", fontsize=8, color="#555")
     for et, f in HITOS:
         x = D(f) + dt.timedelta(days=1)
         ax.axvline(x, color="#555", ls="--", lw=0.9)
-        ax.text(x, -1.1, et, ha="center", va="center", fontsize=10, color="#333")
+        ax.plot([x], [-0.9], marker="D", ms=7, color="#333", clip_on=False, zorder=5)
+        ax.text(x + dt.timedelta(hours=14), -0.9, et, ha="left", va="center", fontsize=10, color="#333")
 
     ax.set_yticks(range(total), etiquetas)
-    ax.set_ylim(total + 1, -1.6)
+    ax.set_ylim(total + 1, -2.6)
     ax.set_xlim(D("21/09"), c1)
     ax.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
@@ -155,7 +163,7 @@ def dibujar(salida: pathlib.Path):
                Patch(color=GRIS, label="Tarea de la reserva documental"),
                Patch(facecolor="white", edgecolor=GRIS, hatch="///", label="Tarea documental estimada"),
                Line2D([], [], color=ROJO, marker=">", label="Dependencia"),
-               Line2D([], [], color="#555", ls="--", label="Hito de la cadencia"),
+               Line2D([], [], color="#555", ls="--", marker="D", ms=5, label="Hito de la cadencia"),
                Line2D([], [], color=GRIS, ls=":", label="Resultado de la línea de base")]
     ax.legend(handles=leyenda, loc="upper center", bbox_to_anchor=(0.5, -0.07), ncol=3, frameon=False, fontsize=9)
     fig.tight_layout()

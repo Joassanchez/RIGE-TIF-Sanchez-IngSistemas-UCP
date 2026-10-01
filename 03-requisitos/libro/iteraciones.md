@@ -20,7 +20,7 @@
 | Integrantes del equipo                           | 1, de autoría individual                                                                 |
 | Horas semanales reales por integrante            | 28 h: 20 técnicas y 8 de reserva documental                                              |
 | Presupuesto total del período                    | 224 h en ocho semanas, del 21/09 al 14/11/2026: 160 técnicas y 64 de reserva             |
-| Reducción prevista (exámenes, feriados)          | 15 %, equivalente a 34 h: 24 técnicas y 10 de reserva                                    |
+| Reducción prevista de disponibilidad          | 15 %, equivalente a 34 h: 24 técnicas y 10 de reserva                                    |
 | **Presupuesto efectivo resultante**              | **190 h: 136 técnicas y 54 de reserva**                                                  |
 | Fase de cierre posterior al período (estimación) | 48 h efectivas en las semanas 15 y 16, sujetas a la confirmación de las fechas de la AE4 |
 
@@ -28,12 +28,12 @@
 
 | **Iteración** | **Tarea**                                                                           | **Requisitos**                              | **Horas** |
 |---------------|-------------------------------------------------------------------------------------|---------------------------------------------|-----------|
-| 1             | Repositorio, canal de integración continua y entorno de ejecución                   | Condición (a) de la definición de terminado | 8         |
-| 1             | Adaptador mínimo: lectura de tres entradas de archivo con su posición               | RF-01                                       | 8         |
-| 1             | Núcleo: resolución con procedencia conforme a RD-01                                 | RF-01, RNF-03                               | 6         |
-| 1             | Almacén propio: esquema, escritura y lectura de la resolución                       | RF-17, RNF-01                               | 4         |
-| 1             | Interfaz mínima de selección del proyecto y consulta                                | RF-01, RNF-09                               | 5         |
-| 1             | Pruebas de aceptación y primeros resultados de referencia                           | RF-01, RNF-01, RNF-03                       | 4         |
+| 1 | Incremento 0 · Esqueleto: repositorio, canal de integración continua y entorno | Condición (a) de la definición de terminado; RNF-03, RNF-09 | 8 |
+| 1 | Incremento 1 · Núcleo: resolución con procedencia conforme a RD-01 | RF-01, RNF-03 | 6 |
+| 1 | Incremento 2 · Adaptador: lectura de tres entradas de archivo con su posición, y primeros resultados de referencia | RF-01 | 8 |
+| 1 | Incremento 3 · Almacén propio: esquema, escritura y lectura de la resolución | RF-17, RNF-01 | 4 |
+| 1 | Incremento 4 · Interfaz web y recorrido de punta a punta | RF-01, RF-17 | 5 |
+| 1 | Incremento 5 · Archivo de lectura, prueba de clonado y etiqueta v1 | Condición de aceptación del v1 (apartado V.2) | 4 |
 |               | **Subtotal de la iteración 1**                                                      |                                             | **35**    |
 | 2             | Incorporación del evaluador de permisos de OpenCode, con atribución                 | RF-02, RNF-10                               | 10        |
 | 2             | Cadena ordenada de reglas y herencia hacia subagentes conforme a RD-03 y RD-05      | RF-02                                       | 10        |
