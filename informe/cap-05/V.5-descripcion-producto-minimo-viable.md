@@ -17,8 +17,8 @@ RF-05, RF-08 y RF-09 extienden el flujo de otros casos de uso: ante una versión
 
 | **Casos de uso expresamente excluidos del producto mínimo viable**                                 | **Iteración prevista**                                                           |
 |----------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
-| Informar la disponibilidad de la herramienta para el modelo junto con la decisión (RF-10, Should) | Sin asignar; se incorpora si las horas lo permiten |
-| Consultar el resumen del ecosistema por tipo de elemento y por tipo de hallazgo (RF-11, Should)    | Sin asignar; se incorpora si las horas lo permiten |
+| Informar la disponibilidad de la herramienta para el modelo junto con la decisión (RF-10, Should) | Tercera iteración, si las horas lo permiten |
+| Consultar el resumen del ecosistema por tipo de elemento y por tipo de hallazgo (RF-11, Should)    | Tercera iteración, si las horas lo permiten |
 | Informar la localización de cada declaración en el formato ruta:línea:columna (RF-12, Should)     | Segunda iteración, si las horas lo permiten                                      |
 | Explorar las relaciones entre los elementos del ecosistema (RF-13, Could)                          | Fuera del período                                                                |
 | Consultar por línea de comandos el estado resuelto completo (RF-14, Could)                         | Fuera del período                                                                |
