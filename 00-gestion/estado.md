@@ -21,10 +21,10 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | revisada | AE2 | 01/10/2026 |
 | III.4 | `informe/cap-03/III.4-limites-sistema.md` | revisada | AE2 | 01/10/2026 |
 | III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | revisada | AE2 | 01/10/2026 |
-| IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | borrador | AE2 | 28/09/2026 |
-| IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | aprobada (migración) | AE2 | 24/09/2026 |
-| IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | borrador | AE2 | 28/09/2026 |
-| IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | aprobada (migración) | AE2 | 24/09/2026 |
+| IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | borrador | AE2 | 01/10/2026 |
+| IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | borrador | AE2 | 01/10/2026 |
+| IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | borrador | AE2 | 01/10/2026 |
+| IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | borrador | AE2 | 01/10/2026 |
 | V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | borrador | AE2 | 29/09/2026 |
 | V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | borrador | AE2 | 29/09/2026 |
 | V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | aprobada (migración) | AE2 | 24/09/2026 |

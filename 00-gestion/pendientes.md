@@ -17,8 +17,8 @@ Severidad: **B** bloqueante · **I** importante · **M** menor.
 | G-01 | **Marcadores residuales** (`armar.py` bloquea la entrega). Quedan 5 en los Caps. III a V: `\[enlace\]`, `\[estado\]` y `\[fecha\]` en V.5 (dependen de U-01) y dos `[DATO PENDIENTE]` en RNF-07 del Anexo I (PV-01, PV-02). | B |
 | PV-01 | **RNF-07 · equipo de referencia.** Construir la imagen de ADR-054 y registrar su resumen; precisar «máquina virtual» como «contenedor Ubuntu 26.04 sobre Docker Desktop y WSL 2» en la ficha de RNF-07 y el Anexo I. Datos del anfitrión ya relevados: Samsung Galaxy Book3 (750XFG), Intel Core i7-1355U (10 núcleos, 12 hilos), 16 GB, SSD NVMe 512 GB, Windows 11 Home 10.0.26200. | I |
 | PV-02 | **RNF-07 · proyecto público.** Elegido openchamber (`fc012ae`) por ADR-071 (aceptado el 01/10/2026). **Falta:** verificar que resuelve con OpenCode 1.18.25 sin entradas ilegibles, junto con el contenedor (PV-01, AD-26), y darlo de alta con `/fuente`. | I |
-| IV-05 | **IV.1, Tabla 10, fila «Canales»:** dice «Repositorio público con versiones publicadas», en contradicción con X.4 y el Instrumento 34 (repositorio privado con el docente como colaborador, publicado bajo MIT tras la aprobación; ADR-057). Corregir con `/corregir` sobre IV.1, precisando que la publicación es posterior a la aprobación del TIF. IV.1 vuelve a «borrador». | I |
 | M-09 | Revisar la legibilidad de la Figura 3 en el `.docx`. | M |
+| IV-06 | **Cap. IV corregido el 01/10/2026** (ADR-075, ficha `20261001-cap4`, Codex). **Falta:** (1) revisión del autor de IV.1 a IV.4 y del A.I.4; (2) declarar en la bitácora la búsqueda de competidores con Codex (`gpt-6.1-sol`, búsqueda web, nómina en `00-gestion/fichas-redaccion/20261001-cap4-nomina-competidores.md`) y la redacción con Codex (se suma a AR-11); (3) verificar con `/revisar` las 26 fuentes «sin verificar» dadas de alta el 01/10/2026 (verificador de fuentes); (4) arrastres a la Ventana, §8. | I |
 
 ## 2. Prototipo v1
 
@@ -71,7 +71,7 @@ Severidad: **B** bloqueante · **I** importante · **M** menor.
 
 | # | Pendiente | Sev. |
 |---|---|---|
-| PV-03 | Procedimiento de conteo para la referente (en `01-relevamiento/validacion/`), con aviso de las correcciones posteriores a la sesión del 26/09/2026: enunciado de RNF-07; tres correcciones del modelo del dominio (Elemento–Declaración 0..*, la entrada como destino de un hallazgo, Regla de permiso «declarada o nativa» y su definición en el glosario); iteración de RNF-02 (2 → 3). El envío lo hace el autor. | M |
+| PV-03 | Procedimiento de conteo para la referente (en `01-relevamiento/validacion/`), con aviso de las correcciones posteriores a la sesión del 26/09/2026: CA-8 y motivo de prioridad de RF-02 (ADR-075); enunciado de RNF-07; tres correcciones del modelo del dominio (Elemento–Declaración 0..*, la entrada como destino de un hallazgo, Regla de permiso «declarada o nativa» y su definición en el glosario); iteración de RNF-02 (2 → 3). El envío lo hace el autor. | M |
 | PV-05 | **Cerrado por ADR-073 (01/10/2026):** E-01 es el CA-6 de RF-03 y E-02 es el CA-2 de RF-17. Se conserva la fila hasta el próximo `/cerrar`. | M |
 | PV-06 | El resultado 23 del AE1 (OpenCode escribe al arrancar) conserva dos `[DATO PENDIENTE]`; condiciona el aislamiento del oráculo y si su regeneración requiere red. Ver `ventana-ae1.md`, §5. | M |
 | PV-08 | Tabla 5 de III.2 acotada el 01/10/2026 (instrucciones, comandos y skills sin compromiso del período) y siete tipos de RF-04 enumerados por ADR-073. **Falta (Cap. VI):** confirmar que la enumeración coincide con los «siete tipos» originales (condición 2 de ADR-073). | M |

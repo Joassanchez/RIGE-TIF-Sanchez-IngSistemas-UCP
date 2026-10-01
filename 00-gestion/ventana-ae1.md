@@ -78,3 +78,15 @@ No se rehacen las seis funciones; se corrigen estos puntos para que el AE1 no co
 | I.6.2, F6 | «Localizar y abrir en el editor la declaración» pasa a «informar la localización en formato ruta:línea:columna» (RF-12); RIGE no abre el editor |
 | I.6.2, F6 | «Exportar el estado resuelto a un archivo» pasa a «informar por línea de comandos el estado resuelto completo de un proyecto» (RF-14) |
 | I.6.2, F4 | La matriz de agentes por tipo de permiso y la consulta inversa se declaran fuera del período (RF-15, Won't) |
+
+## 8. Estado del arte y diferencial (ADR-075, relevamiento del 01/10/2026)
+
+El relevamiento de competidores del 01/10/2026 (33 herramientas; nómina en `00-gestion/fichas-redaccion/20261001-cap4-nomina-competidores.md`) mostró que Amp y Codex ya evalúan una acción y devuelven la regla coincidente, sin procedencia por declaración. El A.I.4 se corrige junto con el Cap. IV (ficha `20261001-cap4`). Quedan para la Ventana:
+
+| Dónde | Cambio |
+|---|---|
+| Hallazgo 5 del AE1 (distinción entre listar reglas y explicar una decisión) | Precisar que la distinción vale dentro de OpenCode; en otras herramientas, Amp y Codex evalúan la decisión sin procedencia por declaración. El diferencial es la combinación (ADR-075) |
+| II.5, Tabla 17, amenaza A1 | La amenaza deja de ser hipotética: dos proveedores construyeron parte de la función. La implicancia «el valor reside en la explicación de permisos…» pasa a la combinación de decisión y procedencia por declaración |
+| Cap. I y II, menciones a «ninguna solución relevada explica una decisión de permiso» | Revisar con el mismo criterio |
+| I.1 | Dice que la extensión para Claude Code no detecta relaciones; el A.I.4 del 01/10/2026 registra solapamientos y duplicados |
+| Anexo I del Cap. III, fila HA-5 | Conserva «ninguna solución explica decisiones de permiso»: alinear con D-59 (no es AE1, pero se corrige junto con el hallazgo 5) |
