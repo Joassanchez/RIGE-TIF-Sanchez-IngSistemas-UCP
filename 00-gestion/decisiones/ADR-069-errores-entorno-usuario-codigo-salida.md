@@ -1,6 +1,6 @@
 # ADR-069 — Errores del entorno del usuario: error de uso (código 1) cuando RIGE puede detectarlos antes de operar
 
-- Estado: propuesto
+- Estado: aceptado (01/10/2026)
 - Fecha: 30/09/2026
 - Capítulos afectados: ninguno del cuerpo del AE2. Precisa el contrato de salida de la CLI (ADR-058) y los códigos estables de ADR-066. Afecta `src/paquetes/rige/adaptadores/` y `src/pruebas/aceptacion/arranque.test.ts` (regla A-4 de la ficha T0-11a)
 - Origen: revisión del incremento 0 (`/revisar-codigo incremento inc0-esqueleto`, 30/09/2026), punto 12 de `critico-codigo`
@@ -33,7 +33,7 @@ ADR-058 separa el error de uso (código 1, «JSON de error con código estable»
 
 ### Decisión del autor
 
-[DECISIÓN PENDIENTE: el autor acepta, modifica o rechaza.]
+Aceptado por el autor el 01/10/2026 (`/aceptar ADR-069`), con la recomendación E-B completa. Se programa como ficha al comienzo del incremento 1 o como corrección del incremento 0.
 
 ### Consecuencias
 

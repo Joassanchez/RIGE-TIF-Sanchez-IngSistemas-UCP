@@ -25,6 +25,68 @@ Quedan fuera de ese alcance, y se realizan de manera propia, la delimitación de
 
 ## Entradas de la AE2
 
+### Entrada · Miércoles 30 de septiembre (noche) y jueves 1 de octubre de 2026 — Cierre del incremento 0 del prototipo: T0-11a a T0-13, revisión del incremento y unión con `main` (ADR-069 y ADR-070)
+
+<!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->
+
+1. **Decisión adoptada.**
+   - **Contrato de errores de la CLI:** fijé tres puntos que ningún ADR fijaba:
+     - forma del error `{"esquema":1,"error":{"codigo","mensaje"}}`;
+     - código `argumentos-invalidos` para la salida 2;
+     - campo `stack` dentro del mismo JSON con `--depurar`.
+
+     Los registré en las fichas, sin ADR propio.
+   - **Prueba del método de ADR-067 sin supervisión:** autoricé al ingeniero a resolver las consultas con su recomendación. Así se cerraron T0-11a (estado, contrato de la CLI y arranque), T0-11b (servidor y página de inicio), T0-12 (seguridad web, RNF-09) y T0-13 (README §3 a §8).
+   - **Revisión del incremento** con `revisor-codigo` y `critico-codigo`: conforme, sin bloqueantes. Elegí aplicar todas las mejoras recomendadas:
+     - inc0-c1: versión de SQLite en el README;
+     - inc0-c2: escape cerrado por tipos y cabeceras de defensa;
+     - inc0-c3: CLI por tabla y mensajes del almacén;
+     - inc0-c4: imports del workspace, `verificar` legible y guardas simplificadas.
+   - **ADR-069 (aceptado):** un error del entorno que RIGE detecta antes de operar da código 1, no 70.
+   - **ADR-070 (aceptado):** guardas de arquitectura con un analizador propio, sin herramientas externas.
+   - Uní `inc0-esqueleto` con `main` (`b1432eb`).
+2. **Alternativas evaluadas y criterio de descarte (recortes).**
+   - **Subcomando `estado` en la CLI:** descartado, porque ADR-062 C1 cierra la lista de subcomandos. `consultar-estado` lo usa solo `servir`.
+   - **C6, precisar ADR-061 para admitir `existsSync` en el almacén:** descartado. Reabrir un ADR aceptado no se justifica por una clase de ocho líneas.
+   - **Diagnóstico con `--depurar` en la web:** diferido a RNF-04.
+   - **ADR-069 sin programar:** se aceptó después de cerrar el incremento y su ficha va al comienzo del incremento 1.
+   - **Solo T0-11a y luego el resto en otra sesión:** descartado. Las fichas siguientes entraron en la misma jornada sin superar la cuota.
+3. **Evidencia.**
+   - **CI en verde en `ubuntu-latest` y `windows-latest`:**
+     - primera corrida: 30/09/2026 22:26 (UTC−3), commit `11c852e`, corrida `36801042650`;
+     - después en `c0c84bf` y en `c27aea2`, y en `main` sobre `b1432eb`.
+   - **Suite:** 324 pruebas en verde y `bun run verificar` en PASS en `main`.
+   - **Medición** (`00-gestion/fichas/inc0/INDICE.md`):
+
+     | Tarea | Commit | Reloj | Entrada (caché) | Cuota 5 h |
+     |---|---|---|---|---|
+     | T0-11a | `f173541` | ≈ 13 min | 1,46 M (1,37 M) | +6 |
+     | T0-11b | `cacefc0` | ≈ 12 min | 1,38 M | +5 |
+     | T0-12 | `060eca3` | ≈ 9 min | 1,21 M | +5 |
+     | T0-13 | `ad33f14` | ≈ 7 min | 1,08 M | +4 |
+     | inc0-c1 | `836a180` | ≈ 2 min | 0,44 M | +1 |
+     | inc0-c4 | `496c514`, `bb4f2c5` | ≈ 21 min | 4,27 M | +10 |
+     | inc0-c2 | `56b633e` | ≈ 6 min | 0,95 M | +3 |
+     | inc0-c3 | `4f08efe` | ≈ 12 min | 2,69 M | +7 |
+
+   - **Totales:** ≈ 82 min de escritor y ≈ 13,5 M de tokens de entrada, casi todos en caché. Cuota semanal de Codex: 26 → 33 %.
+   - **Contra la línea de base de ADR-065** (≈ 1 h y ≈ 8 M por tarea): todas las tareas quedan dentro de la meta de reloj (15 min). En tokens, dos ejecuciones la superan:
+     - la reanudación de inc0-c4, que arrastró toda la sesión;
+     - inc0-c3, que tocó 20 archivos.
+4. **Aporte personal.**
+   - Fijé el contrato de errores de la CLI.
+   - Decidí probar el método sin supervisión.
+   - Subí la rama para la primera corrida del CI.
+   - Elegí el paquete de mejoras.
+   - Uní con `main`.
+   - Acepté ADR-069 y ADR-070.
+   - Artefactos: `00-gestion/fichas/inc0/` (T0-11a a T0-13 e inc0-c1 a inc0-c4), ADR-069, ADR-070, `src/README.md`, `04-diseno/README.md` §1 y la rama unida en `main`.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos en la jornada.
+6. **Herramientas auxiliares.** Asistencia conforme al criterio general declarado (ADR-067, regla 10):
+   - **Claude Code** (`claude-opus-5-5`): fichas, ADR-069 y ADR-070, orquestación, ejecución de pruebas de control, revisión de los diffs y consulta del CI. Subagentes: `revisor-codigo` (Sonnet 5.5) y `critico-codigo` (Opus 5.5).
+   - **Codex CLI** (`gpt-6.1-sol`, esfuerzo `high`, o `medium` en T0-13 e inc0-c1; plan ChatGPT Plus): implementación con TDD y commits en `inc0-esqueleto`.
+   - Artefactos: `src/` y `00-gestion/`.
+
 ### Entrada · Miércoles 30 de septiembre de 2026 (cierre) — Incremento 0 del prototipo hasta T0-10 y cambio del método de programación (ADR-066 y ADR-067)
 
 <!-- BORRADOR generado con /cerrar. Lo revisa y aprueba el autor. -->

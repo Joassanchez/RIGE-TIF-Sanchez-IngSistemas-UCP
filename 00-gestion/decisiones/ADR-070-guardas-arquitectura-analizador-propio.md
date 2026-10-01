@@ -1,6 +1,6 @@
 # ADR-070 — Guardas de arquitectura con un analizador léxico propio sobre el escáner de TypeScript
 
-- Estado: propuesto
+- Estado: aceptado (01/10/2026)
 - Fecha: 30/09/2026
 - Capítulos afectados: ninguno del cuerpo del AE2. Alimenta el capítulo de diseño de una entrega posterior (verificación de RNF-03). Afecta `src/pruebas/utilidades/analisis-arquitectura.ts` y `src/pruebas/arquitectura/`
 - Origen: revisión del incremento 0 (`/revisar-codigo incremento inc0-esqueleto`, 30/09/2026), punto 10 de `critico-codigo` (pregunta probable del tribunal)
@@ -36,7 +36,7 @@ La elección no está registrada en ningún ADR, y la pregunta «¿por qué no u
 
 ### Decisión del autor
 
-[DECISIÓN PENDIENTE: el autor acepta, modifica o rechaza.]
+Aceptado por el autor el 01/10/2026 (`/aceptar ADR-070`), con la recomendación A-A y sus dos límites, ya aplicados en la ficha inc0-c4 (`496c514`, `bb4f2c5`).
 
 ### Consecuencias
 
