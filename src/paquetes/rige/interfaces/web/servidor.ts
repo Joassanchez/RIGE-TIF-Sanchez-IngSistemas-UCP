@@ -1,20 +1,22 @@
 import type { consultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
 import { errorPuertoOcupado, type ErrorUso } from "../../aplicacion/errores";
 import { conErrores, paginaErrorUso } from "./intermedios/errores";
+import { conVerificacionDeOrigen } from "./intermedios/origen";
 import { paginaInicio } from "./paginas/inicio";
 import { html } from "./plantillas";
 
 export type ConsultarEstado = () => ReturnType<typeof consultarEstado>;
 
-export function crearManejador(consultar: ConsultarEstado): (solicitud: Request) => Response {
-  return conErrores((solicitud) => {
+export function crearManejador(puerto: number, consultar: ConsultarEstado): (solicitud: Request) => Response {
+  const enrutar = (solicitud: Request): Response => {
     if (new URL(solicitud.url).pathname !== "/") {
       const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>RIGE</title></head><body><p>Página no encontrada.</p></body></html>`;
       return new Response(pagina.texto, { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
     const resultado = consultar();
     return resultado.exito ? paginaInicio(resultado.valor) : paginaErrorUso(resultado.error);
-  });
+  };
+  return conErrores(conVerificacionDeOrigen(puerto, enrutar));
 }
 
 export interface ServidorIniciado {
@@ -26,7 +28,7 @@ export function iniciarServidor(puerto: number, consultar: ConsultarEstado):
   | { readonly exito: true; readonly valor: ServidorIniciado }
   | { readonly exito: false; readonly error: ErrorUso } {
   try {
-    const servidor = Bun.serve({ hostname: "127.0.0.1", port: puerto, fetch: crearManejador(consultar) });
+    const servidor = Bun.serve({ hostname: "127.0.0.1", port: puerto, fetch: crearManejador(puerto, consultar) });
     return {
       exito: true,
       valor: { direccion: `http://127.0.0.1:${puerto}`, detener: () => { servidor.stop(true); } },

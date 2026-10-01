@@ -10,23 +10,25 @@ const respuesta: RespuestaEstado = {
 
 describe("W-4", () => {
   test("consulta en cada inicio, presenta errores y omite la consulta en otras rutas", async () => {
+    const puerto = 12345;
+    const solicitar = (ruta = "/") => new Request(`http://127.0.0.1${ruta}`, { headers: { Host: `127.0.0.1:${puerto}` } });
     let llamadas = 0;
-    const manejar = crearManejador(() => { llamadas++; return { exito: true, valor: respuesta }; });
+    const manejar = crearManejador(puerto, () => { llamadas++; return { exito: true, valor: respuesta }; });
     for (let indice = 0; indice < 2; indice++) {
-      const inicio = manejar(new Request("http://127.0.0.1/"));
+      const inicio = manejar(solicitar());
       expect(inicio.status).toBe(200);
       expect(await inicio.text()).toBe(await paginaInicio(respuesta).text());
     }
     expect(llamadas).toBe(2);
-    const otra = manejar(new Request("http://127.0.0.1/otra"));
+    const otra = manejar(solicitar("/otra"));
     expect(otra.status).toBe(404);
     expect(otra.headers.get("Content-Type")).toBe("text/html; charset=utf-8");
     expect(await otra.text()).toContain("Página no encontrada.");
     expect(llamadas).toBe(2);
-    const uso = crearManejador(() => ({ exito: false, error: errorAlmacenSinEsquema }));
-    expect(uso(new Request("http://127.0.0.1/")).status).toBe(503);
-    const falla = crearManejador(() => { throw new Error("Detalle privado"); });
-    expect(falla(new Request("http://127.0.0.1/")).status).toBe(500);
+    const uso = crearManejador(puerto, () => ({ exito: false, error: errorAlmacenSinEsquema }));
+    expect(uso(solicitar()).status).toBe(503);
+    const falla = crearManejador(puerto, () => { throw new Error("Detalle privado"); });
+    expect(falla(solicitar()).status).toBe(500);
   });
 });
 
@@ -56,5 +58,38 @@ describe("W-5", () => {
     const servir = spyOn(Bun, "serve").mockImplementation(() => { throw falla; });
     try { expect(() => iniciarServidor(puerto, () => ({ exito: true, valor: respuesta }))).toThrow(falla); }
     finally { servir.mockRestore(); }
+  });
+});
+
+describe("O-4", () => {
+  test("verifica cualquier ruta antes de consultar y nunca emite cabeceras CORS", async () => {
+    const puerto = 12345;
+    let llamadas = 0;
+    const manejar = crearManejador(puerto, () => { llamadas++; return { exito: true, valor: respuesta }; });
+    const casos = [
+      ["/", "GET", { Host: `127.0.0.1:${puerto}` }, 200],
+      ["/otra", "GET", { Host: `localhost:${puerto}` }, 404],
+      ...["/", "/otra"].flatMap((ruta) => [
+        [ruta, "GET", { Host: `ajeno.example:${puerto}` }, 403],
+        [ruta, "GET", { Host: `127.0.0.1:${puerto}`, "Sec-Fetch-Site": "cross-site" }, 403],
+        [ruta, "POST", { Host: `127.0.0.1:${puerto}` }, 405],
+      ] as const),
+    ] as const;
+    const respuestas: Response[] = [];
+    for (const [ruta, method, headers, estado] of casos) {
+      const recibida = manejar(new Request(`http://127.0.0.1${ruta}`, { method, headers }));
+      expect(recibida.status).toBe(estado);
+      respuestas.push(recibida);
+    }
+    expect(llamadas).toBe(1);
+    const solicitud = () => new Request("http://127.0.0.1/", { headers: { Host: `127.0.0.1:${puerto}` } });
+    const uso = crearManejador(puerto, () => ({ exito: false, error: errorAlmacenSinEsquema }))(solicitud());
+    const falla = crearManejador(puerto, () => { throw new Error("Detalle privado"); })(solicitud());
+    expect(uso.status).toBe(503);
+    expect(falla.status).toBe(500);
+    expect(await falla.clone().text()).not.toContain("Detalle privado");
+    for (const recibida of [...respuestas, uso, falla]) {
+      expect([...recibida.headers.keys()].filter((nombre) => nombre.startsWith("access-control-"))).toEqual([]);
+    }
   });
 });
