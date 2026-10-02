@@ -1,9 +1,8 @@
 # Anexo I, A.I.6 — Issues de OpenCode sobre comportamiento inesperado de configuración y permisos
 
 **Proyecto Integrador Final · RIGE · Ingeniería en Sistemas de Información · UCP**
-**Sostiene:** apartado I.3.1, tercera consecuencia acreditada — "los reportes del repositorio de OpenCode sobre permisos o configuración con un comportamiento distinto del esperado aportan evidencia de ocurrencia, con [N] casos identificados en el período [ ]".
+**Sostiene:** apartado I.3.1, tercera consecuencia acreditada — "los reportes del repositorio de OpenCode sobre permisos o configuración con un comportamiento distinto del esperado aportan evidencia de ocurrencia, con 32 casos identificados en la historia completa del repositorio hasta la consulta del 17/09/2026".
 
-> Nota de numeración: se asigna el rótulo A.I.6 dejando A.I.5 para la entrevista al referente de EMSA, ya referenciada así en el Capítulo I. Ajustalo si tu numeración real es otra.
 
 ---
 
@@ -97,10 +96,3 @@ Rango temporal de los 46 candidatos: 28/11/2025 a 16/09/2026 (un día antes de l
 
 ---
 
-## 4. Advertencia sobre el uso de este número
-
-Esta clasificación la hice yo aplicando el criterio que definimos juntos; no es un conteo automático libre de juicio. Antes de citar "32 casos" en el informe final, te conviene:
-
-1. Revisar vos mismo al menos los casos marcados "Incluido" que te generen dudas — la clasificación de límite (por ejemplo, #19101 o #43748) es defendible pero no la única posible.
-2. Decidir si preferís informar el número agregado (32) o desagregarlo como en la Tabla 5 de tu diseño de línea base (por ejemplo, separando "precedencia/fusión" de "permisos" como subcategorías).
-3. Si en la Instancia Oral te preguntan por qué el filtro fue "ambos términos en el título" y no en título+cuerpo, la respuesta está en la sección 1 de este anexo: a la escala del repositorio, título+cuerpo sin restricción no es manejable ni defendible.

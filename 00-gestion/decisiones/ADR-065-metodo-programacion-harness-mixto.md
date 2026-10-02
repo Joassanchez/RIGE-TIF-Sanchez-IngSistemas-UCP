@@ -13,7 +13,7 @@ Con ADR-058 y ADR-060 se puede empezar a escribir el núcleo. Falta decidir con 
 **Datos del repositorio y de la verificación (registro original):**
 
 - **El autor usa OpenCode con gentle-ai** (configurador MIT de Gentleman Programming que instala flujo de trabajo, skills, memoria y una persona). En `~/.config/opencode/` constan `AGENTS.md` (persona de gentle-ai), `opencode.json`, `plugins/`, `skills/` y `commands/` (listado del 29/09/2026).
-- **Los estudios sobre OpenCode estuvieron aislados de esa configuración.** El laboratorio corrió cada sesión con `HOME`, `USERPROFILE` y `XDG_*` redirigidos a `./oc-lab/home/`, con una única fuga declarada: el directorio `state` (`01-relevamiento/linea-base/laboratorio-verificacion.md`, «Aislamiento»). La medición de la línea de base corre en el contenedor con usuarios propios (ADR-054). El 29/09/2026 no había variables `OPENCODE_*` definidas en el entorno del autor ni archivos `opencode.json` o `.opencode` en `C:\Users\Joa` o en `Documents`.
+- **Los estudios sobre OpenCode estuvieron aislados de esa configuración.** El laboratorio corrió cada sesión con `HOME`, `USERPROFILE` y `XDG_*` redirigidos a `./oc-lab/home/`, con una única fuga declarada: el directorio `state` (`01-relevamiento/opencode/laboratorio-verificacion.md`, «Aislamiento»). La medición de la línea de base corre en el contenedor con usuarios propios (ADR-054). El 29/09/2026 no había variables `OPENCODE_*` definidas en el entorno del autor ni archivos `opencode.json` o `.opencode` en `C:\Users\Joa` o en `Documents`.
 - **Carga de instrucciones de OpenCode 1.18.25** (`packages/opencode/src/session/instruction.ts:60-67, 115-125`, tag verificado en ADR-060): carga el primer archivo global que exista entre `<config>/AGENTS.md` y `~/.claude/CLAUDE.md`. En el proyecto, subiendo desde el directorio de trabajo hasta la raíz del worktree, carga el primer **tipo** de archivo que encuentre en el orden `AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`. Abierto en `src/`, carga `src/AGENTS.md` y ningún `CLAUDE.md`. Abierto en la raíz del repositorio, que no tiene `AGENTS.md`, cargaría el `CLAUDE.md` raíz (rol del ingeniero del TIF) junto con la persona de gentle-ai.
 - **La persona de gentle-ai** indica «Never add "Co-Authored-By" or AI attribution to commits», respuestas cortas y no presentar alternativas salvo bifurcación real (`~/.config/opencode/AGENTS.md`).
 - **Guía de comprobación del v1:** el `README.md` del prototipo declara las herramientas auxiliares con herramienta, función y artefacto afectado (`00-gestion/reglas-catedra.md`, sección 7).
@@ -147,7 +147,7 @@ Aceptado por el autor el 29/09/2026 (`/aceptar ADR-065`). En la sesión del 29/0
 
 - `~/.config/opencode/` del autor (listados del 29/09/2026: `AGENTS.md`, `opencode.json`, `skills/`, `prompts/sdd/`); `~/.gentle-ai/state.json` y `~/.gentle-ai/backups/`
 - gentle-ai, documentación oficial (`docs/usage.md`, sección ODD; `docs/intended-usage.md`; `docs/quickstart.md`) y notas de versiones 3.0.1 a 3.7.0, https://github.com/Gentleman-Programming/gentle-ai (consultadas el 29/09/2026)
-- `01-relevamiento/linea-base/laboratorio-verificacion.md` (sección 1, «Aislamiento»)
+- `01-relevamiento/opencode/laboratorio-verificacion.md` (sección 1, «Aislamiento»)
 - Código fuente de OpenCode, tag `v1.18.25`: `packages/opencode/src/session/instruction.ts` (verificación descrita en ADR-060)
 - `src/AGENTS.md`, `src/CLAUDE.md` y `.claude/settings.json` del repositorio
 - `00-gestion/reglas-catedra.md`, sección 7

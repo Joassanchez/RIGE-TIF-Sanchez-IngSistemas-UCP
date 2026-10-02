@@ -142,7 +142,7 @@ La aceptación de este registro solo autoriza la consolidación.
 ### Evidencia
 
 - Mediciones del equipo del 28/09/2026 (PV-01)
-- `01-relevamiento/opencode-como-funciona.md` (§3; líneas 19, 85, 347 y 355)
+- `01-relevamiento/opencode/como-funciona.md` (§3; líneas 19, 85, 347 y 355)
 - `01-relevamiento/linea-base/DISENO-medicion-agentes.md` (§2, regla 1; fases 1, 6 y 8)
 - `catedra/AE2-guia-comprobacion-v1.md`
 - `informe/cap-04/IV.1-definicion-negocios.md` y `IV.3-analisis-rivalidad-amplificada.md`

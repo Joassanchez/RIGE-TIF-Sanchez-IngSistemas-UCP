@@ -44,7 +44,7 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 
 | Elemento | Estado |
 |---|---|
-| Guía y acta | `01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md` (v2); antecedente v1 del 22/09 en la misma carpeta |
+| Guía y acta | `01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md` (v2); reemplaza a la v1 del 22/09/2026, retirada |
 | Contenido | Entorno (E-01, E-02) · límites L-01 a L-13 · decisiones de ingeniería (conocimiento) · 23 requisitos · 9 entidades y 11 relaciones · 13 reglas · vocabulario · prototipo v0 · consultas |
 | Sesión | Realizada el 26/09/2026, 17:00, presencial, 35 minutos. Los 82 puntos confirmados sin observaciones. Acta completada el 28/09/2026 |
 | Constancia de conformidad | Pendiente de firma (U-04) |

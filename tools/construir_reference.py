@@ -2,7 +2,7 @@
 """Genera tools/reference.docx: estilos del informe según la plantilla
 oficial de la AE2 y los Arts. 20.º y 21.º (A4, márgenes 2,5/3 cm, Times New Roman 12,
 interlineado doble, justificado, notas en 10, todo en negro). Tamaños de títulos, carátulas,
-sangría y tablas (Times New Roman 10) tomados del modelo del autor en 00-gestion/borradores/."""
+sangría y tablas (Times New Roman 10) tomados del modelo del autor en tools/modelo-autor.docx."""
 import subprocess, zipfile, re, pathlib, tempfile, shutil
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent

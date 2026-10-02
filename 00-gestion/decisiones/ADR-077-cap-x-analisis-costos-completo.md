@@ -23,15 +23,15 @@
 
 | Dato | Valor | Fuente o evidencia |
 |---|---|---|
-| Tipo de cambio | Billete vendedor BNA $1.545 por USD (01/10/2026, 17:00) | `bna-cotizaciones`; `00-gestion/evidencia-recursos/20261001-bna-cotizaciones.html` |
-| Valor de reposición del equipo | $2.200.000 («Mejor precio» publicado; caja abierta, última unidad), USD 1.423,95. Mismo modelo y configuración del equipo del autor | `mudi-notebook-book3` (no verificable en línea: HTTP 403); `00-gestion/evidencia-recursos/20261001-precio-notebook-mercadolibre.png` |
+| Tipo de cambio | Billete vendedor BNA $1.545 por USD (01/10/2026, 17:00) | `bna-cotizaciones`; `01-relevamiento/evidencia/bna-cotizaciones_20261001.html` |
+| Valor de reposición del equipo | $2.200.000 («Mejor precio» publicado; caja abierta, última unidad), USD 1.423,95. Mismo modelo y configuración del equipo del autor | `mudi-notebook-book3` (no verificable en línea: HTTP 403); `01-relevamiento/evidencia/mudi-notebook-book3_20261001.png` |
 | Compra del equipo | Enero de 2025 (declaración del autor) | Sesión del 01/10/2026 |
-| Batería | 48.371 / 54.362 mWh (88,98 %), 409 ciclos; semana 30/08–06/09: 48.892 mWh | `00-gestion/evidencia-recursos/20261001-reporte-bateria.html` |
+| Batería | 48.371 / 54.362 mWh (88,98 %), 409 ciclos; semana 30/08–06/09: 48.892 mWh | `01-relevamiento/evidencia/reporte-bateria_20261001.html` |
 | Uso activo del equipo | 138,5 h entre el 30/08 y el 30/09 (49,8 h a batería, 88,6 h con cargador) | Mismo reporte, sección *Usage history* |
-| SSD (SMART) | Samsung MZVLQ512HBLU; Percentage Used 5 %; Data Units Written 42.956.846 (21,9 TB); Power On Hours 1.355; salud PASSED | `00-gestion/evidencia-recursos/PRIV/20261001-smart-ssd.png` (excluida del repositorio) |
-| Energía | Factura de abril–mayo de 2026 (cuadro tarifario 633), 116 kWh, $45.436,68. Energía $253,573/kWh; Ley provincial 2620/89 1,5 % sobre energía + cuota de servicio; FNEE $264,13; IVA 21 % no computable | Factura del suministro del lugar de trabajo, en `00-gestion/evidencia-recursos/PRIV/` (la copia el autor) |
+| SSD (SMART) | Samsung MZVLQ512HBLU; Percentage Used 5 %; Data Units Written 42.956.846 (21,9 TB); Power On Hours 1.355; salud PASSED | `01-relevamiento/evidencia/PRIV/20261001-smart-ssd.png` (excluida del repositorio) |
+| Energía | Factura de abril–mayo de 2026 (cuadro tarifario 633), 116 kWh, $45.436,68. Energía $253,573/kWh; Ley provincial 2620/89 1,5 % sobre energía + cuota de servicio; FNEE $264,13; IVA 21 % no computable | Factura del suministro del lugar de trabajo, en `01-relevamiento/evidencia/PRIV/` (la copia el autor) |
 | Potencia instantánea | 7,7 W a batería con carga liviana (una muestra, `BatteryStatus.DischargeRate`) | Medición del ingeniero, 01/10/2026 |
-| ChatGPT Plus | USD 20 mensuales (lista); cobro real del 30/09: $33.135,34 a $1.656,77 por USD | `openai-chatgpt-precios`; `00-gestion/evidencia-recursos/PRIV/20260930-comprobante-chatgpt-plus.jpg` |
+| ChatGPT Plus | USD 20 mensuales (lista); cobro real del 30/09: $33.135,34 a $1.656,77 por USD | `openai-chatgpt-precios`; `01-relevamiento/evidencia/PRIV/20260930-comprobante-chatgpt-plus.jpg` |
 | Claude Pro | USD 20 mensuales con facturación mensual, impuestos aparte | `anthropic2026precios` (actualizada el 01/10/2026) |
 | Costo de hora | $8.876 (Sysarmy 2026.01, mediana bruta junior ÷ 173,33 h) | `sysarmy2026`; ADR-076 |
 | Cadencia de OpenCode | 227 releases estables del 01/01 al 30/09/2026 (1.0.222 a 1.18.34); mediana de 15,5 h entre releases; 9 series menores nuevas. Cambios de configuración, permisos o agentes declarados en las notas: 43 confirmados y 23 posibles (3 y 4 entre julio y septiembre). Cuántos obligan a readaptar RIGE: sin determinar | `opencode-releases-api`, `opencode-releases-semantica`; investigación de Codex del 01/10/2026 |
@@ -216,7 +216,7 @@ El desembolso es el 8 % del costo del proyecto; el resto es costo de oportunidad
 - vida útil de 3 años como supuesto declarado;
 - doble moneda con el billete vendedor BNA del 01/10/2026 (M-B);
 - suscripciones a precio de lista × BNA para ambas (U-B);
-- comprobantes con datos personales en `00-gestion/evidencia-recursos/PRIV/`, excluida por `.gitignore`.
+- comprobantes con datos personales en `01-relevamiento/evidencia/PRIV/`, excluida por `.gitignore`.
 
 El autor eligió Q-C el 01/10/2026. Los ejes B, I, C, E, P y R los propuso el ingeniero; el autor pidió incorporar al ADR, el 01/10/2026, la separación de las horas técnicas (CAPEX) y de reserva (OPEX), el costo por hora de uso con las horas desatendidas, el costo por iteración, el flujo mensual, la contingencia por alcance, las alternativas de X.4 sin guiones y las partidas menores.
 
@@ -258,6 +258,6 @@ El punto de equilibrio se expresa también en cantidad de patrocinadores, con el
 
 - `informe/cap-10/` (X.1 a X.5 vigentes), `instrumentos/instrumento-34-recursos.md`, `informe/cap-04/IV.1-definicion-negocios.md`.
 - `catedra/AE2-plantilla-informe.md` (X.1 a X.5) y `catedra/AE2-guia.md` (§7).
-- `00-gestion/evidencia-recursos/` (reporte de batería, captura del precio del equipo, copia de la página del BNA) y `00-gestion/evidencia-recursos/PRIV/` (SMART, comprobante de ChatGPT, factura de energía; excluida del repositorio).
+- `01-relevamiento/evidencia/` (reporte de batería, captura del precio del equipo, copia de la página del BNA) y `01-relevamiento/evidencia/PRIV/` (SMART, comprobante de ChatGPT, factura de energía; excluida del repositorio).
 - `01-relevamiento/fuentes.md`: `mudi-notebook-book3`, `bna-cotizaciones`, `anthropic2026precios`, `openai-chatgpt-precios`, `sysarmy2026`.
 - Anexo III, D-18 y D-49; ADR-052, ADR-057 y ADR-076.

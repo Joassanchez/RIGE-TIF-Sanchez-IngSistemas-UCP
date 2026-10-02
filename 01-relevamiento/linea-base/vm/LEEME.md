@@ -1,6 +1,6 @@
 # Preparación de la VM de la línea base
 
-Esta carpeta contiene todo lo que va a la máquina virtual y nada más. No contiene respuestas: las respuestas están en `sesion/`, que nunca entra a la VM.
+Esta carpeta contiene todo lo que va a la máquina virtual y nada más. No contiene respuestas: las respuestas están en `../respuestas.md`, que nunca entra a la VM.
 
 | Archivo | Qué es |
 |---|---|
@@ -29,7 +29,7 @@ Esta carpeta contiene todo lo que va a la máquina virtual y nada más. No conti
    ```bash
    sudo /opt/linea-base/verificar.sh
    ```
-   Revisar cada archivo generado en `/opt/linea-base/verificacion/<fecha>/` contra `sesion/casos-y-respuestas.md`. Copiar esa carpeta fuera de la VM: es la evidencia del anexo.
+   Revisar cada archivo generado en `/opt/linea-base/verificacion/<fecha>/` contra `../respuestas.md` (fuera de la VM). Copiar esa carpeta fuera de la VM: es la evidencia del anexo.
 7. **Dejar la VM en el estado inicial y sacar la instantánea:**
    ```bash
    sudo /opt/linea-base/caso.sh practica

@@ -9,7 +9,7 @@
 | Versión de la herramienta | OpenCode 1.18.25 (tag `v1.18.25` de `anomalyco/opencode`) |
 | Versión de esta guía | 2 — corregida con el motor de permisos v2 y con el laboratorio de verificación |
 | Última actualización | 21/09/2026 (incluye la revisión de la documentación web) |
-| Método | Lectura del código fuente del tag + escenarios controlados sobre la versión instalada + laboratorio de verificación con agente real (17 experimentos, `INFORME.md`) |
+| Método | Lectura del código fuente del tag + escenarios controlados sobre la versión instalada + laboratorio de verificación con agente real (17 experimentos, `laboratorio-verificacion.md`) |
 | Para qué sirve | (1) entender la herramienta, (2) escribir mis propias reglas sabiendo qué hacen, (3) definir qué tiene que resolver y mostrar RIGE |
 
 > **Etiquetas de evidencia.**

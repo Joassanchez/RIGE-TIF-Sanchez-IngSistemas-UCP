@@ -78,13 +78,13 @@ La pérdida de valor no se distribuye de manera uniforme: se concentra en una ac
 
 ### II.5.5 · Encuadre del sector del cual provienen los recursos
 
-Este apartado examina el mismo sector que el apartado II.5.1, con un propósito distinto: establecer si existen los recursos que hacen factible construir la solución. El sector de Software y Servicios Informáticos comprende las actividades de desarrollo, implementación, mantenimiento y soporte de software, junto con los servicios informáticos asociados, medidas en términos de facturación, exportaciones y empleo, conforme al relevamiento del Observatorio Permanente de la Industria del Software y Servicios Informáticos (OPSSI) de la Cámara de la Industria Argentina del Software (CESSI). Este encuadre se produce una sola vez para los tres proyectos del grupo y se incorpora aquí citado, con la coautoría declarada en el Anexo III.
+Este apartado examina el mismo sector que el apartado II.5.1, con un propósito distinto: establecer si existen los recursos que hacen factible construir la solución. El sector de Software y Servicios Informáticos comprende las actividades de desarrollo, implementación, mantenimiento y soporte de software, junto con los servicios informáticos asociados, medidas en términos de facturación, exportaciones y empleo. Este encuadre se produce una sola vez para los tres proyectos del grupo y se incorpora aquí citado, con la coautoría declarada en el Anexo III.
 
 | **Parámetro**                                          | **Valor** | **Método, universo y período de referencia**                           |
 |--------------------------------------------------------|-----------|------------------------------------------------------------------------|
-| Facturación del sector                                 | \[ \]     | Relevamiento del OPSSI sobre empresas asociadas a CESSI; período \[ \] |
-| Empleo del sector                                      | \[ \]     | Relevamiento del OPSSI; universo \[ \]; período \[ \]                  |
-| Exportaciones del sector                               | \[ \]     | Relevamiento del OPSSI; período \[ \]                                  |
+| Facturación del sector                                 | \[ \]     | \[fuente\]; período \[ \]                                              |
+| Empleo del sector                                      | \[ \]     | \[fuente\]; período \[ \]                                              |
+| Exportaciones del sector                               | \[ \]     | \[fuente\]; período \[ \]                                              |
 | Costo de la hora de desarrollo de referencia           | \[ \]     | \[origen del dato\]; período \[ \]                                     |
 | Disponibilidad de perfiles en Posadas y en el Nordeste | \[ \]     | \[fuente\]; período \[ \]                                              |
 

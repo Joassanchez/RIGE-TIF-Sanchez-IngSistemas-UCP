@@ -106,8 +106,6 @@ Naciones Unidas. (2015). *Transformar nuestro mundo: la Agenda 2030 para el Desa
 
 NLnet. (2026). *Apply for a grant*. https://nlnet.nl/propose/
 
-Observatorio Permanente de la Industria del Software y Servicios Informáticos de la Argentina. (2026). *Industria del software en Argentina al 1er trimestre de 2026* [Reporte]. Cámara de la Industria Argentina del Software. https://cessi.org.ar/wp-content/uploads/2026/07/OPSSI-Reporte-Industria-Software-1er.-trim.-2026.pdf
-
 Onufriichuk, A. (2026). *Claude Code Config Manager* (Versión 0.10.0) \[Extensión de VS Code\]. Visual Studio Marketplace. https://marketplace.visualstudio.com/items?itemName=agnislav.claude-code-config-manager
 
 OpenAI. (2026). *Codex* (Versión 0.159.3) [Software]. GitHub. https://github.com/openai/codex/releases/tag/rust-v0.159.3

@@ -73,7 +73,7 @@ def romano(n):
     return r
 
 def portada(datos, ae, caps):
-    """Portada según el modelo del autor (00-gestion/borradores/): rótulos en negrita, capítulos y fecha en letras."""
+    """Portada según el modelo del autor (tools/modelo-autor.docx): rótulos en negrita, capítulos y fecha en letras."""
     a, hoy = datos["autor"], datetime.date.today()
     capitulos = " · ".join(f"Capítulo {romano(int(c.split('-')[1]))}" for c in caps)
     lineas = [f"**{datos['universidad'].upper()}**", datos["facultad"], datos["carrera"],

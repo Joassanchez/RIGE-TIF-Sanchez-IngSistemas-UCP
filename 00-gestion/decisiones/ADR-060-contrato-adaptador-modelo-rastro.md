@@ -36,7 +36,7 @@ Restricciones que salen del repositorio:
    - Agentes (`opencode/src/agent/agent.ts`): siete nativos, `build`, `plan`, `general`, `explore` y los ocultos `compaction`, `title` y `summary` (140-265); cada campo declarado reemplaza al anterior, `options` se fusiona en profundidad, `disable: true` elimina el agente y un agente nuevo recibe `mode: "all"` (267-294).
    - Permisos: lista plana por agente, reglas por defecto nativas → propias del agente nativo → `permission` declarado → propias del agente declarado → `external_directory: Truncate.GLOB → allow` agregada al final salvo denegación explícita (145-151, 293, 296-310). Cada regla se genera recorriendo `Object.entries` (`opencode/src/permission/index.ts:186-197`); la evaluación toma la última coincidencia y, si no hay ninguna, `ask` (28-36).
    - Un agente en Markdown con frontmatter ilegible se descarta sin aviso (`config/agent.ts:19`); un modo que no cumple el esquema también (50-56).
-5. **Comportamiento ante contenido inválido.** `OPENCODE_PERMISSION` con JSON inválido se descarta con un aviso que solo va al log (`config.ts:560-564`); `OPENCODE_CONFIG_CONTENT` con JSON inválido es fatal (`parse.ts:26-29`). Coincide con E-12 y E-18b de `01-relevamiento/linea-base/laboratorio-verificacion.md` (tabla «Asimetría entre las dos variables»).
+5. **Comportamiento ante contenido inválido.** `OPENCODE_PERMISSION` con JSON inválido se descarta con un aviso que solo va al log (`config.ts:560-564`); `OPENCODE_CONFIG_CONTENT` con JSON inválido es fatal (`parse.ts:26-29`). Coincide con E-12 y E-18b de `01-relevamiento/opencode/laboratorio-verificacion.md` (tabla «Asimetría entre las dos variables»).
 6. **Comando nativo que lista los agentes:** `opencode agent list` (`opencode/src/cli/cmd/agent.ts:235-252`); incluye los ocultos, ordena nativos primero y por nombre, e imprime `nombre (modo)` y el conjunto de reglas en JSON. Existe además `opencode debug agent <name>` (`cli/cmd/debug/agent.ts:5`).
 7. **Agentes invocados sin declaración (H-18):** `compaction` (`opencode/src/session/compaction.ts:358`) y `title` (`opencode/src/session/prompt.ts:216`); `explore` y `general` son subagentes nativos. No se encontró una invocación literal de `summary`.
 8. **Escrituras de OpenCode al leer la configuración:** agrega `$schema` al archivo leído (`config.ts:245-249`), crea la configuración global (264-270), escribe `.gitignore` (309-326) e instala dependencias con `npm` en cada directorio de configuración (452-471).
@@ -161,7 +161,7 @@ Aceptado por el autor el 29/09/2026 (`/aceptar ADR-060`). En la sesión del 29/0
 ### Evidencia
 
 - Código fuente de OpenCode, tag `v1.18.25` (archivo y SHA-256 en el Contexto): `opencode/src/config/parse.ts`, `config.ts`, `paths.ts`, `variable.ts`, `agent.ts`; `opencode/src/agent/agent.ts`; `opencode/src/permission/index.ts`; `opencode/src/cli/cmd/agent.ts`; `opencode/src/session/compaction.ts`, `prompt.ts`; `core/src/flag/flag.ts`, `core/src/global.ts`
-- `01-relevamiento/linea-base/laboratorio-verificacion.md` (E-12, E-18, «Asimetría entre las dos variables»)
+- `01-relevamiento/opencode/laboratorio-verificacion.md` (E-12, E-18, «Asimetría entre las dos variables»)
 - `03-requisitos/libro/catalogo/RNF-03.md`, `RF-02.md`, `RF-07.md`, `RF-09.md`, `RF-16.md`; `03-requisitos/libro/reglas.md`; `03-requisitos/libro/trazabilidad.md` (H-18, E-02)
 - ADR-019, ADR-029, ADR-032, ADR-051, ADR-054, ADR-055, ADR-058, ADR-059
 - Sesión de diseño del 29/09/2026

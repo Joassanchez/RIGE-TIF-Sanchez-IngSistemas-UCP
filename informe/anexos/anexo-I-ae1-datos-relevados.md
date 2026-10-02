@@ -42,7 +42,7 @@ Cuando la cantidad de participantes no resulta múltiplo de la cantidad de secue
 
 ## A.I.3 · Relevamiento técnico de OpenCode 1.18.25
 
-Documento completo en el repositorio del proyecto, bajo 01-relevamiento/opencode-como-funciona.md. Sostiene las afirmaciones de los apartados I.1.1, I.1.3, I.6.2 y II.6.1, y se sintetiza aquí en sus resultados verificados.
+Documento completo en el repositorio del proyecto, bajo `01-relevamiento/opencode/como-funciona.md`. Sostiene las afirmaciones de los apartados I.1.1, I.1.3, I.6.2 y II.6.1, y se sintetiza aquí en sus resultados verificados.
 
 | **N.º** | **Resultado verificado**                                                                                                                                                                                                         | **Método**                                                                                              | **Estado**                                                                             |
 |---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
@@ -203,7 +203,7 @@ La posición expresa el eje horizontal y el vertical, en ese orden. El horizonta
 
 *Tabla A.I.6. Resultado de la aplicación de los criterios. Fuente: elaboración propia; relevamiento del 17/09/2026.*
 
-**Nómina.** La nómina completa de las 46 incidencias candidatas, con número, título, fecha de apertura, estado, clasificación y motivo de inclusión o exclusión, consta en el repositorio del proyecto bajo docs/relevamiento/incidencias-opencode.md y se incorpora impresa a continuación. \[Nómina pendiente de incorporación impresa.\]
+**Nómina.** La nómina completa de las 46 incidencias candidatas, con número, título, fecha de apertura, estado, clasificación y motivo de inclusión o exclusión, consta en el repositorio del proyecto bajo `01-relevamiento/opencode/incidencias.md` y se incorpora impresa a continuación. \[Nómina pendiente de incorporación impresa.\]
 
 ## A.I.7 · Hoja de respuestas y criterio de corrección
 
