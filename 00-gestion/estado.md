@@ -16,25 +16,25 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | II.4 | `informe/cap-02/II.4-graficos-variables-analisis.md` | aprobada (migración) | AE1 | 24/09/2026 |
 | II.5 | `informe/cap-02/II.5-analisis-informacion.md` | borrador | AE1 | 25/09/2026 |
 | II.6 | `informe/cap-02/II.6-conclusiones-relevamiento.md` | borrador | AE1 | 25/09/2026 |
-| III.1 | `informe/cap-03/III.1-entorno-sistema-informacion.md` | revisada | AE2 | 01/10/2026 |
-| III.2 | `informe/cap-03/III.2-dominio-sistema-informacion.md` | revisada | AE2 | 01/10/2026 |
-| III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | revisada | AE2 | 01/10/2026 |
-| III.4 | `informe/cap-03/III.4-limites-sistema.md` | revisada | AE2 | 01/10/2026 |
-| III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | revisada | AE2 | 01/10/2026 |
-| IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | borrador | AE2 | 01/10/2026 |
-| IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | borrador | AE2 | 01/10/2026 |
-| IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | borrador | AE2 | 01/10/2026 |
-| IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | borrador | AE2 | 01/10/2026 |
-| V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | borrador | AE2 | 01/10/2026 |
-| V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | borrador | AE2 | 01/10/2026 |
-| V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | borrador | AE2 | 01/10/2026 |
-| V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 01/10/2026 |
-| V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 01/10/2026 |
-| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 02/10/2026 |
-| X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 02/10/2026 |
-| X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 02/10/2026 |
-| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | revisada | AE2 | 02/10/2026 |
-| X.5 | `informe/cap-10/X.5-otros-recursos.md` | revisada | AE2 | 02/10/2026 |
+| III.1 | `informe/cap-03/III.1-entorno-sistema-informacion.md` | aprobada | AE2 | 02/10/2026 |
+| III.2 | `informe/cap-03/III.2-dominio-sistema-informacion.md` | aprobada | AE2 | 02/10/2026 |
+| III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | aprobada | AE2 | 02/10/2026 |
+| III.4 | `informe/cap-03/III.4-limites-sistema.md` | aprobada | AE2 | 02/10/2026 |
+| III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | aprobada | AE2 | 02/10/2026 |
+| IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | aprobada | AE2 | 02/10/2026 |
+| IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | aprobada | AE2 | 02/10/2026 |
+| IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | aprobada | AE2 | 02/10/2026 |
+| IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | aprobada | AE2 | 02/10/2026 |
+| V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | aprobada | AE2 | 02/10/2026 |
+| V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | aprobada | AE2 | 02/10/2026 |
+| V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | aprobada | AE2 | 02/10/2026 |
+| V.4 | `informe/cap-05/V.4-cronograma.md` | aprobada | AE2 | 02/10/2026 |
+| V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | aprobada | AE2 | 02/10/2026 |
+| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | aprobada | AE2 | 02/10/2026 |
+| X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | aprobada | AE2 | 02/10/2026 |
+| X.3 | `informe/cap-10/X.3-recursos-financieros.md` | aprobada | AE2 | 02/10/2026 |
+| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | aprobada | AE2 | 02/10/2026 |
+| X.5 | `informe/cap-10/X.5-otros-recursos.md` | aprobada | AE2 | 02/10/2026 |
 
 ## Correcciones pendientes del AE1
 

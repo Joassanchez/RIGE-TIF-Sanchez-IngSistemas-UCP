@@ -25,4 +25,5 @@ tools/
 # Sistema de agentes y material de trabajo (fuera de git)
 .agents/
 .trabajo/
+informe/AGENTS.md
 
