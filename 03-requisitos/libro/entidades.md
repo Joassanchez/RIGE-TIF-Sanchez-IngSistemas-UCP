@@ -71,4 +71,4 @@ Una sola especialización se declara en el modelo. El Agente se modela como enti
 | Una resolución produce ninguno o muchos hallazgos                                                    | 1 a 0..*          |
 | Un hallazgo recae sobre un elemento, una declaración, una entrada o una sustitución | 0..* a 1 {xor: elemento, declaración, entrada o sustitución} |
 
-*Tabla 4. Relaciones del dominio y sus multiplicidades. Fuente: elaboración propia; precisiones aceptadas en ADR-074.*
+*Tabla 4. Relaciones del dominio y sus multiplicidades. Fuente: elaboración propia; precisiones aceptadas (Anexo III, D-61).*

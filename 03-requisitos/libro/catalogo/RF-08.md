@@ -16,4 +16,3 @@
 
 <!-- Migrado de Cap. III, Anexo I, A.I.1. «Categoría» de la Tabla 9; «Iteración prevista» de la Tabla 18 (Cap. V);
 «¿Integra el MVP?» por la regla del III.5 (los requisitos Must constituyen el MVP del V.5). -->
-<!-- Modificado por ADR-059 (29/09/2026). -->

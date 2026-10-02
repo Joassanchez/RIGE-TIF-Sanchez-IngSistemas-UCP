@@ -17,3 +17,13 @@ __pycache__/
 
 .claude/
 CLAUDE.md
+AGENTS.md
+
+.tools/
+00-gestion/procedimientos/
+00-gestion/fichas-redaccion
+
+# Comprobantes con datos personales (no se publican)
+00-gestion/evidencia-recursos/PRIV/
+.agents
+

@@ -14,4 +14,4 @@
 | Iteración prevista | 1 |
 | ¿Integra el MVP? | Sí |
 
-<!-- Alta por ADR-059 (29/09/2026). -->
+<!-- Alta (Anexo III, D-52) (29/09/2026). -->

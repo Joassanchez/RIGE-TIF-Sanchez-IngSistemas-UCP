@@ -55,10 +55,11 @@
 
 | Herramienta | Uso |
 |-------------|-----|
-| Claude Code (en VS Code) | Sesión principal (ingeniero) y subagentes. |
+| Claude Code (en VS Code) | Sesión principal preferida (ingeniero); subagentes críticos y de respaldo. |
+| Codex CLI (interactivo) | Sesión principal de respaldo cuando Claude se queda sin cuota: lee el mismo `AGENTS.md` y los mismos procedimientos (sección 3.4). |
 | VS Code | Edición, vista previa de Markdown y revisión de diffs antes de cada commit. |
 | Gemini | Auditoría global ocasional antes de cada entrega (contexto largo). |
-| Codex CLI (`codex exec`) | Escritor de `src/`, lanzado por el ingeniero con `/programar`; una ejecución por tarea (ADR-067). Sustituye a OpenCode con gentle-ai (ADR-065), que se desinstaló el 30/09/2026. |
+| Codex CLI (`codex exec`) | Escritor de `src/` (`/programar`, ADR-067), redactor de `informe/` (`/redactar`, `/corregir`) y revisores de solo lectura (`/revisar`, `/revisar-codigo`, `/fuente`); una ejecución por tarea. Sustituye a OpenCode con gentle-ai (ADR-065), que se desinstaló el 30/09/2026. |
 
 ### 3.2 Modelos por rol
 
@@ -67,36 +68,62 @@ Cada agente fija su modelo con ID completo (no `inherit`, que haría que todos u
 | Rol | Modelo | Esfuerzo | Motivo |
 |-----|--------|----------|--------|
 | Ingeniero (sesión principal) | `claude-opus-5-5` | medio | Discusión y decisiones. |
-| Redactor | `claude-opus-5-5` | medio | Produce el texto que se entrega. |
-| Crítico | `claude-opus-5-5` | medio | Evaluar argumentos es juicio. |
-| Revisor de consigna | `claude-sonnet-5-5` | — | Contraste contra una lista concreta. |
-| Verificador de consistencia | `claude-sonnet-5-5` | — | Comparación contra glosario, libro y ADR. |
-| Verificador de fuentes | `claude-sonnet-5-5` | — | Muchas búsquedas y lecturas web. |
-| Revisor de código | `claude-sonnet-5-5` | alto | Conformidad contra ficha, ADR y pruebas; ejecuta y lee pruebas. |
-| Crítico de código | `claude-opus-5-5` | alto | Juicio de diseño; corre solo al cierre del incremento. |
+| Ingeniero de respaldo | `gpt-6.1-sol` (Codex) | medio | Solo cuando Claude se queda sin cuota (sección 3.4). |
+| Redactor | `gpt-6.1-sol` (Codex) | medio | Produce el texto que se entrega. Respaldo: `claude-opus-5-5`. |
+| Crítico | `claude-opus-5-5` | medio | Evaluar argumentos es juicio; en Claude para revisar con otro modelo lo que escribe Codex. Con el ingeniero en Codex: `gpt-6.1-sol`, alto. |
+| Revisor de consigna | `gpt-6-luna` (Codex) | alto | Contraste contra una lista concreta. Respaldo: `claude-sonnet-5-5`. |
+| Verificador de consistencia | `gpt-6.1-sol` (Codex) | medio | Comparación contra glosario, libro y ADR. Respaldo: `claude-sonnet-5-5`. |
+| Verificador de fuentes | `gpt-6.1-sol` (Codex, búsqueda web) | medio | Muchas búsquedas y lecturas web. Respaldo: `claude-sonnet-5-5`. |
+| Revisor de código | `gpt-6-luna` (Codex) | alto | Conformidad contra ficha, ADR y pruebas; lee la salida de las pruebas que corre el ingeniero. Respaldo: `claude-sonnet-5-5`, alto. |
+| Crítico de código | `claude-opus-5-5` | alto | Juicio de diseño; corre solo al cierre del incremento. Con el ingeniero en Codex: `gpt-6.1-sol`, alto. |
 | Escritor (Codex) | `gpt-6.1-sol` | medio (alto si la ficha lo pide) | Implementa una ficha con TDD; `gpt-6-luna` en tareas mecánicas si la ficha lo indica. |
 
-Para cambiar un modelo: línea `model:` (y `effort:`) del archivo en `.claude/agents/` (solo modelos de Anthropic); para el escritor, el comando `/programar` o el encabezado de la ficha. Toda modificación se refleja en esta tabla, que sostiene la declaración de herramientas.
+Para cambiar un modelo: los roles Codex, en `00-gestion/procedimientos/lanzar-revisor.md` (revisores), `corregir.md` (redactor) o `programar.md` y el encabezado de la ficha (escritor); los roles Claude, en la línea `model:` (y `effort:`) del archivo en `.claude/agents/`. Toda modificación se refleja en esta tabla, que sostiene la declaración de herramientas.
 
 ### 3.3 Cuidado del cupo (plan Pro)
 
 - `/revisar` solo con la sección completa; admite filtro para un único revisor (`/revisar III.2 fuentes`).
 - Misiones acotadas: cada subagente recibe rutas exactas y no lee el informe entero.
 - Una sección por sesión; `/clear` al cambiar de sección.
-- Auditoría global (Gemini) y el escritor de `src/` (Codex) no consumen la suscripción de Claude; la orquestación, las revisiones y la crítica de código sí.
+- Auditoría global (Gemini), el escritor de `src/`, el redactor y los revisores de solo lectura (Codex) no consumen la suscripción de Claude; la orquestación y los dos críticos sí.
 - El escritor corre con `--ignore-user-config` y sin gentle-ai: una ejecución por tarea, sin subagentes, con contexto nuevo. `/programar` informa tiempo, tokens y porcentaje de la cuota semanal de Codex por tarea.
 - Primer ajuste si el consumo es excesivo: ingeniero en Sonnet para el trabajo diario y Opus solo en `/decidir`.
+- Si Claude se queda sin cuota, el ingeniero pasa a Codex (sección 3.4).
+
+### 3.4 Independencia de la herramienta (01/10/2026)
+
+El contenido del sistema es Markdown neutro; cada herramienta tiene solo envoltorios.
+
+| Pieza | Fuente única | Envoltorio Claude Code | Envoltorio Codex |
+|---|---|---|---|
+| Rol del ingeniero | `AGENTS.md` (raíz) | `CLAUDE.md` (`@AGENTS.md`) | nativo |
+| Comandos | `00-gestion/procedimientos/<comando>.md` | `.claude/commands/` | `.agents/skills/<comando>/SKILL.md` |
+| Revisores y críticos | `00-gestion/revisores/` (`AGENTS.md` común, un archivo por rol, `esquema-salida-revisor.json`) | `.claude/agents/` | `codex exec -C 00-gestion/revisores` |
+| Redactor | `informe/AGENTS.md` | `.claude/agents/redactor.md` (respaldo) | `codex exec -C informe` |
+| Escritor | `src/AGENTS.md` | — | `codex exec -C src` |
+
+**Aislamiento de roles.** Codex une los `AGENTS.md` desde la raíz del proyecto hasta la carpeta de trabajo. Todo `codex exec` de un rol se lanza con `-c 'project_root_markers=[]'`, para que lea solo el `AGENTS.md` de su carpeta y no el del ingeniero (verificado el 01/10/2026: sin la opción lee ambos; con ella, solo el de la carpeta).
+
+**Verificaciones del 01/10/2026 (Codex CLI 0.159.1):**
+- `codex exec` con `-c web_search="live"` busca en la web: habilita al verificador de fuentes.
+- Las habilidades de `.agents/skills/` se cargan en la sesión.
+- Bajo el sandbox `read-only`, `bun test` falla por permisos (`EPERM`). El ingeniero corre las pruebas y pasa la salida al revisor de código por la entrada estándar.
+- Las reglas de ejecución (`.codex/rules/`, `~/.codex/rules/`) no bloquearon un comando de git dentro del sandbox. No se usan como barrera.
+
+**Degradaciones con el ingeniero en Codex:** los críticos corren en Codex y se pierde la revisión cruzada entre modelos; no hay bloqueo por carpeta (`src/`, `catedra/`, `05-entregas/`): queda como instrucción, y el control efectivo es el diff que revisa el autor antes de commitear. El sandbox `workspace-write` sí protege `.git`.
 
 ---
 
 ## 4. Estructura del repositorio
 
 ```
-CLAUDE.md                        ← rol y reglas del ingeniero
-.claude/
+AGENTS.md                        ← rol y reglas del ingeniero (fuente única, sección 3.4)
+CLAUDE.md                        ← importa AGENTS.md; lo propio de Claude Code
+.claude/                         ← fuera de git (.gitignore)
   settings.json                  ← permisos (sección 12)
-  agents/                        ← subagentes
-  commands/                      ← comandos (sección 8)
+  agents/                        ← subagentes: críticos y respaldos
+  commands/                      ← envoltorios de los procedimientos (sección 8)
+.agents/skills/                  ← envoltorios de los procedimientos para Codex
 .github/workflows/ci.yml         ← integración continua (debe estar en la raíz)
 00-gestion/
   estado.md                      ← estado de cada sección del informe
@@ -108,6 +135,8 @@ CLAUDE.md                        ← rol y reglas del ingeniero
     INDICE.md                    ← lista de ADR con estado y capítulos afectados
     ADR-NNN-titulo.md
   revisiones/                    ← informes consolidados de los revisores
+  procedimientos/                ← un archivo por comando; lanzar-revisor.md
+  revisores/                     ← AGENTS.md común, rol de cada revisor y crítico, esquema de salida
 01-relevamiento/                 ← instrumentos, evidencia de contacto, datos en bruto
   fuentes.md                     ← registro de fuentes con las tres preguntas
 02-analisis/                     ← PESTEL, cadena de valor, FODA, rivalidad; .docx de los Instrumentos 32 y 33
@@ -163,7 +192,7 @@ No se adelanta contenido de capítulos posteriores a la entrega en curso.
 
 ### 5.1 Ingeniero — sesión principal
 
-Es la sesión principal de Claude Code. Es el único rol que conversa con el autor.
+Es la sesión principal de Claude Code (o de Codex, como respaldo; sección 3.4). Es el único rol que conversa con el autor.
 
 - **Postura (muy exigente):** ingeniero de sistemas senior. Propone, recomienda con firmeza y discute; no da la razón por cortesía. Reabre por iniciativa propia decisiones aceptadas cuando aparece evidencia nueva y propone un ADR de reemplazo.
 - **Comportamientos:** dice explícitamente cuando no está de acuerdo y argumenta; distingue **dato del repositorio**, **conocimiento general de ingeniería** y **suposición**; señala las ambigüedades de la consigna en lugar de elegir en silencio.
@@ -177,17 +206,17 @@ Es la sesión principal de Claude Code. Es el único rol que conversa con el aut
 
 | Archivo | Contenido | Cuándo se carga |
 |---------|-----------|-----------------|
-| `CLAUDE.md` | Rol y postura · método · reglas de oro · protocolo de sesión · mapa del repo · idioma y registro | Siempre |
-| `00-gestion/reglas-catedra.md` | Sección 11 de este documento | Siempre (importado con `@00-gestion/reglas-catedra.md`) |
+| `AGENTS.md` | Rol y postura · método · reglas de oro · protocolo de sesión · herramienta · preferencias del autor · mapa del repo · idioma y registro | Siempre (Claude Code lo importa desde `CLAUDE.md`) |
+| `00-gestion/reglas-catedra.md` | Sección 11 de este documento | Siempre (en Claude, importado con `@`; en Codex, `AGENTS.md` indica leerlo al empezar) |
 | `catedra/<AE>-guia.md` | Exigencias de la entrega en curso | Solo al trabajar esa entrega |
 
-**Reglas de oro del `CLAUDE.md`:** no inventar datos · no adelantar capítulos · el redactor solo usa ADR aceptados · ningún commit ni etiqueta · orden de prelación del principio 5.
+**Reglas de oro del `AGENTS.md`:** no inventar datos · no adelantar capítulos · el redactor solo usa ADR aceptados · ningún commit ni etiqueta · orden de prelación del principio 5.
 
 **Idioma y registro:** con el autor, español directo y conversacional; en el informe, registro académico impersonal.
 
 ### 5.2 Funcionamiento común de los subagentes
 
-- Cada subagente es un archivo en `.claude/agents/` con descripción, herramientas permitidas, modelo e instrucciones.
+- El rol de cada revisor y crítico está en `00-gestion/revisores/` (reglas comunes en su `AGENTS.md`). Los revisores corren en Codex (`codex exec -s read-only`) con `00-gestion/procedimientos/lanzar-revisor.md` y responden con `esquema-salida-revisor.json`; los críticos, como subagentes de Claude (`.claude/agents/`). Los subagentes de Claude de los revisores quedan como respaldo y remiten al mismo archivo de rol.
 - Arranca **sin el contexto de la conversación**: cada delegación es una **misión autocontenida** con rutas concretas (sección, consigna, ADR aplicables).
 - Los revisores no reescriben: sugieren correcciones.
 
@@ -261,7 +290,7 @@ Controla el informe **contra la evidencia**.
 ### 5.9 Revisor de código
 
 - **Pregunta:** ¿cumple? Ficha, ADR, `src/AGENTS.md`, reglas de dependencia, pruebas en verde, criterios de aceptación con prueba.
-- Corre en las tareas de riesgo y al cierre del incremento. Solo lectura; puede ejecutar `bun test` y `bun run verificar`.
+- Corre en las tareas de riesgo y al cierre del incremento. Solo lectura. En Codex no puede ejecutar las pruebas (sección 3.4): el ingeniero corre `bun run verificar` y `bun test` y le pasa la salida; el respaldo en Claude las ejecuta.
 - **Devuelve** un veredicto (conforme · con observaciones · no conforme) y hallazgos en el formato común.
 
 ### 5.10 Crítico de código
@@ -368,7 +397,7 @@ Push, CI y merge (autor)
 
 ## 8. Comandos
 
-Archivos en `.claude/commands/`. Los marcados con ★ cambian un estado y los ejecuta **solo el autor**.
+Procedimientos en `00-gestion/procedimientos/`, con envoltorios en `.claude/commands/` (Claude Code, `/comando`) y `.agents/skills/` (Codex). Los marcados con ★ cambian un estado y los ejecuta **solo el autor**.
 
 **De sesión**
 
@@ -478,7 +507,7 @@ Instrumentos 32 a 35 a `.docx` con el mismo pipeline.
 
 ## 11. Reglas de la cátedra
 
-Fuente única: `00-gestion/reglas-catedra.md` (importado en `CLAUDE.md`). La copia que había aquí se eliminó el 28/09/2026 para no mantener dos versiones.
+Fuente única: `00-gestion/reglas-catedra.md` (importado en `CLAUDE.md`; `AGENTS.md` lo indica para Codex). La copia que había aquí se eliminó el 28/09/2026 para no mantener dos versiones.
 
 ---
 
@@ -491,8 +520,10 @@ Configurados en `.claude/settings.json`, para que no dependan de que el agente r
 | Git denegado | `commit`, `push`, `tag`, `add`, `reset`, `checkout`, `switch`, `restore`, `rebase`, `merge`, `stash`, `clean` |
 | Git permitido | `status`, `diff`, `log`, `show`, y `clone` (solo para `/comprobar-v1`, en carpeta temporal) |
 | Edición denegada | `05-entregas/` (lo escriben solo los scripts, creando archivos nuevos), `catedra/` (salvo las devoluciones, que carga el autor) y `src/` (lo escribe solo el escritor; ADR-067) |
-| Escritor externo permitido | `codex exec --ignore-user-config …` (ADR-067): commitea solo en la rama del incremento; su sandbox limita la escritura a `src/` y `.git`, sin red |
+| Codex permitido | `codex exec --ignore-user-config …`: escritor (ADR-067), que commitea solo en la rama del incremento y cuyo sandbox limita la escritura a `src/` y `.git`, sin red; redactor (`informe/`); revisores y críticos (`read-only`) |
 | Pruebas permitidas | `bun test` y `bun run verificar`, para la revisión de cada tarea |
+
+**Ingeniero en Codex:** estas barreras no existen; rige la sección 3.4 (el sandbox protege `.git`; el resto es instrucción).
 
 **Límite técnico:** Claude Code no permite restringir por carpeta la escritura de un subagente particular. Que solo el redactor escriba en `informe/` y solo el ingeniero en `00-gestion/` queda como instrucción; el control efectivo es la revisión del diff por parte del autor antes de cada commit.
 

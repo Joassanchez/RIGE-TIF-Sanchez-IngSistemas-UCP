@@ -30,11 +30,11 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | borrador | AE2 | 01/10/2026 |
 | V.4 | `informe/cap-05/V.4-cronograma.md` | borrador | AE2 | 01/10/2026 |
 | V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | borrador | AE2 | 01/10/2026 |
-| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | borrador | AE2 | 01/10/2026 |
-| X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | borrador | AE2 | 01/10/2026 |
-| X.3 | `informe/cap-10/X.3-recursos-financieros.md` | borrador | AE2 | 01/10/2026 |
-| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | borrador | AE2 | 01/10/2026 |
-| X.5 | `informe/cap-10/X.5-otros-recursos.md` | borrador | AE2 | 01/10/2026 |
+| X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 02/10/2026 |
+| X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 02/10/2026 |
+| X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 02/10/2026 |
+| X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | revisada | AE2 | 02/10/2026 |
+| X.5 | `informe/cap-10/X.5-otros-recursos.md` | revisada | AE2 | 02/10/2026 |
 
 ## Correcciones pendientes del AE1
 

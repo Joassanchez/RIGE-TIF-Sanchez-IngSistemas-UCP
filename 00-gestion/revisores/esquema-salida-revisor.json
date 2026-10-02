@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Respuesta final de un revisor (Codex)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["estado", "veredicto", "controles", "hallazgos", "no_verificado", "fila_fuente", "notas"],
+  "properties": {
+    "estado": {
+      "type": "string",
+      "enum": ["completada", "fallida"],
+      "description": "completada: la revisión terminó. fallida: no se pudo revisar (archivo inexistente, error técnico); el motivo va en notas."
+    },
+    "veredicto": {
+      "type": "string",
+      "description": "Solo revisor de código: conforme, conforme con observaciones o no conforme. Cadena vacía en los demás roles."
+    },
+    "controles": {
+      "type": "array",
+      "description": "Tabla de contraste propia del rol (ver el archivo del rol). Vacía si el rol no la usa.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["elemento", "referencia", "estado", "ubicacion", "nota"],
+        "properties": {
+          "elemento": { "type": "string" },
+          "referencia": { "type": "string" },
+          "estado": { "type": "string" },
+          "ubicacion": { "type": "string" },
+          "nota": { "type": "string" }
+        }
+      }
+    },
+    "hallazgos": {
+      "type": "array",
+      "description": "Hallazgos en el formato común, de mayor a menor severidad, sin duplicados.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["severidad", "ubicacion", "regla", "hallazgo", "correccion", "base"],
+        "properties": {
+          "severidad": { "type": "string", "enum": ["bloqueante", "importante", "menor"] },
+          "ubicacion": { "type": "string", "description": "Archivo y apartado, tabla o línea." },
+          "regla": { "type": "string", "description": "Exigencia de la consigna, regla, ADR o criterio que se incumple." },
+          "hallazgo": { "type": "string" },
+          "correccion": { "type": "string", "description": "Corrección sugerida, concreta." },
+          "base": { "type": "string", "enum": ["dato", "suposición", "conocimiento general"] }
+        }
+      }
+    },
+    "no_verificado": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Lo que no se pudo verificar, con el motivo. Vacío si no hay."
+    },
+    "fila_fuente": {
+      "type": "string",
+      "description": "Solo en /fuente: la fila propuesta para 01-relevamiento/fuentes.md. Cadena vacía en otro caso."
+    },
+    "notas": {
+      "type": "string",
+      "description": "Observaciones que no son hallazgos. Cadena vacía si no hay."
+    }
+  }
+}

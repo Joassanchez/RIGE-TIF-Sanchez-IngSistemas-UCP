@@ -9,7 +9,7 @@
 | Prioridad | Must |
 | Motivo de la prioridad | Las variables de entorno suelen contener credenciales |
 | Criterio de aceptación | CA-1: Definida una variable con un valor conocido y referenciada por una sustitución en una declaración, la búsqueda textual registra cero apariciones de ese valor en las salidas del sistema (interfaz, línea de comandos, diagnóstico y almacén propio). CA-2: La misma condición se cumple para el contenido de un archivo incorporado por sustitución y para una sustitución contenida en una variable de entorno que constituye una entrada de configuración. CA-3: Para el 100 % de las sustituciones, el sistema informa su origen y su condición de definido o no definido |
-| Trazabilidad | Acta del 26/09/2026, decisión L-03; ADR-058, eje 8; acta de validación, extensión |
+| Trazabilidad | Acta del 26/09/2026, decisión L-03; acta de validación, extensión |
 | Estado de validación | Validado |
 | Iteración prevista | 3 |
 | ¿Integra el MVP? | Sí |

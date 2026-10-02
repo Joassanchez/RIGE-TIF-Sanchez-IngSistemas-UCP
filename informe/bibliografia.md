@@ -12,11 +12,21 @@ Al-Shaer, E., y Hamed, H. (2004). Discovery of policy anomalies in distributed f
 
 Amp. (s. f.). *How we think about permissions* [Documentación de software]. Recuperado el 1 de octubre de 2026, de https://ampcode.com/notes/permissions
 
-anomalyco. (s. f.). *Providers* [Documentación de software]. OpenCode. Recuperado el 1 de octubre de 2026, de https://opencode.ai/docs/providers/
+anomalyco. (s. f.-a). *Comparación v1.18.25...v1.18.26* [Código fuente y diferencias]. GitHub. Recuperado el 1 de octubre de 2026, de https://github.com/anomalyco/opencode/compare/v1.18.25...v1.18.26
+
+anomalyco. (s. f.-b). *Providers* [Documentación de software]. OpenCode. Recuperado el 1 de octubre de 2026, de https://opencode.ai/docs/providers/
+
+anomalyco. (s. f.-c). *Releases de OpenCode* [Conjunto de datos; API de GitHub]. Recuperado el 1 de octubre de 2026, de https://api.github.com/repos/anomalyco/opencode/releases
+
+anomalyco. (s. f.-d). *Releases · OpenCode* [Notas de publicación]. GitHub. Recuperado el 1 de octubre de 2026, de https://github.com/anomalyco/opencode/releases
+
+Anthropic. (s. f.). *Pricing*. Claude. Recuperado el 1 de octubre de 2026, de https://claude.com/pricing
 
 Anthropic. (2026). *Claude Code* (Versión 2.1.286) [Software]. GitHub. https://github.com/anthropics/claude-code/releases/tag/v2.1.286
 
 ApptwareLabs Pvt. Ltd. (s. f.). *Markr* [Extensión de VS Code]. Visual Studio Marketplace. Recuperado el 1 de octubre de 2026, de https://marketplace.visualstudio.com/items?itemName=Apptware-Product-Lab.markr
+
+Banco de la Nación Argentina. (s. f.). *Personas*. Recuperado el 1 de octubre de 2026, de https://www.bna.com.ar/Personas
 
 broker4develop. (s. f.). *Claude Code Navigator* [Extensión de VS Code]. Visual Studio Marketplace. Recuperado el 1 de octubre de 2026, de https://marketplace.visualstudio.com/items?itemName=broker4develop.claude-settings-manager
 
@@ -52,7 +62,11 @@ Galster, M., Mohsenimofidi, S., Lulla, J. L., Abubakar, M. A., Treude, C., y Bal
 
 Gauthier, P. (2026). *aider-chat* (Versión 0.86.2) [Software]. PyPI. https://pypi.org/project/aider-chat/
 
-GitHub. (s. f.). *GitHub Actions runner images* [Repositorio]. GitHub. Recuperado el 1 de octubre de 2026, de https://github.com/actions/runner-images
+GitHub. (s. f.-a). *About GitHub Sponsors*. Recuperado el 2 de octubre de 2026, de https://docs.github.com/en/sponsors/getting-started-with-github-sponsors/about-github-sponsors
+
+GitHub. (s. f.-b). *GitHub Actions runner images* [Repositorio]. GitHub. Recuperado el 1 de octubre de 2026, de https://github.com/actions/runner-images
+
+GitHub. (s. f.-c). *Setting up GitHub Sponsors for your personal account*. Recuperado el 2 de octubre de 2026, de https://docs.github.com/en/sponsors/receiving-sponsorships-through-github-sponsors/setting-up-github-sponsors-for-your-personal-account
 
 GitHub, Inc. (s. f.). *GitHub Actions billing* [Documentación]. https://docs.github.com/en/billing/concepts/product-billing/github-actions
 
@@ -104,9 +118,11 @@ OpenAI. (s. f.-b). *Pricing* [Página web]. OpenAI API. Recuperado el 1 de octub
 
 openchamber. (2026). *openchamber* (commit fc012ae0029fa2ac8d1d52b4af37040fc536258e) [Software]. GitHub. https://github.com/openchamber/openchamber/tree/fc012ae0029fa2ac8d1d52b4af37040fc536258e/.opencode
 
-OpenCode. (2025). *opencode* (Versión 1.18.25) [Software]. GitHub. https://github.com/sst/opencode/blob/v1.18.25/package.json
-
 OpenCode. (2026). *OpenCode* (Versión 1.18.25) \[Software\]. GitHub. https://github.com/anomalyco/opencode/releases/tag/v1.18.25
+
+Open Source Collective. (s. f.-a). *Fees*. Recuperado el 2 de octubre de 2026, de https://docs.oscollective.org/welcome-and-introduction-to-osc/fees
+
+Open Source Collective. (s. f.-b). *Is OSC right for my project?* Recuperado el 2 de octubre de 2026, de https://docs.oscollective.org/interested-in-joining-osc/is-osc-right-for-me
 
 Osterwalder, A. y Pigneur, Y. (2019). *Generación de modelos de negocio*. Deusto. (Obra original publicada en 2010).
 
@@ -134,6 +150,10 @@ Sysarmy. (2026, 6 de marzo). *Resultados de la encuesta de sueldos 2026.1*. http
 
 Taiizor. (2026). *agents-md-cookbook: agents-md-lint y agents-md-migrate* (Versión 1.0.0) [Software]. GitHub. https://github.com/Taiizor/agents-md-cookbook
 
+Tienda oficial MUDI. (s. f.). *Notebook Samsung Galaxy Np750 Book3 15.6, Intel I7, 16gb 512gb 10 nucleos (Nuevo con caja abierta)* [Publicación comercial]. Mercado Libre. Recuperado el 1 de octubre de 2026, de https://www.mercadolibre.com.ar/notebook-samsung-galaxy-np750-book3-156-intel-i7-16gb-512gb-10-nucleos-nuevo-con-caja-abierta/p/MLA2022034505?wid=MLA3987382678
+
 Universidad de la Cuenca del Plata. (2023). *Resolución Rectoral N.º 97/23. Reglamento General del Proyecto Integrador Final*.
 
 Winning, S. (2026, 3 de junio). *Expose effective config provenance from the CLI* (Incidencia n.º 26255) [Incidencia de GitHub]. https://github.com/openai/codex/issues/26255
+
+ZhukovLabs. (2026, 2 de septiembre). *Legacy agent `tools` config overrides user `permission` rules in 1.18.26* (Incidencia n.º 46873) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/46873

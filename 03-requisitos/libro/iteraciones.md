@@ -67,3 +67,10 @@
 | 7         | Estabilización, reducida de 11 h a 1 h                                                                                    | 10                  | 45            |
 
 *Tabla 19. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 18.*
+
+| **Cláusula de contingencia (hoja Iteraciones)** | **Valor declarado** |
+|---|---|
+| Criterio de redistribución | En el proyecto individual, la redistribución traslada trabajo entre iteraciones: lo postergado vuelve a la iteración siguiente si la capacidad se recupera. El orden posterga primero lo que no interviene en la medición final ni en la mitigación del riesgo principal y, dentro de ello, lo que debilita en menor medida un objetivo específico. Toda postergación se registra en la bitácora y en el tablero y se refleja en la prioridad del catálogo; si afecta un requisito Must, también modifica el producto mínimo viable (V.5) |
+| Qué no se sacrifica en ningún caso | La trazabilidad del catálogo y la ejecutabilidad de cada etiqueta, que la cátedra fija como condiciones de cómputo; la fidelidad respecto de OpenCode 1.18.25 (RNF-02); las restricciones de seguridad RNF-01, RNF-04 y RNF-05; CU-01 en su forma mínima con la advertencia de versión, CU-02, CU-03 con la decisión de RF-02, RF-06, RF-08 y RF-09, y RF-03 |
+
+*Fuente: elaboración propia sobre el apartado V.4.*

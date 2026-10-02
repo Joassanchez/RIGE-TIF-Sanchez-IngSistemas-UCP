@@ -26,8 +26,11 @@ Reglas transversales que aplican el redactor y controlan los revisores. Es la fu
 | Márgenes | Superior e inferior 2,5 cm · izquierdo y derecho 3 cm |
 | Interlineado | Doble |
 | Tipografía | Times New Roman: cuerpo 12, justificado; notas y citas al pie 10; títulos, encabezado y pie a elección; texto en negro |
-| Tablas e instrumentos | Calibri 9,5, interlineado simple (formato de la plantilla) |
-| Carátulas | Cada capítulo en hoja aparte, numeral romano y título en mayúsculas, centrados; el texto empieza en la hoja siguiente sin repetir el título |
+| Párrafos | Sangría de primera línea 1,27 cm; 10 pt antes y después (modelo del autor) |
+| Títulos | Apartado (III.1) 13 negrita; subapartado (III.2.1) 12 negrita; ambos a la izquierda |
+| Tablas e instrumentos | Times New Roman 10, interlineado simple, al ancho del texto (decisión del autor; la plantilla sugiere Calibri 9,5, pero el Art. 20.º admite libertad de formato en tablas, títulos y pies) |
+| Portada | Sin número de página; rótulos en negrita, capítulos que integra la entrega y fecha en letras («Octubre de 2026») |
+| Carátulas | Cada capítulo en hoja aparte, numeral romano y título en mayúsculas, centrados, ambos en 14 negrita; el texto empieza en la hoja siguiente sin repetir el título |
 | Numeración | Correlativa; los anexos aparte, «página X de Y» |
 | Láminas | Dentro del capítulo, numeradas como una página; normas IRAM |
 | Unidades | SIMELA (Ley N.º 19.511) y recomendaciones del SI |

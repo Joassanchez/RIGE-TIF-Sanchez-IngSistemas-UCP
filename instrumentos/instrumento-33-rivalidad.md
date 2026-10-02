@@ -2,19 +2,17 @@
 
 > Plantilla oficial migrada desde `catedra/originales/03_Plantillas_Instrumentos_AE2.docx`. Completar sobre esta estructura; `/exportar instrumento 33` genera el `.docx` en la carpeta que fija la consigna.
 
-<!-- [PENDIENTE U-03: completar el instrumento] -->
-
 *Momento de aplicación: semana 7, en continuidad con el Instrumento 32. Destino: Capítulo IV, apartados IV.3 y IV.4, y Portafolio de la Unidad Dos. Plazo: jueves 24 de septiembre.*
 
 La pregunta que ordena el análisis no es cuán intensa resulta cada fuerza, sino qué decisión del proyecto cambia por causa de ella. Se cuentan implicancias, no filas. El sustituto más frecuente y más subestimado es la solución artesanal que hoy funciona en la organización: la planilla de cálculo mantenida a mano, gratuita, conocida y capaz de resolver buena parte del problema.
 
 | **Fuerza**                            | **Situación relevada** | **Evidencia (Cap. II, acta o fuente secundaria)** | **Intensidad** | **Implicancia decisoria** |
 |---------------------------------------|------------------------|---------------------------------------------------|----------------|---------------------------|
-| Rivalidad entre competidores actuales |                        |                                                   |                |                           |
-| Competidores potenciales              |                        |                                                   |                |                           |
-| Sustitutos                            |                        |                                                   |                |                           |
-| Poder de negociación de proveedores   |                        |                                                   |                |                           |
-| Poder de negociación de clientes      |                        |                                                   |                |                           |
+| Rivalidad entre competidores actuales | Sobre OpenCode operan `debug config`, `debug agent`, OCCM, CC Switch y agnix. El costo monetario es nulo; queda el tiempo de reconstrucción manual. Ninguna evalúa una decisión ni informa procedencia por declaración | OpenCode (2026); icysaintdx (2026); JasonYoung (2026); agent-sh (2026); informe de la AE1, Anexo I, A.I.4 | Baja | Se compite por explicación: RF-02, RF-06 y RF-09 conservan prioridad Must. El comando nativo de resolución por agente es el oráculo de RNF-02 |
+| Competidores potenciales              | Amp evalúa acciones e informa regla y alcance; Codex evalúa comandos de shell y expone la configuración efectiva con origen por capa. Ninguno informa archivo y posición. Una incidencia abierta en Codex pide la procedencia de la configuración. El conocimiento y los escenarios bajo MIT dejan la entrada sin barreras | Amp (s. f.); OpenAI (2026); Winning (2026); A.I.4 | Alta | El diferencial combina ambos ejes del mapeo (33.2); RF-02 incorpora el CA-8 (Anexo III, D-59). La independencia del núcleo (RNF-03) permite reorientar la plataforma. El aporte a OpenCode queda como salida (apartado IV.1) |
+| Sustitutos                            | Procedimiento manual con comandos nativos; consulta a un agente de permisos elevados; agente interno que crea y configura agentes; sincronizadores de fuente única, que generan configuración sin verificar el estado cargado, los implícitos ni las reglas nativas | Entrevista con la referente (informe de la AE1, A.I.5); dyoshikawa (2026); JasonYoung (2026) | Alta | RF-03 conserva prioridad Must: reemplaza la consulta delegada por una lectura directa y sin consumo de tokens. RIGE es de solo lectura; sobre una configuración generada informa lo que efectivamente rige |
+| Poder de negociación de proveedores   | OpenCode define el esquema y lo modifica con frecuencia: el conteo propio de los metadatos y la clasificación de las notas publicados por su equipo entre el 01/01 y el 30/09/2026 registran 227 versiones estables, 43 de ellas con cambios declarados de configuración, permisos o agentes (anomalyco, s. f.-c; anomalyco, s. f.-d). La incidencia n.º 46873 reporta un comportamiento de permisos en 1.18.26 (ZhukovLabs, 2026), aunque los archivos de resolución y permisos no difieren de los de 1.18.25 (anomalyco, s. f.-a), de modo que su versión de introducción no está confirmada (Anexo VI). Los archivos comparados son los de configuración de agentes (`config/agent.ts`), configuración (`config.ts`), permisos (`permission.ts`) y agente (`agent/agent.ts`); el escenario reportado queda sin ejecutar contra 1.18.25 y, si el comportamiento ya está presente, RIGE lo reproduce porque su referencia es el comportamiento efectivo verificado contra el oráculo (RNF-02). También aporta el evaluador de permisos reutilizado bajo MIT | Anexo VI; informe de la AE1, Anexo II, A.II.3 | Alta | Sostiene la versión congelada (L-05) y la advertencia de versión de RF-05. El código reutilizado conserva la licencia de 1.18.25 aunque cambie en versiones futuras |
+| Poder de negociación de clientes      | Cada desarrollador elige y configura su herramienta: quien decide la adopción padece el problema. El costo de cambio es nulo y las alternativas ofrecen uso gratuito. El agente consumidor utiliza la salida sin juzgarla | Entrevista con la referente (informe de la AE1, A.I.5); apartado IV.4 | Alta | La adopción exige instalación sin privilegios, sin cuenta ni configuración propia de RIGE. La coincidencia entre decisor y usuario confirma L-04. La asimetría del agente consumidor sostiene la salida determinista con esquema estable (RF-03 y RNF-08) |
 
 **33.2 · Mapeo de competencia**
 
@@ -22,21 +20,32 @@ Declare primero los dos ejes y su justificación; recién después ubique las al
 
 | **Definición de los ejes**                                                    |     |
 |-------------------------------------------------------------------------------|-----|
-| Eje horizontal                                                                |     |
-| Justificación del eje horizontal (evidencia del relevamiento que lo sostiene) |     |
-| Eje vertical                                                                  |     |
-| Justificación del eje vertical                                                |     |
+| Eje horizontal                                                                | Profundidad de la explicación, en cuatro niveles: no resuelve el estado efectivo (0), muestra el resultado de la fusión (1), lista valores o reglas en orden de evaluación (2), o evalúa la decisión para una acción con su regla determinante (3) |
+| Justificación del eje horizontal (evidencia del relevamiento que lo sostiene) | Corresponde a la primera mitad de la definición de respuesta correcta del instrumento de la línea de base: coinciden el valor o la decisión (informe de la AE1, Anexo I, A.I.7). El hallazgo 5 del relevamiento distingue listar reglas de explicar una decisión |
+| Eje vertical                                                                  | Granularidad de la procedencia, en tres niveles: ninguna (0), por alcance o capa (1), o por declaración, con su entrada, archivo y posición (2) |
+| Justificación del eje vertical                                                | Corresponde a la segunda mitad de la misma definición: coinciden la fuente del valor o la regla determinante (A.I.7). Ambos ejes son las dimensiones con que se relevó cada solución (A.I.4). Se descartan el precio, que no discrimina porque las soluciones son gratuitas o tienen modalidad gratuita, y la cobertura de herramientas, que no mide la respuesta correcta y discrimina en contra de RIGE (apartado IV.4) |
 
 | **Alternativa relevada**           | **Qué resuelve hoy** | **Costo total para la organización** | **Posición en el eje horizontal** | **Posición en el eje vertical** |
 |------------------------------------|----------------------|--------------------------------------|-----------------------------------|---------------------------------|
-| Solución artesanal vigente         |                      |                                      |                                   |                                 |
-|                                    |                      |                                      |                                   |                                 |
-|                                    |                      |                                      |                                   |                                 |
-| Solución propuesta por el proyecto |                      |                                      |                                   |                                 |
+| Solución artesanal vigente         | Procedimiento manual: el desarrollador reconstruye el estado efectivo archivo por archivo, con apoyo de los comandos nativos o de la consulta a un agente | Sin costo monetario. Tiempo de reconstrucción y tasa de error que mide la línea de base (IB-1 e IB-2, apartado I.3.2); la consulta a un agente suma consumo de tokens | Sin posición fija: depende de quien lo ejecuta (apartado IV.3) | Sin posición fija |
+| OpenCode `debug agent <nombre>`    | Agente resuelto, con permisos y disponibilidad de herramientas; incorpora valores nativos | Sin costo monetario; incluido en la herramienta | 2 | 0 |
+| OpenCode `debug config`            | Configuración resuelta, serializada como JSON | Sin costo monetario; incluido en la herramienta | 1 | 0 |
+| Amp `permissions test`             | Acción resultante, regla coincidente y alcance de origen | Exige usar Amp en lugar de OpenCode | 3 | 1 |
+| Codex `execpolicy check`           | Decisión para un comando de shell y reglas coincidentes | Exige usar Codex en lugar de OpenCode | 3 | 0 |
+| Claude Code Config Manager         | Valores por alcance, efectivos y sobrescritos; navega hasta la línea JSON de la declaración | Exige usar Claude Code en lugar de OpenCode | 1 | 1 |
+| OCCM, CC Switch y sincronizadores  | Edición, validación, gestión o generación de la configuración | Sin costo monetario; no verifican el estado cargado | 0 | 0 |
+| Solución propuesta por el proyecto | RIGE: valor efectivo con su procedencia y decisión de permiso con su regla determinante, por declaración, sobre OpenCode 1.18.25 | Sin costo monetario (MIT); instalación local sin privilegios administrativos y sin cuenta | 3 | 2 |
+
+*Posiciones según el relevamiento del 01/10/2026 (informe de la AE1, Anexo I, A.I.4) y la Figura 2 del apartado IV.4. Ninguna de las 33 soluciones relevadas ocupa la posición (3, 2).*
 
 +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | **✦ LA PREGUNTA QUE LA CÁTEDRA FORMULARÁ**                                                                                                                                                                                                                                                   |
 |                                                                                                                                                                                                                                                                                              |
 | «Tomo el sustituto que ya funciona en la organización. Es gratuito, la gente lo sabe usar y resuelve buena parte del problema. ¿Por qué su sistema es mejor que eso, medido con qué indicador y en qué plazo?» Si el instrumento no tiene esa respuesta, el apartado IV.3 no está terminado. |
-+==============================================================================================================================================================================================================================================================================================+
 +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+| **Respuesta a la pregunta de la cátedra** |     |
+|-------------------------------------------|-----|
+| Por qué el sistema es mejor que el sustituto | El sustituto es gratuito y conocido, pero responde sin garantía de corrección y sin mostrar el origen. RIGE responde con el valor o la decisión, su declaración de origen (entrada, archivo y posición) y un resultado verificado contra la propia herramienta (RNF-02). La ventaja reside en la exactitud, no en la comodidad |
+| Indicador | IB-1, proporción de respuestas erróneas, e IB-2, mediana del tiempo de resolución, en las consultas de mayor dificultad (condiciones C-2 a C-4), conforme al criterio de éxito del apartado I.3.4 del informe de la AE1 |
+| Plazo | La línea de base fija el valor inicial; la medición final, al cierre del período, compara RIGE con ese valor (apartados V.1 y V.4). La Tabla 13 del apartado IV.3 fija de antemano qué resultado confirma, reordena o refuta la selección |

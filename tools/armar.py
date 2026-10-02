@@ -12,7 +12,7 @@ Uso:
 Nombre de salida: AAAAMMDD_<Tipo>_<Equipo>_vN.<ext>; nunca sobrescribe un archivo existente.
 Con --prueba no aplica los controles de estado y escribe en build/.
 """
-import argparse, datetime, os, pathlib, re, subprocess, sys, tempfile, shutil
+import argparse, datetime, os, pathlib, re, subprocess, sys, tempfile, shutil, zipfile
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 INF = RAIZ / "informe"
@@ -62,15 +62,56 @@ def archivos_carpeta(d):
                [int(x) if x.isdigit() else x for x in re.split(r"[.\-]", f.name)]))
     return fs
 
-def portada(datos, ae):
-    a = datos["autor"]
-    lineas = [datos["universidad"].upper(), datos["facultad"], datos["carrera"], "",
-              "PROYECTO INTEGRADOR FINAL", f"Actividad de Evaluación N.º {ae[-1]}" if ae.startswith("AE") else "", "",
-              datos["titulo"].upper(), "", f"Autor: {a['apellido_nombre']} — DNI {a['dni']}",
-              f"Docente Titular: {datos['docente']}", datos["comision"],
-              f"{datos['lugar']} — {datetime.date.today().strftime('%m/%Y')}"]
+MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+         "septiembre", "octubre", "noviembre", "diciembre"]
+ROMANOS = [(10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")]
+
+def romano(n):
+    r = ""
+    for v, s in ROMANOS:
+        while n >= v: r += s; n -= v
+    return r
+
+def portada(datos, ae, caps):
+    """Portada según el modelo del autor (00-gestion/borradores/): rótulos en negrita, capítulos y fecha en letras."""
+    a, hoy = datos["autor"], datetime.date.today()
+    capitulos = " · ".join(f"Capítulo {romano(int(c.split('-')[1]))}" for c in caps)
+    lineas = [f"**{datos['universidad'].upper()}**", datos["facultad"], datos["carrera"],
+              "**PROYECTO INTEGRADOR FINAL**", f"Actividad de Evaluación N.º {ae[-1]}" if ae.startswith("AE") else "",
+              capitulos, f"**{datos['titulo'].upper()}**",
+              "**Autor:**", f"{a['apellido_nombre']} — DNI {a['dni']}",
+              "**Docente Titular:**", datos["docente"], f"**{datos['comision']}**",
+              f"**{datos['lugar']} — {MESES[hoy.month - 1].capitalize()} de {hoy.year}**"]
     cuerpo = "\n\n".join(f"::: {{custom-style=\"Portada\"}}\n{l}\n:::" for l in lineas if l)
     return cuerpo + "\n\n```{=openxml}\n<w:p><w:r><w:br w:type=\"page\"/></w:r></w:p>\n```\n"
+
+ANCHO_TEXTO = 11906 - 2 * 1701  # A4 menos márgenes de 3 cm, en veinteavos de punto (≈ 15 cm)
+
+def tablas_al_ancho(docx):
+    """Fija cada tabla al ancho del texto en medida absoluta: algunos visores (Google Docs) no
+    respetan el 100 % relativo que escribe pandoc y la tabla queda desalineada con los márgenes."""
+    with zipfile.ZipFile(docx) as z:
+        partes = {n: z.read(n) for n in z.namelist()}
+    doc = partes["word/document.xml"].decode("utf-8")
+
+    def ajustar(m):
+        t = m.group(0)
+        cols = [int(float(w)) for w in re.findall(r'<w:gridCol w:w="([\d.]+)"', t)]
+        if not cols: return t
+        suma, acum, nuevas = sum(cols), 0, []
+        for i, w in enumerate(cols):
+            n = ANCHO_TEXTO - acum if i == len(cols) - 1 else round(w * ANCHO_TEXTO / suma)
+            nuevas.append(n); acum += n
+        grilla = "<w:tblGrid>" + "".join(f'<w:gridCol w:w="{n}" />' for n in nuevas) + "</w:tblGrid>"
+        t = re.sub(r"<w:tblGrid>.*?</w:tblGrid>", grilla, t, count=1, flags=re.S)
+        t = re.sub(r"<w:tblW [^>]*/>", f'<w:tblW w:w="{ANCHO_TEXTO}" w:type="dxa" /><w:jc w:val="left" /><w:tblInd w:w="0" w:type="dxa" />', t, count=1)
+        return t
+
+    # Las tablas no se anidan en el informe; si alguna lo estuviera, el patrón la deja intacta.
+    doc = re.sub(r"<w:tbl>(?:(?!<w:tbl>).)*?</w:tbl>", ajustar, doc, flags=re.S)
+    partes["word/document.xml"] = doc.encode("utf-8")
+    with zipfile.ZipFile(docx, "w", zipfile.ZIP_DEFLATED) as z:
+        for n, b in partes.items(): z.writestr(n, b)
 
 def nombre_salida(destino, tipo, datos):
     hoy = datetime.date.today().strftime("%Y%m%d")
@@ -94,7 +135,7 @@ def main():
         ae = a.objetivo[0].upper()
         if ae not in ENTREGAS: sys.exit(f"AE sin composición definida en ENTREGAS: {ae}")
         cfg = ENTREGAS[ae]; tipo = f"Informe{ae}"
-        pp = tmp / "00-portada.md"; pp.write_text(portada(datos, ae), encoding="utf-8"); partes.append(pp)
+        pp = tmp / "00-portada.md"; pp.write_text(portada(datos, ae, cfg["caps"]), encoding="utf-8"); partes.append(pp)
         if cfg["resumen"]:
             r = INF / "00-resumen.md"; partes.append(r)
             palabras = len(re.findall(r"\w+", re.sub(r"^#.*$", "", r.read_text(encoding="utf-8"), flags=re.M)))
@@ -138,6 +179,7 @@ def main():
         cmd += ["--citeproc", f"--bibliography={BIB}", f"--csl={CSL}", "-M", "lang=es-AR",
                 "-M", "reference-section-title=BIBLIOGRAFÍA"]
     subprocess.run(cmd, check=True)
+    tablas_al_ancho(salida)
     print(salida)
     if a.formato == "pdf":
         subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", str(destino), str(salida)],

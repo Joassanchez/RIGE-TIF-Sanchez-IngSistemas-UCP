@@ -5,6 +5,7 @@
 - Capítulos afectados: Cap. X (X.3 completo; X.4, X.1); Cap. I (valorización del consumo por tokens, Ventana del AE1); diseño de la medición (`01-relevamiento/linea-base/DISENO-medicion-agentes.md`); Instrumento 34; Anexo III (D-41, D-48, D-49)
 - Origen: corrección del Cap. X del autor (01/10/2026: «descartar el planteo actual», «la métrica debe ser el consumo de tokens», «suscripción mensual de aprox. USD 20, orientada a la familia de Codex») y elección del autor en la sesión del 01/10/2026: ChatGPT Plus, con el dato del autor de que OpenCode acepta esa suscripción como proveedor
 - Reemplaza: ADR-057, eje T (tope de API de USD 50, carga de USD 20, regla de recorte) y sus consecuencias en X.3. **Modifica** ADR-053 en los modelos (tres modelos de Anthropic por API) y en el control del gasto (clave exclusiva conciliada con la consola)
+- Modificado por: ADR-077 (eje X, estructura de X.3, y la consecuencia «Claude Pro sin costo atribuible»), aceptado el 01/10/2026
 - Relacionado: ADR-053 (diseño de la medición, criterio de 8 de 12 sobre el modelo principal), ADR-057 (ejes L y S, vigentes), ADR-067 (Codex sobre ChatGPT Plus como escritor)
 
 ### Contexto

@@ -138,6 +138,25 @@ def presupuesto(ws):
         if v is not None: ws.cell(row=fila, column=2).value = v
     return sum(v is not None for v in valores.values())
 
+def contingencia(ws):
+    """Carga la cláusula de contingencia de la hoja Iteraciones (B26 a B28): B26 desde la Tabla 19
+    (orden, qué se posterga y horas liberadas) y B27 y B28 desde la tabla «Cláusula de contingencia»."""
+    texto = (LIBRO / "iteraciones.md").read_text(encoding="utf-8")
+    pasos, d = [], {}
+    for enc, cuerpo in tablas_md(texto):
+        if enc and enc[0] == "orden" and any(h.startswith("que se posterga") for h in enc):
+            q = next(i for i, h in enumerate(enc) if h.startswith("que se posterga"))
+            h = next(i for i, x in enumerate(enc) if x.startswith("horas liberadas"))
+            pasos = [f"{limpiar(f[0])}) {limpiar(f[q])} ({limpiar(f[h])} h)" for f in cuerpo if len(f) > h]
+        if enc and enc[0].startswith("clausula de contingencia"):
+            d = {norm(f[0]): limpiar(f[1]) for f in cuerpo if len(f) > 1}
+    valores = {26: "Se posterga, en este orden, hasta cubrir la caída de la capacidad técnica: " + "; ".join(pasos) + "." if pasos else None,
+               27: next((v for k, v in d.items() if k.startswith("criterio de redistribucion")), None),
+               28: next((v for k, v in d.items() if k.startswith("que no se sacrifica")), None)}
+    for fila, v in valores.items():
+        if v: ws.cell(row=fila, column=2).value = v
+    return sum(bool(v) for v in valores.values())
+
 def main():
     ap = argparse.ArgumentParser(description="Genera el Libro de trabajo .xlsx.")
     ap.add_argument("--destino", required=True, help="carpeta de salida relativa a la raíz, según la consigna")
@@ -165,6 +184,7 @@ def main():
             [["tipo", "clase"], ["recurso", "concepto"], ["cantidad"], ["unidad"], ["costo unitario"], [], ["fuente"]]) if f[1]]),
     }
     informe["Iteraciones (presupuesto)"] = presupuesto(wb["Iteraciones"])
+    informe["Iteraciones (contingencia)"] = contingencia(wb["Iteraciones"])
     wb.save(destino)
     print(destino.relative_to(RAIZ) if RAIZ in destino.parents else destino)
     for hoja, k in informe.items(): print(f"  {hoja}: {k} filas")

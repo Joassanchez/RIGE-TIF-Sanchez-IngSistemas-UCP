@@ -41,4 +41,4 @@ El anexo clasifica por mecanismo las 32 incidencias incluidas en el relevamiento
 
 ¹ Clasificación de límite: en las incidencias n.º 13751, n.º 16495 y n.º 43669 interviene una regla nativa, de modo que admiten también la lectura como valor implícito (C-3). Se clasifican como permisos porque el comportamiento reportado es una decisión de permiso.
 
-² La incidencia n.º 46873 corresponde a la versión 1.18.26, posterior a la versión congelada. Acredita la ocurrencia del fenómeno y el cambio de reglas entre versiones, y no el comportamiento de la versión 1.18.25.
+² La incidencia n.º 46873 corresponde a la versión 1.18.26, posterior a la versión congelada. Acredita el comportamiento reportado, no el de la versión 1.18.25; la comparación de los archivos de resolución y permisos entre ambas versiones no muestra diferencias, por lo que su versión de introducción no está confirmada.
