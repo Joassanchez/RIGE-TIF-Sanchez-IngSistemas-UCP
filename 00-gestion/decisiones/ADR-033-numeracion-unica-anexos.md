@@ -80,6 +80,7 @@ Alternativa **A** (25/09/2026).
 1. Renombrar los archivos de `informe/anexos/` según el esquema, integrar la clasificación en A.VI.6 y actualizar `00-anexos.md`.
 2. Renumerar las remisiones en los capítulos I y II, en la Ventana del AE1, y en III, IV y V, antes de la entrega de la AE2. La fórmula «del informe de la AE1» deja de ser necesaria para distinguir anexos.
 3. En la entrega de la AE2 van los anexos I a V. El VI y el VII se remiten como material del informe de la AE1 hasta el informe integral.
+   - *Precisión del autor (02/10/2026):* la AE2 lleva también el Anexo VI, porque la clasificación de incidencias de A.VI.6 sustenta la Tabla 9 del apartado IV.3. El VII sigue remitido.
 4. Crear el Anexo IV cuando exista el canal de CI.
 5. Verificar con `tools/armar.py` que el orden de los anexos respete la numeración. La paginación independiente con «página X de Y» sigue pendiente (M-11).
 

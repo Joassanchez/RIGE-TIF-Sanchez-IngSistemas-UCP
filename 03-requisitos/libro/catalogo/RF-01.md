@@ -14,5 +14,5 @@
 | Iteración prevista | 1 |
 | ¿Integra el MVP? | Sí |
 
-<!-- Migrado de Cap. III, Anexo I, A.I.1. «Categoría» de la Tabla 9; «Iteración prevista» de la Tabla 18 (Cap. V);
+<!-- Migrado de Cap. III, Anexo I, A.I.1. «Categoría» de la Tabla 6; «Iteración prevista» de la Tabla 15 (Cap. V);
 «¿Integra el MVP?» por la regla del III.5 (los requisitos Must constituyen el MVP del V.5). -->

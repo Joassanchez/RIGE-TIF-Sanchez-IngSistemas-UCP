@@ -25,9 +25,12 @@ CITEPROC = BIB.exists() and "@" in BIB.read_text(encoding="utf-8")
 # Composición del informe de cada AE (qué partes lo integran, no dónde se aloja).
 ENTREGAS = {
     "AE1": {"caps": ["cap-01", "cap-02"], "resumen": True,
-            "anexos": ["anexos/00-anexos.md", "anexos/anexo-I-ae1-*.md", "anexos/anexo-II-ae1-*.md", "@00-gestion/anexo-III.md"]},
+            "anexos": ["anexos/00-anexos.md", "anexos/anexo-II-*.md", "@00-gestion/anexo-III.md", "anexos/anexo-VI-*.md", "anexos/anexo-VII-*.md"]},
+    # ADR-033: la AE2 lleva los anexos I a V y, por decisión del autor del 02/10/2026, el VI,
+    # que contiene la clasificación de incidencias (A.VI.6) en la que se apoya la Tabla 9.
     "AE2": {"caps": ["cap-03", "cap-04", "cap-05", "cap-10"], "resumen": False,
-            "anexos": ["anexos/anexo-I-cap3-*.md", "anexos/anexo-V-cap3-*.md", "anexos/anexo-VI-cap4-*.md"]},
+            "anexos": ["anexos/00-anexos.md", "anexos/anexo-I-*.md", "anexos/anexo-II-*.md", "@00-gestion/anexo-III.md",
+                       "anexos/anexo-IV-*.md", "anexos/anexo-V-*.md", "anexos/anexo-VI-*.md"]},
 }
 
 def yaml_simple(p):

@@ -1,4 +1,4 @@
-# ANEXO III — BITÁCORA DE DECISIONES E HISTORIAL DEL REPOSITORIO
+# ANEXO III · BITÁCORA DE DECISIONES E HISTORIAL DEL REPOSITORIO
 
 ## A.III.1 · Registro de decisiones
 
@@ -41,7 +41,7 @@ Cada entrada conserva la deliberación completa que el Artículo 21.º excluye d
 | D-33 | V.1 | Cuatro iteraciones de duración variable, cerradas en los hitos de la cadencia de artefactos | Iteraciones de duración fija de dos semanas | Sus cierres no coinciden con los hitos, de modo que los artefactos quedarían a mitad de iteración |
 | D-34 | V.1 (RNF-02) | Verificar cada integración contra resultados de referencia versionados y regenerarlos por completo al cierre de cada iteración | Ejecutar la herramienta en cada integración; conservar los resultados sin regenerarlos | La primera hace depender cada corrida de la disponibilidad del paquete publicado de la versión. La segunda deja pasar inadvertido un escenario modificado sin su referencia actualizada |
 | D-35 | V.4 | Presupuesto sobre 28 h semanales reales, en capacidad técnica y reserva documental, con una reducción del 15 % y cláusula de contingencia | Presupuestar sobre la duración nominal del cuatrimestre | La duración nominal no corresponde a la dedicación real y conduce a comprometer requisitos que no se pueden construir |
-| D-36 | V.1, V.4 | Preparar la línea de base desde el 02/10 (arnés, contenedor y piloto) y ejecutarla en uno o dos días, con resultado a más tardar el 16/10, con cargo a la reserva de la Ventana, como corrección del informe de la AE1 | Medir antes del 02/10; medir en la iteración 3; descontar las horas de la capacidad técnica | Medir antes no es viable junto con la entrega de la AE2. Medir en la iteración 3 quita a la Tabla 13 su función de ordenar la iteración 2. Descontar las horas de la capacidad técnica trata como trabajo de la AE2 una deuda del AE1 y desplaza requisitos |
+| D-36 | V.1, V.4 | Preparar la línea de base desde el 02/10 (arnés, contenedor y piloto) y ejecutarla en uno o dos días, con resultado a más tardar el 16/10, con cargo a la reserva de la Ventana, como corrección del informe de la AE1 | Medir antes del 02/10; medir en la iteración 3; descontar las horas de la capacidad técnica | Medir antes no es viable junto con la entrega de la AE2. Medir en la iteración 3 quita a la Tabla 10 su función de ordenar la iteración 2. Descontar las horas de la capacidad técnica trata como trabajo de la AE2 una deuda del AE1 y desplaza requisitos |
 | D-37 | V.1, V.4 | La línea de comandos es la interfaz completa y se adelanta a la iteración 2; la interfaz web queda limitada a formularios y vistas mínimas | Construir el v1 o todo el período solo por línea de comandos; mantener la línea de comandos en la iteración 3 | Sin interfaz web, el v1 arriesga la comprobación de la cátedra, que supone un proceso que responde en una dirección. Dejar la línea de comandos en la iteración 3 deja la medición final sin su herramienta si esa iteración se atrasa |
 | D-38 | V.4 | La iteración 2 toma 2 h del margen de estabilización de la iteración 4 | Estimar la consulta de permisos en el mínimo de su rango; tomar horas de la reserva documental | Ajustar una estimación para que la cuenta cierre no resiste la pregunta de por qué ese valor. La reserva tiene entregables con fecha fija y ya financia la línea de base |
 | D-39 | V.4 | La cláusula de contingencia posterga la explicación en prosa y la vista web de permisos, para volver a absorber un tercio de la capacidad | Postergar RF-09; declarar que la cláusula absorbe menos de un tercio | Postergar RF-09 rompe un caso del criterio principal. Absorber menos de un tercio incumple la consigna |
@@ -99,7 +99,99 @@ Cada entrada conserva la deliberación completa que el Artículo 21.º excluye d
 
 **D-62 · Análisis de costos del proyecto.** La presentación anterior de los recursos declaraba nula la inversión inicial porque el autor no realizaba desembolsos por el equipo, la conexión ni el espacio. Esa lectura confunde desembolso con costo: el proyecto consume horas, desgasta un equipo, usa energía y ocupa un espacio que alguien paga. Se adopta un criterio único de imputación: se imputa todo recurso consumido que alguien paga, se valoriza solo lo que tiene fuente fechada o medición propia, y lo gratuito figura en cero. Para el equipo se consideran tres opciones. Omitirlo contradice la observación docente. Amortizarlo sobre el valor de compra exige un comprobante de enero de 2025 en pesos, deteriorado por la inflación. Se adopta la amortización sobre el valor de reposición del mismo modelo, expresada como costo por hora de uso medida, porque así no depende de cuántos meses calendario se cuenten. La degradación de la batería y del disco se mide al inicio y al cierre como evidencia, sin monetizarla aparte, para no contar dos veces el mismo desgaste; su magnitud se juzga con la medición de cierre, porque la capacidad semanal de la batería oscila alrededor de ±500 mWh. La energía se valoriza con el costo marginal de la factura del suministro y no con su costo promedio, porque los cargos fijos se pagan con o sin el proyecto. El espacio, el agua y la conexión se declaran como aporte en especie sin valorizar, dado que carecen de una fuente que los mida. Para el punto de equilibrio se descarta el cálculo sobre el valor del problema, que reintroduciría por otra vía la valoración monetaria descartada en D-18, y se adopta el del sostenimiento. Con 227 versiones publicadas en nueve meses y 43 cambios declarados de configuración, permisos o agentes, seguir cada versión costaría por año entre una y nueve veces el costo del proyecto; esa cifra se presenta como sensibilidad y sostiene la versión congelada. Se adopta una intervención trimestral que agrupa los cambios, valorizada con la cota alta de 22 horas porque una intervención que reúne tres meses de cambios se acerca al máximo. El ingreso que iguala ese costo se prevé mediante GitHub Sponsors, que admite mantenedores residentes en Argentina y no cobra comisión sobre los patrocinios de cuentas personales; con la meta mensual, bastan nueve patrocinadores de cinco dólares. Se descarta Open Source Collective porque cobra el 10 % como host, exige un repositorio bajo una organización y orienta a otras alternativas a los proyectos de una sola persona con recaudaciones menores a seiscientos dólares anuales. Consecuencias asumidas: la amortización y la energía quedan provisorias hasta la medición de cierre, y el punto de equilibrio se revisa si una intervención trimestral excede las 22 horas.
 
-## A.III.3 · Historial del repositorio
+## A.III.3 · Fundamentos y cálculos remitidos desde el cuerpo
+
+Esta sección reúne el detalle que los Capítulos III, IV, V y X consignan en una línea: el fundamento de las fronteras de ingeniería, las alternativas menores descartadas, el efecto de la cláusula de contingencia y la memoria de cálculo de los costos.
+
+### Fronteras de ingeniería del apartado III.4
+
+Las exclusiones siguientes no responden a una expectativa de la organización, sino a una imposibilidad técnica o a la frontera individual del sistema declarada en el apartado I.6.4. Las adopta el autor como decisiones de ingeniería y se pusieron en conocimiento de la referente en el acta de la sesión de validación del 26/09/2026, sección 2, sin observaciones.
+
+| **Qué se incluye** | **Qué queda fuera** | **Fundamento** |
+|---|---|---|
+| Entradas del entorno individual del desarrollador | Configuración remota y administrada a nivel de sistema operativo | Requieren privilegios administrativos y son ajenas a la frontera individual declarada |
+| Elementos que determinan el comportamiento de los agentes | Configuración de la interfaz de la herramienta | No altera lo que un agente hace ni lo que puede hacer |
+| Reglas de permiso declaradas y nativas | Aprobaciones permanentes concedidas por el desarrollador | Se conservan fuera de las entradas de configuración, asociadas al texto literal de cada acción, y su lectura constituye una función distinta de la resolución; RIGE declara esta condición junto a cada decisión |
+| Instrucciones de alcance global y de proyecto como entradas de configuración | Instrucciones declaradas en subdirectorios del proyecto | Se incorporan durante la sesión según los archivos que el agente lee, de modo que no constituyen un dato estático de la configuración |
+| Plugins como elementos declarados, con su origen | Efecto del código de los plugins sobre la configuración | Su determinación exige ejecutar código de terceros, contrario al modo de operación de solo lectura |
+| Declaración y habilitación de servidores MCP | Disponibilidad, contenido y seguridad de esos servidores | Corresponden al objeto de los escáneres de seguridad relevados |
+| Instrucciones como entrada de configuración | Evaluación de la calidad de su contenido | Aborda qué dicen las instrucciones y no qué configuración rige |
+| Variables de entorno del proceso de RIGE | Entorno de ejecución de una sesión concreta de OpenCode, y diferencias de disponibilidad entre modos de ejecución | RIGE no se conecta con la ejecución de la herramienta; la condición se declara junto a los resultados |
+
+*Tabla A.III.2. Fronteras adoptadas como decisiones de ingeniería, con su fundamento. Fuente: elaboración propia.*
+
+### Fuentes de ingreso descartadas o no presupuestas (IV.1, D-31)
+
+Las recompensas por incidencia se reservan para tareas puntuales, dado que la readaptación ante cada versión de la herramienta constituye un trabajo continuo. Las subvenciones a software abierto se consideran posibles pero no se presuponen, porque sus convocatorias imponen condiciones de elegibilidad, entre ellas de radicación de los solicitantes (NLnet, 2026).
+
+### Alcance de la visión (IV.2)
+
+Se evalúa como alternativa nombrar las herramientas que se incorporarían en el horizonte de la visión y se descarta por el ritmo de cambio del sector, declarado en el apartado II.6.3. La visión compromete la verificación de cada versión publicada de RIGE y no la compatibilidad con cada versión nueva de las herramientas, que un mantenimiento sin ingresos no puede asegurar.
+
+### Verificación de H-18 (V.1)
+
+La verificación de H-18 condiciona la inclusión de los agentes nativos y precede a RF-16, que necesita identificarlos. Si el resultado es negativo, los agentes nativos salen del alcance de RF-06 y de RF-16, que se limita a los agentes declarados, y se revisa RD-03, sin mover horas.
+
+### Denominación de la versión congelada (V.2)
+
+La etiqueta de la cuarta iteración se denomina congelada. Se reserva la numeración semántica para la primera publicación posterior al período, para evitar confusiones con las etiquetas v1 a v3 de la cadencia.
+
+### Efecto de la cláusula de contingencia (V.4, D-39 y D-55)
+
+La vista web de permisos y la explicación en lenguaje natural se postergan antes que la detección de hallazgos: la decisión y su regla determinante siguen disponibles por la vía de consulta del apartado V.5, mientras que sin RF-07 el OE-3 queda sin cumplir. La vista web se posterga antes que la explicación porque la explicación del motivo de prevalencia integra RF-02, que concentra el diferencial (apartado IV.3).
+
+Si la cláusula se aplica completa, el OE-2 se conserva por línea de comandos, con la decisión y la regla determinante; el OE-1 se reduce a las entradas de archivo del v1; y el OE-3 queda sin cumplir. Con una caída de 11 h o menos, que cubren los órdenes 1 a 4 de la Tabla 16, los tres objetivos se conservan, con la pérdida de la explicación en prosa y de la paridad con la interfaz web en las decisiones de permiso. En el proyecto individual, la redistribución traslada trabajo entre iteraciones: lo postergado vuelve a la iteración siguiente si la capacidad se recupera.
+
+### Memoria de cálculo de los costos (X.2 y X.3, D-62)
+
+**Amortización del equipo.** Se toma el valor de reposición del mismo modelo y configuración, $2.200.000 (USD 1.423,95), de una oferta individual de caja abierta publicada por la Tienda oficial MUDI y conservada por el autor el 01/10/2026 (Tienda oficial MUDI, s. f.). La condición de caja abierta subestima la amortización, con un efecto menor; la vida útil de 36 meses es un supuesto declarado del autor. La amortización se expresa como costo por hora de uso medida: $61.111,11 por mes (USD 39,55), dividido por las 138,465 h activas medidas del 30/08 al 30/09/2026 en el reporte de batería del sistema del 01/10/2026, arroja $441,35 por hora (USD 0,29), como cálculo propio.
+
+Ese costo se aplica a las 190 h del autor y a las horas de ejecución desatendida de la línea de base dentro del período; las de la medición final corresponden a la fase de cierre. El inicio y el fin de esas ejecuciones se registran en la bitácora: [DATO PENDIENTE: horas de ejecución desatendida de las mediciones]. Con las 190 h conocidas, la amortización asciende provisoriamente a $83.856 (USD 54,28). La sensibilidad calculada con esas 190 h arroja $125.784 para una vida útil de 24 meses y $62.892 para 48 meses, una variación de ±2,2 % del costo del proyecto. Septiembre es un único mes de referencia y el denominador se recalcula con las horas de octubre y noviembre. El reporte de batería cuenta tiempo activo y queda sin constancia la inclusión de las corridas desatendidas con la pantalla apagada.
+
+**Degradación medida.** La Tabla A.III.3 consigna el estado inicial medido por el autor el 01/10/2026 mediante el reporte de batería del sistema y la autoevaluación SMART del único disco del equipo.
+
+| Componente | Indicador | Inicio del período | Cierre |
+|---|---|---|---|
+| Batería | Capacidad de carga completa sobre la de diseño | 88,98 % (48.371 mWh sobre 54.362 mWh) | [DATO PENDIENTE: medición de fines de noviembre de 2026] |
+| Batería | Ciclos | 409 | [DATO PENDIENTE: medición de fines de noviembre de 2026] |
+| Disco Samsung NVMe de 512 GB | Vida usada según SMART | 5 % | [DATO PENDIENTE: medición de fines de noviembre de 2026] |
+| Disco Samsung NVMe de 512 GB | Datos escritos | 21,9 TB | [DATO PENDIENTE: medición de fines de noviembre de 2026] |
+
+*Tabla A.III.3. Indicadores de degradación del equipo al inicio y al cierre. Fuente: medición propia del 01/10/2026 mediante el reporte de batería del sistema y SMART.*
+
+Según el reporte del sistema del 01/10/2026, la capacidad semanal de la batería oscila alrededor de ±500 mWh (por ejemplo, 48.632 y 49.695 mWh en agosto de 2026) y registra una pérdida de 521 mWh en septiembre, desde los 48.892 mWh de la semana del 30/08 al 06/09/2026. La conclusión sobre la degradación se condiciona a la medición de cierre; se informa como evidencia y se mantiene dentro de la amortización para evitar contar dos veces el mismo desgaste.
+
+**Energía.** La energía se valoriza mediante un cálculo propio sobre la factura del suministro del lugar de trabajo, correspondiente al período del 17/04 al 15/05/2026 y a 116 kWh: energía, Ley provincial 2620/89 (1,5 %), FNEE e IVA del 21 % arrojan un costo marginal de $314,18 por kWh (USD 0,20). Los dos bloques de la factura, los primeros 30 kWh y los siguientes 86 kWh, tienen el mismo precio de $253,573 por kWh, por lo que el costo marginal es independiente del escalón. Se descarta el costo promedio de la factura, $391,70 por kWh (USD 0,25), porque la cuota de servicio se paga con o sin el proyecto y el alumbrado público se trata como cargo fijo bajo un supuesto declarado; ese promedio queda como cota superior. La factura es anterior al período del proyecto y su tarifa queda sin actualizar ante aumentos posteriores.
+
+Con 190 h de uso a 10 a 20 W, la energía representa $597 a $1.194 (USD 0,39 a 0,77), como orden de magnitud. El rango de potencia es un supuesto, por encima de una muestra de 7,7 W a carga liviana tomada el 01/10/2026, para cubrir el trabajo con contenedores y agentes: [DATO PENDIENTE: potencia media medida del equipo]. Aun con 60 W durante 190 h al costo promedio, la cota calculada es de $4.465, el 0,23 % del costo del proyecto. La energía imputada es la del equipo; la climatización y la iluminación del ambiente corresponden al uso compartido del espacio y quedan dentro del aporte en especie sin valorizar.
+
+**Fechas de los precios y partidas sin valorizar.** Las cifras combinan precios de distintas fechas (salario de diciembre de 2025 a febrero de 2026, tarifa de abril y mayo de 2026, equipo y tipo de cambio de octubre de 2026); la conversión a dólares se hace a una sola fecha, y el salario sin actualizar subestima el costo laboral en ambas monedas. La conexión queda sin valorizar por falta de comprobante. El tiempo de la referente queda sin valorizar porque su perfil no corresponde a la tarifa junior del autor y se carece de una fuente para su tarifa.
+
+**Suscripciones.** Se imputan a precio de lista mensual del proveedor, USD 20 ($30.900), por el tipo de cambio único, y excluyen impuestos. El cobro real de ChatGPT Plus del 30/09/2026, según el comprobante del autor, es de $33.135,34 (USD 21,45), un 7,2 % mayor que el importe de referencia, por el tipo de cambio y los cargos que aplica el medio de pago. El flujo de desembolso a precio de lista es de USD 20 en septiembre (Claude Pro) y de USD 40 en octubre y en noviembre (Claude Pro y ChatGPT Plus), USD 100 en total.
+
+**Consumo de la medición.** El consumo se registra en tokens de entrada, en caché y de salida por caso y por modelo; su equivalente a precio de lista es solo informativo, con las tarifas congeladas en el Anexo VI, A.VI.10. Si los límites de uso de la suscripción impiden completar la medición, se reducen las repeticiones de los modelos secundarios antes que el principal (D-48).
+
+**Sostenimiento.** El equipo de OpenCode produce los metadatos y las notas de las versiones: el conteo propio de las 227 versiones estables publicadas del 01/01 al 30/09/2026 y la clasificación de sus notas arrojan una mediana de 15,5 h entre publicaciones, 43 con cambios declarados de configuración, permisos o agentes y 23 posibles (anomalyco, s. f.-c; anomalyco, s. f.-d). Los cambios declarados constituyen evidencia documental y su cantidad no equivale a readaptaciones necesarias de RIGE, cuyo número queda sin determinar.
+
+La cota baja de 4 h del apartado X.5 corresponde a regenerar y verificar el oráculo, un trabajo fijo que se repite en cada intervención: seguir cada versión lo paga por cada cambio y agrupar lo paga una vez por trimestre. Las cotas de 4 a 22 h representan $35.504 a $195.272 (USD 22,98 a 126,39) de trabajo por intervención. En el último trimestre, de julio a septiembre de 2026, el mismo conteo y la clasificación de las notas registran 3 cambios confirmados y 4 posibles, una carga compatible con la cota alta de 22 h bajo el supuesto adoptado.
+
+Para seguir cada versión, la anualización multiplica el conteo por 365 y lo divide por 273 días para enero a septiembre, o por 92 días para julio a septiembre, con redondeo hacia arriba. La política de una intervención por serie menor se basa en las 9 series menores nuevas registradas en los nueve meses. Los escenarios alternativos valorizan las horas de trabajo; la fila adoptada suma también la amortización y la energía.
+
+| Política de mantenimiento | Intervenciones por año | Patrocinio anual | USD |
+|---|---|---|---|
+| Seguir cada versión con cambio declarado, enero a septiembre, 4 a 22 h por intervención | 58 a 89 | $2.059.232 a $17.379.208 | 1.332,84 a 11.248,68 |
+| Seguir cada versión con cambio declarado, julio a septiembre, 4 a 22 h por intervención | 12 a 28 | $426.048 a $5.467.616 | 275,76 a 3.538,91 |
+| Una intervención por serie menor, 4 a 22 h por intervención | ≈ 12 | $426.048 a $2.343.264 | 275,76 a 1.516,68 |
+| Trimestral con la cota baja de 4 h | 4 | $142.016 | 91,92 |
+| **Trimestral con la cota alta de 22 h, adoptada, con amortización y energía** | **4** | **$820.203 a $820.480** | **530,88 a 531,05** |
+
+*Tabla A.III.4. Sensibilidad del punto de equilibrio del sostenimiento. Fuente: elaboración propia sobre anomalyco (s. f.-c; s. f.-d) y la estimación de readaptación del apartado X.5.*
+
+La política adoptada suma las 88 h anuales, que representan $781.088, la amortización del equipo de esas horas, $38.839, y la energía, con el supuesto de 10 a 20 W, $276 a $553. Seguir cada versión con cambio declarado costaría por año 1,07 a 9,02 veces el costo del proyecto del período con la ventana de enero a septiembre, y 0,22 a 2,84 veces con la de julio a septiembre.
+
+Se descarta Open Source Collective como vía de patrocinio porque su documentación institucional, consultada el 02/10/2026, establece una comisión del 10 % como host, exige un repositorio bajo una organización y orienta a otras alternativas a los proyectos de una sola persona o con menos de USD 600 anuales, como RIGE (Open Source Collective, s. f.-a, s. f.-b).
+
+## A.III.4 · Historial del repositorio
 
 | **Campo**                                   | **Contenido** |
 |---------------------------------------------|---------------|
@@ -108,8 +200,8 @@ Cada entrada conserva la deliberación completa que el Artículo 21.º excluye d
 | Período cubierto por el historial           | \[ \]         |
 | Cantidad de commits del autor en el período | \[ \]         |
 
-*Tabla A.III.2. Referencias del repositorio y del tablero. Fuente: elaboración propia.*
+*Tabla A.III.5. Referencias del repositorio y del tablero. Fuente: elaboración propia.*
 
-## A.III.4 · Declaración de coautoría
+## A.III.5 · Declaración de coautoría
 
 El Informe Grupal de Encuadre Común, que sustenta el apartado II.5.5 y la Tabla 18, se elabora una sola vez para los tres proyectos del grupo. Integrantes y distribución del trabajo: \[ \]. Responsable de carga: \[ \]. Enlace al documento colectivo: \[ \]. El encuadre del sector donde vive el problema, en cambio, es propio de este proyecto y se elabora sin coautoría, conforme al apartado II.5.1.

@@ -1,10 +1,10 @@
 ## II.3 · Presentación de los datos recabados
 
-Este apartado presenta los datos en estado ordenado y sin interpretación; el análisis corresponde al apartado II.5. Los registros extensos constan en el Anexo I, y aquí se incorpora la síntesis con su remisión.
+Este apartado presenta los datos en estado ordenado y sin interpretación; el análisis corresponde al apartado II.5. Los registros extensos constan en el Anexo VI, y aquí se incorpora la síntesis con su remisión.
 
 ### II.3.1 · Datos del relevamiento documental de incidencias
 
-La aplicación del criterio registrado en el Anexo I, A.I.6 arroja 46 incidencias candidatas. De ellas se excluyen 12 por corresponder a pedidos de funcionalidad que no relatan un comportamiento ya experimentado, y 2 por no versar sobre el fenómeno relevado: una relativa a la expresividad de la interfaz de programación de permisos y otra a una discrepancia de nomenclatura en el esquema publicado. Quedan incluidas 32 incidencias, de las cuales 8 permanecen abiertas y 24 se encuentran cerradas a la fecha de consulta.
+La aplicación del criterio registrado en el Anexo VI, A.VI.6 arroja 46 incidencias candidatas. De ellas se excluyen 12 por corresponder a pedidos de funcionalidad que no relatan un comportamiento ya experimentado, y 2 por no versar sobre el fenómeno relevado: una relativa a la expresividad de la interfaz de programación de permisos y otra a una discrepancia de nomenclatura en el esquema publicado. Quedan incluidas 32 incidencias, de las cuales 8 permanecen abiertas y 24 se encuentran cerradas a la fecha de consulta.
 
 | **Categoría**                                         | **Casos** | **Observación**                                        |
 |-------------------------------------------------------|-----------|--------------------------------------------------------|
@@ -13,7 +13,7 @@ La aplicación del criterio registrado en el Anexo I, A.I.6 arroja 46 incidencia
 | Excluidas por no versar sobre el fenómeno             | 2         | Expresividad de la interfaz y nomenclatura del esquema |
 | **Incluidas**                                         | **32**    | 8 abiertas y 24 cerradas                               |
 
-*Tabla 13. Resultado del relevamiento de incidencias del repositorio de OpenCode. Fuente: elaboración propia sobre el relevamiento del 17/09/2026; nómina completa de las 46 incidencias en el Anexo I, A.I.6.*
+*Tabla 13. Resultado del relevamiento de incidencias del repositorio de OpenCode. Fuente: elaboración propia sobre el relevamiento del 17/09/2026; nómina completa de las 46 incidencias en el Anexo VI, A.VI.6.*
 
 ### II.3.2 · Datos de la medición de la línea de base
 
@@ -26,15 +26,15 @@ Los valores agregados por condición corresponden a la Tabla 4 del apartado I.3.
 | C-2 a C-4     | Habitual   | \[ \]                      | \[ \]                   | \[ \]                | \[ \]              |
 | C-2 a C-4     | Ocasional  | \[ \]                      | \[ \]                   | \[ \]                | \[ \]              |
 
-*Tabla 14. Indicadores de la línea de base por condición agrupada y perfil. Fuente: elaboración propia; registro completo en el Anexo I, A.I.8.*
+*Tabla 14. Indicadores de la línea de base por condición agrupada y perfil. Fuente: elaboración propia; registro completo en el Anexo VI, A.VI.8.*
 
-La desagregación se presenta con las condiciones C-2 a C-4 agrupadas, dado que el reparto de las respuestas entre cuatro condiciones y dos perfiles produce celdas demasiado pequeñas para admitir lectura. Se evalúa como alternativa informar las cuatro condiciones por separado y se la descarta por esa razón; el detalle por condición individual consta en el Anexo I, A.I.8.
+La desagregación se presenta con las condiciones C-2 a C-4 agrupadas, dado que el reparto de las respuestas entre cuatro condiciones y dos perfiles produce celdas demasiado pequeñas para admitir lectura. Se evalúa como alternativa informar las cuatro condiciones por separado y se la descarta por esa razón; el detalle por condición individual consta en el Anexo VI, A.VI.8.
 
-Dado que las respuestas de un mismo participante no son independientes entre sí, IB-1 se informa también por participante como control de la unidad de análisis adoptada: el registro individual consta en el Anexo I, A.I.8, y en el cuerpo se consigna el rango de la proporción de error entre participantes y si algún participante concentra una parte desproporcionada de los errores. El registro incorpora, además, los recursos que el participante emplea durante cada resolución, obtenidos de la grabación: qué comandos de introspección utiliza, si recurre a la documentación o a la hoja de referencia, y la cantidad de archivos que abre. Esos valores caracterizan el procedimiento manual vigente, no integran la meta cuantificada del criterio de éxito y constan en el Anexo I, A.I.8. Se registra asimismo, para cada caso, si su respuesta puede obtenerse mediante la lectura de la documentación o si solo surge del comportamiento de la herramienta.
+Dado que las respuestas de un mismo participante no son independientes entre sí, IB-1 se informa también por participante como control de la unidad de análisis adoptada: el registro individual consta en el Anexo VI, A.VI.8, y en el cuerpo se consigna el rango de la proporción de error entre participantes y si algún participante concentra una parte desproporcionada de los errores. El registro incorpora, además, los recursos que el participante emplea durante cada resolución, obtenidos de la grabación: qué comandos de introspección utiliza, si recurre a la documentación o a la hoja de referencia, y la cantidad de archivos que abre. Esos valores caracterizan el procedimiento manual vigente, no integran la meta cuantificada del criterio de éxito y constan en el Anexo VI, A.VI.8. Se registra asimismo, para cada caso, si su respuesta puede obtenerse mediante la lectura de la documentación o si solo surge del comportamiento de la herramienta.
 
 ### II.3.3 · Datos de la entrevista al referente
 
-Los datos se presentan aquí en los términos en que fueron declarados u observados, sin interpretación; su lectura corresponde a los apartados II.5 y II.6. El registro completo consta en el Anexo I, A.I.5.
+Los datos se presentan aquí en los términos en que fueron declarados u observados, sin interpretación; su lectura corresponde a los apartados II.5 y II.6. El registro completo consta en el Anexo VI, A.VI.5.
 
 **Composición del equipo y adopción.** El equipo de desarrollo está integrado por cinco personas y comenzó a utilizar herramientas de programación basadas en agentes a comienzos de 2026. La referente atribuye la incorporación a dos motivos y los jerarquiza: la actualización tecnológica frente a la adopción creciente en el sector y, como factor determinante, la necesidad de sostener el volumen de trabajo comprometido sin ampliar la dotación de personal.
 

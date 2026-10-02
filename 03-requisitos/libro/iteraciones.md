@@ -11,7 +11,7 @@
 | 3             | 26/10 al 07/11 | RIGE descubre los siete tipos de entrada, advierte ante una versión distinta de la 1.18.25, detecta los seis tipos de hallazgo con cero falsos positivos, y la interfaz web local presenta la vista de hallazgos con los mismos resultados que la línea de comandos                                                                                | RF-04, RF-05, RF-07, RNF-02, RNF-04, RNF-05. Condicionados: RF-10, RF-11, RNF-08 | Etiqueta v3              |
 | 4             | 09/11 al 14/11 | La versión congelada satisface los criterios de aceptación de los dieciocho requisitos Must sin incorporar funcionalidad                                                                                                                                                                                                                                           | Ninguno nuevo; acreditación de RNF-06 y RNF-07 dentro de la estabilización                                                                                    | Etiqueta congelada       |
 
-*Tabla 14. Iteraciones del período técnico, con su objetivo verificable, sus requisitos comprometidos y su entregable de cierre. Fuente: elaboración propia sobre el catálogo del apartado III.5.*
+*Tabla 11. Iteraciones del período técnico, con su objetivo verificable, sus requisitos comprometidos y su entregable de cierre. Fuente: elaboración propia sobre el catálogo del apartado III.5.*
 
 ## Presupuesto y tareas por iteración (V.4)
 
@@ -24,7 +24,7 @@
 | **Presupuesto efectivo resultante**              | **190 h: 136 técnicas y 54 de reserva**                                                  |
 | Fase de cierre posterior al período (estimación) | 48 h efectivas en las semanas 15 y 16, sujetas a la confirmación de las fechas de la AE4 |
 
-*Tabla 17. Presupuesto de horas-persona del proyecto. Fuente: elaboración propia sobre el Instrumento 24.*
+*Tabla 14. Presupuesto de horas-persona del proyecto. Fuente: elaboración propia sobre el Instrumento 24.*
 
 | **Iteración** | **Tarea**                                                                           | **Requisitos**                              | **Horas** |
 |---------------|-------------------------------------------------------------------------------------|---------------------------------------------|-----------|
@@ -54,7 +54,7 @@
 | 4             | Corrección de defectos, regresión completa, prueba de clonado y archivo de lectura; acreditación de RNF-06 y RNF-07 | Requisitos Must; RNF-06 y RNF-07 | 11        |
 |               | **Total de la capacidad técnica efectiva**                                          |                                             | **136**   |
 
-*Tabla 18. Estimación de horas por tarea e iteración. Fuente: elaboración propia.*
+*Tabla 15. Estimación de horas por tarea e iteración. Fuente: elaboración propia.*
 
 | **Orden** | **Qué se posterga**                                                                                                       | **Horas liberadas** | **Acumulado** |
 |-----------|---------------------------------------------------------------------------------------------------------------------------|---------------------|---------------|
@@ -66,7 +66,7 @@
 | 6         | RF-07 · hallazgos, con su vista web y su salida por línea de comandos (CU-04)                                             | 16                  | 35            |
 | 7         | Estabilización, reducida de 11 h a 1 h                                                                                    | 10                  | 45            |
 
-*Tabla 19. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 18.*
+*Tabla 16. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 15.*
 
 | **Cláusula de contingencia (hoja Iteraciones)** | **Valor declarado** |
 |---|---|

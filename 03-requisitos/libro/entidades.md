@@ -4,21 +4,21 @@
 
 ## Entidades y candidatas descartadas (III.2.2)
 
-El modelado sigue el procedimiento de identificación de sustantivos del dominio (Larman, 2004). Los sustantivos se recolectan del vocabulario que la herramienta efectivamente emplea, tomado del esquema de configuración publicado, del código fuente analizado en el Anexo I, A.I.3 del informe de la AE1 y de la documentación de la versión 1.18.25, y se contrastan con los términos que la referente utiliza (Evans, 2003). Cada candidata se somete a tres pruebas (identidad propia, datos y reglas propios, y pertenencia al recorte delimitado) e ingresa como entidad solo si las satisface todas. Los atributos de cada entidad constan en el Anexo V.
+El modelado sigue el procedimiento de identificación de sustantivos del dominio (Larman, 2004). Los sustantivos se recolectan del vocabulario que la herramienta efectivamente emplea, tomado del esquema de configuración publicado, del código fuente analizado en el Anexo VI, A.VI.3 y de la documentación de la versión 1.18.25, y se contrastan con los términos que la referente utiliza (Evans, 2003). Cada candidata se somete a tres pruebas (identidad propia, datos y reglas propios, y pertenencia al recorte delimitado) e ingresa como entidad solo si las satisface todas. Los atributos de cada entidad constan en el Anexo V.
 
 | **Entidad**              | **Definición operativa**                                                                             | **Fuente que la acredita**       | **Relaciones principales**                                                      |
 |--------------------------|------------------------------------------------------------------------------------------------------|----------------------------------|---------------------------------------------------------------------------------|
-| Proyecto analizado       | Contexto sobre el cual se resuelve el estado efectivo de la configuración                            | A.I.3, resultado 1               | Se resuelve en muchas resoluciones                                              |
-| Resolución               | Estado efectivo del ecosistema obtenido en un momento determinado                                    | A.I.3, resultados 1 y 3          | Lee muchas entradas; comprende muchos elementos; produce muchos hallazgos                                   |
-| Entrada de configuración | Vía por la cual OpenCode incorpora configuración al resolver el estado efectivo, sea o no un archivo | A.I.3, resultado 1               | Contiene ninguna o muchas declaraciones                                                   |
-| Declaración              | Asignación concreta escrita dentro de una entrada                                                    | A.I.3, resultados 3 y 6          | Compone uno o muchos elementos; puede desplazar a otra declaración; contiene sustituciones |
-| Sustitución              | Reemplazo de una variable de entorno o de un archivo dentro de una declaración                       | A.I.3, resultado 13              | Pertenece a una declaración; puede originar un hallazgo sobre ella              |
-| Elemento                 | Unidad de configuración que RIGE resuelve y relaciona, cuyo tipo declara el adaptador                | A.I.3, resultado 1; AE1, Tabla 6 | Se compone de ninguna o muchas declaraciones; se relaciona con otros elementos  |
-| Agente                   | Especialización de Elemento sobre la cual se manifiesta el efecto de toda la configuración           | A.I.3, resultados 5 y 12         | Evalúa una cadena de reglas; invoca muchos subagentes y puede ser invocado por muchos agentes                                  |
-| Regla de permiso         | Regla que produce una decisión de permiso, nativa de la herramienta o escrita por el usuario en una declaración | A.I.3, resultados 5, 7 y 8 | Rige sobre uno o muchos agentes; ocupa una posición en la cadena; si es declarada, proviene de una declaración |
-| Hallazgo                 | Defecto detectado en el ecosistema, con su localización                                              | A.I.3, resultados 3, 5, 13 y 14      | Recae sobre un elemento, una declaración, una entrada o una sustitución        |
+| Proyecto analizado       | Contexto sobre el cual se resuelve el estado efectivo de la configuración                            | A.VI.3, resultado 1               | Se resuelve en muchas resoluciones                                              |
+| Resolución               | Estado efectivo del ecosistema obtenido en un momento determinado                                    | A.VI.3, resultados 1 y 3          | Lee muchas entradas; comprende muchos elementos; produce muchos hallazgos                                   |
+| Entrada de configuración | Vía por la cual OpenCode incorpora configuración al resolver el estado efectivo, sea o no un archivo | A.VI.3, resultado 1               | Contiene ninguna o muchas declaraciones                                                   |
+| Declaración              | Asignación concreta escrita dentro de una entrada                                                    | A.VI.3, resultados 3 y 6          | Compone uno o muchos elementos; puede desplazar a otra declaración; contiene sustituciones |
+| Sustitución              | Reemplazo de una variable de entorno o de un archivo dentro de una declaración                       | A.VI.3, resultado 13              | Pertenece a una declaración; puede originar un hallazgo sobre ella              |
+| Elemento                 | Unidad de configuración que RIGE resuelve y relaciona, cuyo tipo declara el adaptador                | A.VI.3, resultado 1; AE1, Tabla 6 | Se compone de ninguna o muchas declaraciones; se relaciona con otros elementos  |
+| Agente                   | Especialización de Elemento sobre la cual se manifiesta el efecto de toda la configuración           | A.VI.3, resultados 5 y 12         | Evalúa una cadena de reglas; invoca muchos subagentes y puede ser invocado por muchos agentes                                  |
+| Regla de permiso         | Regla que produce una decisión de permiso, nativa de la herramienta o escrita por el usuario en una declaración | A.VI.3, resultados 5, 7 y 8 | Rige sobre uno o muchos agentes; ocupa una posición en la cadena; si es declarada, proviene de una declaración |
+| Hallazgo                 | Defecto detectado en el ecosistema, con su localización                                              | A.VI.3, resultados 3, 5, 13 y 14      | Recae sobre un elemento, una declaración, una entrada o una sustitución        |
 
-*Tabla 2. Entidades del dominio, con su fuente y sus relaciones principales. Fuente: elaboración propia sobre el relevamiento técnico del Anexo I, A.I.3 del informe de la AE1.*
+*Tabla 2. Entidades del dominio, con su fuente y sus relaciones principales. Fuente: elaboración propia sobre el relevamiento técnico del Anexo VI, A.VI.3.*
 
 Las candidatas descartadas se conservan con su reclasificación, dado que el descarte documentado es lo que permite defender la delimitación adoptada.
 
@@ -71,4 +71,4 @@ Una sola especialización se declara en el modelo. El Agente se modela como enti
 | Una resolución produce ninguno o muchos hallazgos                                                    | 1 a 0..*          |
 | Un hallazgo recae sobre un elemento, una declaración, una entrada o una sustitución | 0..* a 1 {xor: elemento, declaración, entrada o sustitución} |
 
-*Tabla 4. Relaciones del dominio y sus multiplicidades. Fuente: elaboración propia; precisiones aceptadas (Anexo III, D-61).*
+*Tabla A.V.4. Relaciones del dominio y sus multiplicidades. Fuente: elaboración propia; precisiones aceptadas (Anexo III, D-61).*

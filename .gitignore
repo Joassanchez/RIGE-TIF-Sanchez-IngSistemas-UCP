@@ -18,8 +18,7 @@ __pycache__/
 .claude/
 CLAUDE.md
 AGENTS.md
-
-.tools/
+tools/
 
 # Comprobantes con datos personales (no se publican)
 01-relevamiento/evidencia/PRIV/
