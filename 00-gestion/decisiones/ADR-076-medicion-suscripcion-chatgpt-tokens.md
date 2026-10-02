@@ -111,7 +111,7 @@ USD por millón de tokens, nivel Standard. Contexto largo: más de 272 000 token
 
 ### Evidencia
 
-- `00-gestion/revisiones/documento_de_correcciones.md` (corrección del Cap. X del autor).
+- `documento_de_correcciones.md` (retirado; consta en el commit `dfaf300`) (corrección del Cap. X del autor).
 - ADR-053 (modelos, criterio y tokens), ADR-057 (eje T), ADR-067 (Codex sobre ChatGPT Plus).
 - `informe/cap-10/X.3-recursos-financieros.md` y `X.4-recursos-tecnologicos.md`.
 - Búsqueda del 01/10/2026 (precio de ChatGPT Plus, conexión de OpenCode y modelos), pendiente de incorporar.

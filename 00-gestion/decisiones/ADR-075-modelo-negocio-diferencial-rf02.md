@@ -3,7 +3,7 @@
 - Estado: aceptado (01/10/2026)
 - Fecha: 01/10/2026
 - Capítulos afectados: Cap. IV (IV.1, Tabla 10 y párrafo obligatorio; IV.3, Tabla 11; IV.4, Figura 2 y lectura); Cap. III (Anexo I, RF-02); libro (`catalogo/RF-02.md`); Anexo III (D-31); Ventana del AE1 (A.I.4, hallazgo 5, FODA A1)
-- Origen: corrección del Cap. IV (`00-gestion/revisiones/documento_de_correcciones.md`, IV.1, IV.3 e IV.4) y relevamiento de competidores del 01/10/2026 (búsqueda con Codex, verificada por el ingeniero en la documentación oficial de Amp y de Codex)
+- Origen: corrección del Cap. IV (`documento_de_correcciones.md` (retirado; consta en el commit `dfaf300`), IV.1, IV.3 e IV.4) y relevamiento de competidores del 01/10/2026 (búsqueda con Codex, verificada por el ingeniero en la documentación oficial de Amp y de Codex)
 - Precisa: ADR-057, eje L (no cambia la decisión L-A; cambia su fundamento y amplía las alternativas)
 - Relacionado: ADR-057 (sostenimiento), ADR-059 (localización ruta:línea:columna, RF-12), ADR-062 (distribución con `bun run` sobre el código fuente, sin artefacto distribuido)
 
@@ -107,5 +107,5 @@ Quedan refutadas las afirmaciones «ninguna evalúa la decisión correspondiente
 - `03-requisitos/libro/catalogo/RF-01.md` (CA-1, archivo y línea), `RF-02.md` (CA-1 a CA-7) y `RF-12.md`.
 - Amp, *How we think about permissions*, ejemplo de `amp permissions test` (consulta del 01/10/2026).
 - Documentación de reglas de Codex, `codex execpolicy check` (consulta del 01/10/2026).
-- Nómina del 01/10/2026: `00-gestion/fichas-redaccion/20261001-cap4-nomina-competidores.md`.
+- Nómina del 01/10/2026: `01-relevamiento/nomina-competidores-20261001.md`.
 - ADR-057, eje L; Anexo III, D-31.

@@ -1,6 +1,6 @@
 # AGENTS.md — Redactor del informe del TIF
 
-Sos el **redactor** del informe del Proyecto Integrador Final RIGE (Ingeniería en Sistemas de Información, UCP, Sede Posadas). RIGE es una plataforma local de solo lectura que resuelve y explica la configuración efectiva de OpenCode 1.18.25 y su procedencia. Cada ejecución recibe una **ficha** (`00-gestion/fichas-redaccion/<id>.md`) con la tarea. Hacés solo lo que dice la ficha.
+Sos el **redactor** del informe del Proyecto Integrador Final RIGE (Ingeniería en Sistemas de Información, UCP, Sede Posadas). RIGE es una plataforma local de solo lectura que resuelve y explica la configuración efectiva de OpenCode 1.18.25 y su procedencia. Cada ejecución recibe una **ficha** (`.trabajo/fichas-redaccion/<id>.md`) con la tarea. Hacés solo lo que dice la ficha.
 
 > Este archivo no forma parte del informe: `tools/armar.py` no lo incluye en el documento.
 

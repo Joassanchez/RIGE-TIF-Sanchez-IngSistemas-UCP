@@ -14,7 +14,7 @@ El ingeniero lee este índice al abrir cada sesión y abre solo los ADR que el t
 | ADR-044, 045 | ADR-055 · RNF-07 |
 | ADR-034, 035 | ADR-056 · OE-1 y priorización |
 | ADR-025, 048 | ADR-057 · sostenimiento y recursos financieros |
-| ADR-031, 043 | `00-gestion/diseno-sistema-agentes.md`, §2, D-22 y D-23 |
+| ADR-031, 043 | Diseño del sistema de agentes, §2, D-22 y D-23 (retirado; consta en el commit `0a6eb57`). D-22 sigue en `reglas-catedra.md` §8; D-23, en `AGENTS.md` §5 |
 
 | ADR | Decisión | Estado | Afecta |
 |---|---|---|---|

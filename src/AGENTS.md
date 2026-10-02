@@ -16,7 +16,7 @@ RIGE es una herramienta local de **solo lectura** que resuelve y explica la conf
   - ADR-054: plataformas;
   - ADR-061: ciclo de vida de la Resolución y modelo de datos del almacén;
   - ADR-062: distribución, web, dependencias, configuración propia, versionado y arnés de pruebas.
-- **Ficha de la tarea (ADR-067):** `../00-gestion/fichas/<incremento>/<tarea>.md`. Es la especificación de lo que hay que hacer: criterios, archivos, interfaces, pruebas, comandos y condiciones de detención. No se amplía ni se reinterpreta: si no alcanza o contradice un ADR, detenete. `odd/tasks/inc0-esqueleto.md` es un antecedente congelado del incremento 0 (ADR-065): consultalo solo si la ficha remite a él y no lo modifiques.
+- **Ficha de la tarea (ADR-067):** `../.trabajo/fichas/<incremento>/<tarea>.md`. Es la especificación de lo que hay que hacer: criterios, archivos, interfaces, pruebas, comandos y condiciones de detención. No se amplía ni se reinterpreta: si no alcanza o contradice un ADR, detenete. `odd/tasks/inc0-esqueleto.md` es un antecedente congelado del incremento 0 (ADR-065): consultalo solo si la ficha remite a él y no lo modifiques.
 - Nada de esto se contradice sin un ADR nuevo aceptado por el autor. Si una tarea lo exige, **detenete y avisá**.
 
 ## 2. Restricciones no negociables

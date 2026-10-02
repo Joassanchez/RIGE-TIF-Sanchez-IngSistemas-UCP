@@ -20,10 +20,10 @@ CLAUDE.md
 AGENTS.md
 
 .tools/
-00-gestion/procedimientos/
-00-gestion/fichas-redaccion
 
 # Comprobantes con datos personales (no se publican)
 01-relevamiento/evidencia/PRIV/
-.agents
+# Sistema de agentes y material de trabajo (fuera de git)
+.agents/
+.trabajo/
 

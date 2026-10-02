@@ -97,6 +97,7 @@ El registro reúne fuentes citadas (§1, una fila por fuente), evidencia propia 
 | relevamiento-tecnico-opencode | Guía técnica de configuración efectiva y permisos de OpenCode 1.18.25 | 01-relevamiento/opencode/como-funciona.md | 21/09/2026 | Anexo I (A.I.3) | público |
 | incidencias-opencode | Búsqueda y clasificación de 46 incidencias candidatas, 32 incluidas | 01-relevamiento/opencode/incidencias.md | 17/09/2026 | Anexo I (A.I.6) | público |
 | guia-validacion | Instrumento 31: guía v2 y acta de validación con la referente | 01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md | 25/09/2026 (guía); 26/09/2026 (sesión) | Cap. III (III.2 a III.5); Libro de trabajo | público |
+| nomina-competidores | Nómina de competidores con la clasificación de Porter aprobada por el autor; producida con Codex (`gpt-6.1-sol`, búsqueda web) | 01-relevamiento/nomina-competidores-20261001.md | 01/10/2026 | Cap. IV (IV.3, IV.4); Anexo I (A.I.4); ADR-075 | público |
 
 ## 3. Retiradas
 

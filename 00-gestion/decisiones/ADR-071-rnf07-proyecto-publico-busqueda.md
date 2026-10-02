@@ -3,7 +3,7 @@
 - Estado: aceptado (01/10/2026)
 - Fecha: 01/10/2026
 - Capítulos afectados: Cap. III (III.5, Anexo I, ficha de RNF-07); libro (`03-requisitos/libro/catalogo/RNF-07.md`); `01-relevamiento/fuentes.md`. Precisa ADR-055 sin cambiar su decisión
-- Origen: sesión del 01/10/2026 (discusión del documento de correcciones del autor, `00-gestion/revisiones/documento_de_correcciones.md`, Cap. III, III.5)
+- Origen: sesión del 01/10/2026 (discusión del documento de correcciones del autor, `documento_de_correcciones.md` (retirado; consta en el commit `dfaf300`), Cap. III, III.5)
 
 ### Contexto
 

@@ -96,7 +96,7 @@ Con ADR-058 y ADR-060 se puede empezar a escribir el núcleo. Falta decidir con 
    - recién entonces se implementa;
    - al terminar, el sistema de agentes del TIF revisa el diff de la rama y entrega un prompt de correcciones, que se itera hasta el cierre.
    
-   Cada prompt y cada revisión se guardan en `00-gestion/revisiones/`. Se usa el flujo orgánico de ODD; **no se usa el ciclo SDD** ni `openspec/`, que duplicarían el catálogo y los ADR.
+   Cada prompt y cada revisión se guardan en `.trabajo/revisiones/`. Se usa el flujo orgánico de ODD; **no se usa el ciclo SDD** ni `openspec/`, que duplicarían el catálogo y los ADR.
 4. **TDD estricto**, declarado en `src/AGENTS.md` (ejecutor `bun test`), con la tabla de evidencia rojo-verde-refactorización en el documento del incremento.
 5. **Commits del agente solo en la rama del incremento**, con mensajes Conventional Commits. El autor revisa, une con `main` y sube. El agente nunca sube, nunca une y nunca crea etiquetas.
 6. **Reparto:**
@@ -136,7 +136,7 @@ Aceptado por el autor el 29/09/2026 (`/aceptar ADR-065`). En la sesión del 29/0
 ### Consecuencias
 
 - **`src/AGENTS.md`:** §1 remite a `src/odd/tasks/`; §7 declara ODD, TDD estricto, commits solo en la rama del incremento y la prohibición de subir, unir o etiquetar.
-- **`00-gestion/planes/`** deja de usarse. El plan del incremento 0 queda como base del prompt de contexto en `00-gestion/revisiones/20260929_inc0-base-contexto.md`.
+- **`00-gestion/planes/`** deja de usarse. El plan del incremento 0 queda como base del prompt de contexto en `20260929_inc0-base-contexto.md` (retirada; consta en el commit `0a6eb57`).
 - **`CLAUDE.md` raíz, §5:** en una sesión abierta en `src/` rigen `src/AGENTS.md` y el documento del incremento; el ingeniero del TIF no programa ni escribe en `src/odd/`.
 - **`src/README.md`, sección 8, y bitácora:** la declaración de la regla 9.
 - **Cap. X e Instrumento 34:** declarar los proveedores de modelos de gentle-ai, con su condición y costo, una vez obtenido el dato.

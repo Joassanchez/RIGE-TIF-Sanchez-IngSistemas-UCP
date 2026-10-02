@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Genera la Figura 2 del Cap. IV (mapa de posicionamiento de las soluciones relevadas).
 
-Fuente de los datos: nómina del 01/10/2026 (00-gestion/fichas-redaccion/20261001-cap4-nomina-competidores.md,
+Fuente de los datos: nómina del 01/10/2026 (01-relevamiento/nomina-competidores-20261001.md,
 33 herramientas) con la clasificación aprobada por el autor y ADR-075. Ejes de IV.4: profundidad de la
 explicación (0 a 3) y granularidad de la procedencia (0 a 2). Las herramientas que comparten posición se
 agrupan en un solo marcador con su cantidad; la forma del marcador distingue si operan sobre OpenCode.

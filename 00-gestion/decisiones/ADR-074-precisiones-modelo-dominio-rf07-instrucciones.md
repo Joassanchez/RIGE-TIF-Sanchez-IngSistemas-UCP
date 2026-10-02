@@ -3,7 +3,7 @@
 - Estado: aceptado (01/10/2026)
 - Fecha: 01/10/2026
 - Capítulos afectados: Cap. III (III.2: Tablas 2 a 5 y Figura 1; III.4: Tabla 8); Anexo I (RF-07); Anexo V (reglas y glosario); libro (`entidades.md`, `reglas.md`, `glosario.md`, `catalogo/RF-07.md`); acta (extensión)
-- Origen: revisión del Cap. III del 01/10/2026 (`00-gestion/revisiones/20261001-cap-III.md`, hallazgos I-1, I-2 e I-3)
+- Origen: revisión del Cap. III del 01/10/2026 (`20261001-cap-III.md` (retirada; consta en el commit `dfaf300`), hallazgos I-1, I-2 e I-3)
 
 ### Contexto
 
@@ -81,7 +81,7 @@ La revisión del Cap. III detectó tres problemas que cambian contenido validado
 
 ### Evidencia
 
-- `00-gestion/revisiones/20261001-cap-III.md` (I-1, I-2 e I-3).
+- `20261001-cap-III.md` (retirada; consta en el commit `dfaf300`) (I-1, I-2 e I-3).
 - `03-requisitos/libro/reglas.md`, líneas 17 y 19.
 - Acta, líneas 368 y 395 a 397.
 - ADR-052, ADR-064 (horas) y RF-13 (L-12).

@@ -1,6 +1,6 @@
 # Reglas de la cátedra
 
-Reglas transversales que aplican el redactor y controlan los revisores. Es la fuente única (el diseño del sistema, sección 11, remite aquí). Se actualizan cuando la cátedra publica una consigna nueva o el docente aclara algo (sección 4).
+Reglas transversales que aplican el redactor y controlan los revisores. Es la fuente única. Se actualizan cuando la cátedra publica una consigna nueva o el docente aclara algo (sección 4).
 
 ## 1. Redacción
 
@@ -96,3 +96,14 @@ Los scripts de `tools/` no fijan destinos: el agente elige la carpeta con esta t
 | Instrumento 35 · Ficha del v1 | `instrumentos/instrumento-35-ficha-v1.md` | `src/` | `Instrumento35` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
 
 Nomenclatura: `AAAAMMDD_TipoDocumento_Equipo_vN.ext` (Guía AE2, 10.2). Los scripts la aplican y nunca sobrescriben un archivo existente.
+
+## 9. Correspondencia entre entregas y capítulos
+
+| Instancia | Capítulos |
+|-----------|-----------|
+| AE1 · TP1 | Resumen · Capítulos I y II |
+| AE2 · TP2 | Capítulos III (con el catálogo de requisitos como III.5), IV, V y X |
+| Sprint 3 | Capítulos VI y IX |
+| AE4 · TP4 y defensa | Capítulos VII, VIII, XI, XII y XIII · Conclusiones · Bibliografía · Anexos |
+
+No se adelanta contenido de capítulos posteriores a la entrega en curso.

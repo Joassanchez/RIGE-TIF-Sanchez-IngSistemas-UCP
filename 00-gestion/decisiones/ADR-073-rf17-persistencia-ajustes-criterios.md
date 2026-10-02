@@ -3,7 +3,7 @@
 - Estado: aceptado (01/10/2026)
 - Fecha: 01/10/2026
 - Capítulos afectados: Cap. III (III.3 Tabla 7, III.5, Anexo I); Cap. V (V.1, V.5); libro (catálogo, trazabilidad, `iteraciones.md`); cierra en parte PV-05, PV-08 y AR-08 (V-1)
-- Origen: análisis ingenieril de los RF pedido por el autor en el documento de correcciones (`00-gestion/revisiones/documento_de_correcciones.md`, III.5), sesión del 01/10/2026
+- Origen: análisis ingenieril de los RF pedido por el autor en el documento de correcciones (`documento_de_correcciones.md` (retirado; consta en el commit `dfaf300`), III.5), sesión del 01/10/2026
 
 ### Contexto
 
