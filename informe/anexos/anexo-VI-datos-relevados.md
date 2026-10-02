@@ -203,7 +203,7 @@ La posición expresa el eje horizontal y el vertical, en ese orden. El horizonta
 
 *Tabla A.VI.8. Resultado de la aplicación de los criterios. Fuente: elaboración propia; relevamiento del 17/09/2026.*
 
-**Nómina.** La nómina completa de las 46 incidencias candidatas, con número, título, fecha de apertura, estado, clasificación y motivo de inclusión o exclusión, consta en el repositorio del proyecto bajo `01-relevamiento/opencode/incidencias.md` y se incorpora impresa a continuación. \[Nómina pendiente de incorporación impresa.\]
+**Nómina.** La nómina completa de las 46 incidencias candidatas, con número, título, fecha de apertura, estado, clasificación y motivo de inclusión o exclusión, consta en el repositorio del proyecto bajo `01-relevamiento/opencode/incidencias.md`.
 
 ### Clasificación de las incidencias por mecanismo
 

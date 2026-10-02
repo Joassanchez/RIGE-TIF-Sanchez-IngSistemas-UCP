@@ -195,13 +195,13 @@ Se descarta Open Source Collective como vía de patrocinio porque su documentaci
 
 | **Campo**                                   | **Contenido** |
 |---------------------------------------------|---------------|
-| Enlace al repositorio                       | \[ \]         |
-| Enlace al tablero de gestión                | \[ \]         |
-| Período cubierto por el historial           | \[ \]         |
-| Cantidad de commits del autor en el período | \[ \]         |
+| Enlace al repositorio                       | <https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP> |
+| Enlace al tablero de gestión                | <https://trello.com/b/BhNydwGK> |
+| Período cubierto por el historial           | 24/09/2026 al 02/10/2026 |
+| Cantidad de commits del autor en el período | 59 |
 
 *Tabla A.III.5. Referencias del repositorio y del tablero. Fuente: elaboración propia.*
 
 ## A.III.5 · Declaración de coautoría
 
-El Informe Grupal de Encuadre Común, que sustenta el apartado II.5.5 y la Tabla 18, se elabora una sola vez para los tres proyectos del grupo. Integrantes y distribución del trabajo: \[ \]. Responsable de carga: \[ \]. Enlace al documento colectivo: \[ \]. El encuadre del sector donde vive el problema, en cambio, es propio de este proyecto y se elabora sin coautoría, conforme al apartado II.5.1.
+El Informe Grupal de Encuadre Común, que sustenta el apartado II.5.5 y la Tabla 18, se elabora una sola vez para los dos proyectos del grupo. Integrantes y distribución del trabajo: Joaquín Sebastián Sánchez (RIGE) y Santiago Agustín Nuñez (CODI), cada uno a cargo de la redacción correspondiente a su proyecto. Responsable de carga: Joaquín Sebastián Sánchez. Enlace al documento colectivo: <https://docs.google.com/document/d/1dq6d9cQXI9PWWcX1-NqbTbL5dC4YDrLE/edit?usp=sharing>. El encuadre del sector donde vive el problema, en cambio, es propio de este proyecto y se elabora sin coautoría, conforme al apartado II.5.1.

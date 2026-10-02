@@ -4,7 +4,7 @@
 
 La sesión de validación se realiza el 26/09/2026, en modalidad presencial y con una duración de 35 minutos, conforme al apartado X.1. Participan Valeria Areco, referente técnica de Electricidad de Misiones S. A. (EMSA), identificada en el apartado V.3, y Joaquín Sebastián Sánchez, autor del proyecto. Se aplica la «Guía y acta de la sesión de validación con la referente, RIGE», versión 2 del 25/09/2026 (Instrumento 31).
 
-La tabla reúne las decisiones registradas en el acta, sintetizadas a partir del apartado III.4 y de la matriz de trazabilidad del Anexo I, A.I.2. Las precisiones posteriores de L-06 constan en esa matriz y en la extensión del acta.
+La tabla reúne las decisiones registradas en el acta, sintetizadas a partir del apartado III.4 y de la matriz de trazabilidad del Anexo I, A.I.2. Las precisiones posteriores de L-06 constan en esa matriz y en el acta.
 
 | **Decisión** | **Enunciado breve** |
 |---|---|
@@ -26,7 +26,7 @@ La tabla reúne las decisiones registradas en el acta, sintetizadas a partir del
 
 *Tabla A.II.1. Decisiones registradas en el acta de la sesión de validación del 26/09/2026. Fuente: elaboración propia sobre el apartado III.4 y la matriz del Anexo I, A.I.2.*
 
-[DATO PENDIENTE: transcripción del acta de la sesión del 26/09/2026 y constancia de conformidad de la referente, conservadas en el Portafolio Digital]
+El acta completa, con la constancia de conformidad firmada por la referente, consta en el Portafolio Digital de la AE2.
 
 ## A.II.2 · Validación del prototipo v0
 
@@ -42,4 +42,4 @@ La maqueta navegable de baja fidelidad comprende las pantallas del flujo relevad
 
 *Tabla A.II.2. Pantallas del prototipo v0. Fuente: elaboración propia.*
 
-\[Capturas pendientes de incorporación. Enlace a la maqueta: \[ \]. Constancia de validación con el referente: \[ \].\]
+La maqueta, con su versión en PDF, se encuentra en <https://drive.google.com/file/d/17jelVm2VFUr7spS7OKnvCGs8OIrD4aTI/view?usp=sharing>. Su validación consta en el acta de la sesión del 26/09/2026, sección 7, con conformidad de la referente (A.II.1).
