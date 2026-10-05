@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": {
+      "temperature": 0.3,
+      "top_p": 0.5,
+      "options": {
+        "a": false
+      }
+    }
+  }
+}

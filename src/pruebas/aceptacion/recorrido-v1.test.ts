@@ -241,7 +241,7 @@ describe("V-8", () => {
     expect(inexistente.cuerpo).toContain("no existe");
     const entrada = join(recorrido.proyecto, "opencode.jsonc");
     const original = readFileSync(entrada, "utf8");
-    writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": "{env:X}"'));
+    writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": {env:X}'));
     const noSoportado = await recorrido.resolver();
     expect(noSoportado.estado).toBe(422);
     expect(noSoportado.cuerpo).toContain("El prototipo v1 no incorpora {env:X}");

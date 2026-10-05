@@ -10,6 +10,8 @@ export interface ViaUbicada {
   readonly via: string;
   readonly referencia: string;
   readonly condicion: "observada" | "no_observada";
+  /** Nombre del elemento que la via declara por completo. */
+  readonly elemento?: string;
 }
 
 export interface Declaracion {

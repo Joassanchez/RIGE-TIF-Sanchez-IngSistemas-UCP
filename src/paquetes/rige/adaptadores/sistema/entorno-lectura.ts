@@ -17,8 +17,7 @@ export class EntornoLecturaSistema implements EntornoLectura {
   }
 
   variable(nombre: string): string | undefined {
-    const valor = Object.hasOwn(this.entorno, nombre) ? this.entorno[nombre] : undefined;
-    return valor?.trim() ? valor : undefined;
+    return Object.hasOwn(this.entorno, nombre) ? this.entorno[nombre] : undefined;
   }
 
   tipo(ruta: string): TipoRuta {

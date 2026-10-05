@@ -13,7 +13,7 @@ export function crearEntornoMemoria(opciones: {
   const resumir = (texto: string) => createHash("sha256").update(texto, "utf8").digest("hex");
   return {
     plataforma: opciones.plataforma ?? "linux",
-    variable: (nombre) => Object.hasOwn(opciones.variables ?? {}, nombre) ? opciones.variables![nombre] || undefined : undefined,
+    variable: (nombre) => Object.hasOwn(opciones.variables ?? {}, nombre) ? opciones.variables![nombre] : undefined,
     tipo(ruta) {
       const normalizada = posix.normalize(ruta);
       return archivos.has(normalizada) ? "archivo" : directorios.has(normalizada) ? "directorio" : "inexistente";

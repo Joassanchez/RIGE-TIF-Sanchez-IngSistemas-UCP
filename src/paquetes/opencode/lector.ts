@@ -1,6 +1,12 @@
-import { getNodeValue, parseTree, type Node, type ParseError } from "jsonc-parser";
+import * as jsonc from "jsonc-parser";
+import { createScanner, getNodeValue, parseTree, type Node, type ParseError } from "jsonc-parser";
 import type { Declaracion, ErrorAnalisis, ViaUbicada } from "@rige/nucleo/contrato/adaptador";
 import type { Resultado } from "@rige/nucleo/resultado";
+
+// Usar los tokens de runtime como numeros evita el const enum ambiental con verbatimModuleSyntax.
+const { SyntaxKind }: { readonly SyntaxKind: Readonly<Record<
+  "EOF" | "StringLiteral" | "LineCommentTrivia" | "BlockCommentTrivia", number
+>> } = jsonc;
 
 export function posicion(texto: string, desplazamiento: number): { linea: number; columna: number } {
   let linea = 1;
@@ -15,8 +21,15 @@ export function posicion(texto: string, desplazamiento: number): { linea: number
 }
 
 export function leerEntrada(via: ViaUbicada, texto: string): Resultado<readonly Declaracion[], ErrorAnalisis> {
-  const sustitucion = /\{(env|file):[^}]*\}/.exec(texto);
-  if (sustitucion) {
+  const scanner = createScanner(texto, false);
+  let token = scanner.scan();
+  for (const sustitucion of texto.matchAll(/\{(env|file):[^}]*\}/g)) {
+    while (token !== SyntaxKind.EOF && scanner.getTokenOffset() + scanner.getTokenLength() <= sustitucion.index) {
+      token = scanner.scan();
+    }
+    const dentro = scanner.getTokenOffset() <= sustitucion.index
+      && sustitucion.index + sustitucion[0].length <= scanner.getTokenOffset() + scanner.getTokenLength();
+    if (dentro && [SyntaxKind.StringLiteral, SyntaxKind.LineCommentTrivia, SyntaxKind.BlockCommentTrivia].includes(token)) continue;
     const { linea, columna } = posicion(texto, sustitucion.index);
     return { exito: false, error: {
       codigo: "contenido-no-soportado",
@@ -37,7 +50,7 @@ export function leerEntrada(via: ViaUbicada, texto: string): Resultado<readonly 
     for (const propiedad of nodo.children ?? []) {
       const [clave, valor] = propiedad.children!;
       const rutaHoja = [...ruta, getNodeValue(clave!) as string];
-      if (valor!.type === "object") recorrer(valor!, rutaHoja);
+      if (valor!.type === "object" && valor!.children?.length) recorrer(valor!, rutaHoja);
       else declaraciones.push({
         ruta: rutaHoja, valor: getNodeValue(valor!), posicion: posicion(texto, clave!.offset),
       });

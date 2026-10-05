@@ -11,19 +11,20 @@ export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<rea
   if (!entorno.esAbsoluta(proyecto) || entorno.tipo(proyecto) !== "directorio") return { exito: false, error: {
     codigo: "proyecto-inexistente", mensaje: `El proyecto ${proyecto} no existe o no es un directorio.`,
   } };
-  const variable = (nombre: string) => {
-    const valor = entorno.variable(nombre);
-    return valor?.trim() ? valor : undefined;
-  };
+  const variable = (nombre: string) => entorno.variable(nombre);
   for (const nombre of ["OPENCODE_CONFIG_CONTENT", "OPENCODE_PERMISSION", "OPENCODE_CONFIG_DIR",
     "OPENCODE_DISABLE_PROJECT_CONFIG", "OPENCODE_TEST_HOME", "OPENCODE_TEST_MANAGED_CONFIG_DIR"]) {
-    if (variable(nombre) !== undefined) return noSoportada(nombre);
+    const valor = variable(nombre);
+    const definida = nombre === "OPENCODE_CONFIG_DIR" || nombre === "OPENCODE_TEST_HOME" ? valor !== undefined
+      : nombre === "OPENCODE_DISABLE_PROJECT_CONFIG" ? ["true", "1"].includes(valor?.toLowerCase() ?? "")
+      : Boolean(valor);
+    if (definida) return noSoportada(nombre);
   }
-  const config = variable("OPENCODE_CONFIG");
+  const config = variable("OPENCODE_CONFIG") || undefined;
   if (config !== undefined && !entorno.esAbsoluta(config)) return noSoportada("OPENCODE_CONFIG");
   const nombreHome = entorno.plataforma === "win32" ? "USERPROFILE" : "HOME";
   const hogar = variable(nombreHome);
-  if (hogar === undefined) return { exito: false, error: {
+  if (!hogar) return { exito: false, error: {
     codigo: "entorno-incompleto", mensaje: `Falta la variable ${nombreHome} para ubicar las entradas globales.`,
   } };
   const vias: ViaUbicada[] = [];
@@ -31,7 +32,7 @@ export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<rea
   function agregar(via: string, ruta: string): void {
     if (entorno.tipo(ruta) === "archivo") vias.push({ via, referencia: normalizar(ruta), condicion: "observada" });
   }
-  const global = entorno.unir(variable("XDG_CONFIG_HOME") ?? entorno.unir(hogar, ".config"), "opencode");
+  const global = entorno.unir(variable("XDG_CONFIG_HOME") || entorno.unir(hogar, ".config"), "opencode");
   const heredada = entorno.unir(global, "config");
   if (entorno.tipo(heredada) !== "inexistente") return noSoportada(heredada);
   noObservada("remota-wellknown");
@@ -48,31 +49,24 @@ export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<rea
     if (superior === worktree) break;
     worktree = superior;
   }
-  function subir(objetivo: string): string[] {
+  function subir(objetivos: readonly string[], desde: string, hasta: string): string[] {
     const rutas: string[] = [];
-    let actual = proyecto;
-    for (;;) {
-      const ruta = entorno.unir(actual, objetivo);
-      if (entorno.tipo(ruta) !== "inexistente") rutas.push(ruta);
+    let actual = desde;
+    while (true) {
+      for (const objetivo of objetivos) {
+        const ruta = entorno.unir(actual, objetivo);
+        if (entorno.tipo(ruta) !== "inexistente") rutas.push(ruta);
+      }
+      if (hasta === actual) break;
       const superior = entorno.padre(actual);
-      if (actual === worktree || superior === actual) return rutas;
+      if (superior === actual) break;
       actual = superior;
     }
+    return rutas;
   }
   // Invertir la lista completa conserva json antes de jsonc dentro de cada nivel.
-  const entradasProyecto: string[] = [];
-  let actual = proyecto;
-  for (;;) {
-    for (const nombre of ["opencode.jsonc", "opencode.json"]) {
-      const ruta = entorno.unir(actual, nombre);
-      if (entorno.tipo(ruta) === "archivo") entradasProyecto.push(ruta);
-    }
-    const superior = entorno.padre(actual);
-    if (actual === worktree || superior === actual) break;
-    actual = superior;
-  }
-  for (const ruta of entradasProyecto.reverse()) agregar("proyecto", ruta);
-  const directorios = [...new Set([global, ...subir(".opencode"), entorno.unir(hogar, ".opencode")])];
+  for (const ruta of subir(["opencode.jsonc", "opencode.json"], proyecto, worktree).reverse()) agregar("proyecto", ruta);
+  const directorios = [...new Set([global, ...subir([".opencode"], proyecto, worktree), entorno.unir(hogar, ".opencode")])];
   for (const directorio of directorios) {
     if (entorno.tipo(directorio) !== "directorio") continue;
     if (normalizar(directorio).endsWith("/.opencode")) {
@@ -93,17 +87,13 @@ export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<rea
     }
     markdown.sort((a, b) => normalizar(a) < normalizar(b) ? -1 : normalizar(a) > normalizar(b) ? 1 : 0);
     for (const ruta of markdown) {
-      const texto = entorno.leer(ruta).texto;
-      if (texto.startsWith("---")) {
-        const lineas = texto.split(/\r?\n/);
-        const cierre = lineas.findIndex((linea, indice) => indice > 0 && linea.trim() === "---");
-        if (cierre > 0 && lineas.slice(1, cierre).some(linea => /^\s*name\s*:/.test(linea))) return noSoportada(ruta);
-      }
-      vias.push({ via: "markdown", referencia: normalizar(ruta), condicion: "no_observada" });
+      const relativa = normalizar(ruta).slice(normalizar(directorio).length + 1);
+      const elemento = relativa.split("/").slice(1).join("/").slice(0, -3);
+      vias.push({ via: "markdown", referencia: normalizar(ruta), condicion: "observada", elemento });
     }
   }
   noObservada("remota-organizacion");
-  const administrada = entorno.plataforma === "win32" ? entorno.unir(variable("ProgramData") ?? "C:\\ProgramData", "opencode")
+  const administrada = entorno.plataforma === "win32" ? entorno.unir(variable("ProgramData") || "C:\\ProgramData", "opencode")
     : entorno.plataforma === "darwin" ? "/Library/Application Support/opencode" : "/etc/opencode";
   for (const nombre of ["opencode.json", "opencode.jsonc"]) agregar("administrada", entorno.unir(administrada, nombre));
   noObservada("preferencias-macos");

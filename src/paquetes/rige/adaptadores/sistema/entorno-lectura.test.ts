@@ -9,7 +9,7 @@ afterEach(() => {
   for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
 });
 
-describe("E-1", () => {
+describe("E-1 V1-08 F-2", () => {
   test("lectura real, rutas, nombres ordenados y resumen de los bytes sin escribir entradas", async () => {
     const temporal = mkdtempSync(join(tmpdir(), "rige-lectura-"));
     temporales.push(temporal);
@@ -22,8 +22,8 @@ describe("E-1", () => {
     const entorno = new EntornoLecturaSistema({ plataforma: "win32", entorno: { HOME: temporal, VACIA: "", ESPACIOS: " \t ", VALOR: "literal" } });
     expect(entorno.plataforma).toBe("win32");
     expect(entorno.variable("HOME")).toBe(temporal);
-    expect(entorno.variable("VACIA")).toBeUndefined();
-    expect(entorno.variable("ESPACIOS")).toBeUndefined();
+    expect(entorno.variable("VACIA")).toBe("");
+    expect(entorno.variable("ESPACIOS")).toBe(" \t ");
     expect(entorno.variable("AUSENTE")).toBeUndefined();
     expect(entorno.variable("toString")).toBeUndefined();
     expect(entorno.variable("VALOR")).toBe("literal");
