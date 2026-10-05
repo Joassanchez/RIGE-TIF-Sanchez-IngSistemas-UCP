@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
@@ -148,18 +148,19 @@ describe("A-3", () => {
 });
 
 describe("A-4", () => {
-  test("un archivo como directorio provoca falla interna sin crear logs", () => {
+  test("una base que no es SQLite provoca falla interna sin crear archivos fuera del almacen", () => {
     const temporal = escenario();
-    const archivo = join(temporal, "almacen");
-    writeFileSync(archivo, "archivo regular");
+    const directorio = join(temporal, "almacen");
+    mkdirSync(directorio);
+    writeFileSync(join(directorio, "rige.db"), "no es sqlite");
     const antes = readdirSync(temporal, { recursive: true }).sort();
-    const normal = lanzar(temporal, ["esquema"], { RIGE_ALMACEN: archivo });
+    const normal = lanzar(temporal, ["esquema"], { RIGE_ALMACEN: directorio });
     expect(normal).toEqual({
       codigo: 70, salida: "",
       error: JSON.stringify({ esquema: 1, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
     });
     expect(readdirSync(temporal, { recursive: true }).sort()).toEqual(antes);
-    const depurado = lanzar(temporal, ["esquema", "--depurar"], { RIGE_ALMACEN: archivo });
+    const depurado = lanzar(temporal, ["esquema", "--depurar"], { RIGE_ALMACEN: directorio });
     expect(depurado.codigo).toBe(70);
     expect(depurado.salida).toBe("");
     const error = JSON.parse(depurado.error);
@@ -169,6 +170,25 @@ describe("A-4", () => {
     });
     expect(error.error.stack.length).toBeGreaterThan(0);
     expect(depurado.error).toBe(JSON.stringify(error) + "\n");
+    expect(readdirSync(temporal, { recursive: true }).sort()).toEqual(antes);
+  });
+});
+
+describe("A-5", () => {
+  test("un archivo como almacen es error de uso y no cambia el arbol del temporal", () => {
+    const temporal = escenario();
+    const archivo = join(temporal, "almacen");
+    writeFileSync(archivo, "archivo regular");
+    const antes = readdirSync(temporal, { recursive: true }).sort();
+    const resultado = lanzar(temporal, ["esquema"], { RIGE_ALMACEN: archivo });
+    expect(resultado.codigo).toBe(1);
+    expect(resultado.salida).toBe("");
+    const error = JSON.parse(resultado.error);
+    expect(error).toEqual({
+      esquema: 1,
+      error: { codigo: "configuracion-invalida", mensaje: expect.stringContaining("RIGE_ALMACEN") },
+    });
+    expect(resultado.error).toBe(JSON.stringify(error) + "\n");
     expect(readdirSync(temporal, { recursive: true }).sort()).toEqual(antes);
   });
 });
