@@ -153,3 +153,38 @@ describe("C4-9", () => {
     }
   });
 });
+
+describe("C4-10", () => {
+  test("rechaza un archivo o un ancestro archivo en el entorno, el archivo y los valores por defecto", () => {
+    const { temporal, rutaArchivo } = escenario();
+    const archivo = join(temporal, "archivo");
+    writeFileSync(archivo, "archivo regular");
+    for (const directorio of [archivo, join(archivo, "sub", "almacen")]) {
+      comprobarError(new ConfiguracionSistema({ rutaArchivo, plataforma: "linux", entorno: {
+        RIGE_ALMACEN: directorio,
+      } }).leer(), "RIGE_ALMACEN");
+      writeFileSync(rutaArchivo, `RIGE_ALMACEN=${directorio}`);
+      comprobarError(new ConfiguracionSistema({ rutaArchivo, plataforma: "linux", entorno: {} }).leer(), "RIGE_ALMACEN");
+      rmSync(rutaArchivo);
+    }
+    for (const [plataforma, entorno] of [
+      ["win32", { LOCALAPPDATA: archivo }],
+      ["linux", { XDG_DATA_HOME: archivo }],
+      ["linux", { HOME: archivo }],
+    ] as const) {
+      comprobarError(new ConfiguracionSistema({ rutaArchivo, plataforma, entorno }).leer(), "RIGE_ALMACEN");
+    }
+    expect(readdirSync(temporal)).toEqual(["archivo"]);
+    expect(readFileSync(archivo, "utf8")).toBe("archivo regular");
+  });
+
+  test("admite directorio existente y ruta inexistente con ancestro directorio sin escribir", () => {
+    const { temporal, rutaArchivo } = escenario();
+    for (const directorio of [temporal, join(temporal, "nuevo", "sub", "almacen")]) {
+      expect(new ConfiguracionSistema({ rutaArchivo, plataforma: "linux", entorno: {
+        RIGE_ALMACEN: directorio,
+      } }).leer()).toEqual({ exito: true, valor: { puerto: 4747, directorioAlmacen: resolve(directorio) } });
+    }
+    expect(readdirSync(temporal)).toEqual([]);
+  });
+});

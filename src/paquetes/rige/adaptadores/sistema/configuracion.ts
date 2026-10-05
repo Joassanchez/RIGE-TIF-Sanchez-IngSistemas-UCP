@@ -1,6 +1,6 @@
 import type { Resultado } from "@rige/nucleo/resultado";
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { errorConfiguracionInvalida, type ErrorUso } from "../../aplicacion/puertos/configuracion";
 import type { ConfiguracionRige, PuertoConfiguracion } from "../../aplicacion/puertos/configuracion";
 
@@ -60,6 +60,16 @@ export class ConfiguracionSistema implements PuertoConfiguracion {
         }
       }
     }
-    return { exito: true, valor: { puerto, directorioAlmacen: resolve(directorio) } };
+    const directorioAlmacen = resolve(directorio);
+    let existente = directorioAlmacen;
+    while (!existsSync(existente)) {
+      const padre = dirname(existente);
+      if (padre === existente) throw new Error("No se pudo observar un ancestro del almacen.");
+      existente = padre;
+    }
+    if (!statSync(existente).isDirectory()) {
+      return { exito: false, error: errorConfiguracionInvalida("RIGE_ALMACEN", "la ruta o su primer ancestro existente no es un directorio") };
+    }
+    return { exito: true, valor: { puerto, directorioAlmacen } };
   }
 }

@@ -1,4 +1,8 @@
-import type { HtmlSeguro } from "./plantillas";
+import { html, type HtmlSeguro } from "./plantillas";
+
+export function redirigir(ubicacion: string): Response {
+  return responderHtml(303, html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>RIGE</title></head><body><a href="${ubicacion}">Ver resolución</a></body></html>`, { Location: ubicacion });
+}
 
 export function responderHtml(
   estado: number,

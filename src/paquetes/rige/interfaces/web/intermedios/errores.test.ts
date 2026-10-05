@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { errorAlmacenSinEsquema, errorConfiguracionInvalida, errorPuertoOcupado } from "../../../aplicacion/errores";
 import { conErrores, paginaErrorUso } from "./errores";
+import type { ErrorUso } from "../../../aplicacion/errores";
 
 describe("W-3", () => {
   test("oculta excepciones y presenta errores de uso con el mensaje escapado", async () => {
@@ -25,6 +26,23 @@ describe("W-3", () => {
 });
 
 describe("W-9", () => {
+  test.each([
+    ["solicitud-invalida", 400],
+    ["proyecto-inexistente", 404],
+    ["resolucion-inexistente", 404],
+    ["agente-sin-declaraciones", 404],
+    ["clave-inexistente", 404],
+    ["clave-no-resuelta", 422],
+    ["via-no-soportada", 422],
+    ["contenido-no-soportado", 422],
+    ["entrada-ilegible", 422],
+    ["entorno-incompleto", 500],
+  ] satisfies [ErrorUso["codigo"], number][])("asigna a %s el estado %i y escapa su mensaje", async (codigo, estado) => {
+    const respuesta = paginaErrorUso({ codigo, mensaje: '<script>"&' });
+    expect(respuesta.status).toBe(estado);
+    expect(await respuesta.text()).toContain("&lt;script&gt;&quot;&amp;");
+  });
+
   test("asigna el estado HTTP segun el codigo de error de uso", () => {
     const casos = [
       [errorAlmacenSinEsquema, 503],

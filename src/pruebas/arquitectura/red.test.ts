@@ -53,28 +53,27 @@ async function comprobarRed(): Promise<HallazgoDependencia[]> {
 }
 
 describe("T0-07 sin clientes de red", () => {
-  for (const modulo of ["node:http", "node:https", "node:net", "node:tls", "node:dgram", "undici"]) {
-    for (const codigo of [`import "${modulo}";`, `import type { Cliente } from "${modulo}";`,
-      `export type { Cliente } from "${modulo}";`, `type T = import("${modulo}").Cliente;`,
-      `const cargar = () => import("${modulo}");`, `const cliente = require("${modulo}");`]) {
-      test(`rechaza ${codigo}`, () => {
-        expect(analizarRed("paquetes/rige/interfaces/cli/sonda.ts", codigo).length).toBeGreaterThan(0);
-      });
-    }
-  }
-  for (const codigo of ['fetch("http://127.0.0.1:1");', 'globalThis.fetch("http://127.0.0.1:1");',
+  const modulos = ["node:http", "node:https", "node:net", "node:tls", "node:dgram", "undici"];
+  const imports = modulos.flatMap(modulo => [`import "${modulo}";`, `import type { Cliente } from "${modulo}";`,
+    `export type { Cliente } from "${modulo}";`, `type T = import("${modulo}").Cliente;`,
+    `const cargar = () => import("${modulo}");`, `const cliente = require("${modulo}");`]);
+  test("rechaza todas las formas de importar clientes de red", () => {
+    expect(imports.map(caso => ({ caso, resultado: analizarRed("paquetes/rige/interfaces/cli/sonda.ts", caso).length > 0 })))
+      .toEqual(imports.map(caso => ({ caso, resultado: true })));
+  });
+  const globales = ['fetch("http://127.0.0.1:1");', 'globalThis.fetch("http://127.0.0.1:1");',
     'new WebSocket("ws://127.0.0.1:1");', 'globalThis["fetch"]("http://127.0.0.1:1");',
-    'fetch.preconnect("http://127.0.0.1:1");', 'const solicitud = fetch; solicitud("http://127.0.0.1:1");']) {
-    test(`rechaza cliente global: ${codigo}`, () => {
-      expect(analizarRed("paquetes/rige/interfaces/web/sonda.ts", codigo).length).toBeGreaterThan(0);
-    });
-  }
+    'fetch.preconnect("http://127.0.0.1:1");', 'const solicitud = fetch; solicitud("http://127.0.0.1:1");'];
+  test("rechaza todos los clientes globales", () => {
+    expect(globales.map(caso => ({ caso, resultado: analizarRed("paquetes/rige/interfaces/web/sonda.ts", caso).length > 0 })))
+      .toEqual(globales.map(caso => ({ caso, resultado: true })));
+  });
   test("permite servidor local y texto inerte sin interpretar comentarios o regex", () => {
-    for (const codigo of ['const ejemplo = \'fetch("url"); WebSocket\';', '// fetch("url"); WebSocket',
+    const casos = ['const ejemplo = \'fetch("url"); WebSocket\';', '// fetch("url"); WebSocket',
       'const patron = () => /fetch("external") WebSocket/;',
-      'Bun.serve({hostname: "127.0.0.1", fetch: () => new Response("fija")});']) {
-      expect(analizarRed("paquetes/rige/interfaces/web/servidor.ts", codigo)).toEqual([]);
-    }
+      'Bun.serve({hostname: "127.0.0.1", fetch: () => new Response("fija")});'];
+    expect(casos.map(caso => ({ caso, resultado: analizarRed("paquetes/rige/interfaces/web/servidor.ts", caso) })))
+      .toEqual(casos.map(caso => ({ caso, resultado: [] })));
   });
   test("solo la ruta exacta reservada puede importar node:http", () => {
     expect(analizarRed(clienteReservado, 'import { request } from "node:http";')).toEqual([]);
