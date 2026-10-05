@@ -6,6 +6,15 @@ const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
   "almacen-sin-esquema": 503,
   "configuracion-invalida": 500,
   "puerto-ocupado": 500,
+  "solicitud-invalida": 400,
+  "proyecto-inexistente": 404,
+  "resolucion-inexistente": 404,
+  "agente-sin-declaraciones": 404,
+  "clave-inexistente": 404,
+  "via-no-soportada": 422,
+  "contenido-no-soportado": 422,
+  "entrada-ilegible": 422,
+  "entorno-incompleto": 500,
 };
 
 export function paginaErrorUso(error: ErrorUso): Response {
