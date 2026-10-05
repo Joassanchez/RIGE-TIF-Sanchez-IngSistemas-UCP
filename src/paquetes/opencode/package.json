@@ -3,5 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "dependencies": { "@rige/nucleo": "workspace:*" }
+  "dependencies": {
+    "@rige/nucleo": "workspace:*",
+    "jsonc-parser": "3.3.1"
+  }
 }

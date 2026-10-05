@@ -224,7 +224,7 @@ describe("T0-04 andamiaje", () => {
       const paquete = await Bun.file(join(raiz, "paquetes", nombre, "package.json")).json();
       expect(paquete.name).toBe(`@rige/${nombre}`);
       expect(paquete.dependencies ?? {}).toEqual(nombre === "nucleo" ? {} : nombre === "opencode"
-        ? { "@rige/nucleo": "workspace:*" }
+        ? { "@rige/nucleo": "workspace:*", "jsonc-parser": "3.3.1" }
         : { "@rige/nucleo": "workspace:*", "@rige/opencode": "workspace:*" });
       const config = await Bun.file(join(raiz, "paquetes", nombre, "tsconfig.json")).json();
       expect(config.compilerOptions.types).toEqual(nombre === "nucleo" ? [] : ["bun"]);
