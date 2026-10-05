@@ -90,6 +90,8 @@ Los scripts de `tools/` no fijan destinos: el agente elige la carpeta con esta t
 |---|---|---|---|---|
 | Informe de la AE | `informe/` | `05-entregas/` | `InformeAEn` | Guía AE2, 10.2 |
 | Libro de trabajo | `03-requisitos/libro/` + Instrumento 34 | `03-requisitos/` | `CatalogoRequisitos` | Guía AE2, 10.2 |
+| Instrumento 24 · Presupuesto de horas-persona | `instrumentos/instrumento-24-presupuesto-horas.md` | `00-gestion/` | `Instrumento24` | Guía AE2, 10.2 (carpeta /00-gestion) y 11.1 |
+| Instrumento 27 · Delimitación de entorno y dominio | `instrumentos/instrumento-27-delimitacion.md` | `03-requisitos/` | `Instrumento27` | Guía AE2, 11.1 a; sin plantilla en `catedra/` (Clase 8). Destino elegido junto al modelo del dominio (Guía AE2, 10.2) |
 | Instrumento 32 · Lienzo | `instrumentos/instrumento-32-lienzo.md` | `02-analisis/` | `Instrumento32` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
 | Instrumento 33 · Rivalidad | `instrumentos/instrumento-33-rivalidad.md` | `02-analisis/` | `Instrumento33` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
 | Instrumento 34 · Recursos | `instrumentos/instrumento-34-recursos.md` | `03-requisitos/` | `Instrumento34` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |

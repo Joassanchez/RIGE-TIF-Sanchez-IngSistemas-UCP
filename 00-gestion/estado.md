@@ -88,6 +88,8 @@ Estados: `plantilla` → `completado` (por el autor) → `revisado` (`/revisar i
 
 | Instrumento | Fuente | Estado | Plazo | Fecha |
 |---|---|---|---|---|
+| 24 · Presupuesto de horas | `instrumentos/instrumento-24-presupuesto-horas.md` | por asignar (autor) · armado el 02/10/2026 desde V.3, V.4 y la hoja Iteraciones; `.docx` v1 en `00-gestion/` | sin plazo propio | 02/10/2026 |
+| 27 · Delimitación | `instrumentos/instrumento-27-delimitacion.md` | por asignar (autor) · armado el 02/10/2026 desde III.1, III.2.1 y III.4, sin plantilla de la Clase 8; `.docx` v1 en `03-requisitos/` | sin plazo propio | 02/10/2026 |
 | 32 · Lienzo | `instrumentos/instrumento-32-lienzo.md` | plantilla | 24/09/2026 | 25/09/2026 |
 | 33 · Rivalidad | `instrumentos/instrumento-33-rivalidad.md` | plantilla | 24/09/2026 | 25/09/2026 |
 | 34 · Recursos | `instrumentos/instrumento-34-recursos.md` | plantilla | 01/10/2026 | 25/09/2026 |

@@ -1,6 +1,5 @@
 # Instrumento 32 · Lienzo de modelo de negocio del Sistema de Información
 
-> Plantilla oficial migrada desde `catedra/originales/03_Plantillas_Instrumentos_AE2.docx`. Completar sobre esta estructura; `/exportar instrumento 32` genera el `.docx` en la carpeta que fija la consigna.
 
 *Momento de aplicación: semanas 6 y 7, una vez cerrado el conjunto de requisitos «Must». Destino: Capítulo IV, apartado IV.1, y Portafolio de la Unidad Dos. Plazo: jueves 24 de septiembre.*
 

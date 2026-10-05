@@ -33,7 +33,7 @@ Quedan fuera de ese alcance, y los realizo de manera propia, la delimitación de
 | Hasta el 30/09 (T0-01 a T0-09) | OpenCode con gentle-ai | Propuesta del documento ODD; revisión e implementación; exploración | `src/` |
 | Desde el 30/09 (T0-10) | Codex CLI (plan ChatGPT Plus), orquestado por Claude Code | Apoyo en la implementación con TDD y commits en la rama del incremento; revisión y crítica del código | `src/` |
 | 01/10 | Codex como apoyo | Búsquedas web de solo lectura y apoyo en las correcciones de los Caps. IV, V y X sobre fichas | `informe/` |
-| 28/09 | Herramientas auxiliares para la maqueta del prototipo v0 | HTML de la maqueta | `[DATO PENDIENTE: nombre de las herramientas usadas en la maqueta (R-03)]` |
+| 28/09 | Claude Design | Elaboración del HTML de la maqueta del prototipo v0 | Maqueta del v0 |
 
 Las menciones a registros de decisión consolidados el 28/09/2026 se acompañan del número vigente; la tabla de equivalencias está en `00-gestion/decisiones/INDICE.md`.
 
@@ -71,8 +71,6 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 ## Entradas de la AE2
 
 ### Entrada · Jueves 1 de octubre de 2026 (incluye la noche del 30 de septiembre) — Cierre del incremento 0 y corrección de los Capítulos IV, V y X
-
-<!-- BORRADOR condensado el 02/10/2026. Lo revisa y aprueba el autor. -->
 
 1. **Decisión adoptada.**
    - **Diferencial (ADR-075).** Adopté la combinación de la decisión de permiso con su regla determinante y la procedencia por declaración (RF-02 CA-8). Definí el aporte a OpenCode como salida estratégica y conservé el repositorio privado (D-31).
@@ -117,8 +115,6 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 
 ### Entrada · Miércoles 30 de septiembre de 2026 — Tablero de gestión, cambio del método de programación e incremento 0 hasta T0-10
 
-<!-- BORRADOR condensado el 02/10/2026. Lo revisa y aprueba el autor. -->
-
 1. **Decisión adoptada.**
    - **Tablero.** Definí un kanban por estados, con un máximo de dos tareas en curso, una columna «Hecho» por iteración y 47 tarjetas basadas en V.4, Tabla 18 y los entregables. Incorporé el prefijo, el color, las fechas reales y la reconstrucción declarada; las tareas inconclusas cambian de iteración en la misma tarjeta, con un comentario.
    - **Errores (ADR-066).** Fijé los códigos estables y la ubicación de los datos de ejecución en temporales, separados del repositorio.
@@ -153,8 +149,6 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidad: el tablero se creó con el conector de Trello, y desde T0-10 el código cuenta con el apoyo de Codex.
 
 ### Entrada · Martes 29 de septiembre de 2026 — Arquitectura, revisión del catálogo y diseño para programar el v1
-
-<!-- BORRADOR condensado el 02/10/2026. Lo revisa y aprueba el autor. -->
 
 1. **Decisión adoptada.**
    - **Arquitectura (ADR-058).** Acepté la arquitectura de puertos y adaptadores, con tres paquetes aislados, un núcleo sin dependencias y la política de OpenCode en el adaptador. Adopté los errores categorizados y la falla visible.
@@ -213,8 +207,6 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 
 ### Entrada · Lunes 28 de septiembre de 2026 — Validación con la referente, planificación y Capítulo X
 
-<!-- BORRADOR condensado el 02/10/2026. Lo revisa y aprueba el autor. -->
-
 1. **Decisión adoptada.**
    - **Validación (acta del 26/09).** Registré la sesión presencial de las 17:00, de 35 minutos, con 82 puntos confirmados; la constancia queda pendiente (U-04). Propagué sus consecuencias al libro y al informe.
    - **Rendimiento (ADR-045, hoy ADR-055).** Adopté el doble del mayor entre un proyecto público y el de la referente, con un umbral en Ubuntu y una medición informativa en Windows.
@@ -248,11 +240,9 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
    - Conduje la sesión y elegí las alternativas P-01, P-15, P-16 y P-21. Aporté el reporte del OPSSI y los recursos, y aprobé el esquema y las correcciones.
    - Registré el aporte en el libro, los Caps. III, IV, V y X, I.6.6, los Anexos I y V, el Instrumento 34, el Anexo III, IV.1, V.2, `tools/exportar_libro.py`, `03-requisitos/modelo-dominio.mmd` y `tools/figura_cronograma.py`.
 5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos dentro del equipo. Llevo al Informe Grupal de Encuadre Común la corrección de la descripción de RIGE y de las cifras del costo de hora (AD-27). La revisión crítica objetó la brevedad de la validación (82 puntos en 35 minutos, sin observaciones); la registro como pregunta probable de la defensa.
-6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidad: la Figura 1 se exporta con `@mermaid-js/mermaid-cli` y la Figura 3 con matplotlib, mediante scripts del repositorio. Falta nombrar las herramientas usadas en la maqueta del v0 (R-03).
+6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidad: la Figura 1 se exporta con `@mermaid-js/mermaid-cli` y la Figura 3 con matplotlib, mediante scripts del repositorio. La maqueta del v0 se elaboró con Claude Design.
 
 ### Entrada · Viernes 25 de septiembre de 2026 — Línea de base, papel de cada interfaz y guía de validación
-
-<!-- BORRADOR condensado el 02/10/2026. Lo revisa y aprueba el autor. -->
 
 1. **Decisión adoptada.**
    - **Línea de base (ADR-040, hoy ADR-053; D-41).** Adopté las herramientas como ejecutores, dieciséis casos, cuatro por condición y el caso como unidad de análisis. Fijé el éxito en ocho de los doce casos de C-2 a C-4; las herramientas empleadas inicialmente quedaron reemplazadas el 01/10 por ADR-076.

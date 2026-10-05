@@ -1,6 +1,5 @@
 # Instrumento 33 · Matriz de rivalidad amplificada y mapeo de competencia
 
-> Plantilla oficial migrada desde `catedra/originales/03_Plantillas_Instrumentos_AE2.docx`. Completar sobre esta estructura; `/exportar instrumento 33` genera el `.docx` en la carpeta que fija la consigna.
 
 *Momento de aplicación: semana 7, en continuidad con el Instrumento 32. Destino: Capítulo IV, apartados IV.3 y IV.4, y Portafolio de la Unidad Dos. Plazo: jueves 24 de septiembre.*
 
@@ -48,4 +47,4 @@ Declare primero los dos ejes y su justificación; recién después ubique las al
 |-------------------------------------------|-----|
 | Por qué el sistema es mejor que el sustituto | El sustituto es gratuito y conocido, pero responde sin garantía de corrección y sin mostrar el origen. RIGE responde con el valor o la decisión, su declaración de origen (entrada, archivo y posición) y un resultado verificado contra la propia herramienta (RNF-02). La ventaja reside en la exactitud, no en la comodidad |
 | Indicador | IB-1, proporción de respuestas erróneas, e IB-2, mediana del tiempo de resolución, en las consultas de mayor dificultad (condiciones C-2 a C-4), conforme al criterio de éxito del apartado I.3.4 del informe de la AE1 |
-| Plazo | La línea de base fija el valor inicial; la medición final, al cierre del período, compara RIGE con ese valor (apartados V.1 y V.4). La Tabla 13 del apartado IV.3 fija de antemano qué resultado confirma, reordena o refuta la selección |
+| Plazo | La línea de base fija el valor inicial; la medición final, al cierre del período, compara RIGE con ese valor (apartados V.1 y V.4). La Tabla 10 del apartado IV.3 fija de antemano qué resultado confirma, reordena o refuta la selección |

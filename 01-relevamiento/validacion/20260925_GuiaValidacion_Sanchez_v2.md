@@ -1,9 +1,13 @@
 # Guía y acta de la sesión de validación con la referente — RIGE
 
 **Proyecto:** RIGE · Plataforma local para la resolución y explicación de la configuración efectiva y su procedencia en herramientas de programación basadas en agentes
+
 **Autor:** Sánchez, Joaquín Sebastián
+
 **Instrumento:** 31 · Guía y acta de la sesión de validación
+
 **Capítulos del informe que alimenta:** III · Entorno y Dominio del Sistema de Información (III.2 a III.5) y Libro de trabajo (catálogo, entidades, reglas y glosario)
+
 **Versión:** v2 · 25 de septiembre de 2026. Reemplaza a la v1 del 22 de septiembre de 2026 (`20260922_DecisionesDelimitacion_RIGE_v1.md`); los cambios constan al final. Acta completada con los resultados de la sesión del 26/09/2026.
 
 ---
@@ -152,6 +156,7 @@ La salida es estructurada, determinista y se ajusta a un esquema publicado que d
 Quedan diferidos como trabajo posterior los listados de otros elementos, la exportación del ecosistema completo y la consulta inversa, que consiste en averiguar qué agentes pueden realizar una acción.
 
 **Motivo.**
+
 - La necesidad surge de la entrevista: un agente que crea o modifica configuración necesita saber sobre qué archivo intervenir.
 - La consulta de permisos, que la v1 difería, se incorpora porque un agente solo puede usar RIGE por esta vía, y las consultas de permisos son tan relevantes como las de valores para el problema que el proyecto aborda.
 - La explicación se entrega solo a pedido para no aumentar el texto que el agente procesa en cada consulta.
@@ -196,6 +201,7 @@ Observaciones: sin observaciones.
 ### L-10 · Dos interfaces con papeles distintos · *nueva*
 
 **Decisión.** RIGE ofrece dos interfaces sobre el mismo núcleo, que informan los mismos resultados:
+
 - la **línea de comandos**, completa (L-06);
 - una **interfaz web local**, que se abre en el navegador del propio equipo sin conexión externa. Se limita a formularios y vistas de consulta de valores, permisos y hallazgos, sin funciones que la línea de comandos no tenga.
 
@@ -250,6 +256,7 @@ Observaciones: sin observaciones.
 **Decisión.** La explicación en lenguaje natural se genera con plantillas fijas a partir del recorrido de la resolución, sin intervención de un modelo de lenguaje. Se ofrece para las decisiones de permiso y los hallazgos. Los valores se informan con su procedencia, sin texto explicativo.
 
 **Motivo.**
+
 - Un modelo de lenguaje exigiría una conexión externa, y RIGE opera sin conexión (L-04).
 - Podría dar respuestas distintas ante la misma pregunta.
 - Tendría un costo por uso.
@@ -283,6 +290,7 @@ Estas exclusiones derivan de una imposibilidad técnica o de la frontera individ
 ## Sección 3 · Catálogo de requisitos
 
 Cada requisito se presenta con su enunciado y su prioridad. La prioridad sigue el método MoSCoW:
+
 - **Must:** el requisito se compromete y forma parte del producto mínimo viable.
 - **Should:** se incorpora si las horas lo permiten.
 - **Could:** es deseable y sin compromiso.
@@ -429,7 +437,7 @@ Si el término del equipo difiere del adoptado, se registra como sinónimo en el
 
 | Campo | Contenido |
 | --- | --- |
-| Herramienta | HTML, construida con asistentes generativos ([DATO PENDIENTE: asistentes utilizados, función y artefacto afectado]) |
+| Herramienta | HTML, construida con un asistente generativo: Claude Design, empleado en la elaboración del HTML de la maqueta (artefacto afectado: maqueta del prototipo v0) |
 | Enlace | https://drive.google.com/file/d/17jelVm2VFUr7spS7OKnvCGs8OIrD4aTI/view?usp=sharing |
 | Naturaleza | Maqueta navegable de baja fidelidad y no funcional: no calcula, no persiste ni lee archivos, y sus datos son ilustrativos |
 
@@ -444,6 +452,7 @@ La maqueta representa el recorrido de consulta del desarrollador. Se valida el *
 | 5 | Detalle de un hallazgo | Localización de la declaración que lo origina y explicación de su causa | Incluida (RF-07) | ☒ | ☐ | Sin observaciones |
 
 **Preguntas para la referente:**
+
 - ¿El recorrido responde las preguntas que el equipo se hace sobre su configuración?
 - ¿Falta alguna pantalla o alguna información que el equipo necesitaría ver?
 - ¿El orden de las pantallas es el que el equipo seguiría?
