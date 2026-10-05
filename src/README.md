@@ -11,7 +11,7 @@
 
 ## 2. Qué hace este prototipo
 
-[DATO PENDIENTE: caso de uso vertical implementado, en dos oraciones, y qué decisión arquitectónica prueba (Cap. V, V.5).]
+El prototipo implementa el caso de uso vertical «consultar el valor efectivo de una clave de un agente de OpenCode 1.18.25, con su procedencia»: la interfaz web recibe un proyecto, un agente y una clave; la lógica aplica la regla de negocio validada RD-01 (prevalece la declaración de la última entrada que declara la clave), la resolución se guarda en el almacén SQLite propio y la página se arma con lo que se lee del almacén, con el valor, la declaración que lo determina y las declaraciones desplazadas. El recorrido prueba la decisión arquitectónica de separar un núcleo genérico, que ejecuta la combinación, de un adaptador por herramienta que declara el orden de las entradas y su estrategia (RNF-03; ADR-058 y ADR-060): el núcleo no depende del adaptador y un adaptador ficticio se resuelve sin modificarlo.
 
 ## 3. Requisitos previos
 
@@ -100,9 +100,28 @@ La salida contiene una línea JSON con `esquema: 1`, `versionRige: "0.1.0"`, `al
 bun run servir
 ```
 
-Con el puerto por defecto, se escribe `{"esquema":1,"direccion":"http://127.0.0.1:4747"}` y el proceso queda escuchando. En el navegador, `http://127.0.0.1:4747` muestra «RIGE 0.1.0», la ruta del almacén y la versión de su esquema. Si se cambia `RIGE_PUERTO`, se usa el puerto configurado en la dirección. Se detiene con Ctrl+C antes de continuar.
+Con el puerto por defecto, se escribe `{"esquema":1,"direccion":"http://127.0.0.1:4747"}` y el proceso queda escuchando. En el navegador, `http://127.0.0.1:4747` muestra «RIGE 0.1.0», la ruta del almacén y la versión de su esquema. Si se cambia `RIGE_PUERTO`, se usa el puerto configurado en la dirección.
 
-**3. Verificar tipos, construcción y pruebas:**
+**3. Recorrido vertical (caso de uso del Instrumento 35):**
+
+Con el servidor en marcha:
+
+1. Abrir `http://127.0.0.1:4747` en el navegador (o la dirección con el puerto configurado).
+2. Completar el formulario: **Proyecto** `pruebas/escenarios/v1-precedencia/proyecto` (ruta relativa a `src/`, el directorio desde el que se ejecutó `bun run servir`), **Agente** `build`, **Clave** `temperature`, y pulsar «Resolver y guardar».
+3. **Resultado esperado, en un almacén recién creado:** la dirección pasa a `http://127.0.0.1:4747/resoluciones/1?agente=build&clave=temperature`; la tabla «Valores efectivos» muestra `temperature` con valor `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`, y dos declaraciones desplazadas, en orden: `0.1` en `…/v1-precedencia/opencode.json:5:7 (proyecto)` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7 (proyecto)`. «Regla aplicada» indica: «OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).» «Entradas leídas» lista los tres archivos con su resumen SHA-256 y las vías remotas con condición `no_observada`; `preferencias-macos` también figura como `no_observada` en Ubuntu y Windows. Las rutas se muestran completas, con `/` como separador. Si ya hay resoluciones guardadas, se usa el número que aparece en la dirección después de resolver.
+4. **Persistencia:** detener el servidor con Ctrl+C y volver a ejecutar:
+
+   ```bash
+   bun run servir
+   ```
+
+   Abrir la misma dirección de la resolución: la página muestra los mismos datos, leídos del almacén, y el texto «Página armada con la resolución leída del almacén de RIGE.» «Resoluciones de este proyecto» lista la resolución 1.
+5. **Variante:** volver a la página inicial, completar el mismo proyecto y agente, dejar **Clave** vacía y pulsar «Resolver y guardar»: la tabla «Valores efectivos» muestra `description`, `steps` y `temperature` en una nueva resolución.
+6. Los valores coinciden con los de OpenCode 1.18.25 registrados en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`; si el equipo tiene configuración global de OpenCode, RIGE la incorpora y la muestra con su procedencia, de modo que pueden aparecer entradas adicionales.
+
+Se detiene el servidor con Ctrl+C antes de continuar.
+
+**4. Verificar tipos, construcción y pruebas:**
 
 ```bash
 bun run verificar
@@ -130,11 +149,16 @@ Produce el mismo JSON de estado que `bun run esquema`. Sin `--silent`, `bun run`
 
 La forma del error es `{"esquema":1,"error":{"codigo":"…","mensaje":"…"}}`. La tabla describe los canales de la CLI; la línea propia de `bun run` se evita con `--silent`.
 
-Correspondencia prevista: la etiqueta `v1` corresponderá a la versión `0.1.0` de RIGE.
+La etiqueta `v1` corresponde a la versión `0.1.0` de RIGE.
 
 ## 7. Estado del canal de construcción
 
-El archivo `.github/workflows/ci.yml` ejecuta en cada push, en `ubuntu-latest` y `windows-latest` con Bun 1.3.14, `bun install --frozen-lockfile`, `bun run verificar` y `bun test`. Las pruebas incluyen criterios del catálogo: `pruebas/aceptacion/RNF-03.test.ts` (CA-1, CA-2) y `pruebas/aceptacion/RNF-09.test.ts` (CA-1 a CA-3).
+El archivo `.github/workflows/ci.yml` ejecuta en cada push, en `ubuntu-26.04` y `windows-latest` con Bun 1.3.14, `bun install --frozen-lockfile`, `bun run verificar` y `bun test`. Las pruebas de aceptación ligadas a criterios del catálogo son:
+
+- `pruebas/aceptacion/RF-01.test.ts` (CA-1, CA-2).
+- `pruebas/aceptacion/recorrido-v1.test.ts` (RF-01 CA-1 y CA-2 por la web; RF-17 CA-1 a CA-3; RNF-01; RNF-09).
+- `pruebas/aceptacion/RNF-03.test.ts` (CA-1 a CA-3).
+- `pruebas/aceptacion/RNF-09.test.ts` (CA-1 a CA-3).
 
 El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/workflows/ci.yml) permite consultar los resultados. La primera corrida exitosa en las dos plataformas, comprobada por el ingeniero en la API de GitHub, es del **30/09/2026, 22:26 (UTC−3)**, commit `11c852e`: [corrida 36801042650](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/runs/36801042650).
 
