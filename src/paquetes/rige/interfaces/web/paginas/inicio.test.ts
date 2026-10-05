@@ -18,3 +18,19 @@ describe("W-2", () => {
     expect(cuerpo).not.toContain("<script");
   });
 });
+
+describe("W-10", () => {
+  test("ofrece el formulario GET y conserva version y almacen", async () => {
+    const cuerpo = await paginaInicio({ esquema: 1, versionRige,
+      almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 } }).text();
+    expect(cuerpo).toContain('<form method="get" action="/resolver">');
+    expect(cuerpo).toMatch(/<input[^>]*name="proyecto"[^>]*required/);
+    expect(cuerpo).toMatch(/<input[^>]*name="agente"[^>]*value="build"/);
+    expect(cuerpo).toMatch(/<input[^>]*name="clave"[^>]*value=""/);
+    expect(cuerpo).toContain("vacía: todas las claves del agente");
+    expect(cuerpo).toContain("Resolver y guardar");
+    expect(cuerpo).toContain(`RIGE ${versionRige}`);
+    expect(cuerpo).toContain("/temporal/rige.db");
+    expect(cuerpo).not.toContain("<script");
+  });
+});

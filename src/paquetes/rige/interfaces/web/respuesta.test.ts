@@ -1,9 +1,30 @@
 import { describe, expect, test } from "bun:test";
 import { errorAlmacenSinEsquema } from "../../aplicacion/errores";
+import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
 import { versionRige, type RespuestaEstado } from "../../aplicacion/respuestas/estado";
 import { html } from "./plantillas";
 import { responderHtml } from "./respuesta";
 import { crearManejador } from "./servidor";
+
+describe("W-11 redireccion", () => {
+  test("redirige con 303, enlace escapado y las mismas defensas", async () => {
+    const { redirigir } = await import("./respuesta");
+    const ubicacion = '/resoluciones/7?agente=a&clave=<"clave">';
+    const respuesta = redirigir(ubicacion);
+    expect(respuesta.status).toBe(303);
+    expect(respuesta.headers.get("location")).toBe(ubicacion);
+    const defensas = responderHtml(200, html`<p>RIGE</p>`);
+    for (const [nombre, valor] of defensas.headers) expect(respuesta.headers.get(nombre)).toBe(valor);
+    const cuerpo = await respuesta.text();
+    expect(cuerpo).toContain('href="/resoluciones/7?agente=a&amp;clave=&lt;&quot;clave&quot;&gt;"');
+    expect(cuerpo).not.toContain('<"clave">');
+  });
+});
+
+const manejarEstado = (puerto: number, consultarEstado: ConsultarEstado) => crearManejador(puerto, {
+  consultarEstado, resolverProyecto: () => { throw new Error("No resolver"); },
+  consultarResolucion: () => { throw new Error("No consultar"); },
+});
 
 describe("W-7", () => {
   test("incluye las cinco cabeceras de defensa y conserva las adicionales sin CORS", async () => {
@@ -38,7 +59,7 @@ describe("W-8", () => {
     const estado: RespuestaEstado = {
       esquema: 1, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
     };
-    const manejar = crearManejador(puerto, () => ({ exito: true, valor: estado }));
+    const manejar = manejarEstado(puerto, () => ({ exito: true, valor: estado }));
     const solicitud = (ruta = "/", opciones: { method?: string; headers?: Record<string, string> } = {}) => new Request(`http://127.0.0.1${ruta}`, {
       ...opciones, headers: { Host: `127.0.0.1:${puerto}`, ...opciones.headers },
     });
@@ -48,8 +69,8 @@ describe("W-8", () => {
       [manejar(solicitud("/", { headers: { Host: `ajeno.example:${puerto}` } })), 403],
       [manejar(solicitud("/", { headers: { "Sec-Fetch-Site": "cross-site" } })), 403],
       [manejar(solicitud("/", { method: "POST" })), 405],
-      [crearManejador(puerto, () => ({ exito: false, error: errorAlmacenSinEsquema }))(solicitud()), 503],
-      [crearManejador(puerto, () => { throw new Error("Falla de infraestructura"); })(solicitud()), 500],
+      [manejarEstado(puerto, () => ({ exito: false, error: errorAlmacenSinEsquema }))(solicitud()), 503],
+      [manejarEstado(puerto, () => { throw new Error("Falla de infraestructura"); })(solicitud()), 500],
     ] as const;
     for (const [respuesta, codigo] of respuestas) {
       expect(respuesta.status).toBe(codigo);
