@@ -1,0 +1,19 @@
+{
+  "procedencia": {
+    "herramienta": "opencode",
+    "version": "1.18.25",
+    "comando": "opencode debug agent build",
+    "directorio": "proyecto",
+    "binario": "opencode-windows-x64@1.18.25",
+    "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+    "fecha": "2026-10-05",
+    "aislamiento": "Copia del escenario con git init; HOME, USERPROFILE y XDG_* en un directorio temporal vacio. Los archivos del escenario no se modificaron.",
+    "criterio": "Se comparan las claves que el escenario declara para el agente build; el resto de la salida es nativa y queda fuera del v1."
+  },
+  "agente": "build",
+  "valores": {
+    "description": "Agente de construccion del proyecto de ejemplo",
+    "steps": 12,
+    "temperature": 0.3
+  }
+}

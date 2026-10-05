@@ -1,0 +1,9 @@
+// Entrada de mayor precedencia del proyecto (opencode.jsonc prevalece sobre opencode.json)
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": {
+      "temperature": 0.3,
+    },
+  },
+}

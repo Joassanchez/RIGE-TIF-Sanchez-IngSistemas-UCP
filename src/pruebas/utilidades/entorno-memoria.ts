@@ -27,5 +27,15 @@ export function crearEntornoMemoria(opciones: {
     unir: (...partes) => posix.join(...partes),
     padre: (ruta) => posix.dirname(posix.normalize(ruta)),
     esAbsoluta: (ruta) => posix.isAbsolute(ruta),
+    listar(directorio) {
+      const normalizada = posix.normalize(directorio);
+      if (!directorios.has(normalizada)) return [];
+      const prefijo = normalizada.endsWith("/") ? normalizada : `${normalizada}/`;
+      const nombres = new Set<string>();
+      for (const ruta of [...archivos.keys(), ...directorios]) {
+        if (ruta.startsWith(prefijo) && ruta !== normalizada) nombres.add(ruta.slice(prefijo.length).split("/")[0]!);
+      }
+      return [...nombres].sort();
+    },
   };
 }

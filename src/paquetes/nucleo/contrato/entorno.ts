@@ -14,4 +14,5 @@ export interface EntornoLectura {
   unir(...partes: readonly string[]): string;
   padre(ruta: string): string;
   esAbsoluta(ruta: string): boolean;
+  listar(directorio: string): readonly string[];
 }
