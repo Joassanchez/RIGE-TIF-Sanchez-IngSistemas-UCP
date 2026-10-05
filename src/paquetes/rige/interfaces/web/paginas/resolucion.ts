@@ -21,10 +21,11 @@ export function paginaResolucion(respuesta: RespuestaConsulta): Response {
 <dt>Resumen de las entradas leídas</dt><dd>${resolucion.resumenEntradas}</dd></dl>
 <h2>Valores efectivos</h2>
 <table><thead><tr><th>Clave</th><th>Valor efectivo</th><th>Declaración determinante</th><th>Declaraciones desplazadas</th><th>Regla aplicada</th></tr></thead>
-<tbody>${respuesta.valores.map(({ clave, rastro }) => html`<tr><td>${clave}</td><td>${JSON.stringify(rastro.valor)}</td>
+<tbody>${respuesta.valores.length ? respuesta.valores.map(({ clave, rastro }) => html`<tr><td>${clave}</td><td>${JSON.stringify(rastro.valor)}</td>
 <td>${presentarDeclaracion(rastro.determinante)}</td><td>${rastro.desplazadas.length
     ? html`<ol>${rastro.desplazadas.map((declaracion) => html`<li>${presentarDeclaracion(declaracion)}</li>`)}</ol>`
-    : "ninguna"}</td><td>${respuesta.reglas[rastro.determinante.regla]}</td></tr>`)}</tbody></table>
+    : "ninguna"}</td><td>${respuesta.reglas[rastro.determinante.regla]}</td></tr>`)
+    : html`<tr><td colspan="5">El agente no tiene claves resueltas en el prototipo v1.</td></tr>`}</tbody></table>
 ${respuesta.noResueltas.length ? html`<h2>Claves no resueltas en el prototipo v1</h2>
 <ul>${respuesta.noResueltas.map((clave) => html`<li>${clave.ruta.join(".")}: ${respuesta.reglas[clave.regla]}</li>`)}</ul>` : html``}
 <h2>Entradas leídas</h2>

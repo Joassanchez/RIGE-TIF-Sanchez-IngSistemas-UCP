@@ -34,7 +34,8 @@ export function consultarAgente(resolucion: Resolucion, agente: string, clave: s
   } };
   const valores = resolucion.valores.filter((valor) => valor.ruta.length > prefijo.length
     && esPrefijo(prefijo, valor.ruta));
-  if (!valores.length) {
+  if (!valores.length && !noResueltas.some((pendiente) => pendiente.ruta.length > prefijo.length
+    && esPrefijo(prefijo, pendiente.ruta))) {
     return { exito: false, error: { codigo: "agente-sin-declaraciones", mensaje: `El agente ${agente} no tiene declaraciones.` } };
   }
   const proyectar = (rastro: RastroValor): ValorConsultado => ({ clave: rastro.ruta.slice(prefijo.length).join("."), rastro });

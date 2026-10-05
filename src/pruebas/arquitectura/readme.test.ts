@@ -19,9 +19,13 @@ test("D-1 el archivo de lectura tiene las ocho secciones completas y un escenari
   expect(escenario).not.toBeNull();
   expect(await Bun.file(new URL(`${escenario![1]}/opencode.jsonc`, raiz)).exists()).toBe(true);
   const pasoSeis = /^6\. .+$/m.exec(ejecucion)?.[0];
-  for (const texto of ["sustituciones", "Markdown", "`mode`", "`disable`", "claves derivadas", "no resueltas en el prototipo v1", "el resto del recorrido no cambia"]) {
+  for (const texto of ["sustituciones", "Markdown", "`mode`", "`disable`", "claves derivadas", "no resueltas en el prototipo v1",
+    "las claves afectadas", "la clave o el agente consultado", "la página de error", "`clave-no-resuelta`", "HTTP 422",
+    "no se crea la resolución", "Una sustitución fuera de una cadena", "un `mode` que no es objeto",
+    "detienen el análisis con `contenido-no-soportado`"]) {
     expect(pasoSeis).toContain(texto);
   }
+  expect(pasoSeis).not.toContain("el resto del recorrido no cambia");
   expect(ejecucion).toMatch(/\| 1 \| Error de uso de la CLI \|/);
   const erroresWeb = /La web presenta[^\n]+/.exec(ejecucion)?.[0];
   for (const texto of ["400", "`solicitud-invalida`", "404", "`proyecto-inexistente`", "`resolucion-inexistente`",

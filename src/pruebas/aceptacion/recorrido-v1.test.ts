@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
@@ -76,7 +76,7 @@ test.skipIf(!existsSync(resolve(import.meta.dir, "../../..", ".git")))(
   "V-0 RF-01 CA-1; ruta relativa del README sin copiar el escenario (se omite sin .git)", async () => {
     const temporal = mkdtempSync(join(tmpdir(), "rige-recorrido-readme-"));
     let servidor: Awaited<ReturnType<typeof lanzarServidor>> | undefined;
-    const raiz = resolve(import.meta.dir, "../escenarios/v1-precedencia");
+    const raiz = realpathSync.native(resolve(import.meta.dir, "../escenarios/v1-precedencia"));
     const archivos = ["opencode.json", "proyecto/opencode.json", "proyecto/opencode.jsonc"];
     const resumenes = () => archivos.map((archivo) => createHash("sha256").update(readFileSync(join(raiz, archivo))).digest("hex"));
     const antes = resumenes();

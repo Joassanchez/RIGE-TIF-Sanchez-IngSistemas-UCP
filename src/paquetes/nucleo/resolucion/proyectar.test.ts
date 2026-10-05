@@ -108,3 +108,32 @@ describe("Q-3", () => {
     expect(consulta.valor).toEqual({ valores: [{ clave: "temperatura", rastro: resultado.valor.valores[0]! }], noResueltas: [] });
   });
 });
+
+describe("Q-4", () => {
+  test("consulta un agente con solo claves pendientes y distingue claves no resueltas, inexistentes y agentes vacios", async () => {
+    const { consultarAgente } = await import("./proyectar");
+    const noResueltas = ["steps", "maxSteps"].map((clave) => ({
+      ruta: [...resolucion.prefijoAgente, "a", clave], regla: "excluida",
+    }));
+    const pendiente: Resolucion = { ...resolucion, valores: [],
+      reglas: { excluida: "Esta forma queda sin resolver." }, noResueltas: [
+        ...noResueltas, { ruta: [...resolucion.prefijoAgente, "ab", "steps"], regla: "excluida" },
+      ] };
+    expect(consultarAgente(pendiente, "a", undefined)).toEqual({
+      exito: true, valor: { valores: [], noResueltas },
+    });
+    for (const clave of ["steps", "maxSteps", "steps.extra"]) {
+      expect(consultarAgente(pendiente, "a", clave)).toMatchObject({
+        exito: false, error: { codigo: "clave-no-resuelta" },
+      });
+    }
+    expect(consultarAgente(pendiente, "a", "temperature")).toMatchObject({
+      exito: false, error: { codigo: "clave-inexistente" },
+    });
+    for (const clave of [undefined, "steps"]) {
+      expect(consultarAgente(pendiente, "ausente", clave)).toMatchObject({
+        exito: false, error: { codigo: "agente-sin-declaraciones" },
+      });
+    }
+  });
+});

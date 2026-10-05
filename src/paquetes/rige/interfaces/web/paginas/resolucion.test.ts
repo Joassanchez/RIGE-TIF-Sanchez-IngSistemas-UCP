@@ -93,3 +93,21 @@ describe("W-14", () => {
     expect(cuerpo).not.toContain("orden-de-aplicacion");
   });
 });
+
+describe("W-15", () => {
+  test("sin valores presenta una sola fila informativa y la lista de claves no resueltas", async () => {
+    const { paginaResolucion } = await import("./resolucion");
+    const recibida = paginaResolucion({ ...respuesta(), valores: [], noResueltas: [
+      { ruta: ["steps"], regla: "fuera-del-v1" },
+      { ruta: ["maxSteps"], regla: "fuera-del-v1" },
+    ] });
+    expect(recibida.status).toBe(200);
+    const cuerpo = await recibida.text();
+    const tabla = cuerpo.split("<tbody>")[1]!.split("</tbody>")[0]!;
+    expect(tabla.match(/<tr>/g)).toHaveLength(1);
+    expect(tabla).toContain('<td colspan="5">El agente no tiene claves resueltas en el prototipo v1.</td>');
+    expect(cuerpo).toContain("Claves no resueltas en el prototipo v1");
+    expect(cuerpo).toContain("<li>steps: Sin resolver &lt;permiso&gt;.</li>");
+    expect(cuerpo).toContain("<li>maxSteps: Sin resolver &lt;permiso&gt;.</li>");
+  });
+});
