@@ -33,7 +33,7 @@ function ensamblar(): Ensamblado {
       consultarEstado: () => consultarEstado(almacen),
       iniciarServidor: () => iniciarServidor(resultado.valor.puerto, {
         consultarEstado: () => consultarEstado(almacen),
-        resolverProyecto: (proyecto) => resolverProyecto(dependencias, proyecto),
+        resolverProyecto: (proyecto, agente, clave) => resolverProyecto(dependencias, proyecto, agente, clave),
         consultarResolucion: (id, agente, clave) => consultarResolucion(resoluciones, id, agente, clave),
       }),
     },

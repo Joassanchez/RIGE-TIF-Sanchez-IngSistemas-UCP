@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
@@ -71,6 +71,36 @@ function resumen(cuerpo: string): string {
   if (!encontrado) throw new Error("La pagina no presenta el resumen de las entradas.");
   return encontrado[1]!;
 }
+
+test.skipIf(!existsSync(resolve(import.meta.dir, "../../..", ".git")))(
+  "V-0 RF-01 CA-1; ruta relativa del README sin copiar el escenario (se omite sin .git)", async () => {
+    const temporal = mkdtempSync(join(tmpdir(), "rige-recorrido-readme-"));
+    let servidor: Awaited<ReturnType<typeof lanzarServidor>> | undefined;
+    const raiz = resolve(import.meta.dir, "../escenarios/v1-precedencia");
+    const archivos = ["opencode.json", "proyecto/opencode.json", "proyecto/opencode.jsonc"];
+    const resumenes = () => archivos.map((archivo) => createHash("sha256").update(readFileSync(join(raiz, archivo))).digest("hex"));
+    const antes = resumenes();
+    try {
+      const variables = { RIGE_ALMACEN: join(temporal, "almacen"), ProgramData: join(temporal, "administrada-vacia") };
+      mkdirSync(variables.ProgramData);
+      const esquema = lanzar(temporal, ["esquema"], variables);
+      expect(esquema.codigo).toBe(0);
+      expect(esquema.error).toBe("");
+      servidor = await lanzarServidor(temporal, variables);
+      const solicitar = (ruta: string) => solicitarLocal({ host: "127.0.0.1", puerto: servidor!.puerto, ruta });
+      const redireccion = await solicitar("/resolver?proyecto=pruebas/escenarios/v1-precedencia/proyecto&agente=build&clave=temperature");
+      expect(redireccion.estado).toBe(303);
+      expect(redireccion.cabeceras.location).toBe(paginaPrimera);
+      const pagina = await solicitar(paginaPrimera);
+      expect(pagina.estado).toBe(200);
+      comprobarTemperatura(pagina.cuerpo, raiz);
+      expect(resumenes()).toEqual(antes);
+    } finally {
+      try { await servidor?.detener(); }
+      finally { rmSync(temporal, { recursive: true, force: true }); }
+    }
+  },
+);
 
 describe("V-1 RF-01 CA-1; guia paso 8", () => {
   const preparar = prepararRecorrido();
@@ -251,5 +281,58 @@ describe("V-8", () => {
     const valida = await recorrido.resolver();
     expect(valida.estado).toBe(303);
     expect(valida.cabeceras.location).toBe(paginaPrimera);
+  });
+});
+
+describe("V-9", () => {
+  const preparar = prepararRecorrido();
+  test("clave o agente inexistentes dan 404 y la siguiente resolucion valida sigue siendo la 1", async () => {
+    const recorrido = preparar();
+    const clave = await recorrido.resolver("temperaturre");
+    expect(clave.estado).toBe(404);
+    expect(clave.cuerpo).toContain("La clave temperaturre no existe para el agente build.");
+    expect(clave.cabeceras.location).toBeUndefined();
+    const agente = await recorrido.solicitar(`/resolver?proyecto=${encodeURIComponent(recorrido.proyecto)}&agente=ausente`);
+    expect(agente.estado).toBe(404);
+    expect(agente.cuerpo).toContain("El agente ausente no tiene declaraciones.");
+    expect(agente.cabeceras.location).toBeUndefined();
+    expect((await recorrido.solicitar(paginaPrimera)).estado).toBe(404);
+    const valida = await recorrido.resolver();
+    expect(valida.estado).toBe(303);
+    expect(valida.cabeceras.location).toBe(paginaPrimera);
+    const pagina = await recorrido.solicitar(paginaPrimera);
+    expect(pagina.estado).toBe(200);
+    comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
+  });
+});
+
+describe("V-10 Q-1 Q-2", () => {
+  const preparar = prepararRecorrido();
+  test("no guarda la clave no resuelta y sin clave muestra solo las pendientes del agente consultado", async () => {
+    const recorrido = preparar();
+    const entrada = join(recorrido.proyecto, "opencode.jsonc");
+    const original = readFileSync(entrada, "utf8");
+    // La copia temporal conserva la linea y columna de temperature.
+    writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": 0.3, "permission": {"edit":"deny"}')
+      .replace('"build": {', '"otro": {"permission":{"bash":"deny"}}, "build": {'));
+    const rechazo = await recorrido.resolver("permission.edit");
+    expect(rechazo.estado).toBe(422);
+    expect(rechazo.cuerpo).toContain("permission.edit");
+    expect(rechazo.cabeceras.location).toBeUndefined();
+    const valida = await recorrido.resolver("");
+    expect(valida.estado).toBe(303);
+    expect(valida.cabeceras.location).toBe("/resoluciones/1?agente=build");
+    const pagina = await recorrido.solicitar("/resoluciones/1?agente=build");
+    expect(pagina.estado).toBe(200);
+    expect(pagina.cuerpo).toContain("<td>temperature</td><td>0.3</td>");
+    expect(pagina.cuerpo).toContain("Claves no resueltas en el prototipo v1");
+    expect(pagina.cuerpo).toContain("<li>permission:");
+    const pendientes = /<h2>Claves no resueltas en el prototipo v1<\/h2>\s*<ul>(.*?)<\/ul>/s.exec(pagina.cuerpo)?.[1];
+    expect(pendientes).toBeDefined();
+    expect(pendientes?.match(/<li>/g)).toHaveLength(1);
+    expect(pagina.cuerpo).not.toContain("otro.permission");
+    const recuperada = await recorrido.solicitar("/resoluciones/1?agente=build&clave=permission");
+    expect(recuperada.estado).toBe(422);
+    expect(recuperada.cuerpo).toContain("permission");
   });
 });

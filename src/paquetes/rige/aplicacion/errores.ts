@@ -2,7 +2,7 @@ export interface ErrorUso {
   readonly codigo: "almacen-sin-esquema" | "configuracion-invalida" | "puerto-ocupado"
     | "solicitud-invalida" | "proyecto-inexistente" | "via-no-soportada" | "contenido-no-soportado"
     | "entrada-ilegible" | "entorno-incompleto" | "agente-sin-declaraciones" | "clave-inexistente"
-    | "resolucion-inexistente";
+    | "resolucion-inexistente" | "clave-no-resuelta";
   readonly mensaje: string;
 }
 
@@ -41,6 +41,7 @@ export function errorDesdeAnalisis(error: { codigo: string; mensaje: string }): 
     case "entorno-incompleto":
     case "agente-sin-declaraciones":
     case "clave-inexistente":
+    case "clave-no-resuelta":
       return { codigo: error.codigo, mensaje: error.mensaje };
     default:
       throw new Error(`Codigo de analisis desconocido: ${error.codigo}`);

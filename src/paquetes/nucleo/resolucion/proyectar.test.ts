@@ -17,12 +17,14 @@ const resolucion: Resolucion = {
 describe("N-8", () => {
   test("con clave relativa partida por puntos devuelve solo el rastro exacto", async () => {
     const { consultarAgente } = await import("./proyectar");
-    expect(consultarAgente(resolucion, "a", "parametros.temperatura")).toEqual({ exito: true, valor: [temperatura] });
+    expect(consultarAgente(resolucion, "a", "parametros.temperatura")).toEqual({ exito: true,
+      valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }], noResueltas: [] } });
   });
 
   test("sin clave devuelve todas las hojas del agente ordenadas, sin otros prefijos", async () => {
     const { consultarAgente } = await import("./proyectar");
-    expect(consultarAgente(resolucion, "a", undefined)).toEqual({ exito: true, valor: [temperatura, pasos] });
+    expect(consultarAgente(resolucion, "a", undefined)).toEqual({ exito: true,
+      valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }, { clave: "pasos", rastro: pasos }], noResueltas: [] } });
   });
 
   test.each(["inexistente", "parametros", "parametros.temperatura.extra"])("la clave ausente %s produce clave-inexistente", async (clave) => {
@@ -46,5 +48,63 @@ describe("N-8", () => {
   test("clave une la ruta con puntos", async () => {
     const { clave } = await import("./proyectar");
     expect(clave(["perfiles", "a", "parametros", "temperatura"])).toBe("perfiles.a.parametros.temperatura");
+  });
+});
+
+describe("Q-1", () => {
+  test.each([
+    { noResuelta: ["perfiles", "grupo", "a", "permiso"], agente: "a", clave: "permiso.editar" },
+    { noResuelta: ["perfiles", "grupo", "a", "permiso"], agente: "a", clave: "permiso" },
+    { noResuelta: ["perfiles", "grupo", "a", "permiso", "editar"], agente: "a", clave: "permiso" },
+    { noResuelta: ["perfiles", "grupo", "x"], agente: "x", clave: "pasos" },
+    { noResuelta: ["perfiles", "grupo", "x"], agente: "x", clave: undefined },
+    { noResuelta: ["perfiles", "grupo"], agente: "a", clave: "pasos" },
+    { noResuelta: ["perfiles"], agente: "a", clave: undefined },
+  ])("rechaza consultas afectadas por $noResuelta con clave $clave", async ({ noResuelta, agente, clave }) => {
+    const { consultarAgente } = await import("./proyectar");
+    const resultado = consultarAgente({ ...resolucion, reglas: { excluida: "Esta forma queda sin resolver." },
+      noResueltas: [{ ruta: noResuelta, regla: "excluida" }] }, agente, clave);
+    expect(resultado).toMatchObject({ exito: false, error: { codigo: "clave-no-resuelta" } });
+    if (resultado.exito) throw new Error("Se esperaba una clave no resuelta.");
+    expect(resultado.error.mensaje).toContain(clave ?? agente);
+    expect(resultado.error.mensaje).toContain("Esta forma queda sin resolver.");
+  });
+
+  test("una clave ajena a la no resuelta conserva su valor y rastro", async () => {
+    const { consultarAgente } = await import("./proyectar");
+    const noResueltas = [{ ruta: ["perfiles", "grupo", "a", "permiso"], regla: "excluida" }];
+    expect(consultarAgente({ ...resolucion, noResueltas }, "a", "parametros.temperatura")).toEqual({
+      exito: true, valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }], noResueltas },
+    });
+  });
+});
+
+describe("Q-2", () => {
+  test("sin clave conserva todas las hojas y solo las no resueltas del agente, sin coincidencias parciales", async () => {
+    const { consultarAgente } = await import("./proyectar");
+    const propia = { ruta: ["perfiles", "grupo", "a", "permiso"], regla: "excluida" };
+    const otras = [{ ruta: ["perfiles", "grupo", "ab", "permiso"], regla: "excluida" },
+      { ruta: ["global", "permiso"], regla: "excluida" }];
+    expect(consultarAgente({ ...resolucion, noResueltas: [otras[0]!, propia, otras[1]!] }, "a", undefined)).toEqual({
+      exito: true, valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura },
+        { clave: "pasos", rastro: pasos }], noResueltas: [propia] },
+    });
+  });
+});
+
+describe("Q-3", () => {
+  test("el adaptador ficticio devuelve claves relativas sin asumir la longitud del prefijo", async () => {
+    const { consultarAgente } = await import("./proyectar");
+    const { resolver } = await import("./resolver");
+    const { adaptadorFicticio } = await import("../../../pruebas/utilidades/adaptador-ficticio");
+    const { crearEntornoMemoria } = await import("../../../pruebas/utilidades/entorno-memoria");
+    const resultado = resolver(adaptadorFicticio, "/proyecto", crearEntornoMemoria({ archivos: {
+      "/proyecto/capa-b.json": '{"temperatura":0.3}', "/proyecto/capa-a.json": '{}',
+    } }));
+    if (!resultado.exito) throw new Error(resultado.error.mensaje);
+    expect(resultado.valor.prefijoAgente).toEqual(["perfiles"]);
+    const consulta = consultarAgente(resultado.valor, "a", "temperatura");
+    if (!consulta.exito) throw new Error(consulta.error.mensaje);
+    expect(consulta.valor).toEqual({ valores: [{ clave: "temperatura", rastro: resultado.valor.valores[0]! }], noResueltas: [] });
   });
 });

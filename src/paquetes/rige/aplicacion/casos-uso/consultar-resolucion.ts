@@ -34,9 +34,11 @@ export function consultarResolucion(resoluciones: PuertoResoluciones, id: string
     },
     agente,
     clave: clave === "" ? null : clave,
-    valores: valores.valor,
+    valores: valores.valor.valores,
     reglas: resolucion.reglas,
-    noResueltas: resolucion.noResueltas,
+    noResueltas: valores.valor.noResueltas.map((pendiente) => ({ ...pendiente,
+      ruta: pendiente.ruta.slice(resolucion.prefijoAgente.length + 1),
+    })),
     anteriores: anteriores.valor,
   } };
 }

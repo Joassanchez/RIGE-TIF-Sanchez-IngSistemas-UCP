@@ -18,11 +18,11 @@ const iniciarEstado = (puerto: number, consultar: ConsultarEstado) => iniciarSer
 
 describe("W-11", () => {
   test("valida agente antes de resolver, propaga errores escapados y codifica la Location", async () => {
-    const solicitudes: string[] = [];
+    const solicitudes: string[][] = [];
     const casos = {
       consultarEstado: () => ({ exito: true as const, valor: respuesta }),
-      resolverProyecto: (proyecto: string) => {
-        solicitudes.push(proyecto);
+      resolverProyecto: (proyecto: string, agente: string, clave: string) => {
+        solicitudes.push([proyecto, agente, clave]);
         return proyecto === "malo" ? { exito: false as const,
           error: { codigo: "contenido-no-soportado" as const, mensaje: 'Contenido <script> "privado"' } }
           : { exito: true as const, valor: { id: 7 } };
@@ -45,7 +45,7 @@ describe("W-11", () => {
       expect(redireccion.status).toBe(303);
       expect(redireccion.headers.get("location")).toBe(`/resoluciones/7?agente=a%20%26%20b${clave ? "&clave=c%20%26%20d" : ""}`);
     }
-    expect(solicitudes).toEqual(["malo", "/proyecto", "/proyecto"]);
+    expect(solicitudes).toEqual([["malo", "build", ""], ["/proyecto", "a & b", ""], ["/proyecto", "a & b", "c & d"]]);
   });
 });
 

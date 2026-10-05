@@ -15,7 +15,8 @@ function dobles() {
   } }));
   if (!resultado.exito) throw new Error(resultado.error.mensaje);
   const resolucion: Resolucion = { ...resultado.valor, reglas: { ...resultado.valor.reglas, excluida: "No resuelta" },
-    noResueltas: [{ ruta: ["perfiles", "a", "permiso"], regla: "excluida" }] };
+    noResueltas: [{ ruta: ["perfiles", "a", "permiso"], regla: "excluida" },
+      { ruta: ["perfiles", "otro", "privada"], regla: "excluida" }, { ruta: ["global"], regla: "excluida" }] };
   const anteriores: readonly ResumenResolucion[] = [{ id: 7, instante, resumenEntradas: resolucion.resumenEntradas },
     { id: 6, instante: "2026-10-04T00:00:00.000Z", resumenEntradas: "a".repeat(64) }];
   const llamadas: (string | number)[] = [];
@@ -53,13 +54,13 @@ describe("C-2", () => {
       esquema: 1, versionRige,
       resolucion: { id: 7, instante, proyecto: "/proyecto", herramienta: "ficticia", versionHerramienta: "1",
         resumenEntradas: resolucion.resumenEntradas, entradas: resolucion.entradas },
-      agente: "a", clave: clave || null, valores: proyeccion.valor, reglas: resolucion.reglas,
-      noResueltas: resolucion.noResueltas, anteriores,
+      agente: "a", clave: clave || null, valores: proyeccion.valor.valores, reglas: resolucion.reglas,
+      noResueltas: [{ ruta: ["permiso"], regla: "excluida" }], anteriores,
     } });
     expect(llamadas).toEqual([7, "/proyecto"]);
   });
 
-  test.each([["ausente", ""], ["a", "ausente"]])("conserva el error del nucleo para agente %s y clave %s", async (agente, clave) => {
+  test.each([["ausente", ""], ["a", "ausente"], ["a", "permiso.editar"]])("conserva el error del nucleo para agente %s y clave %s", async (agente, clave) => {
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, resolucion, llamadas } = dobles();
     const esperado = consultarAgente(resolucion, agente, clave || undefined);

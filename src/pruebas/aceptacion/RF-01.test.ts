@@ -64,7 +64,7 @@ function resolverEscenario(proyecto: string, entorno: EntornoLecturaSistema): Re
 function consultar(resolucion: Resolucion, clave: string | undefined): readonly RastroValor[] {
   const resultado = consultarAgente(resolucion, "build", clave);
   if (!resultado.exito) throw new Error(resultado.error.mensaje);
-  return resultado.valor;
+  return resultado.valor.valores.map(({ rastro }) => rastro);
 }
 function comprobarTemperatura(rastro: RastroValor, raiz: string, valor: number): void {
   expect(rastro.ruta).toEqual(["agent", "build", "temperature"]);

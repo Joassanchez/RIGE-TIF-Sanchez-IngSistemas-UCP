@@ -15,13 +15,13 @@ function respuesta(): RespuestaConsulta {
         { orden: 1, via: "proyecto", referencia: "/proyecto/<entrada1>.jsonc", condicion: "observada", resumen: "b".repeat(64) }],
     },
     agente: "a & b", clave: null,
-    valores: [{ ruta: ["agent", "a & b", "description"], valor: "<script>alert(1)</script>",
+    valores: [{ clave: "description", rastro: { ruta: ["agent", "a & b", "description"], valor: "<script>alert(1)</script>",
       determinante: declaracion("<script>alert(1)</script>", 3), motivo: "entrada-posterior",
-      desplazadas: [declaracion(0.1, 1), declaracion(0.2, 2)] },
-      { ruta: ["agent", "a & b", "steps"], valor: 12, determinante: declaracion(12, 1),
-        motivo: "entrada-posterior", desplazadas: [] }],
+      desplazadas: [declaracion(0.1, 1), declaracion(0.2, 2)] } },
+      { clave: "steps", rastro: { ruta: ["agent", "a & b", "steps"], valor: 12, determinante: declaracion(12, 1),
+        motivo: "entrada-posterior", desplazadas: [] } }],
     reglas: { "orden-de-aplicacion": "Prevalece la ultima <declaracion> (RD-01).", "fuera-del-v1": "Sin resolver <permiso>." },
-    noResueltas: [{ ruta: ["agent", "a & b", "permission"], regla: "fuera-del-v1" }],
+    noResueltas: [{ ruta: ["permission"], regla: "fuera-del-v1" }],
     anteriores: [{ id: 7, instante: "2026-10-05T12:00:00.000Z", resumenEntradas: "a".repeat(64) },
       { id: 6, instante: "2026-10-04T12:00:00.000Z", resumenEntradas: "c".repeat(64) }],
   };
@@ -50,7 +50,7 @@ describe("W-13", () => {
       "&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;", "0.1 en /proyecto/&lt;entrada1&gt;.jsonc:6:7 (proyecto)",
       "0.2 en /proyecto/&lt;entrada2&gt;.jsonc:6:7 (proyecto)", "ninguna",
       "Prevalece la ultima &lt;declaracion&gt; (RD-01).", "Sin resolver &lt;permiso&gt;.",
-      "agent.a &amp; b.permission", "Orden", "Vía", "Referencia", "Condición", "Resumen SHA-256",
+      "permission: Sin resolver &lt;permiso&gt;.", "Orden", "Vía", "Referencia", "Condición", "Resumen SHA-256",
       "remota-wellknown", "no_observada", "observada", "b".repeat(64), "—", "(esta)", "2026-10-04T12:00:00.000Z"]) {
       expect(cuerpo).toContain(dato);
     }
@@ -67,5 +67,29 @@ describe("W-13", () => {
     expect(cuerpo).toContain('href="/resoluciones/6?agente=a%20%26%20b&amp;clave=c%20%26%20d"');
     expect(cuerpo).toContain("c &amp; d");
     expect(cuerpo).not.toContain("Claves no resueltas en el prototipo v1");
+  });
+});
+
+describe("W-14", () => {
+  test("presenta claves relativas y la regla opaca de cada determinante sin una regla fija", async () => {
+    const { paginaResolucion } = await import("./resolucion");
+    const original = respuesta();
+    const valores = original.valores.map(({ clave, rastro }, indice) => ({ clave,
+      rastro: { ...rastro, ruta: ["perfiles", "grupo", original.agente, clave],
+        determinante: { ...rastro.determinante, regla: indice === 0 ? "primera" : "ultima" } },
+    }));
+    const cuerpo = await paginaResolucion({ ...original, valores, reglas: {
+      primera: "Conservar la primera <declaracion>.", ultima: "Conservar la ultima & su orden.",
+      "fuera-del-v1": "No se resuelve <permiso>.",
+    } }).text();
+    const filas = [...cuerpo.matchAll(/<tr><td>(description|steps)<\/td>.*?<\/tr>/gs)].map((fila) => fila[0]);
+    expect(filas).toHaveLength(2);
+    expect(filas[0]).toContain("Conservar la primera &lt;declaracion&gt;.");
+    expect(filas[0]).not.toContain("Conservar la ultima");
+    expect(filas[1]).toContain("Conservar la ultima &amp; su orden.");
+    expect(filas[1]).not.toContain("Conservar la primera");
+    expect(cuerpo).toContain("permission: No se resuelve &lt;permiso&gt;.");
+    expect(cuerpo).not.toContain("grupo.a &amp; b");
+    expect(cuerpo).not.toContain("orden-de-aplicacion");
   });
 });

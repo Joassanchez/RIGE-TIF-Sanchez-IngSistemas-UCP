@@ -30,12 +30,12 @@ describe("RNF-03 CA-3", () => {
     expect(resultado.valor.prefijoAgente).toEqual(["perfiles"]);
     const consulta = consultarAgente(resultado.valor, "a", "temperatura");
     if (!consulta.exito) throw new Error(consulta.error.mensaje);
-    expect(consulta.valor).toEqual([{
+    expect(consulta.valor).toEqual({ valores: [{ clave: "temperatura", rastro: {
       ruta: ["perfiles", "a", "temperatura"], valor: 0.2,
       determinante: { orden: 0, via: "capa-b", referencia: "/proyecto/capa-b.json", posicion: { linea: 1, columna: 2 }, valor: 0.2, regla: "primera-declaracion" },
       motivo: "primera-declaracion",
       desplazadas: [{ orden: 1, via: "capa-a", referencia: "/proyecto/capa-a.json", posicion: { linea: 1, columna: 2 }, valor: 0.1, regla: "primera-declaracion" }],
-    }]);
+    } }], noResueltas: [] });
     const conReemplazo = resolver({ ...adaptadorFicticio, secuenciar(lecturas) {
       const secuencia = adaptadorFicticio.secuenciar(lecturas);
       if (!secuencia.exito) return secuencia;
@@ -43,6 +43,6 @@ describe("RNF-03 CA-3", () => {
     } }, "/proyecto", entorno);
     if (!conReemplazo.exito) throw new Error(conReemplazo.error.mensaje);
     expect(conReemplazo.valor.valores[0]?.valor).toBe(0.1);
-    expect(conReemplazo.valor.valores[0]?.valor).not.toBe(consulta.valor[0]?.valor);
+    expect(conReemplazo.valor.valores[0]?.valor).not.toBe(consulta.valor.valores[0]?.rastro.valor);
   });
 });

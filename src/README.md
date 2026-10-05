@@ -117,7 +117,7 @@ Con el servidor en marcha:
 
    Abrir la misma dirección de la resolución: la página muestra los mismos datos, leídos del almacén, y el texto «Página armada con la resolución leída del almacén de RIGE.» «Resoluciones de este proyecto» lista la resolución 1.
 5. **Variante:** volver a la página inicial, completar el mismo proyecto y agente, dejar **Clave** vacía y pulsar «Resolver y guardar»: la tabla «Valores efectivos» muestra `description`, `steps` y `temperature` en una nueva resolución.
-6. Los valores coinciden con los de OpenCode 1.18.25 registrados en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`; si el equipo tiene configuración global de OpenCode, RIGE la incorpora y la muestra con su procedencia, de modo que pueden aparecer entradas adicionales.
+6. Los valores coinciden con los de OpenCode 1.18.25 registrados en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`; si el equipo tiene configuración global de OpenCode, RIGE la incorpora y la muestra con su procedencia, de modo que pueden aparecer entradas adicionales. Si esa configuración tiene sustituciones, agentes en Markdown, `mode`, `disable` o claves derivadas, esas claves figuran como «no resueltas en el prototipo v1» y el resto del recorrido no cambia.
 
 Se detiene el servidor con Ctrl+C antes de continuar.
 
@@ -143,11 +143,13 @@ Produce el mismo JSON de estado que `bun run esquema`. Sin `--silent`, `bun run`
 | Código de salida | Situación | Canal de salida | Canal de error |
 |---|---|---|---|
 | 0 | Respuesta válida | JSON de respuesta | Vacío |
-| 1 | Error de uso | Vacío | JSON de error: `almacen-sin-esquema`, `configuracion-invalida` o `puerto-ocupado` |
+| 1 | Error de uso de la CLI | Vacío | JSON de error: `almacen-sin-esquema`, `configuracion-invalida` o `puerto-ocupado` |
 | 2 | Argumentos inválidos | Vacío | JSON de error: `argumentos-invalidos` |
 | 70 | Falla interna | Vacío | JSON de error: `interno`; `--depurar` agrega el stack, sin logs a disco |
 
 La forma del error es `{"esquema":1,"error":{"codigo":"…","mensaje":"…"}}`. La tabla describe los canales de la CLI; la línea propia de `bun run` se evita con `--silent`.
+
+La web presenta los errores de uso con estado HTTP 400 (`solicitud-invalida`), 404 (`proyecto-inexistente`, `resolucion-inexistente`, `agente-sin-declaraciones`, `clave-inexistente`) o 422 (`via-no-soportada`, `contenido-no-soportado`, `entrada-ilegible`, `clave-no-resuelta`).
 
 La etiqueta `v1` corresponde a la versión `0.1.0` de RIGE.
 
@@ -155,8 +157,8 @@ La etiqueta `v1` corresponde a la versión `0.1.0` de RIGE.
 
 El archivo `.github/workflows/ci.yml` ejecuta en cada push, en `ubuntu-26.04` y `windows-latest` con Bun 1.3.14, `bun install --frozen-lockfile`, `bun run verificar` y `bun test`. Las pruebas de aceptación ligadas a criterios del catálogo son:
 
-- `pruebas/aceptacion/RF-01.test.ts` (CA-1, CA-2).
-- `pruebas/aceptacion/recorrido-v1.test.ts` (RF-01 CA-1 y CA-2 por la web; RF-17 CA-1 a CA-3; RNF-01; RNF-09).
+- `pruebas/aceptacion/RF-01.test.ts` (CA-1, CA-2; incluye el escenario `v1-vias`).
+- `pruebas/aceptacion/recorrido-v1.test.ts` (RF-01 CA-1 y CA-2 por la web; RF-17 CA-1 a CA-3; RNF-01; RNF-09; V-0 reproduce la ruta relativa del README sin copiar el escenario y se omite si el repositorio no tiene `.git`).
 - `pruebas/aceptacion/RNF-03.test.ts` (CA-1 a CA-3).
 - `pruebas/aceptacion/RNF-09.test.ts` (CA-1 a CA-3).
 
@@ -168,6 +170,7 @@ El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSis
 |---|---|---|---|
 | 29/09/2026–30/09/2026 (T0-01 a T0-09) | OpenCode con gentle-ai 3.7; modelos `opencode-go/mimo-v2.6-pro` y `openai/gpt-6.1-sol` | Escritura del código y de las pruebas por delegación sobre el documento ODD | `src/` hasta el commit `a613de6`; `odd/tasks/inc0-esqueleto.md` |
 | Desde el 30/09/2026 (T0-10 en adelante) | Codex (`gpt-6.1-sol`, plan ChatGPT Plus) como escritor, orquestado por Claude Code (`claude-opus-5-5`) | Escritura del código y de las pruebas sobre fichas del ingeniero; revisión por los subagentes `revisor-codigo` (Sonnet 5.5) y `critico-codigo` (Opus 5.5) | `src/` desde el commit `5ca3431`; este README |
+| 05/10/2026 (prototipo v1, V1-01 a V1-09) | Codex (`gpt-6.1-sol`) como escritor, orquestado por Claude Code (`claude-opus-5-5`); revisión de conformidad por Codex (`gpt-6-luna`) y crítica por el subagente `critico-codigo` (Opus 5.5); OpenCode 1.18.25 (binario `opencode-windows-x64@1.18.25`) ejecutado una vez por el ingeniero para generar los resultados de referencia | Escritura, revisión y generación de referencias | `src/` desde el commit `1b684d5`; `pruebas/escenarios/*/REFERENCIA.json` |
 
 El diseño, los requisitos y las decisiones (ADR) son del autor; las herramientas escriben y revisan código bajo esas decisiones.
 

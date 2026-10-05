@@ -32,6 +32,7 @@ describe("W-9", () => {
     ["resolucion-inexistente", 404],
     ["agente-sin-declaraciones", 404],
     ["clave-inexistente", 404],
+    ["clave-no-resuelta", 422],
     ["via-no-soportada", 422],
     ["contenido-no-soportado", 422],
     ["entrada-ilegible", 422],
