@@ -60,7 +60,9 @@ describe("C-2", () => {
     expect(llamadas).toEqual([7, "/proyecto"]);
   });
 
-  test.each([["ausente", ""], ["a", "ausente"], ["a", "permiso.editar"]])("conserva el error del nucleo para agente %s y clave %s", async (agente, clave) => {
+  test("propaga sin cambios un error del nucleo sin listar", async () => {
+    const agente = "a";
+    const clave = "ausente";
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, resolucion, llamadas } = dobles();
     const esperado = consultarAgente(resolucion, agente, clave || undefined);

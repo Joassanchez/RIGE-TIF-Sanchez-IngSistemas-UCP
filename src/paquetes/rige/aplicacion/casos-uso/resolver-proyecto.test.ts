@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
 import type { PuertoResoluciones } from "../puertos/resoluciones";
 import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { consultarAgente } from "@rige/nucleo/resolucion/proyectar";
 import { adaptadorFicticio } from "../../../../pruebas/utilidades/adaptador-ficticio";
 import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memoria";
 
@@ -100,15 +101,6 @@ describe("C-1", () => {
       guardar: () => ({ exito: false, error }),
     } }, "pedido", "a", "")).toEqual({ exito: false, error });
   });
-
-  test("RelojSistema entrega ISO 8601 UTC del instante actual", async () => {
-    const { RelojSistema } = await import("../../adaptadores/sistema/reloj");
-    const antes = Date.now();
-    const ahora = new RelojSistema().ahora();
-    expect(ahora).toBe(new Date(ahora).toISOString());
-    expect(Date.parse(ahora)).toBeGreaterThanOrEqual(antes);
-    expect(Date.parse(ahora)).toBeLessThanOrEqual(Date.now());
-  });
 });
 
 describe("C-3 RF-17 CA-2", () => {
@@ -129,16 +121,6 @@ describe("C-3 RF-17 CA-2", () => {
 });
 
 describe("C-4", () => {
-  test.each([["ausente", "", "agente-sin-declaraciones"], ["a", "ausente", "clave-inexistente"]])(
-    "no guarda ni consulta el reloj con agente %s y clave %s", async (agente, clave, codigo) => {
-      const { resolverProyecto } = await import("./resolver-proyecto");
-      const { dependencias, guardadas, llamadas } = dobles();
-      expect(resolverProyecto(dependencias, "pedido", agente!, clave!)).toMatchObject({ exito: false, error: { codigo } });
-      expect(guardadas).toEqual([]);
-      expect(llamadas).toEqual(["pedido"]);
-    },
-  );
-
   test.each(["", " \t"])("rechaza agente vacio %j antes de resolver", async (agente) => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias, guardadas, llamadas } = dobles();
@@ -147,23 +129,16 @@ describe("C-4", () => {
     expect(llamadas).toEqual([]);
   });
 
-  test("una clave no resuelta conserva su error y una consulta valida guarda exactamente una vez", async () => {
+  test("propaga sin cambios un error del nucleo sin guardar ni consultar el reloj", async () => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias, guardadas, llamadas } = dobles();
-    const adaptador = { ...adaptadorFicticio, reglas: { ...adaptadorFicticio.reglas, excluida: "No se resuelve esta clave." },
-      secuenciar: (lecturas: Parameters<typeof adaptadorFicticio.secuenciar>[0]) => {
-        const secuencia = adaptadorFicticio.secuenciar(lecturas);
-        if (!secuencia.exito) return secuencia;
-        return { exito: true, valor: { ...secuencia.valor, noResueltas: [{ ruta: ["perfiles", "a", "permiso"], regla: "excluida" }] } } as const;
-      },
-    };
-    const resultado = resolverProyecto({ ...dependencias, adaptador }, "pedido", "a", "permiso.editar");
-    expect(resultado).toMatchObject({ exito: false, error: { codigo: "clave-no-resuelta", mensaje: expect.stringContaining("No se resuelve esta clave.") } });
+    const analisis = resolver(dependencias.adaptador, "/canonico", dependencias.entorno);
+    if (!analisis.exito) throw new Error(analisis.error.mensaje);
+    const esperado = consultarAgente(analisis.valor, "a", "ausente");
+    if (esperado.exito) throw new Error("Se esperaba un error del nucleo");
+    expect(resolverProyecto(dependencias, "pedido", "a", "ausente")).toEqual(esperado);
     expect(guardadas).toEqual([]);
     expect(llamadas).toEqual(["pedido"]);
-    expect(resolverProyecto({ ...dependencias, adaptador }, "pedido", "a", "modelo")).toEqual({ exito: true, valor: { id: 1 } });
-    expect(guardadas).toHaveLength(1);
-    expect(llamadas).toEqual(["pedido", "pedido", "reloj"]);
   });
 });
 

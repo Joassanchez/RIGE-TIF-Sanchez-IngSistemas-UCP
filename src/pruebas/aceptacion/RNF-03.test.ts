@@ -3,8 +3,8 @@ import { comprobarDependencias, comprobarIdentificaciones } from "../utilidades/
 import { crearEntornoMemoria } from "../utilidades/entorno-memoria";
 
 describe("RNF-03 CA-1", () => {
-  test("el analisis estatico registra cero dependencias del nucleo hacia el adaptador", async () => {
-    expect((await comprobarDependencias()).filter((hallazgo) => hallazgo.archivo.startsWith("paquetes/nucleo/"))).toEqual([]);
+  test("el analisis estatico cumple toda la matriz, incluido el nucleo hacia el adaptador", async () => {
+    expect(await comprobarDependencias()).toEqual([]);
   });
 });
 

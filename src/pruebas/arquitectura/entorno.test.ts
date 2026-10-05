@@ -47,18 +47,14 @@ describe("M-12 verificar falla ante terminacion por senal", () => {
       return { codigo: resultado.exitCode, etapas: resultado.stdout.toString().trim().split(/\r?\n/) };
     } finally { rmSync(temporal, { recursive: true, force: true }); }
   }
-  for (const etapa of ["tsc", "build"] as const) {
-    test(`${etapa}: null se traduce a falla y conserva un codigo no cero`, async () => {
-      const proyectos = 1 + (await Bun.file(join(raiz, "tsconfig.json")).json()).references.length;
-      const etapas = etapa === "tsc" ? ["tsc"] : [...Array<string>(proyectos).fill("tsc"), "build"];
-      for (const codigo of [null, 7]) {
-        expect(comprobar(etapa, codigo)).toEqual({ codigo: codigo ?? 1, etapas });
-      }
-    });
-  }
-  test("cero sigue siendo exito tras comprobar tipos y build", async () => {
+  test("propaga null y codigos no cero en cada etapa y admite cero", async () => {
     const proyectos = 1 + (await Bun.file(join(raiz, "tsconfig.json")).json()).references.length;
-    expect(comprobar("build", 0)).toEqual({ codigo: 0, etapas: [...Array<string>(proyectos).fill("tsc"), "build"] });
+    const casos = (["tsc", "build"] as const).flatMap(etapa => [null, 7].map(codigo => ({ etapa, codigo })));
+    casos.push({ etapa: "build", codigo: 0 });
+    expect(casos.map(caso => ({ caso, resultado: comprobar(caso.etapa, caso.codigo) }))).toEqual(casos.map(caso => ({
+      caso, resultado: { codigo: caso.codigo ?? 1,
+        etapas: caso.etapa === "tsc" ? ["tsc"] : [...Array<string>(proyectos).fill("tsc"), "build"] },
+    })));
   });
 });
 
@@ -107,11 +103,11 @@ describe("M-3 verificar legible y efectivo", () => {
 
 describe("M-4 tsconfigs sin aliases", () => {
   const raiz = resolve(import.meta.dir, "../..");
-  async function comprobar() {
+  async function comprobar(carpeta = raiz) {
     const hallazgos: string[] = [];
-    for (const archivo of new Bun.Glob("**/tsconfig*.json").scanSync({ cwd: raiz, onlyFiles: true })) {
+    for (const archivo of new Bun.Glob("**/tsconfig*.json").scanSync({ cwd: carpeta, onlyFiles: true })) {
       if (archivo.replaceAll("\\", "/").split("/").includes("node_modules")) continue;
-      const opciones = (await Bun.file(join(raiz, archivo)).json()).compilerOptions ?? {};
+      const opciones = (await Bun.file(join(carpeta, archivo)).json()).compilerOptions ?? {};
       for (const clave of ["paths", "baseUrl"]) {
         if (Object.hasOwn(opciones, clave)) hallazgos.push(`${archivo}: ${clave}`);
       }
@@ -121,17 +117,17 @@ describe("M-4 tsconfigs sin aliases", () => {
   test("el repositorio no define paths ni baseUrl", async () => {
     expect(await comprobar()).toEqual([]);
   });
-  test("detecta cada infraccion temporal y la revierte", async () => {
-    const archivo = join(raiz, "tsconfig.json");
-    const original = readFileSync(archivo);
+  test("detecta paths y baseUrl en configuraciones sinteticas", async () => {
+    const temporal = mkdtempSync(join(tmpdir(), "rige-aliases-"));
+    const casos = [{ paths: {} }, { baseUrl: "." }];
     try {
-      for (const [clave, valor] of [["paths", {}], ["baseUrl", "."]] as const) {
-        const config = JSON.parse(original.toString());
-        config.compilerOptions[clave] = valor;
-        writeFileSync(archivo, JSON.stringify(config));
-        expect(await comprobar()).toEqual([`tsconfig.json: ${clave}`]);
+      const resultados = [];
+      for (const caso of casos) {
+        writeFileSync(join(temporal, "tsconfig.json"), JSON.stringify({ compilerOptions: caso }));
+        resultados.push({ caso, resultado: await comprobar(temporal) });
       }
-    } finally { writeFileSync(archivo, original); }
+      expect(resultados).toEqual(casos.map(caso => ({ caso, resultado: [`tsconfig.json: ${Object.keys(caso)[0]}`] })));
+    } finally { rmSync(temporal, { recursive: true, force: true }); }
   });
 });
 

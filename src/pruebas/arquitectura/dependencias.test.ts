@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { Resultado } from "../../paquetes/nucleo/resultado";
 import type { PuertoConfiguracion } from "../../paquetes/rige/aplicacion/puertos/configuracion";
 import type { PuertoAlmacen } from "../../paquetes/rige/aplicacion/puertos/almacen";
-import { analizarFuente, analizarGlobales, analizarManifiesto, comprobarDependencias, comprobarGlobales } from "../utilidades/analisis-arquitectura";
+import { analizarFuente, analizarGlobales, analizarManifiesto, comprobarGlobales } from "../utilidades/analisis-arquitectura";
 
 describe("M-1 imports entre paquetes por workspace", () => {
   test("rechaza rutas relativas y admite subpaths declarados", () => {
@@ -10,9 +10,6 @@ describe("M-1 imports entre paquetes por workspace", () => {
     expect(analizarFuente("paquetes/opencode/sonda.ts", 'import "@rige/nucleo/resultado";', {
       dependencias: { "@rige/nucleo": "workspace:*" },
     })).toEqual([]);
-  });
-  test("el repositorio real cumple", async () => {
-    expect(await comprobarDependencias()).toEqual([]);
   });
 });
 
@@ -25,7 +22,7 @@ describe("M-2 dependencias del workspace declaradas", () => {
 });
 
 describe("M-6 globales limitados al borde autorizado", () => {
-  test.each([
+  const prohibidos = [
     ["rige/adaptadores/sistema/sonda.ts", 'Bun.write("archivo", "valor");'],
     ["rige/aplicacion/sonda.ts", "process.env;"],
     ["rige/interfaces/cli/sonda.ts", 'Bun.spawn(["comando"]);'],
@@ -33,26 +30,35 @@ describe("M-6 globales limitados al borde autorizado", () => {
     ["nucleo/sonda.ts", 'Bun["write"]("archivo", "valor");'],
     ["rige/interfaces/web/servidor.ts", 'Bun["serve"]({});'],
     ["rige/interfaces/web/servidor.ts", "Bun.spawn([]);"],
-  ])("rechaza %s: %s", (archivo, codigo) => {
-    expect(analizarGlobales(`paquetes/${archivo}`, codigo).length).toBeGreaterThan(0);
+  ] as const;
+  test("rechaza los globales no autorizados", () => {
+    expect(prohibidos.map(caso => {
+      const [archivo, codigo] = caso;
+      return { caso, resultado: analizarGlobales(`paquetes/${archivo}`, codigo).length > 0 };
+    })).toEqual(prohibidos.map(caso => ({ caso, resultado: true })));
   });
-  test.each([
+  const permitidos = [
     ["rige/interfaces/web/servidor.ts", "Bun.serve({});"],
     ["rige/arranque/rige.ts", "process.argv;"],
     ["nucleo/sonda.ts", '// Bun.write();\nconst texto = "process.env"; const regex = /Bun.write/;'],
     ["nucleo/sonda.test.ts", "Bun.write(); process.env;"],
-  ])("admite %s: %s", (archivo, codigo) => {
-    expect(analizarGlobales(`paquetes/${archivo}`, codigo)).toEqual([]);
-  });
-  test("el repositorio real cumple", async () => {
-    expect(await comprobarGlobales()).toEqual([]);
+  ] as const;
+  test("admite los globales autorizados y el texto inerte", () => {
+    expect(permitidos.map(caso => {
+      const [archivo, codigo] = caso;
+      return { caso, resultado: analizarGlobales(`paquetes/${archivo}`, codigo) };
+    })).toEqual(permitidos.map(caso => ({ caso, resultado: [] })));
   });
 });
 
 describe("M-7 referencias solo a declaraciones de la misma carpeta", () => {
-  test.each(["../otro.ts", "../guion.d.ts", "./otro.ts", "/guion.d.ts", "..\\guion.d.ts"])("rechaza %s", (ruta) => {
-    expect(analizarFuente("paquetes/rige/adaptadores/almacen-sqlite/esquema.ts",
-      `/// <reference path="${ruta}" />\nexport {};`).length).toBeGreaterThan(0);
+  const rutasProhibidas = ["../otro.ts", "../guion.d.ts", "./otro.ts", "/guion.d.ts", "..\\guion.d.ts"] as const;
+  test("rechaza las referencias no autorizadas", () => {
+    expect(rutasProhibidas.map(caso => {
+      const ruta = caso;
+      return { caso, resultado: analizarFuente("paquetes/rige/adaptadores/almacen-sqlite/esquema.ts",
+      `/// <reference path="${ruta}" />\nexport {};`).length > 0 };
+    })).toEqual(rutasProhibidas.map(caso => ({ caso, resultado: true })));
   });
   test("admite guion.d.ts de la misma carpeta", () => {
     expect(analizarFuente("paquetes/rige/adaptadores/almacen-sqlite/esquema.ts",
@@ -65,7 +71,7 @@ describe("M-7 referencias solo a declaraciones de la misma carpeta", () => {
 });
 
 describe("M-11 accesos indirectos a globales", () => {
-  test.each([
+  const prohibidos = [
     ["globalThis['process'];", "process"],
     ['globalThis["Bun"];', "Bun"],
     ['globalThis["process"].env;', "process"],
@@ -76,11 +82,19 @@ describe("M-11 accesos indirectos a globales", () => {
     ["const { write } = Bun;", "Bun"],
     ["const entorno = process;", "process"],
     ["const runtime = Bun;", "Bun"],
-  ])("rechaza %s", (codigo, global) => {
-    const archivo = "paquetes/rige/aplicacion/sonda.ts";
-    expect(analizarGlobales(archivo, codigo)).toEqual([{ archivo, motivo: `Global no permitido: ${global}` }]);
+  ] as const;
+  test("rechaza los accesos indirectos a globales", () => {
+    expect(prohibidos.map(caso => {
+      const [codigo, global] = caso;
+      const archivo = "paquetes/rige/aplicacion/sonda.ts";
+      return { caso, resultado: analizarGlobales(archivo, codigo) };
+    })).toEqual(prohibidos.map(caso => {
+      const [codigo, global] = caso;
+      const archivo = "paquetes/rige/aplicacion/sonda.ts";
+      return { caso, resultado: [{ archivo, motivo: `Global no permitido: ${global}` }] };
+    }));
   });
-  test.each([
+  const permitidos = [
     ["rige/aplicacion/sonda.ts", 'const texto = "globalThis[\'process\']; process?.env; const { write } = Bun";'],
     ["rige/aplicacion/sonda.ts", "// globalThis['Bun']; process?.env; const { env } = process;"],
     ["rige/aplicacion/sonda.ts", 'const texto = `globalThis["Bun"]; Bun?.write(); const { env } = process`;'],
@@ -90,11 +104,12 @@ describe("M-11 accesos indirectos a globales", () => {
     ["rige/interfaces/web/servidor.ts", "Bun.serve({});"],
     ["rige/arranque/rige.ts", 'const { env } = process; process?.argv; globalThis["process"];'],
     ["rige/aplicacion/sonda.test.ts", 'globalThis["Bun"]; const { env } = process;'],
-  ])("admite %s: %s", (archivo, codigo) => {
-    expect(analizarGlobales(`paquetes/${archivo}`, codigo)).toEqual([]);
-  });
-  test("el repositorio real cumple", async () => {
-    expect(await comprobarGlobales()).toEqual([]);
+  ] as const;
+  test("admite los accesos autorizados y el texto inerte", () => {
+    expect(permitidos.map(caso => {
+      const [archivo, codigo] = caso;
+      return { caso, resultado: analizarGlobales(`paquetes/${archivo}`, codigo) };
+    })).toEqual(permitidos.map(caso => ({ caso, resultado: [] })));
   });
 });
 
@@ -137,11 +152,10 @@ describe("T0-05 analisis de dependencias", () => {
     ["nucleo/sonda.ts", 'const cargar = () => import("@rige/opencode");'],
     ["nucleo/sonda.ts", 'const paquete = require("@rige/opencode");'],
   ] as const;
-  for (const [ruta, codigo] of prohibidos) {
-    test(`rechaza ${ruta}: ${codigo}`, async () => {
-      expect(analizarFuente(`paquetes/${ruta}`, codigo).length).toBeGreaterThan(0);
-    });
-  }
+  test("rechaza todas las dependencias prohibidas", () => {
+    expect(prohibidos.map(caso => ({ caso, resultado: analizarFuente(`paquetes/${caso[0]}`, caso[1]).length > 0 })))
+      .toEqual(prohibidos.map(caso => ({ caso, resultado: true })));
+  });
 
   const permitidos = [
     ["nucleo/sonda.ts", 'import type { Resultado } from "./resultado";'],
@@ -157,11 +171,10 @@ describe("T0-05 analisis de dependencias", () => {
     ["rige/interfaces/cli/sonda.ts", 'import "../../aplicacion/errores";'],
     ["rige/arranque/sonda.ts", 'import "../adaptadores/sistema/configuracion";'],
   ] as const;
-  for (const [ruta, codigo] of permitidos) {
-    test(`admite ${ruta}: ${codigo}`, async () => {
-      expect(analizarFuente(`paquetes/${ruta}`, codigo)).toEqual([]);
-    });
-  }
+  test("admite todas las dependencias permitidas", () => {
+    expect(permitidos.map(caso => ({ caso, resultado: analizarFuente(`paquetes/${caso[0]}`, caso[1]) })))
+      .toEqual(permitidos.map(caso => ({ caso, resultado: [] })));
+  });
 
   test("no confunde comentarios o cadenas con imports", async () => {
     expect(analizarFuente("paquetes/nucleo/sonda.ts", '// import "@rige/opencode";\nconst ejemplo = \'import "@rige/opencode";\';')).toEqual([]);
@@ -185,9 +198,6 @@ describe("T0-05 analisis de dependencias", () => {
     expect(analizarFuente("paquetes/nucleo/resultado.ts", 'import "./resultado.test";').length).toBeGreaterThan(0);
   });
 
-  test("el repositorio real cumple toda la matriz", async () => {
-    expect(await comprobarDependencias()).toEqual([]);
-  });
 
   test("descriptor y error minimo tienen contratos estables", async () => {
     const { versionSoportada } = await import("../../paquetes/opencode/descriptor");
@@ -233,16 +243,15 @@ describe("T0-05 analisis de dependencias", () => {
     expect(analizarFuente("paquetes/nucleo/sonda.ts", 'const valor = a / (b as import("@rige/opencode").Tipo) / c;').length).toBeGreaterThan(0);
   });
 
-  for (const regex of ['/"/', "/'/"]) {
-    for (const dependencia of ["import type {X} from '@rige/opencode';", "type X = import('@rige/opencode').X;",
-      'import type {X} from "@rige/opencode";', 'type X = import("@rige/opencode").X;']) {
-      test(`regresion: no pierde tipos despues de ${regex}: ${dependencia}`, () => {
-        const codigo = `const pattern = ${regex}; ${dependencia}`;
-        expect(new Bun.Transpiler({ loader: "ts" }).scanImports(codigo)).toEqual([]);
-        expect(analizarFuente("paquetes/nucleo/x.ts", codigo).length).toBeGreaterThan(0);
-      });
-    }
-  }
+  test("regresiones: conserva los tipos despues de regex con comillas", () => {
+    const casos = ['/"/', "/'/"].flatMap(regex => ["import type {X} from '@rige/opencode';", "type X = import('@rige/opencode').X;",
+      'import type {X} from "@rige/opencode";', 'type X = import("@rige/opencode").X;'].map(dependencia => ({ regex, dependencia })));
+    expect(casos.map(caso => {
+      const codigo = `const pattern = ${caso.regex}; ${caso.dependencia}`;
+      return { caso, importsBun: new Bun.Transpiler({ loader: "ts" }).scanImports(codigo),
+        rechazado: analizarFuente("paquetes/nucleo/x.ts", codigo).length > 0 };
+    })).toEqual(casos.map(caso => ({ caso, importsBun: [], rechazado: true })));
+  });
 
   test("regresion: regex de una funcion flecha no declara un import", () => {
     const codigo = 'const pattern = () => /import "external"/;';
@@ -262,20 +271,24 @@ describe("T0-05 analisis de dependencias", () => {
 describe("T0-09 excepcion SQL limitada al almacen", () => {
   const origen = "paquetes/rige/adaptadores/almacen-sqlite/esquema.ts";
 
-  test.each(["../../../../esquemas/almacen/001_inicial.sql",
-    "../../../../esquemas/almacen/../almacen/001_inicial.sql"])(
-    "admite import como texto de archivo real normalizado: %s", (destino) => {
-      expect(analizarFuente(origen, `import guion from "${destino}" with { type: "text" };`)).toEqual([]);
-    },
-  );
+  const permitidos = ["../../../../esquemas/almacen/001_inicial.sql",
+    "../../../../esquemas/almacen/../almacen/001_inicial.sql"] as const;
+  test("admite los imports SQL normalizados", () => {
+    expect(permitidos.map(caso => {
+      const destino = caso;
+      return { caso, resultado: analizarFuente(origen, `import guion from "${destino}" with { type: "text" };`) };
+    })).toEqual(permitidos.map(caso => ({ caso, resultado: [] })));
+  });
 
-  test.each(["./ajeno.sql", "./../sistema/ajeno.sql", "../../../../esquemas/salida/ajeno.sql",
+  const prohibidos = ["./ajeno.sql", "./../sistema/ajeno.sql", "../../../../esquemas/salida/ajeno.sql",
     "../../../../esquemas/almacen/../../ajeno.sql", "../../../../esquemas/almacen/inexistente.sql",
-    "../../../../esquemas/almacen/001_inicial.sql/", "sql-externo", "esquemas/almacen/001_inicial.sql"])(
-    "rechaza destino SQL no autorizado: %s", (destino) => {
-      expect(analizarFuente(origen, `import guion from "${destino}" with { type: "text" };`).length).toBeGreaterThan(0);
-    },
-  );
+    "../../../../esquemas/almacen/001_inicial.sql/", "sql-externo", "esquemas/almacen/001_inicial.sql"] as const;
+  test("rechaza los destinos SQL no autorizados", () => {
+    expect(prohibidos.map(caso => {
+      const destino = caso;
+      return { caso, resultado: analizarFuente(origen, `import guion from "${destino}" with { type: "text" };`).length > 0 };
+    })).toEqual(prohibidos.map(caso => ({ caso, resultado: true })));
+  });
 
   test("la declaracion solo exporta string para SQL y no se interpreta como import", async () => {
     const archivo = "paquetes/rige/adaptadores/almacen-sqlite/guion.d.ts";
@@ -290,15 +303,29 @@ describe("T0-09 excepcion SQL limitada al almacen", () => {
 });
 
 describe("M-9 SQL rechazado por origen no autorizado", () => {
-  test.each(["nucleo", "opencode", "rige/aplicacion", "rige/adaptadores/sistema",
-    "rige/interfaces/cli", "rige/arranque", "rige/adaptadores/almacen-sqlite-ajeno"])(
-    "rechaza SQL desde otro origen: %s", (capa) => {
+  const capasProhibidas = ["nucleo", "opencode", "rige/aplicacion", "rige/adaptadores/sistema",
+    "rige/interfaces/cli", "rige/arranque", "rige/adaptadores/almacen-sqlite-ajeno"] as const;
+  test("rechaza SQL desde todas las capas no autorizadas", () => {
+    expect(capasProhibidas.map(caso => {
+      const capa = caso;
       const archivo = `paquetes/${capa}/sonda.ts`;
       const profundidad = `paquetes/${capa}`.split("/").length;
       const relativo = "../".repeat(profundidad) + "esquemas/almacen/001_inicial.sql";
-      expect(analizarFuente(archivo, `import guion from "${relativo}" with { type: "text" };`)).toEqual([
+      return { caso, resultado: analizarFuente(archivo, `import guion from "${relativo}" with { type: "text" };`) };
+    })).toEqual(capasProhibidas.map(caso => {
+      const capa = caso;
+      const archivo = `paquetes/${capa}/sonda.ts`;
+      const profundidad = `paquetes/${capa}`.split("/").length;
+      const relativo = "../".repeat(profundidad) + "esquemas/almacen/001_inicial.sql";
+      return { caso, resultado: [
         { archivo, motivo: `Origen SQL no autorizado: ${relativo} -> esquemas/almacen/001_inicial.sql` },
-      ]);
-    },
-  );
+      ] };
+    }));
+  });
+});
+
+describe("Repositorio real", () => {
+  test("cumple las restricciones de globales", async () => {
+    expect(await comprobarGlobales()).toEqual([]);
+  });
 });
