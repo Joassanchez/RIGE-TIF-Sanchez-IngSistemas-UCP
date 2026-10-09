@@ -215,7 +215,7 @@ describe("T0-04 andamiaje", () => {
     expect(manifiesto).toMatchObject({ name: "rige", version: versionRige, private: true,
       packageManager: "bun@1.3.14", workspaces: ["paquetes/*"],
       devDependencies: { typescript: "7.0.2", "@types/bun": "1.3.14" } });
-    expect(Object.keys(manifiesto.scripts).sort()).toEqual(["esquema", "rige", "servir", "verificar"]);
+    expect(Object.keys(manifiesto.scripts).sort()).toEqual(["esquema", "referencias", "rige", "servir", "verificar"]);
     for (const nombre of ["nucleo", "opencode", "rige"]) {
       const paquete = await Bun.file(join(raiz, "paquetes", nombre, "package.json")).json();
       expect(paquete.name).toBe(`@rige/${nombre}`);

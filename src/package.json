@@ -9,7 +9,8 @@
     "esquema": "bun ./paquetes/rige/arranque/rige.ts esquema",
     "servir": "bun ./paquetes/rige/arranque/rige.ts servir",
     "rige": "bun ./paquetes/rige/arranque/rige.ts",
-    "verificar": "bun ./herramientas/verificar.ts"
+    "verificar": "bun ./herramientas/verificar.ts",
+    "referencias": "bun ./herramientas/referencias-nativas.ts"
   },
   "devDependencies": {
     "typescript": "7.0.2",
