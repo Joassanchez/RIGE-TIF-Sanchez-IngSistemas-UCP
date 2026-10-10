@@ -1,6 +1,6 @@
 # ADR-053 — Línea de base con agentes de programación como ejecutores del procedimiento delegado: tres modelos Anthropic, dieciséis casos, criterio de 8 de 12 y ejecución del 02/10 al 16/10 con cargo a la Ventana
 
-- Estado: aceptado (28/09/2026)
+- Estado: aceptado (28/09/2026); modificado por ADR-076 (modelos) y por ADR-078 (09/10/2026: datos del AE1, criterio, skill nativa y amenazas)
 - Fecha: 28/09/2026
 - Capítulos afectados: Cap. I (I.1.2, I.2.3 y OE-4, I.3.1 a I.3.4, I.6.5); Cap. II (II.2.1 a II.2.4, II.3, II.6.3); Cap. V (V.1, V.4); Cap. X (X.3); Anexo I del AE1 (A.I.1, A.I.5, A.I.7, A.I.8); Anexo III
 - Origen: consolidación del 28/09/2026 (pendiente LI-01). No es una decisión nueva: reúne lo vigente de ADR-038, ADR-039 y ADR-040, todos aceptados el 25/09/2026.
