@@ -10,9 +10,16 @@ type Referencia = {
   readonly agente: string;
   readonly valores: Record<string, unknown>;
 };
-const hashes: Readonly<Record<string, string>> = {
-  "linux-x64": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
-  "windows-x64": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+// Variantes oficiales de opencode-ai@1.18.25 por plataforma: en Windows el postinstall elige la baseline
+// si no detecta AVX2; en Linux las dos variantes son el mismo binario.
+const hashes: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  "linux-x64": {
+    "opencode-linux-x64": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
+  },
+  "windows-x64": {
+    "opencode-windows-x64": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+    "opencode-windows-x64-baseline": "954f2869f9cc2131b03cb6aa7ee50c70601c1a56811fb5bcf749b827c970d290",
+  },
 };
 
 function entornoBase(): Record<string, string> {
@@ -38,7 +45,9 @@ function ejecutar(): number {
   const binario = resolve(argumentos[1], "opencode-ai/bin/opencode.exe");
   const hash = createHash("sha256").update(readFileSync(binario)).digest("hex");
   const plataforma = `${process.platform === "win32" ? "windows" : process.platform}-${process.arch}`;
-  if (!Object.hasOwn(hashes, plataforma) || hashes[plataforma] !== hash) {
+  const variante = Object.hasOwn(hashes, plataforma)
+    ? Object.entries(hashes[plataforma]!).find(([, conocido]) => conocido === hash)?.[0] : undefined;
+  if (!variante) {
     throw new Error(`Binario no verificado (${plataforma}); SHA-256 obtenido: ${hash}.`);
   }
   const version = Bun.spawnSync([binario, "--version"], {
@@ -48,6 +57,7 @@ function ejecutar(): number {
   if (version.exitCode !== 0 || referencias.some(({ referencia }) => referencia.procedencia.version !== obtenida)) {
     throw new Error(`Version nativa inesperada: ${obtenida}; SHA-256 obtenido: ${hash}.`);
   }
+  console.log(`binario: ${variante} ${obtenida}`);
   let codigo = 0;
   for (const { nombre, referencia } of referencias) {
     const copia = copiarEscenario(nombre);

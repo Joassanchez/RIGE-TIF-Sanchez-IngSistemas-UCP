@@ -19,6 +19,7 @@ describe("RN-1 normalizacion de la salida nativa", () => {
 
 const raiz = resolve(import.meta.dir, "../..");
 const hashWindows = "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff";
+const hashWindowsBaseline = "954f2869f9cc2131b03cb6aa7ee50c70601c1a56811fb5bcf749b827c970d290";
 const hashLinux = "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb";
 type Llamada = { argumentos: string[]; cwd?: string; env: Record<string, string>; timeout: number; copia?: string };
 
@@ -93,18 +94,19 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
 }
 
 describe("RN-4 binario directo, version y SHA-256 verificados", () => {
-  test("rechaza argumentos, version, hash y plataforma antes de comparar; admite ambos hashes", () => {
+  test("rechaza argumentos, version, hash y plataforma antes de comparar; admite las variantes oficiales", () => {
     const sinRaiz = ejecutar({ argumentos: [] });
     expect(sinRaiz.codigo).toBe(1);
     expect(sinRaiz.error).toContain("--raiz");
     expect(sinRaiz.llamadas).toEqual([]);
-    for (const opciones of [{ version: "1.18.24" }, { hash: "hash-invalido" }, { plataforma: "darwin" }]) {
+    for (const opciones of [{ version: "1.18.24" }, { hash: "hash-invalido" }, { plataforma: "darwin" },
+      { plataforma: "linux", hash: hashWindowsBaseline }]) {
       const resultado = ejecutar(opciones);
       expect(resultado.codigo).toBe(1);
       expect(resultado.error).toContain(opciones.hash ?? hashWindows);
       expect(resultado.llamadas.every(llamada => llamada.argumentos[1] === "--version")).toBe(true);
     }
-    for (const opciones of [{}, { plataforma: "linux", hash: hashLinux }]) {
+    for (const opciones of [{}, { hash: hashWindowsBaseline }, { plataforma: "linux", hash: hashLinux }]) {
       const resultado = ejecutar(opciones);
       expect(resultado.codigo).toBe(0);
       expect(resultado.llamadas[0]?.argumentos).toEqual([join(resultado.temporal, "opencode-ai/bin/opencode.exe"), "--version"]);
@@ -157,18 +159,28 @@ describe("RN-6 informa coincidencias y diferencias sin modificar escenarios", ()
     const antes = capturar();
     const correcto = ejecutar();
     expect(correcto.codigo).toBe(0);
-    expect(correcto.salida.trim().split(/\r?\n/)).toEqual(["v1-precedencia: ok", "v1-vias: ok"]);
+    expect(correcto.salida.trim().split(/\r?\n/)).toEqual(["binario: opencode-windows-x64 1.18.25", "v1-precedencia: ok", "v1-vias: ok"]);
     const distinto = ejecutar({ diferente: true });
     expect(distinto.codigo).toBe(1);
     const lineas = distinto.salida.trim().split(/\r?\n/);
-    expect(lineas).toHaveLength(2);
-    expect(lineas[0]).toContain(JSON.stringify([{ clave: "temperature", esperado: 0.3, obtenido: 0.2 }]));
-    expect(lineas[1]).toBe("v1-vias: ok");
+    expect(lineas).toHaveLength(3);
+    expect(lineas[1]).toContain(JSON.stringify([{ clave: "temperature", esperado: 0.3, obtenido: 0.2 }]));
+    expect(lineas[2]).toBe("v1-vias: ok");
     const desconocido = ejecutar({ desconocido: true });
     expect(desconocido.codigo).toBe(1);
     expect(desconocido.error).toContain("Escenario sin aislamiento conocido: desconocido");
     expect(desconocido.llamadas).toEqual([]);
     expect(capturar()).toEqual(antes);
+  });
+});
+
+describe("RN-7 informa la variante oficial verificada", () => {
+  test("nombra la variante del binario antes de los escenarios", () => {
+    for (const [hash, variante] of [[hashWindows, "opencode-windows-x64"], [hashWindowsBaseline, "opencode-windows-x64-baseline"]] as const) {
+      const resultado = ejecutar({ hash });
+      expect(resultado.codigo).toBe(0);
+      expect(resultado.salida.trim().split(/\r?\n/)[0]).toBe(`binario: ${variante} 1.18.25`);
+    }
   });
 });
 
