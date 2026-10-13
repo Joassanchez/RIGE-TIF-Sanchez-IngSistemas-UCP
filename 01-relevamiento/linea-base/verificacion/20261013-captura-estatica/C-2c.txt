@@ -1,0 +1,146 @@
+==================================================================
+CASO C-2c · 2026-10-13T21:54:26+00:00
+Directorio de trabajo: ~/proyecto
+==================================================================
+
+--- Escenario: configuración global (~/.config/opencode) ---
+(vacía)
+--- Escenario: archivos de configuración del proyecto ---
+## ~/proyecto/.opencode/agent/revisor.md
+---
+description: Revisor de código del equipo
+model: anthropic/claude-sonnet-4-5
+---
+
+Revisá los cambios pendientes y señalá errores antes del commit.
+
+## ~/proyecto/opencode.json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "revisor": {
+      "description": "Revisa cambios antes del commit",
+      "model": "openai/gpt-5",
+      "temperature": 0.2
+    }
+  }
+}
+
+--- Escenario: variables de entorno del caso ---
+(ninguna)
+
+--- $ opencode debug config ---
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "revisor": {
+      "description": "Revisor de código del equipo",
+      "model": "anthropic/claude-sonnet-4-5",
+      "temperature": 0.2,
+      "options": {},
+      "permission": {},
+      "name": "revisor",
+      "prompt": "Revisá los cambios pendientes y señalá errores antes del commit."
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}
+
+--- $ opencode debug agent revisor ---
+{
+  "name": "revisor",
+  "mode": "all",
+  "permission": [
+    {
+      "permission": "*",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "doom_loop",
+      "action": "ask",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "*",
+      "action": "ask"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/tmp/opencode/*",
+      "action": "allow"
+    },
+    {
+      "permission": "question",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_enter",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_exit",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "read",
+      "pattern": "*",
+      "action": "allow"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.*",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.example",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    }
+  ],
+  "options": {},
+  "native": false,
+  "model": {
+    "providerID": "anthropic",
+    "modelID": "claude-sonnet-4-5"
+  },
+  "prompt": "Revisá los cambios pendientes y señalá errores antes del commit.",
+  "description": "Revisor de código del equipo",
+  "temperature": 0.2,
+  "tools": {
+    "invalid": true,
+    "question": false,
+    "bash": true,
+    "read": true,
+    "glob": true,
+    "grep": true,
+    "edit": true,
+    "write": true,
+    "task": true,
+    "webfetch": true,
+    "todowrite": true,
+    "skill": true
+  }
+}

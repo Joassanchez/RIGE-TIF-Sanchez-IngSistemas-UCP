@@ -1,0 +1,21 @@
+{
+  "provider": {
+    "simulado": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Simulado local",
+      "options": {
+        "baseURL": "http://127.0.0.1:35377/v1"
+      },
+      "models": {
+        "permisos": {
+          "name": "Permisos simulado",
+          "limit": {
+            "context": 32000,
+            "output": 2048
+          }
+        }
+      }
+    }
+  },
+  "model": "simulado/permisos"
+}

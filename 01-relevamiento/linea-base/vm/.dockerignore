@@ -1,0 +1,33 @@
+# Lista de inclusión: no se envían el repositorio ni los archivos del anfitrión.
+**
+!Dockerfile
+!instalar.sh
+!caso.sh
+!verificar.sh
+!permisos.sh
+!medir.sh
+!indicacion.txt
+!ejecutores/
+!ejecutores/**
+!simulado/
+!simulado/proveedor.py
+!simulado/evidencia.py
+!simulado/ensayo.py
+!simulado/ensayo.json
+!simulado/planes/
+!simulado/planes/*.json
+!como-dev
+!casos/
+!casos/**
+!docs/
+!docs/*.html
+!docs/GENERACION.txt
+!hoja-referencia.md
+# La hoja de respuestas y credenciales tampoco se admiten dentro de los casos.
+**/respuestas.md
+**/respuestas.json
+**/auth.json
+**/.env
+**/.env.*
+**/.git
+**/.git/**

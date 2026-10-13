@@ -1,61 +1,346 @@
-# Preparación de la VM de la línea base
+# Contenedor Ubuntu 26.04 de la línea base
 
-Esta carpeta contiene todo lo que va a la máquina virtual y nada más. No contiene respuestas: las respuestas están en `../respuestas.md`, que nunca entra a la VM.
+La imagen común del oráculo y de la medición sigue ADR-054 y §3 de `../DISENO-medicion-agentes.md`. Usa Linux x86_64 y OpenCode 1.18.25 nativo. La hoja de respuestas (`../respuestas.md` y su futura versión JSON) permanece en el anfitrión: nunca se envía al contexto de construcción, se copia a la imagen ni entra al contenedor.
 
-| Archivo | Qué es |
+| Archivo | Función |
 |---|---|
-| `instalar.sh` | Instala OpenCode 1.18.25, congela la versión y deja todo en su lugar |
-| `caso.sh` | Activa un caso para el participante |
-| `verificar.sh` | Captura la evidencia de los casos para el anexo |
-| `casos/` | Los dieciséis escenarios, el de práctica y el proyecto común |
-| `docs/` | Documentación oficial de la 1.18.25 en HTML, sin conexión (36 páginas, commit `cb7d8b2f5e44`) |
-| `hoja-referencia.md` | La hoja única que tiene el participante durante la sesión |
+| `Dockerfile`, `.dockerignore` y `.gitattributes` | Base fijada por resumen, contexto limitado a `vm/` y fines de línea LF para los scripts |
+| `instalar.sh` | Paso de construcción: verifica el binario por SHA-256, crea usuarios, permisos y configuración inicial |
+| `como-dev` | Ejecuta como `participante` con su entorno de inicio de sesión |
+| `contenedor.sh` | Construye, captura evidencia sin red y abre la consola del ingeniero |
+| `caso.sh` | Activa uno de los veinticuatro escenarios o el auxiliar `practica` |
+| `verificar.sh` | Captura introspección, controles de usuarios y errores; la comparación se hace fuera |
+| `permisos.sh` | Ejecuta las doce preguntas de permiso, controla contaminación y conserva evidencia cruda |
+| `simulado/proveedor.py`, `simulado/evidencia.py` y `simulado/planes/*.json` | API local determinista, centinelas, clasificador y llamadas fijas por caso; sólo Python estándar |
+| `casos/` | Veinticuatro escenarios, práctica y proyecto común; sólo root lee las plantillas |
+| `docs/` | Documentación oficial sin conexión: 36 páginas, commit `cb7d8b2f5e44` |
+| `hoja-referencia.md` | Copia del instrumento existente en `~evaluador/tarea/` |
 
-## Una vez: preparar la VM
+## Construcción en el anfitrión
 
-1. **Instalar Ubuntu** (x86_64). El usuario que crea el instalador es el tuyo, con permisos de administrador.
-2. **Crear el usuario del participante, sin sudo:**
-   ```bash
-   sudo adduser participante
-   ```
-   El participante nunca conoce tu contraseña. Es lo que impide que lea `/opt/linea-base`.
-3. **Copiar esta carpeta a la VM** e instalar, **con red**:
-   ```bash
-   sudo ./instalar.sh
-   ```
-4. **Borrar la carpeta copiada.** Contiene las plantillas de los casos. `verificar.sh` avisa si queda alguna copia.
-5. **Cortar la red** de la VM.
-6. **Verificar:**
-   ```bash
-   sudo /opt/linea-base/verificar.sh
-   ```
-   Revisar cada archivo generado en `/opt/linea-base/verificacion/<fecha>/` contra `../respuestas.md` (fuera de la VM). Copiar esa carpeta fuera de la VM: es la evidencia del anexo.
-7. **Dejar la VM en el estado inicial y sacar la instantánea:**
-   ```bash
-   sudo /opt/linea-base/caso.sh practica
-   ```
+Requisitos: Docker con motor de contenedores Linux y Bash (Git Bash o WSL). Ejecutar desde `01-relevamiento/linea-base/`. En Git Bash, el script controla la conversión de rutas del cliente Windows; en WSL, usa rutas Linux. Los scripts deben tener fines de línea LF y UTF-8 sin BOM.
 
-## Cada participante
+El ingeniero completa los dos argumentos pendientes declarados en `Dockerfile`:
 
-1. Restaurar la instantánea.
-2. Iniciar sesión como `participante`.
+- `UBUNTU_DIGEST`: resumen `sha256:…` de la base `ubuntu:26.04` para `linux/amd64`, obtenido y registrado al preparar la construcción.
+- `OPENCODE_SHA256`: SHA-256 del **binario extraído** `package/bin/opencode` del paquete `opencode-linux-x64-baseline` 1.18.25. No es el hash del archivo `.tgz`. El paquete se obtiene de `https://registry.npmjs.org/opencode-linux-x64-baseline/-/opencode-linux-x64-baseline-1.18.25.tgz`; el ingeniero contrasta y registra el hash antes de construir.
 
-## Entre casos (fuera del cronómetro)
+Se elige siempre la variante `x64-baseline`, para que la selección no dependa de que el anfitrión exponga AVX2. Es un binario nativo; no se instala Node. Python 3 se instala con `apt-get` para el proveedor simulado; no usa `pip` ni dependencias adicionales. No hay valores de hash supuestos ni una base sin fijar: la construcción se rechaza si faltan argumentos válidos.
 
-Desde una terminal, con un **espacio al principio** para que el comando no quede en el historial del participante:
+Sustituir los marcadores por los valores obtenidos:
 
 ```bash
- su - <tu-usuario> -c "sudo /opt/linea-base/caso.sh C-2a"
+export UBUNTU_DIGEST='sha256:88a381d5b5eeb2b35d3ad70925a362c37ce569daf43ede89ff818ec20e4d3794'   # valor por defecto; contrastado el 13/10/2026
+export OPENCODE_SHA256='d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb'   # valor por defecto; contrastado el 13/10/2026
+bash vm/contenedor.sh construir
 ```
 
-Después **cerrar todas las terminales** y abrir una nueva en el directorio que indica el script. Hay que abrirla de nuevo siempre: es lo que carga las variables de entorno del caso (C-3a) y el directorio de trabajo (C-2b empieza en `~/proyecto/sub`).
+Esto ejecuta `docker build --platform linux/amd64`, con contexto **exclusivamente `vm/`**, ambos argumentos y etiqueta `rige-linea-base:1.18.25`. `.dockerignore` usa una lista de inclusión y excluye además respuestas, `auth.json`, `.env` y repositorios `.git`. No se usa `COPY .` ni se manda la raíz del repositorio al constructor.
 
-## Qué deja cada caso
+Se conserva `instalar.sh` como único paso de preparación llamado por el `Dockerfile`: permite leer juntos la instalación y los permisos. Instala OpenCode sólo después de comprobar SHA-256, comprueba la versión y desactiva actualización automática y descarga de modelos tanto en `ENV` como en los shells de inicio de sesión. El primer uso con red durante la construcción prepara las cachés de ambos usuarios, sin autenticar ni consultar un proveedor. La verificación posterior sin red debe confirmar que esas cachés bastan; un error de descarga queda registrado como fallo, sin habilitar red para corregir la corrida.
 
-| Ubicación | Contenido |
+## Usuarios y archivos de la imagen
+
+| Usuario / ubicación | Acceso |
 |---|---|
-| `~/.config/opencode/` | Sólo la configuración global del caso, o vacío |
-| `~/proyecto/` | El proyecto común más los archivos del caso, con un repositorio git y un commit inicial |
-| `~/.bashrc` | Las variables de entorno del caso, si las tiene, en un bloque que se borra al cambiar de caso |
+| `root`, `/opt/linea-base/` | Plantillas y scripts, `root:root`, modo 700; activa y verifica casos |
+| `participante`, `/home/participante/` | Escenario, sin credenciales ni sudo; directorio personal 750 |
+| `evaluador`, `/home/evaluador/tarea/` | Ejecutor, `hoja-referencia.md` y `docs/index.html`, fuera del escenario |
+| `/usr/local/bin/como-dev` | `root:root` 755; `evaluador ALL=(participante) NOPASSWD: ALL` |
 
-La ruta del proyecto es siempre la misma: nada en lo que ve el participante identifica qué caso es.
+`evaluador` pertenece al grupo `participante`. Después de cada activación, `caso.sh` da lectura al grupo y recorrido a los directorios del escenario, incluso si las plantillas tienen modo 700. No da acceso a `/opt/linea-base`. `como-dev` carga el entorno de inicio de sesión del participante; `COMO_DEV_DIR=sub` permite trabajar en el directorio del caso C-2b. Lo exportará `medir.sh` cuando esté implementado.
+
+El usuario predeterminado de la imagen es `evaluador`, en `~/tarea`; ninguno de los dos usuarios tiene contraseña habilitada ni sudo a root. Se instala la configuración inicial del principal de §3.2. La configuración de Charles y el congelamiento de los ejecutores corresponden a tareas posteriores.
+
+No se usa systemd, rutas del anfitrión, socket de Docker ni `--privileged`. El envoltorio no monta ningún directorio, ni siquiera para evidencia. La imagen no contiene credenciales.
+
+## Captura y revisión sin red
+
+Crear una carpeta nueva y vacía **fuera del repositorio** (incluidos archivos ocultos). Para todos los casos:
+
+```bash
+EVIDENCIA="$(mktemp -d "${TMPDIR:-/tmp}/rige-verificacion.XXXXXX")"
+bash vm/contenedor.sh verificar todos "$EVIDENCIA"
+```
+
+Para uno solo, usar otra carpeta vacía:
+
+```bash
+EVIDENCIA="$(mktemp -d "${TMPDIR:-/tmp}/rige-C2b.XXXXXX")"
+bash vm/contenedor.sh verificar C-2b "$EVIDENCIA"
+```
+
+El envoltorio ejecuta `docker run --rm --network none` como root en un contenedor nuevo. `verificar.sh` activa cada caso con `caso.sh` y ejecuta OpenCode como `participante`, desde su directorio y con sus variables. La lista predeterminada contiene exactamente C-1a a C-4f; `practica` se puede pedir aparte. Los fallos de preparación o de introspección dan código de salida distinto de cero.
+
+La captura se guarda primero en `/opt/linea-base/verificacion/<fecha>-<sufijo>/`. El contenedor permanece vivo sólo hasta ejecutar `docker cp`; el script copia la evidencia a la carpeta solicitada y lo elimina incluso si un paso posterior falla. La carpeta contiene `codigo-salida.txt`, el subdirectorio fechado, las salidas por caso y:
+
+- `00-entorno.txt`: sistema, versión, hash real del binario y sondeo de conectividad.
+- `01-alcance.txt`: limitación de la captura y comando para la ejecución complementaria de permisos.
+- `02-usuarios.txt`: grupos, modos, sudoers, aislamiento y lectura desde evaluador.
+- `03-estado.txt`: número de fallos de preparación o introspección.
+
+La red aislada la garantiza `--network none`; el sondeo no reemplaza esa opción. Un código cero acredita que la captura terminó sin esos fallos: **no cierra la verificación del instrumento**. Revisar los veinticuatro archivos contra `../respuestas.md` exclusivamente en el anfitrión y registrar comandos, salidas y dictamen. No introducir respuestas en el contenedor para automatizar esa comparación.
+
+`debug config` y `debug agent` no demuestran que una herramienta se ofreció o ejecutó, ni la herencia de una invocación concreta de C-3f. Complementar estas capturas con la ejecución siguiente y revisar ambas contra respuestas. La fase 2 sigue abierta hasta obtener decisiones determinadas, controles limpios y esa revisión.
+
+## Ejecución de permisos con proveedor simulado (MED-4a)
+
+Desde `01-relevamiento/linea-base/`, en Git Bash o WSL, el ingeniero construye y ejecuta:
+
+```bash
+bash vm/contenedor.sh construir
+EVIDENCIA="$(mktemp -d "${TMPDIR:-/tmp}/rige-permisos.XXXXXX")"
+bash vm/contenedor.sh permisos todos "$EVIDENCIA"
+```
+
+Para un caso, usar una carpeta nueva y vacía y sustituir `todos`, por ejemplo:
+
+```bash
+EVIDENCIA="$(mktemp -d "${TMPDIR:-/tmp}/rige-C3f-permisos.XXXXXX")"
+bash vm/contenedor.sh permisos C-3f "$EVIDENCIA"
+```
+
+El envoltorio acepta exclusivamente los doce casos de la tabla siguiente. Usa las mismas garantías que `verificar`: contenedor nuevo, `--network none`, sin montajes, extracción mediante `docker cp`, carpeta vacía fuera del repositorio y eliminación al salir. La construcción conserva sus descargas de Ubuntu y OpenCode; todas las ejecuciones de evidencia permanecen sin salida a internet. No pasar credenciales al subcomando `permisos`.
+
+`permisos.sh` corre como root y activa cada caso con `caso.sh`. OpenCode corre como `participante`, con el agente indicado, en el directorio del caso. Un proveedor Python escucha exclusivamente en `127.0.0.1`, en un puerto efímero. Atiende `/v1/chat/completions` con SSE, `/v1/models` y una página local de prueba. No usa API key. La declaración sigue el ejemplo de proveedor local sin credenciales de `docs/providers.html`, apartado «Atomic Chat».
+
+La declaración auxiliar está en `/tmp/rige-proveedor-*/proveedor.json`, fuera del proyecto y de `~/.config/opencode`, y contiene **únicamente `provider` y `model`**. Se indica con `OPENCODE_CONFIG`. Antes de cada ejecución se guarda `opencode debug agent <agente>` con y sin esa variable y se comparan las listas `permission` completas, preservando su orden. En C-3f también se controla `general`. Una diferencia marca el caso **contaminado** y omite su ejecución; una salida fallida o ilegible lo omite como indeterminado. No se modifica ningún permiso para conseguir que el caso corra.
+
+Las llamadas se leen de `simulado/planes/<caso>.json`. Los efectos se preparan sólo en el proyecto activo: `.env` inocuo, un archivo `MED4A_STATUS`, una modificación de README para `git diff` y un ejecutable `.med4a-bin/npm`. No se cambian las plantillas de `casos/`. Las ediciones van precedidas de `read` del archivo para cumplir la comprobación de lectura previa de la herramienta; esa lectura preparatoria no se clasifica como la acción de la pregunta.
+
+| Caso | Agente | Llamada objetivo fija |
+|---|---|---|
+| C-1b | `build` | `webfetch` a `http://127.0.0.1:<puerto>/evidencia/MED4A_HTTP`, formato `text` |
+| C-1d | `build` | `edit` de `src/productos.js`, agregando un comentario centinela |
+| C-1f | `build` | `read` de `src/productos.js` |
+| C-3b | `build` | `read` de `.env`, con `MED4A_ENV_LOCAL=sin_credenciales` |
+| C-3d | `plan` | `edit` de `README.md`, agregando un comentario centinela |
+| C-3f | `build` → `general` | `task` con `subagent_type: general`; la sesión hija solicita `bash` con `command: git status` |
+| C-4a | `build` | `bash` con `command: git status` |
+| C-4b | `build` | `bash` con `command: git diff` |
+| C-4c | `plan` | `edit` de `src/index.js`, agregando un comentario centinela |
+| C-4d | `build` | `bash` con `command: npm install` |
+| C-4e | `build` | `webfetch` a la página local y `edit` de `src/productos.js`, en dos sesiones independientes |
+| C-4f | `build` | `edit` de `src/productos.js`; conserva la variable inválida y captura `--print-logs` |
+
+Los comandos de Git son exactos, sin redirecciones ni comandos compuestos que alteren la evaluación del permiso. Su efecto observable es la salida que contiene `MED4A_STATUS` o `MED4A_DIFF`. `npm install` encuentra primero el ejecutable inocuo del proyecto mediante `PATH`; éste sólo crea `MED4A_NPM_INSTALL` y devuelve ese texto. Se verifica la decisión sobre el comando, sin instalar paquetes ni necesitar npm real. Las ediciones usan el contenido anterior íntegro como `oldString` y el mismo contenido con un comentario como `newString`; ambos quedan en `plan.json`.
+
+La carpeta exportada contiene `codigo-salida.txt`, un subdirectorio fechado y:
+
+- `00-entorno.txt`: versión, hash, sistema y tabla de rutas del contenedor.
+- `01-alcance.txt`: alcance y limitaciones de la corrida.
+- `02-resultados.tsv`: decisión observada por acción, sin respuestas esperadas.
+- `03-estado.txt`: cantidad de fallos, controles omitidos o indeterminados.
+- `<caso>/`: activación, configuración original, variables del caso, centinelas y plan resuelto.
+- `<caso>/<acción>/`: declaración auxiliar, comandos exactos, ambas introspecciones crudas y sus códigos, controles de contaminación, stdout JSONL, stderr de `--print-logs`, logs de OpenCode, código de `run`, registro JSONL del proveedor y `clasificacion.json` con decisión, regla y señales aplicadas.
+- En C-4f, `aviso-descarte.txt` extrae `OPENCODE_PERMISSION contains invalid JSON, skipping`; su ausencia cuenta como fallo.
+- Si la corrida se detiene por incompatibilidad o fallo de ejecución, `04-detencion.txt` explica el punto de detención. La evidencia parcial también se copia afuera.
+
+Cada solicitud del proveedor registra `toolsOffered`, cuerpo recibido y resultados de herramientas; cada respuesta registra la llamada emitida o el final. Si un rechazo termina la sesión sin otra consulta al modelo, el resultado se conserva en el evento terminal del stdout JSONL de la CLI: no se inventa su recepción por el proveedor. En C-3f distingue `principal` de `hijo` por el marcador del último mensaje de usuario: la aparición de ese marcador en los argumentos de `task` no convierte al padre en hijo. Para clasificar la acción hija se exige además la llamada `task` a `general`, su retorno y el intercambio final del padre.
+
+La clasificación usa el resultado correspondiente al identificador de la llamada objetivo, evitando confundirlo con el `read` preparatorio o el `task` del padre:
+
+- **`allow`**: intercambio terminado (respuesta final del proveedor o evento terminal de la CLI), `run` con código cero, resultado objetivo sin error y efecto acreditado. Para edición se comprueba el contenido nuevo exacto; para lectura y Git, el texto centinela en el resultado; para webfetch, la petición GET registrada y el texto devuelto; para npm, archivo centinela y texto devuelto.
+- **`ask`**: sin efecto contradictorio, el resultado contiene `The user rejected permission to use this specific tool call`. Es el autorrechazo no interactivo; no se usa `--auto`.
+- **`deny`**: sin efecto contradictorio, el resultado contiene `The user has specified a rule which prevents you`, o la herramienta no figuraba en la oferta de la solicitud que recibió la llamada fija y hay un resultado de retorno. La oferta usada para C-3f es la de la sesión hija.
+- **`indeterminado`**: falta una señal, un efecto suficiente, el retorno, el final o la cadena del subagente; hay señales contradictorias; o la ejecución falla o agota el límite de 120 segundos. Un fallo de transporte nunca se convierte en `deny`.
+
+`ask` y `deny` impiden ejecutar en modo no interactivo; aquí se distinguen por el texto y la oferta, sin atribuir un rechazo automático a una intervención humana. Si una protección adicional de webfetch impide consultar el bucle local pese al permiso, la falta del efecto deja la acción indeterminada. La prueba no acredita acceso a internet ni instalación real de paquetes. La oferta y la ejecución no identifican por sí mismas el archivo de procedencia: la revisión externa las combina con la evidencia de configuración.
+
+Si OpenCode 1.18.25 no acepta este proveedor sin red o sin credenciales, el script detiene la tanda, conserva lo observado y devuelve un código distinto de cero. No agrega credenciales, no cambia la configuración del escenario y no habilita red. Un control contaminado omite ese caso y permite capturar los restantes. Un código cero sólo acredita evidencia determinada y controles limpios: comparar afuera con `../respuestas.md` antes de cerrar la fase 2.
+
+Pruebas locales del proveedor, SSE, clasificación y control de reglas, sin Docker ni conexiones externas (usan sólo HTTP en el bucle local):
+
+```bash
+python -B vm/simulado/test_simulado.py
+bash -n vm/permisos.sh
+bash -n vm/contenedor.sh
+bash -n vm/verificar.sh
+```
+
+Estas pruebas no reemplazan la ejecución con el binario Linux fijado de OpenCode. La integración dentro de Ubuntu queda para el ingeniero mediante los comandos `construir` y `permisos` anteriores.
+
+## Consola del ingeniero
+
+```bash
+bash vm/contenedor.sh shell
+```
+
+Abre una consola root interactiva en un contenedor descartable con `--network none`. Root es sólo el ingeniero: el ejecutor y el escenario se usan con sus respectivos usuarios. Ejemplo, dentro de esa consola:
+
+```bash
+/opt/linea-base/caso.sh C-2b
+runuser -l evaluador
+# Ya como evaluador:
+cd ~/tarea
+COMO_DEV_DIR=sub como-dev 'pwd; opencode debug config'
+# Salir de evaluador y después del contenedor:
+exit
+exit
+```
+
+La consola se elimina al salir y no exporta evidencia automáticamente. Para capturas conservadas, usar `verificar` o `permisos`. Cada sesión parte de un contenedor nuevo de la misma imagen; no se reutiliza uno contaminado por casos anteriores.
+
+## Medición con API
+
+ADR-054 permite salida a la API para la medición; el oráculo, estas capturas y las tandas de ensayo permanecen con `--network none`. MED-4b agrega `medir.sh` y el subcomando `medir`. Las credenciales se suministran sólo al ejecutar, por variable de entorno, nunca por `ARG`, `ENV` permanente, `COPY`, archivo del contexto o montaje del repositorio. `participante` permanece sin credenciales y el ejecutor arranca como `evaluador` en `~/tarea`.
+
+El diseño vigente §3.4 prevé autenticación por suscripción, mientras ADR-054 describe credencial por variable de entorno: esa compatibilidad se verifica en la fase 0 y no se resuelve autenticando durante la construcción. Tampoco se deben pasar credenciales al comando `verificar`, que no las necesita.
+
+La hoja de referencia original conserva las indicaciones para personas. MED-4b prepara en cada tanda la copia del ejecutor quitando «Cómo responder» y «No disponible durante la sesión»; en FIN agrega la fila congelada de RIGE. La documentación del ejecutor está en `~/tarea/docs/index.html`, como indica el mensaje de la tarea. La hoja original no se modifica.
+
+## Arnés MED-4b · ensayo y corrección externa
+
+No se ejecutó Docker durante la construcción de MED-4b: la ficha lo prohíbe.
+La integración con el binario Linux se verifica con estos pasos, desde
+`01-relevamiento/linea-base/`, en Git Bash o WSL:
+
+```bash
+# Reconstruir la imagen con los archivos nuevos; nunca enviar la raíz del repo.
+bash vm/contenedor.sh construir
+# Elegir una carpeta NUEVA y vacía fuera del repositorio.
+DESTINO="${TMPDIR:-/tmp}/rige-med4b-ensayo-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$DESTINO"
+bash vm/contenedor.sh medir --ensayo --destino "$DESTINO" \
+  --tanda ensayo --condicion LB --brazo LB --ejecutor principal \
+  --modelo openai/gpt-6.1-sol --k 3 --limite 60 --semilla 20261013
+# Las dos herramientas siguientes corren en el anfitrión, SIN red ni modelo.
+python herramientas/corregir.py "$DESTINO/ensayo/registro.jsonl" \
+  --respuestas vm/simulado/ensayo.json \
+  --salida "$DESTINO/ensayo/corregido.jsonl"
+python herramientas/analizar.py "$DESTINO/ensayo/corregido.jsonl" \
+  --destino "$DESTINO/analisis"
+```
+
+Se espera una tanda de 72 ejecuciones (24 × 3), C-1 sin errores, respuestas
+correctas/parciales/incorrectas, rama E descriptiva y cero adjudicaciones
+pendientes. El informe dice **ENSAYO**; `cumplimiento_proyecto` es `null`.
+`vm/simulado/ensayo.json` contiene valores **inventados**, sus salidas y su clave
+de prueba; no deriva de `respuestas.md` ni de `respuestas.json`. Ese archivo
+permanece sólo accesible a root en el contenedor. El proveedor escucha en
+127.0.0.1; declara consumos también inventados. No es una ejecución experimental.
+
+`medir.sh` aleatoriza pares caso/repetición con semilla registrada, activa el
+escenario antes de cada intento, corre sólo OpenCode como evaluador, aplica
+`timeout` y reintenta hasta dos veces ante 429/5xx reconocibles. Guarda cada
+intento y sus hashes. La duración medida comprende los procesos `opencode run`,
+sin activación, introspección ni esperas; `duracion_total_s` conserva el tiempo
+del circuito. El consumo incluye los intentos fallidos. Las pérdidas de consumo
+no se convierten en ceros: invalidan la completitud y obligan a recuperar o
+repetir el caso antes de la medición definitiva.
+
+La evidencia sale mediante `docker cp`, también cuando la tanda falla. No hay
+montajes ni socket Docker. Las tarifas se copian por `docker cp` a un archivo
+root temporal; la hoja real de respuestas y las herramientas de corrección
+jamás entran en la imagen ni en el contenedor. `.dockerignore` es una lista de
+inclusión y rechaza explícitamente `respuestas.md` y `respuestas.json`.
+
+### Hoja real, adjudicación y análisis pareado
+
+```bash
+python herramientas/generar-respuestas-json.py
+python herramientas/corregir.py /ruta/LB/registro.jsonl \
+  --salida /ruta/LB/corregido.jsonl
+# Copiar revision_manual.csv a adjudicaciones.csv; completar resultado y motivo.
+# Conservar id y hash_respuesta. No editar la hoja ni el registro crudo.
+python herramientas/corregir.py /ruta/LB/registro.jsonl \
+  --adjudicaciones /ruta/LB/adjudicaciones.csv \
+  --salida /ruta/LB/adjudicado.jsonl
+python herramientas/analizar.py /ruta/LB/adjudicado.jsonl \
+  /ruta/FIN-indicado/adjudicado.jsonl /ruta/FIN-disponible/adjudicado.jsonl \
+  --piloto /ruta/piloto/adjudicado.jsonl --destino /ruta/analisis
+```
+
+La adjudicación es un CSV separado (`id,hash_respuesta,resultado,motivo`); el
+corrector verifica que corresponda a la misma evidencia y a una revisión
+pendiente. Volver a corregir desde el registro original. Las revisiones sin
+adjudicar quedan fuera de las tres comparaciones pareadas; no cuentan como
+errores automáticamente. Más de dos casos excluidos invalidan la combinación.
+El JSON conserva todas las ejecuciones, las exclusiones y las censuradas; el
+Markdown informa tasas y distribuciones por caso, ramas, IB-1, IB-3, esfuerzo,
+duración, cruces descriptivos y equivalente USD. No se generan gráficos ni IC.
+La valoración aplica la tarifa corta/larga **por solicitud**, con el umbral
+estricto `entrada + caché > 272000`, y usa exclusivamente el archivo congelado.
+
+### Configuraciones, autenticación y fase 0
+
+`vm/ejecutores/` identifica y verifica por SHA-256 ambas configuraciones. Charles
+conserva el cuerpo de la instrucción recibido y temperatura 0,2; cambia `edit`
+y los `ask` a `deny`, deniega las skills y permite `como-dev` y `rige`. La
+excepción `/home/participante/**` permite leer el escenario separado; el resto
+de sus excepciones se conserva. También se deniegan `doom_loop` y el acceso
+externo por defecto para retirar los `ask` nativos. No se aplica el `bash:
+allow` del principal a Charles. Se guardan `debug config`, `debug agent` y
+`debug skill` como evidencia; hay que revisar su configuración efectiva y
+comprobar lectura e invocación de RIGE antes del piloto, en ambos brazos.
+
+Para una tanda real, `OPENCODE_AUTH_JSON` contiene el **objeto completo** del
+`auth.json` de OpenCode, incluida la entrada OAuth `openai` de la suscripción.
+El envoltorio pasa sólo el nombre de la variable a Docker. El arnés la consume
+sin imprimirla ni agregarla a argumentos, crea `auth.json` con modo 600 para
+evaluador sólo en el contenedor descartable y la retira del entorno de los
+subprocesos. Hay que verificar la autenticación y los modelos disponibles en
+fase 0; no se autentica durante la construcción ni se suministra la credencial
+al ensayo. Usar los ocho parámetros explícitos en una tanda real: `--tanda`,
+`--condicion`, `--modelo`, `--k`, `--limite`, `--semilla`, `--ejecutor`, `--brazo`.
+Charles sólo admite `openai/gpt-6-luna`. Un recorte de k requiere
+`--recorte-declarado`; no se admite en principal/gpt-6.1-sol.
+
+**Flags:** `vm/docs/cli.html`, sección `run`, documenta `--model`, `--agent` y
+`--format json`. No se comprobó `opencode run --help` dentro del contenedor en
+esta tarea. Cada tanda lo ejecuta como evaluador, guarda `run-help.txt` y se
+detiene **antes de medir** si falta alguna opción. `DETENCION.txt` propone el
+servidor/API con selección explícita como alternativa pendiente de decisión.
+
+**Tokens:** las trazas locales de MED-4a (por ejemplo
+`verificacion/20261013-permisos/C-4a/bash/run.stdout.jsonl`) acreditan
+`step_finish.part.tokens.input/output/cache.read/cache.write/reasoning`; allí
+los consumos son cero. Se suma `input + cache.read + output`, sin duplicar
+`part.id`. Suposición pendiente de contrastar con el proveedor real: `input`
+ya excluye caché y `output` ya incluye el razonamiento facturable; no se vuelve
+a sumar `reasoning`. **[VERIFICAR: semántica de tokens del proveedor real]**.
+Cuando hay `task` o censura, se exporta la sesión y sus hijas, obtenidas de
+`state.metadata.sessionId`. Se exige el esquema `info.id/messages[].parts[]`,
+con partes `step-finish`; un esquema distinto o export fallido marca el
+consumo incompleto. **[VERIFICAR: esquema de export y recuperación de hijos y
+censura en 1.18.25]**. No se suman los mismos pasos de export y stdout.
+
+`archivos_leidos` cuenta las rutas explícitas de `read`; las lecturas por bash
+requieren revisión de sus argumentos. `fuente_observada` y la detección de web
+se basan en la traza de herramientas; no prueban ausencia de tráfico oculto.
+Las negativas se conservan con evidencia y atribución pendiente del autor.
+La cobertura disponible aún debe adjudicarse con evidencia antes del piloto.
+
+### Pendientes conservados
+
+- `vm/indicacion.txt`: fijado por el autor el 13/10/2026.
+  `indicado` se bloquea mientras exista el marcador; no se salta en ensayo.
+- FIN exige `rige` instalado y `--rige-descripcion` con la fila congelada de su
+  ayuda: **[DECISIÓN PENDIENTE: comando/distribución de RIGE y texto de su fila]**.
+  Debe estar disponible y permitido en ambos brazos antes del piloto; si ello
+  exige ampliar permisos deliberadamente denegados, ese ejecutor queda sólo LB.
+- La hoja real sigue abierta por C-3f/RF-02 CA-3; el generador respeta su
+  respuesta corregida `allow`. C-2c conserva dos alternativas en la sección del
+  caso: `revision_manual=true` con motivo, aunque la tabla de captura confirma
+  0,2. Se necesita adjudicar contra la evidencia, sin reescribir la hoja aquí.
+- **Empate de C-3 con la tasa mayor en IV.3**: se lee como «Reordena» (decisión del autor, 13/10/2026):
+  el informe señala el empate sin elegir entre Confirma y Reordena; las ramas
+  de ADR-079 siguen su condición independiente.
+- **[DECISIÓN PENDIENTE: reducción de tokens con denominador cero]**: se deja
+  `null`, sin otorgar cumplimiento que dependa de esa mediana.
+- **`cache.write`**: se registra aparte y se valoriza al precio de entrada (decisión del autor, 13/10/2026): si aparece,
+  el registro es incompleto; no se inventa una tarifa ni se omite el consumo.
+
+Pruebas externas, sin Docker ni acceso al proveedor:
+
+```bash
+python -m unittest discover -s herramientas -p 'test_*.py' -v
+python -m unittest discover -s vm/simulado -p 'test_*.py' -v
+bash -n vm/medir.sh
+bash -n vm/contenedor.sh
+```
+
+Las pruebas de CLI fabrican un registro de ensayo en una carpeta temporal,
+corrigen y analizan con los programas reales; también prueban la segunda
+pasada de adjudicación CSV. Esto verifica el circuito externo, pero no
+reemplaza la tanda Docker que corre el ingeniero con los pasos anteriores.

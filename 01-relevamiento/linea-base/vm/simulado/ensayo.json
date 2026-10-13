@@ -1,0 +1,534 @@
+{
+  "ensayo": true,
+  "descripcion": "Valores INVENTADOS para comprobar el circuito. No derivan de respuestas.md ni respuestas.json.",
+  "casos": {
+    "C-1a": {
+      "respuesta": "ENSAYO-valor-C-1a",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-1a\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-1",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-1a",
+        "fuente": "archivo-ENSAYO-C-1a.txt"
+      }
+    },
+    "C-1b": {
+      "respuesta": "ENSAYO-valor-C-1b",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-1b\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-1",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-1b",
+        "fuente": "archivo-ENSAYO-C-1b.txt"
+      }
+    },
+    "C-1c": {
+      "respuesta": "ENSAYO-valor-C-1c",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-1c\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-1",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-1c",
+        "fuente": "archivo-ENSAYO-C-1c.txt"
+      }
+    },
+    "C-1d": {
+      "respuesta": "ENSAYO-valor-C-1d",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-1d\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-1",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-1d",
+        "fuente": "archivo-ENSAYO-C-1d.txt"
+      }
+    },
+    "C-1e": {
+      "respuesta": "ENSAYO-valor-C-1e",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-1e\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-1",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-1e",
+        "fuente": "archivo-ENSAYO-C-1e.txt"
+      }
+    },
+    "C-1f": {
+      "respuesta": "ENSAYO-valor-C-1f",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-1f\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-1",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-1f",
+        "fuente": "archivo-ENSAYO-C-1f.txt"
+      }
+    },
+    "C-2a": {
+      "respuesta": "ENSAYO-valor-C-2a",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-2a\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-2",
+      "salida": {
+        "respuesta": "ENSAYO-incorrecto",
+        "fuente": "archivo-ENSAYO-C-2a.txt"
+      }
+    },
+    "C-2b": {
+      "respuesta": "ENSAYO-valor-C-2b",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-2b\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-2",
+      "salida": {
+        "respuesta": "ENSAYO-incorrecto",
+        "fuente": "archivo-ENSAYO-C-2b.txt"
+      }
+    },
+    "C-2c": {
+      "respuesta": "ENSAYO-valor-C-2c",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-2c\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-2",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-2c",
+        "fuente": "fuente-ENSAYO-equivocada"
+      }
+    },
+    "C-2d": {
+      "respuesta": "ENSAYO-valor-C-2d",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-2d\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-2",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-2d",
+        "fuente": "fuente-ENSAYO-equivocada"
+      }
+    },
+    "C-2e": {
+      "respuesta": "ENSAYO-valor-C-2e",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-2e\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-2",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-2e",
+        "fuente": "archivo-ENSAYO-C-2e.txt"
+      }
+    },
+    "C-2f": {
+      "respuesta": "ENSAYO-valor-C-2f",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-2f\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-2",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-2f",
+        "fuente": "archivo-ENSAYO-C-2f.txt"
+      }
+    },
+    "C-3a": {
+      "respuesta": "ENSAYO-valor-C-3a",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-3a\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-3",
+      "salida": {
+        "respuesta": "ENSAYO-incorrecto",
+        "fuente": "archivo-ENSAYO-C-3a.txt"
+      }
+    },
+    "C-3b": {
+      "respuesta": "ENSAYO-valor-C-3b",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-3b\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-3",
+      "salida": {
+        "respuesta": "ENSAYO-incorrecto",
+        "fuente": "archivo-ENSAYO-C-3b.txt"
+      }
+    },
+    "C-3c": {
+      "respuesta": "ENSAYO-valor-C-3c",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-3c\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-3",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-3c",
+        "fuente": "fuente-ENSAYO-equivocada"
+      }
+    },
+    "C-3d": {
+      "respuesta": "ENSAYO-valor-C-3d",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-3d\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-3",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-3d",
+        "fuente": "fuente-ENSAYO-equivocada"
+      }
+    },
+    "C-3e": {
+      "respuesta": "ENSAYO-valor-C-3e",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-3e\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-3",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-3e",
+        "fuente": "archivo-ENSAYO-C-3e.txt"
+      }
+    },
+    "C-3f": {
+      "respuesta": "ENSAYO-valor-C-3f",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-3f\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-3",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-3f",
+        "fuente": "archivo-ENSAYO-C-3f.txt"
+      }
+    },
+    "C-4a": {
+      "respuesta": "ENSAYO-valor-C-4a",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-4a\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-4",
+      "salida": {
+        "respuesta": "ENSAYO-incorrecto",
+        "fuente": "archivo-ENSAYO-C-4a.txt"
+      }
+    },
+    "C-4b": {
+      "respuesta": "ENSAYO-valor-C-4b",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-4b\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-4",
+      "salida": {
+        "respuesta": "ENSAYO-incorrecto",
+        "fuente": "archivo-ENSAYO-C-4b.txt"
+      }
+    },
+    "C-4c": {
+      "respuesta": "ENSAYO-valor-C-4c",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-4c\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-4",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-4c",
+        "fuente": "fuente-ENSAYO-equivocada"
+      }
+    },
+    "C-4d": {
+      "respuesta": "ENSAYO-valor-C-4d",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-4d\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-4",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-4d",
+        "fuente": "fuente-ENSAYO-equivocada"
+      }
+    },
+    "C-4e": {
+      "respuesta": "ENSAYO-valor-C-4e",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-4e\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-4",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-4e",
+        "fuente": "archivo-ENSAYO-C-4e.txt"
+      }
+    },
+    "C-4f": {
+      "respuesta": "ENSAYO-valor-C-4f",
+      "sinonimos": {},
+      "partes": [],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "fuentes_aceptadas": [
+        [
+          "archivo-ENSAYO-C-4f\\.txt$"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^fuente-ENSAYO-equivocada$"
+        ]
+      ],
+      "condicion": "C-4",
+      "salida": {
+        "respuesta": "ENSAYO-valor-C-4f",
+        "fuente": "archivo-ENSAYO-C-4f.txt"
+      }
+    }
+  }
+}

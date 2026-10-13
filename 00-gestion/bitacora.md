@@ -36,6 +36,7 @@ Quedan fuera de ese alcance, y los realizo de manera propia, la delimitación de
 | 28/09 | Claude Design | Elaboración del HTML de la maqueta del prototipo v0 | Maqueta del v0 |
 | 09/10 al 13/10 | Claude Code | Búsquedas y verificación de fuentes, reclasificación de incidencias, verificación de OpenCode en contenedor; redacción de protocolo, encuesta, ADR-078, fichas y borradores de esta bitácora | `00-gestion/`, `01-relevamiento/linea-base/`, `.trabajo/fichas/v1/` |
 | 09/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Implementación de V1-12 | `src/`, `.github/workflows/ci.yml` |
+| 13/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Verificación de fuentes; apoyo en la corrección de I.1 e I.2 sobre fichas; crítica; construcción de los casos, el contenedor y el arnés de la medición | `informe/cap-01/`, `01-relevamiento/linea-base/` |
 
 Las menciones a registros de decisión consolidados el 28/09/2026 se acompañan del número vigente; la tabla de equivalencias está en `00-gestion/decisiones/INDICE.md`.
 
@@ -72,6 +73,25 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 | 25/09 | Línea de base con herramientas como ejecutores, dieciséis casos | ADR-040 (hoy ADR-053); D-41 | medición con personas; encuesta como línea de base | vigente; herramientas modificadas por ADR-076 |
 
 ## Entradas de la AE2
+
+### Entrada · Martes 13 de octubre de 2026 (segunda sesión) — Corrección de I.1 e I.2, criterio de la línea de base y preparación de la medición
+
+1. **Decisión adoptada.**
+   - **Caps. I y II.** Armé con el ingeniero el inventario de correcciones contra los ADR (`.trabajo/revisiones/20261013-cap01-02-inventario.md`) y aprobé las de I.1 e I.2. I.1 actualiza el estado del arte al 01/10/2026, separa lo verificado de lo pendiente, acota los episodios de la entrevista a demanda declarada y suma la cadencia de versiones de OpenCode. I.2 reenuncia el objetivo general por casos, sin cifras de línea de base, y alinea OE-1 a OE-4 con el catálogo y con la medición con agentes.
+   - **Línea de base.** Revisé el diseño desde cero y acepté ADR-079: regla de ramas fijada antes de medir (error, costo, problema bajo el mínimo o sin problema), veinticuatro casos, dos brazos en la medición final con RIGE indicado como principal, clasificación de la fuente de la respuesta y el agente de la referente («Charles») como segundo ejecutor. Acepté ADR-080 (conjunto de aceptación de RIGE con manifiesto y causas de retiro) y ADR-081 (RF-02 CA-3: el subagente no hereda las restricciones del agente padre).
+   - **Docente.** Decidí medir sin esperar la respuesta del docente.
+2. **Alternativas y criterio de descarte (recortes).**
+   - **Criterio de 8 de 12 con regla de techo.** Lo descarté porque se cumple sin reducir ningún error y deja sin lectura el resultado en que el agente acierta con un costo alto.
+   - **Agente de la referente como ejecutor principal.** Lo descarté porque ata el resultado a un equipo que no es el ámbito de implantación y a skills que no recibí; queda como variante declarada.
+   - **Conservar el CA-3 de RF-02.** Lo descarté porque la ejecución y el código de la versión 1.18.25 lo refutan.
+   - **Fuera de esta sesión:** I.3 a I.6 y el Cap. II, el Resumen y el uso de IA (DV2-04).
+3. **Evidencia.**
+   - Verificación de los veinticuatro casos en el contenedor `rige-linea-base:1.18.25` (`01-relevamiento/linea-base/verificacion/`): doce casos de valor confirmados y doce de permiso ejecutados con un proveedor simulado local; C-3f contradijo el resultado 12 de A.VI.3.
+   - Código del tag v1.18.25 (`01-relevamiento/evidencia/opencode-subagent-permissions_20261013.ts`).
+   - Fuentes de Galster et al. verificadas (`01-relevamiento/fuentes.md`).
+4. **Aporte personal.** Fijé el alcance de cada sección, acepté o rechacé cada propuesta, aporté el agente de la referente con su consentimiento y decidí los umbrales (X = 2, Y = 30 %), la indicación del brazo con RIGE, el empate en IV.3 y la valorización de `cache.write`. Artefactos: ADR-079 a ADR-081, `informe/cap-01/I.1` e `I.2`, `01-relevamiento/linea-base/`.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos dentro del equipo. El ingeniero recomendó enviar la consulta al docente en paralelo; lo dejé registrado como pendiente opcional (LB-01).
+6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidades: Claude Code orquestó la sesión, verificó resultados y redactó los ADR y el borrador de esta entrada; Codex CLI (`gpt-6.1-sol`) actuó como verificador de fuentes, redactor de I.1 e I.2 sobre fichas, crítico (I.1, I.2 y ADR-079 a ADR-081) y escritor de los casos, el contenedor y el arnés de la medición (fichas `.trabajo/fichas/medicion/MED-1` a `MED-4b`). Consumo de Codex en la sesión: alrededor del 75 % de la ventana de 5 horas.
 
 ### Entrada · Martes 13 de octubre de 2026 — Dictamen de la AE2 en pendientes y corrección del fundamento de ADR-078
 

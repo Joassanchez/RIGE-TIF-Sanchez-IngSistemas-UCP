@@ -284,12 +284,16 @@ Padre con `bash *: deny` → el subagente `general` **también** tiene `bash` oc
 `deny`), pero además su lista es más corta: pierde `task` y `todowrite`
 (`evidencia/E16.txt`).
 
+> **Corrección del 13/10/2026:** refutado por ejecución y por el código del tag; el subagente no hereda las restricciones del agente padre, solo las de la sesión padre. Ver `como-funciona.md` §12 y ADR-081.
+
 ### C-12 · Los archivos de agente markdown reemplazan, no fusionan
 
 `opencode.json → agent.myagent` y `.opencode/agent/myagent.md` declarados a la vez:
 `debug agent myagent` devolvió `"prompt": "PROMPT-FROM-MARKDOWN"` y
 `"description": "DESCRIPTION-FROM-MARKDOWN"`. El `prompt` y la `description` del JSON
 quedaron completamente inertes.
+
+> **Precisión del 13/10/2026:** la captura de la línea de base (C-2c) muestra que el markdown se fusiona con la declaración del JSON: sus claves prevalecen y las que no declara (la temperatura) se conservan del JSON. Lo inerte en este experimento eran claves declaradas en ambos lados.
 
 ---
 

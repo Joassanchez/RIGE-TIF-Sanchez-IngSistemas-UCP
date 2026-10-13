@@ -2,8 +2,8 @@
 # Activa un caso de la línea base para el usuario participante.
 #
 # Uso (como root, entre casos, fuera del cronómetro):
-#     sudo /opt/linea-base/caso.sh C-2a
-#     sudo /opt/linea-base/caso.sh practica
+#     /opt/linea-base/caso.sh C-2a
+#     /opt/linea-base/caso.sh practica
 #
 # Deja al participante con exactamente el escenario del caso:
 #   ~/.config/opencode/   → sólo la configuración global del caso (o vacío)
@@ -15,12 +15,12 @@
 # accesible sólo por root.
 set -euo pipefail
 
-BASE="${BASE:-/opt/linea-base}"
-USUARIO="${USUARIO:-participante}"
+BASE="/opt/linea-base"
+USUARIO="participante"
 CASO="${1:-}"
 
-[[ $EUID -eq 0 ]] || { echo "Ejecutar como root (sudo)." >&2; exit 1; }
-[[ -n "$CASO" && "$CASO" != "comun" && -d "$BASE/casos/$CASO" ]] || {
+[[ $EUID -eq 0 ]] || { echo "Ejecutar como root dentro del contenedor." >&2; exit 1; }
+[[ $CASO =~ ^(practica|C-[1-4][a-f])$ && -d "$BASE/casos/$CASO" ]] || {
   echo "Caso inexistente: '$CASO'. Disponibles:" >&2
   ls "$BASE/casos" | grep -v '^comun$' >&2
   exit 1
@@ -74,6 +74,11 @@ if [[ -n "$EXPORTS" ]]; then
 fi
 
 chown -R "$USUARIO:$USUARIO" "$HOMEU/proyecto" "$HOMEU/.config" "$HOMEU/.bashrc"
+# cp -a conserva los modos 700 de las plantillas. El grupo participante debe
+# poder leer el escenario desde evaluador, según §3.1; otros usuarios no.
+chmod 750 "$HOMEU"
+chmod -R u+rwX,g+rX,o-rwx "$HOMEU/proyecto" "$HOMEU/.config"
+chmod 640 "$HOMEU/.bashrc"
 
 DESTINO="$HOMEU/proyecto${DIR:+/$DIR}"
 echo "Caso $CASO listo."

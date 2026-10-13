@@ -1,0 +1,978 @@
+{
+  "version": 1,
+  "sha256_hoja": "25a49cabd878d6bde4cd71016e13a458363e2e42af32cdd7170fb90cab3099bb",
+  "regex": "re.IGNORECASE; texto sin backticks; AND dentro de cada grupo, OR entre grupos; conflictos a revisión manual",
+  "hoja_cerrada": false,
+  "casos": {
+    "C-1a": {
+      "condicion": "C-1",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Con qué modelo corre el agente `build` en este proyecto, y qué archivo lo determina?",
+      "respuesta": "openai/gpt-5-mini",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bproyecto\\b|\\bproject\\b)"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`openai/gpt-5-mini`",
+      "criterio_fuente_original": "el `opencode.json` del proyecto (`~/proyecto/opencode.json`, «el del proyecto»)",
+      "criterio_rechazo_original": "la configuración global",
+      "documentada": "Sí"
+    },
+    "C-1b": {
+      "condicion": "C-1",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` usa la herramienta `webfetch`, ¿qué ocurre, y qué archivo lo determina?",
+      "respuesta": "ask",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "(?:\\bproyecto\\b|\\bproject\\b)"
+        ],
+        [
+          "defecto"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`ask`",
+      "criterio_fuente_original": "la configuración global (`~/.config/opencode/opencode.json`)",
+      "criterio_rechazo_original": "el `opencode.json` del proyecto; «el valor por defecto»",
+      "documentada": "Sí"
+    },
+    "C-1c": {
+      "condicion": "C-1",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Qué temperatura usa el agente `plan` en este proyecto, y qué archivo la determina?",
+      "respuesta": "0.3",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "(?:\\bproyecto\\b|\\bproject\\b)"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`0.3`",
+      "criterio_fuente_original": "la configuración global",
+      "criterio_rechazo_original": "el `opencode.json` del proyecto",
+      "documentada": "Sí"
+    },
+    "C-1d": {
+      "condicion": "C-1",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` intenta modificar el archivo `src/productos.js`, ¿qué ocurre, y qué archivo lo determina?",
+      "respuesta": "deny",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bproyecto\\b|\\bproject\\b)",
+          "edit\\s*[:=→-]*\\s*deny"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deny`",
+      "criterio_fuente_original": "el `opencode.json` del proyecto (regla `edit: deny`)",
+      "criterio_rechazo_original": "la configuración global",
+      "documentada": "Sí"
+    },
+    "C-1e": {
+      "condicion": "C-1",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Qué temperatura usa el agente `build` en este proyecto, y qué archivo la determina?",
+      "respuesta": "0.4",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:proyecto/\\.opencode/opencode\\.json|\\.opencode.*proyecto|proyecto.*\\.opencode)"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+        ],
+        [
+          "proyecto/opencode\\.json"
+        ],
+        [
+          "(?:nativ[ao]|incorporad[ao]|builtin|built-in)"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`0.4`",
+      "criterio_fuente_original": "`~/proyecto/.opencode/opencode.json` (clave `agent.build.temperature`; «el JSON del `.opencode` del proyecto»)",
+      "criterio_rechazo_original": "la configuración global; `~/proyecto/opencode.json`; una temperatura nativa",
+      "documentada": "[VERIFICAR la carga de `.opencode/opencode.json` contra `vm/docs/` y el manual embebido en la fase 2]"
+    },
+    "C-1f": {
+      "condicion": "C-1",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` intenta leer `src/productos.js`, ¿qué decisión de permiso corresponde, y qué regla y archivo la determinan?",
+      "respuesta": "deny",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "config\\.json",
+          "read\\s*[:=→-]*\\s*deny"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "proyecto.*opencode\\.json"
+        ],
+        [
+          "(?:nativ[ao]|incorporad[ao]|builtin|built-in)"
+        ],
+        [
+          "^(?:el )?global$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deny`",
+      "criterio_fuente_original": "la regla `read: deny` de `~/.config/opencode/config.json` (regla y archivo)",
+      "criterio_rechazo_original": "el `opencode.json` del proyecto; una regla nativa; «el global» sin identificar `config.json`",
+      "documentada": "[VERIFICAR el nombre global `config.json` contra `vm/docs/` y el manual embebido en la fase 2; la regla de lectura está documentada]"
+    },
+    "C-2a": {
+      "condicion": "C-2",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Con qué modelo y con qué temperatura corre el agente `build`, y de qué archivo sale cada uno de los dos valores?",
+      "respuesta": "anthropic/claude-opus-4-1; 0.7",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [
+        {
+          "nombre": "modelo",
+          "respuesta": "anthropic/claude-opus-4-1",
+          "fuentes_aceptadas": [
+            [
+              "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+            ]
+          ],
+          "fuentes_rechazadas": [
+            [
+              "(?:\\bproyecto\\b|\\bproject\\b)"
+            ]
+          ]
+        },
+        {
+          "nombre": "temperatura",
+          "respuesta": "0.7",
+          "fuentes_aceptadas": [
+            [
+              "(?:\\bproyecto\\b|\\bproject\\b)"
+            ]
+          ],
+          "fuentes_rechazadas": [
+            [
+              "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+            ]
+          ]
+        }
+      ],
+      "fuentes_aceptadas": [],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?(?:global|proyecto|equipo\\.json|opencode_permission)$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "modelo `anthropic/claude-opus-4-1` **y** temperatura `0.7`",
+      "criterio_fuente_original": "el modelo, del global; la temperatura, del proyecto. **Las dos asignaciones** son necesarias",
+      "criterio_rechazo_original": "una sola fuente para ambos valores",
+      "documentada": "Parcialmente"
+    },
+    "C-2b": {
+      "condicion": "C-2",
+      "tipo_consulta": "valor",
+      "pregunta": "Trabajando desde `sub/`, ¿con qué modelo corre el agente `docs`, y qué archivo lo determina?",
+      "respuesta": "deepseek/deepseek-chat",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:proyecto/\\.opencode/opencode\\.json|\\.opencode.*raíz|\\.opencode.*raiz|el de arriba)"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "sub/\\.opencode"
+        ],
+        [
+          "^(?:el )?\\.?opencode$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deepseek/deepseek-chat`",
+      "criterio_fuente_original": "`~/proyecto/.opencode/opencode.json` («el `.opencode` de la raíz», «el de arriba», la ruta completa)",
+      "criterio_rechazo_original": "«el `.opencode`» sin precisar cuál (hay dos); `sub/.opencode/opencode.json`",
+      "documentada": "No"
+    },
+    "C-2c": {
+      "condicion": "C-2",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Con qué modelo y con qué temperatura corre el agente `revisor`, y de dónde sale cada uno de los dos valores?",
+      "respuesta": "anthropic/claude-sonnet-4-5; [DATO PENDIENTE]",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [
+        {
+          "nombre": "modelo",
+          "respuesta": "anthropic/claude-sonnet-4-5"
+        },
+        {
+          "nombre": "temperatura",
+          "respuesta": null
+        }
+      ],
+      "fuentes_aceptadas": [
+        [
+          "revisor\\.md"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^opencode\\.json$"
+        ]
+      ],
+      "revision_manual": true,
+      "motivo_revision": "C-2c conserva alternativas de temperatura en la sección del caso; adjudicar conforme a la captura verificada.",
+      "criterio_respuesta_original": "modelo `anthropic/claude-sonnet-4-5` **y** temperatura `0.2`",
+      "criterio_fuente_original": "el modelo, de `.opencode/agent/revisor.md`; la temperatura, del `opencode.json` del proyecto. **Las dos asignaciones** son necesarias",
+      "criterio_rechazo_original": "`opencode.json` para el modelo; el markdown para la temperatura; «implícita» para la temperatura",
+      "documentada": "[VERIFICAR contra `vm/docs/` y el manual embebido en la fase 2]"
+    },
+    "C-2d": {
+      "condicion": "C-2",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Con qué modelo corre el agente `build`, y qué archivo lo determina?",
+      "respuesta": "mistral/codestral-latest",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "opencode\\.jsonc"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "config\\.json"
+        ],
+        [
+          "^(?:el )?global$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`mistral/codestral-latest`",
+      "criterio_fuente_original": "`~/.config/opencode/opencode.jsonc`",
+      "criterio_rechazo_original": "`config.json`; «el global» sin precisar el archivo (hay dos)",
+      "documentada": "[VERIFICAR contra `vm/docs/` y el manual embebido en la fase 2]"
+    },
+    "C-2e": {
+      "condicion": "C-2",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Con qué modelo corre el agente `build` en este proyecto, y de qué entrada sale ese valor?",
+      "respuesta": "deepseek/deepseek-chat",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "opencode_config_content"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "caso\\.env"
+        ],
+        [
+          "^(?:el )?opencode\\.json.*proyecto$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deepseek/deepseek-chat`",
+      "criterio_fuente_original": "la variable de entorno `OPENCODE_CONFIG_CONTENT`, que declara `agent.build.model`",
+      "criterio_rechazo_original": "el `opencode.json` del proyecto; cualquier archivo como fuente determinante; `caso.env` (plantilla de activación, no entrada leída por OpenCode)",
+      "documentada": "Sí (`vm/docs/config.html`, «Precedence order»: configuración en línea después del proyecto)"
+    },
+    "C-2f": {
+      "condicion": "C-2",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Con qué modelo y con qué temperatura corre el agente `build`, y de qué entrada y archivo sale cada valor?",
+      "respuesta": "mistral/codestral-latest; 0.9",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [
+        {
+          "nombre": "modelo",
+          "respuesta": "mistral/codestral-latest",
+          "fuentes_aceptadas": [
+            [
+              "(?:equipo\\.json|opencode_config\\b)"
+            ]
+          ],
+          "fuentes_rechazadas": [
+            [
+              "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+            ]
+          ]
+        },
+        {
+          "nombre": "temperatura",
+          "respuesta": "0.9",
+          "fuentes_aceptadas": [
+            [
+              "(?:\\bproyecto\\b|\\bproject\\b)"
+            ]
+          ],
+          "fuentes_rechazadas": [
+            [
+              "equipo\\.json|opencode_config\\b"
+            ]
+          ]
+        }
+      ],
+      "fuentes_aceptadas": [],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?(?:global|proyecto|equipo\\.json|opencode_permission)$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "modelo `mistral/codestral-latest` **y** temperatura `0.9`",
+      "criterio_fuente_original": "modelo del archivo `~/.config/opencode/equipo.json`, indicado por `OPENCODE_CONFIG`; temperatura de `~/proyecto/opencode.json`. **Las dos asignaciones** son necesarias; «archivo indicado por `OPENCODE_CONFIG`» identifica el primero",
+      "criterio_rechazo_original": "`~/.config/opencode/opencode.json` para el modelo; `equipo.json` para la temperatura; «el global» para el modelo sin distinguir el archivo indicado por variable; una sola fuente para ambos valores",
+      "documentada": "Sí (`vm/docs/config.html`, «Precedence order»: global → archivo indicado por variable → proyecto)"
+    },
+    "C-3a": {
+      "condicion": "C-3",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Qué modelo usa el agente `plan`, y de dónde sale ese valor?",
+      "respuesta": "google/gemini-2.5-pro",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "\\boc_modelo\\b"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?global$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`google/gemini-2.5-pro`",
+      "criterio_fuente_original": "la variable de entorno `OC_MODELO` (referenciada desde el global con `{env:OC_MODELO}`)",
+      "criterio_rechazo_original": "«el global» sin mencionar la variable",
+      "documentada": "Sí"
+    },
+    "C-3b": {
+      "condicion": "C-3",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` intenta leer el archivo `.env` del proyecto, ¿qué ocurre, y qué regla lo determina?",
+      "respuesta": "ask",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:nativ[ao]|incorporad[ao]|builtin|built-in)"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?global$"
+        ],
+        [
+          "^(?:el )?proyecto$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`ask`",
+      "criterio_fuente_original": "una regla nativa (incorporada) del agente o de OpenCode, no declarada en ningún archivo",
+      "criterio_rechazo_original": "el global; el proyecto",
+      "documentada": "De forma incorrecta"
+    },
+    "C-3c": {
+      "condicion": "C-3",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Con qué modelo corre el agente `build`, y de dónde sale ese valor?",
+      "respuesta": "deepseek/deepseek-reasoner",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "modelo-equipo\\.txt"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?global$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deepseek/deepseek-reasoner`",
+      "criterio_fuente_original": "el archivo `modelo-equipo.txt` (en `~/.config/opencode/`), referenciado desde el global con `{file:...}`",
+      "criterio_rechazo_original": "«el global» sin mencionar el archivo referenciado",
+      "documentada": "Sí"
+    },
+    "C-3d": {
+      "condicion": "C-3",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `plan` intenta modificar el archivo `README.md`, ¿qué ocurre, y qué regla lo determina?",
+      "respuesta": "deny",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:nativ[ao]|incorporad[ao]|builtin|built-in)",
+          "\\bplan\\b"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?global$"
+        ],
+        [
+          "^(?:el )?proyecto$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deny` [VERIFICAR con `debug agent plan` y en ejecución]",
+      "criterio_fuente_original": "una regla nativa del agente `plan`, no declarada en ningún archivo",
+      "criterio_rechazo_original": "el global; el proyecto",
+      "documentada": "[VERIFICAR contra `vm/docs/` y el manual embebido en la fase 2]"
+    },
+    "C-3e": {
+      "condicion": "C-3",
+      "tipo_consulta": "valor",
+      "pregunta": "¿Cuál es el valor efectivo de `description` del agente `plan`, y de dónde sale ese valor?",
+      "respuesta": "Revisa--equipo",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bproyecto\\b|\\bproject\\b)",
+          "rige_lb_etiqueta_ausente",
+          "(?:no definida|ausen|sin definir|undefined)"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?proyecto$"
+        ],
+        [
+          "^(?:el )?global$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`Revisa--equipo`",
+      "criterio_fuente_original": "`~/proyecto/opencode.json`, clave `agent.plan.description`, **y** la variable no definida `RIGE_LB_ETIQUETA_AUSENTE`, cuya sustitución aporta una cadena vacía. Se requieren el archivo y la ausencia de la variable",
+      "criterio_rechazo_original": "el proyecto sin mencionar la variable no definida; la variable como si aportara un valor declarado; el global; la descripción nativa de `plan`",
+      "documentada": "Sí (`vm/docs/config.html`, «Env vars»: una variable no definida se sustituye por cadena vacía)"
+    },
+    "C-3f": {
+      "condicion": "C-3",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` lanza al subagente `general` para ejecutar `git status` en este proyecto, ¿qué decisión de permiso corresponde al subagente, y qué regla la determina?",
+      "respuesta": "allow",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "general",
+          "(?:propi[ao]|nativ[ao])",
+          "(?:no.*(?:hereda|aplica)|sin.*hered)"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:regla )?bash:\\s*deny.*build.*heredada$"
+        ],
+        [
+          "plan.*bash.*allow"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`allow`",
+      "criterio_fuente_original": "el conjunto de reglas propio de `general`, cuya regla nativa general (`*` → `allow`) es la última que coincide con `bash`; la denegación `bash: deny` de `agent.build.permission` en `~/.config/opencode/opencode.json` **no** se aplica al subagente. Se requiere identificar que decide el conjunto propio de `general` y no la regla del padre",
+      "criterio_rechazo_original": "la regla `bash: deny` de `build` como determinante o como heredada; una regla declarada de `general` (no existe); la regla `bash: allow` de `plan`",
+      "documentada": "[VERIFICAR la herencia de denegaciones del padre contra `vm/docs/` y el manual embebido en la fase 2]"
+    },
+    "C-4a": {
+      "condicion": "C-4",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` ejecuta `git status`, ¿qué ocurre, y qué regla lo decide?",
+      "respuesta": "allow",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))",
+          "git\\s*\\*",
+          "allow"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:por )?el orden$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`allow`",
+      "criterio_fuente_original": "la regla `git *` → `allow` de la configuración **global** (regla y archivo)",
+      "criterio_rechazo_original": "solo «por el orden», sin identificar la regla y el archivo",
+      "documentada": "Sí"
+    },
+    "C-4b": {
+      "condicion": "C-4",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` ejecuta `git diff`, ¿qué ocurre, y qué regla lo decide?",
+      "respuesta": "deny",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bproyecto\\b|\\bproject\\b)",
+          "\\*",
+          "deny"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:por )?el orden$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deny`",
+      "criterio_fuente_original": "la regla `*` → `deny` del **proyecto** (regla y archivo)",
+      "criterio_rechazo_original": "solo «por el orden», sin identificar la regla y el archivo",
+      "documentada": "No"
+    },
+    "C-4c": {
+      "condicion": "C-4",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `plan` intenta modificar el archivo `src/index.js`, ¿qué ocurre, y qué regla lo decide?",
+      "respuesta": "allow",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))",
+          "edit\\s*[:=→-]*\\s*allow"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?modo plan no edita$"
+        ],
+        [
+          "^regla nativa$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`allow`",
+      "criterio_fuente_original": "la regla `edit: allow` de la configuración **global**, que se evalúa después de las reglas nativas del agente",
+      "criterio_rechazo_original": "«el modo plan no edita»; una regla nativa",
+      "documentada": "[VERIFICAR contra `vm/docs/` y el manual embebido en la fase 2]"
+    },
+    "C-4d": {
+      "condicion": "C-4",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` ejecuta `npm install`, ¿qué ocurre, y qué regla lo decide?",
+      "respuesta": "deny",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))",
+          "build",
+          "\\*",
+          "deny"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?proyecto$"
+        ],
+        [
+          "proyecto tiene prioridad"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deny`",
+      "criterio_fuente_original": "la regla `*` → `deny` del agente `build`, declarada en la configuración **global**",
+      "criterio_rechazo_original": "el proyecto; «el proyecto tiene prioridad sobre el global»",
+      "documentada": "[VERIFICAR contra `vm/docs/` y el manual embebido en la fase 2]"
+    },
+    "C-4e": {
+      "condicion": "C-4",
+      "tipo_consulta": "permiso",
+      "pregunta": "Para el agente `build`, ¿qué decisiones de permiso corresponden a usar `webfetch` y a modificar `src/productos.js`, y qué regla y entrada determinan cada decisión?",
+      "respuesta": "allow; ask",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [
+        {
+          "nombre": "webfetch",
+          "respuesta": "allow",
+          "fuentes_aceptadas": [
+            [
+              "(?=.*proyecto)(?=.*agent\\.build\\.permission\\.webfetch).*"
+            ]
+          ],
+          "fuentes_rechazadas": [
+            [
+              "opencode_permission"
+            ],
+            [
+              "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+            ]
+          ]
+        },
+        {
+          "nombre": "edición",
+          "respuesta": "ask",
+          "fuentes_aceptadas": [
+            [
+              "(?=.*edit)(?=.*opencode_permission).*"
+            ]
+          ],
+          "fuentes_rechazadas": [
+            [
+              "(?:\\bproyecto\\b|\\bproject\\b)"
+            ],
+            [
+              "(?:\\bglobal\\b|\\.config/opencode/opencode\\.json(?!c))"
+            ]
+          ]
+        }
+      ],
+      "fuentes_aceptadas": [],
+      "fuentes_rechazadas": [
+        [
+          "^(?:el )?(?:global|proyecto|equipo\\.json|opencode_permission)$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`webfetch`: `allow`; edición: `ask`",
+      "criterio_fuente_original": "para `webfetch`, `agent.build.permission.webfetch: allow` de `~/proyecto/opencode.json`; para la edición, `edit: ask` de la variable de entorno `OPENCODE_PERMISSION`. **Las dos asignaciones** son necesarias",
+      "criterio_rechazo_original": "el `permission` raíz del global para cualquiera de las dos decisiones; la variable para `webfetch`; el proyecto para la edición; una sola fuente para ambas",
+      "documentada": "[VERIFICAR la posición intermedia de `OPENCODE_PERMISSION` contra `vm/docs/` y el manual embebido en la fase 2]"
+    },
+    "C-4f": {
+      "condicion": "C-4",
+      "tipo_consulta": "permiso",
+      "pregunta": "Si el agente `build` intenta modificar `src/productos.js`, ¿qué decisión de permiso corresponde, y qué regla y entrada la determinan?",
+      "respuesta": "deny",
+      "sinonimos": {
+        "allow": [
+          "permitido"
+        ],
+        "ask": [
+          "pregunta"
+        ],
+        "deny": [
+          "denegado"
+        ]
+      },
+      "partes": [],
+      "fuentes_aceptadas": [
+        [
+          "(?:\\bproyecto\\b|\\bproject\\b)",
+          "edit\\s*[:=→-]*\\s*deny"
+        ]
+      ],
+      "fuentes_rechazadas": [
+        [
+          "^opencode_permission$"
+        ],
+        [
+          "^(?:el )?global$"
+        ],
+        [
+          "^regla nativa$"
+        ]
+      ],
+      "revision_manual": false,
+      "motivo_revision": "",
+      "criterio_respuesta_original": "`deny`",
+      "criterio_fuente_original": "la regla `permission.edit: deny` de `~/proyecto/opencode.json`",
+      "criterio_rechazo_original": "`OPENCODE_PERMISSION`, cuyo JSON inválido se descarta; la configuración global; una regla nativa",
+      "documentada": "[VERIFICAR el descarte de `OPENCODE_PERMISSION` inválida contra `vm/docs/` y el manual embebido en la fase 2]"
+    }
+  }
+}

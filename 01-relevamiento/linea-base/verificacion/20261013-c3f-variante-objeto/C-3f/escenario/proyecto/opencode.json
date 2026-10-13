@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "general": {
+      "temperature": 0.6
+    },
+    "plan": {
+      "permission": {
+        "bash": "allow"
+      }
+    }
+  }
+}

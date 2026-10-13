@@ -1,0 +1,7 @@
+# Los scripts se ejecutan directamente en Linux, también después de un checkout
+# en Windows con core.autocrlf. No cambiar los bytes de las plantillas ahora.
+*.sh text eol=lf
+como-dev text eol=lf
+caso.env text eol=lf
+Dockerfile text eol=lf
+.dockerignore text eol=lf

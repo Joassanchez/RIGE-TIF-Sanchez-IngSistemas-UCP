@@ -1,0 +1,26 @@
+timestamp=2026-10-13T22:17:05.374Z level=INFO run=b48d5c5f message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:05.376Z level=INFO run=b48d5c5f message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:05.435Z level=INFO run=b48d5c5f message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:05.439Z level=INFO run=b48d5c5f message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-13T22:17:05.440Z level=INFO run=b48d5c5f message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-13T22:17:05.444Z level=INFO run=b48d5c5f message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-13T22:17:05.452Z level=INFO run=b48d5c5f message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-13T22:17:05.629Z level=INFO run=b48d5c5f message="all LSPs are disabled"
+timestamp=2026-10-13T22:17:05.630Z level=INFO run=b48d5c5f message="all formatters are disabled"
+timestamp=2026-10-13T22:17:05.630Z level=INFO run=b48d5c5f message=init
+timestamp=2026-10-13T22:17:07.934Z level=INFO run=e4d2d772 message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:07.936Z level=INFO run=e4d2d772 message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:07.993Z level=INFO run=e4d2d772 message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:07.997Z level=INFO run=e4d2d772 message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-13T22:17:07.998Z level=INFO run=e4d2d772 message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-13T22:17:08.002Z level=INFO run=e4d2d772 message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-13T22:17:08.002Z level=INFO run=e4d2d772 message=loading path=/tmp/rige-proveedor-BWcAhH/proveedor.json
+timestamp=2026-10-13T22:17:08.009Z level=INFO run=e4d2d772 message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-13T22:17:08.088Z level=INFO run=e4d2d772 message="all LSPs are disabled"
+timestamp=2026-10-13T22:17:08.090Z level=INFO run=e4d2d772 message="all formatters are disabled"
+timestamp=2026-10-13T22:17:08.090Z level=INFO run=e4d2d772 message=init
+timestamp=2026-10-13T22:17:08.253Z level=INFO run=e4d2d772 message=created id=ses_ec8a8bc62ffeiQ9EgwmiZ8saol slug=quiet-circuit version=1.18.25 projectID=51b1668583cbc18cf7eeaf37c8aaa774203f5e7c directory=/home/participante/proyecto path="" workspaceID=undefined parentID=undefined title="New session - 2026-10-13T22:17:08.253Z" agent=undefined model=undefined metadata=undefined permission="[{\"permission\":\"question\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_enter\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_exit\",\"pattern\":\"*\",\"action\":\"deny\"}]" cost=0 tokens.input=0 tokens.output=0 tokens.reasoning=0 tokens.cache.read=0 tokens.cache.write=0 time.created=1791929828253 time.updated=1791929828253
+timestamp=2026-10-13T22:17:08.303Z level=INFO run=e4d2d772 message="event connected"
+timestamp=2026-10-13T22:17:08.791Z level=INFO run=e4d2d772 message=loop session.id=ses_ec8a8bc62ffeiQ9EgwmiZ8saol step=0
+timestamp=2026-10-13T22:17:08.810Z level=INFO run=e4d2d772 message=stream providerID=simulado modelID=permisos session.id=ses_ec8a8bc62ffeiQ9EgwmiZ8saol small=true agent=title mode=primary
+timestamp=2026-10-13T22:17:08.829Z level=INFO run=e4d2d772 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos

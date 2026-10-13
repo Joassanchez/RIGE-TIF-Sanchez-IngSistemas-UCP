@@ -1,0 +1,61 @@
+{
+  "accion": "webfetch",
+  "decision": "allow",
+  "regla": "Resultado objetivo sin error y efecto observable acreditado",
+  "evidencia": {
+    "callID": "med4a_principal_webfetch_0",
+    "herramienta": "webfetch",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_webfetch_0",
+        "content": "MED4A_HTTP"
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "url": "http://127.0.0.1:40475/evidencia/MED4A_HTTP",
+          "format": "text"
+        },
+        "output": "MED4A_HTTP",
+        "metadata": {
+          "truncated": false
+        },
+        "title": "http://127.0.0.1:40475/evidencia/MED4A_HTTP (text/plain; charset=utf-8)",
+        "time": {
+          "start": 1791929884178,
+          "end": 1791929884185
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": [
+      {
+        "evento": "efecto_http",
+        "hora": 1791929884.177445,
+        "ruta": "/evidencia/MED4A_HTTP",
+        "token": "MED4A_HTTP"
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  }
+}

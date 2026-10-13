@@ -1,0 +1,31 @@
+{
+  "caso": "C-4c",
+  "agente": "plan",
+  "acciones": [
+    {
+      "id": "editar",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          }
+        },
+        {
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "oldString": "const productos = require('./productos');\n\nfunction buscar(codigo) {\n  return productos.find((p) => p.codigo === codigo) ?? null;\n}\n\nmodule.exports = { buscar };\n",
+            "newString": "const productos = require('./productos');\n\nfunction buscar(codigo) {\n  return productos.find((p) => p.codigo === codigo) ?? null;\n}\n\nmodule.exports = { buscar };\n\n// MED4A_EDIT_INDEX\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "edicion",
+        "archivo": "src/index.js",
+        "token": "MED4A_EDIT_INDEX"
+      }
+    }
+  ]
+}

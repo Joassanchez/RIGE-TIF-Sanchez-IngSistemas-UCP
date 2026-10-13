@@ -1,0 +1,37 @@
+timestamp=2026-10-13T22:17:46.877Z level=INFO run=a4d1f4fc message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:46.878Z level=INFO run=a4d1f4fc message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:46.940Z level=INFO run=a4d1f4fc message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:46.945Z level=INFO run=a4d1f4fc message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-13T22:17:46.946Z level=INFO run=a4d1f4fc message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-13T22:17:46.950Z level=INFO run=a4d1f4fc message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-13T22:17:46.956Z level=INFO run=a4d1f4fc message=loading path=/tmp/rige-proveedor-BWcAhH/proveedor.json
+timestamp=2026-10-13T22:17:46.959Z level=INFO run=a4d1f4fc message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-13T22:17:47.039Z level=INFO run=a4d1f4fc message="all LSPs are disabled"
+timestamp=2026-10-13T22:17:47.040Z level=INFO run=a4d1f4fc message="all formatters are disabled"
+timestamp=2026-10-13T22:17:47.040Z level=INFO run=a4d1f4fc message=init
+timestamp=2026-10-13T22:17:47.192Z level=INFO run=a4d1f4fc message=created id=ses_ec8a82447ffedCJt6LQLXzMxjS slug=curious-squid version=1.18.25 projectID=4ac1083a31e5553baeb24a525500716a248fd008 directory=/home/participante/proyecto path="" workspaceID=undefined parentID=undefined title="New session - 2026-10-13T22:17:47.192Z" agent=undefined model=undefined metadata=undefined permission="[{\"permission\":\"question\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_enter\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_exit\",\"pattern\":\"*\",\"action\":\"deny\"}]" cost=0 tokens.input=0 tokens.output=0 tokens.reasoning=0 tokens.cache.read=0 tokens.cache.write=0 time.created=1791929867192 time.updated=1791929867192
+timestamp=2026-10-13T22:17:47.235Z level=INFO run=a4d1f4fc message="event connected"
+timestamp=2026-10-13T22:17:47.675Z level=INFO run=a4d1f4fc message=loop session.id=ses_ec8a82447ffedCJt6LQLXzMxjS step=0
+timestamp=2026-10-13T22:17:47.701Z level=INFO run=a4d1f4fc message=stream providerID=simulado modelID=permisos session.id=ses_ec8a82447ffedCJt6LQLXzMxjS small=true agent=title mode=primary
+timestamp=2026-10-13T22:17:47.720Z level=INFO run=a4d1f4fc message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-13T22:17:47.791Z level=INFO run=a4d1f4fc message=initialized
+timestamp=2026-10-13T22:17:47.831Z level=INFO run=a4d1f4fc message=tracking hash=173fb19e42e19dd26dd51cb198c45b89ab701ca3 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/4ac1083a31e5553baeb24a525500716a248fd008/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-13T22:17:47.838Z level=INFO run=a4d1f4fc message="shell tool using shell" shell=/bin/bash
+timestamp=2026-10-13T22:17:47.844Z level=INFO run=a4d1f4fc message=init count=1
+timestamp=2026-10-13T22:17:47.930Z level=INFO run=a4d1f4fc message="watcher backend" directory=/home/participante/proyecto platform=linux backend=inotify
+timestamp=2026-10-13T22:17:47.937Z level=INFO run=a4d1f4fc message="project copy refresh started" projectID=4ac1083a31e5553baeb24a525500716a248fd008
+timestamp=2026-10-13T22:17:48.286Z level=INFO run=a4d1f4fc message="project copy refresh done" projectID=4ac1083a31e5553baeb24a525500716a248fd008 updated=[] removed=[]
+timestamp=2026-10-13T22:17:48.293Z level=INFO run=a4d1f4fc message="booting location services" directory=/home/participante/proyecto workspaceID=undefined
+timestamp=2026-10-13T22:17:48.296Z level=INFO run=a4d1f4fc message=process session.id=ses_ec8a82447ffedCJt6LQLXzMxjS messageID=msg_13757dda0001mEZjO4RUmH1RJB
+timestamp=2026-10-13T22:17:48.297Z level=INFO run=a4d1f4fc message=stream providerID=simulado modelID=permisos session.id=ses_ec8a82447ffedCJt6LQLXzMxjS small=false agent=build mode=primary
+timestamp=2026-10-13T22:17:48.299Z level=INFO run=a4d1f4fc message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-13T22:17:48.360Z level=INFO run=a4d1f4fc message=tracking hash=173fb19e42e19dd26dd51cb198c45b89ab701ca3 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/4ac1083a31e5553baeb24a525500716a248fd008/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-13T22:17:48.393Z level=INFO run=a4d1f4fc message=loop session.id=ses_ec8a82447ffedCJt6LQLXzMxjS step=1
+timestamp=2026-10-13T22:17:48.426Z level=INFO run=a4d1f4fc message=tracking hash=173fb19e42e19dd26dd51cb198c45b89ab701ca3 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/4ac1083a31e5553baeb24a525500716a248fd008/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-13T22:17:48.432Z level=INFO run=a4d1f4fc message=process session.id=ses_ec8a82447ffedCJt6LQLXzMxjS messageID=msg_13757e06b001cBN0W4ENDyAzq5
+timestamp=2026-10-13T22:17:48.433Z level=INFO run=a4d1f4fc message=stream providerID=simulado modelID=permisos session.id=ses_ec8a82447ffedCJt6LQLXzMxjS small=false agent=build mode=primary
+timestamp=2026-10-13T22:17:48.435Z level=INFO run=a4d1f4fc message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-13T22:17:48.486Z level=INFO run=a4d1f4fc message=tracking hash=173fb19e42e19dd26dd51cb198c45b89ab701ca3 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/4ac1083a31e5553baeb24a525500716a248fd008/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-13T22:17:48.507Z level=INFO run=a4d1f4fc message=loop session.id=ses_ec8a82447ffedCJt6LQLXzMxjS step=2
+timestamp=2026-10-13T22:17:48.508Z level=INFO run=a4d1f4fc message="exiting loop" session.id=ses_ec8a82447ffedCJt6LQLXzMxjS
+timestamp=2026-10-13T22:17:48.519Z level=INFO run=a4d1f4fc message="disposing instance" directory=/home/participante/proyecto

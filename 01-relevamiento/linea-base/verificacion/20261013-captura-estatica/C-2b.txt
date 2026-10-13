@@ -1,0 +1,257 @@
+==================================================================
+CASO C-2b · 2026-10-13T21:54:23+00:00
+Directorio de trabajo: ~/proyecto/sub
+==================================================================
+
+--- Escenario: configuración global (~/.config/opencode) ---
+(vacía)
+--- Escenario: archivos de configuración del proyecto ---
+## ~/proyecto/.opencode/opencode.json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "docs": {
+      "model": "deepseek/deepseek-chat"
+    }
+  }
+}
+
+## ~/proyecto/opencode.json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "notas": {
+      "model": "xai/grok-3"
+    }
+  }
+}
+
+## ~/proyecto/sub/.opencode/opencode.json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "docs": {
+      "model": "mistral/mistral-large-latest"
+    }
+  }
+}
+
+## ~/proyecto/sub/opencode.json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "notas": {
+      "model": "groq/llama-3.3-70b-versatile"
+    }
+  }
+}
+
+--- Escenario: variables de entorno del caso ---
+(ninguna)
+
+--- $ opencode debug config ---
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "notas": {
+      "model": "groq/llama-3.3-70b-versatile",
+      "options": {},
+      "permission": {}
+    },
+    "docs": {
+      "model": "deepseek/deepseek-chat",
+      "options": {},
+      "permission": {}
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}
+
+--- $ opencode debug agent docs ---
+{
+  "name": "docs",
+  "mode": "all",
+  "permission": [
+    {
+      "permission": "*",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "doom_loop",
+      "action": "ask",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "*",
+      "action": "ask"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/tmp/opencode/*",
+      "action": "allow"
+    },
+    {
+      "permission": "question",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_enter",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_exit",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "read",
+      "pattern": "*",
+      "action": "allow"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.*",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.example",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    }
+  ],
+  "options": {},
+  "native": false,
+  "model": {
+    "providerID": "deepseek",
+    "modelID": "deepseek-chat"
+  },
+  "tools": {
+    "invalid": true,
+    "question": false,
+    "bash": true,
+    "read": true,
+    "glob": true,
+    "grep": true,
+    "edit": true,
+    "write": true,
+    "task": true,
+    "webfetch": true,
+    "todowrite": true,
+    "skill": true
+  }
+}
+
+--- $ opencode debug agent notas ---
+{
+  "name": "notas",
+  "mode": "all",
+  "permission": [
+    {
+      "permission": "*",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "doom_loop",
+      "action": "ask",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "*",
+      "action": "ask"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/tmp/opencode/*",
+      "action": "allow"
+    },
+    {
+      "permission": "question",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_enter",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_exit",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "read",
+      "pattern": "*",
+      "action": "allow"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.*",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.example",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    }
+  ],
+  "options": {},
+  "native": false,
+  "model": {
+    "providerID": "groq",
+    "modelID": "llama-3.3-70b-versatile"
+  },
+  "tools": {
+    "invalid": true,
+    "question": false,
+    "bash": true,
+    "read": true,
+    "glob": true,
+    "grep": true,
+    "edit": true,
+    "write": true,
+    "task": true,
+    "webfetch": true,
+    "todowrite": true,
+    "skill": true
+  }
+}

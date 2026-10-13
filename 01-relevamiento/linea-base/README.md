@@ -2,9 +2,9 @@
 
 | Archivo | Qué es | Estado |
 |---|---|---|
-| `DISENO-medicion-agentes.md` | **Diseño vigente** para construir y ejecutar la medición con agentes (ADR-040) | Listo para entregar |
-| `respuestas.md` | Hoja de respuestas de los dieciséis casos. **Nunca entra a la VM** | Pendiente de cierre tras la verificación en la VM |
-| `vm/` | Lo que se copia a la máquina virtual: escenarios de los dieciséis casos, `instalar.sh`, `caso.sh`, `verificar.sh`, hoja de referencia y documentación sin conexión. Es lo único que va a la VM | Se amplía según el diseño, sección 5 |
+| `DISENO-medicion-agentes.md` | Diseño vigente, versión 2.0 (ADR-053, 076, 078 y 079) | Listo para entregar |
+| `respuestas.md` | Hoja de respuestas de los veinticuatro casos. **Nunca entra a la VM** | Pendiente de cierre tras la verificación en la VM |
+| `vm/` | Lo que entra al contenedor Ubuntu 26.04 (ADR-054): escenarios de los veinticuatro casos, `instalar.sh`, `caso.sh`, `verificar.sh`, hoja de referencia y documentación sin conexión. Es lo único que va a la VM | Se amplía según el diseño, sección 5 |
 | `PROTOCOLO-relevamiento-delegacion.md` | Protocolo del relevamiento de la práctica de delegación (P1) y del error de los agentes (P2): fuentes F-1 a F-8, criterios y reglas fijadas antes de buscar | Propuesta del ingeniero, 09/10/2026; la fija el autor |
 | `encuesta-practica-form.gs` | Script de Google Apps Script que crea la encuesta en Google Forms (español) | 09/10/2026 |
 | `borrador-encuesta-practica.md` | Borrador de encuesta de práctica y pedido a la referente (ADR-040); respalda la representatividad del procedimiento delegado | Borrador del ingeniero, 25/09/2026; el pedido de la sección 2 ya fue enviado por el autor |

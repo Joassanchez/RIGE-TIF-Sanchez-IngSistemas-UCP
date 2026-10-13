@@ -1,0 +1,5 @@
+#!/bin/bash
+set -eu
+[[ $# -eq 1 && $1 == install ]] || exit 2
+printf "MED4A_NPM_INSTALL\n" > "${0%/*}/../MED4A_NPM_INSTALL"
+echo MED4A_NPM_INSTALL

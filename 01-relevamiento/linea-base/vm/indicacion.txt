@@ -1,0 +1,1 @@
+En este equipo está instalado RIGE, que informa la configuración efectiva de OpenCode y de qué declaración proviene cada valor o decisión. Consultalo con `rige --help` antes de responder.

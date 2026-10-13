@@ -1,6 +1,6 @@
 # ADR-029 — Estrategia de oráculo híbrida: resultados de referencia versionados y regeneración completa al cierre de cada iteración
 
-- Estado: aceptado (retroactivo)
+- Estado: aceptado (retroactivo); precisado por ADR-080 (13/10/2026: conjunto de aceptación con manifiesto, corte del 07/11/2026 y causas de retiro)
 - Fecha: AE2 (septiembre de 2026)
 - Capítulos afectados: Cap. V (V.1, definición de terminado; V.4, Tabla 19); RNF-02
 - Origen: Cap. V, V.1

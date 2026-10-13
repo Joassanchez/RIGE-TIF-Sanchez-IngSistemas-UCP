@@ -1,0 +1,19 @@
+{
+  "adr": "ADR-079 sec. 7; DISENO-medicion-agentes.md sec. 3.2",
+  "fuente_charles": "../evidencia/PRIV/agente-referente-charles_20261013.md",
+  "sha256_fuente_charles": "43993b1ed646c779c76188d40a6f01321af49b7005df65c9b446225309413ea3",
+  "cambios_charles": [
+    "edit deny",
+    "ask explicitos pasan a deny",
+    "skill * deny; sin las tres propias",
+    "como-dev y rige permitidos en bash",
+    "ruta /home/participante/** para leer el escenario separado",
+    "doom_loop deny y external_directory * deny para retirar ask nativos sin ampliar excepciones"
+  ],
+  "verificacion_efectiva": "[VERIFICAR: debug config/agent/skill, lectura del escenario y RIGE en ambos brazos antes del piloto]",
+  "archivos": {
+    "charles/agents/charles.md": "b6b31ca1ebd49555c61a7730821f41c6e24f13e2a77d71a8d99ca229e663f8b1",
+    "charles/opencode.json": "8d4425657fa3b79412f0499053314285555dac7d27d02b9f8c4af4d491184773",
+    "principal/opencode.json": "d65e379094678ed9f3af1e1a613aabed606ed1af5cce2837d8022e7838f31fe5"
+  }
+}

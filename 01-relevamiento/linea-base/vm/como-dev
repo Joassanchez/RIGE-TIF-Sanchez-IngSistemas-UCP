@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Ejecuta en el entorno del escenario según DISENO-medicion-agentes.md §3.1.
+# COMO_DEV_DIR lo fija el futuro medir.sh; no contiene el identificador del caso.
+set -euo pipefail
+[[ $# -gt 0 ]] || { echo "Uso: como-dev '<comando>'" >&2; exit 2; }
+if [[ -n ${COMO_DEV_DIR:-} ]]; then
+  [[ $COMO_DEV_DIR =~ ^[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*$ ]] || {
+    echo "COMO_DEV_DIR debe ser un subdirectorio relativo del proyecto." >&2; exit 2;
+  }
+fi
+exec sudo -u participante -i bash -c "cd \"\$HOME/proyecto${COMO_DEV_DIR:+/$COMO_DEV_DIR}\" && $*"

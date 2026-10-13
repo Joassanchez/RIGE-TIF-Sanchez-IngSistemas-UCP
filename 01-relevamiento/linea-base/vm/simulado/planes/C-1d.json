@@ -1,0 +1,31 @@
+{
+  "caso": "C-1d",
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "editar",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "${PROJECT}/src/productos.js"
+          }
+        },
+        {
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "${PROJECT}/src/productos.js",
+            "oldString": "${OLD_TEXT}",
+            "newString": "${NEW_TEXT}"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "edicion",
+        "archivo": "src/productos.js",
+        "token": "MED4A_EDIT_PRODUCTOS"
+      }
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "name": "plan",
+  "description": "Planifica sin modificar archivos",
+  "options": {},
+  "permission": [
+    {
+      "permission": "*",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "doom_loop",
+      "action": "ask",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "*",
+      "action": "ask"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/tmp/opencode/*",
+      "action": "allow"
+    },
+    {
+      "permission": "question",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_enter",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_exit",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "read",
+      "pattern": "*",
+      "action": "allow"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.*",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.example",
+      "action": "allow"
+    },
+    {
+      "permission": "question",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_exit",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "task",
+      "pattern": "general",
+      "action": "deny"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/plans/*",
+      "action": "allow"
+    },
+    {
+      "permission": "edit",
+      "pattern": "*",
+      "action": "deny"
+    },
+    {
+      "permission": "edit",
+      "pattern": ".opencode/plans/*.md",
+      "action": "allow"
+    },
+    {
+      "permission": "edit",
+      "pattern": "../.local/share/opencode/plans/*.md",
+      "action": "allow"
+    },
+    {
+      "permission": "edit",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    }
+  ],
+  "mode": "primary",
+  "native": true,
+  "tools": {
+    "invalid": true,
+    "question": true,
+    "bash": true,
+    "read": true,
+    "glob": true,
+    "grep": true,
+    "edit": true,
+    "write": true,
+    "task": true,
+    "webfetch": true,
+    "todowrite": true,
+    "websearch": true,
+    "skill": true
+  }
+}

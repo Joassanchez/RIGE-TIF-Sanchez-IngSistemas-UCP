@@ -1,0 +1,23 @@
+{
+  "caso": "C-4b",
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "bash",
+      "llamadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git diff",
+            "description": "Prueba local inocua MED-4a"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "salida",
+        "token": "MED4A_DIFF"
+      }
+    }
+  ]
+}

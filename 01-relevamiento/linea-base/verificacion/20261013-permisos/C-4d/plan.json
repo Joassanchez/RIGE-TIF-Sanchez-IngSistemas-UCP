@@ -1,0 +1,23 @@
+{
+  "caso": "C-4d",
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "bash",
+      "llamadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "npm install",
+            "description": "Prueba local inocua MED-4a"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "npm",
+        "token": "MED4A_NPM_INSTALL"
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "accion": "webfetch",
+  "decision": "ask",
+  "regla": "Resultado objetivo contiene el texto de autorrechazo de ask",
+  "evidencia": {
+    "callID": "med4a_principal_webfetch_0",
+    "herramienta": "webfetch",
+    "etapa": "principal",
+    "solicitudes": 2,
+    "resultados": [],
+    "estados": [
+      {
+        "status": "error",
+        "input": {
+          "url": "http://127.0.0.1:37999/evidencia/MED4A_HTTP",
+          "format": "text"
+        },
+        "error": "The user rejected permission to use this specific tool call.",
+        "time": {
+          "start": 1791929829404,
+          "end": 1791929829411
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": false,
+    "detalleEfecto": [],
+    "finProveedor": false,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  }
+}

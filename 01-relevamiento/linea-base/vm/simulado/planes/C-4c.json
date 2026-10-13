@@ -1,0 +1,31 @@
+{
+  "caso": "C-4c",
+  "agente": "plan",
+  "acciones": [
+    {
+      "id": "editar",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "${PROJECT}/src/index.js"
+          }
+        },
+        {
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "${PROJECT}/src/index.js",
+            "oldString": "${OLD_TEXT}",
+            "newString": "${NEW_TEXT}"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "edicion",
+        "archivo": "src/index.js",
+        "token": "MED4A_EDIT_INDEX"
+      }
+    }
+  ]
+}

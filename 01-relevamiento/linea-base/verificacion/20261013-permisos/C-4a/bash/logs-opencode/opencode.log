@@ -1,0 +1,16 @@
+timestamp=2026-10-13T22:17:41.564Z level=INFO run=921abf31 message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:41.566Z level=INFO run=921abf31 message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:41.627Z level=INFO run=921abf31 message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:41.632Z level=INFO run=921abf31 message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-13T22:17:41.633Z level=INFO run=921abf31 message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-13T22:17:41.637Z level=INFO run=921abf31 message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-13T22:17:41.645Z level=INFO run=921abf31 message=loading path=/tmp/rige-proveedor-BWcAhH/proveedor.json
+timestamp=2026-10-13T22:17:41.648Z level=INFO run=921abf31 message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-13T22:17:41.727Z level=INFO run=921abf31 message="all LSPs are disabled"
+timestamp=2026-10-13T22:17:41.728Z level=INFO run=921abf31 message="all formatters are disabled"
+timestamp=2026-10-13T22:17:41.728Z level=INFO run=921abf31 message=init
+timestamp=2026-10-13T22:17:41.870Z level=INFO run=921abf31 message=created id=ses_ec8a83911ffewgxV19VqUGdvwH slug=quiet-eagle version=1.18.25 projectID=cc31f243e0670dd27d6a6eec58c6113cc2907d2d directory=/home/participante/proyecto path="" workspaceID=undefined parentID=undefined title="New session - 2026-10-13T22:17:41.870Z" agent=undefined model=undefined metadata=undefined permission="[{\"permission\":\"question\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_enter\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_exit\",\"pattern\":\"*\",\"action\":\"deny\"}]" cost=0 tokens.input=0 tokens.output=0 tokens.reasoning=0 tokens.cache.read=0 tokens.cache.write=0 time.created=1791929861870 time.updated=1791929861870
+timestamp=2026-10-13T22:17:41.914Z level=INFO run=921abf31 message="event connected"
+timestamp=2026-10-13T22:17:42.378Z level=INFO run=921abf31 message=loop session.id=ses_ec8a83911ffewgxV19VqUGdvwH step=0
+timestamp=2026-10-13T22:17:42.396Z level=INFO run=921abf31 message=stream providerID=simulado modelID=permisos session.id=ses_ec8a83911ffewgxV19VqUGdvwH small=true agent=title mode=primary
+timestamp=2026-10-13T22:17:42.413Z level=INFO run=921abf31 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos

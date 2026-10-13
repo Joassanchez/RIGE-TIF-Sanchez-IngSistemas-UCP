@@ -1,0 +1,145 @@
+==================================================================
+CASO C-1a · 2026-10-13T21:54:04+00:00
+Directorio de trabajo: ~/proyecto
+==================================================================
+
+--- Escenario: configuración global (~/.config/opencode) ---
+## ~/.config/opencode/opencode.json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "anthropic/claude-sonnet-4-5"
+}
+
+--- Escenario: archivos de configuración del proyecto ---
+## ~/proyecto/opencode.json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": {
+      "model": "openai/gpt-5-mini"
+    }
+  }
+}
+
+--- Escenario: variables de entorno del caso ---
+(ninguna)
+
+--- $ opencode debug config ---
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "anthropic/claude-sonnet-4-5",
+  "agent": {
+    "build": {
+      "model": "openai/gpt-5-mini",
+      "options": {},
+      "permission": {}
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}
+
+--- $ opencode debug agent build ---
+{
+  "name": "build",
+  "description": "The default agent. Executes tools based on configured permissions.",
+  "options": {},
+  "permission": [
+    {
+      "permission": "*",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "doom_loop",
+      "action": "ask",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "*",
+      "action": "ask"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/tmp/opencode/*",
+      "action": "allow"
+    },
+    {
+      "permission": "question",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_enter",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_exit",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "read",
+      "pattern": "*",
+      "action": "allow"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.*",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.example",
+      "action": "allow"
+    },
+    {
+      "permission": "question",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_enter",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    }
+  ],
+  "mode": "primary",
+  "native": true,
+  "model": {
+    "providerID": "openai",
+    "modelID": "gpt-5-mini"
+  },
+  "tools": {
+    "invalid": true,
+    "question": true,
+    "bash": true,
+    "read": true,
+    "glob": true,
+    "grep": true,
+    "task": true,
+    "webfetch": true,
+    "todowrite": true,
+    "skill": true,
+    "apply_patch": true
+  }
+}

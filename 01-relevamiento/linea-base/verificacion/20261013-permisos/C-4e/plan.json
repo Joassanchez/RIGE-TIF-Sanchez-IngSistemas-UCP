@@ -1,0 +1,48 @@
+{
+  "caso": "C-4e",
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "webfetch",
+      "llamadas": [
+        {
+          "herramienta": "webfetch",
+          "argumentos": {
+            "url": "${BASE_URL}/evidencia/MED4A_HTTP",
+            "format": "text"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "http",
+        "token": "MED4A_HTTP"
+      }
+    },
+    {
+      "id": "editar",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js"
+          }
+        },
+        {
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js",
+            "oldString": "module.exports = [\n  { codigo: 'A-100', nombre: 'Teclado', stock: 14 },\n  { codigo: 'A-200', nombre: 'Monitor', stock: 3 },\n];\n",
+            "newString": "module.exports = [\n  { codigo: 'A-100', nombre: 'Teclado', stock: 14 },\n  { codigo: 'A-200', nombre: 'Monitor', stock: 3 },\n];\n\n// MED4A_EDIT_PRODUCTOS\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "edicion",
+        "archivo": "src/productos.js",
+        "token": "MED4A_EDIT_PRODUCTOS"
+      }
+    }
+  ]
+}

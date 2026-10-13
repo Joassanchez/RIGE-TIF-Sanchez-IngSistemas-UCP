@@ -1,0 +1,52 @@
+{
+  "accion": "editar",
+  "decision": "deny",
+  "regla": "La herramienta objetivo no fue ofrecida en su sesión; hay retorno de la llamada fija",
+  "evidencia": {
+    "callID": "med4a_principal_editar_1",
+    "herramienta": "edit",
+    "etapa": "principal",
+    "solicitudes": 4,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_editar_1",
+        "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'edit'. Available tools: bash, glob, grep, invalid, read, skill, task, todowrite, webfetch."
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "tool": "edit",
+          "error": "Model tried to call unavailable tool 'edit'. Available tools: bash, glob, grep, invalid, read, skill, task, todowrite, webfetch."
+        },
+        "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'edit'. Available tools: bash, glob, grep, invalid, read, skill, task, todowrite, webfetch.",
+        "metadata": {
+          "truncated": false
+        },
+        "title": "Invalid Tool",
+        "time": {
+          "start": 1791929894342,
+          "end": 1791929894347
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch"
+    ],
+    "efecto": false,
+    "detalleEfecto": "module.exports = [\n  { codigo: 'A-100', nombre: 'Teclado', stock: 14 },\n  { codigo: 'A-200', nombre: 'Monitor', stock: 3 },\n];\n",
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  }
+}

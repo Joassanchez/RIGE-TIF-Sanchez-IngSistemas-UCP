@@ -1,0 +1,14 @@
+caso	accion	decision
+C-1b	webfetch	ask
+C-1d	editar	deny
+C-1f	leer	deny
+C-3b	leer	ask
+C-3d	editar	deny
+C-3f	subagente	allow
+C-4a	bash	allow
+C-4b	bash	deny
+C-4c	editar	allow
+C-4d	bash	deny
+C-4e	webfetch	allow
+C-4e	editar	ask
+C-4f	editar	deny

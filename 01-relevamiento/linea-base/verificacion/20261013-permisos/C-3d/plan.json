@@ -1,0 +1,31 @@
+{
+  "caso": "C-3d",
+  "agente": "plan",
+  "acciones": [
+    {
+      "id": "editar",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/README.md"
+          }
+        },
+        {
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/README.md",
+            "oldString": "# inventario-api\n\nServicio interno de consulta de inventario.\n\n## Desarrollo\n\n```bash\nnpm install\nnpm run dev\n```\n",
+            "newString": "# inventario-api\n\nServicio interno de consulta de inventario.\n\n## Desarrollo\n\n```bash\nnpm install\nnpm run dev\n```\n\n<!-- MED4A_EDIT_README -->\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "edicion",
+        "archivo": "README.md",
+        "token": "MED4A_EDIT_README"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # ADR-078 — Línea de base sobre el procedimiento delegado: fundamento ante el dictamen de la AE2, tratamiento de los datos del AE1, indicadores y condición de la skill nativa
 
-- Estado: aceptado (09/10/2026)
+- Estado: aceptado (09/10/2026); precisado por ADR-079 (13/10/2026: criterio principal por ramas; los tokens pasan a principal solo en la rama C; condición 4 solo en la rama N)
 - Fecha: 09/10/2026
 - Capítulos afectados: Cap. I (I.3.1, I.3.2, I.3.4, I.6.5 y nota sobre el estado de la entrega); Cap. II (II.1, II.2, II.3, II.6.3); Cap. IV (IV.3, IV.4); Anexo VI (A.VI.1, A.VI.6, A.VI.8); Anexo III (D-41)
 - Origen: dictamen DEV-AE2 N.º 14/2026 (apartados 7, 10 y 14; Bloque A, pregunta 1) y sesión del 09/10/2026 con el autor
@@ -85,6 +85,8 @@ Es la única combinación que mide el procedimiento real con evidencia de que ex
 ### Decisión del autor
 
 **Aceptado por el autor el 09/10/2026** («acepto todo»), con todas las alternativas recomendadas: O-B, D-C, I-B (error principal; tokens secundario), S-A (skill `customize-opencode` disponible), K-A y la encuesta como complemento que no bloquea. En la misma respuesta el autor aceptó la ficha para regenerar en el CI la referencia nativa del v1 (fuera de este ADR).
+
+**Decisión del autor del 13/10/2026 sobre la consulta al docente:** la medición se ejecuta sin esperar la respuesta del docente («no hace falta la aprobación del docente»). El ingeniero advirtió que el dictamen observó que D-41 se adoptó «sin consulta localizada» y recomendó enviar la consulta en paralelo, para que conste antes de la entrega. La condición 3 de invalidación sigue vigente si el docente objeta el diseño después de medir.
 
 **Corrección del 13/10/2026 (ingeniero):** se retiró del análisis de O-A y O-C el motivo de reclutar personas, que la preferencia del autor excluye como fundamento de la reformulación de la línea de base; O-A queda fundado en la falta de registros, la entrevista y la reorientación del proyecto. La decisión no cambia.
 

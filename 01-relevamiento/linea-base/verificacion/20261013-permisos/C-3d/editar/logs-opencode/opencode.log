@@ -1,0 +1,15 @@
+timestamp=2026-10-13T22:17:28.530Z level=INFO run=d5f4016e message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:28.532Z level=INFO run=d5f4016e message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:28.579Z level=INFO run=d5f4016e message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-13T22:17:28.585Z level=INFO run=d5f4016e message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-13T22:17:28.586Z level=INFO run=d5f4016e message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-13T22:17:28.590Z level=INFO run=d5f4016e message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-13T22:17:28.597Z level=INFO run=d5f4016e message=loading path=/tmp/rige-proveedor-BWcAhH/proveedor.json
+timestamp=2026-10-13T22:17:28.599Z level=INFO run=d5f4016e message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-13T22:17:28.680Z level=INFO run=d5f4016e message="all LSPs are disabled"
+timestamp=2026-10-13T22:17:28.681Z level=INFO run=d5f4016e message="all formatters are disabled"
+timestamp=2026-10-13T22:17:28.681Z level=INFO run=d5f4016e message=init
+timestamp=2026-10-13T22:17:28.859Z level=INFO run=d5f4016e message=created id=ses_ec8a86be5ffevVZ1uo9hFy9ofJ slug=curious-garden version=1.18.25 projectID=9027cb363c03196d21f486b90bc534d63280891c directory=/home/participante/proyecto path="" workspaceID=undefined parentID=undefined title="New session - 2026-10-13T22:17:28.859Z" agent=undefined model=undefined metadata=undefined permission="[{\"permission\":\"question\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_enter\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_exit\",\"pattern\":\"*\",\"action\":\"deny\"}]" cost=0 tokens.input=0 tokens.output=0 tokens.reasoning=0 tokens.cache.read=0 tokens.cache.write=0 time.created=1791929848859 time.updated=1791929848859
+timestamp=2026-10-13T22:17:28.906Z level=INFO run=d5f4016e message="event connected"
+timestamp=2026-10-13T22:17:29.406Z level=INFO run=d5f4016e message=loop session.id=ses_ec8a86be5ffevVZ1uo9hFy9ofJ step=0
+timestamp=2026-10-13T22:17:29.425Z level=INFO run=d5f4016e message=stream providerID=simulado modelID=permisos session.id=ses_ec8a86be5ffevVZ1uo9hFy9ofJ small=true agent=title mode=primary

@@ -441,6 +441,8 @@ Cuando un agente lanza un subagente `[CÓDIGO]` — `agent/subagent-permissions.
 
 Con el padre en `bash *: deny`, el subagente `general` tampoco tuvo `bash`, y además perdió `task` y `todowrite` `[EJECUCIÓN]`. Las restricciones viajan hacia abajo; los permisos amplios no.
 
+> **Corrección del 13/10/2026 (ADR-081, propuesto).** Lo anterior es inexacto. El código hereda las reglas `deny` y `external_directory` de la **sesión** padre (`parentSessionPermission`), no las del **agente** padre: «Parent agent restrictions only govern that agent; the subagent's own permissions determine its capabilities» (`packages/opencode/src/agent/subagent-permissions.ts`, copia en `../evidencia/opencode-subagent-permissions_20261013.ts`). Ejecución en el contenedor: `build` con `bash` denegado en `agent.build.permission` lanza a `general` con `task`, al subagente se le ofrece `bash` y `git status` se ejecuta; sí pierde `task` y `todowrite` `[EJECUCIÓN]` (`../linea-base/verificacion/20261013-permisos/C-3f/`). La restricción del agente padre **no** viaja hacia abajo. La evidencia de E-16 no se conservó.
+
 ---
 
 ## 13. Herramientas que desaparecen

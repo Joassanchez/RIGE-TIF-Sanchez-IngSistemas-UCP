@@ -1,92 +1,80 @@
 #!/usr/bin/env bash
-# Instalación de la VM de la línea base. Se corre UNA vez, CON internet, antes de cortar la red.
-#
-# Uso (desde la carpeta vm/ copiada a la VM):
-#     sudo ./instalar.sh
-#
-# Hace:
-#   1. Instala OpenCode 1.18.25 (binario nativo, sin Node) en /usr/local/bin/opencode.
-#   2. Desactiva la actualización automática y la descarga de modelos, sin tocar
-#      ninguna configuración de caso.
-#   3. Copia casos y scripts a /opt/linea-base (sólo root puede leerlo).
-#   4. Deja la documentación offline y la hoja de referencia en el home del participante.
-#   5. Ejecuta OpenCode una vez como el participante, con red, para que cualquier
-#      descarga de primer uso ocurra ahora y no durante una sesión.
+# Paso de construcción del contenedor Ubuntu 26.04. Lo invoca el Dockerfile.
+# No se ejecuta en el anfitrión, no usa systemd ni instala credenciales.
+# Uso: /opt/linea-base/instalar.sh <sha256-del-binario>
 set -euo pipefail
+umask 022
 
 VERSION="1.18.25"
-USUARIO="${USUARIO:-participante}"
+# Una sola variante x86_64: funciona también cuando no se expone AVX2.
+PAQUETE="opencode-linux-x64-baseline"
 BASE="/opt/linea-base"
-ORIGEN="$(cd "$(dirname "$0")" && pwd)"
-
-[[ $EUID -eq 0 ]] || { echo "Ejecutar como root (sudo)." >&2; exit 1; }
-[[ "$(uname -m)" == "x86_64" ]] || { echo "Sólo x86_64." >&2; exit 1; }
-HOMEU="$(getent passwd "$USUARIO" | cut -d: -f6 || true)"
-[[ -n "$HOMEU" && -d "$HOMEU" ]] || {
-  echo "No existe el usuario '$USUARIO'. Crearlo antes (sin permisos de sudo):" >&2
-  echo "    sudo adduser $USUARIO" >&2
-  exit 1
+SHA256="${1:-}"
+[[ $EUID -eq 0 ]] || { echo "Ejecutar como root dentro del contenedor." >&2; exit 1; }
+[[ $(uname -m) == x86_64 ]] || { echo "Sólo x86_64." >&2; exit 1; }
+[[ $SHA256 =~ ^[[:xdigit:]]{64}$ ]] || {
+  echo "Falta OPENCODE_SHA256: SHA-256 contrastado del binario $PAQUETE $VERSION." >&2
+  exit 2
 }
-if id -nG "$USUARIO" | grep -qw sudo; then
-  echo "AVISO: '$USUARIO' pertenece al grupo sudo. El participante no debe poder leer $BASE." >&2
-  echo "       Quitarlo con: sudo deluser $USUARIO sudo" >&2
-fi
 
-como_participante() { runuser -u "$USUARIO" -- env HOME="$HOMEU" USER="$USUARIO" PATH="/usr/local/bin:/usr/bin:/bin" bash -c "$1"; }
-
-echo "== 1. Dependencias"
-FALTAN=()
-for p in git curl; do command -v "$p" > /dev/null || FALTAN+=("$p"); done
-if [[ ${#FALTAN[@]} -gt 0 ]]; then
-  apt-get update -qq || echo "   (aviso: algún repositorio no respondió; se intenta igual)"
-  apt-get install -y -qq "${FALTAN[@]}" ca-certificates > /dev/null
-fi
-echo "   git y curl disponibles"
-
-echo "== 2. OpenCode $VERSION"
-# Los procesadores virtuales a veces no exponen AVX2: en ese caso se usa la variante baseline,
-# que es la misma que elegiría el instalador oficial.
-if grep -qw avx2 /proc/cpuinfo; then PAQUETE="opencode-linux-x64"; else PAQUETE="opencode-linux-x64-baseline"; fi
-TMP="$(mktemp -d)"
-curl -fsSL "https://registry.npmjs.org/$PAQUETE/-/$PAQUETE-$VERSION.tgz" -o "$TMP/oc.tgz"
-tar -xzf "$TMP/oc.tgz" -C "$TMP"
-install -m 0755 "$TMP/package/bin/opencode" /usr/local/bin/opencode
-rm -rf "$TMP"
+echo "== OpenCode $VERSION ($PAQUETE)"
+TEMPORAL="$(mktemp -d)"
+trap 'rm -rf "$TEMPORAL"' EXIT
+curl -fsSL --retry 3 "https://registry.npmjs.org/$PAQUETE/-/$PAQUETE-$VERSION.tgz" -o "$TEMPORAL/oc.tgz"
+tar -xzf "$TEMPORAL/oc.tgz" -C "$TEMPORAL"
+printf '%s  %s\n' "$SHA256" "$TEMPORAL/package/bin/opencode" | sha256sum -c -
+install -m 0755 "$TEMPORAL/package/bin/opencode" /usr/local/bin/opencode
 INSTALADA="$(OPENCODE_DISABLE_AUTOUPDATE=1 /usr/local/bin/opencode --version)"
-[[ "$INSTALADA" == "$VERSION" ]] || { echo "Versión inesperada: $INSTALADA" >&2; exit 1; }
-echo "   $PAQUETE $INSTALADA · sha256 $(sha256sum /usr/local/bin/opencode | cut -d' ' -f1)"
+[[ $INSTALADA == "$VERSION" ]] || { echo "Versión inesperada: $INSTALADA" >&2; exit 1; }
 
-echo "== 3. Congelar la versión"
-for VAR in OPENCODE_DISABLE_AUTOUPDATE OPENCODE_DISABLE_MODELS_FETCH; do
-  grep -q "^$VAR=" /etc/environment || echo "$VAR=1" >> /etc/environment
+echo "== Dos usuarios y permisos (§3.1)"
+useradd --create-home --user-group --shell /bin/bash participante
+useradd --create-home --user-group --shell /bin/bash evaluador
+usermod -aG participante evaluador
+chmod 750 /home/participante /home/evaluador
+printf '%s\n' 'evaluador ALL=(participante) NOPASSWD: ALL' > /etc/sudoers.d/evaluador
+chmod 440 /etc/sudoers.d/evaluador
+visudo -cf /etc/sudoers.d/evaluador
+# Ambos usuarios tienen contraseña bloqueada y no pertenecen al grupo sudo.
+for USUARIO in participante evaluador; do
+  if id -nG "$USUARIO" | grep -qw sudo; then
+    echo "El usuario $USUARIO no debe pertenecer a sudo." >&2; exit 1
+  fi
 done
 
-echo "== 4. Plantillas y scripts en $BASE (sólo root)"
-rm -rf "$BASE"
-mkdir -p "$BASE"
-cp -a "$ORIGEN/casos" "$BASE/casos"
-install -m 0755 "$ORIGEN/caso.sh" "$ORIGEN/verificar.sh" "$BASE/"
+# ENV alcanza docker exec; estos archivos alcanzan shells de inicio de sesión
+# y runuser/sudo, que limpian las variables heredadas. Sin tocar los casos.
+printf '%s\n' 'OPENCODE_DISABLE_AUTOUPDATE=1' 'OPENCODE_DISABLE_MODELS_FETCH=1' >> /etc/environment
+printf '%s\n' 'export OPENCODE_DISABLE_AUTOUPDATE=1 OPENCODE_DISABLE_MODELS_FETCH=1' > /etc/profile.d/opencode-fijo.sh
+chmod 644 /etc/profile.d/opencode-fijo.sh
+
+mkdir -p /home/evaluador/tarea /home/evaluador/.config/opencode
+cp -a "$BASE/docs" /home/evaluador/tarea/docs
+install -m 0644 "$BASE/hoja-referencia.md" /home/evaluador/tarea/hoja-referencia.md
+# Configuración inicial del principal (§3.2); Charles se prepara en otra tarea.
+cat > /home/evaluador/.config/opencode/opencode.json <<'JSON'
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "read": "allow",
+    "bash": "allow",
+    "external_directory": "allow",
+    "edit": "deny",
+    "webfetch": "deny",
+    "websearch": "deny"
+  }
+}
+JSON
+chown -R evaluador:evaluador /home/evaluador/tarea /home/evaluador/.config
+chmod -R u+rwX,go+rX /home/evaluador/tarea
 chown -R root:root "$BASE"
-chmod 700 "$BASE"
+chmod -R 700 "$BASE"
 
-echo "== 5. Documentación y hoja de referencia para el participante"
-rm -rf "$HOMEU/Documentacion-OpenCode"
-cp -a "$ORIGEN/docs" "$HOMEU/Documentacion-OpenCode"
-install -m 0644 "$ORIGEN/hoja-referencia.md" "$HOMEU/hoja-referencia.md"
-chown -R "$USUARIO:$USUARIO" "$HOMEU/Documentacion-OpenCode" "$HOMEU/hoja-referencia.md"
-
-echo "== 6. Primer uso con red"
-"$BASE/caso.sh" practica > /dev/null
-como_participante 'export OPENCODE_DISABLE_AUTOUPDATE=1 OPENCODE_DISABLE_MODELS_FETCH=1;
-  cd ~/proyecto && opencode debug config > /dev/null && opencode debug agent build > /dev/null && opencode debug skill > /dev/null'
-echo "   OK"
-
-echo
-echo "IMPORTANTE: borrar la carpeta desde la que se instaló ($ORIGEN)."
-echo "            Contiene las plantillas de los casos, y el participante no debe poder leerlas."
-echo
-echo "Instalación terminada. Siguientes pasos:"
-echo "  1. Cortar la red de la VM."
-echo "  2. sudo $BASE/verificar.sh   (y revisar las salidas contra casos-y-respuestas.md)"
-echo "  3. sudo $BASE/caso.sh practica"
-echo "  4. Sacar la instantánea."
+echo "== Primer uso con red durante la construcción, sin proveedor ni credenciales"
+"$BASE/caso.sh" practica
+runuser -l participante -c 'cd ~/proyecto && opencode debug config >/dev/null && opencode debug agent build >/dev/null && opencode debug skill >/dev/null'
+runuser -l evaluador -c 'cd ~/tarea && opencode debug config >/dev/null && opencode debug agent build >/dev/null && opencode debug skill >/dev/null'
+# La imagen parte de un escenario limpio. La corrida sin red comprueba si la
+# caché de primer uso basta para los escenarios; no se ocultan sus errores.
+"$BASE/caso.sh" practica
+echo "Construcción terminada. Verificar sin red y comparar fuera con respuestas.md."

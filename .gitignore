@@ -27,3 +27,5 @@ tools/
 .trabajo/
 informe/AGENTS.md
 
+# Tandas de ensayo del arnés de la línea de base: datos inventados, reproducibles con vm/contenedor.sh medir --ensayo
+01-relevamiento/linea-base/verificacion/*ensayo*/

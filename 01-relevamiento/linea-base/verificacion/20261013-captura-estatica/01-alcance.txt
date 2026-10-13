@@ -1,0 +1,7 @@
+Esta corrida captura configuración y reglas resueltas; no ejecuta herramientas.
+[DATO PENDIENTE: ejecutar las decisiones de permiso con un proveedor simulado local.]
+En particular, debug agent general no acredita la herencia de una invocación
+concreta en C-3f. La fase 2 no se cierra sólo con estas capturas.
+El proveedor simulado debe funcionar dentro del contenedor con --network none
+(el bucle local está disponible); no abrir salida a internet para resolverlo.
+Comparar con respuestas.md fuera del contenedor y registrar la revisión.

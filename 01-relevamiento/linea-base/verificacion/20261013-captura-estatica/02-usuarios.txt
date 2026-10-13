@@ -1,0 +1,16 @@
+700 root:root /opt/linea-base
+700 root:root /opt/linea-base/casos
+700 root:root /opt/linea-base/caso.sh
+700 root:root /opt/linea-base/verificar.sh
+750 participante:participante /home/participante
+755 root:root /usr/local/bin/como-dev
+440 root:root /etc/sudoers.d/evaluador
+uid=1001(participante) gid=1001(participante) groups=1001(participante)
+uid=1002(evaluador) gid=1002(evaluador) groups=1002(evaluador),1001(participante)
+/etc/sudoers.d/evaluador: parsed OK
+participante: plantillas inaccesibles
+participante: sin sudo a root
+evaluador: plantillas inaccesibles
+evaluador: sin sudo a root
+sudo: unable to resolve host ce44f99ca87d: Temporary failure in name resolution
+evaluador: documentación y como-dev disponibles
