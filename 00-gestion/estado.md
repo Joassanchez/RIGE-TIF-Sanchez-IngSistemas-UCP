@@ -57,20 +57,24 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 |---|---|
 | 1 · Decisiones de arquitectura | 16 registros aceptados en la tabla (ADR-070, guardas de arquitectura, aceptado el 01/10/2026) (incluidos ADR-061, modelo de datos, y ADR-062, distribución, web y dependencias, aceptados el 29/09/2026; ADR-062 revisado el mismo día: TypeScript 7.0.2). ADR-063 por discutir (AR-04). Método: ADR-065, reescrito el 29/09/2026 (OpenCode con gentle-ai 3.7 en modo ODD; documento por incremento propuesto por el agente y revisado hasta la conformidad) |
 | 2 · Modelo de datos | Completa por remisión a ADR-061 (29/09/2026) |
-| 3 · Canal de integración continua | Completa por remisión a ADR-062; `.github/workflows/ci.yml` (matriz Ubuntu/Windows). Primera corrida verde el 30/09/2026 22:26 (corrida `36801042650`, commit `11c852e`); verde en `main` sobre `b1432eb` (01/10/2026). Matriz cambiada a `ubuntu-26.04` y `windows-latest` el 01/10/2026 (ADR-076, búsqueda de ejecutores): falta la primera corrida sobre 26.04 |
-| Prototipo v1 | **Recorrido vertical completo en la rama `v1-recorrido` (05/10/2026), sin unir con `main` ni etiquetar.** Once tareas con ADR-067 (V1-01 a V1-11, commits `1b684d5` a `6b0bef7`): web → adaptador de OpenCode y núcleo (RD-01) → almacén SQLite → página leída del almacén. 375 pruebas tras consolidar la suite (V1-11; mapa en `src/pruebas/README.md`); coincide con OpenCode 1.18.25 en dos escenarios de referencia (`v1-precedencia`, `v1-vias`); README de ocho secciones verificado ejecutando sus pasos; comprobación simulada desde un clon limpio, también con `TEMP` 8.3. Precisiones de C8 en ADR-062 (05/10/2026, pendientes de conformidad del autor). Falta (autor): subir la rama, CI verde en las dos plataformas, unir con `main`, prueba de clonado por otra persona (Instrumento 35, 35.2) y etiqueta |
+| 3 · Canal de integración continua | Completa por remisión a ADR-062; `.github/workflows/ci.yml` (matriz Ubuntu/Windows). Primera corrida verde el 30/09/2026 22:26 (corrida `36801042650`, commit `11c852e`); verde en `main` sobre `b1432eb` (01/10/2026). Matriz cambiada a `ubuntu-26.04` y `windows-latest` el 01/10/2026 (ADR-076, búsqueda de ejecutores). Trabajo `referencia-nativa` agregado el 09/10/2026 (V1-12): ejecuta OpenCode 1.18.25 real sobre los escenarios y falla si difiere de `REFERENCIA.json`. Última corrida verde sobre `main`: `c9322e7` (10/10/2026) |
+| Prototipo v1 | **Recorrido vertical completo en `main`** (unido el 05/10/2026, `b6657ba`; V1-01 a V1-11 con ADR-067, 375 pruebas, mapa en `src/pruebas/README.md`). V1-12 (09/10/2026, `7233fd0`): referencia nativa verificada en el CI contra el binario real. Verificado por el ingeniero el 09/10/2026 contra el dictamen (DV2-01): comparación con el comando nativo y prueba de RNF-03 capaz de fallar. Precisiones de C8 en ADR-062 (05/10/2026, pendientes de conformidad del autor). Falta (autor): repositorio privado con la cátedra como colaboradora, prueba de clonado por otra persona (Instrumento 35, 35.2), etiqueta `v1` y `/comprobar-v1` (DV2-02) |
 
-## Medición de la línea base (ADR-053)
+## Medición de la línea base (ADR-053, modificado por ADR-078)
 
 | Elemento | Estado |
 |---|---|
-| Diseño | `01-relevamiento/linea-base/DISENO-medicion-agentes.md` v1.1 |
-| Casos | 16 escenarios escritos; ninguno verificado en la VM |
+| Decisión | ADR-078 aceptado el 09/10/2026: procedimiento delegado como objeto; datos del AE1 como prueba informal sin registros (no se usan); error como criterio principal y tokens como secundario; agente con la skill nativa `customize-opencode` disponible; costo humano relevado con la encuesta. Anexo III, D-41, actualizado. Corrección del 13/10/2026: se retiró el motivo de reclutamiento de su análisis |
+| Consulta al docente | Pendiente (LB-01). La medición no se ejecuta hasta la respuesta |
+| Relevamiento de la práctica | Protocolo y resultados en `01-relevamiento/linea-base/` (09/10/2026; fecha de corte 09/10/2026). P1: skill nativa verificada por ejecución, `agent create`, incidencias #14216 y #22247, oferta de skills; falta la confirmación escrita de la referente. P2: estudios con error apreciable del modelo solo y mejora con validador determinista; ningún estudio sobre precedencia entre fuentes. Pendientes en LB-03 |
+| Diseño | `01-relevamiento/linea-base/DISENO-medicion-agentes.md` v1.1; falta actualizarlo con ADR-078 (AD-19) |
+| Casos | 16 escenarios escritos; ninguno verificado en el contenedor |
 | Hoja de respuestas | Reconstruida; abierta hasta la fase 2 |
-| Modelos | Opus 5.5 · Sonnet 5 · Haiku 4.5 (registrados) |
-| Agente de la referente | Pedido enviado; archivo no recibido |
-| Encuesta | Borrador; falta plataforma, comunidades y versión en inglés |
-| Ejecución | Fase 0 no iniciada; ventana del 02/10 al 16/10 |
+| Modelos | `gpt-6.1-sol` (principal), `gpt-6-astra` y `gpt-6-luna` desde OpenCode con ChatGPT Plus (ADR-076) |
+| Agente de la referente | Pedido reenviado el 09/10/2026 con la confirmación de la práctica; sin respuesta (AD-17) |
+| Encuesta | Lista para publicar en Google Forms (script); falta piloto, canales y publicación (AD-18) |
+| Contenedor | Imagen de ADR-054 sin construir (AD-26); base verificada el 09/10/2026 en un contenedor descartable |
+| Ejecución | No iniciada; espera LB-01 |
 
 ## Tablero de gestión (Guía AE2, objeto 3)
 

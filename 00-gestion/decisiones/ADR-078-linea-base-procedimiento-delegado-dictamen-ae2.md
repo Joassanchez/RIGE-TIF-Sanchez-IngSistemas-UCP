@@ -54,9 +54,9 @@ Hechos establecidos en la sesión del 09/10/2026:
 
 ### Análisis (trade-offs)
 
-- **O-A:** los datos del AE1 no tienen registros ni protocolo uniforme, así que no hay medición que conservar ni ampliar sobre la misma base; habría que rehacerla desde cero con personas, con el problema de reclutar dos veces que motivó ADR-053. Además mide un procedimiento que la evidencia muestra en retroceso frente a la delegación.
+- **O-A:** los datos del AE1 no tienen registros ni protocolo uniforme, así que no hay medición que conservar ni ampliar sobre la misma base. Además, la entrevista con la referente y la reorientación del proyecto ubican el procedimiento actual en la delegación: medir el procedimiento manual mediría una práctica que no es la que el sujeto afectado usa hoy.
 - **O-B:** mide el procedimiento que la herramienta misma propone por defecto (skill incorporada) y que la referente relata. El sujeto afectado sigue siendo el desarrollador: quien recibe la respuesta errónea y paga los tokens es la persona, y el agente es el procedimiento que usa. La objeción «otro sujeto» confunde al ejecutor de la medición con el sujeto del problema. Es coherente con la arquitectura: RIGE ya está diseñado para un agente consumidor (III.1, I.3.5).
-- **O-C:** responde la objeción del costo humano, pero reintroduce el reclutamiento y duplica el instrumento. Su aporte lo cubre K-A con la encuesta (pregunta 9) a una fracción del costo.
+- **O-C:** responde la objeción del costo humano, pero duplica el instrumento con una segunda medición sobre un procedimiento que no es el actual. Su aporte lo cubre K-A con la encuesta (preguntas 8 ter y 9) a una fracción del costo.
 - **D-A y D-B:** presentar como datos valores sin registros que los respalden es lo que la regla de las tres preguntas prohíbe (no hay método verificable). D-B además da una apariencia de rigor que no tienen.
 - **D-C:** corrige expresamente lo dicho en el AE1, con el mismo criterio que el dictamen elogia en el resultado n.º 11 del Anexo VI. Costo: hay que explicar que el informe del AE1 los presentó como medición.
 - **I-A:** una respuesta barata y equivocada no le sirve al usuario; mezclar los dos indicadores en el mismo criterio permite «ganar» por tokens con más error.
@@ -85,6 +85,8 @@ Es la única combinación que mide el procedimiento real con evidencia de que ex
 ### Decisión del autor
 
 **Aceptado por el autor el 09/10/2026** («acepto todo»), con todas las alternativas recomendadas: O-B, D-C, I-B (error principal; tokens secundario), S-A (skill `customize-opencode` disponible), K-A y la encuesta como complemento que no bloquea. En la misma respuesta el autor aceptó la ficha para regenerar en el CI la referencia nativa del v1 (fuera de este ADR).
+
+**Corrección del 13/10/2026 (ingeniero):** se retiró del análisis de O-A y O-C el motivo de reclutar personas, que la preferencia del autor excluye como fundamento de la reformulación de la línea de base; O-A queda fundado en la falta de registros, la entrevista y la reorientación del proyecto. La decisión no cambia.
 
 ### Consecuencias
 

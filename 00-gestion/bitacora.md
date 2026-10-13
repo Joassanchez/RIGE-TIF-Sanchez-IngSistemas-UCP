@@ -34,6 +34,8 @@ Quedan fuera de ese alcance, y los realizo de manera propia, la delimitación de
 | Desde el 30/09 (T0-10) | Codex CLI (plan ChatGPT Plus), orquestado por Claude Code | Apoyo en la implementación con TDD y commits en la rama del incremento; revisión y crítica del código | `src/` |
 | 01/10 | Codex como apoyo | Búsquedas web de solo lectura y apoyo en las correcciones de los Caps. IV, V y X sobre fichas | `informe/` |
 | 28/09 | Claude Design | Elaboración del HTML de la maqueta del prototipo v0 | Maqueta del v0 |
+| 09/10 al 13/10 | Claude Code | Búsquedas y verificación de fuentes, reclasificación de incidencias, verificación de OpenCode en contenedor; redacción de protocolo, encuesta, ADR-078, fichas y borradores de esta bitácora | `00-gestion/`, `01-relevamiento/linea-base/`, `.trabajo/fichas/v1/` |
+| 09/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Implementación de V1-12 | `src/`, `.github/workflows/ci.yml` |
 
 Las menciones a registros de decisión consolidados el 28/09/2026 se acompañan del número vigente; la tabla de equivalencias está en `00-gestion/decisiones/INDICE.md`.
 
@@ -43,6 +45,7 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 
 | Fecha | Decisión | Registro | Recorte principal | Estado |
 |---|---|---|---|---|
+| 09/10 | Línea de base sobre el procedimiento delegado: datos del AE1 como prueba informal; error principal y tokens secundario; skill nativa disponible; consulta al docente antes de medir | ADR-078 | medición con personas; medición mixta; datos del AE1 como piloto | vigente; fundamento corregido el 13/10 |
 | 01/10 | Medición con agentes sobre ChatGPT Plus, consumo en tokens, tarifas congeladas; costo de hora basado en la mediana junior de SysArmy | ADR-076 | tope de API; OpenCode Go y Claude Pro; salario promedio OPSSI | vigente; eje X modificado por ADR-077 |
 | 01/10 | Diferencial: decisión de permiso con regla determinante y procedencia por declaración; RF-02 CA-8 | ADR-075 | diferencial en la explicación sola; inversión y otros modelos de sostenimiento | vigente |
 | 01/10 | Guardas de arquitectura con analizador propio | ADR-070 | herramientas externas | vigente |
@@ -69,6 +72,53 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 | 25/09 | Línea de base con herramientas como ejecutores, dieciséis casos | ADR-040 (hoy ADR-053); D-41 | medición con personas; encuesta como línea de base | vigente; herramientas modificadas por ADR-076 |
 
 ## Entradas de la AE2
+
+### Entrada · Martes 13 de octubre de 2026 — Dictamen de la AE2 en pendientes y corrección del fundamento de ADR-078
+
+1. **Decisión adoptada.**
+   - **Dictamen DEV-AE2 N.º 14/2026.** Cargué en `00-gestion/pendientes.md` las observaciones del dictamen como DV2-01 a DV2-14, con dimensión y severidad, y guardé el PDF en `catedra/originales/`.
+   - **ADR-078.** Corregí su análisis: retiré el motivo de reclutar personas en O-A y O-C y dejé O-A fundado en la falta de registros, la entrevista con la referente y la reorientación del proyecto. La decisión no cambia.
+   - **Bitácora.** Decidí que el cierre de cada sesión siga dejando la entrada del día en la bitácora.
+2. **Alternativas y criterio de descarte (recortes).**
+   - **ADR-078.** Descarté reabrir la decisión: el cambio afecta solo el fundamento, no la alternativa elegida.
+   - **Bitácora.** Descarté suspender la entrada al cierre; registro el riesgo frente al apartado 11 del dictamen y reviso cada entrada antes de entregarla.
+   - **Pendientes.** Eliminé AD-25 (tope de API), sin objeto desde ADR-076.
+3. **Evidencia.**
+   - Dictamen DEV-AE2 N.º 14/2026 (apartados 2, 7, 8, 11, 13 y 14).
+   - CI en verde sobre `main` en `c9322e7` (10/10/2026), con el trabajo `referencia-nativa` de V1-12.
+4. **Aporte personal.** Decidí el criterio sobre la bitácora y la corrección del fundamento. Registré el aporte en `00-gestion/pendientes.md`, `00-gestion/estado.md` y ADR-078.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos dentro del equipo.
+6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidad: Claude Code procesó el dictamen en pendientes, actualizó estado y pendientes y redactó el borrador de esta entrada, que reviso.
+
+### Entrada · Viernes 9 de octubre de 2026 — Respuesta al dictamen: línea de base sobre el procedimiento delegado, relevamiento de la práctica y encuesta
+
+1. **Decisión adoptada.**
+   - **Línea de base (ADR-078, modifica ADR-053).** Mantuve la medición del procedimiento delegado: un agente que resuelve la consulta de configuración. El sujeto afectado sigue siendo el desarrollador. Declaré las 64 observaciones del AE1 como prueba informal, sin protocolo uniforme ni registros, y no uso sus valores. Fijé el error como criterio principal y los tokens como secundario, con su equivalente a precio de lista. Decidí medir con la skill nativa `customize-opencode` disponible y consultar al docente antes de medir.
+   - **Problemática.** La conservé: cambian la manifestación (el desarrollador delega en un agente) y la magnitud (error, aciertos parciales y tokens).
+   - **Relevamiento de la práctica.** Fijé dos afirmaciones: P1, la práctica de delegar, y P2, el error de los agentes con la configuración. Fijé también ocho fuentes, seis reglas y la fecha de corte del 09/10/2026 antes de buscar.
+   - **Encuesta.** La adopté como complemento, sin que bloquee la consulta. Agregué el consentimiento informado, la separación de los cambios de apariencia, el método principal, la pregunta del tiempo, el criterio de cierre (14 días y mínimo de 30 respuestas) y el plan de análisis.
+   - **Prototipo.** Pedí que el CI ejecute OpenCode 1.18.25 real y falle si difiere de la referencia (ficha V1-12).
+2. **Alternativas y criterio de descarte (recortes).**
+   - **Medición con personas (O-A).** La descarté: los datos del AE1 no tienen registros y el procedimiento actual, según la entrevista y la reorientación del proyecto, es la delegación.
+   - **Medición mixta (O-C).** La descarté porque duplica el instrumento; el costo humano lo releva la encuesta.
+   - **Datos del AE1 como piloto con valores (D-B).** Los descarté porque no hay registros que los respalden.
+   - **Tokens en el criterio principal (I-A).** Los descarté: una respuesta barata y equivocada no resuelve la consulta.
+   - **Skill desactivada (S-B).** La descarté porque mediría un agente más débil que el de cualquier usuario.
+   - **Encuesta.** Excluí la pregunta sobre la intención de usar RIGE, por sesgo hipotético y para no romper la neutralidad.
+   - **Codificación de incidencias.** Excluí la doble codificación; declaro el codificador único como límite.
+3. **Evidencia.**
+   - `opencode debug skill` en OpenCode 1.18.25, ejecutado en un contenedor limpio, lista `customize-opencode` como skill incorporada.
+   - Incidencias #14216 y #22247 (agente que modificó `opencode.json` con resultado erróneo). Reclasificación de las 32 de A.VI.6: ninguna de delegación, y #32581 corresponde a OpenClaw, no a OpenCode.
+   - Estudios verificados en arXiv: el modelo solo se equivoca y con un validador determinista mejora (89,06 % frente a 98,50 % en Ghorab et al., 2026). No hay estudios sobre precedencia entre varias fuentes.
+   - Stack Overflow 2025 y 2026, verificados en las páginas oficiales.
+   - Todo consta en `01-relevamiento/linea-base/relevamiento-delegacion.md`.
+4. **Aporte personal.**
+   - Aporté la causa de invalidez de los datos del AE1 y la observación de la referente sobre las correcciones con agentes.
+   - Decidí las alternativas de ADR-078, el enfoque de la encuesta y el consentimiento.
+   - Envié el correo de confirmación a la referente.
+   - Registré el aporte en ADR-078, el Anexo III (D-41), `PROTOCOLO-relevamiento-delegacion.md`, `borrador-encuesta-practica.md` y la ficha V1-12.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos dentro del equipo. Revisé con criterio propio las sugerencias de una segunda herramienta sobre la encuesta y acepté las que mejoraban la calidad de los datos.
+6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidad: Claude Code ejecutó las búsquedas, la reclasificación de incidencias y la verificación en contenedor, y redactó el protocolo, la encuesta, ADR-078 y el borrador de esta entrada. Codex (`gpt-6.1-sol`) implementó V1-12 en `src/`.
 
 ### Entrada · Jueves 1 de octubre de 2026 (incluye la noche del 30 de septiembre) — Cierre del incremento 0 y corrección de los Capítulos IV, V y X
 
