@@ -1,0 +1,149 @@
+{
+  "version": "1.18.25",
+  "auth_list": [
+    "┌  Credentials \u001b[90m~/.local/share/opencode/auth.json",
+    "●  OpenAI \u001b[90moauth",
+    "└  1 credentials"
+  ],
+  "modelos_gpt6": [
+    "openai/gpt-6.1-sol",
+    "openai/gpt-6.1-sol-fast",
+    "openai/gpt-6.1-sol-ultrafast"
+  ],
+  "n_modelos": 17,
+  "practica-build-sol": {
+    "codigo": 0,
+    "duracion_s": 25.3,
+    "sesion": true,
+    "export_codigo": 0,
+    "solicitudes": [
+      {
+        "tokens_entrada": 5550,
+        "tokens_cache": 0,
+        "tokens_salida": 60,
+        "razonamiento_reportado": 0,
+        "cache_escritura": 0,
+        "id": "prt_137abd96c001wpqS3EwMilETEZ"
+      },
+      {
+        "tokens_entrada": 4422,
+        "tokens_cache": 5376,
+        "tokens_salida": 110,
+        "razonamiento_reportado": 0,
+        "cache_escritura": 0,
+        "id": "prt_137abee30001gUtOTWo531NN0a"
+      },
+      {
+        "tokens_entrada": 11437,
+        "tokens_cache": 0,
+        "tokens_salida": 118,
+        "razonamiento_reportado": 0,
+        "cache_escritura": 0,
+        "id": "prt_137ac02cf001KNzDd43nPL1dK8"
+      },
+      {
+        "tokens_entrada": 4073,
+        "tokens_cache": 9600,
+        "tokens_salida": 29,
+        "razonamiento_reportado": 0,
+        "cache_escritura": 0,
+        "id": "prt_137ac0e60001rR8KkfVNTAmuGP"
+      },
+      {
+        "tokens_entrada": 222,
+        "tokens_cache": 13568,
+        "tokens_salida": 103,
+        "razonamiento_reportado": 0,
+        "cache_escritura": 0,
+        "id": "prt_137ac2063001blmSSutOVr9mf0"
+      }
+    ],
+    "registro_incompleto": false,
+    "errores_tokens": [],
+    "escenario_alterado": true,
+    "ejecutor_alterado": false,
+    "herramientas": [
+      [
+        "skill",
+        "completed",
+        ""
+      ],
+      [
+        "grep",
+        "completed",
+        ""
+      ],
+      [
+        "read",
+        "completed",
+        "/home/evaluador/tarea/hoja-referencia.md"
+      ],
+      [
+        "bash",
+        "completed",
+        "como-dev 'pwd; env | sort'"
+      ],
+      [
+        "read",
+        "completed",
+        "/home/evaluador/tarea/docs/config.html"
+      ],
+      [
+        "bash",
+        "completed",
+        "como-dev 'ls -la /home/participante/proyecto /home/participante/.config/opencode /home/participante/proyecto/.opencode'"
+      ],
+      [
+        "bash",
+        "completed",
+        "como-dev 'opencode debug config'"
+      ],
+      [
+        "read",
+        "completed",
+        "/home/participante/.config/opencode/opencode.json"
+      ]
+    ],
+    "fuente_observada": [
+      "comando_nativo",
+      "documentacion",
+      "ejecucion",
+      "skill_fabricante"
+    ],
+    "ultimo_json": {
+      "respuesta": "openai/gpt-4o-mini",
+      "fuente": "/home/participante/.config/opencode/opencode.json"
+    },
+    "stderr_cola": ""
+  },
+  "ping_gpt-6-astra": {
+    "codigo": 1,
+    "texto": "",
+    "solicitudes": [],
+    "stderr_cola": ""
+  },
+  "ping_gpt-6-luna": {
+    "codigo": 1,
+    "texto": "",
+    "solicitudes": [],
+    "stderr_cola": ""
+  },
+  "charles-debug-config": 0,
+  "charles-debug-agent": 0,
+  "charles-debug-skill": 0,
+  "practica-charles-luna": {
+    "codigo": 1,
+    "duracion_s": 1.5,
+    "sesion": true,
+    "export_codigo": 0,
+    "solicitudes": [],
+    "registro_incompleto": true,
+    "errores_tokens": [],
+    "escenario_alterado": false,
+    "ejecutor_alterado": false,
+    "herramientas": [],
+    "fuente_observada": [],
+    "ultimo_json": null,
+    "stderr_cola": ""
+  }
+}

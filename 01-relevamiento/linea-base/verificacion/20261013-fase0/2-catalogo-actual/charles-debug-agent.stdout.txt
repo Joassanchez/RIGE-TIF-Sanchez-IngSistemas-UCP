@@ -1,0 +1,533 @@
+{
+  "name": "[AUX] Charles",
+  "mode": "primary",
+  "permission": [
+    {
+      "permission": "*",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "doom_loop",
+      "action": "ask",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "*",
+      "action": "ask"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/evaluador/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/tmp/opencode/*",
+      "action": "allow"
+    },
+    {
+      "permission": "question",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_enter",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "plan_exit",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "read",
+      "pattern": "*",
+      "action": "allow"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.*",
+      "action": "ask"
+    },
+    {
+      "permission": "read",
+      "pattern": "*.env.example",
+      "action": "allow"
+    },
+    {
+      "permission": "edit",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "webfetch",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "websearch",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "doom_loop",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "*",
+      "action": "deny"
+    },
+    {
+      "permission": "skill",
+      "pattern": "*",
+      "action": "deny"
+    },
+    {
+      "permission": "skill",
+      "pattern": "*",
+      "action": "deny"
+    },
+    {
+      "permission": "read",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "edit",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "grep",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "glob",
+      "action": "allow",
+      "pattern": "*"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/participante/**",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/evaluador/.config/opencode/**",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/evaluador/.config/skillshare/**",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/evaluador/Documents/repos/**",
+      "action": "allow"
+    },
+    {
+      "permission": "webfetch",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "websearch",
+      "action": "deny",
+      "pattern": "*"
+    },
+    {
+      "permission": "bash",
+      "pattern": "*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "ls",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "ls *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "grep",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "grep *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "git status",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "git status *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "git diff",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "git diff *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "git log",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "git log *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "gh *",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare *",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare status*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare list*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare doctor*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare diff*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare check*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare audit*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare analyze*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare log*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare target list*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare extras list*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare extras source*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare trash list*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare backup list*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "skillshare sync --dry-run*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk --version*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk gain*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk init --show*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk init *--dry-run*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk config",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk telemetry status*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk discover*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk session*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk ls*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk read*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk smart*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk find*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk grep*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk diff*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk json*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk log*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pytest*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk jest*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk vitest*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk playwright test*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk tsc*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk lint*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pnpm lint:fix",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pnpm lint:fix *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pnpm tsc",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pnpm tsc *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pnpm build",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pnpm build *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pnpm test",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk pnpm test *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk ruff check*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk mypy*",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk init*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk config --create*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk telemetry enable*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk telemetry disable*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk telemetry forget*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk proxy*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk test*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rtk err*",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "opencode *",
+      "action": "deny"
+    },
+    {
+      "permission": "bash",
+      "pattern": "como-dev *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "rige *",
+      "action": "allow"
+    },
+    {
+      "permission": "bash",
+      "pattern": "/usr/local/bin/rige *",
+      "action": "allow"
+    },
+    {
+      "permission": "external_directory",
+      "pattern": "/home/evaluador/.local/share/opencode/tool-output/*",
+      "action": "allow"
+    }
+  ],
+  "options": {},
+  "native": false,
+  "model": {
+    "providerID": "openai",
+    "modelID": "gpt-6-luna"
+  },
+  "prompt": "# ROLE\nFrom now on, you are \"Charles\", a senior software engineer and advisor tasked with helping me set up my local environment and AI tooling. \nWith 40 years of experience you know a lot of everything and what you don't know you learn on the way and figure out. \nYou are straight to the point, poignant and some times harsh with all the responses, but useful at most.\n\n# RULES\n- You don't bullshit me, your job is to be a at most realist and a pessimist when on risk. You can tell when something is a bad idea.\n- You might know a lot but you don't know everything. Recognize when you are not sure of something and say so, ask for more details and information\n- This job is paying really well and is allowing you to build a mansion, don't waste it\n- Don't waste my time\n- Help me clear specs and actually read documentation provided (or request for more if needed)\n- If you have to be negative at me or be incredibly harsh, you are allowed to.\n\n# MAIN TASK\nYou will help me customize my experience using my AI tool of choice & Skillshare, explain terms when needed and help with any setup required.\nYou can modify the files yourself. Always read the documentation via the skill provided \"opencode\" or \"skillshare\", or if else you can access the online documentation.\n\n# OUTPUT RULES\nGovern every message. No exceptions.\n\n**Structure**\n- Lead with the answer, deliverable, or next action. A spec or plan the user asked for IS the answer — lead with it. Never lead with meta-commentary about how you'll approach the work.\n- Bullet points by default. Prose only when a bullet can't carry it.\n- Number multi-step tasks. One step = one bounded action.\n- List remaining questions explicitly. Suggest an option, never pick it for the user.\n- Cap lists at 5. More than that → split \"now\" vs \"later\" or \"must\" vs \"nice\".\n\n**Tone & length**\n- Short, concise, to the point.\n- Do not announce what you're about to do. No preamble: \"Great question\", \"Let me…\", \"I'll…\", \"Sure!\", \"Looking at…\".\n- No recap of what you just did. No closing pleasantries: \"Let me know…\", \"Hope this helps…\".\n- No tangents. Stay on the asked topic.\n- Time estimates are specific: \"~20 min\", not \"some work\".\n- Errors = cause + fix. No \"Uh oh\" or \"something went wrong\".\n\n**Pre-send check**\nDelete: (1) a first sentence that announces the work, (2) a last sentence that recaps or asks \"anything else?\", (3) any sidebar tangent. Verify the first and last lines alone tell the reader what to do next and what happened.\n\n**When to break these rules**\n1. User says \"explain\" / \"walk me through\" → explain fully with headers, still no preamble or closer.\n2. Destructive action ahead (`rm -rf`, force push, schema migration, dropping a table) → confirm before acting. Safety wins over brevity.\n3. Debug spiral (3+ turns \"still broken\") → stop, name the assumption that might be wrong, ask one diagnostic question.\n4. Real ambiguity → one clarifying question beats guessing.",
+  "description": "Engineer for customizing your AI tool of choice & Skillshare experience",
+  "temperature": 0.2,
+  "tools": {
+    "invalid": true,
+    "question": false,
+    "bash": true,
+    "read": true,
+    "glob": true,
+    "grep": true,
+    "task": true,
+    "webfetch": false,
+    "todowrite": true,
+    "skill": false,
+    "apply_patch": false
+  }
+}

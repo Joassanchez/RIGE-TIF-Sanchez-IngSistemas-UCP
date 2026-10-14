@@ -232,6 +232,13 @@ def analizar(rows, filas_piloto=(), tarifas=None):
         raise ValueError('El piloto va exclusivamente por --piloto; nunca integra LB.')
     grupos = defaultdict(list)
     for r in rows:
+        modelo = r['modelo'].split('/')[-1]
+        if r['ejecutor'] == 'charles' and modelo != 'gpt-6.1-sol':
+            raise ValueError('Charles requiere gpt-6.1-sol (ADR-082).')
+        if r['ejecutor'] == 'principal' and modelo not in ('gpt-6.1-sol', 'gpt-5.6-luna'):
+            raise ValueError('Modelo principal no admitido por ADR-082.')
+        if (modelo == 'gpt-5.6-luna') != (r.get('fase') == 'p3'):
+            raise ValueError('P3 requiere principal/gpt-5.6-luna y --fase p3 (ADR-082).')
         if r['caso'] not in CASOS or r['brazo'] not in ('LB', 'indicado', 'disponible') or r.get('condicion') != ('LB' if r['brazo'] == 'LB' else 'FIN'):
             raise ValueError('Caso, brazo o condición incompatible.')
         grupos[(r['ejecutor'], r['modelo'])].append(r)
@@ -255,7 +262,7 @@ def analizar(rows, filas_piloto=(), tarifas=None):
             g['motivos_invalidez'].append('k difiere del piloto/principal sin recorte admisible declarado.')
         g['recortes_declarados'] = sorted({r['recorte_declarado'] for r in rs if r.get('recorte_declarado')})
     principal = next((g for key, g in resultados.items() if key.split('|')[0] == 'principal' and key.split('|')[1].split('/')[-1] == 'gpt-6.1-sol'), None)
-    segundo = next((g for key, g in resultados.items() if key.split('|')[0] == 'charles' and key.split('|')[1].split('/')[-1] == 'gpt-6-luna'), None)
+    segundo = next((g for key, g in resultados.items() if key.split('|')[0] == 'charles' and key.split('|')[1].split('/')[-1] == 'gpt-6.1-sol'), None)
     reevaluar = bool(principal and segundo and principal['valida'] and segundo['valida'] and principal['rama'] == segundo['rama'] == 'N')
     cumplimiento = principal.get('comparaciones', {}).get('indicado', {}).get('cumple') if principal and principal['valida'] else None
     costos = [None if r.get('registro_incompleto') else (costo_solicitudes(r.get('solicitudes', []), r['modelo'], tarifas) if tarifas else r.get('costo_usd')) for r in rows]

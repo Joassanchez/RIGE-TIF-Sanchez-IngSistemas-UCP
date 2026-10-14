@@ -9,6 +9,9 @@ from pathlib import Path
 
 from comun import RESULTADOS, costo_solicitudes, hash_archivo, identificador, leer_jsonl
 
+DECISIONES = ('allow', 'ask', 'deny')
+MOTIVO_DECISION_MANUAL = 'Decisión en texto libre sin término explícito o con términos en conflicto (ADR-083).'
+
 
 def normalizar(value):
     return str(value).strip().lower().replace('`', '')
@@ -54,9 +57,37 @@ def separar(value, nombres):
     return [p.split(':', 1)[1].strip() if p.strip().lower().startswith(n + ':') else p.strip() for n, p in zip(nombres, pedazos)]
 
 
+def extraer_decision(value, esperado, sinonimos):
+    if valor(value, esperado, sinonimos):
+        return normalizar(esperado), 'exacta'
+    texto = normalizar(value)
+    encontradas = {decision for decision in DECISIONES
+                   if any(re.search(r'\b' + re.escape(normalizar(termino)) + r'\b', texto)
+                          for termino in (decision, *sinonimos.get(decision, [])))}
+    if len(encontradas) == 1:
+        return encontradas.pop(), 'termino_unico'
+    return None, 'revision_manual'
+
+
+def extraer_decisiones(value, partes, sinonimos):
+    nombres = [p['nombre'] for p in partes]
+    valores = separar(value, nombres)
+    esperadas = [normalizar(p['respuesta']) for p in partes]
+    # Preservar la comparación vigente, incluidas sus asignaciones por nombre.
+    if valores is not None and all(valor(v, p['respuesta'], sinonimos) for v, p in zip(valores, partes)):
+        return esperadas, 'exacta'
+    if not isinstance(value, str) or len(value.split(';')) != len(partes):
+        return None, 'revision_manual'
+    extracciones = [extraer_decision(v, p['respuesta'], sinonimos) for v, p in zip(valores, partes)]
+    if any(decision is None for decision, _ in extracciones):
+        return None, 'revision_manual'
+    return [decision for decision, _ in extracciones], 'termino_unico'
+
+
 def corregir(row, regla):
     out = dict(row, respuesta=None, fuente=None, resultado='sin_respuesta', motivo='',
-               sigue_documentacion=False, adjudicado_manual=False)
+               sigue_documentacion=False, adjudicado_manual=False,
+               decision_extraida=None, regla_extraccion='exacta')
     texto = row.get('respuesta_textual', '')
     out['hash_respuesta'] = hashlib.sha256(texto.encode()).hexdigest()
     try:
@@ -77,13 +108,28 @@ def corregir(row, regla):
     if isinstance(obj['respuesta'], str) and normalizar(obj['respuesta']) in ('sin respuesta', 'me niego', 'no puedo responder'):
         out['motivo'] = 'negativa'
         return out
-    out['sigue_documentacion'] = row['caso'] == 'C-3b' and valor(obj['respuesta'], 'deny', regla['sinonimos'])
+    partes = regla.get('partes', [])
+    permisos = (all(normalizar(p['respuesta']) in DECISIONES for p in partes) if partes
+                else normalizar(regla['respuesta']) in DECISIONES)
+    if permisos:
+        if partes:
+            decision, extraccion = extraer_decisiones(obj['respuesta'], partes, regla['sinonimos'])
+        else:
+            decision, extraccion = extraer_decision(obj['respuesta'], regla['respuesta'], regla['sinonimos'])
+        out.update(decision_extraida=decision, regla_extraccion=extraccion)
+        if extraccion == 'revision_manual':
+            out.update(resultado='revision_manual', motivo=MOTIVO_DECISION_MANUAL)
+            return out
+    out['sigue_documentacion'] = row['caso'] == 'C-3b' and out['decision_extraida'] == 'deny'
     if regla['revision_manual']:
         out.update(resultado='revision_manual', motivo=regla['motivo_revision'])
         return out
-    partes = regla.get('partes', [])
     if partes:
         nombres = [p['nombre'] for p in partes]
+    if permisos:
+        esperada = [normalizar(p['respuesta']) for p in partes] if partes else normalizar(regla['respuesta'])
+        correcta = out['decision_extraida'] == esperada
+    elif partes:
         valores = separar(obj['respuesta'], nombres)
         if valores is None:
             out.update(resultado='revision_manual', motivo='Respuesta compuesta sin asignación inequívoca por partes.')

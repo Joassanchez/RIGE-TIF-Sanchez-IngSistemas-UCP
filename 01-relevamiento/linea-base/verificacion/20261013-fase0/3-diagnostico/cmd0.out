@@ -1,0 +1,22 @@
+/home/participante/proyecto
+HOME=/home/participante
+HOSTNAME=95f3792f814f
+LANG=C.UTF-8
+LC_CTYPE=C.UTF-8
+LOGNAME=participante
+MAIL=/var/mail/participante
+OLDPWD=/home/participante
+OPENCODE_DISABLE_AUTOUPDATE=1
+OPENCODE_DISABLE_MODELS_FETCH=1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+PWD=/home/participante/proyecto
+SHELL=/bin/bash
+SHLVL=1
+SUDO_COMMAND=/bin/bash -c bash -c cd\ "$HOME/proyecto"\ &&\ pwd;\ env\ |\ sort
+SUDO_GID=1002
+SUDO_HOME=/home/evaluador
+SUDO_UID=1002
+SUDO_USER=evaluador
+TERM=unknown
+USER=participante
+_=/usr/bin/env

@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "sha256_hoja": "25a49cabd878d6bde4cd71016e13a458363e2e42af32cdd7170fb90cab3099bb",
+  "sha256_hoja": "68ca1bfdaa0fb0fc3da7c2dd1584dbaa001b1b264556849627ff688ee9bbc0f3",
   "regex": "re.IGNORECASE; texto sin backticks; AND dentro de cada grupo, OR entre grupos; conflictos a revisión manual",
-  "hoja_cerrada": false,
+  "hoja_cerrada": true,
   "casos": {
     "C-1a": {
       "condicion": "C-1",

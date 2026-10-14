@@ -23,6 +23,8 @@ HOME_E = Path('/home/evaluador')
 HOME_P = Path('/home/participante')
 CASOS = [f'C-{c}{v}' for c in range(1, 5) for v in 'abcdef']
 TOKEN_FIELDS = ('tokens_entrada', 'tokens_cache', 'tokens_salida')
+HASH_CATALOGO = '515672f64e5e6c83b715d67f57bedbdd6fe0abd9e3e786176974ef902b8d1219'
+GENERADOS_OPENCODE = {'node_modules', 'package.json', 'package-lock.json', 'bun.lock', 'bun.lockb', '.gitignore'}
 PREGUNTAS = {
     'C-1a': '¿Con qué modelo corre el agente `build` en este proyecto, y qué archivo lo determina?',
     'C-1b': 'Si el agente `build` usa la herramienta `webfetch`, ¿qué ocurre, y qué archivo lo determina?',
@@ -70,14 +72,17 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def hash_arbol(roots):
+def hash_arbol(roots, excluir=()):
     h = hashlib.sha256()
     for root in map(Path, roots):
         h.update(str(root).encode() + b'\0')
         if not root.exists():
             h.update(b'AUSENTE\0')
             continue
-        paths = sorted(root.rglob('*')) if root.is_dir() else [root]
+        # Excluir sólo entradas de primer nivel y podar sus subárboles antes
+        # de recorrerlos: las dependencias pueden cambiar durante el run.
+        paths = sorted(p for entrada in root.iterdir() if entrada.name not in excluir
+                       for p in [entrada, *entrada.rglob('*')]) if root.is_dir() else [root]
         for p in paths:
             if '.git' in p.relative_to(root.parent).parts:
                 continue
@@ -94,7 +99,9 @@ def hash_arbol(roots):
 
 def hash_escenario():
     # Sólo el bloque del caso, no las preferencias ajenas de bash.
-    h = hashlib.sha256(hash_arbol([HOME_P / 'proyecto', HOME_P / '.config/opencode']).encode())
+    proyecto = hash_arbol([HOME_P / 'proyecto'])
+    config = hash_arbol([HOME_P / '.config/opencode'], excluir=GENERADOS_OPENCODE)
+    h = hashlib.sha256((proyecto + config).encode())
     bashrc = (HOME_P / '.bashrc').read_text()
     bloque = re.search(r'^# >>> entorno local >>>$.*?^# <<< entorno local <<<$', bashrc, re.M | re.S)
     h.update((bloque[0] if bloque else '').encode())
@@ -258,11 +265,72 @@ def como_evaluador(args, entorno=None):
 def congelar_ejecutor(ejecutor):
     origen = BASE / 'ejecutores' / ejecutor
     destino = HOME_E / '.config/opencode'
-    if destino.exists():
-        shutil.rmtree(destino)
-    shutil.copytree(origen, destino)
+    destino.mkdir(parents=True, exist_ok=True)
+    for entrada in destino.iterdir():
+        if entrada.name in GENERADOS_OPENCODE:
+            continue
+        if entrada.is_dir() and not entrada.is_symlink():
+            shutil.rmtree(entrada)
+        else:
+            entrada.unlink()
+    shutil.copytree(origen, destino, dirs_exist_ok=True,
+                    ignore=lambda carpeta, nombres: GENERADOS_OPENCODE.intersection(nombres) if Path(carpeta) == origen else ())
     subprocess.run(['chown', '-R', 'evaluador:evaluador', str(destino)], check=True)
-    return hash_arbol([origen]), hash_arbol([destino])
+    return (hash_arbol([origen], excluir=GENERADOS_OPENCODE),
+            hash_arbol([destino], excluir=GENERADOS_OPENCODE))
+
+
+def instalar_catalogo(origen):
+    if not origen.is_file() or sha(origen) != HASH_CATALOGO:
+        raise ValueError('Catálogo ausente o SHA-256 distinto del congelado; usar contenedor.sh medir.')
+    cache = HOME_E / '.cache/opencode'
+    cache.mkdir(parents=True, exist_ok=True)
+    destino = cache / 'models.json'
+    shutil.copyfile(origen, destino)
+    destino.chmod(0o644)
+    for path in (cache.parent, cache, destino):
+        shutil.chown(path, user='evaluador', group='evaluador')
+    return sha(destino)
+
+
+def seleccionar_pares(casos, k, semilla, pares=None):
+    if pares is not None:
+        trabajos = []
+        for par in pares.split(','):
+            match = re.fullmatch(r'(C-[1-4][a-f]):([1-9][0-9]*)', par)
+            if not match or match[1] not in casos or int(match[2]) > k:
+                raise ValueError('--pares requiere caso:repetición, casos seleccionados y repetición entre 1 y k.')
+            trabajos.append((match[1], int(match[2])))
+        if len(set(trabajos)) != len(trabajos):
+            raise ValueError('--pares contiene un par repetido.')
+        return trabajos
+    trabajos = [(c, r) for c in casos for r in range(1, k + 1)]
+    random.Random(semilla).shuffle(trabajos)
+    return trabajos
+
+
+def limite_cuota(evidencia):
+    return bool(re.search(r'(?:status(?:Code)?|HTTP|status code)[\s\x22:=]+429\b|rate[_ -]limit|usage[_ -]limit|Too Many Requests', evidencia, re.I))
+
+
+def clasificar_fallo(codigo, stderr, eventos_stdout):
+    # Sólo los errores del stdout original: herramientas, texto, tokens y
+    # partes recuperadas por export no son evidencia de fallo del proveedor.
+    errores = [e for e in eventos_stdout if e.get('type') == 'error']
+    evidencia = stderr + '\n' + '\n'.join(json.dumps(e, ensure_ascii=False) for e in errores)
+    if codigo in (0, 124, 137) and not errores:
+        return False, False, evidencia
+    cuota = limite_cuota(evidencia)
+    transitorio = cuota or bool(re.search(r'(?:status(?:Code)?|HTTP|status code)[\s\x22:=]+5\d\d\b', evidencia, re.I))
+    return cuota, transitorio, evidencia
+
+
+def detener_por_cuota(salida, caso, repeticion, evidencia):
+    hora = datetime.now(timezone.utc).isoformat()
+    (salida / 'DETENCION.txt').write_text(
+        f'Límite de cuota persistente tras tres intentos. Par: {caso}:{repeticion}\n'
+        f'Hora (UTC): {hora}\nEvidencia del último intento:\n{evidencia}\n', encoding='utf-8')
+    raise SystemExit(3)
 
 
 def main():
@@ -277,8 +345,9 @@ def main():
     p.add_argument('--limite', type=int, default=600)
     p.add_argument('--semilla', type=int, default=20261013)
     p.add_argument('--casos', default=','.join(CASOS))
+    p.add_argument('--pares', help='Sólo estos pares caso:repetición, separados por comas, en el orden indicado.')
     p.add_argument('--ensayo', action='store_true')
-    p.add_argument('--fase', choices=['piloto', 'medicion'], default='medicion')
+    p.add_argument('--fase', choices=['medicion', 'p3'], default='medicion', help='p3: tanda opcional principal/gpt-5.6-luna, aprobada por el autor (ADR-082).')
     p.add_argument('--recorte-declarado', help='Motivo del recorte de k permitido por ADR-076/079; nunca en principal/gpt-6.1-sol')
     p.add_argument('--rige-descripcion', help='Texto congelado de la fila de RIGE, contrastado con --help')
     a = p.parse_args()
@@ -291,22 +360,26 @@ def main():
     casos = a.casos.split(',')
     if len(set(casos)) != len(casos) or not set(casos) <= set(CASOS):
         p.error('Lista de casos inválida.')
+    try:
+        trabajos = seleccionar_pares(casos, a.k, a.semilla, a.pares)
+    except ValueError as error:
+        p.error(str(error))
     if (a.condicion == 'LB') != (a.brazo == 'LB'):
         p.error('LB requiere brazo LB; FIN requiere indicado o disponible.')
-    if a.ejecutor == 'charles' and a.modelo != 'openai/gpt-6-luna':
-        p.error('Charles conserva openai/gpt-6-luna.')
-    if a.ejecutor == 'principal' and a.modelo not in ('openai/gpt-6.1-sol', 'openai/gpt-6-astra', 'openai/gpt-6-luna'):
-        p.error('Principal: sólo los tres modelos congelados de ADR-076.')
+    if a.ejecutor == 'charles' and a.modelo != 'openai/gpt-6.1-sol':
+        p.error('Charles requiere openai/gpt-6.1-sol (ADR-082).')
+    if a.ejecutor == 'principal' and a.modelo not in ('openai/gpt-6.1-sol', 'openai/gpt-5.6-luna'):
+        p.error('Principal: openai/gpt-6.1-sol o openai/gpt-5.6-luna con --fase p3 (ADR-082).')
+    if (a.modelo == 'openai/gpt-5.6-luna') != (a.fase == 'p3'):
+        p.error('--fase p3 requiere principal/openai/gpt-5.6-luna, y ese modelo requiere --fase p3.')
     if a.recorte_declarado and a.ejecutor == 'principal' and a.modelo == 'openai/gpt-6.1-sol':
         p.error('ADR-076/079: no recortar k del ejecutor y modelo principales.')
-    agente = 'build' if a.ejecutor == 'principal' else 'charles'
+    agente = 'build' if a.ejecutor == 'principal' else '[AUX] Charles'
     if a.agente and a.agente != agente:
         p.error('El agente debe coincidir con el ejecutor congelado.')
-    if a.fase == 'piloto' and (a.k != 10 or casos != CASOS or a.ejecutor != 'principal' or a.modelo != 'openai/gpt-6.1-sol' or a.condicion != 'LB'):
-        p.error('Piloto: principal/gpt-6.1-sol, 24 casos, k=10, LB.')
     indicacion = (BASE / 'indicacion.txt').read_text(encoding='utf-8')
     if a.brazo == 'indicado' and ('[DECISIÓN PENDIENTE' in indicacion or not indicacion.strip()):
-        p.error('Brazo indicado bloqueado: fijar vm/indicacion.txt antes del piloto.')
+        p.error('Brazo indicado bloqueado: fijar vm/indicacion.txt antes de medir.')
     if a.condicion == 'FIN' and (not shutil.which('rige') or not a.rige_descripcion):
         p.error('[DECISIÓN PENDIENTE: instalar RIGE congelado y fijar su fila de referencia contrastada con --help]')
     if a.ensayo:
@@ -339,6 +412,10 @@ def main():
     if not tarifas_path.exists():
         p.error('Falta la copia root de tarifas congeladas; usar contenedor.sh medir.')
     tarifas = json.loads(tarifas_path.read_text())
+    try:
+        hash_catalogo = instalar_catalogo(BASE / 'modelos.json')
+    except ValueError as error:
+        p.error(str(error))
     freeze, hash_config = congelar_ejecutor(a.ejecutor)
     manifiesto = json.loads((BASE / 'ejecutores/congeladas.json').read_text())
     for nombre, esperado in manifiesto['archivos'].items():
@@ -364,18 +441,19 @@ def main():
         hoja = hoja.replace('## Documentación', f'| `rige` | {a.rige_descripcion} |\n\n## Documentación')
     hoja_path = HOME_E / 'tarea/hoja-referencia.md'
     hoja_path.write_text(hoja)
-    trabajos = [(c, r) for c in casos for r in range(1, a.k + 1)]
-    random.Random(a.semilla).shuffle(trabajos)
     meta = vars(a) | {'agente': agente, 'orden': trabajos, 'inicio': datetime.now(timezone.utc).isoformat(),
         'version_opencode': '1.18.25', 'hash_binario': sha(shutil.which('opencode')),
         'hash_ejecutor': freeze, 'hash_instruccion': hashlib.sha256(INSTRUCCION.encode()).hexdigest(),
         'hash_indicacion': sha(BASE / 'indicacion.txt'), 'hash_hoja': sha(hoja_path), 'hash_tarifas': sha(tarifas_path),
+        'hash_catalogo': hash_catalogo,
+        'exclusiones_hash': sorted(GENERADOS_OPENCODE),
         'hash_arnes': sha(BASE / 'medir.sh'), 'hash_preguntas': hashlib.sha256(json.dumps(PREGUNTAS, sort_keys=True).encode()).hexdigest(),
         'verificacion_flags': 'opencode run --help como evaluador; run-help.txt',
         'extraccion_tokens': 'step_finish.part.tokens.input + cache.read + output; por solicitud; no duplicar part.id; export completo por sesión para incluir hijos y censura',
-        'verificacion_tokens_proveedor_real': '[VERIFICAR: contrastar semántica de input/cache/output/reasoning y export/API en fase 0; evidencia local sólo acredita estructura]'}
+        'verificacion_tokens_proveedor_real': 'verificacion/20261013-fase0/: input excluye cache.read; stdout y export coinciden. reasoning=0: no verificable si output incluye razonamiento; hijos y censura requieren comprobación adicional.'}
     (salida / 'tanda.json').write_text(json.dumps(meta, ensure_ascii=False, indent=2) + '\n')
     registro = salida / 'registro.jsonl'
+    registro.touch()
     for caso, repeticion in trabajos:
         congelar_ejecutor(a.ejecutor)
         todos_solicitudes, todos_tools, intentos = [], [], []
@@ -383,6 +461,7 @@ def main():
         inicio = datetime.now(timezone.utc).isoformat()
         principio = time.monotonic()
         duracion_ejecuciones = 0
+        fallo_preparacion = False
         for intento in range(3):
             prefijo = crudo / f'{caso}-{repeticion}-{intento}'
             with (Path(str(prefijo) + '.activacion.txt')).open('wb') as out:
@@ -397,6 +476,16 @@ def main():
                 instruccion += '\n' + indicacion
             entorno = {'COMO_DEV_DIR': directorio}
             modelo_ejecutado = a.modelo
+            codigo = ejecutar(como_evaluador(['como-dev', 'opencode debug config'], entorno),
+                              str(prefijo) + '.preparacion.stdout.txt', str(prefijo) + '.preparacion.stderr.txt')
+            if codigo:
+                fallo_preparacion = incompleto = True
+                parsed = {'respuesta_textual': ''}
+                intentos.append(dict(intento=intento, codigo_salida=codigo, fallo_preparacion=True,
+                    hash_antes=None, hash_despues=None, hash_ejecutor_antes=None, hash_ejecutor_despues=None,
+                    duracion_s=0, transitorio=False, censurado=False,
+                    archivo_evidencia=f'crudo/{prefijo.name}.preparacion.stdout.txt', errores_tokens=[]))
+                break
             proveedor = None
             temporal = None
             try:
@@ -424,26 +513,26 @@ def main():
                 if warmcode:
                     raise RuntimeError('No se pudo preparar/verificar el ejecutor; no medir sobre ese fallo.')
                 antes = hash_escenario()
-                antes_e = hash_arbol([HOME_E / '.config/opencode'])
+                antes_e = hash_arbol([HOME_E / '.config/opencode'], excluir=GENERADOS_OPENCODE)
                 outpath, errpath = str(prefijo) + '.stdout.txt', str(prefijo) + '.stderr.txt'
                 inicio_run = time.monotonic()
                 codigo = ejecutar(como_evaluador(['opencode', 'run', '--model', modelo_ejecutado, '--agent', agente, '--format', 'json', instruccion], entorno), outpath, errpath, a.limite)
                 duracion_run = time.monotonic() - inicio_run
                 duracion_ejecuciones += duracion_run
                 despues = hash_escenario()
-                despues_e = hash_arbol([HOME_E / '.config/opencode'])
+                despues_e = hash_arbol([HOME_E / '.config/opencode'], excluir=GENERADOS_OPENCODE)
                 parsed = extraer_eventos(Path(outpath).read_text(errors='replace'))
+                cuota, transitorio, evidencia = clasificar_fallo(
+                    codigo, Path(errpath).read_text(errors='replace'), parsed['eventos'])
                 if parsed['sesiones_hijas'] or codigo in (124, 137):
                     parsed = recuperar_sesiones(parsed, prefijo, entorno)
                 Path(str(prefijo) + '.eventos.txt').write_text(''.join(json.dumps(e, ensure_ascii=False) + '\n' for e in parsed['eventos']))
                 todos_solicitudes.extend(parsed['solicitudes'])
                 todos_tools.extend(parsed['herramientas'])
                 incompleto |= parsed['registro_incompleto'] or antes != despues or antes_e != despues_e
-                evidencia = Path(errpath).read_text(errors='replace') + Path(outpath).read_text(errors='replace')
-                transitorio = codigo not in (124, 137) and bool(re.search(r'(?:status(?:Code)?|HTTP|status code)[\s\x22:=]+(?:429|5\d\d)\b|rate[_ -]limit|Too Many Requests', evidencia, re.I))
                 intentos.append(dict(intento=intento, codigo_salida=codigo, hash_antes=antes, hash_despues=despues,
                                      duracion_s=duracion_run,
-                                     hash_ejecutor_antes=antes_e, hash_ejecutor_despues=despues_e, transitorio=transitorio,
+                                     hash_ejecutor_antes=antes_e, hash_ejecutor_despues=despues_e, transitorio=transitorio, limite_cuota=cuota,
                                      censurado=codigo in (124, 137), archivo_evidencia=f'crudo/{prefijo.name}.stdout.txt',
                                      errores_tokens=parsed['errores_tokens']))
             finally:
@@ -453,8 +542,10 @@ def main():
                 if temporal:
                     temporal.cleanup()
             if not transitorio or intento == 2:
+                if cuota and intento == 2:
+                    detener_por_cuota(salida, caso, repeticion, evidencia)
                 break
-            time.sleep(1)
+            time.sleep((30, 120)[intento] if cuota else 1)
         # Incluye el consumo de todos los intentos, incluso errores y censura.
         totales = {k: sum(s[k] for s in todos_solicitudes) if not incompleto else None for k in TOKEN_FIELDS}
         precio = next((m for m in tarifas['modelos'] if m['modelo'] == a.modelo.split('/')[-1]), None)
@@ -475,6 +566,7 @@ def main():
             ejecutor_alterado=int(any(i['hash_ejecutor_antes'] != i['hash_ejecutor_despues'] for i in intentos)),
             respuesta_textual=parsed['respuesta_textual'], archivo_evidencia=intentos[-1]['archivo_evidencia'],
             herramientas=todos_tools, registro_incompleto=incompleto, costo_usd=costo,
+            fallo_preparacion=fallo_preparacion,
             hash_ejecutor=freeze, modelo_ejecutado=modelo_ejecutado, **totales, **observar(todos_tools))
         row['hash_instruccion'] = hashlib.sha256(instruccion.encode()).hexdigest()
         if a.condicion == 'LB':

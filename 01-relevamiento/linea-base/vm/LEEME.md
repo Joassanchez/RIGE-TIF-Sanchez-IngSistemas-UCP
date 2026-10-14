@@ -1,6 +1,6 @@
 # Contenedor Ubuntu 26.04 de la línea base
 
-La imagen común del oráculo y de la medición sigue ADR-054 y §3 de `../DISENO-medicion-agentes.md`. Usa Linux x86_64 y OpenCode 1.18.25 nativo. La hoja de respuestas (`../respuestas.md` y su futura versión JSON) permanece en el anfitrión: nunca se envía al contexto de construcción, se copia a la imagen ni entra al contenedor.
+La imagen común del oráculo y de la medición sigue ADR-054 y §3 de `../DISENO-medicion-agentes.md`. Usa Linux x86_64 y OpenCode 1.18.25 nativo. La hoja de respuestas (`../respuestas.md` y su versión JSON) permanece en el anfitrión: nunca se envía al contexto de construcción, se copia a la imagen ni entra al contenedor.
 
 | Archivo | Función |
 |---|---|
@@ -185,7 +185,7 @@ La consola se elimina al salir y no exporta evidencia automáticamente. Para cap
 
 ADR-054 permite salida a la API para la medición; el oráculo, estas capturas y las tandas de ensayo permanecen con `--network none`. MED-4b agrega `medir.sh` y el subcomando `medir`. Las credenciales se suministran sólo al ejecutar, por variable de entorno, nunca por `ARG`, `ENV` permanente, `COPY`, archivo del contexto o montaje del repositorio. `participante` permanece sin credenciales y el ejecutor arranca como `evaluador` en `~/tarea`.
 
-El diseño vigente §3.4 prevé autenticación por suscripción, mientras ADR-054 describe credencial por variable de entorno: esa compatibilidad se verifica en la fase 0 y no se resuelve autenticando durante la construcción. Tampoco se deben pasar credenciales al comando `verificar`, que no las necesita.
+El diseño vigente §3.4 prevé autenticación por suscripción, mientras ADR-054 describe credencial por variable de entorno: esa compatibilidad quedó verificada en la fase 0 del 13/10/2026 y no se resuelve autenticando durante la construcción. Tampoco se deben pasar credenciales al comando `verificar`, que no las necesita.
 
 La hoja de referencia original conserva las indicaciones para personas. MED-4b prepara en cada tanda la copia del ejecutor quitando «Cómo responder» y «No disponible durante la sesión»; en FIN agrega la fila congelada de RIGE. La documentación del ejecutor está en `~/tarea/docs/index.html`, como indica el mensaje de la tarea. La hoja original no se modifica.
 
@@ -222,7 +222,7 @@ permanece sólo accesible a root en el contenedor. El proveedor escucha en
 
 `medir.sh` aleatoriza pares caso/repetición con semilla registrada, activa el
 escenario antes de cada intento, corre sólo OpenCode como evaluador, aplica
-`timeout` y reintenta hasta dos veces ante 429/5xx reconocibles. Guarda cada
+`timeout` y reintenta hasta dos veces ante límites de cuota o 5xx reconocibles. Guarda cada
 intento y sus hashes. La duración medida comprende los procesos `opencode run`,
 sin activación, introspección ni esperas; `duracion_total_s` conserva el tiempo
 del circuito. El consumo incluye los intentos fallidos. Las pérdidas de consumo
@@ -231,7 +231,7 @@ repetir el caso antes de la medición definitiva.
 
 La evidencia sale mediante `docker cp`, también cuando la tanda falla. No hay
 montajes ni socket Docker. Las tarifas se copian por `docker cp` a un archivo
-root temporal; la hoja real de respuestas y las herramientas de corrección
+root temporal, igual que el catálogo congelado; la hoja real de respuestas y las herramientas de corrección
 jamás entran en la imagen ni en el contenedor. `.dockerignore` es una lista de
 inclusión y rechaza explícitamente `respuestas.md` y `respuestas.json`.
 
@@ -248,7 +248,7 @@ python herramientas/corregir.py /ruta/LB/registro.jsonl \
   --salida /ruta/LB/adjudicado.jsonl
 python herramientas/analizar.py /ruta/LB/adjudicado.jsonl \
   /ruta/FIN-indicado/adjudicado.jsonl /ruta/FIN-disponible/adjudicado.jsonl \
-  --piloto /ruta/piloto/adjudicado.jsonl --destino /ruta/analisis
+  --destino /ruta/analisis
 ```
 
 La adjudicación es un CSV separado (`id,hash_respuesta,resultado,motivo`); el
@@ -264,52 +264,132 @@ estricto `entrada + caché > 272000`, y usa exclusivamente el archivo congelado.
 
 ### Configuraciones, autenticación y fase 0
 
-`vm/ejecutores/` identifica y verifica por SHA-256 ambas configuraciones. Charles
-conserva el cuerpo de la instrucción recibido y temperatura 0,2; cambia `edit`
-y los `ask` a `deny`, deniega las skills y permite `como-dev` y `rige`. La
-excepción `/home/participante/**` permite leer el escenario separado; el resto
-de sus excepciones se conserva. También se deniegan `doom_loop` y el acceso
-externo por defecto para retirar los `ask` nativos. No se aplica el `bash:
-allow` del principal a Charles. Se guardan `debug config`, `debug agent` y
-`debug skill` como evidencia; hay que revisar su configuración efectiva y
-comprobar lectura e invocación de RIGE antes del piloto, en ambos brazos.
+ADR-082 fija **k = 3 antes de medir, sin piloto**. Se ejecutan primero
+`principal` (`build`) y después `charles` (`[AUX] Charles`), ambos con
+`openai/gpt-6.1-sol`: 144 ejecuciones (24 × 3 × 2). Las tasas por caso se
+informan sin excluir los casos inestables (1/3 o 2/3).
 
-Para una tanda real, `OPENCODE_AUTH_JSON` contiene el **objeto completo** del
-`auth.json` de OpenCode, incluida la entrada OAuth `openai` de la suscripción.
-El envoltorio pasa sólo el nombre de la variable a Docker. El arnés la consume
-sin imprimirla ni agregarla a argumentos, crea `auth.json` con modo 600 para
-evaluador sólo en el contenedor descartable y la retira del entorno de los
-subprocesos. Hay que verificar la autenticación y los modelos disponibles en
-fase 0; no se autentica durante la construcción ni se suministra la credencial
-al ensayo. Usar los ocho parámetros explícitos en una tanda real: `--tanda`,
-`--condicion`, `--modelo`, `--k`, `--limite`, `--semilla`, `--ejecutor`, `--brazo`.
-Charles sólo admite `openai/gpt-6-luna`. Un recorte de k requiere
-`--recorte-declarado`; no se admite en principal/gpt-6.1-sol.
+`vm/ejecutores/` verifica por SHA-256 ambas configuraciones. Charles conserva
+el cuerpo de la instrucción, temperatura 0,2 y estructura de permisos de la
+variante: `edit`, `ask`, skills, `doom_loop` y acceso externo por defecto en
+`deny`; excepciones `como-dev`, `rige` y `/home/participante/**`. Su único
+cambio adicional es el modelo: `gpt-6-luna` no está disponible con la
+suscripción en 1.18.25. La fase 0 (`../verificacion/20261013-fase0/`, resultado
+7) acredita el nombre efectivo y los permisos; cada tanda guarda `debug
+config`, `debug agent '[AUX] Charles'` y `debug skill` para revisar la variante
+actualizada. Comprobar lectura e invocación de RIGE en ambos brazos antes de
+FIN, sin ampliar permisos deliberadamente denegados.
 
-**Flags:** `vm/docs/cli.html`, sección `run`, documenta `--model`, `--agent` y
-`--format json`. No se comprobó `opencode run --help` dentro del contenedor en
-esta tarea. Cada tanda lo ejecuta como evaluador, guarda `run-help.txt` y se
-detiene **antes de medir** si falta alguna opción. `DETENCION.txt` propone el
-servidor/API con selección explícita como alternativa pendiente de decisión.
+**Catálogo:** `contenedor.sh medir` copia
+`../catalogo-modelos-20261013.json` por `docker cp` a
+`/opt/linea-base/modelos.json`, también en ensayo. El arnés exige SHA-256
+`515672f64e5e6c83b715d67f57bedbdd6fe0abd9e3e786176974ef902b8d1219` y lo
+instala en `/home/evaluador/.cache/opencode/models.json`, dueño evaluador y
+modo 644, antes de `run --help` y de los `debug`. Registra `hash_catalogo` en
+`tanda.json`; se mantiene `OPENCODE_DISABLE_MODELS_FETCH=1`. El catálogo
+incluido en 1.18.25 no conoce ningún `gpt-6` (fase 0, resultado 2).
 
-**Tokens:** las trazas locales de MED-4a (por ejemplo
-`verificacion/20261013-permisos/C-4a/bash/run.stdout.jsonl`) acreditan
-`step_finish.part.tokens.input/output/cache.read/cache.write/reasoning`; allí
-los consumos son cero. Se suma `input + cache.read + output`, sin duplicar
-`part.id`. Suposición pendiente de contrastar con el proveedor real: `input`
-ya excluye caché y `output` ya incluye el razonamiento facturable; no se vuelve
-a sumar `reasoning`. **[VERIFICAR: semántica de tokens del proveedor real]**.
-Cuando hay `task` o censura, se exporta la sesión y sus hijas, obtenidas de
-`state.metadata.sessionId`. Se exige el esquema `info.id/messages[].parts[]`,
-con partes `step-finish`; un esquema distinto o export fallido marca el
-consumo incompleto. **[VERIFICAR: esquema de export y recuperación de hijos y
-censura en 1.18.25]**. No se suman los mismos pasos de export y stdout.
+**Preparación:** tras activar cada intento, `como-dev 'opencode debug config'`
+corre una vez como participante con su entorno de inicio de sesión y el
+`DIR` del caso, antes del hash y del cronómetro. La primera introspección crea
+`~/.config/opencode/.gitignore` (fase 0, resultado 5). Se guardan
+`<prefijo>.preparacion.stdout.txt` y `.stderr.txt`; si falla se registra
+`fallo_preparacion=true`, sin `run`, con consumo incompleto y duración medida
+cero. Se usan los mismos permisos y el mismo envoltorio del participante.
+
+**Archivos generados y hashes (AR-10):** en la primera tanda real del
+13/10/2026, 21:32, el ingeniero observó en `C-4a:3` que OpenCode instaló por
+su cuenta dependencias en `~evaluador/.config/opencode` con red habilitada.
+La instalación cambió el hash del ejecutor durante `run`: `ejecutor_alterado=1`
+y registro incompleto, con escenario intacto y sin errores. Borrar toda la
+carpeta al congelar el ejecutor provocaba una nueva instalación en cada
+ejecución. Este hallazgo comunicado por el ingeniero complementa AR-10 y la
+creación de `.gitignore` aislada en la fase 0, resultado 5
+(`../verificacion/20261013-fase0/LEEME.md`).
+
+Por decisión del autor, `congelar_ejecutor` conserva las entradas generadas
+de primer nivel: `node_modules`, `package.json`, `package-lock.json`,
+`bun.lock`, `bun.lockb` y `.gitignore`; elimina las demás entradas y repone
+los archivos congelados. Esos nombres y todo su contenido se excluyen de
+los hashes de las carpetas de configuración de OpenCode del evaluador y
+del participante. `tanda.json` registra la lista ordenada en
+`exclusiones_hash`. `opencode.json`, `agents/`, `skills/` y cualquier otra
+entrada nueva siguen integrando el hash. Los mismos nombres dentro de esas
+subcarpetas también se hashean. El proyecto del participante se hashea
+completo: un `node_modules` nuevo allí sí altera el escenario.
+
+**Autenticación:** verificada en fase 0 con ChatGPT Plus. Para una tanda real,
+`OPENCODE_AUTH_JSON` contiene el objeto completo de `auth.json`, incluida la
+entrada OAuth `openai`. El envoltorio pasa sólo el nombre de la variable a
+Docker; el arnés la consume sin imprimirla, crea `auth.json` con modo 600 para
+evaluador y la retira del entorno de los subprocesos. No se autentica durante
+la construcción ni se suministra credencial al ensayo. Indicar los ocho
+parámetros explícitos: `--tanda`, `--condicion`, `--modelo`, `--k`, `--limite`,
+`--semilla`, `--ejecutor`, `--brazo`. Un recorte requiere
+`--recorte-declarado`; nunca se admite para principal/gpt-6.1-sol.
+
+**P3 opcional:** sólo con aprobación posterior del autor y una tarifa de lista
+de fuente registrada, el principal admite `openai/gpt-5.6-luna` con
+`--fase p3`. Es una tanda posterior a las dos principales, de menor capacidad
+y generación anterior; no decide el cumplimiento. Ejemplo de los parámetros
+adicionales: `--ejecutor principal --modelo openai/gpt-5.6-luna --fase p3`.
+Sin esa tanda P3 queda no respondida por causa externa; `gpt-6-astra` se declara
+perdido sin reemplazo. La opción no sustituye la aprobación ni la tarifa.
+
+**Cuota y reanudación:** la detección sólo se evalúa si el código es distinto
+de 0 (excluidos 124/137) o el stdout contiene un evento de tipo `error`. Se
+busca únicamente en stderr y en el JSON de esos eventos: estado HTTP 429,
+`rate limit`, `usage limit`, `usage_limit_reached` o `Too Many Requests`
+(también variantes con guion o guion bajo); para 5xx se exige asimismo un
+estado HTTP. Resultados de herramientas, texto de respuesta y tokens no
+integran esa evidencia. Los reintentos por cuota esperan 30 s y luego 120 s. Si el tercer
+intento sigue limitado, no se agrega la fila del par a `registro.jsonl`: la
+tanda escribe `DETENCION.txt` con caso/repetición, hora UTC y evidencia, y sale
+con código 3. El envoltorio copia la evidencia parcial. Para reanudar, crear
+una tanda nueva con los mismos parámetros y `--pares C-1a:2,C-3b:1,...`; sólo
+corren esos pares, en el orden indicado, sin aleatorizarlos. La evidencia de
+los intentos detenidos permanece separada, sin integrarla como ejecución.
+
+```bash
+# Después de la detención: completar explícitamente los pares faltantes.
+bash vm/contenedor.sh medir --destino /ruta/nueva-vacia \
+  --tanda continuacion --condicion LB --brazo LB --ejecutor principal \
+  --modelo openai/gpt-6.1-sol --k 3 --limite 600 --semilla 20261013 \
+  --pares C-1a:2,C-3b:1
+python herramientas/unir.py /ruta/parcial/registro.jsonl \
+  /ruta/continuacion/registro.jsonl --salida /ruta/union-nueva/registro.jsonl
+```
+
+`unir.py` requiere el `tanda.json` vecino de cada registro. Rechaza diferencias
+de ejecutor, modelo, brazo, condición, fase, ensayo, k, semilla y hashes de
+instrucción (plantilla), ejecutor, hoja, tarifas o catálogo; rechaza pares
+repetidos. Conserva cada fila y su tanda de origen, genera un manifiesto unido
+y avisa todos los pares faltantes para completar 24 × k. Usar una carpeta de
+salida nueva; luego corregir y analizar el registro unido fuera del contenedor.
+
+**Flags:** la fase 0 acredita `--model`, `--agent` y `--format json`;
+`run --help` escribe la ayuda en stderr. Cada tanda guarda ambas salidas y se
+detiene antes de medir si falta una opción. La alternativa servidor/API queda
+pendiente de decisión sólo si falla esa comprobación.
+
+**Tokens:** la fase 0 (resultado 4) verifica que `input` excluye `cache.read`
+y que stdout y export coinciden solicitud por solicitud. Se suma
+`input + cache.read + output`, sin duplicar `part.id`. La suscripción informa
+`reasoning = 0`: **no es verificable si `output` incluye el razonamiento**.
+Se conserva `razonamiento_reportado` por solicitud y no se vuelve a sumarlo;
+no cambia la fórmula. `cache.write = 0` en esa evidencia y `cost = 0` no se
+usa como costo. Cuando hay `task` o censura, se exporta la sesión y sus hijas,
+obtenidas de `state.metadata.sessionId`; se exige
+`info.id/messages[].parts[]`, con partes `step-finish`. Un esquema distinto o
+export fallido marca consumo incompleto. La fase 0 no acredita la recuperación
+de hijos o censura: **[VERIFICAR: recuperación real de hijos y censura]**.
+No se suman los mismos pasos de export y stdout.
 
 `archivos_leidos` cuenta las rutas explícitas de `read`; las lecturas por bash
 requieren revisión de sus argumentos. `fuente_observada` y la detección de web
 se basan en la traza de herramientas; no prueban ausencia de tráfico oculto.
 Las negativas se conservan con evidencia y atribución pendiente del autor.
-La cobertura disponible aún debe adjudicarse con evidencia antes del piloto.
+La cobertura disponible aún debe adjudicarse con evidencia antes de medir.
 
 ### Pendientes conservados
 
@@ -317,19 +397,21 @@ La cobertura disponible aún debe adjudicarse con evidencia antes del piloto.
   `indicado` se bloquea mientras exista el marcador; no se salta en ensayo.
 - FIN exige `rige` instalado y `--rige-descripcion` con la fila congelada de su
   ayuda: **[DECISIÓN PENDIENTE: comando/distribución de RIGE y texto de su fila]**.
-  Debe estar disponible y permitido en ambos brazos antes del piloto; si ello
+  Debe estar disponible y permitido en ambos brazos antes de medir; si ello
   exige ampliar permisos deliberadamente denegados, ese ejecutor queda sólo LB.
-- La hoja real sigue abierta por C-3f/RF-02 CA-3; el generador respeta su
-  respuesta corregida `allow`. C-2c conserva dos alternativas en la sección del
+- La hoja real está cerrada el 13/10/2026; `respuestas.json` registra
+  `hoja_cerrada=true` y conserva la respuesta corregida `allow` de C-3f.
+  C-2c conserva dos alternativas en la sección del
   caso: `revision_manual=true` con motivo, aunque la tabla de captura confirma
   0,2. Se necesita adjudicar contra la evidencia, sin reescribir la hoja aquí.
+- P3 opcional: **[DECISIÓN PENDIENTE: aprobación del autor y tarifa de lista
+  registrada para gpt-5.6-luna]**. No bloquea las dos tandas principales.
 - **Empate de C-3 con la tasa mayor en IV.3**: se lee como «Reordena» (decisión del autor, 13/10/2026):
   el informe señala el empate sin elegir entre Confirma y Reordena; las ramas
   de ADR-079 siguen su condición independiente.
 - **[DECISIÓN PENDIENTE: reducción de tokens con denominador cero]**: se deja
   `null`, sin otorgar cumplimiento que dependa de esa mediana.
-- **`cache.write`**: se registra aparte y se valoriza al precio de entrada (decisión del autor, 13/10/2026): si aparece,
-  el registro es incompleto; no se inventa una tarifa ni se omite el consumo.
+- **`cache.write`**: se registra aparte y se valoriza al precio de entrada (decisión del autor, 13/10/2026): se conserva por solicitud; no se omite el consumo ni se inventa una tarifa.
 
 Pruebas externas, sin Docker ni acceso al proveedor:
 

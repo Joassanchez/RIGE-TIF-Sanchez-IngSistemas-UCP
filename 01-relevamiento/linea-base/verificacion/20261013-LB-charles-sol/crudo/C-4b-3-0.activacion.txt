@@ -1,0 +1,2 @@
+Caso C-4b listo.
+Cerrá todas las terminales y abrí una nueva en: ~/proyecto

@@ -37,6 +37,8 @@ Quedan fuera de ese alcance, y los realizo de manera propia, la delimitación de
 | 09/10 al 13/10 | Claude Code | Búsquedas y verificación de fuentes, reclasificación de incidencias, verificación de OpenCode en contenedor; redacción de protocolo, encuesta, ADR-078, fichas y borradores de esta bitácora | `00-gestion/`, `01-relevamiento/linea-base/`, `.trabajo/fichas/v1/` |
 | 09/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Implementación de V1-12 | `src/`, `.github/workflows/ci.yml` |
 | 13/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Verificación de fuentes; apoyo en la corrección de I.1 e I.2 sobre fichas; crítica; construcción de los casos, el contenedor y el arnés de la medición | `informe/cap-01/`, `01-relevamiento/linea-base/` |
+| 13/10 al 14/10 | Claude Code | Fase 0, ejecución y control de las tandas de la línea de base, revisión del arnés, ADR-082 y 083; adjudicación de las revisiones manuales por delegación del autor | `00-gestion/`, `01-relevamiento/linea-base/verificacion/` |
+| 13/10 al 14/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Arreglos del arnés (MED-5) y regla de corrección de ADR-083 | `01-relevamiento/linea-base/vm/`, `herramientas/` |
 
 Las menciones a registros de decisión consolidados el 28/09/2026 se acompañan del número vigente; la tabla de equivalencias está en `00-gestion/decisiones/INDICE.md`.
 
@@ -46,6 +48,8 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 
 | Fecha | Decisión | Registro | Recorte principal | Estado |
 |---|---|---|---|---|
+| 14/10 | Recorrección de la decisión de permiso escrita en texto libre; criterio estricto de fuente en C-3b y C-3d | ADR-083 | repetir la línea de base; criterio laxo | vigente |
+| 13/10 | Línea de base con `gpt-6.1-sol` como único modelo, k = 3, sin piloto, dos tandas | ADR-082 | piloto 24 × 10; sustituir `gpt-6-luna` | vigente; P3 opcional |
 | 09/10 | Línea de base sobre el procedimiento delegado: datos del AE1 como prueba informal; error principal y tokens secundario; skill nativa disponible; consulta al docente antes de medir | ADR-078 | medición con personas; medición mixta; datos del AE1 como piloto | vigente; fundamento corregido el 13/10 |
 | 01/10 | Medición con agentes sobre ChatGPT Plus, consumo en tokens, tarifas congeladas; costo de hora basado en la mediana junior de SysArmy | ADR-076 | tope de API; OpenCode Go y Claude Pro; salario promedio OPSSI | vigente; eje X modificado por ADR-077 |
 | 01/10 | Diferencial: decisión de permiso con regla determinante y procedencia por declaración; RF-02 CA-8 | ADR-075 | diferencial en la explicación sola; inversión y otros modelos de sostenimiento | vigente |
@@ -73,6 +77,39 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 | 25/09 | Línea de base con herramientas como ejecutores, dieciséis casos | ADR-040 (hoy ADR-053); D-41 | medición con personas; encuesta como línea de base | vigente; herramientas modificadas por ADR-076 |
 
 ## Entradas de la AE2
+
+### Entrada · Martes 13 y miércoles 14 de octubre de 2026 (tercera sesión) — Medición de la línea de base
+
+1. **Decisión adoptada.**
+   - **Fase 0 con el proveedor real** (13/10, de 20:47 a 21:31; caso auxiliar `practica`). Verifiqué la autenticación de ChatGPT Plus dentro del contenedor y la extracción de la respuesta. En tokens, `input` excluye la caché; no se puede verificar si `output` incluye el razonamiento, porque la suscripción informa cero. Encontré que la versión 1.18.25 no ofrece `gpt-6-astra` ni `gpt-6-luna` con la suscripción. Aparecieron además tres fallas del arnés: el catálogo de modelos sin `gpt-6`, la alteración del escenario y el nombre del agente de Charles.
+   - **ADR-082** (aceptado el 13/10). Fijé k = 3 antes de medir y suprimí el piloto. La línea de base queda en dos tandas, `build` y Charles, las dos con `gpt-6.1-sol`. Declaré perdido `gpt-6-astra` y dejé P3 (`build` con `gpt-5.6-luna`) como tanda opcional sujeta a mi aprobación. Congelé el catálogo de modelos del 13/10.
+   - **Medición** (13/10). La primera tanda de `build` (21:32:20 a 21:36:32) se descartó por una falla del instrumento: OpenCode instalaba dependencias en la carpeta del ejecutor y alteraba su hash. Sus 7 ejecuciones no se conservaron. Decidí excluir de los hashes los archivos que genera OpenCode. Después corrieron completas las dos tandas: `build` + `gpt-6.1-sol` de 22:07:11 a 22:51:36 y Charles + `gpt-6.1-sol` de 22:52:07 a 23:49:15. Fueron 72 + 72 ejecuciones, sin incompletas, alteraciones, censuras ni reintentos.
+   - **ADR-083** (aceptado el 14/10). La corrección automática marcaba incorrectas 54 ejecuciones de permiso porque la decisión venía dentro de una frase. Elegí recorregir la evidencia con una regla mecánica fijada antes de recorregir y aplicada por igual a las dos tandas. No cambian los valores esperados, las fuentes, los umbrales ni k.
+   - **Adjudicación.** La delegué en el ingeniero: 61 adjudicaciones, cada una con su motivo. Confirmé el criterio estricto en C-3b y C-3d: la fuente tiene que identificar la regla como nativa.
+   - **Resultado.** Las dos mediciones son válidas y caen en la rama P. `build` tiene 1 caso con problema (C-3b) y Charles, 3 (C-3b, C-3d, C-4e). IV.3 da «Reordena». No hubo ningún valor equivocado: todos los errores son de fuente. El equivalente es de USD 3,84 y 4,01.
+2. **Alternativas y criterio de descarte (recortes).**
+   - **Regla de k sobre el piloto (24 × 10).** La descarté porque costaba 240 ejecuciones de una cuota sin límite publicado.
+   - **Sustituir `gpt-6-luna` por `gpt-5.6-luna` en Charles.** Lo descarté porque mezcla generaciones y exige una tarifa no congelada. Charles corre con el modelo principal, como cambio declarado de la variante.
+   - **Repetir la línea de base por la falla de la corrección.** La descarté porque el defecto estaba en la corrección y no en las ejecuciones; quedó como condición de ADR-083.
+   - **Criterio laxo en C-3b y C-3d.** Lo descarté porque la hoja, cerrada antes de medir, exige identificar la regla nativa. Declaro la sensibilidad: con ese criterio, `build` pasaría a la rama N.
+   - **Fuera de esta sesión:** P3, la propagación al informe y la medición final.
+3. **Evidencia.**
+   - Fase 0: `01-relevamiento/linea-base/verificacion/20261013-fase0/`.
+   - Tandas: `verificacion/20261013-LB-principal-sol/` y `verificacion/20261013-LB-charles-sol/`.
+   - Corrección, adjudicaciones y análisis: `verificacion/20261014-analisis-LB/`.
+   - Catálogo congelado: `catalogo-modelos-20261013.json`.
+4. **Aporte personal.** Inicié la sesión de ChatGPT Plus y decidí:
+   - k, la supresión del piloto, los modelos y el orden de las tandas;
+   - la exclusión de los archivos generados del hash;
+   - la recorrección (ADR-083) y el criterio estricto en C-3b y C-3d.
+
+   Acepté ADR-082 y ADR-083. Artefactos: ADR-082, ADR-083 y `01-relevamiento/linea-base/`.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos dentro del equipo.
+6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidades:
+   - **Claude Code (Opus 5.5):** orquestó la sesión, ejecutó la fase 0 y las tandas, revisó los cambios del arnés, redactó ADR-082 y ADR-083 y el borrador de esta entrada, y **adjudicó las 61 revisiones manuales por delegación expresa**; el criterio de C-3b y C-3d lo confirmé yo.
+   - **Codex CLI (`gpt-6.1-sol`, esfuerzo alto), como escritor:** ficha MED-5 (catálogo congelado, preparación del participante, Charles y detención por cuota) y tres correcciones en la misma sesión (detección de la cuota, archivos generados en el hash y regla de ADR-083). Consumo acumulado: 3,90 M tokens de entrada (3,56 M en caché) y 46 mil de salida.
+   - **OpenCode 1.18.25 (ChatGPT Plus), como ejecutor medido:** 144 ejecuciones válidas, más 7 descartadas y 6 de fase 0.
+   - **Cuota compartida:** la ventana de 5 horas pasó del 7 % al 92 % y la semanal, del 13 % al 26 %.
 
 ### Entrada · Martes 13 de octubre de 2026 (segunda sesión) — Corrección de I.1 e I.2, criterio de la línea de base y preparación de la medición
 

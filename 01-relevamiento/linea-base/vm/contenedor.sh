@@ -127,11 +127,12 @@ case "$SUBCOMANDO" in
     trap limpiar EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM
-    # Arranque sin montajes, sin ejecutar la medición antes de copiar las tarifas.
+    # Arranque sin montajes; copiar tarifas y catálogo también en el ensayo.
     docker run --rm --detach --init "${RED[@]}" "${CREDENCIAL[@]}" --platform linux/amd64 \
       --name "$CONTENEDOR" --user root --workdir /opt/linea-base \
       "$IMAGEN" sleep infinity >/dev/null
     docker cp "$(ruta_docker "$ORIGEN/../tarifas-congeladas-20261001.json")" "$CONTENEDOR:/opt/linea-base/tarifas.json"
+    docker cp "$(ruta_docker "$ORIGEN/../catalogo-modelos-20261013.json")" "$CONTENEDOR:/opt/linea-base/modelos.json"
     # exec no imprime ni exporta la credencial en el registro de la tarea.
     CODIGO=0
     docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" || CODIGO=$?

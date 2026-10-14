@@ -1,0 +1,54 @@
+{
+  "version": "1.18.25",
+  "auth_list": [
+    "┌  Credentials \u001b[90m~/.local/share/opencode/auth.json",
+    "●  OpenAI \u001b[90moauth",
+    "└  1 credentials"
+  ],
+  "modelos_gpt6": [],
+  "practica-build-sol": {
+    "codigo": 1,
+    "duracion_s": 1.3,
+    "sesion": true,
+    "export_codigo": 0,
+    "solicitudes": [],
+    "registro_incompleto": true,
+    "errores_tokens": [],
+    "escenario_alterado": false,
+    "ejecutor_alterado": false,
+    "herramientas": [],
+    "fuente_observada": [],
+    "ultimo_json": null,
+    "stderr_cola": ""
+  },
+  "ping_gpt-6-astra": {
+    "codigo": 1,
+    "texto": "",
+    "solicitudes": [],
+    "stderr_cola": ""
+  },
+  "ping_gpt-6-luna": {
+    "codigo": 1,
+    "texto": "",
+    "solicitudes": [],
+    "stderr_cola": ""
+  },
+  "charles-debug-config": 0,
+  "charles-debug-agent": 1,
+  "charles-debug-skill": 0,
+  "practica-charles-luna": {
+    "codigo": 1,
+    "duracion_s": 1.4,
+    "sesion": true,
+    "export_codigo": 0,
+    "solicitudes": [],
+    "registro_incompleto": true,
+    "errores_tokens": [],
+    "escenario_alterado": false,
+    "ejecutor_alterado": false,
+    "herramientas": [],
+    "fuente_observada": [],
+    "ultimo_json": null,
+    "stderr_cola": "\u001b[93m\u001b[1m! \u001b[0m agent \"charles\" not found. Falling back to default agent\n"
+  }
+}

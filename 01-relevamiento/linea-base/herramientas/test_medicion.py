@@ -27,7 +27,7 @@ def filas(brazo='LB', k=3, error=None, tokens=None, ejecutor='principal', modelo
                  repeticion=r, k=k, ejecutor=ejecutor, modelo=modelo,
                  resultado='incorrecta' if r <= error.get(c, 0) else 'correcta',
                  tokens_entrada=tokens.get(c, 100), tokens_cache=0, tokens_salida=0,
-                 duracion_s=1, censurado=False, ensayo=False, fase='medicion', respuesta_textual='',
+                 duracion_s=1, censurado=False, ensayo=False, fase='p3' if modelo == 'openai/gpt-5.6-luna' else 'medicion', respuesta_textual='',
                  solicitudes=[{'tokens_entrada': tokens.get(c, 100), 'tokens_cache': 0, 'tokens_salida': 0}])
             for c in CASOS for r in range(1, k + 1)]
 
@@ -262,7 +262,7 @@ class AnalisisTests(unittest.TestCase):
         datos = analizar(filas())
         self.assertFalse(datos['reevaluar_objeto'])
         self.assertTrue(datos['segundo_ejecutor_pendiente'])
-        datos = analizar(filas() + filas(ejecutor='charles', modelo='openai/gpt-6-luna'))
+        datos = analizar(filas() + filas(ejecutor='charles', modelo='openai/gpt-6.1-sol'))
         self.assertTrue(datos['reevaluar_objeto'])
 
     def test_cumplimiento_solo_principal_modelo_brazo(self):
@@ -272,9 +272,9 @@ class AnalisisTests(unittest.TestCase):
         self.assertTrue(analizar(rs)['cumplimiento_proyecto'])
 
     def test_cada_modelo_rama_propia_y_lectura_brazos(self):
-        rs = filas(error=dict.fromkeys(OBJ[:6], 2)) + filas('indicado') + filas('disponible') + filas(modelo='openai/gpt-6-luna')
+        rs = filas(error=dict.fromkeys(OBJ[:6], 2)) + filas('indicado') + filas('disponible') + filas(modelo='openai/gpt-5.6-luna')
         d = analizar(rs)
-        self.assertEqual(d['grupos']['principal|openai/gpt-6-luna']['rama'], 'N')
+        self.assertEqual(d['grupos']['principal|openai/gpt-5.6-luna']['rama'], 'N')
         self.assertEqual(d['grupos']['principal|openai/gpt-6.1-sol']['lectura_brazos'], 'RIGE resuelve y el agente lo adopta')
 
     def test_ensayo_no_cumplimiento_real(self):
@@ -287,13 +287,13 @@ class AnalisisTests(unittest.TestCase):
 
     def test_k_mismo_en_modelos_salvo_recorte_declarado(self):
         principal = filas()
-        secundario = filas(k=1, modelo='openai/gpt-6-luna')
+        secundario = filas(k=1, modelo='openai/gpt-5.6-luna')
         d = analizar(principal + secundario)
-        self.assertFalse(d['grupos']['principal|openai/gpt-6-luna']['valida'])
+        self.assertFalse(d['grupos']['principal|openai/gpt-5.6-luna']['valida'])
         for r in secundario:
             r['recorte_declarado'] = 'Recorte por límite de suscripción; ADR-076.'
         d = analizar(principal + secundario)
-        self.assertTrue(d['grupos']['principal|openai/gpt-6-luna']['valida'])
+        self.assertTrue(d['grupos']['principal|openai/gpt-5.6-luna']['valida'])
 
     def test_k_uniforme_dentro_de_combination(self):
         rs = filas()

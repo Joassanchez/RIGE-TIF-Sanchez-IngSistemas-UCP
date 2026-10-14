@@ -95,7 +95,7 @@ def generar(texto):
         }
     return {'version': 1, 'sha256_hoja': hashlib.sha256(texto.encode()).hexdigest(),
             'regex': 're.IGNORECASE; texto sin backticks; AND dentro de cada grupo, OR entre grupos; conflictos a revisión manual',
-            'hoja_cerrada': False if 'Cierre de la hoja:** pendiente' in texto else None,
+            'hoja_cerrada': True if 'hoja cerrada el' in texto.lower() else (False if 'Cierre de la hoja:** pendiente' in texto else None),
             'casos': casos}
 
 

@@ -2,7 +2,7 @@
 name: "[AUX] Charles"
 description: Engineer for customizing your AI tool of choice & Skillshare experience
 mode: primary
-model: openai/gpt-6-luna
+model: openai/gpt-6.1-sol
 temperature: 0.2
 permission:
   skill: 

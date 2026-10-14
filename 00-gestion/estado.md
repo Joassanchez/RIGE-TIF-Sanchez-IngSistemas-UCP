@@ -60,7 +60,7 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 | 3 · Canal de integración continua | Completa por remisión a ADR-062; `.github/workflows/ci.yml` (matriz Ubuntu/Windows). Primera corrida verde el 30/09/2026 22:26 (corrida `36801042650`, commit `11c852e`); verde en `main` sobre `b1432eb` (01/10/2026). Matriz cambiada a `ubuntu-26.04` y `windows-latest` el 01/10/2026 (ADR-076, búsqueda de ejecutores). Trabajo `referencia-nativa` agregado el 09/10/2026 (V1-12): ejecuta OpenCode 1.18.25 real sobre los escenarios y falla si difiere de `REFERENCIA.json`. Última corrida verde sobre `main`: `c9322e7` (10/10/2026) |
 | Prototipo v1 | **Recorrido vertical completo en `main`** (unido el 05/10/2026, `b6657ba`; V1-01 a V1-11 con ADR-067, 375 pruebas, mapa en `src/pruebas/README.md`). V1-12 (09/10/2026, `7233fd0`): referencia nativa verificada en el CI contra el binario real. Verificado por el ingeniero el 09/10/2026 contra el dictamen (DV2-01): comparación con el comando nativo y prueba de RNF-03 capaz de fallar. Precisiones de C8 en ADR-062 (05/10/2026, pendientes de conformidad del autor). Falta (autor): repositorio privado con la cátedra como colaboradora, prueba de clonado por otra persona (Instrumento 35, 35.2), etiqueta `v1` y `/comprobar-v1` (DV2-02) |
 
-## Medición de la línea base (ADR-053, modificado por ADR-078 y ADR-079)
+## Medición de la línea base (ADR-053, modificado por ADR-078, ADR-079, ADR-082 y ADR-083)
 
 | Elemento | Estado |
 |---|---|
@@ -70,11 +70,13 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 | Diseño | `DISENO-medicion-agentes.md` v2.0 (ADR-078, 079 y 080; 13/10/2026): regla de ramas, 24 casos, dos brazos, segundo ejecutor «Charles» |
 | Casos | 24 escenarios verificados contra OpenCode 1.18.25 en el contenedor (13/10/2026); hoja de respuestas cerrada; C-3f corregido (ADR-081) |
 | Hoja de respuestas | Cerrada el 13/10/2026 |
-| Modelos | `gpt-6.1-sol` (principal), `gpt-6-astra` y `gpt-6-luna` desde OpenCode con ChatGPT Plus (ADR-076) |
-| Agente de la referente | Recibido el 13/10/2026 («Charles», `gpt-6-luna`); segundo ejecutor (ADR-079). Confirmación escrita de la práctica: sin respuesta (AD-17) |
+| Modelos | `gpt-6.1-sol`, el único `gpt-6` disponible con la suscripción en 1.18.25 (fase 0, 13/10/2026). `gpt-6-astra` y `gpt-6-luna` no están disponibles (ADR-082). P3 (`build` + `gpt-5.6-luna`) es opcional, con la aprobación del autor y una tarifa registrada. Catálogo de modelos congelado del 13/10/2026 |
+| Agente de la referente | Recibido el 13/10/2026 («Charles», `gpt-6-luna`); segundo ejecutor (ADR-079), medido con `gpt-6.1-sol` como cambio declarado (ADR-082). Confirmación escrita de la práctica: sin respuesta (AD-17) |
 | Encuesta | Lista para publicar en Google Forms (script); falta piloto, canales y publicación (AD-18) |
-| Contenedor | `rige-linea-base:1.18.25` construida y verificada (13/10/2026); arnés probado de punta a punta con tanda de ensayo |
-| Ejecución | No iniciada; próximo paso: credencial de ChatGPT Plus, fase 0 y piloto (AD-26) |
+| Contenedor | `rige-linea-base:1.18.25` reconstruida el 13/10/2026 con la ficha MED-5 (catálogo congelado, preparación del participante, Charles como `[AUX] Charles`, detención por cuota y archivos generados excluidos del hash); ensayo y fase 0 limpios (`verificacion/20261013-fase0/`) |
+| Ejecución | **Hecha el 13/10/2026**, k = 3, sin piloto (ADR-082). `build` + `gpt-6.1-sol`, de 22:07 a 22:51; Charles + `gpt-6.1-sol`, de 22:52 a 23:49. Fueron 72 + 72 ejecuciones completas. Una tanda previa (21:32 a 21:36) se descartó por una falla del instrumento |
+| Corrección y adjudicación | Recorrección por ADR-083 (14/10/2026). 61 adjudicaciones manuales del ingeniero por delegación del autor; criterio estricto en C-3b y C-3d confirmado por el autor (`verificacion/20261014-analisis-LB/`) |
+| Resultado | Las dos mediciones son válidas y caen en la **rama P**: `build` tiene 1 caso con problema (C-3b) y Charles, 3 (C-3b, C-3d, C-4e). IV.3 da «Reordena». Sin errores de valor: todos los errores son de fuente. Equivalente: USD 3,84 y 4,01. Sensibilidad: con un criterio laxo en C-3b y C-3d, `build` pasaría a la rama N. **Pendiente: discusión con el autor antes de propagar al informe** |
 
 ## Tablero de gestión (Guía AE2, objeto 3)
 

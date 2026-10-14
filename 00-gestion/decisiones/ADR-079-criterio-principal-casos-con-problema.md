@@ -1,6 +1,7 @@
 # ADR-079 — Línea de base: regla de ramas fijada antes de medir, veinticuatro casos, dos brazos en la medición final con el brazo indicado como principal, clasificación de la fuente de la respuesta y una variante del agente de la referente como segundo ejecutor
 
 - Estado: aceptado (13/10/2026)
+- Modificado por: ADR-082 (§4: k = 3 fijado antes de medir, sin piloto; §7: `build` y Charles con `gpt-6.1-sol`), aceptado el 13/10/2026
 - Fecha: 13/10/2026 (reescrito dos veces el mismo día: discusión del diseño con el autor y crítica de Codex)
 - Capítulos afectados: Cap. I (I.2.3, I.3.1 a I.3.4); Cap. II (II.1, II.2, II.3, II.6.3); Anexo VI (A.VI.1, A.VI.2, A.VI.7, A.VI.8); Anexo III (D-41); Cap. V (V.2, fase de cierre); diseño de la medición (`01-relevamiento/linea-base/DISENO-medicion-agentes.md`, `respuestas.md`); consulta al docente (LB-01)
 - Origen: crítica (Codex) de I.2; discusión del diseño con el autor; entrega del agente de la referente; crítica (Codex) de la primera versión de este ADR. Todo el 13/10/2026

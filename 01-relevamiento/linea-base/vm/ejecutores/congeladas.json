@@ -8,11 +8,12 @@
     "skill * deny; sin las tres propias",
     "como-dev y rige permitidos en bash",
     "ruta /home/participante/** para leer el escenario separado",
-    "doom_loop deny y external_directory * deny para retirar ask nativos sin ampliar excepciones"
+    "doom_loop deny y external_directory * deny para retirar ask nativos sin ampliar excepciones",
+    "modelo gpt-6.1-sol: gpt-6-luna no disponible con la suscripción en 1.18.25 (ADR-082)"
   ],
-  "verificacion_efectiva": "[VERIFICAR: debug config/agent/skill, lectura del escenario y RIGE en ambos brazos antes del piloto]",
+  "verificacion_efectiva": "verificacion/20261013-fase0/: nombre efectivo [AUX] Charles, temperatura 0,2 y permisos verificados; modelo cambiado a gpt-6.1-sol conforme a ADR-082. Repetir debug config/agent/skill con la variante actualizada antes de medir.",
   "archivos": {
-    "charles/agents/charles.md": "b6b31ca1ebd49555c61a7730821f41c6e24f13e2a77d71a8d99ca229e663f8b1",
+    "charles/agents/charles.md": "1811d7c33b300bfc0b0641d3e5c1f2b11882fbdf6e6988cd56951c92976f3db4",
     "charles/opencode.json": "8d4425657fa3b79412f0499053314285555dac7d27d02b9f8c4af4d491184773",
     "principal/opencode.json": "d65e379094678ed9f3af1e1a613aabed606ed1af5cce2837d8022e7838f31fe5"
   }
