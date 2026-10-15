@@ -1,0 +1,8 @@
+Ejecución MED-4a · 2026-10-14T20:29:23+00:00
+Sistema: Ubuntu 26.04.1 LTS · 6.18.33.2-microsoft-standard-WSL2
+Versión: 1.18.25
+SHA-256: d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb
+Aislamiento requerido: docker run --network none, sin montajes ni credenciales
+Proveedor: 127.0.0.1, puerto efímero, sin API key
+Rutas IPv4 del contenedor (debe existir sólo el bucle local):
+Iface	Destination	Gateway 	Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT                                                       

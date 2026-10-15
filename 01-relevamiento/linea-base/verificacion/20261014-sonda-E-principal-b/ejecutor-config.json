@@ -1,0 +1,25 @@
+{
+  "permission": {
+    "read": "allow",
+    "bash": "allow",
+    "external_directory": "allow",
+    "edit": {
+      "*": "deny",
+      "*participante/.config/opencode/*": "allow",
+      "*participante/proyecto/opencode.json": "allow",
+      "*participante/proyecto/opencode.jsonc": "allow",
+      "*participante/proyecto/*/opencode.json": "allow",
+      "*participante/proyecto/*/opencode.jsonc": "allow",
+      "*participante/proyecto/.opencode/*": "allow",
+      "*participante/proyecto/*/.opencode/*": "allow"
+    },
+    "webfetch": "deny",
+    "websearch": "deny"
+  },
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {},
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "evaluador"
+}

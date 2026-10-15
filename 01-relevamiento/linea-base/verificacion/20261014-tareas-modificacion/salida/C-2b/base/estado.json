@@ -1,0 +1,26 @@
+{
+ "config_rc": 0,
+ "config_err": "",
+ "agentes": {
+  "docs": {
+   "rc": 0,
+   "err": ""
+  },
+  "notas": {
+   "rc": 0,
+   "err": ""
+  },
+  "build": {
+   "rc": 0,
+   "err": ""
+  },
+  "plan": {
+   "rc": 0,
+   "err": ""
+  },
+  "general": {
+   "rc": 0,
+   "err": ""
+  }
+ }
+}

@@ -18,6 +18,33 @@ class Ensayo(Proveedor):
         return {'role': 'assistant', 'content': 'ENSAYO: valores inventados.\n' + json.dumps(self.plan['salida'], ensure_ascii=False)}
 
 
+class EnsayoModificacion(Ensayo):
+    """Pide las ediciones a OpenCode: el proveedor nunca escribe el escenario."""
+    def __init__(self, plan, accion, registro, home=Path('/home/participante')):
+        super().__init__(plan, accion, registro)
+        self.llamadas = []
+        for rel, nuevo in plan['archivos'].items():
+            if rel[:2] not in ('G/', 'P/') or '..' in Path(rel).parts or '.git' in Path(rel).parts:
+                raise ValueError('Ruta de ensayo inválida')
+            path = home / ('.config/opencode' if rel.startswith('G/') else 'proyecto') / rel[2:]
+            anterior = path.read_text(encoding='utf-8') if path.exists() else ''
+            if path.exists():
+                self.llamadas.append(('read', dict(filePath=str(path))))
+            self.llamadas.append(('edit', dict(filePath=str(path), oldString=anterior, newString=nuevo)))
+
+    def respuesta(self, cuerpo):
+        self.log('solicitud_ensayo_modificacion', cuerpo=cuerpo, uso_inventado=self.uso)
+        recibidos = {m.get('tool_call_id') for m in cuerpo.get('messages', []) if m.get('role') == 'tool'}
+        for i, (nombre, args) in enumerate(self.llamadas):
+            identificador = f'med6_{i}'
+            if identificador not in recibidos:
+                return {'role': 'assistant', 'content': None, 'tool_calls': [
+                    dict(id=identificador, type='function', function=dict(name=nombre, arguments=json.dumps(args, ensure_ascii=False)))]}
+        salida = self.plan['salida']
+        return {'role': 'assistant', 'content': 'ENSAYO: valores inventados.\n' +
+                (json.dumps(salida, ensure_ascii=False) if isinstance(salida, dict) else salida)}
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--datos', required=True, type=Path)
@@ -28,7 +55,8 @@ def main():
     datos = json.loads(a.datos.read_text(encoding='utf-8'))
     if datos.get('ensayo') is not True:
         p.error('El archivo debe declarar ensayo=true.')
-    provider = Ensayo(datos['casos'][a.caso], 'ensayo', a.registro)
+    clase = EnsayoModificacion if datos.get('dimension') == 'modificacion' else Ensayo
+    provider = clase(datos['casos'][a.caso], 'ensayo', a.registro)
     server = ThreadingHTTPServer(('127.0.0.1', 0), manejador(provider))
     a.listo.write_text(str(server.server_port), encoding='ascii')
     server.serve_forever()

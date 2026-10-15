@@ -39,6 +39,8 @@ Quedan fuera de ese alcance, y los realizo de manera propia, la delimitación de
 | 13/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Verificación de fuentes; apoyo en la corrección de I.1 e I.2 sobre fichas; crítica; construcción de los casos, el contenedor y el arnés de la medición | `informe/cap-01/`, `01-relevamiento/linea-base/` |
 | 13/10 al 14/10 | Claude Code | Fase 0, ejecución y control de las tandas de la línea de base, revisión del arnés, ADR-082 y 083; adjudicación de las revisiones manuales por delegación del autor | `00-gestion/`, `01-relevamiento/linea-base/verificacion/` |
 | 13/10 al 14/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Arreglos del arnés (MED-5) y regla de corrección de ADR-083 | `01-relevamiento/linea-base/vm/`, `herramientas/` |
+| 14/10 | Claude Code | Discusión del resultado de la línea de base; ADR-084 a ADR-086; verificación de las tareas de modificación contra el binario; armonización del diseño de la medición; ejecución y análisis de la línea de base de modificación | `00-gestion/`, `01-relevamiento/linea-base/` |
+| 14/10 | Codex CLI (`gpt-6.1-sol`), orquestado por Claude Code | Arnés de la dimensión de modificación (MED-6) y corrección del detector de acceso web (MED-7) | `01-relevamiento/linea-base/vm/`, `herramientas/`, `modificacion/` |
 
 Las menciones a registros de decisión consolidados el 28/09/2026 se acompañan del número vigente; la tabla de equivalencias está en `00-gestion/decisiones/INDICE.md`.
 
@@ -48,9 +50,12 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 
 | Fecha | Decisión | Registro | Recorte principal | Estado |
 |---|---|---|---|---|
-| 14/10 | Recorrección de la decisión de permiso escrita en texto libre; criterio estricto de fuente en C-3b y C-3d | ADR-083 | repetir la línea de base; criterio laxo | vigente |
+| 14/10 | Línea de base de modificación no válida por la validez previa; causa no instrumental verificada; informe descriptivo | ADR-086 | reinterpretar la validez; repetir con otra instrucción | vigente |
+| 14/10 | Dimensión de modificación: una tarea por caso, corrección por el estado efectivo | ADR-085 | sin medición; medición solo exploratoria | vigente; sin criterio por ADR-086 |
+| 14/10 | Objetivo general tras la rama P: OE-1 a OE-3 y no regresión en atribución | ADR-084 | objetivo descriptivo; criterio sobre la procedencia | vigente |
+| 14/10 | Recorrección de la decisión de permiso escrita en texto libre; criterio estricto de fuente en C-3b y C-3d | ADR-083 (el criterio estricto, en ADR-087) | repetir la línea de base; criterio laxo | vigente |
 | 13/10 | Línea de base con `gpt-6.1-sol` como único modelo, k = 3, sin piloto, dos tandas | ADR-082 | piloto 24 × 10; sustituir `gpt-6-luna` | vigente; P3 opcional |
-| 09/10 | Línea de base sobre el procedimiento delegado: datos del AE1 como prueba informal; error principal y tokens secundario; skill nativa disponible; consulta al docente antes de medir | ADR-078 | medición con personas; medición mixta; datos del AE1 como piloto | vigente; fundamento corregido el 13/10 |
+| 09/10 | Línea de base sobre el procedimiento delegado: datos del AE1 como prueba informal; error principal y tokens secundario; skill nativa disponible; consulta al docente antes de medir | ADR-078 | medición con personas; medición mixta; datos del AE1 como piloto | vigente; fundamento corregido el 13/10; consulta al docente no realizada (14/10) |
 | 01/10 | Medición con agentes sobre ChatGPT Plus, consumo en tokens, tarifas congeladas; costo de hora basado en la mediana junior de SysArmy | ADR-076 | tope de API; OpenCode Go y Claude Pro; salario promedio OPSSI | vigente; eje X modificado por ADR-077 |
 | 01/10 | Diferencial: decisión de permiso con regla determinante y procedencia por declaración; RF-02 CA-8 | ADR-075 | diferencial en la explicación sola; inversión y otros modelos de sostenimiento | vigente |
 | 01/10 | Guardas de arquitectura con analizador propio | ADR-070 | herramientas externas | vigente |
@@ -77,6 +82,42 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 | 25/09 | Línea de base con herramientas como ejecutores, dieciséis casos | ADR-040 (hoy ADR-053); D-41 | medición con personas; encuesta como línea de base | vigente; herramientas modificadas por ADR-076 |
 
 ## Entradas de la AE2
+
+### Entrada · Miércoles 14 de octubre de 2026 (cuarta sesión) — Consecuencias de la rama P y línea de base de modificación
+
+1. **Decisión adoptada.**
+   - **Objetivo general (ADR-084, aceptado).** Con la rama P, ADR-079 dejaba la medición final sin criterio de cumplimiento. Decidí, después de conocer el resultado y declarándolo así, que el objetivo general se cumple con los indicadores de OE-1 a OE-3, fijados antes de medir, y con la no regresión del procedimiento delegado en el brazo indicado de `build`.
+   - **Dimensión de modificación (ADR-085, aceptado).** La consecuencia 2 de I.3 (modificar un archivo sin efecto) figuraba desde el 24/09 pero nunca se había observado. Decidí medirla con una tarea por cada uno de los 24 casos, corregida por el estado efectivo que informa OpenCode. Aprobé el criterio de colaterales acotado al agente objetivo (G2') y los enunciados, y cerré la hoja.
+   - **Línea de base de modificación** (14/10, de 14:59 a 18:02). `build` y Charles con `gpt-6.1-sol`, k = 3. Fueron 72 + 72 ejecuciones; la de Charles se completó en dos tandas por un corte de cuota. Cada uno tuvo 64 correctas y 8 sin efecto. Las 16 fallas tienen la misma causa: una regla de permiso escrita con ruta absoluta, que OpenCode evalúa contra la ruta relativa. En las 16 el agente declaró éxito. No se observaron errores por precedencia.
+   - **ADR-086 (aceptado).** C-1f, un control, falló 3 de 3 en los dos ejecutores, así que las dos mediciones no son válidas. Verifiqué con OpenCode que la causa no está en el instrumento. Decidí no repetir e informar el resultado en forma descriptiva. Corregí además, declarándolo, un falso positivo del detector de acceso web.
+   - **Consulta al docente.** Decidí no hacerla.
+   - **P3.** La aprobé, después de la modificación, sin cambiar el ejecutor principal sea cual fuere su resultado.
+   - **Crítica de la línea de base.** Pedí una crítica de todo lo hecho (subagente `critico`). Pedí corregir la coherencia y preparar las decisiones que la crítica deja abiertas: ADR-087 (quién adjudica, criterio de C-3b y C-3d, prevalencia sobre ADR-084), ADR-088 (RIGE con la ruta relativa y detección de la regla con ruta absoluta) y ADR-089 (sondas de redacción y de ruta), los tres propuestos.
+2. **Alternativas y criterio de descarte (recortes).**
+   - **Objetivo descriptivo.** Lo descarté porque deja el proyecto sin criterio de éxito (reglas de la cátedra, §2).
+   - **Criterio sobre la procedencia.** Lo descarté porque elige la métrica donde ya se había visto la falla.
+   - **Reinterpretar la validez previa.** La descarté porque es cambiar una regla con los datos a la vista. Con cualquier lectura, `build` cae en rama P.
+   - **Repetir con otra instrucción.** La descarté porque elimina el error encontrado.
+   - **Fuera de esta sesión:** la propagación al informe (pendiente de mi readjudicación ciega, ADR-084, punto 4), P3 (la tarifa se registra después del 20/10) y la medición final.
+3. **Evidencia.**
+   - Verificación de las tareas: `01-relevamiento/linea-base/verificacion/20261014-tareas-modificacion/`.
+   - Tandas: `verificacion/20261014-LB-mod-principal-sol/`, `-charles-sol/` y `-charles-b-sol/`.
+   - Análisis y verificación con OpenCode de la causa: `verificacion/20261014-analisis-LB-mod/`.
+   - Tareas y hoja: `01-relevamiento/linea-base/modificacion/`.
+4. **Aporte personal.** Planteé la pregunta que originó la dimensión de modificación (si el agente no conoce la procedencia, ¿falla al modificar?). Elegí la alternativa en cada ADR, aprobé los enunciados, decidí no consultar al docente y acepté ADR-084 a ADR-086. Artefactos: ADR-084 a ADR-086, `01-relevamiento/linea-base/modificacion/` y `verificacion/`.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos dentro del equipo. El ingeniero recomendó consultar al docente; decidí no hacerlo y asumí el riesgo.
+6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidades:
+   - **Claude Code (Opus 5.5):** orquestó la sesión y discutió las alternativas. Redactó ADR-084 a ADR-086, el diseño y las hojas de tareas, las fichas MED-6 y MED-7 y el borrador de esta entrada. Verificó las tareas y la causa de la invalidez contra el binario. Armonizó el diseño de la medición (versión 2.1). Ejecutó las tandas con mi credencial, a mi pedido, y las corrigió. Regeneró dos JSON de hojas (solo cambia el hash) y ajustó una aserción de prueba al cierre de la hoja.
+   - **Codex CLI (`gpt-6.1-sol`), como escritor:** MED-6, el arnés de modificación, en cuatro ejecuciones: dos detenciones por omisiones de la ficha y una corrección de patrones de `edit` tras el ensayo. Consumo: 5,04 M tokens de entrada (4,68 M en caché) y 54 mil de salida. MED-7, el detector, en una ejecución: 0,36 M de entrada (0,29 M en caché) y 4 mil de salida.
+   - **OpenCode 1.18.25 (ChatGPT Plus), como ejecutor medido:** 144 ejecuciones, con un equivalente de USD 9,41. La cuota se agotó a las 17:14 y se renovó antes de las 17:54.
+   - **Subagente `critico` (Claude):** crítica de la línea de base, en solo lectura; la corrección de coherencia, el diseño 2.2, la planilla ciega versión 2 y ADR-087 a ADR-089 los redactó el ingeniero.
+   - **Decisiones posteriores a la crítica.** Acepté ADR-087 con la alternativa J-D: un subagente de Claude, sin acceso a adjudicaciones previas, preclasificó a ciegas las 61 revisiones manuales, y yo reviso y firmo cada veredicto. También acepté ADR-088 y ADR-089.
+   - **Redactor (subagente de Claude):** CA-9 de RF-02 y defecto sembrado de RF-07 en el libro y el Anexo I (ADR-088).
+   - **Sondas y P3 (14/10, de 19:37 a 21:56).** Decidí correrlas hoy, con las sondas antes de P3. Pedí que la tarifa la registrara un verificador con Claude Sonnet. La sonda E perdió 19 pares por un corte de red, que se repitieron. El resultado de la sonda E: los agentes siguen escribiendo la ruta absoluta sin que la instrucción se la dé (7/12 y 6/12 sin efecto). La sonda R y P3 esperan mi adjudicación.
+   - **Enmienda de ADR-087, eje E** (después de ver los datos y antes de firmar). Objeté el criterio estricto porque la pregunta de C-3b pide «qué regla», no si es nativa. Decidí que la fuente se exija en el nivel que pide la pregunta y que se aplique por igual a las tres planillas. El cambio perjudica la hipótesis del proyecto, y lo declaro.
+   - **Adjudicación** (14/10). Pedí que la adjudicaran IAs a ciegas con el criterio enmendado, y acepté sus tres preclasificaciones sin cambios. Resultado: `build` en N (0 errores de 54), Charles en P (2 de 54, en C-4e) y P3 en N. Con preguntas bien leídas, los agentes resuelven la procedencia en estos casos, también con el modelo liviano. Lo que queda es el error al modificar. Abrí la discusión sobre cómo reformular el problema.
+   - **Reformulación (ADR-090 a ADR-093, aceptados el 14/10).** Pedí una segunda crítica para salir del problema. Apliqué «Refuta» de IV.3 y reformulé el problema hacia la verificabilidad del efecto: declaraciones sin efecto y certificación falsa. Decidí medir de nuevo, con el agente dentro del proyecto y todo verificado con OpenCode (modificación y detección). Fijé el criterio de éxito antes de medir, con tokens −50 % como secundario provisorio y la rama de respaldo escrita de antemano. Si sumo una medición con personas lo decido después de medir. ADR-084 queda reemplazado.
+   - **Codex CLI (`gpt-6.1-sol`), como escritor:** MED-8, el soporte de las sondas, en una ejecución: 3,51 M tokens de entrada (3,36 M en caché) y 25 mil de salida.
 
 ### Entrada · Martes 13 y miércoles 14 de octubre de 2026 (tercera sesión) — Medición de la línea de base
 

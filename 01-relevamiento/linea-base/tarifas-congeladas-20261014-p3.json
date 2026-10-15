@@ -1,0 +1,27 @@
+{
+  "descripcion": "Tarifa de referencia congelada para valorizar el consumo de P3 (build + gpt-5.6-luna, ADR-082). Se aplica aunque el proveedor la cambie después. Complementa tarifas-congeladas-20261001.json; misma estructura y misma regla.",
+  "fecha_congelamiento": "2026-10-14",
+  "moneda": "USD",
+  "unidad": "por millón de tokens",
+  "fuente": {
+    "api": "OpenAI. (s. f.-b). Pricing. OpenAI API. https://developers.openai.com/api/docs/pricing (nivel Standard, consultado y verificado el 14/10/2026)"
+  },
+  "umbral_contexto_largo_tokens_entrada_por_solicitud": 272000,
+  "regla": "Por solicitud: si los tokens de entrada (sin caché más en caché) superan el umbral, se aplica la tarifa de contexto largo; si no, la de contexto corto. Costo = (entrada_sin_cache * entrada + entrada_en_cache * cache + salida * salida) / 1000000. El costo de un caso es la suma de sus solicitudes. Es un equivalente informativo: la medición se paga con la suscripción.",
+  "modelos": [
+    {
+      "modelo": "gpt-5.6-luna",
+      "rol": "P3: menor capacidad y generación anterior; informativo, sin decidir el cumplimiento (ADR-082)",
+      "contexto_corto": {
+        "entrada": 0.2,
+        "entrada_en_cache": 0.02,
+        "salida": 1.2
+      },
+      "contexto_largo": {
+        "entrada": 0.4,
+        "entrada_en_cache": 0.04,
+        "salida": 1.8
+      }
+    }
+  ]
+}

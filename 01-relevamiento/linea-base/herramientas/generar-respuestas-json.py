@@ -99,12 +99,58 @@ def generar(texto):
             'casos': casos}
 
 
+def generar_modificacion(texto):
+    tabla = texto.split('## Objetivos por caso', 1)[1].split('\n## ', 1)[0]
+    casos = {}
+    for linea in tabla.splitlines():
+        if not re.match(r'^\| C-[1-4][a-f] \|', linea):
+            continue
+        caso, agente, elemento, inicial, objetivo = [c.strip() for c in linea.strip('|').split('|')]
+        if caso in casos:
+            raise ValueError('Caso duplicado en objetivos.')
+        def celda(s):
+            s = s.strip('`')
+            return float(s) if re.fullmatch(r'\d+\.\d+', s) else s
+        casos[caso] = dict(agente=re.search(r'`([^`]+)`', agente)[1],
+                           elemento=elemento.strip('`'), inicial=celda(inicial),
+                           tipo_consulta='permiso' if elemento.startswith('S') else 'valor',
+                           objetivo=None if caso == 'C-2e' else celda(objetivo),
+                           no_factible=caso == 'C-2e', criterio_original=objetivo)
+        if caso == 'C-2e':
+            variable = re.search(r'`(OPENCODE_CONFIG_CONTENT)`', objetivo)[1]
+            # Traducción conservadora de las dos alternativas de esta celda.
+            if not all(s in objetivo for s in ('variable de entorno', 'contiene la configuración', 'gana al proyecto')):
+                raise ValueError('Cambió el criterio de impedimento; revisar su traducción.')
+            casos[caso]['impedimentos_aceptados'] = [
+                [re.escape(variable)],
+                [r'variable de entorno', r'(?:contiene|contener).*configuraci[oó]n',
+                 r'(?:gana|prevalece|prioridad|precedencia).*proyecto'],
+            ]
+    if set(casos) != {f'C-{c}{v}' for c in range(1, 5) for v in 'abcdef'}:
+        raise ValueError('Se requieren exactamente los 24 objetivos.')
+    sondeos = []
+    for nombre, permiso, patron in re.findall(r'^\| (S\d+) \| `([^`]+)` \| `([^`]+)` \|$', texto, re.M):
+        sondeos.append(dict(nombre=nombre, permiso=permiso, patron=patron))
+    if len(sondeos) != 10:
+        raise ValueError('Se requieren los diez sondeos de la hoja.')
+    return dict(version=1, dimension='modificacion',
+                sha256_hoja=hashlib.sha256(texto.encode()).hexdigest(),
+                hoja_cerrada=True if 'hoja cerrada el' in texto.lower() else (False if 'Cierre de la hoja:** pendiente' in texto else None),
+                sondeos=sondeos, casos=casos)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--hoja', type=Path, default=Path(__file__).resolve().parents[1] / 'respuestas.md')
-    parser.add_argument('--salida', type=Path, default=Path(__file__).resolve().parents[1] / 'respuestas.json')
+    parser.add_argument('--dimension', choices=['atribucion', 'modificacion'], default='atribucion')
+    parser.add_argument('--hoja', type=Path)
+    parser.add_argument('--salida', type=Path)
     args = parser.parse_args()
-    args.salida.write_text(json.dumps(generar(args.hoja.read_text(encoding='utf-8')), ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    base = Path(__file__).resolve().parents[1]
+    nombre = 'modificacion/respuestas-modificacion' if args.dimension == 'modificacion' else 'respuestas'
+    hoja = args.hoja or base / (nombre + '.md')
+    salida = args.salida or base / (nombre + '.json')
+    generar_hoja = generar_modificacion if args.dimension == 'modificacion' else generar
+    salida.write_text(json.dumps(generar_hoja(hoja.read_text(encoding='utf-8')), ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
 if __name__ == '__main__':

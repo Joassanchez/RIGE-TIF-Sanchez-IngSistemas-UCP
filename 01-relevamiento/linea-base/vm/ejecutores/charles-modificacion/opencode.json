@@ -1,0 +1,23 @@
+{
+  "permission": {
+    "edit": {
+      "*": "deny",
+      "*participante/.config/opencode/*": "allow",
+      "*participante/proyecto/opencode.json": "allow",
+      "*participante/proyecto/opencode.jsonc": "allow",
+      "*participante/proyecto/*/opencode.json": "allow",
+      "*participante/proyecto/*/opencode.jsonc": "allow",
+      "*participante/proyecto/.opencode/*": "allow",
+      "*participante/proyecto/*/.opencode/*": "allow"
+    },
+    "webfetch": "deny",
+    "websearch": "deny",
+    "doom_loop": "deny",
+    "external_directory": {
+      "*": "deny"
+    },
+    "skill": {
+      "*": "deny"
+    }
+  }
+}

@@ -14,6 +14,7 @@
 !simulado/evidencia.py
 !simulado/ensayo.py
 !simulado/ensayo.json
+!simulado/modificacion.json
 !simulado/planes/
 !simulado/planes/*.json
 !como-dev
@@ -26,6 +27,8 @@
 # La hoja de respuestas y credenciales tampoco se admiten dentro de los casos.
 **/respuestas.md
 **/respuestas.json
+**/respuestas-modificacion.md
+**/respuestas-modificacion.json
 **/auth.json
 **/.env
 **/.env.*

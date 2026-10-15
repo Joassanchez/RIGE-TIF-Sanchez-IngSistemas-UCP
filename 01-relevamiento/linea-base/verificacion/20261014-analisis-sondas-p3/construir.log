@@ -1,0 +1,87 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.94kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 7.2s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#3 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.0s done
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/ubuntu:26.04@sha256:88a381d5b5eeb2b35d3ad70925a362c37ce569daf43ede89ff818ec20e4d3794
+#4 DONE 11.1s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 729B done
+#5 DONE 0.0s
+
+#6 [ 1/13] FROM docker.io/library/ubuntu:26.04@sha256:88a381d5b5eeb2b35d3ad70925a362c37ce569daf43ede89ff818ec20e4d3794
+#6 resolve docker.io/library/ubuntu:26.04@sha256:88a381d5b5eeb2b35d3ad70925a362c37ce569daf43ede89ff818ec20e4d3794 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 77.69kB 0.1s done
+#7 DONE 0.1s
+
+#8 [ 2/13] RUN test "$(dpkg --print-architecture)" = amd64     && apt-get update     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends        bash ca-certificates curl git python3 sudo util-linux     && rm -rf /var/lib/apt/lists/*
+#8 CACHED
+
+#9 [ 3/13] COPY --chown=root:root --chmod=700 casos/ /opt/linea-base/casos/
+#9 CACHED
+
+#10 [ 4/13] COPY --chown=root:root --chmod=700 caso.sh verificar.sh permisos.sh medir.sh /opt/linea-base/
+#10 DONE 0.0s
+
+#11 [ 5/13] COPY --chown=root:root --chmod=700 ejecutores/ /opt/linea-base/ejecutores/
+#11 DONE 0.0s
+
+#12 [ 6/13] COPY --chown=root:root --chmod=700 indicacion.txt /opt/linea-base/indicacion.txt
+#12 DONE 0.0s
+
+#13 [ 7/13] COPY --chown=root:root --chmod=700 simulado/ /opt/linea-base/simulado/
+#13 DONE 0.0s
+
+#14 [ 8/13] COPY --chown=root:root --chmod=700 instalar.sh /opt/linea-base/instalar.sh
+#14 DONE 0.0s
+
+#15 [ 9/13] COPY --chown=root:root --chmod=755 como-dev /usr/local/bin/como-dev
+#15 DONE 0.0s
+
+#16 [10/13] COPY --chown=root:root docs/ /opt/linea-base/docs/
+#16 DONE 0.0s
+
+#17 [11/13] COPY --chown=root:root hoja-referencia.md /opt/linea-base/hoja-referencia.md
+#17 DONE 0.0s
+
+#18 [12/13] RUN /opt/linea-base/instalar.sh "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb"
+#18 0.199 == OpenCode 1.18.25 (opencode-linux-x64-baseline)
+#18 141.0 /tmp/tmp.hU4nSGU192/package/bin/opencode: OK
+#18 141.5 == Dos usuarios y permisos (§3.1)
+#18 141.6 /etc/sudoers.d/evaluador: parsed OK
+#18 142.0 == Primer uso con red durante la construcción, sin proveedor ni credenciales
+#18 142.0 Caso practica listo.
+#18 142.0 Cerrá todas las terminales y abrí una nueva en: ~/proyecto
+#18 147.6 Caso practica listo.
+#18 147.6 Cerrá todas las terminales y abrí una nueva en: ~/proyecto
+#18 147.6 Construcción terminada. Verificar sin red y comparar fuera con respuestas.md.
+#18 DONE 147.8s
+
+#19 [13/13] WORKDIR /home/evaluador/tarea
+#19 DONE 0.1s
+
+#20 exporting to image
+#20 exporting layers
+#20 exporting layers 4.0s done
+#20 exporting manifest sha256:ec650eee6302dedba132aa3cc344d476b213a0ab0367ec42bbc1ffcefe0f66c0 0.0s done
+#20 exporting config sha256:241b20e782399cc9a40b05cd04b1cccd29fd45e5448f5d928e74968fbcea4136 0.0s done
+#20 exporting attestation manifest sha256:e65c3422de432d6c7860230fa165ae632809a6c6e7c0be570dce8bcd34c918d8 0.0s done
+#20 exporting manifest list sha256:e16c4d89f104563e8204fcc27cc54c0b124e490015b25c58a3da9f8a9271e8f2 0.0s done
+#20 naming to docker.io/library/rige-linea-base:1.18.25 done
+#20 unpacking to docker.io/library/rige-linea-base:1.18.25
+#20 unpacking to docker.io/library/rige-linea-base:1.18.25 2.0s done
+#20 DONE 6.1s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/bszi7c0gwm684cilt0n45k0bw

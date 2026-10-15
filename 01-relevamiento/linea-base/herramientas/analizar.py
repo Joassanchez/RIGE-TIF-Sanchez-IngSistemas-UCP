@@ -24,11 +24,13 @@ def resumen(valores):
             'minimo': valores[0], 'maximo': valores[-1]}
 
 
-def completa(row):
+def completa(row, dimension='atribucion'):
+    if dimension == 'modificacion':
+        return row.get('resultado') in ('correcta', 'colateral', 'sin_efecto', 'incorrecta', 'sin_respuesta') and all(numero(row.get(k)) for k in TOKEN_FIELDS) and not row.get('fallo_preparacion') and not row.get('ejecutor_alterado') and not row.get('acceso_web') and not row.get('registro_incompleto')
     return row.get('resultado') in RESULTADOS and all(numero(row.get(k)) for k in TOKEN_FIELDS) and not row.get('escenario_alterado') and not row.get('acceso_web') and not row.get('registro_incompleto')
 
 
-def por_caso(rows):
+def por_caso(rows, dimension='atribucion'):
     grupos = defaultdict(list)
     for r in rows:
         grupos[r['caso']].append(r)
@@ -48,13 +50,17 @@ def por_caso(rows):
             'fuente_observada': dict(Counter(f for r in rs for f in r.get('fuente_observada', []))),
             'negativas_por_recurso_retirado': [r['negativa_por_recurso_retirado'] for r in rs if r.get('negativa_por_recurso_retirado')],
         }
+        if dimension == 'modificacion':
+            out[caso].update(proporcion_sin_efecto=sum(r['resultado'] == 'sin_efecto' for r in rs) / len(rs),
+                             proporcion_colateral=sum(r['resultado'] == 'colateral' for r in rs) / len(rs),
+                             proporcion_exito_declarado_falso=sum(bool(r.get('exito_declarado_falso')) for r in rs) / len(rs))
     return out
 
 
 def conjunto(casos, ids):
     cs = [casos[c] for c in ids if c in casos]
     n = sum(c['n'] for c in cs)
-    return {
+    out = {
         'casos': [c for c in ids if c in casos], 'n': n,
         'ib1_agregado': sum(c['errores'] for c in cs) / n if n else None,
         'ib1_promedio_casos': sum(c['tasa_error'] for c in cs) / len(cs) if cs else None,
@@ -64,12 +70,16 @@ def conjunto(casos, ids):
         'ib3_parciales': sum(c['resultados'].get('parcial', 0) for c in cs) / n if n else None,
         'censura': sum(c['censuradas'] for c in cs) / n if n else None,
     }
+    if any('proporcion_sin_efecto' in c for c in cs):
+        out.update({campo: sum(c[campo] * c['n'] for c in cs) / n if n else None
+                    for campo in ('proporcion_sin_efecto', 'proporcion_colateral', 'proporcion_exito_declarado_falso')})
+    return out
 
 
-def descriptivas(rows):
+def descriptivas(rows, dimension='atribucion'):
     """Cruces descriptivos; no confundir procedencia declarada con ayuda usada."""
     def indicador(rs):
-        validas = [r for r in rs if completa(r)]
+        validas = [r for r in rs if completa(r, dimension)]
         n = len(validas)
         return {'n': n, 'ib1': sum(r['resultado'] != 'correcta' for r in validas) / n if n else None,
                 'tokens': resumen([sum(r[k] for k in TOKEN_FIELDS) for r in validas]),
@@ -106,21 +116,21 @@ def iv3(casos):
     return {'resultado': 'Confirma', 'pendiente': ''}
 
 
-def rama(casos):
+def rama(casos, dimension='atribucion'):
     control = conjunto(casos, [c for c in casos if c.startswith('C-1')])
     objetivo = conjunto(casos, [c for c in casos if not c.startswith('C-1')])
     p = objetivo['casos_con_problema']
     minimo = Fraction(len(objetivo['casos']), 3)
     if p >= minimo and objetivo['ib1_agregado'] > control['ib1_agregado']:
         return 'E'
-    if p < minimo and objetivo['nivel_tokens'] >= 2 * control['nivel_tokens']:
+    if dimension == 'atribucion' and p < minimo and objetivo['nivel_tokens'] >= 2 * control['nivel_tokens']:
         return 'C'
     if p:
         return 'P'  # Incluye >=1/3 con Refuta, independientemente de IV.3.
     return 'N'
 
 
-def evaluar_final(lb, fin, elegida):
+def evaluar_final(lb, fin, elegida, dimension='atribucion'):
     ids = [c for c in lb if not c.startswith('C-1')]
     problemas = [c for c in ids if lb[c]['con_problema']]
     recuperados = [c for c in problemas if not fin[c]['con_problema']]
@@ -139,28 +149,33 @@ def evaluar_final(lb, fin, elegida):
         cumple = tokens_cumple and not retrocesos and error_fin <= error_lb
     else:
         cumple = None
-    return {'cumple': cumple, 'criterio_error_E': error_cumple if elegida == 'E' else None,
+    out = {'cumple': cumple, 'criterio_error_E': error_cumple if elegida == 'E' else None,
             'criterio_tokens': tokens_cumple if elegida in ('E', 'C') else None,
             'recuperados': recuperados, 'recuperaciones_requeridas': requerido,
             'retrocesos': {c: {'LB': lb[c], 'FIN': fin[c], 'causa': '[DATO PENDIENTE: adjudicar causa del retroceso con la traza]'} for c in retrocesos},
             'ib1_LB': error_lb, 'ib1_FIN': error_fin,
             'reducciones_tokens': reducciones, 'mediana_reducciones_tokens': mediana,
             'pendientes': ['[DECISIÓN PENDIENTE: reducción de tokens con denominador cero]'] if mediana is None else []}
+    if dimension == 'modificacion':
+        out['no_regresion'] = not retrocesos and error_fin <= error_lb
+    return out
 
 
-def analizar_grupo(rows, esperados=CASOS):
+def analizar_grupo(rows, esperados=CASOS, dimension='atribucion'):
+    if any(r.get('sonda') for r in rows):
+        raise ValueError('Las sondas requieren análisis descriptivo --sonda.')
     brazos = sorted(set(r['brazo'] for r in rows))
     agrupados = {(b, c): [r for r in rows if r['brazo'] == b and r['caso'] == c] for b in brazos for c in esperados}
     motivos = defaultdict(list)
     for (b, c), rs in agrupados.items():
         ks = {r.get('k') for r in rs}
         k = next(iter(ks)) if len(ks) == 1 else None
-        if not isinstance(k, int) or k <= 0 or len(rs) != k or sorted(r.get('repeticion', 0) for r in rs) != list(range(1, k + 1)) or not all(completa(r) for r in rs):
+        if not isinstance(k, int) or k <= 0 or len(rs) != k or sorted(r.get('repeticion', 0) for r in rs) != list(range(1, k + 1)) or not all(completa(r, dimension) for r in rs):
             motivos[c].append(f'{b}: ejecución perdida, duplicada, contaminada, sin k o resultado/tokens incompletos')
     excluidos = sorted(motivos)
     comunes = [c for c in esperados if c not in excluidos]
     limpio = [r for r in rows if r['caso'] in comunes]
-    tablas = {b: por_caso([r for r in limpio if r['brazo'] == b]) for b in brazos}
+    tablas = {b: por_caso([r for r in limpio if r['brazo'] == b], dimension) for b in brazos}
     invalidez = []
     if 'LB' not in brazos:
         invalidez.append('Falta línea de base propia.')
@@ -180,7 +195,7 @@ def analizar_grupo(rows, esperados=CASOS):
            'umbral_rama_E': len([c for c in comunes if not c.startswith('C-1')]) / 3,
            'censuradas': [r for r in rows if r.get('censurado')],
            'ejecuciones_excluidas': [r for r in rows if r['caso'] in excluidos],
-           'descriptivas': descriptivas(limpio),
+           'descriptivas': descriptivas(limpio, dimension),
            'indicadores': {b: {**{f'C-{i}': conjunto(tabla, [c for c in comunes if c.startswith(f'C-{i}')]) for i in range(1, 5)},
                                'C-2_a_C-4': conjunto(tabla, [c for c in comunes if not c.startswith('C-1')])} for b, tabla in tablas.items()}}
     if invalidez:
@@ -190,10 +205,10 @@ def analizar_grupo(rows, esperados=CASOS):
     if any(tablas[b][c]['n'] != tablas['LB'][c]['n'] for b in brazos for c in comunes):
         out.update(valida=False, estado='medición inválida', motivos_invalidez=['k distinto entre LB y FIN.'])
         return out
-    out['rama'] = rama(tablas['LB'])
+    out['rama'] = rama(tablas['LB'], dimension)
     out['iv3'] = iv3(tablas['LB'])
     out['casos_con_problema_LB'] = [c for c in comunes if not c.startswith('C-1') and tablas['LB'][c]['con_problema']]
-    out['comparaciones'] = {b: evaluar_final(tablas['LB'], tablas[b], out['rama']) for b in brazos if b != 'LB'}
+    out['comparaciones'] = {b: evaluar_final(tablas['LB'], tablas[b], out['rama'], dimension) for b in brazos if b != 'LB'}
     indicado = out['comparaciones'].get('indicado', {}).get('cumple')
     disponible = out['comparaciones'].get('disponible', {}).get('cumple')
     if indicado is True and disponible is True:
@@ -225,7 +240,13 @@ def piloto(rows):
             'validez_previa_y_rama_descriptiva': analizar_grupo(rows), 'casos': cs}
 
 
-def analizar(rows, filas_piloto=(), tarifas=None):
+def analizar(rows, filas_piloto=(), tarifas=None, dimension='atribucion'):
+    if any(r.get('sonda') for r in [*rows, *filas_piloto]):
+        raise ValueError('Tanda de sonda: usar --sonda; nunca calcular ramas ni cumplimiento.')
+    if any(r.get('dimension', 'atribucion') != dimension for r in [*rows, *filas_piloto]):
+        raise ValueError('No mezclar dimensiones; seleccionar --dimension.')
+    if dimension == 'modificacion' and filas_piloto:
+        raise ValueError('Modificación: k fijado, sin piloto (ADR-082/085).')
     if len({bool(r.get('ensayo')) for r in [*rows, *filas_piloto]}) > 1:
         raise ValueError('No mezclar datos de ensayo y de medición real.')
     if any(r.get('fase') == 'piloto' for r in rows):
@@ -245,7 +266,7 @@ def analizar(rows, filas_piloto=(), tarifas=None):
     for r in rows:
         if tarifas:
             r['costo_usd'] = None if r.get('registro_incompleto') else costo_solicitudes(r.get('solicitudes', []), r['modelo'], tarifas)
-    resultados = {f'{e}|{m}': analizar_grupo(rs) for (e, m), rs in sorted(grupos.items())}
+    resultados = {f'{e}|{m}': analizar_grupo(rs, dimension=dimension) for (e, m), rs in sorted(grupos.items())}
     datos_piloto = piloto(filas_piloto) if filas_piloto else None
     esperado_k = datos_piloto.get('k') if datos_piloto and datos_piloto['valido'] else None
     if esperado_k is None:
@@ -266,7 +287,7 @@ def analizar(rows, filas_piloto=(), tarifas=None):
     reevaluar = bool(principal and segundo and principal['valida'] and segundo['valida'] and principal['rama'] == segundo['rama'] == 'N')
     cumplimiento = principal.get('comparaciones', {}).get('indicado', {}).get('cumple') if principal and principal['valida'] else None
     costos = [None if r.get('registro_incompleto') else (costo_solicitudes(r.get('solicitudes', []), r['modelo'], tarifas) if tarifas else r.get('costo_usd')) for r in rows]
-    return {'ensayo': bool(rows and rows[0].get('ensayo')), 'grupos': resultados,
+    return {'dimension': dimension, 'ensayo': bool(rows and rows[0].get('ensayo')), 'grupos': resultados,
             'cumplimiento_proyecto': None if rows and rows[0].get('ensayo') else cumplimiento,
             'cumplimiento_sintetico': cumplimiento if rows and rows[0].get('ensayo') else None,
             'reevaluar_objeto': reevaluar, 'segundo_ejecutor_pendiente': principal is not None and principal['rama'] == 'N' and segundo is None,
@@ -292,6 +313,13 @@ def markdown(datos):
                 counts = s['resultados']
                 lines.append(f"| {b} | {c} | {s['n']} | {s['tasa_error']:.4f} | {counts.get('correcta', 0)} | {counts.get('parcial', 0)} | {counts.get('incorrecta', 0)} | {counts.get('sin_respuesta', 0)} | {s['tokens']['mediana']} | {s['censuradas']} |")
         lines.extend(['', f"Lectura: {g.get('lectura_brazos', g.get('accion', ''))}", ''])
+        if datos.get('dimension') == 'modificacion':
+            lines.extend(['| Condición | Brazo | Caso | Sin efecto | Colateral | Éxito declarado falso |',
+                          '|---|---|---|---:|---:|---:|'])
+            for b, tabla in g['casos'].items():
+                for c, s in tabla.items():
+                    lines.append(f"| {'LB' if b == 'LB' else 'FIN'} | {b} | {c} | {s['proporcion_sin_efecto']} | {s['proporcion_colateral']} | {s['proporcion_exito_declarado_falso']} |")
+            lines.append('')
         for b, indicadores in g['indicadores'].items():
             lines.extend([f'### Indicadores {b}', '', '| Conjunto | IB-1 agregado | Promedio tasas | Casos con problema | Nivel tokens | IB-3 | Censura |', '|---|---:|---:|---:|---:|---:|---:|'])
             for c, s in indicadores.items():
@@ -305,7 +333,7 @@ def markdown(datos):
     return '\n'.join(lines) + '\n'
 
 
-def cargar(paths):
+def cargar(paths, evidencia=False):
     rows = []
     for path in paths:
         rs = leer_jsonl(path)
@@ -313,9 +341,12 @@ def cargar(paths):
         if meta.exists():
             tanda = json.loads(meta.read_text(encoding='utf-8'))
             for r in rs:
-                for k in ('k', 'fase', 'ensayo', 'recorte_declarado'):
+                for k in ('k', 'fase', 'ensayo', 'recorte_declarado', 'dimension', 'sonda', 'hash_sonda'):
                     if k in tanda:
                         r.setdefault(k, tanda[k])
+        if evidencia:
+            for r in rs:
+                r['_directorio_registro'] = str(path.parent.resolve())
         rows.extend(rs)
     return rows
 
@@ -323,15 +354,23 @@ def cargar(paths):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('registros', nargs='+', type=Path)
+    parser.add_argument('--sonda', choices=['R', 'E'], help='ADR-089: análisis exclusivamente descriptivo con LB de los mismos casos.')
     parser.add_argument('--piloto', nargs='+', type=Path, default=[])
+    parser.add_argument('--dimension', choices=['atribucion', 'modificacion'], default='atribucion')
     parser.add_argument('--destino', type=Path, required=True)
     parser.add_argument('--tarifas', type=Path, default=Path(__file__).resolve().parents[1] / 'tarifas-congeladas-20261001.json')
     args = parser.parse_args()
-    datos = analizar(cargar(args.registros), cargar(args.piloto), json.loads(args.tarifas.read_text(encoding='utf-8')))
+    if args.sonda:
+        if args.piloto:
+            parser.error('Las sondas no admiten piloto.')
+        from analizar_sondas import analizar_sonda, markdown_sonda
+        datos = analizar_sonda(cargar(args.registros, evidencia=True), args.sonda, args.dimension)
+    else:
+        datos = analizar(cargar(args.registros), cargar(args.piloto), json.loads(args.tarifas.read_text(encoding='utf-8')), args.dimension)
     args.destino.mkdir(parents=True, exist_ok=True)
     escribir_json(args.destino / 'analisis.json', datos)
-    (args.destino / 'informe.md').write_text(markdown(datos), encoding='utf-8')
-    print(f'{len(datos["grupos"])} combinaciones; informe.md y analisis.json en {args.destino}')
+    (args.destino / 'informe.md').write_text(markdown_sonda(datos) if args.sonda else markdown(datos), encoding='utf-8')
+    print(f'informe.md y analisis.json en {args.destino}')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,286 @@
+{
+  "version": 1,
+  "dimension": "modificacion",
+  "sha256_hoja": "1c8cfc39a8a1dfb316f53beb9efc47f32bca64d2ae53c49f4871189b95f95c32",
+  "hoja_cerrada": true,
+  "sondeos": [
+    {
+      "nombre": "S1",
+      "permiso": "edit",
+      "patron": "src/productos.js"
+    },
+    {
+      "nombre": "S2",
+      "permiso": "edit",
+      "patron": "README.md"
+    },
+    {
+      "nombre": "S3",
+      "permiso": "edit",
+      "patron": "src/index.js"
+    },
+    {
+      "nombre": "S4",
+      "permiso": "read",
+      "patron": ".env"
+    },
+    {
+      "nombre": "S5",
+      "permiso": "read",
+      "patron": "src/productos.js"
+    },
+    {
+      "nombre": "S6",
+      "permiso": "bash",
+      "patron": "git status"
+    },
+    {
+      "nombre": "S7",
+      "permiso": "bash",
+      "patron": "git diff"
+    },
+    {
+      "nombre": "S8",
+      "permiso": "bash",
+      "patron": "npm install"
+    },
+    {
+      "nombre": "S9",
+      "permiso": "bash",
+      "patron": "ls"
+    },
+    {
+      "nombre": "S10",
+      "permiso": "webfetch",
+      "patron": "https://example.com"
+    }
+  ],
+  "casos": {
+    "C-1a": {
+      "agente": "build",
+      "elemento": "model",
+      "inicial": "openai/gpt-5-mini",
+      "tipo_consulta": "valor",
+      "objetivo": "google/gemini-2.5-flash",
+      "no_factible": false,
+      "criterio_original": "`google/gemini-2.5-flash`"
+    },
+    "C-1b": {
+      "agente": "build",
+      "elemento": "S10",
+      "inicial": "ask",
+      "tipo_consulta": "permiso",
+      "objetivo": "deny",
+      "no_factible": false,
+      "criterio_original": "`deny`"
+    },
+    "C-1c": {
+      "agente": "plan",
+      "elemento": "temperature",
+      "inicial": 0.3,
+      "tipo_consulta": "valor",
+      "objetivo": 0.55,
+      "no_factible": false,
+      "criterio_original": "0.55"
+    },
+    "C-1d": {
+      "agente": "build",
+      "elemento": "S1",
+      "inicial": "deny",
+      "tipo_consulta": "permiso",
+      "objetivo": "allow",
+      "no_factible": false,
+      "criterio_original": "`allow`"
+    },
+    "C-1e": {
+      "agente": "build",
+      "elemento": "temperature",
+      "inicial": 0.4,
+      "tipo_consulta": "valor",
+      "objetivo": 0.55,
+      "no_factible": false,
+      "criterio_original": "0.55"
+    },
+    "C-1f": {
+      "agente": "build",
+      "elemento": "S5",
+      "inicial": "deny",
+      "tipo_consulta": "permiso",
+      "objetivo": "allow",
+      "no_factible": false,
+      "criterio_original": "`allow`"
+    },
+    "C-2a": {
+      "agente": "build",
+      "elemento": "model",
+      "inicial": "anthropic/claude-opus-4-1",
+      "tipo_consulta": "valor",
+      "objetivo": "google/gemini-2.5-flash",
+      "no_factible": false,
+      "criterio_original": "`google/gemini-2.5-flash`"
+    },
+    "C-2b": {
+      "agente": "docs",
+      "elemento": "model",
+      "inicial": "deepseek/deepseek-chat",
+      "tipo_consulta": "valor",
+      "objetivo": "google/gemini-2.5-flash",
+      "no_factible": false,
+      "criterio_original": "`google/gemini-2.5-flash`"
+    },
+    "C-2c": {
+      "agente": "revisor",
+      "elemento": "model",
+      "inicial": "anthropic/claude-sonnet-4-5",
+      "tipo_consulta": "valor",
+      "objetivo": "google/gemini-2.5-flash",
+      "no_factible": false,
+      "criterio_original": "`google/gemini-2.5-flash`"
+    },
+    "C-2d": {
+      "agente": "build",
+      "elemento": "model",
+      "inicial": "mistral/codestral-latest",
+      "tipo_consulta": "valor",
+      "objetivo": "google/gemini-2.5-flash",
+      "no_factible": false,
+      "criterio_original": "`google/gemini-2.5-flash`"
+    },
+    "C-2e": {
+      "agente": "build",
+      "elemento": "model",
+      "inicial": "deepseek/deepseek-chat",
+      "tipo_consulta": "valor",
+      "objetivo": null,
+      "no_factible": true,
+      "criterio_original": "**No factible por archivo:** sin cambio; `hecho: false`; `impedimento` aceptado si menciona `OPENCODE_CONFIG_CONTENT` (o «variable de entorno» que contiene la configuración y le gana al proyecto)",
+      "impedimentos_aceptados": [
+        [
+          "OPENCODE_CONFIG_CONTENT"
+        ],
+        [
+          "variable de entorno",
+          "(?:contiene|contener).*configuraci[oó]n",
+          "(?:gana|prevalece|prioridad|precedencia).*proyecto"
+        ]
+      ]
+    },
+    "C-2f": {
+      "agente": "build",
+      "elemento": "model",
+      "inicial": "mistral/codestral-latest",
+      "tipo_consulta": "valor",
+      "objetivo": "google/gemini-2.5-flash",
+      "no_factible": false,
+      "criterio_original": "`google/gemini-2.5-flash`"
+    },
+    "C-3a": {
+      "agente": "plan",
+      "elemento": "model",
+      "inicial": "google/gemini-2.5-pro",
+      "tipo_consulta": "valor",
+      "objetivo": "google/gemini-2.5-flash",
+      "no_factible": false,
+      "criterio_original": "`google/gemini-2.5-flash`"
+    },
+    "C-3b": {
+      "agente": "build",
+      "elemento": "S4",
+      "inicial": "ask",
+      "tipo_consulta": "permiso",
+      "objetivo": "allow",
+      "no_factible": false,
+      "criterio_original": "`allow`"
+    },
+    "C-3c": {
+      "agente": "build",
+      "elemento": "model",
+      "inicial": "deepseek/deepseek-reasoner",
+      "tipo_consulta": "valor",
+      "objetivo": "google/gemini-2.5-flash",
+      "no_factible": false,
+      "criterio_original": "`google/gemini-2.5-flash`"
+    },
+    "C-3d": {
+      "agente": "plan",
+      "elemento": "S2",
+      "inicial": "deny",
+      "tipo_consulta": "permiso",
+      "objetivo": "allow",
+      "no_factible": false,
+      "criterio_original": "`allow`"
+    },
+    "C-3e": {
+      "agente": "plan",
+      "elemento": "description",
+      "inicial": "Revisa--equipo",
+      "tipo_consulta": "valor",
+      "objetivo": "Revisa-plan",
+      "no_factible": false,
+      "criterio_original": "`Revisa-plan`"
+    },
+    "C-3f": {
+      "agente": "general",
+      "elemento": "S6",
+      "inicial": "allow",
+      "tipo_consulta": "permiso",
+      "objetivo": "deny",
+      "no_factible": false,
+      "criterio_original": "`deny`"
+    },
+    "C-4a": {
+      "agente": "build",
+      "elemento": "S6",
+      "inicial": "allow",
+      "tipo_consulta": "permiso",
+      "objetivo": "ask",
+      "no_factible": false,
+      "criterio_original": "`ask`"
+    },
+    "C-4b": {
+      "agente": "build",
+      "elemento": "S7",
+      "inicial": "deny",
+      "tipo_consulta": "permiso",
+      "objetivo": "allow",
+      "no_factible": false,
+      "criterio_original": "`allow`"
+    },
+    "C-4c": {
+      "agente": "plan",
+      "elemento": "S3",
+      "inicial": "allow",
+      "tipo_consulta": "permiso",
+      "objetivo": "deny",
+      "no_factible": false,
+      "criterio_original": "`deny`"
+    },
+    "C-4d": {
+      "agente": "build",
+      "elemento": "S8",
+      "inicial": "deny",
+      "tipo_consulta": "permiso",
+      "objetivo": "allow",
+      "no_factible": false,
+      "criterio_original": "`allow`"
+    },
+    "C-4e": {
+      "agente": "build",
+      "elemento": "S1",
+      "inicial": "ask",
+      "tipo_consulta": "permiso",
+      "objetivo": "allow",
+      "no_factible": false,
+      "criterio_original": "`allow`"
+    },
+    "C-4f": {
+      "agente": "build",
+      "elemento": "S1",
+      "inicial": "deny",
+      "tipo_consulta": "permiso",
+      "objetivo": "allow",
+      "no_factible": false,
+      "criterio_original": "`allow`"
+    }
+  }
+}

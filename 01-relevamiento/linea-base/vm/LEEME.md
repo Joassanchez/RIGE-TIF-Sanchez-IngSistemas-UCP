@@ -229,6 +229,8 @@ del circuito. El consumo incluye los intentos fallidos. Las pérdidas de consumo
 no se convierten en ceros: invalidan la completitud y obligan a recuperar o
 repetir el caso antes de la medición definitiva.
 
+El registro excluye cada aparición exacta de `https://opencode.ai/config.json` del comando al detectar acceso web; las herramientas y programas web siguen contando, y los correctores conservan `acceso_web_registrado` y declaran `regla_acceso_web: "ADR-086"` ([ADR-086, punto 5](../../../00-gestion/decisiones/ADR-086-modificacion-invalida-causa-no-instrumental.md)).
+
 La evidencia sale mediante `docker cp`, también cuando la tanda falla. No hay
 montajes ni socket Docker. Las tarifas se copian por `docker cp` a un archivo
 root temporal, igual que el catálogo congelado; la hoja real de respuestas y las herramientas de corrección
@@ -426,3 +428,33 @@ Las pruebas de CLI fabrican un registro de ensayo en una carpeta temporal,
 corrigen y analizan con los programas reales; también prueban la segunda
 pasada de adjudicación CSV. Esto verifica el circuito externo, pero no
 reemplaza la tanda Docker que corre el ingeniero con los pasos anteriores.
+
+### Dimensión de modificación (MED-6 / ADR-085)
+
+`medir --dimension modificacion` copia únicamente la hoja de tareas con
+`docker cp` y exige su `--hash-tareas`; el ensayo puede calcularlo en el anfitrión.
+Las respuestas de modificación también quedan fuera del contenedor. Las variantes
+de ejecutor, capturas por intento, diff, restauración del entorno, corrección
+determinista y pasos completos para construir, ensayar y medir están en
+[`../modificacion/LEEME.md`](../modificacion/LEEME.md).
+
+El valor por defecto sigue siendo `--dimension atribucion`: su ensayo y las
+configuraciones congeladas existentes se conservan. La verificación nativa de
+las nuevas rutas de edición la ejecuta el ingeniero antes de medir.
+
+### Sondas descriptivas (MED-8 / ADR-089)
+
+`medir --sonda <archivo> --hash-sonda <sha256>` copia la sonda por `docker cp`
+y comprueba sus bytes antes de ejecutar. Declarar los casos de la sonda con
+`--casos` o sus pares con `--pares`. En modificación sigue siendo obligatorio
+`--hash-tareas`: los enunciados salen de la hoja cerrada original.
+
+Sin sonda se conservan las instrucciones y sus hashes. Con sonda, `tanda.json`
+registra el archivo, su hash, el hash de la plantilla y los hashes efectivos por
+caso (`hash_instruccion_por_caso`); cada fila registra el hash del mensaje enviado.
+Las sondas E conservan además el contenido final de los archivos tocados para
+el análisis de patrones de permiso. Los correctores son los existentes.
+
+La ejecución y el análisis exclusivamente descriptivo se documentan en
+[`../sondas/LEEME.md`](../sondas/LEEME.md). `analizar.py` rechaza sondas sin
+`--sonda R` o `--sonda E`; esa vía no calcula ramas ni cumplimiento.

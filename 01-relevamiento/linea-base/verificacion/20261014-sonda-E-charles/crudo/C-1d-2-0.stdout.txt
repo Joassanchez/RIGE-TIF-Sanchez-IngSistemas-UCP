@@ -1,0 +1,1 @@
+{"type":"error","timestamp":1792020668392,"sessionID":"ses_ec34184e3ffe6iknMh8YxalYRn","error":{"name":"APIError","data":{"message":"Cannot connect to API: Unable to connect. Is the computer able to access the url?","isRetryable":true,"metadata":{"url":"https://api.openai.com/v1/responses"}}}}

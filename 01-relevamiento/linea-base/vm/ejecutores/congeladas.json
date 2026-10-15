@@ -15,6 +15,17 @@
   "archivos": {
     "charles/agents/charles.md": "1811d7c33b300bfc0b0641d3e5c1f2b11882fbdf6e6988cd56951c92976f3db4",
     "charles/opencode.json": "8d4425657fa3b79412f0499053314285555dac7d27d02b9f8c4af4d491184773",
-    "principal/opencode.json": "d65e379094678ed9f3af1e1a613aabed606ed1af5cce2837d8022e7838f31fe5"
+    "principal/opencode.json": "d65e379094678ed9f3af1e1a613aabed606ed1af5cce2837d8022e7838f31fe5",
+    "charles-modificacion/agents/charles.md": "9b5296664c3e582e96173273efc9eed89baa296aafb77e183f8b20ef3d9ebfe5",
+    "charles-modificacion/opencode.json": "3a252f1313978bb01973e305a3447bc5510263887c52669db216b551ec5bc17d",
+    "principal-modificacion/opencode.json": "545d282fa0952a5a06c0164cd0d8cd0492b646e01b68859e1af21d96d08601be"
+  },
+  "modificacion": {
+    "adr": "ADR-085",
+    "cambios": [
+      "edit permitido solo en rutas de configuración del participante, dimensión de modificación, ADR-085",
+      "Patrones edit con prefijo *participante/ para el sujeto relativo al worktree; corrección tras rechazo nativo en ambos ejecutores el 14/10/2026"
+    ],
+    "verificacion_efectiva": "Ensayo nativo del ingeniero 14/10/2026: las reglas absolutas rechazaron todas las llamadas edit en ambos ejecutores. Corregido para path.relative(worktree, archivo), comprobando worktrees / y /home/evaluador/tarea en verificacion-edit.json. [VERIFICAR: repetir ensayo nativo con estos hashes]"
   }
 }

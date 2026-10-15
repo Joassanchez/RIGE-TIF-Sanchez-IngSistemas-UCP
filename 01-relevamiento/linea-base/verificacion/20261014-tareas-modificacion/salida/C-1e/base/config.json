@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "plan": {
+      "temperature": 0.8,
+      "options": {},
+      "permission": {}
+    },
+    "build": {
+      "temperature": 0.4,
+      "options": {},
+      "permission": {}
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

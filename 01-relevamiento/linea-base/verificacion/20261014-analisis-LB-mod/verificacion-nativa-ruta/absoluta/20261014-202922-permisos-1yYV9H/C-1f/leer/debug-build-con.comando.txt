@@ -1,0 +1,1 @@
+export OPENCODE_DISABLE_AUTOUPDATE=1 OPENCODE_DISABLE_MODELS_FETCH=1; unset OPENCODE_CONFIG; export OPENCODE_CONFIG='/tmp/rige-proveedor-deqWTp/proveedor.json'; cd '/home/participante/proyecto' && opencode debug agent 'build'

@@ -1,0 +1,76 @@
+{
+  "sonda": "R",
+  "dimension": "atribucion",
+  "hash_sonda": "a2170ed2b598b677351f54d8f550dc622ea77a6995e023e6dab8f618aabb73a9",
+  "tabla": [
+    {
+      "ejecutor": "charles",
+      "modelo": "openai/gpt-6.1-sol",
+      "caso": "C-3b",
+      "LB": {
+        "n": 3,
+        "errores": 0,
+        "sin_efecto": 0.0
+      },
+      "sonda": {
+        "n": 3,
+        "errores": 0,
+        "sin_efecto": 0.0
+      },
+      "lectura": "dependiente de la redacción",
+      "motivos": []
+    },
+    {
+      "ejecutor": "charles",
+      "modelo": "openai/gpt-6.1-sol",
+      "caso": "C-3d",
+      "LB": {
+        "n": 3,
+        "errores": 0,
+        "sin_efecto": 0.0
+      },
+      "sonda": {
+        "n": 3,
+        "errores": 0,
+        "sin_efecto": 0.0
+      },
+      "lectura": "dependiente de la redacción",
+      "motivos": []
+    },
+    {
+      "ejecutor": "principal",
+      "modelo": "openai/gpt-6.1-sol",
+      "caso": "C-3b",
+      "LB": {
+        "n": 3,
+        "errores": 0,
+        "sin_efecto": 0.0
+      },
+      "sonda": {
+        "n": 3,
+        "errores": 0,
+        "sin_efecto": 0.0
+      },
+      "lectura": "dependiente de la redacción",
+      "motivos": []
+    },
+    {
+      "ejecutor": "principal",
+      "modelo": "openai/gpt-6.1-sol",
+      "caso": "C-3d",
+      "LB": {
+        "n": 3,
+        "errores": 0,
+        "sin_efecto": 0.0
+      },
+      "sonda": {
+        "n": 3,
+        "errores": 0,
+        "sin_efecto": 0.0
+      },
+      "lectura": "dependiente de la redacción",
+      "motivos": []
+    }
+  ],
+  "nota": "Descriptiva ADR-089. El ejecutor sigue fuera del árbol. No modifica la línea de base ni su lectura."
+}

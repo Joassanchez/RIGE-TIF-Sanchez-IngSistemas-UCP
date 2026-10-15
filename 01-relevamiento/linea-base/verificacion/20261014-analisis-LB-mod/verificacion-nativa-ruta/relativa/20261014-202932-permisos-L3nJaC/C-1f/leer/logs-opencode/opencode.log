@@ -1,0 +1,13 @@
+timestamp=2026-10-14T20:29:37.078Z level=INFO run=a5e8137d message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-14T20:29:37.079Z level=INFO run=a5e8137d message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-14T20:29:37.145Z level=INFO run=a5e8137d message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-14T20:29:37.150Z level=INFO run=a5e8137d message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-14T20:29:37.155Z level=INFO run=a5e8137d message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-14T20:29:37.163Z level=INFO run=a5e8137d message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-14T20:29:37.164Z level=INFO run=a5e8137d message=loading path=/tmp/rige-proveedor-TzHbnb/proveedor.json
+timestamp=2026-10-14T20:29:37.166Z level=INFO run=a5e8137d message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-14T20:29:37.260Z level=INFO run=a5e8137d message="all LSPs are disabled"
+timestamp=2026-10-14T20:29:37.261Z level=INFO run=a5e8137d message="all formatters are disabled"
+timestamp=2026-10-14T20:29:37.261Z level=INFO run=a5e8137d message=init
+timestamp=2026-10-14T20:29:37.426Z level=INFO run=a5e8137d message=created id=ses_ec3e4ceedffeb9UZdTZByJpo24 slug=proud-canyon version=1.18.25 projectID=bd87268601917e516deb7e0342eb9f39a682b339 directory=/home/participante/proyecto path="" workspaceID=undefined parentID=undefined title="New session - 2026-10-14T20:29:37.426Z" agent=undefined model=undefined metadata=undefined permission="[{\"permission\":\"question\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_enter\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_exit\",\"pattern\":\"*\",\"action\":\"deny\"}]" cost=0 tokens.input=0 tokens.output=0 tokens.reasoning=0 tokens.cache.read=0 tokens.cache.write=0 time.created=1792009777426 time.updated=1792009777426
+timestamp=2026-10-14T20:29:37.473Z level=INFO run=a5e8137d message="event connected"

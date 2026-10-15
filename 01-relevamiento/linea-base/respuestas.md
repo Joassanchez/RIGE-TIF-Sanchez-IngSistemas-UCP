@@ -81,6 +81,10 @@ Reglas de comparación:
 - `respuesta`: sin distinguir mayúsculas y sin espacios en los extremos. En los permisos, uno de `allow`, `ask`, `deny`; se aceptan también sus equivalentes en español («permitido», «pregunta», «denegado»).
 - `fuente`: el corrector automático aplica los patrones aceptados. Toda fuente que no coincide con un patrón aceptado ni con uno rechazado pasa a **revisión manual**, que se registra con su motivo.
 
+> **Precisión del 14/10/2026 (ADR-087, enmienda del eje E).** La hoja no se reabre. En las preguntas que piden solo «qué regla» (C-3b, C-3d, C-3f, C-4a a C-4d), la fuente es aceptable si identifica la regla determinante correcta; no se exige el archivo ni el carácter nativo, salvo que la fuente atribuya la regla a una ubicación rechazada. En las demás preguntas rige la hoja. Decidido después de conocer los datos y en contra de la hipótesis del proyecto; se informa la sensibilidad con el criterio anterior.
+
+> **Precisión del 14/10/2026 (ADR-083).** La hoja no se reabre: valores, fuentes y criterios no cambian. En los casos de permiso, si `respuesta` no coincide en forma exacta, se extrae la decisión cuando el texto normalizado contiene exactamente una de `allow`, `ask`, `deny` o sus sinónimos; si no contiene ninguna o contiene dos o más distintas, va a revisión manual. En los casos compuestos (C-4e), la regla se aplica a cada parte separada por `;`. Cada fila registra `decision_extraida` y `regla_extraccion`. La regla se fijó después de detectar que 54 ejecuciones se marcaban incorrectas por la forma, y se aplicó por igual a las dos tandas antes de conocer el resultado de la recorrección.
+
 ## Casos
 
 ### C-1a · Control · valor

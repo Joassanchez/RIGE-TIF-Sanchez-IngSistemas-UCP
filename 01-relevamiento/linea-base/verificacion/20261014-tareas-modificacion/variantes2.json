@@ -1,0 +1,22 @@
+{
+ "C-1d": {
+  "minima": {
+   "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"edit\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+  }
+ },
+ "C-4c": {
+  "minima": {
+   "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"plan\": {\n      \"description\": \"Planifica sin modificar archivos\",\n      \"permission\": {\n        \"edit\": {\n          \"src/index.js\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+  }
+ },
+ "C-4e": {
+  "minima": {
+   "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"allow\",\n        \"edit\": {\n          \"src/productos.js\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+  }
+ },
+ "C-4f": {
+  "minima": {
+   "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"edit\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+  }
+ }
+}

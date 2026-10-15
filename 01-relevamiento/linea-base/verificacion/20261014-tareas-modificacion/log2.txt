@@ -1,0 +1,8 @@
+C-1d base ok
+C-1d minima ok
+C-4c base ok
+C-4c minima ok
+C-4e base ok
+C-4e minima ok
+C-4f base ok
+C-4f minima ok

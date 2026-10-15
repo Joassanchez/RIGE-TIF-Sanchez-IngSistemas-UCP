@@ -1,0 +1,18 @@
+{
+ "config_rc": 0,
+ "config_err": "",
+ "agentes": {
+  "build": {
+   "rc": 0,
+   "err": ""
+  },
+  "general": {
+   "rc": 0,
+   "err": ""
+  },
+  "plan": {
+   "rc": 0,
+   "err": ""
+  }
+ }
+}

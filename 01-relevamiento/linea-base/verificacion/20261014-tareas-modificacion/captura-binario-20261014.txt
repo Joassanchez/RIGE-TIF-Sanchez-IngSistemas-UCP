@@ -1,0 +1,7 @@
+binario: d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb  /usr/local/bin/opencode
+opencode --version: 1.18.25
+function g0(){switch("linux"){case"darwin":return"/Library/Application Support/opencode";case"win32":return i2.join(process.env.ProgramData||"C:\\ProgramData","opencode");default:return"/etc/opencode"}}function m0(){return process.env.OPENCODE_TEST_MANAGED_CONFIG_DIR||g0()}function gW($){let
+coincide: permission:\"read\",patterns:\[z\.relative\(c\.worktree,h\)\] True
+coincide: permission:\"edit\",patterns:\[qo\.relative\(y\.worktree,u\)\] True
+ls: cannot access '/etc/opencode': No such file or directory
+no-escribible

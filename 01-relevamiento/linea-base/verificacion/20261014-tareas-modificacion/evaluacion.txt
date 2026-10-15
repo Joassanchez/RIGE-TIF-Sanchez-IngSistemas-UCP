@@ -1,0 +1,47 @@
+C-1a | correcta          | openai/gpt-5-mini → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-1b | correcta          | ask → deny | LOGRA | colaterales: general:webfetch https://example.com ask→deny
+C-1c | correcta          | 0.3 → 0.55 | LOGRA | colaterales: ninguno
+C-1d | correcta          | deny → allow | LOGRA | colaterales: build:edit README.md deny→allow; build:edit src/index.js deny→allow; general:edit src/productos.js deny→allow; general:edit README.md deny→allow; general:edit src/index.js deny→allow; plan:edit src/productos.js deny→allow; plan:edit README.md deny→allow; plan:edit src/index.js deny→allow
+C-1e | correcta          | 0.4 → 0.55 | LOGRA | colaterales: ninguno
+C-1e | ingenua           | 0.4 → 0.4 | SIN EFECTO | colaterales: ninguno
+C-1f | amplia            | deny → allow | LOGRA | colaterales: build:read .env deny→allow; general:read .env deny→allow; general:read src/productos.js deny→allow; plan:read .env deny→allow; plan:read src/productos.js deny→allow
+C-1f | correcta          | deny → allow | LOGRA | colaterales: general:read src/productos.js deny→allow; plan:read src/productos.js deny→allow
+C-2a | correcta          | anthropic/claude-opus-4-1 → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-2a | ingenua           | anthropic/claude-opus-4-1 → anthropic/claude-opus-4-1 | SIN EFECTO | colaterales: ninguno
+C-2b | correcta          | deepseek/deepseek-chat → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-2b | ingenua           | deepseek/deepseek-chat → deepseek/deepseek-chat | SIN EFECTO | colaterales: ninguno
+C-2c | correcta          | anthropic/claude-sonnet-4-5 → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-2c | ingenua           | anthropic/claude-sonnet-4-5 → anthropic/claude-sonnet-4-5 | SIN EFECTO | colaterales: ninguno
+C-2d | correcta          | mistral/codestral-latest → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-2d | ingenua           | mistral/codestral-latest → mistral/codestral-latest | SIN EFECTO | colaterales: ninguno
+C-2e | ingenua           | deepseek/deepseek-chat → deepseek/deepseek-chat | SIN EFECTO | colaterales: ninguno
+C-2e | ingenua_dir       | deepseek/deepseek-chat → deepseek/deepseek-chat | SIN EFECTO | colaterales: ninguno
+C-2e | ingenua_md        | deepseek/deepseek-chat → deepseek/deepseek-chat | SIN EFECTO | colaterales: ninguno
+C-2f | correcta          | mistral/codestral-latest → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-2f | correcta_proyecto | mistral/codestral-latest → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-2f | ingenua           | mistral/codestral-latest → mistral/codestral-latest | SIN EFECTO | colaterales: ninguno
+C-3a | correcta          | google/gemini-2.5-pro → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-3a | ingenua           | google/gemini-2.5-pro → google/gemini-2.5-pro | SIN EFECTO | colaterales: ninguno
+C-3b | amplia            | ask → allow | LOGRA | colaterales: general:read .env ask→allow; plan:read .env ask→allow
+C-3b | correcta          | ask → allow | LOGRA | colaterales: general:read .env ask→allow; plan:read .env ask→allow
+C-3c | correcta          | deepseek/deepseek-reasoner → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-3c | correcta_archivo  | deepseek/deepseek-reasoner → google/gemini-2.5-flash | LOGRA | colaterales: ninguno
+C-3c | ingenua           | deepseek/deepseek-reasoner → deepseek/deepseek-reasoner | SIN EFECTO | colaterales: ninguno
+C-3d | amplia            | deny → allow | LOGRA | colaterales: plan:edit src/productos.js deny→allow; plan:edit src/index.js deny→allow
+C-3d | correcta          | deny → allow | LOGRA | colaterales: ninguno
+C-3e | correcta          | Revisa--equipo → Revisa-plan | LOGRA | colaterales: ninguno
+C-3f | correcta          | allow → deny | LOGRA | colaterales: ninguno
+C-3f | ingenua           | allow → allow | SIN EFECTO | colaterales: ninguno
+C-4a | amplia            | allow → ask | LOGRA | colaterales: build:bash git diff allow→ask; general:bash git status allow→ask; general:bash git diff allow→ask; plan:bash git status allow→ask; plan:bash git diff allow→ask
+C-4a | correcta          | allow → ask | LOGRA | colaterales: ninguno
+C-4b | correcta          | deny → allow | LOGRA | colaterales: ninguno
+C-4b | ingenua           | deny → deny | SIN EFECTO | colaterales: ninguno
+C-4b | ingenua_final     | deny → allow | LOGRA | colaterales: general:bash git diff deny→allow; plan:bash git diff deny→allow
+C-4c | correcta          | allow → deny | LOGRA | colaterales: plan:edit src/productos.js allow→deny; plan:edit README.md allow→deny
+C-4c | quitar_global     | allow → deny | LOGRA | colaterales: plan:edit src/productos.js allow→deny; plan:edit README.md allow→deny
+C-4d | correcta          | deny → allow | LOGRA | colaterales: ninguno
+C-4d | ingenua           | deny → deny | SIN EFECTO | colaterales: ninguno
+C-4e | correcta          | ask → allow | LOGRA | colaterales: build:edit README.md ask→allow; build:edit src/index.js ask→allow
+C-4e | ingenua           | ask → ask | SIN EFECTO | colaterales: ninguno
+C-4e | ingenua_global    | ask → ask | SIN EFECTO | colaterales: ninguno
+C-4f | correcta          | deny → allow | LOGRA | colaterales: build:edit README.md deny→allow; build:edit src/index.js deny→allow; general:edit src/productos.js deny→allow; general:edit README.md deny→allow; general:edit src/index.js deny→allow; plan:edit src/productos.js deny→allow; plan:edit README.md deny→allow; plan:edit src/index.js deny→allow

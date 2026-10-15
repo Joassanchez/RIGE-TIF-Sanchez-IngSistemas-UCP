@@ -1,0 +1,13 @@
+Esta corrida solicita herramientas fijas a OpenCode 1.18.25 como participante.
+La configuración auxiliar sólo declara provider y model, fuera del proyecto y
+de ~/.config/opencode. Antes de ejecutar se comparan las listas permission de
+debug agent con y sin OPENCODE_CONFIG; una diferencia omite el caso contaminado.
+allow exige resultado y efecto observable; ask se identifica por el texto de
+autorrechazo; deny por texto de regla o herramienta no ofrecida en esa sesión.
+Errores de transporte, ejecución, efecto o señales insuficientes: indeterminado.
+C-3f usa build -> task -> general -> bash: git status; no invoca general directamente.
+C-4e ejecuta webfetch y edit en sesiones separadas. C-4f guarda --print-logs.
+npm install usa un ejecutable inocuo del proyecto: mide permiso, no instalación.
+El proveedor y webfetch sólo usan 127.0.0.1 dentro de --network none.
+No se compara con respuestas.md: revisar afuera junto a la captura estática.
+Un resultado completo todavía requiere esa revisión para cerrar la fase 2.

@@ -1,0 +1,10 @@
+{
+ "/etc/opencode": {
+  "existe": false,
+  "escribible_participante": false
+ },
+ "/etc": {
+  "existe": true,
+  "escribible_participante": false
+ }
+}

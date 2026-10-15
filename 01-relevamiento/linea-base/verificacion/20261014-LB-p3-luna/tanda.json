@@ -1,0 +1,329 @@
+{
+  "tanda": "LB-p3-luna",
+  "condicion": "LB",
+  "ejecutor": "principal",
+  "brazo": "LB",
+  "modelo": "openai/gpt-5.6-luna",
+  "agente": "build",
+  "k": 3,
+  "limite": 600,
+  "semilla": 20261013,
+  "casos": "C-1a,C-1b,C-1c,C-1d,C-1e,C-1f,C-2a,C-2b,C-2c,C-2d,C-2e,C-2f,C-3a,C-3b,C-3c,C-3d,C-3e,C-3f,C-4a,C-4b,C-4c,C-4d,C-4e,C-4f",
+  "pares": null,
+  "ensayo": false,
+  "fase": "p3",
+  "recorte_declarado": null,
+  "rige_descripcion": null,
+  "orden": [
+    [
+      "C-1b",
+      3
+    ],
+    [
+      "C-2a",
+      2
+    ],
+    [
+      "C-4f",
+      1
+    ],
+    [
+      "C-2b",
+      2
+    ],
+    [
+      "C-4a",
+      3
+    ],
+    [
+      "C-2d",
+      3
+    ],
+    [
+      "C-2a",
+      1
+    ],
+    [
+      "C-4f",
+      2
+    ],
+    [
+      "C-1d",
+      2
+    ],
+    [
+      "C-4a",
+      2
+    ],
+    [
+      "C-4f",
+      3
+    ],
+    [
+      "C-1f",
+      3
+    ],
+    [
+      "C-1f",
+      2
+    ],
+    [
+      "C-3b",
+      1
+    ],
+    [
+      "C-3d",
+      1
+    ],
+    [
+      "C-4a",
+      1
+    ],
+    [
+      "C-3e",
+      1
+    ],
+    [
+      "C-2e",
+      3
+    ],
+    [
+      "C-4c",
+      3
+    ],
+    [
+      "C-1b",
+      1
+    ],
+    [
+      "C-3e",
+      2
+    ],
+    [
+      "C-1e",
+      2
+    ],
+    [
+      "C-1b",
+      2
+    ],
+    [
+      "C-1a",
+      1
+    ],
+    [
+      "C-3d",
+      3
+    ],
+    [
+      "C-3b",
+      2
+    ],
+    [
+      "C-2b",
+      3
+    ],
+    [
+      "C-1c",
+      2
+    ],
+    [
+      "C-3f",
+      1
+    ],
+    [
+      "C-3e",
+      3
+    ],
+    [
+      "C-3c",
+      1
+    ],
+    [
+      "C-2d",
+      1
+    ],
+    [
+      "C-2f",
+      1
+    ],
+    [
+      "C-2f",
+      2
+    ],
+    [
+      "C-4d",
+      2
+    ],
+    [
+      "C-2b",
+      1
+    ],
+    [
+      "C-2c",
+      3
+    ],
+    [
+      "C-2c",
+      2
+    ],
+    [
+      "C-2a",
+      3
+    ],
+    [
+      "C-4e",
+      1
+    ],
+    [
+      "C-3a",
+      2
+    ],
+    [
+      "C-1d",
+      3
+    ],
+    [
+      "C-4c",
+      2
+    ],
+    [
+      "C-3c",
+      3
+    ],
+    [
+      "C-3c",
+      2
+    ],
+    [
+      "C-4b",
+      1
+    ],
+    [
+      "C-1a",
+      3
+    ],
+    [
+      "C-4d",
+      1
+    ],
+    [
+      "C-4b",
+      3
+    ],
+    [
+      "C-2e",
+      2
+    ],
+    [
+      "C-2d",
+      2
+    ],
+    [
+      "C-4e",
+      2
+    ],
+    [
+      "C-1c",
+      3
+    ],
+    [
+      "C-3a",
+      3
+    ],
+    [
+      "C-1f",
+      1
+    ],
+    [
+      "C-4d",
+      3
+    ],
+    [
+      "C-2f",
+      3
+    ],
+    [
+      "C-3f",
+      2
+    ],
+    [
+      "C-3a",
+      1
+    ],
+    [
+      "C-4e",
+      3
+    ],
+    [
+      "C-3d",
+      2
+    ],
+    [
+      "C-1e",
+      3
+    ],
+    [
+      "C-1a",
+      2
+    ],
+    [
+      "C-1d",
+      1
+    ],
+    [
+      "C-2e",
+      1
+    ],
+    [
+      "C-1c",
+      1
+    ],
+    [
+      "C-3f",
+      3
+    ],
+    [
+      "C-1e",
+      1
+    ],
+    [
+      "C-4c",
+      1
+    ],
+    [
+      "C-3b",
+      3
+    ],
+    [
+      "C-2c",
+      1
+    ],
+    [
+      "C-4b",
+      2
+    ]
+  ],
+  "inicio": "2026-10-15T00:07:36.768616+00:00",
+  "version_opencode": "1.18.25",
+  "hash_binario": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
+  "hash_ejecutor": "1826f51c01aa876c89ebd6412287504a07812aae1d3deb4f8ec1bdc7f62e3c92",
+  "hash_instruccion": "8802843932e32ace070cad2fee5e8f1df6e835156128c080d993af292bf801aa",
+  "hash_indicacion": "69d14afa5139943ba2cc0546791edcd4b1989e6bac699349d4d6d739b86a430e",
+  "hash_hoja": "537321e4dabdce438e9ef5f1cb0fc4c66139161759a570d0087e5cffd28bfae4",
+  "hash_tarifas": "b6fd5635a653ba84f9c07058054e4b00bb52ad377131571398f232a974394515",
+  "hash_catalogo": "515672f64e5e6c83b715d67f57bedbdd6fe0abd9e3e786176974ef902b8d1219",
+  "exclusiones_hash": [
+    ".gitignore",
+    "bun.lock",
+    "bun.lockb",
+    "node_modules",
+    "package-lock.json",
+    "package.json"
+  ],
+  "hash_arnes": "d38b55001d919d74650b60e4cca23262f6df0778742bb6436312d21aa222a16d",
+  "hash_preguntas": "e9c50d70ffeaa87b0be394cdbcf11ebaaefd6ef7455615b58d5da284cd7b20ce",
+  "verificacion_flags": "opencode run --help como evaluador; run-help.txt",
+  "extraccion_tokens": "step_finish.part.tokens.input + cache.read + output; por solicitud; no duplicar part.id; export completo por sesión para incluir hijos y censura",
+  "verificacion_tokens_proveedor_real": "verificacion/20261013-fase0/: input excluye cache.read; stdout y export coinciden. reasoning=0: no verificable si output incluye razonamiento; hijos y censura requieren comprobación adicional."
+}

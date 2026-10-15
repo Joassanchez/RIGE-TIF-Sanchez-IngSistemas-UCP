@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "read": {
+      "src/*": "allow"
+    }
+  },
+  "agent": {
+    "build": {
+      "permission": {
+        "read": {
+          "/home/participante/proyecto/.env": "allow"
+        }
+      },
+      "options": {}
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

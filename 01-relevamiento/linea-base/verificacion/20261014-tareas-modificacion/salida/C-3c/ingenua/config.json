@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": {
+      "model": "deepseek/deepseek-reasoner",
+      "options": {},
+      "permission": {}
+    }
+  },
+  "model": "google/gemini-2.5-flash",
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

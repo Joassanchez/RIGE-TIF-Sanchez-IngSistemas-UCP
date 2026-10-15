@@ -1,0 +1,4 @@
+C-1d | minima            | deny → allow | LOGRA | colaterales: general:edit src/productos.js deny→allow; plan:edit src/productos.js deny→allow
+C-4c | minima            | allow → deny | LOGRA | colaterales: ninguno
+C-4e | minima            | ask → allow | LOGRA | colaterales: ninguno
+C-4f | minima            | deny → allow | LOGRA | colaterales: general:edit src/productos.js deny→allow; plan:edit src/productos.js deny→allow

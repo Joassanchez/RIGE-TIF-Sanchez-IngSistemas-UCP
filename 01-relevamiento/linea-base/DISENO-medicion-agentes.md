@@ -1,10 +1,14 @@
 # Medición de la línea base con agentes de programación
 
-**Diseño para construir y ejecutar** · RIGE · OpenCode 1.18.25 · versión 2.0 · 13/10/2026
+**Diseño para construir y ejecutar** · RIGE · OpenCode 1.18.25 · versión 2.2 · 14/10/2026
+
+Cambios de la 2.2 (ADR-084 a ADR-087, crítica del 14/10/2026): objetivo general sin criterio de mejora en la rama P; dimensión de modificación (`modificacion/`), no válida en la línea de base e informada en forma descriptiva; criterio estricto de C-3b y C-3d formalizado; adjudicación por una persona; amenazas nuevas en §10.
+
+Cambios de la 2.1 (ADR-082 y ADR-083): un único modelo, `gpt-6.1-sol`, para los dos ejecutores; k = 3 fijado antes de medir, sin piloto; catálogo de modelos congelado; P3 como tanda opcional; extracción de la decisión de permiso escrita en texto libre.
 
 Cambios de la 2.0: veinticuatro casos; dos ejecutores; modelos sobre ChatGPT Plus; consumo en tokens y equivalente a tarifas congeladas; dos brazos finales; validez previa, ramas E/C/P/N y regla numérica de k; clasificación de la fuente en dos capas.
 
-Este documento se entrega a quien construye y ejecuta la medición. Es autocontenido: no requiere haber leído el informe del proyecto. Rige ADR-053, modificado por ADR-076, ADR-078 y ADR-079; este último fija el criterio de lectura y cumplimiento.
+Este documento se entrega a quien construye y ejecuta la medición. Es autocontenido: no requiere haber leído el informe del proyecto. Rige ADR-053, modificado por ADR-076, ADR-078, ADR-079 y ADR-082 a ADR-087; ADR-079 fija la lectura por ramas y ADR-084 el cumplimiento del objetivo general. La dimensión de modificación (ADR-085 y ADR-086) tiene sus tareas, su hoja y su arnés en `modificacion/`.
 
 > Convenciones. **[VERIFICAR]**: supuesto técnico que se comprueba en la fase 0 antes de construir sobre él. **[DECISIÓN PENDIENTE]**: lo decide el autor antes de la fase indicada. Todo lo demás está decidido.
 
@@ -26,7 +30,7 @@ Preguntas:
 1. **La hoja de respuestas nunca entra a la VM.** `respuestas.md` y su versión `respuestas.json` viven fuera. La corrección se hace fuera de la VM.
 2. **El escenario y el ejecutor están separados.** El agente que responde no puede estar gobernado por la configuración del caso (ver 3.1).
 3. **El ejecutor no modifica el escenario.** Se controla con un hash antes y después de cada ejecución; la ejecución que altera el escenario se marca y se excluye del análisis principal.
-4. **Todo se congela después del piloto:** modelos, k, tiempo límite, instrucción, hoja de referencia y hoja de respuestas. La medición final usa exactamente lo mismo, más RIGE.
+4. **Todo se congela antes de medir** (sin piloto, ADR-082): modelo, k, catálogo de modelos, tiempo límite, instrucción, hoja de referencia y hoja de respuestas. La medición final usa exactamente lo mismo, más RIGE.
 5. **Toda ejecución deja rastro completo:** transcripción, eventos, tokens, herramientas usadas y código de salida. Ningún resultado se reporta sin su archivo de evidencia.
 6. **Los veredictos no dependen de lo que el agente dice haber hecho**, sino de su respuesta final y de la traza (mismo principio que el laboratorio).
 
@@ -76,7 +80,7 @@ Se preparan dos configuraciones separadas en `evaluador`, sin mezclarlas entre t
 |---|---|---|
 | Agente | `build` nativo, con la skill `customize-opencode` disponible (ADR-078) | Variante experimental de «Charles», recibida el 13/10/2026 |
 | Instrucción | Nativa de `build`, más la tarea de §4.2 | Conserva la instrucción de `../evidencia/PRIV/agente-referente-charles_20261013.md`, más la tarea de §4.2 |
-| Modelo y temperatura | Modelos de §3.3; temperatura si el proveedor lo permite **[VERIFICAR]** | `openai/gpt-6-luna`, temperatura 0,2 |
+| Modelo y temperatura | `openai/gpt-6.1-sol` (§3.3) | `openai/gpt-6.1-sol`, temperatura 0,2. **Cambio declarado** (ADR-082): la referente lo configura con `gpt-6-luna`, que la suscripción no ofrece en 1.18.25 |
 | Permisos | Configuración de solo lectura de abajo | Conserva la estructura recibida: `bash` denegado por defecto con sus excepciones; `edit` y todo `ask` pasan a `deny` |
 | Skills | `customize-opencode` disponible | Sin `opencode`, `skillshare` y `rtk` (no recibidas); `customize-opencode` sigue denegada |
 | Documentación | Sin conexión, §4.3 | La documentación en línea se reemplaza por la misma documentación sin conexión |
@@ -103,20 +107,20 @@ Configuración de solo lectura del principal en `~evaluador/.config/opencode/ope
 - `webfetch` y `websearch` en `deny` equivalen a «sin internet». La VM mantiene salida de red **solo** porque el ejecutor necesita la API del proveedor; el uso de `curl`, `wget` u otro acceso web por `bash` se detecta en la traza y marca la ejecución.
 - El modelo no se fija en el archivo, sino por ejecución (`--model`, **[VERIFICAR]**).
 - La variante Charles se instala como agente de `evaluador` y se selecciona con `--agent`; su configuración se conserva con los cambios declarados en la tabla, sin aplicar el `bash: allow` del principal.
-- Antes del piloto se congela y verifica en el contenedor la **configuración efectiva de los dos ejecutores**: agente, modelo, temperatura, skills y permisos; lectura del caso e invocación de RIGE mediante el envoltorio en ambos brazos. Se guardan comandos y salidas. Si un ejecutor no puede invocar RIGE sin habilitar permisos que deniega deliberadamente, se mide solo en la línea de base y se declara (ADR-079, condición 4).
+- Antes de medir se congela y verifica en el contenedor la **configuración efectiva de los dos ejecutores**: agente, modelo, temperatura, skills y permisos; lectura del caso e invocación de RIGE mediante el envoltorio en ambos brazos. Se guardan comandos y salidas. Si un ejecutor no puede invocar RIGE sin habilitar permisos que deniega deliberadamente, se mide solo en la línea de base y se declara (ADR-079, condición 4).
 - Las negativas atribuibles a los recursos retirados se registran aparte. La anterioridad de Charles a la entrevista está pendiente del acta; si no se acredita, se usa igual como segundo ejecutor, sin citarlo como demanda revelada anterior a la entrevista (ADR-079, condición 2).
 
 ### 3.3 Modelos
 
-Tres modelos de OpenAI sobre **ChatGPT Plus**, fijados por ADR-076:
+Un único modelo de OpenAI sobre **ChatGPT Plus** (ADR-082, que modifica ADR-076): con la suscripción, OpenCode 1.18.25 ofrece `gpt-6.1-sol` como único `gpt-6`; `gpt-6-astra` y `gpt-6-luna` no están disponibles (fase 0, 13/10/2026).
 
-| Rol | Modelo | `--model` | Función |
+| Tanda | Ejecutor | `--model` | Función |
 |---|---|---|---|
-| M1 · principal | `gpt-6.1-sol` | `openai/gpt-6.1-sol` | Con `build`, decide el cumplimiento en el brazo indicado |
-| M2 · más capaz | `gpt-6-astra` | `openai/gpt-6-astra` | Sensibilidad a mayor capacidad |
-| M3 · liviano | `gpt-6-luna` | `openai/gpt-6-luna` | Sensibilidad a menor capacidad y comparación con Charles al mismo modelo |
+| Principal | `build` | `openai/gpt-6.1-sol` | Decide el cumplimiento en el brazo indicado |
+| Segundo ejecutor | Charles | `openai/gpt-6.1-sol` | Comparación con `build` al mismo modelo |
+| P3 (opcional) | `build` | `openai/gpt-5.6-luna` | Menor capacidad y generación anterior; se corre con aprobación del autor y tarifa de lista de una fuente registrada; no decide el cumplimiento |
 
-`build` se mide con los tres modelos; Charles, solo con `gpt-6-luna`. **[VERIFICAR]** en la fase 0 la autenticación por suscripción y los identificadores disponibles en 1.18.25. Si `gpt-6-astra` no está disponible, se declara perdido ese análisis de sensibilidad sin tocar el criterio principal (ADR-076). No se usan los modelos gratuitos de OpenCode: el laboratorio los encontró no deterministas y observó que devolvían contenido ajeno a la sesión (hallazgo C-9).
+`gpt-6-astra` se declara perdido, sin reemplazo. El catálogo de modelos se congela (`catalogo-modelos-20261013.json`) y se copia al contenedor con `docker cp`; la descarga sigue desactivada y su hash se registra en `tanda.json`. No se usan los modelos gratuitos de OpenCode: el laboratorio los encontró no deterministas y observó que devolvían contenido ajeno a la sesión (hallazgo C-9).
 
 ### 3.4 Costo
 
@@ -124,7 +128,7 @@ Tres modelos de OpenAI sobre **ChatGPT Plus**, fijados por ADR-076:
 - Consumo por ejecución = `tokens_entrada + tokens_cache + tokens_salida`, extraídos de la sesión, incluidos los consumidos en ejecuciones erróneas o censuradas.
 - `costo_usd` = Σ (tokens de cada tipo × tarifa congelada por millón / 10⁶). Fuente única: `tarifas-congeladas-20261001.json` (ADR-076), con el nivel corto o largo que corresponda por solicitud. Se conserva su hash en la tanda.
 - Es un **equivalente informativo a precio de lista**, no un desembolso por consulta. No se concilia por consola ni se usa el costo calculado por OpenCode como fuente de valorización.
-- Si los límites de la suscripción impiden completar la medición, se reduce k primero en el segundo ejecutor, después en los modelos secundarios, y nunca en el principal; se declara cada recorte (ADR-076, condición 3, precisada por ADR-079).
+- Si los límites de la suscripción impiden completar la medición, se recorta primero la tanda opcional P3, después k del segundo ejecutor, y nunca el principal; se declara cada recorte (ADR-076, condición 3, precisada por ADR-079 y ADR-082).
 
 ## 4. Instrumento
 
@@ -183,7 +187,7 @@ Casos nuevos y su mecanismo:
 | C-4e | `OPENCODE_PERMISSION` en la cadena | ADR-079; `respuestas.md` |
 | C-4f | `OPENCODE_PERMISSION` inválida descartada | ADR-079; `respuestas.md` |
 
-El caso `practica` queda como auxiliar fuera del instrumento; el piloto abarca los veinticuatro casos (sección 9).
+El caso `practica` queda como auxiliar fuera del instrumento.
 
 ### 4.2 Instrucción de la tarea
 
@@ -215,7 +219,7 @@ En la medición final hay dos brazos (ADR-079):
 | **Indicado** | Se agrega: **[DECISIÓN PENDIENTE: texto exacto de la indicación]** | Principal: el desarrollador indica que se consulte RIGE |
 | **Disponible** | Se conserva el mensaje común | Mide adopción sin indicación; RIGE figura en la hoja |
 
-El texto exacto se fija antes del piloto y se congela junto con las instrucciones de los dos brazos. `uso_rige` se registra en ambos.
+El texto exacto se fija antes de la medición final y se congela junto con las instrucciones de los dos brazos. `uso_rige` se registra en ambos.
 
 ### 4.3 Hoja de referencia del ejecutor
 
@@ -261,7 +265,7 @@ Los casos se ejecutan en orden aleatorio, con una semilla registrada en la tanda
 ### 5.2 `corregir.py`
 
 1. Extrae el último bloque JSON del mensaje final. Si no existe o no se puede interpretar: `sin_respuesta` con el motivo `formato`.
-2. Compara `respuesta` según `respuestas.md` (normalización y sinónimos).
+2. Compara `respuesta` según `respuestas.md` (normalización y sinónimos). En los casos de permiso, si la comparación exacta falla, extrae la decisión del texto cuando aparece exactamente un término (`allow`, `ask`, `deny` o sus sinónimos); si no aparece ninguno o hay términos en conflicto, `revision_manual` (ADR-083). En los compuestos, por partes separadas con `;`.
 3. Compara `fuente` contra los patrones aceptados y rechazados. Si no coincide con ninguno: `revision_manual`.
 4. Clasifica: `correcta`, `parcial`, `incorrecta` o `sin_respuesta`. En C-3b, marca además `sigue_documentacion` si respondió `deny`.
 5. Genera `revision_manual.csv` con la respuesta textual, para que el autor adjudique cada caso. La adjudicación se guarda en un archivo aparte, con su motivo, y el corrector la aplica en una segunda pasada. **La corrección no usa un modelo de lenguaje como juez.**
@@ -307,7 +311,7 @@ resultados/<tanda>/
 
 **Unidad de análisis: el caso.** Cada ejecutor y modelo se analiza con su propia línea de base y con comparación pareada por caso y brazo. La tasa de una condición es el promedio de las tasas de sus seis casos. Los intervalos de confianza no se calculan sobre las ejecuciones como si fueran independientes. Se informa siempre la tabla caso por caso.
 
-### 7.1 Definiciones de ADR-079 (fijas antes del piloto)
+### 7.1 Definiciones de ADR-079 (fijas antes de medir)
 
 | Término | Definición |
 |---|---|
@@ -372,7 +376,7 @@ Comparaciones descriptivas: C-1 frente a C-2 a C-4; casos de valor frente a caso
 
 | Capa | Momento y evidencia | Registro |
 |---|---|---|
-| **Cobertura disponible** | Por caso, antes del piloto, con evidencia de las ayudas disponibles | Etiquetas múltiples: documentación, comando nativo, skill del fabricante y solo ejecución. Cada etiqueta indica si cubre la respuesta completa, solo el valor o la cubre incorrectamente (C-3b) |
+| **Cobertura disponible** | Por caso, antes de la línea de base, con evidencia de las ayudas disponibles | Etiquetas múltiples: documentación, comando nativo, skill del fabricante y solo ejecución. Cada etiqueta indica si cubre la respuesta completa, solo el valor o la cubre incorrectamente (C-3b) |
 | **Fuente observada** | Por ejecución, a partir de la traza | `fuente_observada`: qué usó el agente; se distingue de la fuente de configuración que declara en su respuesta |
 
 Ningún comando nativo informa a la vez la respuesta y su procedencia. Se cruzan la cobertura disponible y la fuente observada con el resultado y los tokens; se informan aparte las negativas atribuibles a recursos retirados.
@@ -384,44 +388,47 @@ Ningún comando nativo informa a la vez la respuesta y su procedencia. Se cruzan
 | **0 · Supuestos técnicos** | Resolver cada **[VERIFICAR]**: flags de `opencode run`, extracción de tokens y herramientas, alcance de `edit: deny`, modelos disponibles con `OPENCODE_DISABLE_MODELS_FETCH=1` (si el modelo fijado no figura en el catálogo empaquetado, quitar esa variable **solo** para `evaluador`), permisos de grupo | Cada punto con su comando y su salida, en `resultados/fase0.md` |
 | **1 · Contenedor** | Instalación ampliada; el autor autentica ChatGPT Plus como `evaluador` | Instalación íntegra, aislamiento y registro de tokens verificados |
 | **2 · Verificación de casos y ejecutores** | Verificar los veinticuatro casos contra el binario 1.18.25 en el contenedor, incluidos los seis marcados **[VERIFICAR]**; comparar con `respuestas.md`; clasificar cobertura disponible y confirmar el criterio 8.2-3; congelar y verificar la configuración efectiva de ambos ejecutores, lectura del caso y acceso a RIGE en los dos brazos (§3.2) | Los veinticuatro casos coinciden; `respuestas.md` cerrada con fecha y evidencias. Discrepancia → corrección registrada y reverificación. Acceso imposible sin ampliar permisos deliberadamente denegados → ese ejecutor solo en LB |
-| **3 · Registro previo** | Registrar modelos, configuraciones de los dos ejecutores, reglas de §7 y redacción final de las instrucciones y hojas de los brazos; consulta previa al docente (ADR-078/ADR-079) | ADR-053 modificado por ADR-076, ADR-078 y ADR-079 y artefactos registrados **antes del piloto** |
-| **4 · Piloto** | Veinticuatro casos, diez ejecuciones por caso, `build` con `gpt-6.1-sol`; tiempo límite inicial de 600 s | Ver sección 9; datos separados de LB |
-| **5 · Congelamiento** | Se fijan k, el tiempo límite, la instrucción y la hoja. Hash de cada artefacto en `congelamiento.json` | Nada cambia después de este punto |
-| **6 · Línea base** | `medir.sh --condicion LB`, veinticuatro casos, `build` con M1 a M3 y Charles con `gpt-6-luna`, k de §9 salvo recortes declarados (§3.4) | Registro completo; validez previa de §7.2. Si falla, corregir la causa y repetir LB completa de ese ejecutor |
+| **3 · Registro previo** | Registrar modelo, configuraciones de los dos ejecutores, reglas de §7 y redacción final de las instrucciones y hojas de los brazos | ADR-053 modificado por ADR-076, ADR-078, ADR-079 y ADR-082, y artefactos registrados **antes de medir** |
+| **4 · Piloto** | Suprimido (ADR-082) | — |
+| **5 · Congelamiento** | Se fijan k = 3, el tiempo límite (600 s), la instrucción, la hoja y el catálogo de modelos. Hash de cada artefacto en `congelamiento.json` y en `tanda.json` | Nada cambia después de este punto |
+| **6 · Línea base** | `medir.sh --condicion LB`, veinticuatro casos, `build` y Charles con `gpt-6.1-sol`, k = 3 (hecha el 13/10/2026). P3 (`build` + `gpt-5.6-luna`) como tanda opcional posterior (§3.3) | Registro completo; validez previa de §7.2. Si falla, corregir la causa y repetir LB completa de ese ejecutor |
 | **7 · Corrección y análisis** | `corregir.py`, adjudicación manual, `analizar.py`; determinar rama propia por ejecutor y modelo e informar IV.3 independientemente | Tablas de §7; I.3.2 y II.3 del informe se completan desde ellas |
 | **8 · Medición final (noviembre)** | Mismos casos, ejecutor, modelo y k, con RIGE congelado y los dos brazos (§4.2–4.3); para todos los que no caen en N y pueden invocarlo | Mismo registro, `--condicion FIN`, brazo indicado y disponible identificados; validez previa y lectura de §7 |
 
-Ventana de la línea base: del 02/10 al 16/10/2026 (ADR-039).
+Ventana de la línea base: del 02/10 al 16/10/2026 (ADR-039). La línea base principal se ejecutó el 13/10/2026 y se corrigió el 14/10/2026 (ADR-083).
 
 ## 9. Piloto
 
-Los datos del piloto **no integran** la línea de base. Antes de ejecutarlo se verifican los veinticuatro casos y la configuración efectiva de los dos ejecutores en el contenedor (§8). Se ejecutan **los veinticuatro casos, diez veces cada uno**, con `build` y `gpt-6.1-sol` (240 ejecuciones). Después del piloto no se modifica ningún caso ni la instrucción; cualquier ajuste requerido se verifica y el piloto se repite antes del congelamiento. Decide:
-
-| Parámetro | Regla |
-|---|---|
-| Tiempo límite | Ninguna ejecución de C-1 debe vencerlo, y en C-4 debe vencerse en menos de la mitad de las ejecuciones (mismo criterio que ADR-003). Si C-1 se censura, se amplía el límite y se repite |
-| k | Concordancia del caso = proporción de sus diez ejecuciones con el resultado más frecuente (correcta o errónea). Si al menos el 90 % de los casos tiene concordancia de 9/10 o más, k = 3; si no, k = 5. Mismo k para todos los ejecutores y modelos, salvo recortes declarados de §3.4. El umbral de problema (1/2) no se revisa con los datos |
-| Inestabilidad | Tasa de error del piloto entre 30 % y 70 %: caso marcado como inestable e informado, **sin excluirlo** |
-| Consumo y equivalente | Tokens y equivalente de §3.4 por ejecución y para las tandas previstas: veinticuatro casos por combinación de ejecutor/modelo; LB y dos brazos finales para las combinaciones que corresponda medir. El piloto solo estima el consumo del principal; los límites siguen §3.4 |
-| Formato | Proporción de `sin_respuesta` por formato en el principal. Si supera 1 de cada 10, se ajusta la redacción del bloque JSON y se repite el piloto |
-| Integridad | Ninguna ejecución altera el escenario ni accede a la web. Si ocurre, se endurece la configuración (3.2) y se repite el piloto |
-| Validez y lectura | Validez previa y ramas de ADR-079 (§7), sin ajustar umbrales. La reevaluación del objeto se activa solo en N si el segundo ejecutor también cae en N; no se decide a partir del piloto del principal solamente |
+Suprimido por ADR-082: k = 3 se fijó antes de medir, sin la regla de concordancia ni el piloto de 24 × 10, por su costo sobre una cuota sin límites publicados. El tiempo límite queda en 600 s. Los casos inestables se identifican en la línea de base (tasa de 1/3 o 2/3) y se informan sin excluirlos. El umbral de problema (1/2) no cambia.
 
 ## 10. Amenazas a la validez que se declaran
 
 | Amenaza | Tratamiento |
 |---|---|
 | Se mide el procedimiento delegado, no el manual | Declarada; la extensión de la práctica se estima con la encuesta de ADR-053/ADR-078 |
-| Dependencia del modelo | Tres niveles; comparación dentro de cada modelo; identificador y fecha registrados |
+| Dependencia del modelo | Un único modelo, el más capaz de la suscripción (ADR-082): el resultado no se generaliza a modelos más livianos salvo por P3; identificador, fecha y catálogo congelado registrados |
 | No determinismo | k repeticiones; transcripciones completas |
 | El modelo puede conocer la documentación por su entrenamiento | Es parte de la práctica real; se declara. En C-3b, «seguir la documentación» se mide |
 | Casos construidos por el autor | Criterios 8.2; seis casos por condición; los casos con incidencias reales asociadas (C-2b, C-2c, C-2d, C-4c) y los observados en el laboratorio se informan como tales |
 | Una sola familia de modelos | Se declara: el resultado no se generaliza a otros proveedores |
 | El ejecutor modifica el escenario o sale a la web | Hash antes y después; detección en la traza; exclusión y registro |
 | Cambios del proveedor entre octubre y noviembre | Identificador con fecha; si el proveedor retira el modelo, se declara y se informa el reemplazo sin mezclarlo en la comparación pareada |
+| k = 3 sin piloto | Fijado antes de medir (ADR-082); tasas por caso sin binarizar (0/3 a 3/3) para mostrar la inestabilidad |
+| Corrección precisada después de detectar un defecto | Regla mecánica y simétrica de ADR-083, aplicada a las dos tandas antes de conocer su resultado; se declara |
 | Un único autor diseña, construye y adjudica | Hoja de respuestas cerrada antes de medir; corrección automática; adjudicaciones manuales registradas con motivo; evidencia cruda disponible para terceros |
+| Adjudicación de la línea base por un modelo de lenguaje | Las 61 revisiones manuales del 13 y 14/10 las adjudicó el ingeniero (Claude Opus 5.5) por delegación del autor, contra el punto 5 de §5.2. Se readjudican por una persona sin acceso al veredicto anterior (ADR-087); se informa la concordancia y prevalece la adjudicación humana |
+| Casos construidos con el modelo medido | Los casos y el arnés los construyó Codex con `gpt-6.1-sol`, el mismo modelo ejecutor; se declara |
+| Casos elegidos donde la herramienta nativa no alcanza | Criterios 8.2-3 y 8.2-10: sesgo de selección a favor de RIGE por construcción; se declara junto con el resultado (el agente acierta igual el 93 % en atribución) |
+| Frontera léxica de la fuente en C-3b y C-3d | Criterio estricto formalizado (ADR-087); se informa siempre con la sensibilidad: con criterio laxo, `build` pasa a la rama N |
+| Decisiones posteriores al resultado | Tabla de bifurcaciones (fecha, decisión, antes o después del dato, dirección del efecto) en A.VI.8: hash del ejecutor, ADR-083 a ADR-087, detector de acceso web, exclusiones |
+| Condición original de ADR-053 (cond. 1) | Con 50 de 54 aciertos y tokens 1,04 veces C-1, se cumple en sustancia; ADR-079 la había limitado a la rama N antes de medir. Se declara sin rodeos |
+| Tabla 10 de IV.3 sin umbral de magnitud | Con C-1 en cero, cualquier error en C-2 a C-4 da «Confirma» o «Reordena»; se informa |
+| Ejecutor fuera del árbol del proyecto | Trabaja desde `~evaluador/tarea` con rutas absolutas en la instrucción; en modificación puede favorecer reglas con ruta absoluta. Sonda ecológica descriptiva (ADR-089) |
+| Control C-1f defectuoso en modificación | Permiso por archivo: expone el mismo error de forma de la ruta que los casos difíciles; invalida la dimensión (ADR-086) |
+| Acceso web real del ejecutor | Charles C-3f:2 descargó código fuente con `curl` por `como-dev`; excluido y declarado. Falso positivo del detector por `$schema` corregido (ADR-086, punto 5) |
+| Registro del razonamiento | La suscripción informa `reasoning = 0`; no se puede verificar si `output` lo incluye |
 | La variante Charles no es la práctica de la referente | Sin sus skills y sin aprobaciones humanas; documentación sin conexión. Cambios declarados, configuración efectiva verificada y negativas por recursos retirados registradas (ADR-079) |
-| Comparación Charles frente a `build` | Al mismo modelo (`gpt-6-luna`) mide el efecto conjunto de instrucción, permisos y ayudas; no se atribuye a un componente aislado (ADR-079) |
+| Comparación Charles frente a `build` | Al mismo modelo (`gpt-6.1-sol`, ADR-082) mide el efecto conjunto de instrucción, permisos y ayudas; no se atribuye a un componente aislado (ADR-079) |
 | Costo humano de verificar fuera de la medición | ADR-078, K-A: se releva con la encuesta y la referente. Si la mayoría de quienes delegan verifica probando el comportamiento, K-A no alcanza y se reevalúa el diseño |
 
 ## 11. Qué entrega quien ejecuta

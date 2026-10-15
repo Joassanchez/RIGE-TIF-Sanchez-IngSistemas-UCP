@@ -1,0 +1,71 @@
+{
+  "tanda": "20261021-sonda-R-principal",
+  "sonda": "sonda-R.md",
+  "hash_sonda": "a2170ed2b598b677351f54d8f550dc622ea77a6995e023e6dab8f618aabb73a9",
+  "condicion": "LB",
+  "ejecutor": "principal",
+  "brazo": "LB",
+  "modelo": "openai/gpt-6.1-sol",
+  "agente": "build",
+  "k": 3,
+  "limite": 600,
+  "semilla": 20261021,
+  "casos": "C-3b,C-3d",
+  "pares": null,
+  "ensayo": false,
+  "fase": "medicion",
+  "recorte_declarado": null,
+  "rige_descripcion": null,
+  "orden": [
+    [
+      "C-3d",
+      3
+    ],
+    [
+      "C-3b",
+      3
+    ],
+    [
+      "C-3b",
+      2
+    ],
+    [
+      "C-3b",
+      1
+    ],
+    [
+      "C-3d",
+      1
+    ],
+    [
+      "C-3d",
+      2
+    ]
+  ],
+  "inicio": "2026-10-14T22:37:09.118920+00:00",
+  "version_opencode": "1.18.25",
+  "hash_binario": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
+  "hash_ejecutor": "1826f51c01aa876c89ebd6412287504a07812aae1d3deb4f8ec1bdc7f62e3c92",
+  "hash_instruccion": "8802843932e32ace070cad2fee5e8f1df6e835156128c080d993af292bf801aa",
+  "hash_indicacion": "69d14afa5139943ba2cc0546791edcd4b1989e6bac699349d4d6d739b86a430e",
+  "hash_hoja": "537321e4dabdce438e9ef5f1cb0fc4c66139161759a570d0087e5cffd28bfae4",
+  "hash_tarifas": "b6fd5635a653ba84f9c07058054e4b00bb52ad377131571398f232a974394515",
+  "hash_catalogo": "515672f64e5e6c83b715d67f57bedbdd6fe0abd9e3e786176974ef902b8d1219",
+  "exclusiones_hash": [
+    ".gitignore",
+    "bun.lock",
+    "bun.lockb",
+    "node_modules",
+    "package-lock.json",
+    "package.json"
+  ],
+  "hash_arnes": "d38b55001d919d74650b60e4cca23262f6df0778742bb6436312d21aa222a16d",
+  "hash_preguntas": "0acf34a275ca17badb200f1a61a54037f722186275f898a373916c8466ea3de5",
+  "verificacion_flags": "opencode run --help como evaluador; run-help.txt",
+  "extraccion_tokens": "step_finish.part.tokens.input + cache.read + output; por solicitud; no duplicar part.id; export completo por sesión para incluir hijos y censura",
+  "verificacion_tokens_proveedor_real": "verificacion/20261013-fase0/: input excluye cache.read; stdout y export coinciden. reasoning=0: no verificable si output incluye razonamiento; hijos y censura requieren comprobación adicional.",
+  "hash_instruccion_por_caso": {
+    "C-3d": "48ca0b557119350b25d0c9c1f727dfdfe81994b8622447e2dcdfe39e9addafd7",
+    "C-3b": "3c8710e7e6109c1a393fd5e05a7649f5c990336e269cb2d1f3b01d6e6b445747"
+  }
+}

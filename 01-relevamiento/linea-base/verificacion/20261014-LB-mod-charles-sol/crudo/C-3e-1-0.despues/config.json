@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": {
+      "description": "Revisa-equipo",
+      "options": {},
+      "permission": {}
+    },
+    "plan": {
+      "description": "Revisa-plan",
+      "options": {},
+      "permission": {}
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

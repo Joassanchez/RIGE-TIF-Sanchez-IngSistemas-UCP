@@ -1,0 +1,14 @@
+timestamp=2026-10-14T20:29:26.861Z level=INFO run=fd0b9ecb message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-14T20:29:26.863Z level=INFO run=fd0b9ecb message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-14T20:29:26.939Z level=INFO run=fd0b9ecb message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-14T20:29:26.944Z level=INFO run=fd0b9ecb message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-14T20:29:26.950Z level=INFO run=fd0b9ecb message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-14T20:29:26.951Z level=INFO run=fd0b9ecb message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-14T20:29:26.957Z level=INFO run=fd0b9ecb message=loading path=/tmp/rige-proveedor-deqWTp/proveedor.json
+timestamp=2026-10-14T20:29:26.960Z level=INFO run=fd0b9ecb message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-14T20:29:27.045Z level=INFO run=fd0b9ecb message="all LSPs are disabled"
+timestamp=2026-10-14T20:29:27.046Z level=INFO run=fd0b9ecb message="all formatters are disabled"
+timestamp=2026-10-14T20:29:27.047Z level=INFO run=fd0b9ecb message=init
+timestamp=2026-10-14T20:29:27.224Z level=INFO run=fd0b9ecb message=created id=ses_ec3e4f6c7ffet5E7USnf94n32l slug=witty-falcon version=1.18.25 projectID=e4c3755d1d3323868705fc47c65ca1606be8b2f0 directory=/home/participante/proyecto path="" workspaceID=undefined parentID=undefined title="New session - 2026-10-14T20:29:27.224Z" agent=undefined model=undefined metadata=undefined permission="[{\"permission\":\"question\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_enter\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_exit\",\"pattern\":\"*\",\"action\":\"deny\"}]" cost=0 tokens.input=0 tokens.output=0 tokens.reasoning=0 tokens.cache.read=0 tokens.cache.write=0 time.created=1792009767224 time.updated=1792009767224
+timestamp=2026-10-14T20:29:27.273Z level=INFO run=fd0b9ecb message="event connected"
+timestamp=2026-10-14T20:29:27.751Z level=INFO run=fd0b9ecb message=loop session.id=ses_ec3e4f6c7ffet5E7USnf94n32l step=0

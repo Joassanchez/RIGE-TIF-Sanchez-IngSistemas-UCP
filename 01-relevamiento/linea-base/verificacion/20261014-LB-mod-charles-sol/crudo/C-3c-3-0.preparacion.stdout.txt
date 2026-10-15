@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": {
+      "model": "deepseek/deepseek-reasoner",
+      "options": {},
+      "permission": {}
+    }
+  },
+  "model": "openai/o4-mini",
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

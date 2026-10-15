@@ -1,0 +1,16 @@
+{
+  "permission": {
+    "read": "allow",
+    "bash": "allow",
+    "external_directory": "allow",
+    "edit": "deny",
+    "webfetch": "deny",
+    "websearch": "deny"
+  },
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {},
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "evaluador"
+}

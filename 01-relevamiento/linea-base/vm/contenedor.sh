@@ -97,15 +97,26 @@ case "$SUBCOMANDO" in
     ;;
   medir)
     ENSAYO=0
+    DIMENSION=atribucion
+    SONDA=
     DESTINO=''
     ARGUMENTOS=()
     while [[ $# -gt 0 ]]; do
       case "$1" in
+        --sonda) [[ $# -ge 2 ]] || fallar 'Falta archivo para --sonda.'; SONDA=$2; ARGUMENTOS+=(--sonda "/opt/linea-base/$(basename "$SONDA")"); shift 2 ;;
+        --sonda=*) SONDA=${1#--sonda=}; ARGUMENTOS+=(--sonda "/opt/linea-base/$(basename "$SONDA")"); shift ;;
         --ensayo) ENSAYO=1; ARGUMENTOS+=(--ensayo); shift ;;
         --destino) [[ $# -ge 2 ]] || fallar 'Falta carpeta para --destino.'; DESTINO=$2; shift 2 ;;
+        --dimension) [[ $# -ge 2 ]] || fallar 'Falta valor para --dimension.'; DIMENSION=$2; ARGUMENTOS+=(--dimension "$2"); shift 2 ;;
+        --dimension=*) DIMENSION=${1#--dimension=}; ARGUMENTOS+=("$1"); shift ;;
         *) ARGUMENTOS+=("$1"); shift ;;
       esac
     done
+    [[ $DIMENSION == atribucion || $DIMENSION == modificacion ]] || fallar 'Dimensión inválida.'
+    if [[ $DIMENSION == modificacion && $ENSAYO -eq 1 && " ${ARGUMENTOS[*]} " != *' --hash-tareas '* && " ${ARGUMENTOS[*]} " != *' --hash-tareas='* ]]; then
+      HASH_TAREAS=$(sha256sum "$ORIGEN/../modificacion/tareas.md")
+      ARGUMENTOS+=(--hash-tareas "${HASH_TAREAS%% *}")
+    fi
     [[ -n $DESTINO && -d $DESTINO ]] || fallar 'Indicar --destino con una carpeta existente y vacía fuera del repositorio.'
     EVIDENCIA="$(cd "$DESTINO" && pwd -P)"
     case "${EVIDENCIA,,}/" in
@@ -133,6 +144,13 @@ case "$SUBCOMANDO" in
       "$IMAGEN" sleep infinity >/dev/null
     docker cp "$(ruta_docker "$ORIGEN/../tarifas-congeladas-20261001.json")" "$CONTENEDOR:/opt/linea-base/tarifas.json"
     docker cp "$(ruta_docker "$ORIGEN/../catalogo-modelos-20261013.json")" "$CONTENEDOR:/opt/linea-base/modelos.json"
+    if [[ $DIMENSION == modificacion ]]; then
+      docker cp "$(ruta_docker "$ORIGEN/../modificacion/tareas.md")" "$CONTENEDOR:/opt/linea-base/tareas.md"
+    fi
+    if [[ -n $SONDA ]]; then
+      [[ -f $SONDA ]] || fallar 'Archivo de sonda inexistente.'
+      docker cp "$(ruta_docker "$SONDA")" "$CONTENEDOR:/opt/linea-base/$(basename "$SONDA")"
+    fi
     # exec no imprime ni exporta la credencial en el registro de la tarea.
     CODIGO=0
     docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" || CODIGO=$?

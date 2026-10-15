@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from comun import RESULTADOS, costo_solicitudes, hash_archivo, identificador, leer_jsonl
+from deteccion import recalcular_acceso_web
 
 DECISIONES = ('allow', 'ask', 'deny')
 MOTIVO_DECISION_MANUAL = 'Decisión en texto libre sin término explícito o con términos en conflicto (ADR-083).'
@@ -88,6 +89,7 @@ def corregir(row, regla):
     out = dict(row, respuesta=None, fuente=None, resultado='sin_respuesta', motivo='',
                sigue_documentacion=False, adjudicado_manual=False,
                decision_extraida=None, regla_extraccion='exacta')
+    out.update(recalcular_acceso_web(row))
     texto = row.get('respuesta_textual', '')
     out['hash_respuesta'] = hashlib.sha256(texto.encode()).hexdigest()
     try:
