@@ -33,3 +33,15 @@ test("D-1 el archivo de lectura tiene las ocho secciones completas y un escenari
   });
   expect([...new Set(scripts)].sort()).toEqual(Object.keys(manifiesto.scripts).sort());
 });
+
+test("D-2 instala curl y unzip antes de Bun en los requisitos de Ubuntu", async () => {
+  const raiz = new URL("../../", import.meta.url);
+  const readme = await Bun.file(new URL("README.md", raiz)).text();
+  const requisitos = readme.split("## 3. Requisitos previos")[1]!.split("## 4.")[0]!;
+  const dependencias = requisitos.indexOf("sudo apt-get install -y curl unzip");
+  const instalador = requisitos.indexOf("curl -fsSL https://bun.sh/install");
+
+  expect(dependencias).toBeGreaterThanOrEqual(0);
+  expect(instalador).toBeGreaterThanOrEqual(0);
+  expect(dependencias).toBeLessThan(instalador);
+});

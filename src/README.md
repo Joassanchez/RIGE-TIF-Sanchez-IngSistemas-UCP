@@ -19,6 +19,13 @@ Se requiere Git y uno de estos sistemas: Ubuntu (plataforma de referencia) o Win
 
 Se instala Bun **1.3.14** exacto:
 
+En Ubuntu, el instalador de Bun requiere `curl` y `unzip`, que una instalación limpia no incluye. Se instalan antes de Bun:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y curl unzip
+```
+
 **Ubuntu (Bash):**
 
 ```bash
