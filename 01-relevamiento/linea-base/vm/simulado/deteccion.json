@@ -1,0 +1,35 @@
+{
+  "ensayo": true,
+  "dimension": "deteccion",
+  "casos": {
+    "D-A": {
+      "salida": {
+        "sin_efecto": [
+          {
+            "archivo": "~/.config/opencode/opencode.json",
+            "clave": "permission.bash.git push",
+            "motivo": "ENSAYO: sin efecto"
+          },
+          {
+            "archivo": "~/.config/opencode/opencode.json",
+            "clave": "permission.bash.npm publish *",
+            "motivo": "ENSAYO: falso positivo"
+          },
+          {
+            "archivo": "archivo-desconocido.json",
+            "clave": "otra",
+            "motivo": "ENSAYO: otra"
+          }
+        ]
+      }
+    },
+    "D-B": {
+      "salida": "ENSAYO sin JSON"
+    },
+    "D-C": {
+      "salida": {
+        "sin_efecto": []
+      }
+    }
+  }
+}

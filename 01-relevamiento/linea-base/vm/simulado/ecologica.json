@@ -1,0 +1,165 @@
+{
+  "ensayo": true,
+  "dimension": "ecologica",
+  "casos": {
+    "M-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "M-2": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"permission\": {\n    \"edit\": \"allow\"\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "M-3": {
+      "archivos": {},
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "M-4": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"permission\": {\n    \"bash\": \"ask\"\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "M-5": {
+      "archivos": {},
+      "salida": "ENSAYO sin JSON final"
+    },
+    "M-6": {
+      "archivos": {
+        "P/.opencode/agent/revisor.md": "---\ndescription: Revisor de código del equipo\nmode: primary\npermission:\n  edit: allow\n---\n\nRevisá los cambios pendientes.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "M-7": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"rm *\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "M-8": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"general\": {\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"allow\",\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  },\n  \"permission\": {\n    \"bash\": \"allow\"\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "M-9": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"ask\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "M-10": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \".env\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"model\": \"google/gemini-2.5-flash\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-2": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"plan\": {\n      \"temperature\": 0.55\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-3": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Desarrollo del inventario\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-4": {
+      "archivos": {
+        "P/.opencode/agent/docs.md": "---\ndescription: Redacta documentación\nmode: primary\nmodel: google/gemini-2.5-flash\n---\n\nRedactá la documentación.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    }
+  },
+  "nota": "ENSAYO: cambios sint?ticos. Crear configuraciones globales usa el directorio habilitado; no se concede escritura al directorio ra?z del proyecto."
+}

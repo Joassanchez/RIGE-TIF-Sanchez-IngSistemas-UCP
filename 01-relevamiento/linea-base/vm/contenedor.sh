@@ -112,7 +112,20 @@ case "$SUBCOMANDO" in
         *) ARGUMENTOS+=("$1"); shift ;;
       esac
     done
-    [[ $DIMENSION == atribucion || $DIMENSION == modificacion ]] || fallar 'Dimensión inválida.'
+    [[ $DIMENSION == atribucion || $DIMENSION == modificacion || $DIMENSION == ecologica || $DIMENSION == deteccion ]] || fallar 'Dimensión inválida.'
+    if [[ $DIMENSION == ecologica || $DIMENSION == deteccion ]]; then
+      # Hash calculado en el anfitrión y comprobado dentro antes de medir.
+      # Lista de inclusión explícita: jamás copiar espec.py/corpus.py/respuestas.
+      for ENTRADA in escenarios.json tareas.md deteccion.md; do
+        [[ -f $ORIGEN/../ecologica/$ENTRADA ]] || fallar "Falta generar ecologica/$ENTRADA."
+        HASH_ENTRADA=$(sha256sum "$ORIGEN/../ecologica/$ENTRADA")
+        case "$ENTRADA" in
+          escenarios.json) ARGUMENTOS+=(--hash-escenarios "${HASH_ENTRADA%% *}") ;;
+          tareas.md) ARGUMENTOS+=(--hash-tareas "${HASH_ENTRADA%% *}") ;;
+          deteccion.md) ARGUMENTOS+=(--hash-deteccion "${HASH_ENTRADA%% *}") ;;
+        esac
+      done
+    fi
     if [[ $DIMENSION == modificacion && $ENSAYO -eq 1 && " ${ARGUMENTOS[*]} " != *' --hash-tareas '* && " ${ARGUMENTOS[*]} " != *' --hash-tareas='* ]]; then
       HASH_TAREAS=$(sha256sum "$ORIGEN/../modificacion/tareas.md")
       ARGUMENTOS+=(--hash-tareas "${HASH_TAREAS%% *}")
@@ -146,6 +159,11 @@ case "$SUBCOMANDO" in
     docker cp "$(ruta_docker "$ORIGEN/../catalogo-modelos-20261013.json")" "$CONTENEDOR:/opt/linea-base/modelos.json"
     if [[ $DIMENSION == modificacion ]]; then
       docker cp "$(ruta_docker "$ORIGEN/../modificacion/tareas.md")" "$CONTENEDOR:/opt/linea-base/tareas.md"
+    fi
+    if [[ $DIMENSION == ecologica || $DIMENSION == deteccion ]]; then
+      for ENTRADA in escenarios.json tareas.md deteccion.md; do
+        docker cp "$(ruta_docker "$ORIGEN/../ecologica/$ENTRADA")" "$CONTENEDOR:/opt/linea-base/$ENTRADA"
+      done
     fi
     if [[ -n $SONDA ]]; then
       [[ -f $SONDA ]] || fallar 'Archivo de sonda inexistente.'

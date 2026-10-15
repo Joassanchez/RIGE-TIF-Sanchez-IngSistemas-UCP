@@ -75,13 +75,20 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def hash_arbol(roots, excluir=()):
+def hash_arbol(roots, excluir=(), inventario=None):
+    # El inventario opcional describe exactamente las mismas entradas y bytes
+    # del hash, en la misma pasada; no cambia el digest ni los usos históricos.
     h = hashlib.sha256()
     for root in map(Path, roots):
+        entradas = {}
+        if inventario is not None:
+            inventario[str(root)] = entradas
         h.update(str(root).encode() + b'\0')
         if not root.exists():
+            entradas['.'] = {'tipo': 'ausente'}
             h.update(b'AUSENTE\0')
             continue
+        entradas['.'] = {'tipo': 'directorio' if root.is_dir() else 'archivo'}
         # Excluir sólo entradas de primer nivel y podar sus subárboles antes
         # de recorrerlos: las dependencias pueden cambiar durante el run.
         paths = sorted(p for entrada in root.iterdir() if entrada.name not in excluir
@@ -92,11 +99,17 @@ def hash_arbol(roots, excluir=()):
             nombre = str(p.relative_to(root) if p != root else p.name)
             h.update(nombre.encode() + b'\0')
             if p.is_symlink():
-                h.update(b'LINK\0' + os.readlink(p).encode())
+                destino = os.readlink(p)
+                h.update(b'LINK\0' + destino.encode())
+                entradas[Path(nombre).as_posix()] = {'tipo': 'enlace', 'destino': destino}
             elif p.is_file():
-                h.update(b'FILE\0' + p.read_bytes())
+                contenido = p.read_bytes()
+                h.update(b'FILE\0' + contenido)
+                if inventario is not None:
+                    entradas[Path(nombre).as_posix()] = {'tipo': 'archivo', 'sha256': hashlib.sha256(contenido).hexdigest()}
             elif p.is_dir():
                 h.update(b'DIR\0')
+                entradas[Path(nombre).as_posix()] = {'tipo': 'directorio'}
     return h.hexdigest()
 
 
@@ -859,5 +872,14 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # MED-9 conserva intacto el recorrido de las dimensiones anteriores.
+    selector = argparse.ArgumentParser(add_help=False)
+    selector.add_argument('--dimension', default='atribucion')
+    dimension, _ = selector.parse_known_args()
+    if dimension.dimension in ('ecologica', 'deteccion'):
+        sys.path.insert(0, str(BASE / 'simulado'))
+        from ecologica import medir
+        medir(globals())
+    else:
+        main()
 PYTHON_MED4B

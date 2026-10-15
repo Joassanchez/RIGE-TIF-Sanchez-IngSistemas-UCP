@@ -1,0 +1,26 @@
+{
+  "permission": {
+    "edit": {
+      "*": "deny",
+      "opencode.json": "allow",
+      "opencode.jsonc": "allow",
+      "*/opencode.json": "allow",
+      "*/opencode.jsonc": "allow",
+      ".opencode/*": "allow",
+      "*/.opencode/*": "allow",
+      "../*": "deny",
+      "/*": "deny",
+      "../.config/opencode/*": "allow"
+    },
+    "webfetch": "deny",
+    "websearch": "deny",
+    "doom_loop": "deny",
+    "external_directory": {
+      "*": "deny",
+      "/home/participante/.config/opencode/*": "allow"
+    },
+    "skill": {
+      "*": "deny"
+    }
+  }
+}

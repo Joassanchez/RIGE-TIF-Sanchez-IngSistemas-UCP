@@ -1,0 +1,13 @@
+{
+  "permission": {
+    "read": "allow",
+    "bash": "allow",
+    "external_directory": {
+      "*": "deny",
+      "/home/participante/.config/opencode/*": "allow"
+    },
+    "edit": "deny",
+    "webfetch": "deny",
+    "websearch": "deny"
+  }
+}

@@ -356,11 +356,17 @@ def main():
     parser.add_argument('registros', nargs='+', type=Path)
     parser.add_argument('--sonda', choices=['R', 'E'], help='ADR-089: análisis exclusivamente descriptivo con LB de los mismos casos.')
     parser.add_argument('--piloto', nargs='+', type=Path, default=[])
-    parser.add_argument('--dimension', choices=['atribucion', 'modificacion'], default='atribucion')
+    parser.add_argument('--dimension', choices=['atribucion', 'modificacion', 'ecologica', 'deteccion'], default='atribucion')
+    parser.add_argument('--complemento', nargs='+', type=Path, default=[], help='MED-9: registros corregidos de la otra dimensión para la rama de respaldo.')
     parser.add_argument('--destino', type=Path, required=True)
     parser.add_argument('--tarifas', type=Path, default=Path(__file__).resolve().parents[1] / 'tarifas-congeladas-20261001.json')
     args = parser.parse_args()
-    if args.sonda:
+    if args.dimension in ('ecologica', 'deteccion'):
+        if args.sonda or args.piloto:
+            parser.error('MED-9 no usa las sondas ADR-089 ni piloto.')
+        from analizar_ecologica import analizar_med9, markdown_med9
+        datos = analizar_med9(cargar(args.registros), args.dimension, cargar(args.complemento))
+    elif args.sonda:
         if args.piloto:
             parser.error('Las sondas no admiten piloto.')
         from analizar_sondas import analizar_sonda, markdown_sonda
@@ -369,7 +375,8 @@ def main():
         datos = analizar(cargar(args.registros), cargar(args.piloto), json.loads(args.tarifas.read_text(encoding='utf-8')), args.dimension)
     args.destino.mkdir(parents=True, exist_ok=True)
     escribir_json(args.destino / 'analisis.json', datos)
-    (args.destino / 'informe.md').write_text(markdown_sonda(datos) if args.sonda else markdown(datos), encoding='utf-8')
+    informe = markdown_med9(datos) if args.dimension in ('ecologica', 'deteccion') else (markdown_sonda(datos) if args.sonda else markdown(datos))
+    (args.destino / 'informe.md').write_text(informe, encoding='utf-8')
     print(f'informe.md y analisis.json en {args.destino}')
 
 

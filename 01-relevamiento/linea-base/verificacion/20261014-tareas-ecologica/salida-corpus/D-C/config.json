@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": "ask"
+  },
+  "agent": {
+    "revisor": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "temperature": 0.1,
+      "options": {},
+      "permission": {},
+      "name": "revisor",
+      "description": "Revisor del equipo",
+      "mode": "primary",
+      "prompt": "Revisá los cambios."
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

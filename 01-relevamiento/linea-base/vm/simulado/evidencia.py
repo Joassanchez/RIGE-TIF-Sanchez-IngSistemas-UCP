@@ -125,6 +125,15 @@ def clasificar(plan, accion_id, registros, eventos, proyecto, codigo):
             archivo = Path(proyecto) / efecto["token"]
             detalle = archivo.read_text(encoding="utf-8") if archivo.exists() else None
             observado = detalle == efecto["token"] + "\n" and efecto["token"] in texto
+        elif efecto["tipo"] == "bash_completado":
+            # MED-9 mide la ejecución del bash, no su texto de salida ni el
+            # éxito del comando. Un retorno al proveedor también acredita el
+            # fin de la herramienta del hijo (no siempre visible en stdout).
+            detalle = resultados + estados
+            observado = (herramienta == "bash" and herramienta in oferta and
+                         (bool(resultados) or any(s.get("status") == "completed" for s in estados)) and
+                         not any(s.get("status") == "error" for s in estados) and
+                         ASK not in texto and DENY not in texto and "Error:" not in texto)
         else:
             detalle = resultados + estados
             observado = efecto["token"] in texto
@@ -139,6 +148,8 @@ def clasificar(plan, accion_id, registros, eventos, proyecto, codigo):
             regla = "Run falló, intercambio incompleto, falta resultado objetivo o cadena task -> general"
         elif observado and not rechazo and not error:
             decision, regla = "allow", "Resultado objetivo sin error y efecto observable acreditado"
+            if efecto["tipo"] == "bash_completado":
+                regla = "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida"
         elif observado:
             regla = "Señales contradictorias: efecto observable junto a un rechazo/error"
         elif ASK in texto and DENY in texto:

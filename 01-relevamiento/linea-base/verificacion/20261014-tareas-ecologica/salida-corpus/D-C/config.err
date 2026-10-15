@@ -1,0 +1,14 @@
+timestamp=2026-10-15T02:21:42.615Z level=INFO run=e189510e message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-15T02:21:42.616Z level=INFO run=e189510e message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-15T02:21:42.657Z level=INFO run=e189510e message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-15T02:21:42.662Z level=INFO run=e189510e message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-15T02:21:42.663Z level=INFO run=e189510e message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-15T02:21:42.664Z level=INFO run=e189510e message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-15T02:21:42.668Z level=INFO run=e189510e message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-15T02:21:42.701Z level=INFO run=e189510e message=loading path=/home/participante/proyecto/.opencode/opencode.json
+timestamp=2026-10-15T02:21:42.701Z level=INFO run=e189510e message=loading path=/home/participante/proyecto/.opencode/opencode.jsonc
+timestamp=2026-10-15T02:21:42.720Z level=WARN run=e189510e message="OPENCODE_PERMISSION contains invalid JSON, skipping" err="SyntaxError: JSON Parse error: Property name must be a string literal"
+timestamp=2026-10-15T02:21:42.770Z level=INFO run=e189510e message="all LSPs are disabled"
+timestamp=2026-10-15T02:21:42.771Z level=INFO run=e189510e message="all formatters are disabled"
+timestamp=2026-10-15T02:21:42.771Z level=INFO run=e189510e message=init
+timestamp=2026-10-15T02:21:42.773Z level=INFO run=e189510e message="disposing instance" directory=/home/participante/proyecto

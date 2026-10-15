@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "dimension": "ecologica",
+  "hoja_cerrada": true,
+  "hashes_fuentes": {
+    "espec.py": "b824ea2fc591377ad9dcdfffb45c6a28cbd49cd6b8accd8c7063ba355b2ebffd",
+    "corpus.py": "8685f07065fe1247ef4377b6ebe5fde06db1fb19d2d81a5a36c17ee3964c8d06",
+    "tareas.md": "6bf5bfb307341b8cef34fdeaeb591cf88a6a05ebb50e107ed68477e387a6f469",
+    "deteccion.md": "5e21b582d3d5f51b3a9262c2bdde710c798eacbfa97823a07a4536c8e3655da1"
+  },
+  "casos": {
+    "M-1": {
+      "objetivo": [
+        "build",
+        "read",
+        "src/productos.js",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          "README.md"
+        ]
+      ]
+    },
+    "M-2": {
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "build",
+          "edit",
+          "src/productos.js"
+        ],
+        [
+          "build",
+          "edit",
+          "README.md"
+        ]
+      ]
+    },
+    "M-3": {
+      "objetivo": [
+        "build",
+        "bash",
+        "npm test",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "npm install"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ]
+    },
+    "M-4": {
+      "objetivo": [
+        "build",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "bash",
+          "npm test"
+        ]
+      ]
+    },
+    "M-5": {
+      "objetivo": [
+        "build",
+        "external_directory",
+        "/home/participante/compartido/*",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "build",
+          "external_directory",
+          "/home/participante/otra/*"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ]
+    },
+    "M-6": {
+      "objetivo": [
+        "revisor",
+        "edit",
+        "src/index.js",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "revisor",
+          "bash",
+          "ls"
+        ],
+        [
+          "revisor",
+          "read",
+          "src/index.js"
+        ]
+      ]
+    },
+    "M-7": {
+      "objetivo": [
+        "build",
+        "bash",
+        "rm -rf dist",
+        "ask"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "bash",
+          "git status"
+        ]
+      ]
+    },
+    "M-8": {
+      "objetivo": [
+        "general",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git push origin main"
+        ],
+        [
+          "general",
+          "bash",
+          "git status"
+        ]
+      ]
+    },
+    "M-9": {
+      "objetivo": [
+        "build",
+        "webfetch",
+        "https://example.com",
+        "ask"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ]
+    },
+    "M-10": {
+      "objetivo": [
+        "build",
+        "read",
+        ".env",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "config/.env"
+        ],
+        [
+          "build",
+          "read",
+          ".env.local"
+        ]
+      ]
+    },
+    "V-1": {
+      "valor": [
+        "build",
+        "model",
+        "google/gemini-2.5-flash"
+      ]
+    },
+    "V-2": {
+      "valor": [
+        "plan",
+        "temperature",
+        0.55
+      ]
+    },
+    "V-3": {
+      "valor": [
+        "build",
+        "description",
+        "Desarrollo del inventario"
+      ]
+    },
+    "V-4": {
+      "valor": [
+        "docs",
+        "model",
+        "google/gemini-2.5-flash"
+      ]
+    }
+  }
+}

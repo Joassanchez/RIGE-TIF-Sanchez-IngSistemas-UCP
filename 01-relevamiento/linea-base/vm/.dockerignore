@@ -15,6 +15,9 @@
 !simulado/ensayo.py
 !simulado/ensayo.json
 !simulado/modificacion.json
+!simulado/ecologica.py
+!simulado/ecologica.json
+!simulado/deteccion.json
 !simulado/planes/
 !simulado/planes/*.json
 !como-dev
@@ -29,6 +32,10 @@
 **/respuestas.json
 **/respuestas-modificacion.md
 **/respuestas-modificacion.json
+**/respuestas-ecologica.json
+**/respuestas-deteccion.json
+**/espec.py
+**/corpus.py
 **/auth.json
 **/.env
 **/.env.*

@@ -83,6 +83,28 @@ Síntesis de las decisiones registradas en las entradas, para su consulta rápid
 
 ## Entradas de la AE2
 
+### Entrada · Jueves 15 de octubre de 2026 — Preparación y primeras tandas de las mediciones de ADR-091 y ADR-092
+
+1. **Decisión adoptada.** Delegué en el ingeniero las decisiones de ejecución.
+   - **Diseño.** Las 14 tareas de modificación (10 de permiso, por mecanismo, y 4 controles de valor) y el corpus de detección (7 declaraciones sin efecto y 9 controles) se verificaron contra OpenCode 1.18.25 y se cerraron.
+   - **Agente dentro del proyecto.** Trabaja dentro del proyecto sin que la configuración del caso lo gobierne: lo resuelven `OPENCODE_DISABLE_PROJECT_CONFIG`, `safe.directory` en el git del evaluador y un envoltorio de `opencode` que muestra la configuración del desarrollador.
+   - **Arnés MED-9.** Lo construyó Codex, con dos correcciones.
+   - **Tandas descartadas.** La primera tanda real (35 ejecuciones) se descartó porque todos los registros quedaron incompletos; el defecto ya está corregido. La segunda se detuvo a las 24 ejecuciones, por mi decisión, para optimizar el oráculo, que tardaba unos 140 s por ejecución. La medición se rehace completa con el arnés optimizado.
+2. **Alternativas y criterio de descarte.**
+   - **Conservar las 24 ejecuciones válidas.** Lo descarté para no mezclar dos versiones del arnés en una tanda.
+   - **Dejar correr las 8 horas.** Lo descarté porque la comprobación «antes» y los controles de aislamiento se repetían sin aportar información.
+3. **Evidencia.**
+   - Tareas y corpus verificados: `01-relevamiento/linea-base/verificacion/20261014-tareas-ecologica/`.
+   - Hojas cerradas: `ecologica/`.
+   - Ensayos y tandas descartadas: fuera del repositorio (`C:/Users/Joa/evidencia-eco-*`).
+   - Traspaso: `.trabajo/linea-base/TRASPASO-20261015.md`.
+4. **Aporte personal.** Exigí que todo se midiera con OpenCode. Objeté el tiempo de las tandas y ordené detener y optimizar. Decidí seguir en otra sesión. Artefactos: `ecologica/` y la ficha MED-9c.
+5. **Desacuerdo y resolución.** Proyecto individual; sin desacuerdos dentro del equipo.
+6. **Herramienta auxiliar.** Conforme a la declaración por período. Particularidades:
+   - **Claude Code (Opus 5.5):** diseñó y verificó las tareas y el corpus, escribió las fichas MED-9 y MED-9c, ejecutó los ensayos y las tandas, y detectó los defectos.
+   - **Codex CLI (`gpt-6.1-sol`):** MED-9 y dos correcciones.
+   - **OpenCode 1.18.25 (ChatGPT Plus):** unas 59 ejecuciones reales descartadas.
+
 ### Entrada · Miércoles 14 de octubre de 2026 (cuarta sesión) — Consecuencias de la rama P y línea de base de modificación
 
 1. **Decisión adoptada.**

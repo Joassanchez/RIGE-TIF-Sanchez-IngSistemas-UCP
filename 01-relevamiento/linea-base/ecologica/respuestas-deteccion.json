@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "dimension": "deteccion",
+  "hoja_cerrada": true,
+  "hashes_fuentes": {
+    "espec.py": "b824ea2fc591377ad9dcdfffb45c6a28cbd49cd6b8accd8c7063ba355b2ebffd",
+    "corpus.py": "8685f07065fe1247ef4377b6ebe5fde06db1fb19d2d81a5a36c17ee3964c8d06",
+    "tareas.md": "6bf5bfb307341b8cef34fdeaeb591cf88a6a05ebb50e107ed68477e387a6f469",
+    "deteccion.md": "5e21b582d3d5f51b3a9262c2bdde710c798eacbfa97823a07a4536c8e3655da1"
+  },
+  "casos": {
+    "D-A": {
+      "items": [
+        {
+          "id": "D1",
+          "efecto": false,
+          "tipo": "regla de permiso sin efecto (desplazada por una regla posterior)",
+          "archivo": "G/opencode.json",
+          "clave": "permission.bash.\"git push\"",
+          "comprobacion": [
+            "perm",
+            "build",
+            "bash",
+            "git push",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(\\.config/opencode/opencode\\.json)",
+            "clave": "git push(?! \\*)"
+          }
+        },
+        {
+          "id": "D2",
+          "efecto": false,
+          "tipo": "regla de permiso sin efecto (ruta absoluta)",
+          "archivo": "P/opencode.json",
+          "clave": "permission.read.\"/home/participante/proyecto/.env\"",
+          "comprobacion": [
+            "perm",
+            "build",
+            "read",
+            ".env",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "/home/participante/proyecto/\\.env|\\.env"
+          }
+        },
+        {
+          "id": "D3",
+          "efecto": false,
+          "tipo": "regla de permiso sin efecto (desplazada por OPENCODE_PERMISSION)",
+          "archivo": "P/opencode.json",
+          "clave": "permission.webfetch",
+          "comprobacion": [
+            "perm",
+            "build",
+            "webfetch",
+            "https://example.com",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "webfetch"
+          }
+        },
+        {
+          "id": "C1",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "G/opencode.json",
+          "clave": "permission.bash.\"npm publish *\"",
+          "comprobacion": [
+            "perm",
+            "build",
+            "bash",
+            "npm publish --access public",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(\\.config/opencode/opencode\\.json)",
+            "clave": "npm publish"
+          }
+        },
+        {
+          "id": "C2",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "permission.read.\"secretos/*\"",
+          "comprobacion": [
+            "perm",
+            "build",
+            "read",
+            "secretos/claves.txt",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "secretos"
+          }
+        },
+        {
+          "id": "C3",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "agent.build.permission.edit",
+          "comprobacion": [
+            "perm",
+            "build",
+            "edit",
+            "src/index.js",
+            "ask"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "edit"
+          }
+        }
+      ]
+    },
+    "D-B": {
+      "items": [
+        {
+          "id": "D4",
+          "efecto": false,
+          "tipo": "valor desplazado por precedencia",
+          "archivo": "P/opencode.json",
+          "clave": "agent.build.model",
+          "comprobacion": [
+            "valor",
+            "build",
+            "model",
+            "openai/gpt-5-mini"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "model"
+          }
+        },
+        {
+          "id": "D5",
+          "efecto": false,
+          "tipo": "sustitución sin valor",
+          "archivo": "P/opencode.json",
+          "clave": "agent.plan.description",
+          "comprobacion": [
+            "valor",
+            "plan",
+            "description",
+            "Plan-{env:RIGE_ETIQUETA_INEXISTENTE}"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "description"
+          }
+        },
+        {
+          "id": "C4",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/.opencode/opencode.json",
+          "clave": "agent.build.model",
+          "comprobacion": [
+            "valor",
+            "build",
+            "model",
+            "google/gemini-2.5-flash"
+          ],
+          "coincide": {
+            "archivo": "\\.opencode/opencode\\.json",
+            "clave": "model"
+          }
+        },
+        {
+          "id": "C5",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "G/opencode.json",
+          "clave": "agent.build.temperature",
+          "comprobacion": [
+            "valor",
+            "build",
+            "temperature",
+            0.4
+          ],
+          "coincide": {
+            "archivo": "(\\.config/opencode/opencode\\.json)",
+            "clave": "temperature"
+          }
+        },
+        {
+          "id": "C6",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "agent.plan.temperature",
+          "comprobacion": [
+            "valor",
+            "plan",
+            "temperature",
+            0.2
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "temperature"
+          }
+        }
+      ]
+    },
+    "D-C": {
+      "items": [
+        {
+          "id": "D6",
+          "efecto": false,
+          "tipo": "entrada descartada sin error visible (JSON inválido)",
+          "archivo": "env:OPENCODE_PERMISSION",
+          "clave": "bash",
+          "comprobacion": [
+            "perm",
+            "build",
+            "bash",
+            "ls",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "OPENCODE_PERMISSION",
+            "clave": ".*"
+          }
+        },
+        {
+          "id": "D7",
+          "efecto": false,
+          "tipo": "valor desplazado por el agente en markdown",
+          "archivo": "P/opencode.json",
+          "clave": "agent.revisor.model",
+          "comprobacion": [
+            "valor",
+            "revisor",
+            "model",
+            "openai/gpt-5"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "model"
+          }
+        },
+        {
+          "id": "C7",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/.opencode/agent/revisor.md",
+          "clave": "model",
+          "comprobacion": [
+            "valor",
+            "revisor",
+            "model",
+            "anthropic/claude-sonnet-4-5"
+          ],
+          "coincide": {
+            "archivo": "\\.opencode/agents?/revisor\\.md",
+            "clave": "model"
+          }
+        },
+        {
+          "id": "C8",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "agent.revisor.temperature",
+          "comprobacion": [
+            "valor",
+            "revisor",
+            "temperature",
+            0.1
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "temperature"
+          }
+        },
+        {
+          "id": "C9",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "permission.bash",
+          "comprobacion": [
+            "perm",
+            "build",
+            "bash",
+            "ls",
+            "ask"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "bash"
+          }
+        }
+      ]
+    }
+  }
+}

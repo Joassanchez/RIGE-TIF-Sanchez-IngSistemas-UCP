@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": {
+      "git push": "deny",
+      "*": "allow",
+      "npm publish *": "deny"
+    },
+    "webfetch": "allow",
+    "read": {
+      "*": "allow",
+      "/home/participante/proyecto/.env": "deny",
+      "secretos/*": "deny"
+    }
+  },
+  "agent": {
+    "build": {
+      "permission": {
+        "edit": "ask"
+      },
+      "options": {}
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

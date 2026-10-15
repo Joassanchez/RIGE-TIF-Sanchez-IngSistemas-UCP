@@ -1,0 +1,11 @@
+timestamp=2026-10-15T02:21:36.798Z level=INFO run=97034bbe message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-15T02:21:36.800Z level=INFO run=97034bbe message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-15T02:21:36.842Z level=INFO run=97034bbe message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-15T02:21:36.846Z level=INFO run=97034bbe message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-15T02:21:36.847Z level=INFO run=97034bbe message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-15T02:21:36.851Z level=INFO run=97034bbe message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-15T02:21:36.852Z level=INFO run=97034bbe message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-15T02:21:36.926Z level=INFO run=97034bbe message="all LSPs are disabled"
+timestamp=2026-10-15T02:21:36.927Z level=INFO run=97034bbe message="all formatters are disabled"
+timestamp=2026-10-15T02:21:36.927Z level=INFO run=97034bbe message=init
+timestamp=2026-10-15T02:21:36.930Z level=INFO run=97034bbe message="disposing instance" directory=/home/participante/proyecto

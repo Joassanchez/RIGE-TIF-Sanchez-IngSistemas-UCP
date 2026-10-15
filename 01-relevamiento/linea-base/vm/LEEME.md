@@ -458,3 +458,17 @@ el análisis de patrones de permiso. Los correctores son los existentes.
 La ejecución y el análisis exclusivamente descriptivo se documentan en
 [`../sondas/LEEME.md`](../sondas/LEEME.md). `analizar.py` rechaza sondas sin
 `--sonda R` o `--sonda E`; esa vía no calcula ramas ni cumplimiento.
+
+### Ecológica y detección (MED-9 / ADR-091 a ADR-093)
+
+`medir --dimension ecologica|deteccion` usa escenarios públicos generados y
+copiados explícitamente; objetivos, guardas y corpus clasificado permanecen fuera
+del contenedor. El ejecutor trabaja dentro del proyecto, aislado de su configuración;
+el `opencode` que invoque como herramienta consulta al participante mediante un
+envoltorio. El oráculo de permisos se ejecuta con el proveedor local, antes y después.
+
+La preparación, los controles nativos obligatorios, el ensayo sin credenciales,
+las tandas LB de ambos ejecutores, `--fuera-del-arbol`, corrección externa y análisis
+con complemento están en [`../ecologica/LEEME.md`](../ecologica/LEEME.md).
+La nueva vía no cambia los recorridos ni los hashes de atribución, modificación
+y sondas. Los ensayos Docker y las mediciones quedan a cargo del ingeniero.

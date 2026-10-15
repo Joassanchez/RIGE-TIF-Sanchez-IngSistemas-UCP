@@ -18,7 +18,13 @@
     "principal/opencode.json": "d65e379094678ed9f3af1e1a613aabed606ed1af5cce2837d8022e7838f31fe5",
     "charles-modificacion/agents/charles.md": "9b5296664c3e582e96173273efc9eed89baa296aafb77e183f8b20ef3d9ebfe5",
     "charles-modificacion/opencode.json": "3a252f1313978bb01973e305a3447bc5510263887c52669db216b551ec5bc17d",
-    "principal-modificacion/opencode.json": "545d282fa0952a5a06c0164cd0d8cd0492b646e01b68859e1af21d96d08601be"
+    "principal-modificacion/opencode.json": "545d282fa0952a5a06c0164cd0d8cd0492b646e01b68859e1af21d96d08601be",
+    "principal-ecologica/opencode.json": "2622f27107e3ed2fc2d0acf4421c00c6b1021c9f569ac594b18e03dbc795df81",
+    "charles-ecologica/agents/charles.md": "2696a322357ce0ef8b60b2e68981cfa343c171d36b9ce51fc183f70914e54428",
+    "charles-ecologica/opencode.json": "53ef9b798009951692f461d65ce1971b9e3630a5500475df2139115fc8c05686",
+    "principal-deteccion/opencode.json": "cf864c3ca7a42b4d32b39cee1fad669936804e30fee1ca440d5bbad56e6f9545",
+    "charles-deteccion/agents/charles.md": "eb38e2b74b15f8c78bb5ec3c5e19803896b2086e78bf1c8e5d1ff6bc45cc6e11",
+    "charles-deteccion/opencode.json": "27b5c50b544f44384820c9b5667d5b7261d43f3283ffe5a34a131fa942a0ef72"
   },
   "modificacion": {
     "adr": "ADR-085",
@@ -27,5 +33,13 @@
       "Patrones edit con prefijo *participante/ para el sujeto relativo al worktree; corrección tras rechazo nativo en ambos ejecutores el 14/10/2026"
     ],
     "verificacion_efectiva": "Ensayo nativo del ingeniero 14/10/2026: las reglas absolutas rechazaron todas las llamadas edit en ambos ejecutores. Corregido para path.relative(worktree, archivo), comprobando worktrees / y /home/evaluador/tarea en verificacion-edit.json. [VERIFICAR: repetir ensayo nativo con estos hashes]"
+  },
+  "ecologica": {
+    "adr": "ADR-091/092; MED-9",
+    "cambios": [
+      "Variantes nuevas; edit relativo al worktree; external_directory solo configuraci?n global del participante.",
+      "Charles conserva el resto de la configuraci?n y su prompt."
+    ],
+    "verificacion_efectiva": "Control nativo obligatorio en cada tanda; verificacion-edit.json y aislamiento-ejecutor.json. Sin corrida Docker del escritor."
   }
 }

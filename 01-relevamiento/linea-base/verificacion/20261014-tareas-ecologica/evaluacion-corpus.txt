@@ -1,0 +1,17 @@
+D-A D1  SIN efecto OK  bash git push: efectiva=allow declarada=deny
+D-A D2  SIN efecto OK  read .env: efectiva=allow declarada=deny
+D-A D3  SIN efecto OK  webfetch https://example.com: efectiva=allow declarada=deny
+D-A C1  con efecto OK  bash npm publish --access public: efectiva=deny declarada=deny
+D-A C2  con efecto OK  read secretos/claves.txt: efectiva=deny declarada=deny
+D-A C3  con efecto OK  edit src/index.js: efectiva=ask declarada=ask
+D-B D4  SIN efecto OK  model: efectivo='google/gemini-2.5-flash' declarado='openai/gpt-5-mini'
+D-B D5  SIN efecto OK  description: efectivo='Plan-' declarado='Plan-{env:RIGE_ETIQUETA_INEXISTENTE}'
+D-B C4  con efecto OK  model: efectivo='google/gemini-2.5-flash' declarado='google/gemini-2.5-flash'
+D-B C5  con efecto OK  temperature: efectivo=0.4 declarado=0.4
+D-B C6  con efecto OK  temperature: efectivo=0.2 declarado=0.2
+D-C D6  SIN efecto OK  bash ls: efectiva=ask declarada=deny
+D-C D7  SIN efecto OK  model: efectivo='anthropic/claude-sonnet-4-5' declarado='openai/gpt-5'
+D-C C7  con efecto OK  model: efectivo='anthropic/claude-sonnet-4-5' declarado='anthropic/claude-sonnet-4-5'
+D-C C8  con efecto OK  temperature: efectivo=0.1 declarado=0.1
+D-C C9  con efecto OK  bash ls: efectiva=ask declarada=ask
+TODO VERIFICADO
