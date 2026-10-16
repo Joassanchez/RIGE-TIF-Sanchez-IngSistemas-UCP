@@ -36,7 +36,7 @@
 | 1 | Incremento 5 · Archivo de lectura, prueba de clonado y etiqueta v1 | Condición de aceptación del v1 (apartado V.2) | 4 |
 |               | **Subtotal de la iteración 1**                                                      |                                             | **35**    |
 | 2             | Incorporación del evaluador de permisos de OpenCode, con atribución                 | RF-02, RNF-10                               | 10        |
-| 2             | Cadena ordenada de reglas y herencia hacia subagentes conforme a RD-03 y RD-05      | RF-02                                       | 10        |
+| 2             | Cadena ordenada de reglas y reglas propias de los subagentes conforme a RD-03 y RD-05      | RF-02                                       | 10        |
 | 2             | Valores implícitos y reglas nativas                                                 | RF-06                                       | 6         |
 | 2             | Comando compuesto y protección nativa desactivada                                   | RF-08, RF-09                                | 8         |
 | 2             | Explicación mediante plantillas deterministas                                       | RF-02                                       | 5         |
@@ -54,7 +54,7 @@
 | 4             | Corrección de defectos, regresión completa, prueba de clonado y archivo de lectura; acreditación de RNF-06 y RNF-07 | Requisitos Must; RNF-06 y RNF-07 | 11        |
 |               | **Total de la capacidad técnica efectiva**                                          |                                             | **136**   |
 
-*Tabla 15. Estimación de horas por tarea e iteración. Fuente: elaboración propia.*
+*Tabla 16. Estimación de horas por tarea e iteración. Fuente: elaboración propia.*
 
 | **Orden** | **Qué se posterga**                                                                                                       | **Horas liberadas** | **Acumulado** |
 |-----------|---------------------------------------------------------------------------------------------------------------------------|---------------------|---------------|
@@ -66,7 +66,7 @@
 | 6         | RF-07 · hallazgos, con su vista web y su salida por línea de comandos (CU-04)                                             | 16                  | 35            |
 | 7         | Estabilización, reducida de 11 h a 1 h                                                                                    | 10                  | 45            |
 
-*Tabla 16. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 15.*
+*Tabla 17. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 16.*
 
 | **Cláusula de contingencia (hoja Iteraciones)** | **Valor declarado** |
 |---|---|

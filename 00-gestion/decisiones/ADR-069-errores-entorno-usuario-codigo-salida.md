@@ -2,12 +2,12 @@
 
 - Estado: aceptado (01/10/2026)
 - Fecha: 30/09/2026
-- Capítulos afectados: ninguno del cuerpo del AE2. Precisa el contrato de salida de la CLI (ADR-058) y los códigos estables de ADR-066. Afecta `src/paquetes/rige/adaptadores/` y `src/pruebas/aceptacion/arranque.test.ts` (regla A-4 de la ficha T0-11a)
+- Capítulos afectados: ninguno del cuerpo del AE2. Precisa el contrato de salida de la CLI (ADR-058) y fija sus códigos estables de error de uso `configuracion-invalida` y `puerto-ocupado`. Afecta `src/paquetes/rige/adaptadores/` y `src/pruebas/aceptacion/arranque.test.ts` (regla A-4 de la ficha T0-11a)
 - Origen: revisión del incremento 0 (`/revisar-codigo incremento inc0-esqueleto`, 30/09/2026), punto 12 de `critico-codigo`
 
 ### Contexto
 
-ADR-058 separa el error de uso (código 1, «JSON de error con código estable») de la falla interna (código 70, defecto o infraestructura). ADR-066 asignó `configuracion-invalida` a «variable no admitida o valor inválido». Ninguno dice qué hacer cuando el valor tiene formato válido pero **el entorno no lo admite**. Dato del repositorio: con `RIGE_ALMACEN` apuntando a un **archivo** regular, `bun run esquema` termina con 70 (`interno`). La regla A-4 de T0-11a lo fija así, y la usa como el caso de prueba de la falla interna. Es un error que el usuario corrige cambiando una variable, igual que un puerto ocupado (ADR-066, `puerto-ocupado`, código 1).
+ADR-058 separa el error de uso (código 1, «JSON de error con código estable») de la falla interna (código 70, defecto o infraestructura). El incremento 0 usa `configuracion-invalida` para «variable no admitida o valor inválido» y `puerto-ocupado` para el puerto en uso, ambos con código 1. Ninguno dice qué hacer cuando el valor tiene formato válido pero **el entorno no lo admite**. Dato del repositorio: con `RIGE_ALMACEN` apuntando a un **archivo** regular, `bun run esquema` termina con 70 (`interno`). La regla A-4 de T0-11a lo fija así, y la usa como el caso de prueba de la falla interna. Es un error que el usuario corrige cambiando una variable, igual que un puerto ocupado (`puerto-ocupado`, código 1).
 
 ### Alternativas evaluadas
 
@@ -35,6 +35,8 @@ ADR-058 separa el error de uso (código 1, «JSON de error con código estable»
 
 Aceptado por el autor el 01/10/2026 (`/aceptar ADR-069`), con la recomendación E-B completa. Se programa como ficha al comienzo del incremento 1 o como corrección del incremento 0.
 
+**Nota (16/10/2026).** Con la eliminación de ADR-066, este registro respalda también los dos códigos estables de error de uso que completan la fila «error de uso» de ADR-058: `configuracion-invalida` (variable no admitida o valor inválido) y `puerto-ocupado` (puerto en uso), ambos con código 1.
+
 ### Consecuencias
 
 - Ficha nueva (después de la aceptación): comprobación en `adaptadores/sistema/configuracion.ts` y nueva redacción de A-4.
@@ -44,5 +46,5 @@ Aceptado por el autor el 01/10/2026 (`/aceptar ADR-069`), con la recomendación 
 ### Evidencia
 
 - `src/pruebas/aceptacion/arranque.test.ts`, A-4 (archivo regular → 70), commit `f173541`.
-- ADR-058, contrato de salida; ADR-066, punto 1.
+- ADR-058, contrato de salida.
 - Informe de `critico-codigo` del 30/09/2026 (en el chat; ADR-067: las revisiones de código no se archivan).

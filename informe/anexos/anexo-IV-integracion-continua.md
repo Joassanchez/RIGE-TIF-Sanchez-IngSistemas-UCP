@@ -23,7 +23,8 @@ El anexo registra las corridas del canal de construcción del repositorio, defin
 | 37033115261 | 02/10/2026 16:19 UTC | main · 3bf9604 | Exitosa |
 | 37034201193 | 02/10/2026 16:28 UTC | main · dbe036c | Exitosa |
 | 37041182988 | 02/10/2026 17:30 UTC | main · 6b871bd | Exitosa |
+| 38822464930 | 15/10/2026 23:16 UTC | v1 · a57c26b | Exitosa |
 
 *Tabla A.IV.1. Registro de las corridas del canal de construcción del repositorio. Fuente: elaboración propia.*
 
-Las tres corridas fallidas del 29 y el 30/09/2026 preceden a la primera corrida exitosa del 01/10/2026; desde entonces todas las corridas resultan exitosas. El registro se actualiza hasta la etiqueta v1.
+Las tres corridas fallidas del 29 y el 30/09/2026 preceden a la primera corrida exitosa del 01/10/2026; desde entonces todas las corridas resultan exitosas. La última corrida registrada es la n.º 38822464930, sobre la etiqueta v1, del 15/10/2026, exitosa en Ubuntu y Windows, incluida la comparación con OpenCode 1.18.25.

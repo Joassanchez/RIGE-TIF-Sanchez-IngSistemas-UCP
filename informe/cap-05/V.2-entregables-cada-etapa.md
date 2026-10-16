@@ -12,4 +12,6 @@ Cada artefacto se acepta cuando los requisitos comprometidos cumplen la definici
 
 *Tabla 12. Entregables de cada etapa con su condición de aceptación. Fuente: elaboración propia.*
 
-La condición de la cuarta etapa es la que vuelve verificable el congelamiento: un tercero la comprueba en el historial del repositorio, sin depender de la declaración del autor. La denominación de la etiqueta consta en el Anexo III, A.III.3.
+Al hito del 01/10 el repositorio contenía el incremento 0. El recorrido vertical se integró el 05/10 y la etiqueta v1 se publicó el 15/10/2026 sobre el commit a57c26b, dentro de la Ventana de Mejora. Se usa v1 y no v1.1 porque no existía una etiqueta publicada anterior. El desvío se absorbió con horas de la segunda iteración (apartado V.4).
+
+La condición de la cuarta etapa permite comprobar el congelamiento en el historial del repositorio. Un tercero realiza esa comprobación sin depender de la declaración del autor. La denominación de la etiqueta consta en el Anexo III, A.III.3.

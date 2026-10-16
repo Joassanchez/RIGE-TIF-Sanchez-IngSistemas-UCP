@@ -2,7 +2,7 @@
 
 *Proyecto: RIGE. Autor: Sánchez, Joaquín Sebastián. Destino: Capítulo V, apartados V.3 y V.4, y hoja «Iteraciones» del Libro de trabajo. Período técnico: 21/09 al 14/11/2026, ocho semanas.*
 
-La planificación se construye sobre las horas semanales reales declaradas y no sobre la duración nominal del cuatrimestre. Descontada la reducción prevista, el presupuesto efectivo determina cuántos requisitos Must caben en el período.
+La planificación se construye sobre las horas semanales declaradas y no sobre la duración nominal del cuatrimestre. Descontada la reducción prevista, el presupuesto efectivo determina cuántos requisitos Must caben en el período.
 
 **24.1 · Horas semanales reales por integrante**
 
@@ -36,8 +36,8 @@ La planificación se construye sobre las horas semanales reales declaradas y no 
 | **Subtotal de reserva** | **54 h** |
 | **Total asignado** | **190 h** |
 
-*Las horas técnicas se asignan a las tareas de los dieciocho requisitos Must (apartado V.4, Tabla 15); los requisitos Should no reciben horas. Margen sin asignar: 0 h.*
+*Las horas técnicas se asignan a las tareas de los dieciocho requisitos Must (apartado V.4, Tabla 16); los requisitos Should no reciben horas. Margen sin asignar: 0 h.*
 
 **24.4 · Lo que no se sacrifica en ningún caso**
 
-Ante una caída de un tercio de la capacidad técnica rige la cláusula de contingencia del apartado V.4 (Tabla 16). En ningún caso se sacrifican la trazabilidad del catálogo y la ejecutabilidad de cada etiqueta, condiciones de cómputo que fija la cátedra; la fidelidad respecto de OpenCode 1.18.25 (RNF-02); las restricciones de seguridad RNF-01, RNF-04 y RNF-05; CU-01 en su forma mínima con la advertencia de versión, CU-02, CU-03 con la decisión de RF-02, RF-06, RF-08 y RF-09, y RF-03.
+Ante una caída de un tercio de la capacidad técnica rige la cláusula de contingencia del apartado V.4 (Tabla 17). En ningún caso se sacrifican la trazabilidad del catálogo y la ejecutabilidad de cada etiqueta, condiciones de cómputo que fija la cátedra; la fidelidad respecto de OpenCode 1.18.25 (RNF-02); las restricciones de seguridad RNF-01, RNF-04 y RNF-05; CU-01 en su forma mínima con la advertencia de versión, CU-02, CU-03 con la decisión de RF-02, RF-06, RF-08 y RF-09, y RF-03.

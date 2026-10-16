@@ -15,7 +15,7 @@ El modelado sigue el procedimiento de identificación de sustantivos del dominio
 | Sustitución              | Reemplazo de una variable de entorno o de un archivo dentro de una declaración                       | Sí | Sí | Sí | A.VI.3, resultado 13              | Pertenece a una declaración; puede originar un hallazgo sobre ella              |
 | Elemento                 | Unidad de configuración que RIGE resuelve y relaciona, cuyo tipo declara el adaptador                | Sí | Sí | Sí | A.VI.3, resultado 1; AE1, Tabla 6 | Se compone de ninguna o muchas declaraciones; se relaciona con otros elementos  |
 | Agente                   | Especialización de Elemento sobre la cual se manifiesta el efecto de toda la configuración           | Sí | Sí | Sí | A.VI.3, resultados 5 y 12         | Evalúa una cadena de reglas; invoca muchos subagentes y puede ser invocado por muchos agentes                                  |
-| Regla de permiso         | Regla que produce una decisión de permiso, nativa de la herramienta o escrita por el usuario en una declaración | Sí | Sí | Sí | A.VI.3, resultados 5, 7 y 8 | Rige sobre uno o muchos agentes; ocupa una posición en la cadena; si es declarada, proviene de una declaración |
+| Regla de permiso         | Regla que produce una decisión de permiso, nativa de la herramienta o escrita por el usuario en una declaración | Sí | Sí | Sí | A.VI.3, resultados 5, 7 y 8; segunda extensión del acta del 15/10/2026 | Rige sobre uno o muchos agentes; ocupa una posición en la cadena; si es declarada, proviene de una declaración |
 | Hallazgo                 | Defecto detectado en el ecosistema, con su localización                                              | Sí | Sí | Sí | A.VI.3, resultados 3, 5, 13 y 14      | Recae sobre un elemento, una declaración, una entrada o una sustitución        |
 
 *Tabla 2. Entidades del dominio, con su fuente y sus relaciones principales. Fuente: elaboración propia sobre el relevamiento técnico del Anexo VI, A.VI.3.*
@@ -37,7 +37,7 @@ Las candidatas descartadas se conservan con su reclasificación, dado que el des
 
 Una candidata se descarta en cuanto no satisface una de las tres pruebas, de modo que las restantes no se evalúan. Las pruebas se marcan según el criterio de reclasificación de cada candidata.
 
-Una sola especialización se declara en el modelo. El Agente se modela como entidad diferenciada porque concentra comportamiento que los demás elementos no poseen (la cadena ordenada de reglas de permiso, la herencia de denegaciones hacia los subagentes que puede invocar y el conjunto de instrucciones aplicables) y porque constituye el eje de la representación. Los restantes tipos comparten el mismo tratamiento de resolución y relación, de modo que no justifican entidades separadas.
+Una sola especialización se declara en el modelo. El Agente se modela como entidad diferenciada porque concentra comportamiento que los demás elementos no poseen (la cadena ordenada de reglas de permiso, las denegaciones que se agregan a los subagentes que lanza y el conjunto de instrucciones aplicables) y porque constituye el eje de la representación. Los restantes tipos comparten el mismo tratamiento de resolución y relación, de modo que no justifican entidades separadas.
 
 ## Atributos de las entidades (A.V.3)
 
@@ -69,7 +69,7 @@ Una sola especialización se declara en el modelo. El Agente se modela como enti
 | Un elemento se relaciona con muchos otros elementos, con un tipo de relación declarado               | 0..* a 0..*       |
 | Un agente evalúa una cadena ordenada de reglas de permiso; una regla rige sobre uno o muchos agentes | 1..* a 1..* {ordenada} |
 | Una declaración origina ninguna o muchas reglas de permiso; una regla nativa no proviene de ninguna declaración | 0..1 a 0..* |
-| Un agente puede invocar muchos subagentes y un subagente puede ser invocado por muchos agentes; en cada invocación, el subagente hereda las reglas de denegación del agente que lo invoca | 0..* a 0..* |
+| Un agente puede invocar muchos subagentes y un subagente puede ser invocado por muchos agentes; el subagente se rige por su propio conjunto de reglas (RD-05)                             | 0..* a 0..* |
 | Una resolución produce ninguno o muchos hallazgos                                                    | 1 a 0..*          |
 | Un hallazgo recae sobre un elemento, una declaración, una entrada o una sustitución | 0..* a 1 {xor: elemento, declaración, entrada o sustitución} |
 

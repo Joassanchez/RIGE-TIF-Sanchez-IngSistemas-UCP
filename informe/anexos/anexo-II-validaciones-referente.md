@@ -4,7 +4,7 @@
 
 La sesión de validación se realiza el 26/09/2026, en modalidad presencial y con una duración de 35 minutos, conforme al apartado X.1. Participan Valeria Areco, referente técnica de Electricidad de Misiones S. A. (EMSA), identificada en el apartado V.3, y Joaquín Sebastián Sánchez, autor del proyecto. Se aplica la «Guía y acta de la sesión de validación con la referente, RIGE», versión 2 del 25/09/2026 (Instrumento 31).
 
-La tabla reúne las decisiones registradas en el acta, sintetizadas a partir del apartado III.4 y de la matriz de trazabilidad del Anexo I, A.I.2. Las precisiones posteriores de L-06 constan en esa matriz y en el acta.
+La tabla reúne las decisiones registradas en el acta, sintetizadas a partir del apartado III.4 y de la matriz de trazabilidad del Anexo I, A.I.2. Las precisiones posteriores de L-06 constan en esa matriz y se validan en la segunda extensión del acta, del 15/10/2026.
 
 | **Decisión** | **Enunciado breve** |
 |---|---|
@@ -26,11 +26,11 @@ La tabla reúne las decisiones registradas en el acta, sintetizadas a partir del
 
 *Tabla A.II.1. Decisiones registradas en el acta de la sesión de validación del 26/09/2026. Fuente: elaboración propia sobre el apartado III.4 y la matriz del Anexo I, A.I.2.*
 
-El acta completa, con la constancia de conformidad firmada por la referente, consta en el Portafolio Digital de la AE2.
+El acta de la sesión presencial del 26/09/2026 registra 82 puntos confirmados por la referente mediante la lectura y el tratamiento de los puntos de la guía con el autor, incluidos veinte de los veintisiete requisitos actuales y once relaciones del dominio; carece de firma propia. La extensión del acta del 01/10/2026 corresponde a una conversación presencial sin registro escrito en la fecha, sobre el catálogo de ese día, y cubre RF-12, RF-14 y RNF-04 reformulados, RF-16, RF-17, RNF-09 y RNF-10 nuevos, la relación por la que una declaración origina reglas de permiso y las multiplicidades corregidas. La constancia firmada por la referente en forma presencial el 15/10/2026 respalda esta extensión y reúne las entrevistas del 29/08 y del 24/09/2026. La segunda extensión del acta, del 15/10/2026 y de modalidad presencial, cubre once cambios posteriores: L-06; RF-02 CA-8; RF-02 CA-3 y RD-05; RF-02 CA-9; RF-07; RNF-07; la relación entre resolución y elemento; Regla de permiso como entidad y término del vocabulario; RE-01; RE-03; y RR-02. La referente confirma los once cambios sin correcciones, y la constancia v2 firmada ese día ratifica además la primera extensión. El acta, las extensiones y las constancias constan en el repositorio y en el Portafolio Digital de la AE2.
 
 ## A.II.2 · Validación del prototipo v0
 
-La maqueta navegable de baja fidelidad comprende las pantallas del flujo relevado para la consulta del estado efectivo de la configuración, conforme al apartado I.6.6. La interfaz de línea de comandos no integra el prototipo v0.
+El prototipo v0 es una maqueta navegable de baja fidelidad de nueve pantallas, presentada a la referente el 29/08/2026 con su conformidad, conforme al apartado I.6.6 y al punto 1.6 de la constancia de entrevistas. A partir del pedido de la referente en la entrevista del 24/09/2026, la maqueta reformulada simplifica la interfaz gráfica a cinco pantallas e incorpora la línea de comandos pensada para que la use un agente (constancia, punto 2.8). Esta maqueta se valida en la sesión del 26/09/2026 y representa el flujo relevado para la consulta del estado efectivo de la configuración.
 
 | **N.º** | **Pantalla**                              | **Función que ilustra** |
 |---------|-------------------------------------------|-------------------------|
@@ -40,6 +40,6 @@ La maqueta navegable de baja fidelidad comprende las pantallas del flujo relevad
 | 4       | Consulta de permiso                       | F4                      |
 | 5       | Detalle de un hallazgo                    | F5 y F6                 |
 
-*Tabla A.II.2. Pantallas del prototipo v0. Fuente: elaboración propia.*
+*Tabla A.II.2. Pantallas de la maqueta reformulada validada el 26/09/2026. Fuente: elaboración propia.*
 
-La maqueta, con su versión en PDF, se encuentra en <https://drive.google.com/file/d/17jelVm2VFUr7spS7OKnvCGs8OIrD4aTI/view?usp=sharing>. Su validación consta en el acta de la sesión del 26/09/2026, sección 7, con conformidad de la referente (A.II.1).
+La maqueta reformulada, con su versión en PDF, se encuentra en <https://drive.google.com/file/d/1kz3OvG5lBim2Yb0Wyem856Li3syry-Px/view?usp=sharing>. Su validación consta en el acta de la sesión del 26/09/2026, sección 7, y en la constancia firmada por la referente el 15/10/2026, punto 2.8 (A.II.1).

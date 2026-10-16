@@ -1,10 +1,8 @@
 ## III.5 · Catálogo de requisitos
 
-El catálogo comprende veintisiete requisitos, diecisiete funcionales y diez no funcionales de seguridad, fiabilidad, mantenibilidad, portabilidad, rendimiento y cumplimiento normativo, validados con la referente en el acta (Anexo II, A.II.1). La prioridad sigue MoSCoW (Clegg y Barker, 1994): 18 Must, 6 Should, 2 Could y 1 Won't; los Must coinciden con el producto mínimo viable de V.5 y las capacidades diferidas se incluyen como Could o Won't.
+El catálogo comprende veintisiete requisitos, diecisiete funcionales y diez no funcionales de seguridad, fiabilidad, mantenibilidad, portabilidad, rendimiento y cumplimiento normativo, validados con la referente: veinte en la sesión del 26/09/2026 y siete (RF-12, RF-14, RF-16, RF-17, RNF-04, RNF-09 y RNF-10) en la extensión del acta del 01/10/2026, con constancia firmada por la referente el 15/10/2026 (Anexo II, A.II.1). La prioridad sigue MoSCoW (Clegg y Barker, 1994): 18 Must, 6 Should, 2 Could y 1 Won't; los Must coinciden con el producto mínimo viable de V.5 y las capacidades diferidas se incluyen como Could o Won't.
 
 Cada requisito se origina en un resultado del relevamiento técnico, un hallazgo del análisis o un acuerdo del acta. Las fichas y la matriz de trazabilidad en doble vía constan en el Anexo I.
-
-RF-15, de prioridad Won't, no lleva criterio de aceptación en el período y no se computa en los controles del catálogo.
 
 | **Cód.** | **Enunciado sintético**                                                                        | **Tipo**       | **Prioridad** |
 |----------|------------------------------------------------------------------------------------------------|----------------|---------------|

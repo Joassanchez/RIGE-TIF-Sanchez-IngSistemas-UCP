@@ -15,7 +15,7 @@ La planificación comprende el período técnico del 21 de septiembre al 14 de n
 
 La dependencia técnica impone primero el esqueleto y, en la segunda iteración, el evaluador, la cadena de reglas y la línea de comandos. RF-02, que concentra el diferencial (apartado IV.3), es el primer incremento funcional completo de esa iteración. La verificación de H-18 precede a RF-16; su contingencia consta en el Anexo III, A.III.3.
 
-La línea de base, rediseñada a partir de la entrevista con la referente y de la reorientación del proyecto (Anexo III, D-41), se prepara y ejecuta durante la segunda iteración con cargo a la reserva de la Ventana, con resultado a más tardar el 16/10. Ese resultado ordena lo que resta de la iteración según la Tabla 10 del apartado IV.3, sin cambiar el conjunto comprometido ni el producto mínimo viable.
+La línea de base se rediseña a partir de la entrevista con la referente y de la reorientación del proyecto (Anexo III, D-41). Se prepara y ejecuta durante la segunda iteración con cargo a la reserva de la Ventana, con resultado a más tardar el 16/10. Ese resultado ordena lo que resta de la iteración según la Tabla 10 del apartado IV.3, sin cambiar el conjunto comprometido ni el producto mínimo viable.
 
 El criterio de corte es la fecha. Cada iteración cierra en su hito, y lo que a esa fecha no satisface la definición de terminado no se computa en ella: vuelve a la lista de pendientes y se replanifica según la prioridad del catálogo y la cláusula de contingencia del apartado V.4. La iteración no se extiende.
 

@@ -2,7 +2,7 @@
 
 ### Presupuesto de horas-persona
 
-El presupuesto se construye sobre las horas semanales reales declaradas en el Instrumento 24: la capacidad técnica determina los requisitos Must del período y la reserva financia los capítulos, las correcciones y la preparación de las mediciones, con entregables de fecha fija. La reserva se mantiene separada de los requisitos y del margen de contingencia, y la reducción prevista del 15 % se distribuye proporcionalmente entre las iteraciones.
+El presupuesto se construye sobre las horas semanales declaradas en el Instrumento 24: la capacidad técnica determina los requisitos Must del período y la reserva financia los capítulos, las correcciones y la preparación de las mediciones, con entregables de fecha fija. La reserva se mantiene separada de los requisitos y del margen de contingencia, y la reducción prevista del 15 % se distribuye proporcionalmente entre las iteraciones.
 
 | **Presupuesto de horas-persona**                 | **Valor declarado**                                                                      |
 |--------------------------------------------------|------------------------------------------------------------------------------------------|
@@ -25,15 +25,17 @@ El presupuesto se construye sobre las horas semanales reales declaradas en el In
 | 4 | 6 | 16 | 11 | −5 |
 | **Total** | **53** | **136** | **136** | **0** |
 
-El exceso de 8 h de las dos primeras iteraciones se cubre con la holgura de 8 h de las dos últimas, disponible porque la cuarta no incorpora funcionalidad.
+*Tabla 15. Asignación de las horas técnicas por iteración, con la capacidad efectiva y la diferencia. Fuente: elaboración propia sobre el Instrumento 24.*
+
+Las dos primeras iteraciones se planifican con 8 h por encima de su capacidad, que la holgura de las dos últimas compensa en el total del período, pero no antes del hito de la primera. Ese exceso se trasladó a la segunda iteración, que concluyó el recorrido vertical del v1 (apartado V.2).
 
 La reserva efectiva asigna 14 h a la AE2, 20 h a la Ventana de Mejora y Cumplimiento y las correcciones del informe de la AE1, 13 h a los Capítulos VI y IX y 7 h a la preparación de la medición final. La línea de base, de 16 a 23 h, se carga a la Ventana y se compensa con la preparación de la medición final, que consiste en volver a ejecutar el guion (Anexo III, D-41).
 
-La fase de cierre se estima en dos semanas según la correspondencia de clases de la consigna y tiene un presupuesto separado para la medición final, la constancia de la referente y los capítulos restantes, sujeto a la confirmación de las fechas de la cuarta actividad de evaluación, cuya modificación altera esa línea y mantiene el alcance comprometido.
+La fase de cierre se estima en dos semanas según la correspondencia de clases de la consigna. Tiene un presupuesto separado para la medición final, la constancia de la referente y los capítulos restantes. Este presupuesto queda sujeto a la confirmación de las fechas de la cuarta actividad de evaluación; un cambio de fechas altera esa línea y mantiene el alcance comprometido.
 
 ### Estimación por tareas
 
-La estimación descompone cada iteración en tareas y les asigna horas por juicio del autor, sobre la base de su experiencia en desarrollo de software (Cohn, 2005). La Tabla 15 asigna las 136 h técnicas a los requisitos Must y a la estabilización prevista en la Tabla 11 del apartado V.1.
+La estimación descompone cada iteración en tareas y les asigna horas por juicio del autor, sobre la base de su experiencia en desarrollo de software (Cohn, 2005). La Tabla 16 asigna las 136 h técnicas a los requisitos Must y a la estabilización prevista en la Tabla 11 del apartado V.1. La estimación es anterior a la adopción del método de programación con un agente escritor sobre fichas del autor (30/09/2026; Anexo III); las horas pasan a cubrir la especificación, la revisión y la verificación de cada tarea, y su suficiencia se controla con el registro de horas de la segunda iteración.
 
 | **Iteración** | **Tarea**                                                                           | **Requisitos**                              | **Horas** |
 |---------------|-------------------------------------------------------------------------------------|---------------------------------------------|-----------|
@@ -45,7 +47,7 @@ La estimación descompone cada iteración en tareas y les asigna horas por juici
 | 1 | Incremento 5 · Archivo de lectura, prueba de clonado y etiqueta v1 | Condición de aceptación del v1 (apartado V.2) | 4 |
 |               | **Subtotal de la iteración 1**                                                      |                                             | **35**    |
 | 2             | Incorporación del evaluador de permisos de OpenCode, con atribución                 | RF-02, RNF-10                               | 10        |
-| 2             | Cadena ordenada de reglas y herencia hacia subagentes conforme a RD-03 y RD-05      | RF-02                                       | 10        |
+| 2             | Cadena ordenada de reglas y reglas propias de los subagentes conforme a RD-03 y RD-05      | RF-02                                       | 10        |
 | 2             | Valores implícitos y reglas nativas                                                 | RF-06                                       | 6         |
 | 2             | Comando compuesto y protección nativa desactivada                                   | RF-08, RF-09                                | 8         |
 | 2             | Explicación mediante plantillas deterministas                                       | RF-02                                       | 5         |
@@ -63,21 +65,21 @@ La estimación descompone cada iteración en tareas y les asigna horas por juici
 | 4             | Corrección de defectos, regresión completa, prueba de clonado y archivo de lectura; acreditación de RNF-06 y RNF-07 | Requisitos Must; RNF-06 y RNF-07 | 11        |
 |               | **Total de la capacidad técnica efectiva**                                          |                                             | **136**   |
 
-*Tabla 15. Estimación de horas por tarea e iteración. Fuente: elaboración propia.*
+*Tabla 16. Estimación de horas por tarea e iteración. Fuente: elaboración propia.*
 
-Los seis requisitos Should no reciben horas propias. RF-12 se incorpora en la segunda iteración y RF-10, RF-11 y RNF-08 en la tercera, si las anteriores cierran por debajo de lo estimado. La acreditación de RNF-06 y RNF-07 sigue lo previsto para la estabilización en el apartado V.1 y es lo primero que se posterga si esta se reduce.
+Los seis requisitos Should se financian con las horas que quedan libres al cierre de cada iteración. RF-12 se incorpora en la segunda iteración y RF-10, RF-11 y RNF-08 en la tercera, si las anteriores cierran por debajo de lo estimado. La acreditación de RNF-06 y RNF-07 sigue lo previsto para la estabilización en el apartado V.1 y es lo primero que se posterga si esta se reduce.
 
 ### Cronograma y dependencias
 
 ![Cronograma del proyecto](../figuras/cap-05/figura-cronograma-gantt.png){width="6.2in"}
 
-*Figura 3. Cronograma del proyecto con dependencias entre tareas consecutivas y los hitos de la cadencia. La iteración 1 se presenta por los incrementos con que se construye el v1. Las barras rayadas corresponden a la fase de cierre, cuya duración se estima. Fuente: elaboración propia sobre la Tabla 15.*
+*Figura 3. Cronograma del proyecto con dependencias entre tareas consecutivas y los hitos de la cadencia. La iteración 1 se presenta por los incrementos con que se construye el v1. Las barras rayadas corresponden a la fase de cierre, cuya duración se estima. Fuente: elaboración propia sobre la Tabla 16.*
 
 La ruta crítica enlaza los incrementos 0 a 5 en la primera iteración; el evaluador, la cadena de reglas, la línea de comandos, H-18, RF-16 y las capacidades restantes de permisos en la segunda; descubrimiento y versión, hallazgos y escenarios completos en la tercera; y estabilización en la cuarta. La figura omite tres dependencias no consecutivas: núcleo → hallazgos, cadena de reglas → hallazgos y cadena de reglas → RF-06. La línea de base separa preparación y ejecución de uno o dos días, con resultado a más tardar el 16/10, que determina el orden restante de la segunda iteración según la Tabla 10 del apartado IV.3.
 
 ### Cláusula de contingencia
 
-La cláusula de contingencia opera sobre la capacidad técnica, que es la que determina los requisitos comprometidos. La magnitud de la caída, un tercio del presupuesto, la fija la consigna de la AE2 en su exigencia (vii). Esa caída reduce las 136 h a 91 h, y la pérdida de 45 h se absorbe mediante las postergaciones de la Tabla 16, aplicadas en el orden indicado hasta cubrirla.
+La cláusula de contingencia opera sobre la capacidad técnica, que es la que determina los requisitos comprometidos. La magnitud de la caída, un tercio del presupuesto, la fija la consigna de la AE2 en su exigencia (vii). Esa caída reduce las 136 h a 91 h, y la pérdida de 45 h se absorbe mediante las postergaciones de la Tabla 17, aplicadas en el orden indicado hasta cubrirla. La consigna fija la caída sobre el presupuesto; se aplica a la capacidad técnica porque la reserva financia entregables de fecha fija (capítulos, Ventana y Caps. VI y IX), que no admiten postergación sin perder el hito.
 
 | **Orden** | **Qué se posterga**                                                                                                       | **Horas liberadas** | **Acumulado** |
 |-----------|---------------------------------------------------------------------------------------------------------------------------|---------------------|---------------|
@@ -89,7 +91,7 @@ La cláusula de contingencia opera sobre la capacidad técnica, que es la que de
 | 6         | RF-07 · hallazgos, con su vista web y su salida por línea de comandos (CU-04)                                             | 16                  | 35            |
 | 7         | Estabilización, reducida de 11 h a 1 h                                                                                    | 10                  | 45            |
 
-*Tabla 16. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 15.*
+*Tabla 17. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 16.*
 
 Se posterga primero lo que no interviene en la medición final ni en la mitigación del riesgo principal y, dentro de ello, lo que menos debilita un objetivo específico. Las postergaciones se registran en la bitácora y el tablero y se reflejan en la prioridad del catálogo y, si afectan un Must, en el producto mínimo viable del apartado V.5. El efecto de cada orden sobre los objetivos específicos consta en el Anexo III, A.III.3.
 

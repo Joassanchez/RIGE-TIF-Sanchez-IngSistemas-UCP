@@ -118,6 +118,8 @@ openchamber. (2026). *openchamber* (commit fc012ae0029fa2ac8d1d52b4af37040fc5362
 
 OpenCode. (2026). *OpenCode* (Versión 1.18.25) \[Software\]. GitHub. https://github.com/anomalyco/opencode/releases/tag/v1.18.25
 
+OpenQube. (2026). *Encuesta de sueldos 2026.01* [Tablero de datos]. Sysarmy. Recuperado el 15 de octubre de 2026, de https://sueldos.openqube.io/encuesta-sueldos-2026.01/
+
 Open Source Collective. (s. f.-a). *Fees*. Recuperado el 2 de octubre de 2026, de https://docs.oscollective.org/welcome-and-introduction-to-osc/fees
 
 Open Source Collective. (s. f.-b). *Is OSC right for my project?* Recuperado el 2 de octubre de 2026, de https://docs.oscollective.org/interested-in-joining-osc/is-osc-right-for-me

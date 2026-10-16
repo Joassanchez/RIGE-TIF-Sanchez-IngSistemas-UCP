@@ -8,11 +8,11 @@
 | Categoría (si es no funcional) | Seguridad |
 | Prioridad | Must |
 | Motivo de la prioridad | Sostiene el carácter auditable de la herramienta y la exclusión de la edición |
-| Criterio de aceptación | CA-1: Calculado el resumen SHA-256 de todos los archivos alcanzados por el análisis, ejecutado un análisis completo y recalculados los resúmenes, los valores resultan idénticos en el 100 % de los archivos. CA-2: En el mismo análisis, ninguna marca de tiempo de modificación cambia |
+| Criterio de aceptación | CA-1: Calculado el resumen SHA-256 de todos los archivos alcanzados por el análisis, ejecutado un análisis completo y recalculados los resúmenes, los valores resultan idénticos en el 100 % de los archivos. CA-2: En el mismo análisis, ninguna marca de tiempo de modificación cambia. CA-3: El inventario de archivos de los directorios de configuración alcanzados, tomado antes y después del análisis, es idéntico: no aparece ni desaparece ningún archivo fuera del almacén de RIGE |
 | Trazabilidad | Acta del 26/09/2026, decisión L-01 |
 | Estado de validación | Validado |
 | Iteración prevista | 1 |
 | ¿Integra el MVP? | Sí |
 
-<!-- Migrado de Cap. III, Anexo I, A.I.1. «Categoría» de la Tabla 6; «Iteración prevista» de la Tabla 15 (Cap. V);
+<!-- Migrado de Cap. III, Anexo I, A.I.1. «Categoría» de la Tabla 6; «Iteración prevista» de la Tabla 16 (Cap. V);
 «¿Integra el MVP?» por la regla del III.5 (los requisitos Must constituyen el MVP del V.5). -->

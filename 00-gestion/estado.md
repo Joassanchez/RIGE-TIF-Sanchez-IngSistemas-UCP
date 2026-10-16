@@ -16,15 +16,15 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | II.4 | `informe/cap-02/II.4-graficos-variables-analisis.md` | aprobada (migración) | AE1 | 24/09/2026 |
 | II.5 | `informe/cap-02/II.5-analisis-informacion.md` | borrador | AE1 | 25/09/2026 |
 | II.6 | `informe/cap-02/II.6-conclusiones-relevamiento.md` | borrador | AE1 | 25/09/2026 |
-| III.1 | `informe/cap-03/III.1-entorno-sistema-informacion.md` | aprobada | AE2 | 02/10/2026 |
-| III.2 | `informe/cap-03/III.2-dominio-sistema-informacion.md` | aprobada | AE2 | 02/10/2026 |
-| III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | aprobada | AE2 | 02/10/2026 |
-| III.4 | `informe/cap-03/III.4-limites-sistema.md` | aprobada | AE2 | 02/10/2026 |
-| III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | aprobada | AE2 | 02/10/2026 |
-| IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | aprobada | AE2 | 02/10/2026 |
-| IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | aprobada | AE2 | 02/10/2026 |
-| IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | aprobada | AE2 | 02/10/2026 |
-| IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | aprobada | AE2 | 02/10/2026 |
+| III.1 | `informe/cap-03/III.1-entorno-sistema-informacion.md` | revisada | AE2 | 15/10/2026 |
+| III.2 | `informe/cap-03/III.2-dominio-sistema-informacion.md` | revisada | AE2 | 15/10/2026 |
+| III.3 | `informe/cap-03/III.3-alcance-sistema-alcance-proyecto.md` | revisada | AE2 | 15/10/2026 |
+| III.4 | `informe/cap-03/III.4-limites-sistema.md` | revisada | AE2 | 15/10/2026 |
+| III.5 | `informe/cap-03/III.5-catalogo-requisitos.md` | revisada | AE2 | 15/10/2026 |
+| IV.1 | `informe/cap-04/IV.1-definicion-negocios.md` | revisada | AE2 | 16/10/2026 |
+| IV.2 | `informe/cap-04/IV.2-definiciones-estrategicas-vision-mision.md` | revisada | AE2 | 16/10/2026 |
+| IV.3 | `informe/cap-04/IV.3-analisis-rivalidad-amplificada.md` | revisada | AE2 | 16/10/2026 |
+| IV.4 | `informe/cap-04/IV.4-mapeo-competencia.md` | revisada | AE2 | 16/10/2026 |
 | V.1 | `informe/cap-05/V.1-definicion-iteraciones-sprints.md` | aprobada | AE2 | 02/10/2026 |
 | V.2 | `informe/cap-05/V.2-entregables-cada-etapa.md` | aprobada | AE2 | 02/10/2026 |
 | V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | aprobada | AE2 | 02/10/2026 |
@@ -47,8 +47,8 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 | Guía y acta | `01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md` (v2); reemplaza a la v1 del 22/09/2026, retirada |
 | Contenido | Entorno (E-01, E-02) · límites L-01 a L-13 · decisiones de ingeniería (conocimiento) · 23 requisitos · 9 entidades y 11 relaciones · 13 reglas · vocabulario · prototipo v0 · consultas |
 | Sesión | Realizada el 26/09/2026, 17:00, presencial, 35 minutos. Los 82 puntos confirmados sin observaciones. Acta completada el 28/09/2026 |
-| Constancia de conformidad | Pendiente de firma (U-04) |
-| Correcciones posteriores a la sesión | Enunciado de RNF-07 (ADR-055), tres correcciones del modelo del dominio y la iteración de RNF-02. Se informan a la referente (PV-03) |
+| Constancia de conformidad | Firmada por la referente el 15/10/2026, en forma presencial: `20261015_ConstanciaEntrevistas_Sanchez_v1_firmada.pdf`. Cubre las entrevistas del 29/08 y 24/09 y la extensión del 01/10 (7 requisitos, relación Declaración–Regla, multiplicidades). El acta se restituyó al 26/09 (82 puntos) |
+| Correcciones posteriores a la sesión | Segunda extensión del 15/10/2026: la referente confirmó los 11 cambios posteriores sin correcciones (constancia v2 firmada, sección 4). Entre ellos, RD-05 corregido (ADR-081) |
 | Datos que quedaron abiertos | Tamaño del proyecto real (la referente no dispone del dato; resuelto por ADR-055 con un proyecto público, PV-02); enlace de la maqueta; asistentes usados en la maqueta; archivo del agente del equipo (confirmado, no recibido) |
 
 ## Diseño (`04-diseno/`, D-23 del diseño del sistema)
@@ -72,7 +72,7 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 | Hoja de respuestas | Cerrada el 13/10/2026 |
 | Modelos | `gpt-6.1-sol`, el único `gpt-6` disponible con la suscripción en 1.18.25 (fase 0, 13/10/2026). `gpt-6-astra` y `gpt-6-luna` no están disponibles (ADR-082). P3 (`build` + `gpt-5.6-luna`) es opcional, con la aprobación del autor y una tarifa registrada. Catálogo de modelos congelado del 13/10/2026 |
 | Agente de la referente | Recibido el 13/10/2026 («Charles», `gpt-6-luna`); segundo ejecutor (ADR-079), medido con `gpt-6.1-sol` como cambio declarado (ADR-082). Confirmación escrita de la práctica: sin respuesta (AD-17) |
-| Encuesta | Lista para publicar en Google Forms (script); falta piloto, canales y publicación (AD-18) |
+| Encuesta | Publicada el 10/10/2026 según el autor; cierra el 24/10/2026 (mínimo 30 respuestas). Falta registrar enlace y canales (AD-18) |
 | Contenedor | `rige-linea-base:1.18.25` reconstruida el 13/10/2026 con la ficha MED-5 (catálogo congelado, preparación del participante, Charles como `[AUX] Charles`, detención por cuota y archivos generados excluidos del hash); ensayo y fase 0 limpios (`verificacion/20261013-fase0/`) |
 | Ejecución | **Hecha el 13/10/2026**, k = 3, sin piloto (ADR-082). `build` + `gpt-6.1-sol`, de 22:07 a 22:51; Charles + `gpt-6.1-sol`, de 22:52 a 23:49. Fueron 72 + 72 ejecuciones completas. Una tanda previa (21:32 a 21:36) se descartó por una falla del instrumento |
 | Corrección y adjudicación | Recorrección por ADR-083 (14/10/2026). 61 adjudicaciones manuales del ingeniero por delegación del autor; criterio estricto en C-3b y C-3d confirmado por el autor (`verificacion/20261014-analisis-LB/`) |

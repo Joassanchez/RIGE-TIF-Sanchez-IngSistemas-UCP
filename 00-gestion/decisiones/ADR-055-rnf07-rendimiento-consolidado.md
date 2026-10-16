@@ -5,6 +5,7 @@
 - Capítulos afectados: Cap. III (III.5); Anexo I (ficha RNF-07); libro (RNF-07); Cap. V (V.4, estabilización de la iteración 4); Cap. X (X.2); `01-relevamiento/fuentes.md`; diseño del v1 (tiempos por etapa)
 - Origen: consolidación del 28/09/2026 (pendiente LI-01). No es una decisión nueva: reúne lo vigente de ADR-044 (25/09/2026) y ADR-045 (28/09/2026), ambos aceptados.
 - Reemplaza: ADR-044 y ADR-045. Sus archivos se eliminaron el 28/09/2026 (quedan en el historial de git).
+- Fundamento del umbral (eje T) precisado por ADR-096 (15/10/2026): medición del comando nativo de OpenCode en el equipo de referencia, en lugar de límites de tolerancia humana
 - Relacionado: ADR-054 (el equipo de referencia es su contenedor), ADR-023 (condición de la caché por hash), ADR-051 (la CLI es la interfaz del agente; salida determinista).
 
 ### Contexto

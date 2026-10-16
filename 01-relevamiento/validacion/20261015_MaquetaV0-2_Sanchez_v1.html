@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maqueta v0.2 de RIGE</title>
+<style>
+  /* Baja fidelidad: escala de grises, tipografía del sistema, cajas y trazos. Sin decisiones estéticas. */
+  :root { --fondo:#fff; --tinta:#222; --suave:#666; --linea:#999; --caja:#f2f2f2; --nota:#fffbe6; --nota-borde:#c9b458; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --fondo:#1b1b1b; --tinta:#e6e6e6; --suave:#a8a8a8; --linea:#777; --caja:#2a2a2a; --nota:#2e2a18; --nota-borde:#8a7a35; }
+  }
+  :root[data-theme="dark"] { --fondo:#1b1b1b; --tinta:#e6e6e6; --suave:#a8a8a8; --linea:#777; --caja:#2a2a2a; --nota:#2e2a18; --nota-borde:#8a7a35; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fondo); color:var(--tinta); font:15px/1.45 system-ui, sans-serif; }
+  code, .mono { font-family:ui-monospace, monospace; font-size:13px; }
+  a { color:inherit; }
+  .marco { max-width:1080px; margin:0 auto; padding:16px; }
+  .rotulo { border:2px dashed var(--linea); padding:8px 12px; font-size:13px; color:var(--suave); margin-bottom:12px; }
+  .rotulo b { color:var(--tinta); }
+  nav.flujo { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  nav.flujo a { border:1px solid var(--linea); padding:4px 10px; text-decoration:none; font-size:13px; }
+  nav.flujo a.activa { background:var(--tinta); color:var(--fondo); }
+  .ventana { border:2px solid var(--tinta); }
+  .barra { border-bottom:2px solid var(--tinta); padding:8px 12px; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .barra span { font-size:13px; color:var(--suave); }
+  .contenido { padding:16px; display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:16px; }
+  @media (max-width:820px) { .contenido { grid-template-columns:1fr; } }
+  section.pantalla { display:none; }
+  section.pantalla.visible { display:block; }
+  h1 { font-size:18px; margin:0 0 4px; }
+  h2 { font-size:15px; margin:18px 0 6px; }
+  p.ayuda { margin:0 0 10px; color:var(--suave); font-size:13px; }
+  .caja { border:1px solid var(--linea); padding:10px; margin-bottom:10px; background:var(--caja); }
+  .aviso { border:2px dashed var(--tinta); padding:8px 10px; margin:10px 0; font-size:13px; }
+  .tabla { width:100%; overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  th, td { border:1px solid var(--linea); padding:5px 7px; text-align:left; vertical-align:top; }
+  th { background:var(--caja); }
+  tr.det td { font-weight:bold; }
+  .marca { display:inline-block; border:1px solid var(--tinta); padding:0 5px; font-size:11px; }
+  .boton { display:inline-block; border:2px solid var(--tinta); padding:5px 12px; text-decoration:none; font-size:13px; cursor:pointer; background:none; color:inherit; font-family:inherit; }
+  .campo { border:1px solid var(--tinta); padding:5px 8px; display:inline-block; min-width:240px; font-family:ui-monospace, monospace; font-size:13px; }
+  .fila { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px; }
+  .tachado { position:relative; color:var(--suave); }
+  .tachado::after { content:""; position:absolute; inset:50% 0 auto 0; border-top:1px solid var(--suave); }
+  .diferido { border:1px dashed var(--linea); padding:10px; color:var(--suave); font-size:13px; }
+  aside.nota { background:var(--nota); border:1px solid var(--nota-borde); padding:10px; font-size:13px; align-self:start; }
+  aside.nota h3 { margin:0 0 6px; font-size:13px; }
+  aside.nota ul { margin:4px 0 8px; padding-left:18px; }
+  body.sin-notas aside.nota { display:none; }
+  body.sin-notas .contenido { grid-template-columns:1fr; }
+  .pie { margin-top:12px; font-size:12px; color:var(--suave); border-top:1px solid var(--linea); padding-top:8px; }
+  .navpie { display:flex; justify-content:space-between; margin-top:14px; gap:8px; }
+  /* Impresión: las cinco pantallas, una por hoja, con los colores claros. */
+  @media print {
+    @page { size:A4; margin:12mm; }
+    :root { --fondo:#fff; --tinta:#222; --suave:#555; --linea:#999; --caja:#f2f2f2; --nota:#fffbe6; --nota-borde:#c9b458; }
+    body { font-size:12px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    nav.flujo, #alternar-envoltorio { display:none; }
+    .ventana { border:none; }
+    .barra { display:none; }
+    section.pantalla { display:block !important; border:2px solid var(--tinta); break-before:page; }
+    section.pantalla:first-of-type { break-before:auto; }
+    .contenido, body.sin-notas .contenido { grid-template-columns:1fr; padding:10px 12px; gap:8px; }
+    aside.nota { order:-1; }
+    .tabla { overflow:visible; }
+    table { font-size:10.5px; }
+    th, td { padding:3px 5px; }
+    td.mono, td .mono, .caja.mono { font-size:10px; word-break:break-all; }
+    h2 { margin:10px 0 4px; }
+    tr, .caja, .aviso { break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="marco">
+
+  <div class="rotulo">
+    <b>RIGE · Prototipo v0, versión 0.2 · Maqueta navegable de baja fidelidad</b><br>
+    No funcional: no calcula, no persiste ni lee archivos. Todos los datos son ilustrativos. Se valida el <b>flujo</b>, no la estética.
+    Representa la interfaz web local (L-10); la interfaz de línea de comandos no integra el prototipo v0.
+    <span id="alternar-envoltorio">· <button class="boton" id="alternar" type="button">Ocultar notas de validación</button></span>
+  </div>
+
+  <nav class="flujo" aria-label="Recorrido">
+    <a href="#p1">1 · Selección del proyecto</a>
+    <a href="#p2">2 · Resumen y hallazgos</a>
+    <a href="#p3">3 · Detalle de un agente</a>
+    <a href="#p4">4 · Consulta de permiso</a>
+    <a href="#p5">5 · Detalle de un hallazgo</a>
+  </nav>
+
+  <div class="ventana">
+    <div class="barra"><b>RIGE</b><span>http://127.0.0.1:[puerto] · solo lectura</span></div>
+
+    <!-- ============ PANTALLA 1 ============ -->
+    <section class="pantalla" id="p1">
+      <div class="contenido">
+        <div>
+          <h1>1 · Selección del proyecto</h1>
+          <p class="ayuda">¿Qué configuración rige en este proyecto?</p>
+
+          <div class="fila">
+            <span>Carpeta del proyecto</span>
+            <span class="campo">C:\dev\proyecto-ejemplo</span>
+            <a class="boton" href="#p2">Resolver</a>
+          </div>
+
+          <div class="aviso">OpenCode instalado: <b>1.18.25</b>. La versión coincide con la verificada; los resultados se presentan como válidos.<br>
+          <span class="ayuda">Si la versión difiere, RIGE lo advierte aquí y no presenta los resultados como válidos.</span></div>
+
+          <h2>Entradas de configuración encontradas</h2>
+          <p class="ayuda">En orden de precedencia: la de abajo prevalece sobre la de arriba.</p>
+          <div class="tabla"><table>
+            <tr><th>#</th><th>Tipo de entrada</th><th>Ubicación</th><th>Estado</th></tr>
+            <tr><td>1</td><td>Global</td><td class="mono">C:\Users\[usuario]\.config\opencode\opencode.json</td><td>Legible</td></tr>
+            <tr><td>2</td><td>Personalizada (variable de entorno)</td><td class="mono">— no definida —</td><td>No aplica</td></tr>
+            <tr><td>3</td><td>Proyecto</td><td class="mono">C:\dev\proyecto-ejemplo\opencode.json</td><td>Legible</td></tr>
+            <tr><td>4</td><td>Directorio de la herramienta</td><td class="mono">C:\dev\proyecto-ejemplo\.opencode\</td><td>Legible · 2 agentes, 1 comando</td></tr>
+            <tr><td>5</td><td>Archivo con sustitución</td><td class="mono">C:\dev\proyecto-ejemplo\.opencode\mcp.jsonc</td><td><b>Ilegible</b> → hallazgo</td></tr>
+          </table></div>
+
+          <h2>Resoluciones anteriores de este proyecto</h2>
+          <div class="tabla"><table>
+            <tr><th>Fecha</th><th>Entradas leídas</th><th></th></tr>
+            <tr><td>[fecha] [hora]</td><td>5 entradas · 1 ilegible</td><td><a href="#p2">Ver</a></td></tr>
+            <tr><td>[fecha] [hora]</td><td>4 entradas · 0 ilegibles</td><td><a href="#p2">Ver</a></td></tr>
+          </table></div>
+        </div>
+        <aside class="nota">
+          <h3>Nota de validación</h3>
+          <ul>
+            <li>¿Es así como el equipo indica qué proyecto mirar?</li>
+            <li>¿Sirve ver las entradas y su orden antes del resultado?</li>
+            <li>¿Hace falta volver a una resolución anterior?</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA 2 ============ -->
+    <section class="pantalla" id="p2">
+      <div class="contenido">
+        <div>
+          <h1>2 · Resumen del ecosistema y de sus hallazgos</h1>
+          <p class="ayuda">Proyecto: <span class="mono">C:\dev\proyecto-ejemplo</span> · resuelto el [fecha] [hora]</p>
+
+          <h2>Elementos por tipo</h2>
+          <div class="tabla"><table>
+            <tr><th>Agentes</th><th>Modelos</th><th>Permisos</th><th>Instrucciones</th><th>Comandos</th><th>Skills</th><th>MCP</th><th>LSP</th><th>Plugins</th></tr>
+            <tr><td>6</td><td>2</td><td>14 reglas</td><td>2</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+          </table></div>
+
+          <h2>Agentes</h2>
+          <div class="tabla"><table>
+            <tr><th>Agente</th><th>Modo</th><th>Origen</th><th></th></tr>
+            <tr><td>build</td><td>Principal</td><td><span class="marca">nativo</span> + declaraciones del usuario</td><td><a href="#p3">Ver</a></td></tr>
+            <tr><td><b>plan</b></td><td>Principal</td><td><span class="marca">nativo</span> + declaraciones del usuario</td><td><a href="#p3">Ver</a></td></tr>
+            <tr><td>general</td><td>Subagente</td><td><span class="marca">nativo</span> sin declaración</td><td><a href="#p3">Ver</a></td></tr>
+            <tr><td>explore</td><td>Subagente</td><td><span class="marca">nativo</span> sin declaración</td><td><a href="#p3">Ver</a></td></tr>
+            <tr><td>revisor</td><td>Subagente</td><td><span class="marca">declarado</span></td><td><a href="#p3">Ver</a></td></tr>
+            <tr><td>documentador</td><td>Subagente</td><td><span class="marca">declarado</span></td><td><a href="#p3">Ver</a></td></tr>
+          </table></div>
+
+          <h2>Hallazgos (5)</h2>
+          <div class="tabla"><table>
+            <tr><th>Tipo</th><th>Cant.</th><th>Primero</th><th></th></tr>
+            <tr><td><b>Declaración que anula una protección nativa</b></td><td>1</td><td class="mono">opencode.json:18:9</td><td><a href="#p5">Ver</a></td></tr>
+            <tr><td>Regla de permiso sin efecto</td><td>1</td><td class="mono">.opencode\agents\revisor.md:7:5</td><td><a href="#p5">Ver</a></td></tr>
+            <tr><td>Referencia no resuelta</td><td>1</td><td class="mono">.opencode\commands\revisar.md:3:8</td><td><a href="#p5">Ver</a></td></tr>
+            <tr><td>Sustitución sin valor</td><td>1</td><td class="mono">opencode.json:9:16</td><td><a href="#p5">Ver</a></td></tr>
+            <tr><td>Entrada ilegible</td><td>1</td><td class="mono">.opencode\mcp.jsonc</td><td><a href="#p5">Ver</a></td></tr>
+            <tr><td>Elemento sin uso · entrada descartada sin error visible</td><td>0</td><td>—</td><td></td></tr>
+          </table></div>
+
+          <div class="fila" style="margin-top:12px">
+            <a class="boton" href="#p3">Explorar el agente «plan»</a>
+            <a class="boton" href="#p4">Consultar un permiso</a>
+          </div>
+        </div>
+        <aside class="nota">
+          <h3>Nota de validación</h3>
+          <ul>
+            <li>¿El resumen ayuda a orientarse en un proyecto ajeno?</li>
+            <li>¿Es útil distinguir los agentes nativos de los declarados?</li>
+            <li>¿Los tipos de hallazgo son los que preocupan al equipo?</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA 3 ============ -->
+    <section class="pantalla" id="p3">
+      <div class="contenido">
+        <div>
+          <h1>3 · Detalle de un agente: plan</h1>
+          <p class="ayuda">¿Qué valor rige en cada clave y qué archivo lo determina? <span class="marca">nativo</span> + declaraciones del usuario · principal</p>
+
+          <h2>Valores efectivos y procedencia</h2>
+          <div class="tabla"><table>
+            <tr><th>Clave</th><th>Valor efectivo</th><th>Lo determina</th><th>Declaraciones desplazadas</th></tr>
+            <tr><td>model</td><td class="mono">[proveedor]/[modelo-B]</td><td>Proyecto · <span class="mono">C:\dev\proyecto-ejemplo\opencode.json:14:7</span></td><td><span class="tachado mono">[proveedor]/[modelo-A]</span><br>Global · <span class="mono">…\opencode\opencode.json:4:3</span></td></tr>
+            <tr><td>temperature</td><td class="mono">[valor]</td><td><span class="marca">implícito</span> ninguna entrada lo declara</td><td>—</td></tr>
+            <tr><td>prompt</td><td>Instrucciones de planificación</td><td><span class="marca">nativo</span> de la herramienta</td><td>—</td></tr>
+            <tr><td>steps</td><td class="mono">[n]</td><td>Directorio · <span class="mono">…\.opencode\agents\plan.md:4:1</span></td><td>—</td></tr>
+            <tr><td>permission.edit</td><td><b>allow</b></td><td>Proyecto · <span class="mono">…\opencode.json:18:9</span></td><td><span class="tachado">deny</span> <span class="marca">nativo</span> · <a href="#p5">ver hallazgo</a></td></tr>
+            <tr><td>permission.bash</td><td>4 reglas</td><td>Ver cadena en la consulta de permiso</td><td><a href="#p4">Consultar</a></td></tr>
+          </table></div>
+          <p class="ayuda">Cada ubicación usa el formato <span class="mono">ruta:línea:columna</span>, que el editor o la terminal abren como enlace.</p>
+
+          <h2>Instrucciones que recibe</h2>
+          <div class="tabla"><table>
+            <tr><th>Orden</th><th>Archivo</th></tr>
+            <tr><td>1</td><td class="mono">C:\Users\[usuario]\.config\opencode\AGENTS.md</td></tr>
+            <tr><td>2</td><td class="mono">C:\dev\proyecto-ejemplo\AGENTS.md</td></tr>
+          </table></div>
+
+          <h2>Elementos relacionados</h2>
+          <div class="diferido">Modelo, comandos que lo invocan, herramientas MCP y skills disponibles. <b>Diferido</b>: no integra la versión comprometida.</div>
+
+          <div class="fila" style="margin-top:12px"><a class="boton" href="#p4">Consultar un permiso de «plan»</a></div>
+        </div>
+        <aside class="nota">
+          <h3>Nota de validación</h3>
+          <ul>
+            <li>¿Esta tabla responde «qué archivo determina cada valor»?</li>
+            <li>¿Las declaraciones desplazadas aportan o confunden?</li>
+            <li>¿Falta alguna clave que el equipo revise?</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA 4 ============ -->
+    <section class="pantalla" id="p4">
+      <div class="contenido">
+        <div>
+          <h1>4 · Consulta de permiso</h1>
+          <p class="ayuda">¿Puede este agente hacer esta acción, y por qué?</p>
+
+          <div class="fila">
+            <span>Agente</span><span class="campo" style="min-width:120px">plan ▾</span>
+            <span>Tipo</span><span class="campo" style="min-width:90px">bash ▾</span>
+            <span>Acción</span><span class="campo">git push origin main</span>
+            <a class="boton" href="#p4">Consultar</a>
+          </div>
+
+          <div class="caja"><b>Decisión: DENY</b> (denegado)<br>
+          La herramienta <i>bash</i> queda disponible para el modelo; esta acción se rechaza.</div>
+
+          <h2>Cadena de reglas coincidentes (orden de evaluación)</h2>
+          <div class="tabla"><table>
+            <tr><th>#</th><th>Patrón</th><th>Decisión</th><th>Carácter</th><th>Procedencia</th></tr>
+            <tr><td>1</td><td class="mono">*</td><td>allow</td><td><span class="marca">nativa general</span></td><td>OpenCode 1.18.25</td></tr>
+            <tr><td>2</td><td class="mono">*</td><td>ask</td><td><span class="marca">nativa del agente</span></td><td>OpenCode 1.18.25 · agente plan</td></tr>
+            <tr><td>3</td><td class="mono">git *</td><td>allow</td><td><span class="marca">declarada global</span></td><td class="mono">…\opencode\opencode.json:12:7</td></tr>
+            <tr class="det"><td>4</td><td class="mono">git push *</td><td>deny</td><td><span class="marca">declarada del agente</span></td><td class="mono">…\.opencode\agents\plan.md:6:3</td></tr>
+          </table></div>
+
+          <h2>Explicación</h2>
+          <div class="caja">La regla 4 determina la decisión porque es la última de la cadena que coincide con «git push origin main».
+          Las declaradas del agente se evalúan después de las globales y de las nativas, por lo que desplaza a las reglas 1, 2 y 3.</div>
+
+          <div class="aviso">RIGE no lee las aprobaciones permanentes que el desarrollador concedió ante una solicitud de permiso. Una aprobación permanente no revierte una denegación declarada, pero sí evita que una acción sujeta a confirmación vuelva a solicitarla.</div>
+
+          <h2>Variante: comando compuesto</h2>
+          <div class="aviso">Acción: <span class="mono">git add . &amp;&amp; git push</span><br>
+          <b>Comando compuesto:</b> RIGE no informa una decisión, para no dar una respuesta incompleta.</div>
+
+          <div class="fila" style="margin-top:12px"><a class="boton" href="#p5">Ver el hallazgo sobre «plan»</a></div>
+        </div>
+        <aside class="nota">
+          <h3>Nota de validación</h3>
+          <ul>
+            <li>¿La cadena explica el resultado mejor que probar la acción?</li>
+            <li>¿La explicación se entiende sin leer la cadena?</li>
+            <li>¿Es aceptable no responder ante un comando compuesto?</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA 5 ============ -->
+    <section class="pantalla" id="p5">
+      <div class="contenido">
+        <div>
+          <h1>5 · Detalle de un hallazgo</h1>
+          <p class="ayuda">¿Dónde está el problema y por qué ocurre?</p>
+
+          <div class="caja"><b>Declaración que anula una protección nativa</b> · agente <a href="#p3">plan</a></div>
+
+          <h2>Localización</h2>
+          <div class="caja mono">C:\dev\proyecto-ejemplo\opencode.json:18:9<br><br>
+          16 │ "agent": {<br>
+          17 │ &nbsp;&nbsp;"plan": {<br>
+          18 │ &nbsp;&nbsp;&nbsp;&nbsp;"permission": { <b>"edit": "allow"</b> }</div>
+
+          <h2>Causa</h2>
+          <div class="caja">El agente «plan» trae una regla nativa que deniega la edición de archivos. La declaración de la línea 18 se evalúa después de esa regla y la reemplaza, de modo que «plan» puede editar archivos. OpenCode no lo advierte.</div>
+
+          <h2>Regla desplazada</h2>
+          <div class="tabla"><table>
+            <tr><th>Patrón</th><th>Decisión</th><th>Carácter</th></tr>
+            <tr><td class="mono">*</td><td><span class="tachado">deny</span></td><td><span class="marca">nativa del agente</span> · OpenCode 1.18.25</td></tr>
+          </table></div>
+
+          <p class="ayuda">RIGE informa y no corrige: la edición del archivo ocurre fuera de RIGE.</p>
+
+          <div class="navpie">
+            <a class="boton" href="#p2">← Volver a los hallazgos</a>
+            <a class="boton" href="#p1">Analizar otro proyecto</a>
+          </div>
+        </div>
+        <aside class="nota">
+          <h3>Nota de validación</h3>
+          <ul>
+            <li>¿La localización alcanza para ir directo al archivo?</li>
+            <li>¿La causa está explicada en los términos del equipo?</li>
+            <li>¿Termina acá el recorrido, o el equipo seguiría a otro lugar?</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <div class="pie">
+    Preguntas generales para la referente: ¿el recorrido responde las preguntas que el equipo formula? ¿Falta o sobra alguna pantalla? ¿El orden es el que el equipo seguiría?<br>
+    Herramienta auxiliar: Claude Code (Anthropic), empleado en la elaboración del HTML de esta maqueta (artefacto afectado: maqueta del prototipo v0, versión 0.2).
+  </div>
+</div>
+
+<script>
+  var ids = ["p1","p2","p3","p4","p5"];
+  function mostrar() {
+    var id = (location.hash || "#p1").slice(1);
+    if (ids.indexOf(id) < 0) id = "p1";
+    ids.forEach(function (x) { document.getElementById(x).classList.toggle("visible", x === id); });
+    document.querySelectorAll("nav.flujo a").forEach(function (a) { a.classList.toggle("activa", a.getAttribute("href") === "#" + id); });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", mostrar);
+  mostrar();
+  document.getElementById("alternar").addEventListener("click", function () {
+    var oculto = document.body.classList.toggle("sin-notas");
+    this.textContent = oculto ? "Mostrar notas de validación" : "Ocultar notas de validación";
+  });
+</script>
+</body>
+</html>

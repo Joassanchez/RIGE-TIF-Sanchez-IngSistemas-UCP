@@ -37,11 +37,11 @@ Las candidatas descartadas se conservan con su reclasificación, porque el desca
 
 *Tabla 3. Candidatas descartadas con su reclasificación. Fuente: elaboración propia.*
 
-Agente es la única especialización de Elemento porque concentra la cadena de reglas de permiso, la herencia de denegaciones y las instrucciones aplicables, y constituye el eje de la representación, mientras los restantes tipos comparten el tratamiento de resolución y relación.
+Agente es la única especialización de Elemento porque concentra la cadena de reglas de permiso, las denegaciones que se agregan a los subagentes y las instrucciones aplicables, y constituye el eje de la representación, mientras los restantes tipos comparten el tratamiento de resolución y relación.
 
 ### III.2.3 · Modelo del dominio
 
-Las relaciones se enuncian como frases del negocio, se validaron con la referente en la sesión del 26/09/2026 y constan con su multiplicidad en el Anexo V, A.V.4.
+Las relaciones se enuncian como frases del negocio y constan con su multiplicidad en el Anexo V, A.V.4. Once se validan con la referente en la sesión del 26/09/2026, y la relación por la que una declaración origina reglas de permiso, junto con las multiplicidades corregidas, en la extensión del acta del 01/10/2026. La relación entre resolución y elemento se valida en la segunda extensión del acta, del 15/10/2026.
 
 ![Modelo del dominio de RIGE](../figuras/cap-03/figura-modelo-dominio.png){width="6in"}
 
@@ -51,7 +51,7 @@ La relación reflexiva representa los vínculos entre elementos (Tabla 7 del inf
 
 ### III.2.4 · Reglas de negocio y glosario
 
-El dominio se gobierna por trece reglas de negocio: siete de derivación, tres de restricción y tres de existencia, validadas en el acta (Anexo II, A.II.1). El registro completo consta en el Anexo V, A.V.2; la Tabla 4 muestra una regla de cada tipo.
+El dominio se gobierna por trece reglas de negocio: siete de derivación, tres de restricción y tres de existencia. La referente valida su pertinencia y su expresión en el vocabulario del equipo (Anexo II, A.II.1). La corrección de las reglas de derivación se verifica contra OpenCode 1.18.25 mediante la ejecución de escenarios controlados y la lectura del código (Anexo V, A.V.2; relevamiento técnico, Anexo VI). La ejecución del 13/10/2026 corrige RD-05, cuya versión validada el 26/09/2026 era errónea (Anexo III, D-65). La referente confirma la corrección en la segunda extensión del acta del 15/10/2026, que también valida RE-01, RE-03 y RR-02 en su redacción vigente. El registro completo consta en el Anexo V, A.V.2; la Tabla 4 muestra una regla de cada tipo.
 
 | **Cód.** | **Tipo**    | **Enunciado verificable**                                                                                                                                                                         | **Fuente**                        | **Estado**              | **Requisito derivado** |
 |----------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|-------------------------|------------------------|
@@ -61,4 +61,4 @@ El dominio se gobierna por trece reglas de negocio: siete de derivación, tres d
 
 *Tabla 4. Reglas de negocio representativas, una por tipo. Registro completo en el Anexo V. Fuente: elaboración propia.*
 
-El glosario consta en el Anexo V y fija el vocabulario del informe. Con la referente se resuelven dos términos ambiguos: «entrada de configuración», con *source*, capa, alcance, nivel y fuente como sinónimos, y «permiso» para la decisión frente a «regla de permiso» para la declaración que la origina.
+El glosario consta en el Anexo V y fija el vocabulario del informe. Con la referente se resuelven dos términos ambiguos: «entrada de configuración», que reemplaza a *source*, capa, alcance, nivel y fuente, denominaciones de las fuentes que el informe no emplea, y «permiso» para la decisión frente a «regla de permiso» para la regla que la origina, nativa de la herramienta o escrita por el usuario en una declaración.

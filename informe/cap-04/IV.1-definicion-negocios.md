@@ -2,9 +2,9 @@
 
 RIGE ofrece al desarrollador que configura su propio entorno en OpenCode el valor efectivo y la declaración que lo determina, y la decisión de permiso para una acción con su regla determinante (RF-01 y RF-02). El diferencial combina la decisión y la procedencia por declaración (entrada, archivo y posición) sobre OpenCode 1.18.25, junto con los valores implícitos y las declaraciones sin efecto (Anexo III, D-59; apartado IV.3).
 
-El sostenimiento se basa en la licencia MIT, sin explotación comercial ni costo de uso, y en las horas del autor durante el período (apartado V.4). La reutilización del evaluador de permisos conserva la atribución exigida por la licencia MIT de OpenCode (Anexo VII, A.VII.3).
+El sostenimiento se basa en la licencia MIT, sin explotación comercial ni costo de uso, y en las horas del autor durante el período (apartado V.4). La reutilización del evaluador de permisos conserva la atribución exigida por la licencia MIT de OpenCode (Anexo III, D-06 y D-44).
 
-Después de la publicación se prevén dos fuentes de ingreso voluntarias: las donaciones recurrentes mediante GitHub Sponsors, que admite mantenedores residentes en Argentina (GitHub, s. f.-a), y el patrocinio por hito de un desarrollo acotado, como el adaptador de una herramienta adicional. Se descartan el núcleo abierto con funciones pagas, el servicio alojado, la licencia dual, el soporte pago, la inversión y el aporte de la función al propio OpenCode, por las fuerzas del apartado IV.3 y la frontera de uso individual y local (Anexo III, D-31 y A.III.3).
+Después de la publicación se prevén dos fuentes de ingreso voluntarias: las donaciones recurrentes mediante GitHub Sponsors, que admite mantenedores residentes en Argentina (GitHub, s. f.-a), y el patrocinio por hito de un desarrollo acotado, como el adaptador de una herramienta adicional. Se descartan el núcleo abierto con funciones pagas, el servicio alojado, la licencia dual, el soporte pago y la inversión, por las fuerzas del apartado IV.3 y la frontera de uso individual y local (Anexo III, D-31 y A.III.3). El aporte de la función al propio OpenCode se descarta durante el período y queda como salida si la herramienta la incorpora en forma nativa.
 
 El régimen de la Ley N.º 27.506 de Promoción de la Economía del Conocimiento no alcanza al proyecto en el período porque carece de persona jurídica beneficiaria y de explotación comercial.
 
@@ -24,4 +24,4 @@ La Tabla 7 presenta el lienzo de modelo de negocio (Osterwalder y Pigneur, 2019)
 
 *Tabla 7. Lienzo de modelo de negocio de RIGE, con la implicancia de cada bloque sobre el alcance comprometido. Fuente: elaboración propia sobre Osterwalder y Pigneur (2019).*
 
-El lienzo cambia una decisión: la «Propuesta de valor», contrastada con el apartado IV.3, muestra que la procedencia del diferencial carece de verificación y RF-02 incorpora el CA-8, en lugar de conservarla solo en el enunciado (Anexo III, D-59). Además, confirma la circunscripción a OpenCode 1.18.25 (L-05), porque cada adaptador agrega un costo recurrente que ningún ingreso asegura.
+El relevamiento de competidores del 01/10/2026 y el análisis del apartado IV.3 muestran que otras herramientas ya devuelven la regla coincidente sin archivo ni posición. Ese análisis origina el CA-8 de RF-02 (Anexo III, D-59). El lienzo registra esa decisión en la «Propuesta de valor» y en su implicancia. También confirma el límite a OpenCode 1.18.25 (L-05), porque cada adaptador agrega un costo recurrente que ningún ingreso asegura.

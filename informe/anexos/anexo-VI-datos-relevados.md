@@ -2,43 +2,60 @@
 
 ## A.VI.1 · Instrumento de medición: composición de los casos
 
-Cada condición de la Tabla 2 se representa con dos casos equivalentes, identificados con los sufijos \*a\* y \*b\*. La equivalencia se establece por estructura —igual cantidad de entradas involucradas y de distractores— y no por redacción. Ningún caso integra el instrumento si un comando nativo de la herramienta informa a la vez el valor y su procedencia.
+El instrumento mide el procedimiento delegado de consulta de la configuración efectiva de OpenCode 1.18.25. Los ejecutores son el agente `build` nativo, con la skill `customize-opencode` disponible, y una variante experimental del agente de la referente, «[AUX] Charles», ambos con `gpt-6.1-sol`; la tanda adicional P3 emplea `build` con `gpt-5.6-luna`. La medición que ejecuta el autor el 13 y el 14/10/2026 utiliza el contenedor de referencia `rige-linea-base:1.18.25`, basado en Ubuntu 26.04, y k = 3 repeticiones por caso. El ejecutor trabaja como `evaluador`, con configuración propia, y consulta el escenario del usuario `participante` mediante `como-dev`; dispone de la hoja de referencia y de la documentación sin conexión. Charles conserva su instrucción, temperatura y estructura de permisos, con el modelo sustituido por disponibilidad, sin las skills propias del equipo y con las aprobaciones interactivas denegadas. Esta elección mide la delegación relevada y mantiene disponible la ayuda nativa del fabricante; la alternativa de medir el procedimiento manual se desarrolla en el Anexo III, D-41 (ADR-053, ADR-078, ADR-079 y ADR-082).
 
-| **Cód.** | **Condición**                                       | **Entradas involucradas**             | **Pregunta formulada** | **Respuesta verificada** |
-|----------|-----------------------------------------------------|---------------------------------------|------------------------|--------------------------|
-| C-1a     | Declaración única, sin conflicto                    | 1                                     | \[ \]                  | \[ \]                    |
-| C-1b     | Declaración única, sin conflicto                    | 1 + 1 distractor de otro agente       | \[ \]                  | \[ \]                    |
-| C-2a     | Combinación de fuentes de distinta precedencia      | 2                                     | \[ \]                  | \[ \]                    |
-| C-2b     | Combinación de fuentes de distinta precedencia      | 2                                     | \[ \]                  | \[ \]                    |
-| C-3a     | Valor o decisión sin declaración del usuario        | 0 declaradas; valor implícito         | \[ \]                  | \[ \]                    |
-| C-3b     | Valor o decisión sin declaración del usuario        | 0 declaradas; regla nativa            | \[ \]                  | \[ \]                    |
-| C-4a     | Decisión de permiso con reglas en fuentes distintas | 2                                     | \[ \]                  | \[ \]                    |
-| C-4b     | Decisión de permiso con reglas en fuentes distintas | 2, con orden de declaración invertido | \[ \]                  | \[ \]                    |
+| **Código** | **Condición** | **Tipo** | **Pregunta resumida** |
+|---|---|---|---|
+| C-1a | Control | Valor | Modelo de `build` y archivo determinante. |
+| C-1b | Control | Permiso | Decisión al usar `webfetch` con `build` y archivo determinante. |
+| C-1c | Control | Valor | Temperatura de `plan` y archivo determinante. |
+| C-1d | Control | Permiso | Decisión al modificar `src/productos.js` con `build` y archivo determinante. |
+| C-1e | Control | Valor | Temperatura de `build` y archivo determinante. |
+| C-1f | Control | Permiso | Decisión al leer `src/productos.js` con `build`, regla y archivo determinantes. |
+| C-2a | Fusión | Valor | Modelo y temperatura de `build`, con el archivo de cada valor. |
+| C-2b | Fusión | Valor | Modelo de `docs` al trabajar desde `sub/` y archivo determinante. |
+| C-2c | Fusión | Valor | Modelo y temperatura de `revisor`, con la procedencia de cada valor. |
+| C-2d | Fusión | Valor | Modelo de `build` y archivo determinante entre los globales. |
+| C-2e | Fusión | Valor | Modelo de `build` y entrada determinante. |
+| C-2f | Fusión | Valor | Modelo y temperatura de `build`, con la entrada y el archivo de cada valor. |
+| C-3a | Implícito | Valor | Modelo de `plan` y procedencia del valor. |
+| C-3b | Implícito | Permiso | Decisión al leer `.env` con `build` y regla determinante. |
+| C-3c | Implícito | Valor | Modelo de `build` y procedencia del valor sustituido. |
+| C-3d | Implícito | Permiso | Decisión al modificar `README.md` con `plan` y regla determinante. |
+| C-3e | Implícito | Valor | Descripción efectiva de `plan` y procedencia de ese valor. |
+| C-3f | Implícito | Permiso | Decisión para `git status` en el subagente `general` lanzado por `build` y regla determinante. |
+| C-4a | Permisos combinados | Permiso | Decisión para `git status` con `build` y regla determinante. |
+| C-4b | Permisos combinados | Permiso | Decisión para `git diff` con `build` y regla determinante. |
+| C-4c | Permisos combinados | Permiso | Decisión al modificar `src/index.js` con `plan` y regla determinante. |
+| C-4d | Permisos combinados | Permiso | Decisión para `npm install` con `build` y regla determinante. |
+| C-4e | Permisos combinados | Permiso | Decisiones para `webfetch` y edición de `src/productos.js` con `build`, con la regla y entrada de cada una. |
+| C-4f | Permisos combinados | Permiso | Decisión al modificar `src/productos.js` con `build`, regla y entrada determinantes. |
 
-*Tabla A.VI.1. Composición de los ocho casos del instrumento. Fuente: elaboración propia.*
+*Tabla A.VI.1. Composición de los 24 casos de atribución. Fuente: elaboración propia sobre `01-relevamiento/linea-base/respuestas.md`, hoja cerrada el 13/10/2026.*
 
-**Procedimiento de verificación de cada caso.** Antes de la primera sesión, cada caso se verifica ejecutando OpenCode 1.18.25 sobre el escenario correspondiente en un entorno limpio, con directorio de usuario aislado y sin plugins instalados. La verificación registra el comando ejecutado, su salida completa y la fecha, y se conserva como ficha por caso. Un caso cuya respuesta no pueda confirmarse por ejecución no integra el instrumento.
+La respuesta verificada de cada caso consta en `01-relevamiento/linea-base/respuestas.md`. El registro técnico del 13/10/2026 documenta la verificación de los 24 casos contra OpenCode 1.18.25 mediante captura estática y ejecución de las decisiones de permiso con un proveedor simulado local, sin red. La captura de C-2c confirma la fusión del agente en Markdown con el JSON: el modelo procede del primero y la temperatura se conserva del segundo, lo que corrige la lectura de reemplazo completo. La ejecución de C-3f confirma que decide el conjunto de reglas propio de `general` y que la denegación de `bash` del padre queda fuera de ese conjunto; la respuesta se corrige de `deny` a `allow` antes del cierre. La evidencia se conserva en `01-relevamiento/linea-base/verificacion/20261013-captura-estatica/` y `20261013-permisos/`.
 
-**Condición de vigencia.** Los ocho casos se verifican nuevamente antes de la medición final, sobre la misma versión. Si alguno cambiara de resultado, el caso se retira del análisis pareado y se informa el retiro, en lugar de sustituirse por otro.
+El instrumento de modificación contiene una tarea por cada uno de los mismos 24 casos, según ADR-085, con los enunciados en `01-relevamiento/linea-base/modificacion/tareas.md`, cerrados el 14/10/2026. La corrección mecánica compara el estado efectivo posterior con el objetivo y comprueba que los demás valores y decisiones de sondeo del agente objetivo se conserven; los cambios en otros agentes se registran en forma descriptiva. Las variables de entorno permanecen fijas y C-2e admite el impedimento previsto por la hoja. Antes de interpretar cada medición se aplica la validez previa de ADR-079, §2: C-1 conserva todos sus casos por debajo del umbral de problema (al menos dos errores de tres), sus ejecuciones quedan libres de censura y cada ejecución cuenta con resultado y tokens completos. Una ejecución perdida se repite; si resulta irrecuperable, se declara la exclusión del caso del conjunto pareado, y más de dos exclusiones invalidan la medición. Ante invalidez, la regla prescribe corregir la causa instrumental y repetir la línea de base; A.VI.8 documenta la desviación aceptada para modificación (Anexo III, D-41; ADR-086).
 
-## A.VI.2 · Secuencias de presentación
+## A.VI.2 · Ejecución de la medición
 
-El orden de los casos se contrabalancea de modo que ninguna condición ocupe sistemáticamente la misma posición, que los dos casos de una misma condición no resulten consecutivos y que la comparación entre variantes no quede confundida con la mitad de la sesión en que cada una se presenta. Cada participante recibe una secuencia asignada, y en la medición final recibe la misma, condición necesaria para el análisis pareado del apartado I.3.4.
+Cada ejecución comienza con el escenario restaurado y una sesión nueva del agente. Este aislamiento permite medir los casos sin contrabalanceo entre participantes. El autor ejecuta las tandas de la Tabla A.VI.2 con el arnés del repositorio, que registra los pares de caso y repetición; las sondas R y E conservan las definiciones de ADR-089. Las franjas se transcriben de los registros de ejecución del 13 y el 14/10/2026.
 
-| **Secuencia** | **Orden de los ocho casos** | **Participante asignado** |
-|---------------|-----------------------------|---------------------------|
-| S1            | \[ \]                       | \[ \]                     |
-| S2            | \[ \]                       | \[ \]                     |
-| S3            | \[ \]                       | \[ \]                     |
-| S4            | \[ \]                       | \[ \]                     |
-| S5            | \[ \]                       | \[ \]                     |
-| S6            | \[ \]                       | \[ \]                     |
-| S7            | \[ \]                       | \[ \]                     |
-| S8            | \[ \]                       | \[ \]                     |
+| **Tanda** | **Ejecutor y modelo** | **Dimensión** | **Fecha y franja horaria** | **Ejecuciones** | **Observación** |
+|---|---|---|---|---|---|
+| LB principal | `build`, `gpt-6.1-sol` | Atribución | 13/10/2026, 22:07:11 a 22:51:36 | 72 | Completa, k = 3. |
+| LB Charles | Charles, `gpt-6.1-sol` | Atribución | 13/10/2026, 22:52:07 a 23:49:15 | 72 | Completa, k = 3. |
+| LB modificación principal | `build`, `gpt-6.1-sol` | Modificación | 14/10/2026, 14:59 a 16:06 | 72 | Completa. |
+| LB modificación Charles | Charles, `gpt-6.1-sol` | Modificación | 14/10/2026, 16:06 a 17:14 | 64 | Detención por cuota en C-3b:2. |
+| LB modificación Charles, reanudación | Charles, `gpt-6.1-sol` | Modificación | 14/10/2026, 17:54 a 18:02 | 8 | Pares restantes; unión con parámetros y hashes idénticos. |
+| Sonda R | `build` y Charles, `gpt-6.1-sol` | Sonda de atribución | 14/10/2026, 19:37 a 19:43 | 12 (6 por ejecutor) | Pregunta explícita sobre el carácter incorporado de la regla. |
+| Sonda E | `build` y Charles, `gpt-6.1-sol` | Sonda de modificación | 14/10/2026, 19:43 a 21:07 | 24 pares previstos; 19 perdidos | Corte de conectividad con la API; los pares perdidos se registran como sin respuesta. |
+| P3 | `build`, `gpt-5.6-luna` | Atribución | 14/10/2026, 21:07 a 21:41 | 72 | Semilla de la línea de base para comparar por caso. |
+| Sonda E, recuperación | `build` y Charles, `gpt-6.1-sol` | Sonda de modificación | 14/10/2026, 21:41 a 21:56 | 19 | Cada par perdido se reemplaza por su repetición con iguales parámetros (ADR-079, §2). |
 
-*Tabla A.VI.2. Secuencias de contrabalanceo y asignación. Fuente: elaboración propia.*
+*Tabla A.VI.2. Tandas ejecutadas por el autor mediante el arnés de medición, el 13 y el 14/10/2026. Fuente: `01-relevamiento/linea-base/verificacion/20261014-analisis-LB/LEEME.md`, `20261014-analisis-LB-mod/LEEME.md` y `20261014-analisis-sondas-p3/LEEME.md`.*
 
-Cuando la cantidad de participantes no resulta múltiplo de la cantidad de secuencias, las secuencias excedentes se asignan en el orden de la tabla, y el desbalance resultante se informa junto con los resultados.
+Por decisión del autor del 14/10/2026, las sondas se ejecutan ese día antes de P3. Sus carpetas registran la fecha real y sus nombres internos y semilla conservan la fecha prevista originalmente, 20261021. Esta variación del orden y la recuperación por conectividad constan en el registro de las sondas y en ADR-089 (Anexo III, D-41).
 
 ## A.VI.3 · Relevamiento técnico de OpenCode 1.18.25
 
@@ -57,7 +74,7 @@ Documento completo en el repositorio del proyecto, bajo `01-relevamiento/opencod
 | 9       | La herramienta expone trece comandos de introspección; ninguno informa el archivo de origen de un valor ni evalúa una decisión para una acción concreta                                                                          | Ejecución de la familia completa de comandos y análisis de sus salidas                                  | Verificado                                                                             |
 | 10      | El repositorio contiene dos motores de evaluación de permisos; en la versión 1.18.25 la decisión la produce el segundo de ellos, mientras que el comando de resolución por agente presenta las reglas con el formato del primero | Lectura de ambos motores y captura de los eventos de permiso emitidos en ejecución                      | Verificado                                                                             |
 | 11      | Una aprobación permanente conserva el texto literal de la acción aprobada, subsiste entre sesiones y no revierte una denegación declarada, que constituye la única decisión que ninguna aprobación vence                         | Ejecución con agente real y verificación del registro persistido                                        | Verificado; corrige el resultado informado en la versión anterior de este relevamiento |
-| 12      | Un subagente hereda del agente que lo invoca únicamente las reglas de denegación y las de directorio externo; el resto proviene de su propio conjunto, al que se agregan denegaciones implícitas                                 | Lectura del armado de permisos de subagentes y ejecución de escenario controlado                        | Verificado                                                                             |
+| 12      | El subagente se rige por su propio conjunto de reglas, más las denegaciones de task y todowrite; las reglas del agente que lo lanza no se le aplican                                                                             | Lectura del armado de permisos de subagentes en el código del tag 1.18.25 y ejecución de escenario controlado; la ejecución del 13/10/2026 corrige la lectura anterior, que confundía las reglas de la sesión con las del agente (ADR-081) | Verificado                                                                             |
 | 13      | Una sustitución que referencia una variable de entorno no definida se reemplaza por una cadena vacía sin advertencia                                                                                                             | Ejecución de escenario controlado                                                                       | Verificado                                                                             |
 | 14      | Una variable de entorno de configuración con contenido inválido se descarta sin error visible; el descarte solo consta en el archivo de registro                                                                                 | Ejecución de escenario controlado con registro activado                                                 | Verificado                                                                             |
 | 15      | El comando de terminal se descompone en un árbol sintáctico y genera un recurso por sub-comando, de modo que una denegación que alcance a cualquiera de ellos deniega el comando completo                                        | Ejecución de escenarios con encadenamiento, tubería, secuencia y subshell, con verificación sobre disco | Verificado                                                                             |
@@ -196,18 +213,20 @@ La posición expresa el eje horizontal y el vertical, en ese orden. El horizonta
 |-------------------------------------------------------|-----------|
 | Candidatas según el criterio de búsqueda              | 46        |
 | Excluidas por corresponder a pedidos de funcionalidad | 12        |
-| Excluidas por no versar sobre el fenómeno relevado    | 2         |
-| **Incluidas**                                         | **32**    |
+| Excluidas por no versar sobre el fenómeno relevado    | 3         |
+| **Incluidas**                                         | **31**    |
 | Incluidas — abiertas a la fecha de consulta           | 8         |
-| Incluidas — cerradas a la fecha de consulta           | 24        |
+| Incluidas — cerradas a la fecha de consulta           | 23        |
 
 *Tabla A.VI.8. Resultado de la aplicación de los criterios. Fuente: elaboración propia; relevamiento del 17/09/2026.*
+
+La incidencia n.º 32581, incluida en el relevamiento del 17/09/2026, se excluye en la revisión del 09/10/2026 porque su autor declara que corresponde a OpenClaw y no a OpenCode.
 
 **Nómina.** La nómina completa de las 46 incidencias candidatas, con número, título, fecha de apertura, estado, clasificación y motivo de inclusión o exclusión, consta en el repositorio del proyecto bajo `01-relevamiento/opencode/incidencias.md`.
 
 ### Clasificación de las incidencias por mecanismo
 
-El anexo clasifica por mecanismo las 32 incidencias incluidas en el relevamiento documental del repositorio de OpenCode, cuyo criterio de búsqueda, inclusión y exclusión consta en el Anexo VI, A.VI.6. Las categorías corresponden a las condiciones del instrumento de la línea de base (informe de la AE1, Tabla 2), y las incidencias que recaen sobre una exclusión del apartado III.4 se consignan con la exclusión correspondiente. La clasificación se realiza sobre el título de cada incidencia y por un único codificador, límite que se suma a los declarados en el apartado II.6.3. Sustenta la Tabla 9 del apartado IV.3.
+El anexo clasifica por mecanismo las 31 incidencias incluidas en el relevamiento documental del repositorio de OpenCode, cuyo criterio de búsqueda, inclusión y exclusión consta en el Anexo VI, A.VI.6. Las categorías corresponden a las condiciones del instrumento de la línea de base (informe de la AE1, Tabla 2), y las incidencias que recaen sobre una exclusión del apartado III.4 se consignan con la exclusión correspondiente. La clasificación se realiza sobre el título de cada incidencia y por un único codificador, límite que se suma a los declarados en el apartado II.6.3. Sustenta la Tabla 9 del apartado IV.3.
 
 | **N.º** | **Fecha**  | **Estado** | **Título de la incidencia**                                                                       | **Mecanismo**                                |
 |---------|------------|------------|---------------------------------------------------------------------------------------------------|----------------------------------------------|
@@ -228,7 +247,6 @@ El anexo clasifica por mecanismo las 32 incidencias incluidas en el relevamiento
 | 28960   | 23/05/2026 | Cerrada    | mcp config bypasses the "not user-overridable" precedence guarantee for managed/MDM configs       | Fuera de alcance: configuración administrada |
 | 30415   | 02/06/2026 | Cerrada    | v1.15.13 upward config loading causes local mcp sections to shadow/replace global MCP servers     | Fuera del compromiso del período: servidores MCP (RF-14, Could)                   |
 | 31919   | 11/06/2026 | Cerrada    | Per-model npm override in custom provider config is ignored                                       | Precedencia y fusión (C-2)                   |
-| 32581   | 16/06/2026 | Cerrada    | ollama plugin overrides api to native protocol ignoring config api setting                        | Fuera de alcance: código de plugins          |
 | 36416   | 11/07/2026 | Cerrada    | Desktop ignores permission rules in \~/.config/opencode/opencode.jsonc                            | Fuera de alcance: modo de ejecución          |
 | 36663   | 13/07/2026 | Cerrada    | OPENCODE_CONFIG overridden by global agent markdown files (undocumented precedence)               | Precedencia y fusión (C-2)                   |
 | 37155   | 15/07/2026 | Cerrada    | AI agent can escalate its own permissions by modifying opencode.json                              | Decisión de permiso (C-4)                    |
@@ -252,33 +270,64 @@ El anexo clasifica por mecanismo las 32 incidencias incluidas en el relevamiento
 
 ## A.VI.7 · Hoja de respuestas y criterio de corrección
 
-La hoja de respuestas se cierra y se verifica antes de la primera sesión y no se modifica una vez iniciada la medición. Una respuesta es correcta cuando coinciden el valor y su fuente o, en las condiciones de permisos, la decisión y la regla determinante. El acierto parcial —valor o decisión correctos con fuente o regla incorrectas— se computa como error y se registra por separado, dado que expresa la segunda consecuencia acreditada en el apartado I.3.1.
+La hoja de atribución, `01-relevamiento/linea-base/respuestas.md`, queda cerrada el 13/10/2026, después de verificar todos sus casos; desde ese cierre conserva sus respuestas. Una respuesta correcta coincide con el valor y la fuente o con la decisión de permiso y la regla determinante que exige la pregunta. El acierto parcial, con valor o decisión correctos y fuente incorrecta, se registra por separado y cuenta como error, al igual que una respuesta incorrecta o ausente. La corrección se realiza fuera del contenedor, donde permanece la hoja.
 
-| **Cód.**    | **Respuesta verificada** | **Variantes aceptables**                                             | **No aceptable**                                             |
-|-------------|--------------------------|----------------------------------------------------------------------|--------------------------------------------------------------|
-| C-1a a C-4b | \[ \]                    | \[Formas equivalentes de nombrar el mismo archivo o la misma regla\] | \[Identificación de una fuente distinta de la determinante\] |
+ADR-083 precisa el 14/10/2026 la extracción de una decisión escrita en texto libre, después de detectar el defecto de comparación literal y antes de conocer el resultado de la recorrección. Si la respuesta contiene exactamente una decisión distinta entre `allow`, `ask`, `deny` y sus sinónimos de la hoja, el corrector la extrae; las expresiones sin término explícito o con decisiones en conflicto pasan a revisión manual. En C-4e se separan las partes por punto y coma y se aplica la regla a cada una, en el orden de la hoja. Se conservan el texto original, la decisión extraída y la regla aplicada. La regla es mecánica y simétrica entre tandas; las decisiones formuladas con otras palabras se aceptan en la adjudicación si su significado resulta inequívoco.
 
-*Tabla A.VI.10. Estructura de la hoja de respuestas. Fuente: elaboración propia.*
+La readjudicación de ADR-087 emplea un modelo de lenguaje como herramienta de apoyo para preclasificar a ciegas las planillas de respuestas, sin acceso a la clave, a las adjudicaciones previas, a `verificacion/` ni a la identidad del ejecutor. El autor revisa los veredictos contra la hoja y firma la adjudicación que rige. El registro del 14/10/2026 documenta la aceptación sin cambios de las preclasificaciones de las 61 revisiones de la línea de base, las 45 de P3 y las 6 de la sonda R; una ronda anterior con indicaciones distintas queda descartada y conservada. El autor conoce los resultados, por lo que su revisión aporta responsabilidad sobre la adjudicación y conserva la amenaza de falta de independencia. La concordancia mediante kappa de Cohen se informa en A.VI.8.
 
-**Tratamiento de los casos ambiguos.** Si durante la medición un caso resulta ambiguo, se registra como tal y se analiza por separado, sin reinterpretar las respuestas ya clasificadas ni modificar el criterio. La decisión de retirarlo del análisis se toma una sola vez y se informa.
+La enmienda de ADR-087 exige la fuente al nivel de la pregunta: en C-3b, C-3d, C-3f y C-4a a C-4d basta identificar la regla determinante correcta, siempre que la ubicación que eventualmente se atribuya resulte compatible con la hoja. Las demás preguntas mantienen la exigencia de archivo, entrada o procedencia. Esta enmienda se decide el 14/10/2026 después de conocer los datos y afecta la interpretación del criterio, mientras la hoja conserva sus respuestas cerradas. Se adopta porque la pregunta pide la regla; el criterio estricto que además exige su carácter nativo o su archivo se conserva como sensibilidad en A.VI.8 (Anexo III, D-41; ADR-087).
 
-**Límite de observación.** Alcanzado el límite, la respuesta se registra como error con tiempo censurado en el valor del límite. El valor se determina en la prueba piloto conforme al criterio del apartado I.3.2 y queda congelado desde la primera sesión. Valor adoptado: \[ \] s. Resultado de la prueba piloto que lo sustenta: \[ \].
+ADR-082 fija k = 3 antes de medir y suprime el piloto por su consumo de cuota. El diseño establece un tope de 600 s por ejecución del agente, con censura al alcanzarlo. La unidad temporal corresponde a la ejecución; el instrumento mide agentes mediante el procedimiento delegado.
 
 ## A.VI.8 · Registro de la medición
 
-**Protocolo de sesión.** La sesión se administra de manera remota y supervisada, con grabación de pantalla bajo consentimiento informado, sobre una máquina virtual con instalación limpia de OpenCode 1.18.25, restaurada antes de cada sesión y sin acceso a internet, condición que se verifica al inicio y se registra. El cronometraje se inicia al concluir la lectura de la pregunta y finaliza cuando el participante declara haber resuelto la consulta o al alcanzarse el límite. La sesión comprende presentación y consentimiento, capacitación breve sobre el entorno, los ocho casos en la secuencia asignada y cierre.
+Cada ejecución conserva caso, condición, ejecutor, agente, modelo, repetición, clasificación y motivo de corrección, junto con respuesta textual, tokens de entrada, caché y salida, duración, censura, archivos leídos o modificados, invocaciones de herramientas y comandos de introspección. `tanda.json` identifica parámetros, semilla, versión y hashes; `registro.jsonl` contiene una fila por ejecución y `crudo/` conserva las transcripciones y salidas. Los registros del autor del 13 y el 14/10/2026 se encuentran en `01-relevamiento/linea-base/verificacion/20261013-LB-principal-sol/`, `20261013-LB-charles-sol/` y las carpetas del 14/10 identificadas en los LEEME de modificación y sondas. La corrección y las adjudicaciones se vinculan con esas filas y su evidencia.
 
-**Estructura del registro por respuesta.** Participante (código), secuencia, posición del caso en la secuencia, código del caso, condición, tiempo en segundos, censura, clasificación (correcta, parcial, errónea), respuesta textual, comandos de introspección utilizados, consultas a la documentación o a la hoja de referencia, y archivos abiertos.
+**Atribución.** La Tabla A.VI.10 transcribe la adjudicación vigente firmada por el autor el 14/10/2026, obtenida por corrección automática y revisión de las planillas de A.VI.7. Cada tanda comprende 24 casos con tres repeticiones, 72 consultas, de las cuales 54 corresponden a C-2 a C-4. Las dos primeras tandas se ejecutan el 13/10 y P3, el 14/10. La lectura aplica la Tabla 10 del apartado IV.3 de manera independiente de las ramas de ADR-079.
 
-| **Participante** | **Perfil** | **Secuencia** | **Respuestas correctas** | **IB-1 individual** | **Mediana de tiempo** | **Completó la medición final** |
-|------------------|------------|---------------|--------------------------|---------------------|-----------------------|--------------------------------|
-| P01 a P\[N\]     | \[ \]      | \[ \]         | \[ \]                    | \[ \]               | \[ \]                 | \[ \]                          |
+| **Tanda** | **Correctas sobre 72** | **Errores en C-2 a C-4 sobre 54** | **Casos con problema (ADR-079)** | **Rama (ADR-079)** | **Lectura de la Tabla 10** |
+|---|---|---|---|---|---|
+| `build`, `gpt-6.1-sol` | 72/72 | 0/54 | 0 | N | Refuta |
+| Charles, `gpt-6.1-sol` | 70/72 | 2/54, en C-4e | 1 (C-4e, 2 de 3) | P | Confirma |
+| P3, `build`, `gpt-5.6-luna` | 70/72 | 2/54, en C-2b y C-4e | 0 | N | Confirma |
 
-*Tabla A.VI.11. Estructura del registro por participante. Fuente: elaboración propia.*
+*Tabla A.VI.10. Atribución por tanda según la adjudicación del autor del 14/10/2026. Fuente: `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/analisis-LB/informe.md` y `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/analisis-p3/informe.md`.*
 
-**Protección de datos.** Conforme a la Ley N.º 25.326, los participantes se identifican por código; los datos identificatorios se conservan separados de los datos de análisis; las grabaciones se eliminan en el plazo declarado en el consentimiento. Formulario de consentimiento: \[ \].
+**Sensibilidad y concordancia.** El LEEME de la adjudicación informa que, con el criterio estricto anterior a la enmienda de ADR-087, `build` queda en P por C-3b, Charles en P por C-3b, C-3d y C-4e, y P3 en E por seis casos, C-3b, C-3d y C-4a a C-4d. Con el criterio enmendado, las ramas registradas son N, P y N, respectivamente. La Tabla A.VI.11 presenta el cálculo del registro de adjudicación del 14/10/2026 sobre las revisiones manuales, 61 para la línea de base y 45 para P3. Las comparaciones entre criterios distintos miden la sensibilidad al criterio; la evidencia disponible contiene una adjudicación firmada, sin una segunda adjudicación independiente bajo el mismo criterio.
 
-**Resultados.** \[Registro completo pendiente de incorporación, una vez ejecutada la medición.\]
+| **Comparación** | **Universo** | **Acuerdo** | **Kappa de Cohen** |
+|---|---|---|---|
+| Ingeniero, criterio estricto, frente a adjudicación vigente | 61 revisiones de la línea de base | 0,80 | 0,20 |
+| Primera preclasificación frente a adjudicación vigente | 61 revisiones de la línea de base | 0,97 | 0,65 |
+| P3, primera preclasificación estricta, frente a adjudicación vigente | 45 revisiones de P3 | 0,67 | 0,08 |
+
+*Tabla A.VI.11. Concordancia documentada en la adjudicación del autor del 14/10/2026. Fuente: `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/LEEME.md`.*
+
+**Sonda R.** El autor ejecuta el 14/10/2026 las consultas de C-3b y C-3d con una pregunta que explicita si la regla es incorporada o declarada en un archivo, tres repeticiones por caso y ejecutor. La adjudicación vigente registra 12 respuestas correctas de 12. Según la lectura fijada antes de la sonda en ADR-089, la falla original bajo el criterio estricto es dependiente de la redacción. La sonda aporta esta sensibilidad y mantiene separada la línea de base original.
+
+**Modificación.** En las 144 ejecuciones realizadas por el autor el 14/10/2026, sobre los 24 casos con tres repeticiones y los dos ejecutores con `gpt-6.1-sol`, la corrección mecánica registra 128 correctas y 16 sin efecto, ocho por ejecutor. El análisis y la verificación nativa identifican una causa única en cada error: el agente escribe una regla con ruta absoluta y OpenCode evalúa la acción contra la ruta relativa al árbol de trabajo, de modo que el patrón queda sin coincidencia. Los errores corresponden a C-1f y C-3b, tres por ejecutor en cada caso, y C-1d y C-4e, uno por ejecutor en cada caso. En los 16, el agente declara éxito después de consultar `opencode debug agent`; el comando muestra la regla agregada y deja sin evaluar su coincidencia con la acción. La reproducción nativa en `20261014-analisis-LB-mod/verificacion-nativa-ruta/` contrasta la regla absoluta, que mantiene `deny`, con la relativa, que produce `allow`.
+
+La validez previa invalida ambas mediciones por C-1f, con tres errores de tres en cada ejecutor: el control expone el mismo mecanismo que los casos difíciles. A ello se suma que el agente opera desde fuera del árbol del proyecto, condición que puede favorecer el uso de rutas absolutas. ADR-086 acepta después del resultado el informe descriptivo y la conservación de la invalidez, en lugar de reinterpretar la medición como válida; dispone su conservación sin repetir la línea de base porque la verificación ubica la causa en la respuesta del agente. Esta desviación de la repetición prescrita por ADR-079, §2, se desarrolla en el Anexo III, D-41. Los recuentos anteriores describen el conjunto crudo; el análisis excluye C-3f de Charles por el acceso web real de su repetición 2 mediante `curl`. ADR-086 también corrige el falso positivo del detector que tomaba el identificador `$schema` como acceso web y aplica la corrección por igual a todas las tandas.
+
+**Sonda E.** El autor retira la ruta absoluta de la instrucción y ejecuta el 14/10/2026 los cuatro casos que presentan errores de modificación, C-1d, C-1f, C-3b y C-4e, con tres repeticiones por ejecutor. Tras reemplazar los pares perdidos por conectividad, la corrección registra 13 ejecuciones sin efecto de 24, siete de `build` y seis de Charles; la revisión de las llamadas a herramientas confirma en las 13 reglas la ruta absoluta y el éxito declarado falso. Los casos se seleccionan por haber fallado, por lo que la cifra mide persistencia en ese conjunto y no frecuencia en el universo de configuraciones. La lectura fijada por ADR-089 identifica un mecanismo propio del agente en este entorno: persiste al retirar la ruta de la instrucción. El ejecutor sigue fuera del árbol y obtiene la ubicación mediante `como-dev`, amenaza que limita esa lectura.
+
+**Consumo.** El arnés registra los tokens por ejecución y los análisis del 14/10/2026 los valorizan con las tarifas congeladas de A.VI.10. La Tabla A.VI.12 presenta el equivalente a precio de lista informativo, redondeado a centavos, para los universos indicados. La medición utiliza la suscripción ChatGPT Plus; el equivalente expresa consumo valorizado y se distingue del desembolso de la suscripción.
+
+| **Dimensión y ejecutor** | **Universo y fecha de ejecución** | **Equivalente informativo (USD)** |
+|---|---|---|
+| Atribución, `build`, `gpt-6.1-sol` | 72 consultas, 13/10/2026 | 3,84 |
+| Atribución, Charles, `gpt-6.1-sol` | 72 consultas, 13/10/2026 | 4,01 |
+| Atribución P3, `build`, `gpt-5.6-luna` | 72 consultas, 14/10/2026 | 0,55 |
+| Modificación, `build`, `gpt-6.1-sol` | 72 ejecuciones, 14/10/2026 | 4,55 |
+| Modificación, Charles, `gpt-6.1-sol` | 72 ejecuciones crudas, 14/10/2026 | 4,86 |
+| Modificación, Charles, conjunto analizado | 69 ejecuciones, tras excluir C-3f, 14/10/2026 | 4,49 |
+
+*Tabla A.VI.12. Consumo valorizado por el arnés y los análisis de la medición del autor. Fuente: análisis LB y P3 de `20261014-adjudicacion-autor/`, y LEEME e `informe-analizar.md` de `20261014-analisis-LB-mod/`, bajo `01-relevamiento/linea-base/verificacion/`.*
+
+Las tarifas de P3 constan en `01-relevamiento/linea-base/tarifas-congeladas-20261014-p3.json`; el análisis las aplica fuera del contenedor porque la imagen conserva las tarifas del 01/10. El registro aporta evidencia sobre estos casos construidos, ejecutores y modelos de una misma familia; las repeticiones describen su variabilidad y el costo humano de verificar permanece fuera de la medición.
+
+El resultado de atribución lleva a aplicar «Refuta» y a reorientar el problema hacia la verificabilidad del efecto de la configuración (apartado IV.3; Anexo III, D-41; ADR-090).
 
 ## A.VI.9 · Composición de los gráficos previstos
 
@@ -298,7 +347,7 @@ Las tarifas quedan fijadas al 01/10/2026 y se aplican a toda valorización del c
 | `gpt-6-astra` | Secundario, mayor capacidad | 10,00 / 1,00 / 50,00 | 20,00 / 2,00 / 75,00 | 5 a 45 |
 | `gpt-6-luna` | Secundario, menor capacidad | 0,10 / 0,01 / 0,50 | 0,20 / 0,02 / 0,75 | 350 a 3.000 |
 
-*Tabla A.VI.12. Tarifas de referencia congeladas al 01/10/2026, en USD por millón de tokens, nivel Standard. Fuente: OpenAI (s. f.-a, s. f.-b), consultado el 01/10/2026.*
+*Tabla A.VI.13. Tarifas de referencia congeladas al 01/10/2026, en USD por millón de tokens, nivel Standard. Fuente: OpenAI (s. f.-a, s. f.-b), consultado el 01/10/2026.*
 
 Por solicitud, se aplica la tarifa de contexto largo si la entrada total (sin caché más en caché) supera 272 000 tokens y la de contexto corto en caso contrario; el costo = (entrada sin caché × tarifa de entrada + entrada en caché × tarifa de caché + salida × tarifa de salida) / 1 000 000, y el costo de un caso es la suma de sus solicitudes.
 
