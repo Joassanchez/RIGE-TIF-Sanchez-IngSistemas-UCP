@@ -1,0 +1,104 @@
+{
+  "accion": "sonda",
+  "decision": "allow",
+  "regla": "Resultado objetivo sin error y efecto observable acreditado",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "read",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "<path>/home/participante/proyecto/privado</path>\n<type>directory</type>\n<entries>\nMED11_ENTRADA.txt\n\n(1 entries)\n</entries>"
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "filePath": "/home/participante/proyecto/privado"
+        },
+        "output": "<path>/home/participante/proyecto/privado</path>\n<type>directory</type>\n<entries>\nMED11_ENTRADA.txt\n\n(1 entries)\n</entries>",
+        "metadata": {
+          "preview": "MED11_ENTRADA.txt",
+          "truncated": false,
+          "loaded": [],
+          "display": {
+            "type": "directory",
+            "path": "/home/participante/proyecto/privado",
+            "entries": [
+              "MED11_ENTRADA.txt"
+            ],
+            "offset": 1,
+            "totalEntries": 1,
+            "truncated": false
+          }
+        },
+        "title": "privado",
+        "time": {
+          "start": 1792096733162,
+          "end": 1792096733181
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "<path>/home/participante/proyecto/privado</path>\n<type>directory</type>\n<entries>\nMED11_ENTRADA.txt\n\n(1 entries)\n</entries>"
+      },
+      {
+        "status": "completed",
+        "input": {
+          "filePath": "/home/participante/proyecto/privado"
+        },
+        "output": "<path>/home/participante/proyecto/privado</path>\n<type>directory</type>\n<entries>\nMED11_ENTRADA.txt\n\n(1 entries)\n</entries>",
+        "metadata": {
+          "preview": "MED11_ENTRADA.txt",
+          "truncated": false,
+          "loaded": [],
+          "display": {
+            "type": "directory",
+            "path": "/home/participante/proyecto/privado",
+            "entries": [
+              "MED11_ENTRADA.txt"
+            ],
+            "offset": 1,
+            "totalEntries": 1,
+            "truncated": false
+          }
+        },
+        "title": "privado",
+        "time": {
+          "start": 1792096733162,
+          "end": 1792096733181
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "read",
+    "privado"
+  ],
+  "evidencia_archivo": "ingenua_list/captura.oraculo-ejecucion/0/clasificacion.json"
+}

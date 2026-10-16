@@ -1,0 +1,42 @@
+[
+  {
+    "archivo": "herramientas/medir-med9c-paralelo.sh",
+    "codigo": 0,
+    "salida": ""
+  },
+  {
+    "archivo": "vm/caso.sh",
+    "codigo": 0,
+    "salida": ""
+  },
+  {
+    "archivo": "vm/contenedor.sh",
+    "codigo": 0,
+    "salida": ""
+  },
+  {
+    "archivo": "vm/instalar.sh",
+    "codigo": 0,
+    "salida": ""
+  },
+  {
+    "archivo": "vm/medir.sh",
+    "codigo": 0,
+    "salida": ""
+  },
+  {
+    "archivo": "vm/permisos.sh",
+    "codigo": 0,
+    "salida": ""
+  },
+  {
+    "archivo": "vm/verificar.sh",
+    "codigo": 0,
+    "salida": ""
+  },
+  {
+    "archivo": "vm/Dockerfile (RUN, solo sintaxis)",
+    "codigo": 0,
+    "salida": ""
+  }
+]

@@ -12,7 +12,11 @@
           "configuraci?n: cambio sint?tico de ensayo"
         ],
         "impedimento": ""
-      }
+      },
+      "lecturas": [
+        "/home/evaluador/tarea/hoja-referencia.md",
+        "/home/evaluador/tarea/docs/permissions.html"
+      ]
     },
     "M-2": {
       "archivos": {
@@ -156,6 +160,258 @@
         "hecho": true,
         "cambios": [
           "configuraci?n: cambio sint?tico de ensayo"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-1": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-2": {
+      "archivos": {
+        "P/.opencode/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"webfetch\": \"allow\"\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-3": {
+      "archivos": {
+        "P/.opencode/agent/auditor.md": "---\ndescription: Auditor del equipo\nmode: primary\npermission:\n  bash: \n    \"*\": deny\n    \"npm test\": allow\n---\n\nAuditá el proyecto.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-4": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"bash\": {\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-5": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"allow\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-6": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"git push *\": \"deny\"\n    },\n    \"read\": {\n      \"secretos.txt\": \"deny\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-7": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"secretos.txt\": \"deny\"\n        },\n        \"grep\": \"deny\",\n        \"bash\": \"deny\",\n        \"task\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "S-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "S-2": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"rm *\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "S-3": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-9": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"tools\": {\n        \"bash\": false\n      },\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"allow\",\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-10": {
+      "archivos": {
+        "P/.opencode/agent/habilidades.md": "---\ndescription: Agente del equipo\nmode: primary\npermission:\n  skill:\n    med11-interna: deny\n---\nConsultá los procedimientos del equipo.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-11": {
+      "archivos": {
+        "G/opencode.jsonc": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-12": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Inspecciona el inventario\",\n      \"permission\": {\n        \"edit\": \"deny\",\n        \"bash\": \"deny\",\n        \"task\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-13": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"write\": \"deny\",\n        \"edit\": {\n          \"src/productos.js\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-14": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"list\": \"deny\",\n        \"read\": {\n          \"privado\": \"deny\",\n          \"privado/\": \"deny\",\n          \"privado/*\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-15": {
+      "archivos": {
+        "P/.opencode/agent/build.md": "---\ndescription: Desarrollo del equipo\nmode: primary\npermission:\n  edit: deny\n---\nDesarrollá el inventario.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-5": {
+      "archivos": {
+        "G/agents/docs_global.md": "---\ndescription: Documentación del equipo\nmode: primary\nmodel: google/gemini-2.5-flash\n---\nDocumentá el inventario.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-6": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Equipo de inventario\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-7": {
+      "archivos": {
+        "P/.opencode/agent/guia.md": "---\ndescription: Guía de auditoría\nmode: primary\nprompt: MED11_PROMPT_INICIAL\n---\nRevisá el inventario y señalá inconsistencias.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-8": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"guia\": {\n      \"mode\": \"primary\",\n      \"temperature\": 0.2,\n      \"prompt\": \"{file:./reglas.md}\",\n      \"instructions\": [\n        \"reglas.md\"\n      ]\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "fixture MED-11 ampliada"
         ],
         "impedimento": ""
       }

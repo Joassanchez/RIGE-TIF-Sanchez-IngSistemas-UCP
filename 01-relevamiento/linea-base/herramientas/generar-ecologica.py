@@ -25,6 +25,9 @@ def cargar(path, nombre):
 def generar(origen):
     origen = Path(origen)
     tareas = cargar(origen / 'espec.py', 'espec_ecologica').T
+    candidatas = [c for c, t in tareas.items() if c.startswith(('N-', 'S-')) or t.get('candidato')]
+    if len(candidatas) + 1 > 23:  # Incluye N-8 retirada.
+        raise ValueError('La ampliación ADR-095 supera el tope autorizado de 23 candidatos.')
     corpus = cargar(origen / 'corpus.py', 'corpus_ecologica').E
     hojas = {d: (origen / f).read_text(encoding='utf-8') for d, f in
              [('ecologica', 'tareas.md'), ('deteccion', 'deteccion.md')]}
@@ -39,13 +42,17 @@ def generar(origen):
         # Lista de inclusión: ninguna variante, clasificación, objetivo ni guarda.
         publico['dimensiones'][dimension] = {
             tid: dict(archivos=t['archivos'], env=t.get('env', {}),
-                      directorio=t.get('DIR', ''), tarea=t.get('tarea', ''),
+                      directorio=t.get('directorio', t.get('DIR', '')), tarea=t.get('tarea', ''),
                       instruccion=instruccion.replace('{TAREA}', t.get('tarea', '')))
             for tid, t in escenarios.items()}
-        campos = ('objetivo', 'guardas', 'valor') if dimension == 'ecologica' else ('items',)
+        campos = ('objetivo', 'objetivos_adicionales', 'guardas', 'guardas_archivos', 'guardas_valor',
+                  'valor', 'mecanismo', 'origen', 'candidato') if dimension == 'ecologica' else ('items',)
         respuestas[dimension] = dict(version=1, dimension=dimension, hoja_cerrada=cerrado,
             hashes_fuentes=hashes, casos={tid: {k: t[k] for k in campos if k in t}
                                           for tid, t in escenarios.items()})
+        if dimension == 'ecologica':
+            respuestas[dimension].update(adr='ADR-095', exploratoria=True, hoja_cerrada=False,
+                admision='pendiente de verificación nativa sin agente')
     # El resultado en memoria tiene el mismo esquema JSON (también las tuplas).
     return tuple(json.loads(json.dumps(x)) for x in (publico, respuestas['ecologica'], respuestas['deteccion']))
 
@@ -56,8 +63,19 @@ def main():
     p.add_argument('--destino', type=Path, required=True)
     a = p.parse_args()
     a.destino.mkdir(parents=True, exist_ok=True)
-    for nombre, datos in zip(('escenarios.json', 'respuestas-ecologica.json', 'respuestas-deteccion.json'), generar(a.origen)):
+    generados = generar(a.origen)
+    for nombre, datos in zip(('escenarios.json', 'respuestas-ecologica.json', 'respuestas-deteccion.json'), generados):
         (a.destino / nombre).write_text(json.dumps(datos, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    manifiesto = dict(adr='ADR-095', estado='pendiente de admisión nativa',
+        k=1, tareas=list(generados[0]['dimensiones']['ecologica']),
+        retiradas={'N-8': 'Sin inicializador determinista verificado de aprobaciones persistidas en el esquema archivos/env.'},
+        valores={t['candidato']: c for c, t in generados[1]['casos'].items() if 'valor' in t and 'candidato' in t},
+        tope_candidatos=23,
+        candidatos_activos=[c for c, t in generados[1]['casos'].items() if c.startswith(('N-', 'S-')) or t.get('candidato')],
+        hashes_fuentes=generados[1]['hashes_fuentes'],
+        hashes_generados={n: hashlib.sha256((a.destino / n).read_bytes()).hexdigest()
+                         for n in ('escenarios.json', 'respuestas-ecologica.json', 'respuestas-deteccion.json')})
+    (a.destino / 'exploracion.json').write_text(json.dumps(manifiesto, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
 if __name__ == '__main__':

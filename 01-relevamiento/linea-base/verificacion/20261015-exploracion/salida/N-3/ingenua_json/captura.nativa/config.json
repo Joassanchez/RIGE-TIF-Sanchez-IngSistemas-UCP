@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "auditor": {
+      "temperature": 0.2,
+      "permission": {
+        "bash": "deny",
+        "edit": "deny"
+      },
+      "options": {},
+      "name": "auditor",
+      "description": "Auditor del equipo",
+      "mode": "primary",
+      "prompt": "Auditá el proyecto."
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

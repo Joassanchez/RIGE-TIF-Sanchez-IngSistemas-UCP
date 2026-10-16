@@ -1,0 +1,37 @@
+timestamp=2026-10-15T20:31:55.975Z level=INFO run=382eeca8 message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-15T20:31:55.979Z level=INFO run=382eeca8 message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-15T20:31:56.044Z level=INFO run=382eeca8 message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-15T20:31:56.051Z level=INFO run=382eeca8 message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-15T20:31:56.061Z level=INFO run=382eeca8 message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-15T20:31:56.063Z level=INFO run=382eeca8 message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-15T20:31:56.068Z level=INFO run=382eeca8 message=loading path=/tmp/med9-oraculo-atwugewz/proveedor.json
+timestamp=2026-10-15T20:31:56.082Z level=INFO run=382eeca8 message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-15T20:31:56.195Z level=INFO run=382eeca8 message="all LSPs are disabled"
+timestamp=2026-10-15T20:31:56.197Z level=INFO run=382eeca8 message="all formatters are disabled"
+timestamp=2026-10-15T20:31:56.198Z level=INFO run=382eeca8 message=init
+timestamp=2026-10-15T20:31:56.355Z level=INFO run=382eeca8 message=created id=ses_ebebc543dffe4gpEYKzy4mdqCZ slug=tidy-rocket version=1.18.25 projectID=cf34132393a31d9c73905c509eaaac902b7b0ef3 directory=/home/participante/proyecto path="" workspaceID=undefined parentID=undefined title="New session - 2026-10-15T20:31:56.354Z" agent=undefined model=undefined metadata=undefined permission="[{\"permission\":\"question\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_enter\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_exit\",\"pattern\":\"*\",\"action\":\"deny\"}]" cost=0 tokens.input=0 tokens.output=0 tokens.reasoning=0 tokens.cache.read=0 tokens.cache.write=0 time.created=1792096316355 time.updated=1792096316355
+timestamp=2026-10-15T20:31:56.381Z level=INFO run=382eeca8 message="event connected"
+timestamp=2026-10-15T20:31:57.034Z level=INFO run=382eeca8 message=loop session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ step=0
+timestamp=2026-10-15T20:31:57.066Z level=INFO run=382eeca8 message=stream providerID=simulado modelID=permisos session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ small=true agent=title mode=primary
+timestamp=2026-10-15T20:31:57.100Z level=INFO run=382eeca8 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-15T20:31:57.293Z level=INFO run=382eeca8 message=initialized
+timestamp=2026-10-15T20:31:57.363Z level=INFO run=382eeca8 message=tracking hash=4ea0f2f3c784ad9e52616c5fcd93be1cbfe61266 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/cf34132393a31d9c73905c509eaaac902b7b0ef3/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:31:57.374Z level=INFO run=382eeca8 message="shell tool using shell" shell=/bin/bash
+timestamp=2026-10-15T20:31:57.386Z level=INFO run=382eeca8 message=init count=1
+timestamp=2026-10-15T20:31:57.526Z level=INFO run=382eeca8 message="watcher backend" directory=/home/participante/proyecto platform=linux backend=inotify
+timestamp=2026-10-15T20:31:57.536Z level=INFO run=382eeca8 message="project copy refresh started" projectID=cf34132393a31d9c73905c509eaaac902b7b0ef3
+timestamp=2026-10-15T20:31:57.907Z level=INFO run=382eeca8 message="project copy refresh done" projectID=cf34132393a31d9c73905c509eaaac902b7b0ef3 updated=[] removed=[]
+timestamp=2026-10-15T20:31:57.926Z level=INFO run=382eeca8 message="booting location services" directory=/home/participante/proyecto workspaceID=undefined
+timestamp=2026-10-15T20:31:57.938Z level=INFO run=382eeca8 message=process session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ messageID=msg_14143ae70001dW4CjWIJ3zZyJ1
+timestamp=2026-10-15T20:31:57.941Z level=INFO run=382eeca8 message=stream providerID=simulado modelID=permisos session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ small=false agent=build mode=primary
+timestamp=2026-10-15T20:31:57.944Z level=INFO run=382eeca8 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-15T20:31:58.014Z level=INFO run=382eeca8 message=tracking hash=4ea0f2f3c784ad9e52616c5fcd93be1cbfe61266 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/cf34132393a31d9c73905c509eaaac902b7b0ef3/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:31:58.044Z level=INFO run=382eeca8 message=loop session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ step=1
+timestamp=2026-10-15T20:31:58.085Z level=INFO run=382eeca8 message=tracking hash=4ea0f2f3c784ad9e52616c5fcd93be1cbfe61266 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/cf34132393a31d9c73905c509eaaac902b7b0ef3/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:31:58.100Z level=INFO run=382eeca8 message=process session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ messageID=msg_14143b25f0013hbH0YEDwYzdMx
+timestamp=2026-10-15T20:31:58.102Z level=INFO run=382eeca8 message=stream providerID=simulado modelID=permisos session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ small=false agent=build mode=primary
+timestamp=2026-10-15T20:31:58.104Z level=INFO run=382eeca8 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-15T20:31:58.163Z level=INFO run=382eeca8 message=tracking hash=4ea0f2f3c784ad9e52616c5fcd93be1cbfe61266 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/cf34132393a31d9c73905c509eaaac902b7b0ef3/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:31:58.198Z level=INFO run=382eeca8 message=loop session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ step=2
+timestamp=2026-10-15T20:31:58.199Z level=INFO run=382eeca8 message="exiting loop" session.id=ses_ebebc543dffe4gpEYKzy4mdqCZ
+timestamp=2026-10-15T20:31:58.208Z level=INFO run=382eeca8 message="disposing instance" directory=/home/participante/proyecto

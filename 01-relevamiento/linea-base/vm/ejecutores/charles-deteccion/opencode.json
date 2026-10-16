@@ -1,11 +1,12 @@
 {
   "permission": {
     "edit": "deny",
-    "webfetch": "deny",
+    "webfetch": "allow",
     "websearch": "deny",
     "doom_loop": "deny",
     "external_directory": {
       "*": "deny",
+      "/home/evaluador/tarea/*": "allow",
       "/home/participante/.config/opencode/*": "allow"
     },
     "skill": {

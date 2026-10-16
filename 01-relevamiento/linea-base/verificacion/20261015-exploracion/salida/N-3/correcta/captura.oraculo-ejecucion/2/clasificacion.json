@@ -1,0 +1,72 @@
+{
+  "accion": "sonda",
+  "decision": "deny",
+  "regla": "Resultado objetivo contiene el texto de denegación por regla",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "bash",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"bash\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"bash\",\"pattern\":\"npm test\",\"action\":\"allow\"}]"
+      }
+    ],
+    "estados": [
+      {
+        "status": "error",
+        "input": {
+          "command": "ls",
+          "description": "Sonda local MED-9"
+        },
+        "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"bash\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"bash\",\"pattern\":\"npm test\",\"action\":\"allow\"}]",
+        "time": {
+          "start": 1792095013416,
+          "end": 1792095013499
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch"
+    ],
+    "efecto": false,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"bash\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"bash\",\"pattern\":\"npm test\",\"action\":\"allow\"}]"
+      },
+      {
+        "status": "error",
+        "input": {
+          "command": "ls",
+          "description": "Sonda local MED-9"
+        },
+        "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"bash\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"bash\",\"pattern\":\"npm test\",\"action\":\"allow\"}]",
+        "time": {
+          "start": 1792095013416,
+          "end": 1792095013499
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "auditor",
+    "bash",
+    "ls"
+  ],
+  "evidencia_archivo": "correcta/captura.oraculo-ejecucion/2/clasificacion.json"
+}

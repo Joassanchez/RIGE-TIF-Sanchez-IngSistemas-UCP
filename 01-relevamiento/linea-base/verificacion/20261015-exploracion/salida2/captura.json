@@ -1,0 +1,37 @@
+{
+  "casos": [
+    "N-7",
+    "N-9",
+    "N-10",
+    "N-11",
+    "N-12",
+    "N-13",
+    "N-14",
+    "N-15",
+    "V-5",
+    "V-6",
+    "V-7",
+    "V-8",
+    "S-1",
+    "S-2",
+    "S-3"
+  ],
+  "errores": [
+    {
+      "tarea": "N-10",
+      "variante": "base",
+      "archivo": "N-10/base/error.txt"
+    },
+    {
+      "tarea": "N-10",
+      "variante": "correcta",
+      "archivo": "N-10/correcta/error.txt"
+    },
+    {
+      "tarea": "N-10",
+      "variante": "ingenua_frontmatter",
+      "archivo": "N-10/ingenua_frontmatter/error.txt"
+    }
+  ],
+  "hash_espec": "a40367706dd4b171f80c9172f95502ce353ebeefc4e9747dac29d20a8c71f8e7"
+}

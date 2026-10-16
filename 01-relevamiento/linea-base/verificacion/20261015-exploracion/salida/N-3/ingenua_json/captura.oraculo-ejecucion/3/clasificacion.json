@@ -1,0 +1,57 @@
+{
+  "accion": "sonda",
+  "decision": "deny",
+  "regla": "La herramienta objetivo no fue ofrecida en su sesión; hay retorno de la llamada fija",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_1",
+    "herramienta": "edit",
+    "etapa": "principal",
+    "solicitudes": 4,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_1",
+        "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'edit'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch."
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "tool": "edit",
+          "error": "Model tried to call unavailable tool 'edit'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch."
+        },
+        "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'edit'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch.",
+        "metadata": {
+          "truncated": false
+        },
+        "title": "Invalid Tool",
+        "time": {
+          "start": 1792095045395,
+          "end": 1792095045397
+        }
+      }
+    ],
+    "toolsOffered": [
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch"
+    ],
+    "efecto": false,
+    "detalleEfecto": "MED9_5c796694e70c\n",
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "auditor",
+    "edit",
+    "src/index.js"
+  ],
+  "evidencia_archivo": "ingenua_json/captura.oraculo-ejecucion/3/clasificacion.json"
+}

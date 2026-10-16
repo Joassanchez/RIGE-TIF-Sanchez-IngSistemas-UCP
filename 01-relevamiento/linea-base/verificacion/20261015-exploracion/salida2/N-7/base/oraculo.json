@@ -1,0 +1,484 @@
+{
+  "[\"build\", \"read\", \"secretos.txt\"]": {
+    "accion": "sonda",
+    "decision": "deny",
+    "regla": "Resultado objetivo contiene el texto de denegación por regla",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"read\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"*.env\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.*\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.example\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"secretos.txt\",\"action\":\"deny\"}]"
+        }
+      ],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/secretos.txt"
+          },
+          "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"read\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"*.env\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.*\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.example\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"secretos.txt\",\"action\":\"deny\"}]",
+          "time": {
+            "start": 1792096072736,
+            "end": 1792096072748
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"read\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"*.env\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.*\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.example\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"secretos.txt\",\"action\":\"deny\"}]"
+        },
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/secretos.txt"
+          },
+          "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"read\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"*.env\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.*\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.example\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"secretos.txt\",\"action\":\"deny\"}]",
+          "time": {
+            "start": 1792096072736,
+            "end": 1792096072748
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "secretos.txt"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/0/clasificacion.json"
+  },
+  "[\"build\", \"grep\", \"SECRETO_FICTICIO\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "grep",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "Found 1 matches\n/home/participante/proyecto/secretos.txt:\n  Line 1: SECRETO_FICTICIO_MED9_e20383b455dd\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "pattern": "SECRETO_FICTICIO",
+            "path": "/home/participante/proyecto",
+            "include": "secretos.txt"
+          },
+          "output": "Found 1 matches\n/home/participante/proyecto/secretos.txt:\n  Line 1: SECRETO_FICTICIO_MED9_e20383b455dd\n",
+          "metadata": {
+            "matches": 1,
+            "truncated": false
+          },
+          "title": "SECRETO_FICTICIO",
+          "time": {
+            "start": 1792096078885,
+            "end": 1792096078920
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "Found 1 matches\n/home/participante/proyecto/secretos.txt:\n  Line 1: SECRETO_FICTICIO_MED9_e20383b455dd\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "pattern": "SECRETO_FICTICIO",
+            "path": "/home/participante/proyecto",
+            "include": "secretos.txt"
+          },
+          "output": "Found 1 matches\n/home/participante/proyecto/secretos.txt:\n  Line 1: SECRETO_FICTICIO_MED9_e20383b455dd\n",
+          "metadata": {
+            "matches": 1,
+            "truncated": false
+          },
+          "title": "SECRETO_FICTICIO",
+          "time": {
+            "start": 1792096078885,
+            "end": 1792096078920
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "grep",
+      "SECRETO_FICTICIO"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/1/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"cat secretos.txt\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "SECRETO_FICTICIO_MED9_a7781e4790d9\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "cat secretos.txt",
+            "description": "Lectura local MED-11"
+          },
+          "output": "SECRETO_FICTICIO_MED9_a7781e4790d9\n",
+          "metadata": {
+            "output": "SECRETO_FICTICIO_MED9_a7781e4790d9\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "cat secretos.txt",
+          "time": {
+            "start": 1792096084949,
+            "end": 1792096084954
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "SECRETO_FICTICIO_MED9_a7781e4790d9\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "cat secretos.txt",
+            "description": "Lectura local MED-11"
+          },
+          "output": "SECRETO_FICTICIO_MED9_a7781e4790d9\n",
+          "metadata": {
+            "output": "SECRETO_FICTICIO_MED9_a7781e4790d9\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "cat secretos.txt",
+          "time": {
+            "start": 1792096084949,
+            "end": 1792096084954
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "cat secretos.txt"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/2/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"src/index.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_5d275fb4efae",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/index.js",
+              "text": "MED9_5d275fb4efae",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792096090751,
+            "end": 1792096090791
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_5d275fb4efae",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/index.js",
+              "text": "MED9_5d275fb4efae",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792096090751,
+            "end": 1792096090791
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "src/index.js"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/3/clasificacion.json"
+  },
+  "[\"build\", \"edit\", \"src/index.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_1",
+      "herramienta": "edit",
+      "etapa": "principal",
+      "solicitudes": 4,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_1",
+          "content": "Edit applied successfully."
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "oldString": "MED9_3b3e23cf0989\n",
+            "newString": "MED9_3b3e23cf0989_EDIT\n"
+          },
+          "output": "Edit applied successfully.",
+          "metadata": {
+            "diagnostics": {},
+            "diff": "Index: /home/participante/proyecto/src/index.js\n===================================================================\n--- /home/participante/proyecto/src/index.js\n+++ /home/participante/proyecto/src/index.js\n@@ -1,1 +1,1 @@\n-MED9_3b3e23cf0989\n+MED9_3b3e23cf0989_EDIT\n",
+            "filediff": {
+              "file": "/home/participante/proyecto/src/index.js",
+              "patch": "Index: /home/participante/proyecto/src/index.js\n===================================================================\n--- /home/participante/proyecto/src/index.js\n+++ /home/participante/proyecto/src/index.js\n@@ -1,1 +1,1 @@\n-MED9_3b3e23cf0989\n+MED9_3b3e23cf0989_EDIT\n",
+              "additions": 1,
+              "deletions": 1
+            },
+            "truncated": false
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792096096872,
+            "end": 1792096096879
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": "MED9_3b3e23cf0989_EDIT\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "edit",
+      "src/index.js"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/4/clasificacion.json"
+  },
+  "[\"build\", \"webfetch\", \"https://example.com\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "webfetch",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_c0ec851b18b8"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "url": "http://127.0.0.1:33829/evidencia/MED9_c0ec851b18b8",
+            "format": "text"
+          },
+          "output": "MED9_c0ec851b18b8",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "http://127.0.0.1:33829/evidencia/MED9_c0ec851b18b8 (text/plain; charset=utf-8)",
+          "time": {
+            "start": 1792096102708,
+            "end": 1792096102714
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "evento": "efecto_http",
+          "hora": 1792096102.7085073,
+          "ruta": "/evidencia/MED9_c0ec851b18b8",
+          "token": "MED9_c0ec851b18b8"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "webfetch",
+      "https://example.com"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/5/clasificacion.json"
+  }
+}

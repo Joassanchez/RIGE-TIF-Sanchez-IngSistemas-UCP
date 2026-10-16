@@ -1,0 +1,396 @@
+{
+  "[\"build\", \"read\", \"privado\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/privado</path>\n<type>directory</type>\n<entries>\nMED11_ENTRADA.txt\n\n(1 entries)\n</entries>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/privado"
+          },
+          "output": "<path>/home/participante/proyecto/privado</path>\n<type>directory</type>\n<entries>\nMED11_ENTRADA.txt\n\n(1 entries)\n</entries>",
+          "metadata": {
+            "preview": "MED11_ENTRADA.txt",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "directory",
+              "path": "/home/participante/proyecto/privado",
+              "entries": [
+                "MED11_ENTRADA.txt"
+              ],
+              "offset": 1,
+              "totalEntries": 1,
+              "truncated": false
+            }
+          },
+          "title": "privado",
+          "time": {
+            "start": 1792096674751,
+            "end": 1792096674769
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/privado</path>\n<type>directory</type>\n<entries>\nMED11_ENTRADA.txt\n\n(1 entries)\n</entries>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/privado"
+          },
+          "output": "<path>/home/participante/proyecto/privado</path>\n<type>directory</type>\n<entries>\nMED11_ENTRADA.txt\n\n(1 entries)\n</entries>",
+          "metadata": {
+            "preview": "MED11_ENTRADA.txt",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "directory",
+              "path": "/home/participante/proyecto/privado",
+              "entries": [
+                "MED11_ENTRADA.txt"
+              ],
+              "offset": 1,
+              "totalEntries": 1,
+              "truncated": false
+            }
+          },
+          "title": "privado",
+          "time": {
+            "start": 1792096674751,
+            "end": 1792096674769
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "privado"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/0/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"src/index.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_5d275fb4efae",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/index.js",
+              "text": "MED9_5d275fb4efae",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792096681111,
+            "end": 1792096681137
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_5d275fb4efae",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/index.js",
+              "text": "MED9_5d275fb4efae",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792096681111,
+            "end": 1792096681137
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "src/index.js"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/1/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"README.md\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/README.md"
+          },
+          "output": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_060bb03ff506",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/README.md",
+              "text": "MED9_060bb03ff506",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "README.md",
+          "time": {
+            "start": 1792096687768,
+            "end": 1792096687826
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/README.md"
+          },
+          "output": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_060bb03ff506",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/README.md",
+              "text": "MED9_060bb03ff506",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "README.md",
+          "time": {
+            "start": 1792096687768,
+            "end": 1792096687826
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "README.md"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/2/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"ls\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "README.md\nopencode.json\npackage.json\nprivado\nsrc\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "ls",
+            "description": "Sonda local MED-9"
+          },
+          "output": "README.md\nopencode.json\npackage.json\nprivado\nsrc\n",
+          "metadata": {
+            "output": "README.md\nopencode.json\npackage.json\nprivado\nsrc\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "ls",
+          "time": {
+            "start": 1792096694255,
+            "end": 1792096694262
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "README.md\nopencode.json\npackage.json\nprivado\nsrc\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "ls",
+            "description": "Sonda local MED-9"
+          },
+          "output": "README.md\nopencode.json\npackage.json\nprivado\nsrc\n",
+          "metadata": {
+            "output": "README.md\nopencode.json\npackage.json\nprivado\nsrc\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "ls",
+          "time": {
+            "start": 1792096694255,
+            "end": 1792096694262
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "ls"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/3/clasificacion.json"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "cat secretos.txt",
+            "description": "Lectura local MED-11"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "salida",
+        "token": "SECRETO_FICTICIO_MED9_a7781e4790d9"
+      }
+    }
+  ]
+}

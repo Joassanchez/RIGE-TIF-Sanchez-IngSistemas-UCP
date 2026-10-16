@@ -140,6 +140,241 @@ T["V-4"] = dict(
     tarea=f"Hacé que el agente `docs` use el modelo `{M}`. Las demás opciones de `docs` no deben cambiar.",
     valor=("docs", "model", M), variantes={"correcta": {"P/.opencode/agent/docs.md": f"---\ndescription: Redacta documentación\nmode: primary\nmodel: {M}\n---\n\nRedactá la documentación.\n"}})
 
+# ---------- Exploración MED-11 (ADR-095): pendientes de admisión nativa ----------
+# Las tareas anteriores se conservan literalmente. Los objetivos adicionales
+# son conjunciones: no alcanza con bloquear una sola vía de acceso.
+T["N-1"] = dict(
+    mecanismo="posición heredada al fusionar capas",
+    archivos={"G/opencode.json": j({"permission": {"bash": {"npm test": "deny", "*": "allow"}}})},
+    tarea="Hacé que el agente `build` pida aprobación para ejecutar `npm test`. Los demás permisos de `build` no deben cambiar.",
+    objetivo=("build", "bash", "npm test", "ask"),
+    guardas=[("build", "bash", "npm install"), ("build", "bash", "ls")],
+    variantes={
+        "correcta": {"G/opencode.json": j({"permission": {"bash": {"*": "allow", "npm test": "ask"}}})},
+        "ingenua_merge": {"P/opencode.json": j({"permission": {"bash": {"npm test": "ask"}}})},
+        "ingenua_amplia": {"P/opencode.json": j({"permission": {"bash": "ask"}})},
+    })
+T["N-2"] = dict(
+    mecanismo="precedencia de .opencode anidados", directorio="sub",
+    archivos={"P/.opencode/opencode.json": j({"permission": {"webfetch": "deny"}}),
+              "P/sub/.opencode/opencode.json": j({"permission": {"webfetch": "ask"}})},
+    tarea="Hacé que el agente `build` pueda consultar páginas web sin pedir aprobación desde este directorio. Los demás permisos de `build` no deben cambiar.",
+    objetivo=("build", "webfetch", "https://example.com", "allow"),
+    guardas=[("build", "read", "src/index.js"), ("build", "bash", "ls")],
+    variantes={
+        "correcta": {"P/.opencode/opencode.json": j({"permission": {"webfetch": "allow"}})},
+        "ingenua_cercana": {"P/sub/.opencode/opencode.json": j({"permission": {"webfetch": "allow"}})},
+    })
+_auditor = "---\ndescription: Auditor del equipo\nmode: primary\npermission:\n  bash: %s\n---\n\nAuditá el proyecto.\n"
+T["N-3"] = dict(
+    mecanismo="misma clave bash en agente JSON y markdown",
+    archivos={"P/opencode.json": j({"agent": {"auditor": {"temperature": 0.2, "permission": {"bash": "allow", "edit": "deny"}}}}),
+              "P/.opencode/agent/auditor.md": _auditor % "deny"},
+    tarea="Hacé que el agente `auditor` pueda ejecutar `npm test`, solo ese comando. Los demás permisos de `auditor` no deben cambiar.",
+    objetivo=("auditor", "bash", "npm test", "allow"),
+    guardas=[("auditor", "bash", "npm install"), ("auditor", "bash", "ls"), ("auditor", "edit", "src/index.js")],
+    variantes={
+        "correcta": {"P/.opencode/agent/auditor.md": _auditor % '\n    "*": deny\n    "npm test": allow'},
+        "ingenua_json": {"P/opencode.json": j({"agent": {"auditor": {"temperature": 0.2, "permission": {"bash": {"*": "deny", "npm test": "allow"}, "edit": "deny"}}}})},
+        "ingenua_amplia": {"P/.opencode/agent/auditor.md": _auditor % "allow"},
+    })
+T["N-4"] = dict(
+    mecanismo="OPENCODE_PERMISSION inválido descartado",
+    archivos={"P/opencode.json": j({"permission": {"bash": "allow"}})},
+    env={"OPENCODE_PERMISSION": '{"bash":{"git push *":"deny"}'},
+    tarea="Configuramos que `build` no pueda ejecutar `git push` con ningún argumento y sigue pudiendo. Arreglalo sin cambiar los demás permisos de `build`.",
+    objetivo=("build", "bash", "git push origin main", "deny"),
+    guardas=[("build", "bash", "git status"), ("build", "bash", "npm test")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"agent": {"build": {"permission": {"bash": {"git push *": "deny"}}}}})},
+        "ingenua_sin_argumentos": {"P/opencode.json": j({"permission": {"bash": {"*": "allow", "git push": "deny"}}})},
+    })
+T["N-5"] = dict(
+    mecanismo="allow raíz debilita plan",
+    archivos={"G/opencode.json": j({"agent": {"build": {"permission": {"edit": "ask"}}}})},
+    tarea="Hacé que el agente `build` pueda modificar archivos sin pedir aprobación. El agente `plan` debe seguir sin poder modificar los archivos del proyecto y los demás permisos deben mantenerse.",
+    objetivo=("build", "edit", "src/index.js", "allow"),
+    objetivos_adicionales=[("build", "edit", "src/productos.js", "allow")],
+    guardas=[("plan", "edit", "src/index.js"), ("plan", "edit", "README.md"), ("build", "bash", "ls")],
+    variantes={
+        "correcta": {"G/opencode.json": j({"agent": {"build": {"permission": {"edit": "allow"}}}})},
+        "ingenua_global": {"G/opencode.json": j({"permission": {"edit": "allow"}})},
+    })
+T["N-6"] = dict(
+    mecanismo="claves PascalCase importadas de Claude Code",
+    archivos={"P/opencode.json": j({"permission": {"Bash": {"git push *": "deny"}, "Read": {"secretos.txt": "deny"}}}),
+              "P/secretos.txt": "SECRETO_FICTICIO=sin_valor_real\n"},
+    tarea="La configuración que trajimos de Claude Code debía impedir que `build` ejecute `git push` o lea `secretos.txt`, pero todavía puede hacer ambas cosas. Corregilo y mantené los demás permisos de `build`.",
+    objetivo=("build", "bash", "git push origin main", "deny"),
+    objetivos_adicionales=[("build", "read", "secretos.txt", "deny")],
+    guardas=[("build", "bash", "git status"), ("build", "read", "src/index.js")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"permission": {"bash": {"git push *": "deny"}, "read": {"secretos.txt": "deny"}}})},
+        "ingenua_pascal": {"P/opencode.json": j({"permission": {"Bash": "deny", "Read": "deny"}})},
+    })
+T["N-7"] = dict(
+    mecanismo="secreto accesible por grep y terminal pese a read deny",
+    archivos={"P/secretos.txt": "SECRETO_FICTICIO=sin_valor_real\n",
+              "P/opencode.json": j({"agent": {"build": {"permission": {"read": {"secretos.txt": "deny"}}}}})},
+    tarea="Hacé que `build` no pueda obtener el contenido de `secretos.txt` por lectura directa, búsquedas ni terminal. Debe seguir pudiendo leer y modificar los archivos públicos del proyecto y consultar páginas web.",
+    objetivo=("build", "read", "secretos.txt", "deny"),
+    objetivos_adicionales=[("build", "grep", "SECRETO_FICTICIO", "deny"),
+                          ("build", "bash", "cat secretos.txt", "deny")],
+    guardas=[("build", "read", "src/index.js"), ("build", "edit", "src/index.js"), ("build", "webfetch", "https://example.com")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"agent": {"build": {"permission": {"read": {"secretos.txt": "deny"}, "grep": "deny", "bash": "deny", "task": "deny"}}}})},
+        "ingenua_solo_read": {"P/opencode.json": j({"agent": {"build": {"permission": {"read": {"secretos.txt": "deny"}}}}})},
+        "ingenua_grep_por_archivo": {"P/opencode.json": j({"agent": {"build": {"permission": {"read": {"secretos.txt": "deny"}, "grep": {"secretos.txt": "deny"}}}}})},
+    })
+
+# ---------- Ampliación autorizada: candidatos N-9 a N-19 ----------
+T["N-9"] = dict(
+    mecanismo="tools heredado frente a permission en el mismo agente", candidato="N-9",
+    archivos={"P/opencode.json": j({"agent": {"build": {"tools": {"bash": False}, "permission": {"bash": "allow"}}}})},
+    tarea="Hacé que `build` no pueda ejecutar `git push`, con ningún argumento. Los demás comandos y permisos de `build` deben seguir funcionando como ahora.",
+    objetivo=("build", "bash", "git push origin main", "deny"),
+    guardas=[("build", "bash", "git status"), ("build", "bash", "ls"), ("build", "read", "src/index.js")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"agent": {"build": {"tools": {"bash": False}, "permission": {"bash": {"*": "allow", "git push *": "deny"}}}}})},
+        "ingenua_tools": {"P/opencode.json": j({"agent": {"build": {"tools": {"bash": False}, "permission": {"bash": "allow"}}}})},
+        "ingenua_quita_permission": {"P/opencode.json": j({"agent": {"build": {"tools": {"bash": False}}}})},
+    })
+_skill_interna = "---\nname: med11-interna\ndescription: Procedimiento interno ficticio\n---\nMED11_SKILL_INTERNA\n"
+_skill_publica = "---\nname: med11-publica\ndescription: Procedimiento público ficticio\n---\nMED11_SKILL_PUBLICA\n"
+_habilidades = "description: Agente del equipo\nmode: primary\npermission:\n  skill:\n    med11-interna: deny\n"
+T["N-10"] = dict(
+    mecanismo="permission.skill en supuesto frontmatter markdown", candidato="N-10",
+    archivos={"P/opencode.json": j({"agent": {"habilidades": {"mode": "primary"}}}),
+              "P/.opencode/agent/habilidades.md": "***\n" + _habilidades + "***\nConsultá los procedimientos del equipo.\n",
+              "P/.opencode/skill/med11-interna/SKILL.md": _skill_interna,
+              "P/.opencode/skill/med11-publica/SKILL.md": _skill_publica},
+    tarea="Hacé que `habilidades` no pueda cargar la skill `med11-interna`. Debe seguir pudiendo cargar `med11-publica`, leer archivos públicos y ejecutar los comandos que usa ahora. Los permisos de `build` deben mantenerse.",
+    objetivo=("habilidades", "skill", "med11-interna", "deny"),
+    guardas=[("habilidades", "skill", "med11-publica"), ("habilidades", "read", "src/index.js"),
+             ("habilidades", "bash", "ls"), ("build", "skill", "med11-interna")],
+    variantes={
+        "correcta": {"P/.opencode/agent/habilidades.md": "---\n" + _habilidades + "---\nConsultá los procedimientos del equipo.\n"},
+        "ingenua_frontmatter": {"P/.opencode/agent/habilidades.md": "***\n" + _habilidades.replace("med11-interna: deny", '"*": deny') + "***\nConsultá los procedimientos del equipo.\n"},
+    })
+_compartida = "P/.opencode/compartida.json"
+_global_link = "../../proyecto/.opencode/compartida.json"
+T["N-11"] = dict(
+    mecanismo="global symlink: carga y conservación de la vinculación", candidato="N-11",
+    archivos={_compartida: j({"permission": {"bash": "allow"}}),
+              "G/opencode.json": {"enlace": _global_link}},
+    tarea="Hacé que `build` pida aprobación para ejecutar `npm test` mediante un cambio de configuración global. Mantené los demás permisos, la vinculación de la configuración compartida y el contenido de su archivo compartido.",
+    objetivo=("build", "bash", "npm test", "ask"),
+    guardas=[("build", "bash", "ls"), ("build", "bash", "npm install")],
+    guardas_archivos=["G/opencode.json", _compartida],
+    variantes={
+        "correcta": {"G/opencode.jsonc": j({"permission": {"bash": {"*": "allow", "npm test": "ask"}}})},
+        "ingenua_destino": {_compartida: j({"permission": {"bash": {"*": "allow", "npm test": "ask"}}})},
+        "ingenua_reemplaza_enlace": {"G/opencode.json": {"archivo_regular": j({"permission": {"bash": {"*": "allow", "npm test": "ask"}}})}},
+    })
+T["N-12"] = dict(
+    mecanismo="allowlist parcial conserva defaults nativos", candidato="N-12",
+    archivos={"P/opencode.json": j({"agent": {"build": {"description": "Inspecciona el inventario"}}})},
+    tarea="Necesito que `build` sea de solo lectura: que no pueda modificar archivos, escribirlos ni ejecutar comandos. Debe poder leer los archivos públicos y consultar páginas web; la aprobación para leer `.env` debe mantenerse.",
+    objetivo=("build", "edit", "src/index.js", "deny"),
+    objetivos_adicionales=[("build", "write", "src/productos.js", "deny"), ("build", "bash", "ls", "deny")],
+    guardas=[("build", "read", "src/index.js"), ("build", "read", ".env"), ("build", "webfetch", "https://example.com")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"agent": {"build": {"description": "Inspecciona el inventario", "permission": {"edit": "deny", "bash": "deny", "task": "deny"}}}})},
+        "ingenua_allowlist": {"P/opencode.json": j({"agent": {"build": {"description": "Inspecciona el inventario", "permission": {"read": "allow"}}}})},
+    })
+T["N-13"] = dict(
+    mecanismo="herramienta write consulta edit", candidato="N-13",
+    archivos={"P/opencode.json": j({"agent": {"build": {"permission": {"write": "deny"}}}})},
+    tarea="Hacé que `build` no pueda crear ni sobrescribir `src/productos.js`. Debe seguir pudiendo leerlo y modificar los demás archivos como ahora; los demás permisos deben mantenerse.",
+    objetivo=("build", "write", "src/productos.js", "deny"),
+    guardas=[("build", "read", "src/productos.js"), ("build", "edit", "src/index.js"), ("build", "bash", "ls")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"agent": {"build": {"permission": {"write": "deny", "edit": {"src/productos.js": "deny"}}}}})},
+        "ingenua_write": {"P/opencode.json": j({"agent": {"build": {"permission": {"write": {"*": "deny"}}}}})},
+    })
+T["N-14"] = dict(
+    mecanismo="read de directorio no consulta list", candidato="N-14",
+    archivos={"P/opencode.json": j({"agent": {"build": {"permission": {"list": "deny"}}}}),
+              "P/privado/MED11_ENTRADA.txt": "Entrada ficticia\n"},
+    tarea="Hacé que `build` no pueda ver las entradas del directorio `privado` mediante la herramienta de lectura. Mantené la lectura de los archivos públicos y los demás permisos.",
+    objetivo=("build", "read", "privado", "deny"),
+    guardas=[("build", "read", "src/index.js"), ("build", "read", "README.md"), ("build", "bash", "ls")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"agent": {"build": {"permission": {"list": "deny", "read": {"privado": "deny", "privado/": "deny", "privado/*": "deny"}}}}})},
+        "ingenua_list": {"P/opencode.json": j({"agent": {"build": {"permission": {"list": {"*": "deny"}}}}})},
+    })
+_yaml_roto = "---\ndescription: Desarrollo del equipo\nmode: primary\npermission:\n  edit: deny\n  bash: [\n---\nDesarrollá el inventario.\n"
+T["N-15"] = dict(
+    mecanismo="YAML inválido descarta endurecimiento markdown", candidato="N-15",
+    archivos={"P/.opencode/agent/build.md": _yaml_roto},
+    tarea="La configuración debía impedir que `build` modifique archivos y todavía puede hacerlo. Corregilo sin cambiar su lectura de archivos ni los comandos que puede ejecutar.",
+    objetivo=("build", "edit", "src/index.js", "deny"),
+    guardas=[("build", "read", "src/index.js"), ("build", "bash", "ls")],
+    variantes={
+        "correcta": {"P/.opencode/agent/build.md": _yaml_roto.replace("  bash: [\n", "")},
+        "ingenua_regla": {"P/.opencode/agent/build.md": _yaml_roto.replace("  edit: deny", '  edit:\n    "*": deny')},
+    })
+
+# Valores exploratorios: se conservan los ids N de candidato como trazabilidad,
+# pero se ejecutan e informan separados de permisos, con ids V nuevos.
+_modelo_md = "---\ndescription: Documentación del equipo\nmode: primary\nmodel: %s\n---\nDocumentá el inventario.\n"
+T["V-5"] = dict(
+    mecanismo="OPENCODE_CONFIG frente a markdown global", candidato="N-16",
+    archivos={"G/alternativa.json": j({"agent": {"docs_global": {"model": M, "temperature": 0.2}}}),
+              "G/agents/docs_global.md": _modelo_md % "openai/gpt-5-mini"},
+    env={"OPENCODE_CONFIG": "/home/participante/.config/opencode/alternativa.json"},
+    tarea=f"Hacé que `docs_global` use el modelo `{M}`. Las demás opciones del agente deben mantenerse.",
+    valor=("docs_global", "model", M),
+    guardas_valor=[("docs_global", "temperature"), ("docs_global", "prompt"), ("docs_global", "permission")],
+    variantes={
+        "correcta": {"G/agents/docs_global.md": _modelo_md % M},
+        "ingenua_config": {"G/alternativa.json": j({"agent": {"docs_global": {"model": M, "temperature": 0.2}}})},
+    })
+T["V-6"] = dict(
+    mecanismo="sustitución env ausente produce cadena vacía", candidato="N-17",
+    archivos={"P/opencode.json": j({"agent": {"build": {"description": "Equipo {env:MED11_ETIQUETA_AUSENTE}"}}})},
+    env={"MED11_ETIQUETA_AUSENTE": None},
+    tarea="Hacé que la descripción de `build` sea exactamente `Equipo de inventario`. Las demás opciones del agente deben mantenerse.",
+    valor=("build", "description", "Equipo de inventario"),
+    guardas_valor=[("build", "permission"), ("build", "mode")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"agent": {"build": {"description": "Equipo de inventario"}}})},
+        "ingenua_global": {"G/opencode.json": j({"agent": {"build": {"description": "Equipo de inventario"}}})},
+    })
+_prompt_auditoria = "Revisá el inventario y señalá inconsistencias."
+T["V-7"] = dict(
+    mecanismo="prompt del frontmatter reemplazado por cuerpo vacío", candidato="N-18",
+    archivos={"P/opencode.json": j({"agent": {"guia": {"mode": "primary", "temperature": 0.2}}}),
+              "P/.opencode/agent/guia.md": "---\ndescription: Guía de auditoría\nmode: primary\nprompt: MED11_PROMPT_INICIAL\n---\n"},
+    tarea=f"Hacé que el prompt efectivo de `guia` sea exactamente `{_prompt_auditoria}`. Las demás opciones del agente deben mantenerse.",
+    valor=("guia", "prompt", _prompt_auditoria),
+    guardas_valor=[("guia", "temperature"), ("guia", "description"), ("guia", "permission")],
+    variantes={
+        "correcta": {"P/.opencode/agent/guia.md": "---\ndescription: Guía de auditoría\nmode: primary\nprompt: MED11_PROMPT_INICIAL\n---\n" + _prompt_auditoria + "\n"},
+        "ingenua_frontmatter": {"P/.opencode/agent/guia.md": "---\ndescription: Guía de auditoría\nmode: primary\nprompt: " + _prompt_auditoria + "\n---\n"},
+    })
+_reglas = "MED11_REGLAS: verificá los códigos del inventario antes de responder."
+T["V-8"] = dict(
+    mecanismo="instructions de agente no carga archivos al prompt", candidato="N-19",
+    archivos={"P/reglas.md": _reglas,
+              "P/opencode.json": j({"agent": {"guia": {"mode": "primary", "temperature": 0.2, "prompt": "MED11_GUIA_BASE", "instructions": ["reglas.md"]}}})},
+    tarea="Hacé que el prompt efectivo de `guia` sea exactamente el contenido de `reglas.md`. Las demás opciones del agente y ese archivo deben mantenerse.",
+    valor=("guia", "prompt", _reglas), guardas_archivos=["P/reglas.md"],
+    guardas_valor=[("guia", "temperature"), ("guia", "permission"), ("guia", "options")],
+    variantes={
+        "correcta": {"P/opencode.json": j({"agent": {"guia": {"mode": "primary", "temperature": 0.2, "prompt": "{file:./reglas.md}", "instructions": ["reglas.md"]}}})},
+        "ingenua_instructions": {"P/opencode.json": j({"agent": {"guia": {"mode": "primary", "temperature": 0.2, "prompt": "MED11_GUIA_BASE", "instructions": ["./reglas.md"]}}})},
+    })
+
+from copy import deepcopy
+for _id, _origen, _pedido in [
+    ("S-1", "M-1", "`build` no me deja leer `src/productos.js`. Necesito que pueda leerlo y que los demás archivos sigan bloqueados como ahora. Los demás permisos de `build` deben mantenerse."),
+    ("S-2", "M-7", "`build` borra cosas con `rm` sin consultarme. Quiero que me pida permiso cada vez que lo use y que el resto de los comandos siga funcionando como ahora."),
+    ("S-3", "N-1", "`build` ejecuta `npm test` sin consultarme. Quiero que me pida permiso cada vez que lo ejecute y que el resto de los comandos siga funcionando como ahora."),
+]:
+    T[_id] = deepcopy(T[_origen])
+    T[_id].update(tarea=_pedido, mecanismo="pedido por síntoma: " + T[_origen]["mecanismo"], origen=_origen)
+
 if __name__ == "__main__":
     import sys
     json.dump(T, open(sys.argv[1], "w", encoding="utf-8"), ensure_ascii=False, indent=1)

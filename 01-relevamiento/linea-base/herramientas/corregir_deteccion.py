@@ -59,6 +59,8 @@ def main():
     hoja = json.loads(a.respuestas.read_text(encoding='utf-8'))
     if hoja.get('dimension') != 'deteccion' or hoja.get('hoja_cerrada') is not True:
         p.error('Se requiere la hoja cerrada de detección.')
+    from corregir_ecologica import validar_tanda
+    validar_tanda(a.registro.parent, a.respuestas)
     rows = []
     for row in leer_jsonl(a.registro):
         if row.get('dimension') != 'deteccion':

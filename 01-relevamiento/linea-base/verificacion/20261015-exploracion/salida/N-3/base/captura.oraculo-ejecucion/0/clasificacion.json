@@ -1,0 +1,79 @@
+{
+  "accion": "sonda",
+  "decision": "deny",
+  "regla": "La herramienta objetivo no fue ofrecida en su sesión; hay retorno de la llamada fija",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "bash",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'bash'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch."
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "tool": "bash",
+          "error": "Model tried to call unavailable tool 'bash'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch."
+        },
+        "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'bash'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch.",
+        "metadata": {
+          "truncated": false
+        },
+        "title": "Invalid Tool",
+        "time": {
+          "start": 1792094975514,
+          "end": 1792094975521
+        }
+      }
+    ],
+    "toolsOffered": [
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch"
+    ],
+    "efecto": false,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'bash'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch."
+      },
+      {
+        "status": "completed",
+        "input": {
+          "tool": "bash",
+          "error": "Model tried to call unavailable tool 'bash'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch."
+        },
+        "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'bash'. Available tools: glob, grep, invalid, read, skill, task, todowrite, webfetch.",
+        "metadata": {
+          "truncated": false
+        },
+        "title": "Invalid Tool",
+        "time": {
+          "start": 1792094975514,
+          "end": 1792094975521
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "auditor",
+    "bash",
+    "npm test"
+  ],
+  "evidencia_archivo": "base/captura.oraculo-ejecucion/0/clasificacion.json"
+}

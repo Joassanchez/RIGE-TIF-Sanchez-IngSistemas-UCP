@@ -1,11 +1,11 @@
 {
   "version": 1,
   "dimension": "ecologica",
-  "hoja_cerrada": true,
+  "hoja_cerrada": false,
   "hashes_fuentes": {
-    "espec.py": "b824ea2fc591377ad9dcdfffb45c6a28cbd49cd6b8accd8c7063ba355b2ebffd",
+    "espec.py": "a40367706dd4b171f80c9172f95502ce353ebeefc4e9747dac29d20a8c71f8e7",
     "corpus.py": "8685f07065fe1247ef4377b6ebe5fde06db1fb19d2d81a5a36c17ee3964c8d06",
-    "tareas.md": "6bf5bfb307341b8cef34fdeaeb591cf88a6a05ebb50e107ed68477e387a6f469",
+    "tareas.md": "c08c65dd4ca41256b2434c4bd784c37577786e15486c5bfd950d9eb168f4379a",
     "deteccion.md": "5e21b582d3d5f51b3a9262c2bdde710c798eacbfa97823a07a4536c8e3655da1"
   },
   "casos": {
@@ -27,7 +27,8 @@
           "read",
           "README.md"
         ]
-      ]
+      ],
+      "mecanismo": "permiso read por archivo"
     },
     "M-2": {
       "objetivo": [
@@ -47,7 +48,8 @@
           "edit",
           "README.md"
         ]
-      ]
+      ],
+      "mecanismo": "permiso edit por archivo"
     },
     "M-3": {
       "objetivo": [
@@ -67,7 +69,8 @@
           "bash",
           "ls"
         ]
-      ]
+      ],
+      "mecanismo": "patrón de bash"
     },
     "M-4": {
       "objetivo": [
@@ -87,7 +90,8 @@
           "bash",
           "npm test"
         ]
-      ]
+      ],
+      "mecanismo": "excepción de denegación con argumentos"
     },
     "M-5": {
       "objetivo": [
@@ -107,7 +111,8 @@
           "read",
           "src/index.js"
         ]
-      ]
+      ],
+      "mecanismo": "external_directory"
     },
     "M-6": {
       "objetivo": [
@@ -127,7 +132,8 @@
           "read",
           "src/index.js"
         ]
-      ]
+      ],
+      "mecanismo": "agente en markdown y en JSON"
     },
     "M-7": {
       "objetivo": [
@@ -147,7 +153,8 @@
           "bash",
           "git status"
         ]
-      ]
+      ],
+      "mecanismo": "orden de reglas con comodín"
     },
     "M-8": {
       "objetivo": [
@@ -167,7 +174,8 @@
           "bash",
           "git status"
         ]
-      ]
+      ],
+      "mecanismo": "subagente"
     },
     "M-9": {
       "objetivo": [
@@ -187,7 +195,8 @@
           "read",
           "src/index.js"
         ]
-      ]
+      ],
+      "mecanismo": "variable OPENCODE_PERMISSION"
     },
     "M-10": {
       "objetivo": [
@@ -207,35 +216,594 @@
           "read",
           ".env.local"
         ]
-      ]
+      ],
+      "mecanismo": "regla nativa"
     },
     "V-1": {
       "valor": [
         "build",
         "model",
         "google/gemini-2.5-flash"
-      ]
+      ],
+      "mecanismo": "control: modelo"
     },
     "V-2": {
       "valor": [
         "plan",
         "temperature",
         0.55
-      ]
+      ],
+      "mecanismo": "control: temperatura"
     },
     "V-3": {
       "valor": [
         "build",
         "description",
         "Desarrollo del inventario"
-      ]
+      ],
+      "mecanismo": "control: descripción"
     },
     "V-4": {
       "valor": [
         "docs",
         "model",
         "google/gemini-2.5-flash"
-      ]
+      ],
+      "mecanismo": "control: modelo de un agente en markdown"
+    },
+    "N-1": {
+      "objetivo": [
+        "build",
+        "bash",
+        "npm test",
+        "ask"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "npm install"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "posición heredada al fusionar capas"
+    },
+    "N-2": {
+      "objetivo": [
+        "build",
+        "webfetch",
+        "https://example.com",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "precedencia de .opencode anidados"
+    },
+    "N-3": {
+      "objetivo": [
+        "auditor",
+        "bash",
+        "npm test",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "auditor",
+          "bash",
+          "npm install"
+        ],
+        [
+          "auditor",
+          "bash",
+          "ls"
+        ],
+        [
+          "auditor",
+          "edit",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "misma clave bash en agente JSON y markdown"
+    },
+    "N-4": {
+      "objetivo": [
+        "build",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "bash",
+          "npm test"
+        ]
+      ],
+      "mecanismo": "OPENCODE_PERMISSION inválido descartado"
+    },
+    "N-5": {
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "allow"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "edit",
+          "src/productos.js",
+          "allow"
+        ]
+      ],
+      "guardas": [
+        [
+          "plan",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "plan",
+          "edit",
+          "README.md"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "allow raíz debilita plan"
+    },
+    "N-6": {
+      "objetivo": [
+        "build",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "read",
+          "secretos.txt",
+          "deny"
+        ]
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "claves PascalCase importadas de Claude Code"
+    },
+    "N-7": {
+      "objetivo": [
+        "build",
+        "read",
+        "secretos.txt",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "grep",
+          "SECRETO_FICTICIO",
+          "deny"
+        ],
+        [
+          "build",
+          "bash",
+          "cat secretos.txt",
+          "deny"
+        ]
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "webfetch",
+          "https://example.com"
+        ]
+      ],
+      "mecanismo": "secreto accesible por grep y terminal pese a read deny"
+    },
+    "N-9": {
+      "objetivo": [
+        "build",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "tools heredado frente a permission en el mismo agente",
+      "candidato": "N-9"
+    },
+    "N-10": {
+      "objetivo": [
+        "habilidades",
+        "skill",
+        "med11-interna",
+        "deny"
+      ],
+      "guardas": [
+        [
+          "habilidades",
+          "skill",
+          "med11-publica"
+        ],
+        [
+          "habilidades",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "habilidades",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "skill",
+          "med11-interna"
+        ]
+      ],
+      "mecanismo": "permission.skill en supuesto frontmatter markdown",
+      "candidato": "N-10"
+    },
+    "N-11": {
+      "objetivo": [
+        "build",
+        "bash",
+        "npm test",
+        "ask"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "bash",
+          "npm install"
+        ]
+      ],
+      "guardas_archivos": [
+        "G/opencode.json",
+        "P/.opencode/compartida.json"
+      ],
+      "mecanismo": "global symlink: carga y conservación de la vinculación",
+      "candidato": "N-11"
+    },
+    "N-12": {
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "write",
+          "src/productos.js",
+          "deny"
+        ],
+        [
+          "build",
+          "bash",
+          "ls",
+          "deny"
+        ]
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          ".env"
+        ],
+        [
+          "build",
+          "webfetch",
+          "https://example.com"
+        ]
+      ],
+      "mecanismo": "allowlist parcial conserva defaults nativos",
+      "candidato": "N-12"
+    },
+    "N-13": {
+      "objetivo": [
+        "build",
+        "write",
+        "src/productos.js",
+        "deny"
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/productos.js"
+        ],
+        [
+          "build",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "herramienta write consulta edit",
+      "candidato": "N-13"
+    },
+    "N-14": {
+      "objetivo": [
+        "build",
+        "read",
+        "privado",
+        "deny"
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          "README.md"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "read de directorio no consulta list",
+      "candidato": "N-14"
+    },
+    "N-15": {
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "deny"
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "YAML inválido descarta endurecimiento markdown",
+      "candidato": "N-15"
+    },
+    "V-5": {
+      "guardas_valor": [
+        [
+          "docs_global",
+          "temperature"
+        ],
+        [
+          "docs_global",
+          "prompt"
+        ],
+        [
+          "docs_global",
+          "permission"
+        ]
+      ],
+      "valor": [
+        "docs_global",
+        "model",
+        "google/gemini-2.5-flash"
+      ],
+      "mecanismo": "OPENCODE_CONFIG frente a markdown global",
+      "candidato": "N-16"
+    },
+    "V-6": {
+      "guardas_valor": [
+        [
+          "build",
+          "permission"
+        ],
+        [
+          "build",
+          "mode"
+        ]
+      ],
+      "valor": [
+        "build",
+        "description",
+        "Equipo de inventario"
+      ],
+      "mecanismo": "sustitución env ausente produce cadena vacía",
+      "candidato": "N-17"
+    },
+    "V-7": {
+      "guardas_valor": [
+        [
+          "guia",
+          "temperature"
+        ],
+        [
+          "guia",
+          "description"
+        ],
+        [
+          "guia",
+          "permission"
+        ]
+      ],
+      "valor": [
+        "guia",
+        "prompt",
+        "Revisá el inventario y señalá inconsistencias."
+      ],
+      "mecanismo": "prompt del frontmatter reemplazado por cuerpo vacío",
+      "candidato": "N-18"
+    },
+    "V-8": {
+      "guardas_archivos": [
+        "P/reglas.md"
+      ],
+      "guardas_valor": [
+        [
+          "guia",
+          "temperature"
+        ],
+        [
+          "guia",
+          "permission"
+        ],
+        [
+          "guia",
+          "options"
+        ]
+      ],
+      "valor": [
+        "guia",
+        "prompt",
+        "MED11_REGLAS: verificá los códigos del inventario antes de responder."
+      ],
+      "mecanismo": "instructions de agente no carga archivos al prompt",
+      "candidato": "N-19"
+    },
+    "S-1": {
+      "objetivo": [
+        "build",
+        "read",
+        "src/productos.js",
+        "allow"
+      ],
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          "README.md"
+        ]
+      ],
+      "mecanismo": "pedido por síntoma: permiso read por archivo",
+      "origen": "M-1"
+    },
+    "S-2": {
+      "objetivo": [
+        "build",
+        "bash",
+        "rm -rf dist",
+        "ask"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "bash",
+          "git status"
+        ]
+      ],
+      "mecanismo": "pedido por síntoma: orden de reglas con comodín",
+      "origen": "M-7"
+    },
+    "S-3": {
+      "objetivo": [
+        "build",
+        "bash",
+        "npm test",
+        "ask"
+      ],
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "npm install"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "pedido por síntoma: posición heredada al fusionar capas",
+      "origen": "N-1"
     }
-  }
+  },
+  "adr": "ADR-095",
+  "exploratoria": true,
+  "admision": "pendiente de verificación nativa sin agente"
 }

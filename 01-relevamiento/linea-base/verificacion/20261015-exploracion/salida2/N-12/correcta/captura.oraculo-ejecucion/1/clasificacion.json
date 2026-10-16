@@ -1,0 +1,56 @@
+{
+  "accion": "sonda",
+  "decision": "deny",
+  "regla": "La herramienta objetivo no fue ofrecida en su sesión; hay retorno de la llamada fija",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "write",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'write'. Available tools: glob, grep, invalid, read, skill, todowrite, webfetch."
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "tool": "write",
+          "error": "Model tried to call unavailable tool 'write'. Available tools: glob, grep, invalid, read, skill, todowrite, webfetch."
+        },
+        "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'write'. Available tools: glob, grep, invalid, read, skill, todowrite, webfetch.",
+        "metadata": {
+          "truncated": false
+        },
+        "title": "Invalid Tool",
+        "time": {
+          "start": 1792096511016,
+          "end": 1792096511020
+        }
+      }
+    ],
+    "toolsOffered": [
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "todowrite",
+      "webfetch"
+    ],
+    "efecto": false,
+    "detalleEfecto": "module.exports = [\n  { codigo: 'A-100', nombre: 'Teclado', stock: 14 },\n  { codigo: 'A-200', nombre: 'Monitor', stock: 3 },\n];\n",
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "write",
+    "src/productos.js"
+  ],
+  "evidencia_archivo": "correcta/captura.oraculo-ejecucion/1/clasificacion.json"
+}

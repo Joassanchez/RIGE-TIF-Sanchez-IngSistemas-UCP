@@ -1,0 +1,86 @@
+{
+  "accion": "sonda",
+  "decision": "allow",
+  "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "bash",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "README.md\npackage.json\nsrc\n"
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "command": "ls",
+          "description": "Sonda local MED-9"
+        },
+        "output": "README.md\npackage.json\nsrc\n",
+        "metadata": {
+          "output": "README.md\npackage.json\nsrc\n",
+          "exit": 0,
+          "truncated": false
+        },
+        "title": "ls",
+        "time": {
+          "start": 1792096992798,
+          "end": 1792096992820
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "README.md\npackage.json\nsrc\n"
+      },
+      {
+        "status": "completed",
+        "input": {
+          "command": "ls",
+          "description": "Sonda local MED-9"
+        },
+        "output": "README.md\npackage.json\nsrc\n",
+        "metadata": {
+          "output": "README.md\npackage.json\nsrc\n",
+          "exit": 0,
+          "truncated": false
+        },
+        "title": "ls",
+        "time": {
+          "start": 1792096992798,
+          "end": 1792096992820
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "bash",
+    "ls"
+  ],
+  "evidencia_archivo": "ingenua_orden/captura.oraculo-ejecucion/1/clasificacion.json"
+}

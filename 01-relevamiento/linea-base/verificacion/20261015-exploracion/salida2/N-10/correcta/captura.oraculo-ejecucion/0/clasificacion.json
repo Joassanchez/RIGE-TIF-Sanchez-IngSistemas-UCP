@@ -1,0 +1,72 @@
+{
+  "accion": "sonda",
+  "decision": "deny",
+  "regla": "Resultado objetivo contiene el texto de denegación por regla",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "skill",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"skill\",\"pattern\":\"med11-interna\",\"action\":\"deny\"}]"
+      }
+    ],
+    "estados": [
+      {
+        "status": "error",
+        "input": {
+          "name": "med11-interna"
+        },
+        "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"skill\",\"pattern\":\"med11-interna\",\"action\":\"deny\"}]",
+        "time": {
+          "start": 1792096354274,
+          "end": 1792096354278
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": false,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"skill\",\"pattern\":\"med11-interna\",\"action\":\"deny\"}]"
+      },
+      {
+        "status": "error",
+        "input": {
+          "name": "med11-interna"
+        },
+        "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"skill\",\"pattern\":\"med11-interna\",\"action\":\"deny\"}]",
+        "time": {
+          "start": 1792096354274,
+          "end": 1792096354278
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "habilidades",
+    "skill",
+    "med11-interna"
+  ],
+  "evidencia_archivo": "correcta/captura.oraculo-ejecucion/0/clasificacion.json"
+}

@@ -1,0 +1,38 @@
+{
+  "G/opencode.json": {
+    "tipo": "enlace",
+    "destino": "../../proyecto/.opencode/compartida.json"
+  },
+  "G/.gitignore": {
+    "tipo": "archivo",
+    "sha256": "663a068e76d264d0bc6740f5450b6c4193c7b41ecf5e0dc222485b8a17404d95"
+  },
+  "P/package.json": {
+    "tipo": "archivo",
+    "sha256": "b157fd844a007d5b6123835f78e1c1862b3c3f0b3945e3b22da4ecae74f91da4"
+  },
+  "P/README.md": {
+    "tipo": "archivo",
+    "sha256": "fe8bb5bb3af466f6f21a80329c857587c8ae36c2c7e2887ec600b56d6be86d97"
+  },
+  "P/.gitignore": {
+    "tipo": "archivo",
+    "sha256": "a8db166167d30d2c36fa95cc3163e77a4bc33205ede3b81a368750f25ded3879"
+  },
+  "P/.opencode/compartida.json": {
+    "tipo": "archivo",
+    "sha256": "d5e3965459906a60b8ce8f1d41b50e03073390f146a6fb427e80709f99b48039"
+  },
+  "P/.opencode/.gitignore": {
+    "tipo": "archivo",
+    "sha256": "663a068e76d264d0bc6740f5450b6c4193c7b41ecf5e0dc222485b8a17404d95"
+  },
+  "P/src/index.js": {
+    "tipo": "archivo",
+    "sha256": "8486617a593ec3d78871f408674e3ce828d3bcf940f6be15611bf4876fbdeed9"
+  },
+  "P/src/productos.js": {
+    "tipo": "archivo",
+    "sha256": "71f3cab55304b4387d3f2f18d5e0e569accb0aef3b399b191b736840f8a22a21"
+  }
+}

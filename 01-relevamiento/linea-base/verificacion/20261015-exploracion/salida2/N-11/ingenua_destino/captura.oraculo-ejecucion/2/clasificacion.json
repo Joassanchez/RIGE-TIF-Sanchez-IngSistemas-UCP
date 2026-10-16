@@ -1,0 +1,86 @@
+{
+  "accion": "sonda",
+  "decision": "allow",
+  "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "bash",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "MED9_BASH\n"
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "command": "npm install",
+          "description": "Sonda local MED-9"
+        },
+        "output": "MED9_BASH\n",
+        "metadata": {
+          "output": "MED9_BASH\n",
+          "exit": 0,
+          "truncated": false
+        },
+        "title": "npm install",
+        "time": {
+          "start": 1792096429827,
+          "end": 1792096429832
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "MED9_BASH\n"
+      },
+      {
+        "status": "completed",
+        "input": {
+          "command": "npm install",
+          "description": "Sonda local MED-9"
+        },
+        "output": "MED9_BASH\n",
+        "metadata": {
+          "output": "MED9_BASH\n",
+          "exit": 0,
+          "truncated": false
+        },
+        "title": "npm install",
+        "time": {
+          "start": 1792096429827,
+          "end": 1792096429832
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "bash",
+    "npm install"
+  ],
+  "evidencia_archivo": "ingenua_destino/captura.oraculo-ejecucion/2/clasificacion.json"
+}

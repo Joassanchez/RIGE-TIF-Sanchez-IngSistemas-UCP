@@ -1,0 +1,22 @@
+{
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "webfetch",
+          "argumentos": {
+            "url": "http://127.0.0.1:37291/evidencia/MED9_c0ec851b18b8",
+            "format": "text"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "http",
+        "token": "MED9_c0ec851b18b8"
+      }
+    }
+  ]
+}

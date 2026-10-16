@@ -1,0 +1,30 @@
+{
+  "agente": "plan",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/README.md"
+          }
+        },
+        {
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/README.md",
+            "oldString": "MED9_657f752c1861\n",
+            "newString": "MED9_657f752c1861_EDIT\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "edicion",
+        "archivo": "README.md",
+        "token": "MED9_657f752c1861"
+      }
+    }
+  ]
+}

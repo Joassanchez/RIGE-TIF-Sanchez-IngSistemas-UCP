@@ -1,0 +1,30 @@
+N-1 base capturada
+N-1 correcta capturada
+N-1 ingenua_merge capturada
+N-1 ingenua_amplia capturada
+N-2 base capturada
+N-2 correcta capturada
+N-2 ingenua_cercana capturada
+N-3 base capturada
+N-3 correcta capturada
+N-3 ingenua_json capturada
+N-3 ingenua_amplia capturada
+N-4 base capturada
+N-4 correcta capturada
+N-4 ingenua_sin_argumentos capturada
+N-5 base capturada
+N-5 correcta capturada
+N-5 ingenua_global capturada
+N-6 base capturada
+N-6 correcta capturada
+N-6 ingenua_pascal capturada
+Traceback (most recent call last):
+  File "/med11/verificacion/20261015-exploracion/capturar_eco.py", line 56, in <module>
+    main()
+    ~~~~^^
+  File "/med11/verificacion/20261015-exploracion/capturar_eco.py", line 50, in main
+    datos = arnes.oraculo(carpeta / 'captura', 'ejecucion', sondas, escenario['directorio'], h) if sondas else {}
+            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/med11/vm/simulado/ecologica.py", line 451, in oraculo
+    raise ValueError(f'Oráculo no distingue allow/ask/deny para {sonda}; ver {destino}')
+ValueError: Oráculo no distingue allow/ask/deny para ('build', 'grep', 'SECRETO_FICTICIO'); ver /evidencia/salida/N-7/base/captura.oraculo-ejecucion/1

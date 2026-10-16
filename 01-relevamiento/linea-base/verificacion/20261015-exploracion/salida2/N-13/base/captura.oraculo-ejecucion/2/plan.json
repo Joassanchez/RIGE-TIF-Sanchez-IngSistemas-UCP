@@ -1,0 +1,30 @@
+{
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          }
+        },
+        {
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "oldString": "MED9_3b3e23cf0989\n",
+            "newString": "MED9_3b3e23cf0989_EDIT\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "edicion",
+        "archivo": "src/index.js",
+        "token": "MED9_3b3e23cf0989"
+      }
+    }
+  ]
+}

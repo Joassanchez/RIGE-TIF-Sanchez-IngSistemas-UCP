@@ -465,10 +465,39 @@ La ejecución y el análisis exclusivamente descriptivo se documentan en
 copiados explícitamente; objetivos, guardas y corpus clasificado permanecen fuera
 del contenedor. El ejecutor trabaja dentro del proyecto, aislado de su configuración;
 el `opencode` que invoque como herramienta consulta al participante mediante un
-envoltorio. El oráculo de permisos se ejecuta con el proveedor local, antes y después.
+envoltorio. MED-9c ejecuta el oráculo inicial una vez por tarea ecológica y
+fragmento, valida su base en el anfitrión y repite el oráculo posterior cuando
+hay cambios de archivos o entorno. Solo reutiliza la base con diff vacío,
+entorno restaurado sin alteraciones, hashes del escenario iguales, archivos de
+inicio completos iguales desde la preparación e inventario del home igual
+durante `run`. Excluye únicamente `.git`, sin excluir cachés; registra los
+motivos de no omisión y las capturas de inicio/home. El aislamiento ecológico
+se comprueba al inicio y al final;
+un cierre ausente o fallido invalida incluso las filas ya escritas. Las respuestas
+siguen fuera del contenedor: entre las dos fases solo vuelve el hash aprobado.
 
 La preparación, los controles nativos obligatorios, el ensayo sin credenciales,
 las tandas LB de ambos ejecutores, `--fuera-del-arbol`, corrección externa y análisis
 con complemento están en [`../ecologica/LEEME.md`](../ecologica/LEEME.md).
 La nueva vía no cambia los recorridos ni los hashes de atribución, modificación
 y sondas. Los ensayos Docker y las mediciones quedan a cargo del ingeniero.
+El LEEME ecológico incluye los comandos exactos de las seis tandas con un
+máximo de cuatro contenedores concurrentes y unión estricta de pares completos.
+
+MED-9d aplica ADR-094 a ambas dimensiones y ejecutores: permite
+`external_directory: /home/evaluador/tarea/*` y `webfetch`, mantiene la edición
+denegada de la documentación y `websearch: deny` sin EXA. No cambia `bash` ni el
+prompt de Charles. Los hashes actualizados y la nota del ADR se conservan en
+`ejecutores/congeladas.json`. El contraste fuera del árbol adapta solo la copia
+instalada de la variante de la dimensión; las variantes de otras dimensiones
+permanecen intactas.
+
+Se comprueban documentación legible, edición denegada y `webfetch` al inicio y
+al final de **ambas** dimensiones. Un fallo inicial detiene antes del agente;
+un cierre fallido o ausente impide aceptar la tanda. M-1 y D-A del proveedor
+simulado leen la hoja y `docs/permissions.html` antes de continuar, y una lectura
+rechazada o faltante detiene el ensayo. `tanda.json` declara
+`regla_acceso_web: "ADR-094"`: el análisis conserva `acceso_web` y cuenta las
+ejecuciones con web por tarea sin invalidarlas. Las demás dimensiones conservan
+la invalidación de ADR-086. Reconstruir la imagen y repetir los ensayos nativos
+antes de las nuevas líneas de base; las tandas previas al cambio no computan.

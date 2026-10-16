@@ -1,0 +1,23 @@
+{
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js",
+            "content": "MED9_258a638cfec4_WRITE\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "escritura",
+        "archivo": "src/productos.js",
+        "contenido": "MED9_258a638cfec4_WRITE\n"
+      }
+    }
+  ]
+}

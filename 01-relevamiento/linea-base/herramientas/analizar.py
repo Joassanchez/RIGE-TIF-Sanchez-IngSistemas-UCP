@@ -340,6 +340,13 @@ def cargar(paths, evidencia=False):
         meta = path.parent / 'tanda.json'
         if meta.exists():
             tanda = json.loads(meta.read_text(encoding='utf-8'))
+            if tanda.get('protocolo_oraculo') == 'MED-9c' or tanda.get('regla_acceso_web') == 'ADR-094':
+                from corregir_ecologica import validar_tanda
+                try:
+                    validar_tanda(path.parent, Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json')
+                except (KeyError, OSError, ValueError, TypeError):
+                    for r in rs:
+                        r.update(fallo_preparacion=True, resultado=None)
             for r in rs:
                 for k in ('k', 'fase', 'ensayo', 'recorte_declarado', 'dimension', 'sonda', 'hash_sonda'):
                     if k in tanda:

@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/med11/verificacion/20261015-exploracion/capturar_eco.py", line 74, in main
+    datos = arnes.oraculo(carpeta / 'captura', 'ejecucion', sondas, escenario['directorio'], h) if sondas else {}
+            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/med11/vm/simulado/ecologica.py", line 436, in oraculo
+    raise ValueError(f'Proveedor contaminó permisos: {sonda}')
+ValueError: Proveedor contaminó permisos: ('habilidades', 'skill', 'med11-publica')

@@ -21,7 +21,11 @@
             "motivo": "ENSAYO: otra"
           }
         ]
-      }
+      },
+      "lecturas": [
+        "/home/evaluador/tarea/hoja-referencia.md",
+        "/home/evaluador/tarea/docs/permissions.html"
+      ]
     },
     "D-B": {
       "salida": "ENSAYO sin JSON"

@@ -1,0 +1,30 @@
+{
+  "agente": "auditor",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          }
+        },
+        {
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "oldString": "MED9_5c796694e70c\n",
+            "newString": "MED9_5c796694e70c_EDIT\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "edicion",
+        "archivo": "src/index.js",
+        "token": "MED9_5c796694e70c"
+      }
+    }
+  ]
+}

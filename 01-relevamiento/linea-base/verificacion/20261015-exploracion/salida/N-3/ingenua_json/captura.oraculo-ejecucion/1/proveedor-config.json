@@ -1,0 +1,22 @@
+{
+  "model": "simulado/permisos",
+  "provider": {
+    "simulado": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Simulado MED-9",
+      "options": {
+        "baseURL": "http://127.0.0.1:36715/v1"
+      },
+      "models": {
+        "permisos": {
+          "name": "permisos",
+          "limit": {
+            "context": 64000,
+            "output": 8000
+          },
+          "tool_call": true
+        }
+      }
+    }
+  }
+}

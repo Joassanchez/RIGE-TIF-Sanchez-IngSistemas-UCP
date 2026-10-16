@@ -15,6 +15,7 @@ import random
 import re
 import shlex
 import shutil
+import stat
 import subprocess
 import tempfile
 import threading
@@ -29,6 +30,10 @@ EDIT = ('opencode.json', 'opencode.jsonc', '*/opencode.json', '*/opencode.jsonc'
 PROYECTO = Path('/home/participante/proyecto')
 HOME = PROYECTO.parent
 BINARIO = '/usr/local/bin/opencode'
+ARCHIVOS_INICIO = ('.bashrc', '.profile', '.bash_profile')
+# Ningún caché está acreditado como exclusivamente regenerable: puede contener
+# configuración, proveedores o plugins. Incluirlo fuerza el oráculo si cambia.
+EXCLUSIONES_HOME = {'nombres': ['.git'], 'caches': []}
 
 
 def guardar(path, datos):
@@ -73,19 +78,56 @@ def participante(comando, salida, error, limite=120):
                                'participante', '-c', comando], stdout=out, stderr=err).returncode
 
 
+def ruta_escenario(rel):
+    pre, resto = rel.split('/', 1)
+    roots = {'G': HOME / '.config/opencode', 'P': PROYECTO, 'H': HOME}
+    if pre not in roots or Path(resto).is_absolute() or '..' in Path(resto).parts:
+        raise ValueError('Ruta de escenario inválida.')
+    return roots[pre] / resto
+
+
+def materializar_archivos(archivos):
+    """Formato público: texto, enlace relativo o reemplazo por archivo regular."""
+    enlaces = []
+    for rel, contenido in archivos.items():
+        path = ruta_escenario(rel)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if isinstance(contenido, dict) and set(contenido) == {'enlace'}:
+            enlaces.append((path, contenido['enlace']))
+            continue
+        if isinstance(contenido, dict) and set(contenido) == {'archivo_regular'}:
+            if path.is_symlink():
+                path.unlink()
+            contenido = contenido['archivo_regular']
+        if not isinstance(contenido, str):
+            raise ValueError('Contenido de escenario inválido.')
+        path.write_text(contenido, encoding='utf-8')
+    for path, destino in enlaces:
+        if Path(destino).is_absolute() or not (path.parent / destino).resolve().is_relative_to(HOME.resolve()):
+            raise ValueError('Enlace fuera del home de escenario.')
+        path.symlink_to(destino)
+
+
+def estado_archivos():
+    out = {}
+    for pre, root in [('G', HOME / '.config/opencode'), ('P', PROYECTO)]:
+        for carpeta, dirs, files in os.walk(root, followlinks=False):
+            dirs[:] = [d for d in dirs if d not in ('.git', 'node_modules')]
+            for nombre in [*files, *[d for d in dirs if (Path(carpeta) / d).is_symlink()]]:
+                path = Path(carpeta) / nombre
+                key = pre + '/' + path.relative_to(root).as_posix()
+                out[key] = (dict(tipo='enlace', destino=os.readlink(path)) if path.is_symlink()
+                            else dict(tipo='archivo', sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+                            if stat.S_ISREG(path.lstat().st_mode) else dict(tipo='especial'))
+    return out
+
+
 def preparar(s, h, sondas=()):
     for p in (PROYECTO, HOME / '.config/opencode', HOME / '.local/share/opencode', HOME / 'compartido', HOME / 'otra'):
         shutil.rmtree(p, ignore_errors=True)
     (HOME / '.config/opencode').mkdir(parents=True)
     shutil.copytree(h.BASE / 'casos/comun/proyecto', PROYECTO)
-    roots = {'G': HOME / '.config/opencode', 'P': PROYECTO, 'H': HOME}
-    for rel, contenido in s['archivos'].items():
-        pre, resto = rel.split('/', 1)
-        if pre not in roots or Path(resto).is_absolute() or '..' in Path(resto).parts:
-            raise ValueError('Ruta de escenario inválida.')
-        path = roots[pre] / resto
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(contenido, encoding='utf-8')
+    materializar_archivos(s['archivos'])
     # Los sujetos auxiliares existen antes de cualquier introspección/sesión.
     # Permanecen hasta preparar el siguiente escenario, sin rutas efímeras.
     preparar_archivos_sondas(sondas)
@@ -95,7 +137,7 @@ def preparar(s, h, sondas=()):
     bashrc = HOME / '.bashrc'
     texto = bashrc.read_text() if bashrc.exists() else ''
     texto = re.sub(h.PATRON_ENTORNO, '', texto, flags=re.M | re.S)
-    bloque = '# >>> entorno local >>>\n' + ''.join(f'export {k}={shlex.quote(v)}\n' for k, v in s['env'].items()) + '# <<< entorno local <<<\n'
+    bloque = '# >>> entorno local >>>\n' + ''.join(f'unset {k}\n' if v is None else f'export {k}={shlex.quote(v)}\n' for k, v in s['env'].items()) + '# <<< entorno local <<<\n'
     bashrc.write_text(bloque + texto)
     subprocess.run(['chown', '-R', 'participante:participante', str(HOME)], check=True)
     # Grupo evaluador ya pertenece a participante. Sin escritura en fuentes.
@@ -108,6 +150,12 @@ def agentes_escenario(s):
     for archivo in s['archivos']:
         if re.search(r'/agents?/[^/]+\.md$', archivo):
             nombres.add(Path(archivo).stem)
+        contenido = s['archivos'][archivo]
+        if archivo.endswith(('.json', '.jsonc')) and isinstance(contenido, str):
+            try:
+                nombres.update(json.loads(contenido).get('agent', {}))
+            except (ValueError, AttributeError):
+                pass
     return sorted(nombres)
 
 
@@ -115,10 +163,11 @@ def capturar(prefijo, momento, agentes, directorio):
     carpeta = Path(str(prefijo) + '.' + momento)
     carpeta.mkdir()
     for nombre, cmd in [('config', 'opencode debug config'), *[(f'agente-{ag}', f'opencode debug agent {shlex.quote(ag)}') for ag in agentes]]:
-        comando = f'unset OPENCODE_DISABLE_PROJECT_CONFIG OPENCODE_CONFIG; cd {shlex.quote(str(PROYECTO / directorio))} && {cmd}'
+        comando = f'unset OPENCODE_DISABLE_PROJECT_CONFIG; cd {shlex.quote(str(PROYECTO / directorio))} && {cmd}'
         codigo = participante(comando, carpeta / f'{nombre}.json', carpeta / f'{nombre}.stderr.txt')
         if codigo or not isinstance(json.loads((carpeta / f'{nombre}.json').read_text()), dict):
             raise ValueError(f'Captura fallida: {momento}/{nombre}')
+    guardar(carpeta / 'archivos.json', estado_archivos())
     return carpeta
 
 
@@ -152,18 +201,65 @@ def verificar_edit(agente, salida, dimension, fuera):
                  '../compartido/opencode.json', '../otra/.opencode/a.json',
                  '../../evaluador/.config/opencode/opencode.json', '/etc/opencode/opencode.json']
     if fuera:
-        permitidas = [os.path.relpath(PROYECTO / p, '/home/evaluador/tarea') for p in permitidas]
-        denegadas = [os.path.relpath(PROYECTO / p, '/home/evaluador/tarea') for p in denegadas]
+        from posixpath import relpath, normpath, join
+        permitidas = [relpath(normpath(join('/home/participante/proyecto', p)), '/home/evaluador/tarea') for p in permitidas]
+        denegadas = [relpath(normpath(join('/home/participante/proyecto', p)), '/home/evaluador/tarea') for p in denegadas]
+    locales = ('/home/evaluador/tarea/hoja-referencia.md', '/home/evaluador/tarea/docs/index.html')
+    # edit recibe rutas relativas al worktree; external_directory, absolutas.
+    denegadas += ['hoja-referencia.md', 'docs/permissions.html', 'docs/opencode.json',
+                 'docs/participante/proyecto/opencode.json',
+                 '/home/evaluador/tarea/docs/participante/proyecto/opencode.json'] if fuera else [
+        '../../evaluador/tarea/hoja-referencia.md', '../../evaluador/tarea/docs/opencode.json']
+    denegadas += list(locales) + ['/home/evaluador/tarea/docs/opencode.json']
     datos = dict(permitidas={p: decidir('edit', p) for p in permitidas},
                  denegadas={p: decidir('edit', p) for p in denegadas},
                  external_directory={p: decidir('external_directory', p) for p in
-                                     ('/home/participante/.config/opencode/*', '/home/participante/compartido/*')})
+                                     ('/home/participante/.config/opencode/*', '/home/participante/compartido/*')},
+                 documentacion={p: decidir('external_directory', p) for p in locales},
+                 lectura_documentacion={p: decidir('read', p) for p in locales},
+                 webfetch=decidir('webfetch', 'https://opencode.ai/docs/permissions/'))
     datos['valido'] = (all(v == ('allow' if dimension == 'ecologica' else 'deny') for v in datos['permitidas'].values()) and
                        all(v == 'deny' for v in datos['denegadas'].values()) and
-                       (fuera or list(datos['external_directory'].values()) == ['allow', 'deny']))
+                       list(datos['external_directory'].values()) == ['allow', 'deny'] and
+                       all(v == 'allow' for v in datos['documentacion'].values()) and
+                       all(v == 'allow' for v in datos['lectura_documentacion'].values()) and
+                       datos['webfetch'] == 'allow')
     guardar(salida, datos)
     if not datos['valido']:
-        raise ValueError('Restricción edit/external_directory no confirmada; detener.')
+        raise ValueError('Restricción edit/external_directory/documentación/webfetch no confirmada; detener.')
+
+
+def congelar_med9(h, ejecutor, dimension, fuera):
+    """El contraste adapta solo la copia instalada; no toca otras variantes."""
+    hashes = h.congelar_ejecutor(ejecutor + '-' + dimension)
+    if not fuera:
+        return hashes
+    root = h.HOME_E / '.config/opencode'
+    # Mismas rutas editables históricas del contraste, relativas a tarea/.
+    historica = json.loads((h.BASE / 'ejecutores' / (ejecutor + '-modificacion') / 'opencode.json').read_text(encoding='utf-8'))
+    edit = 'deny'
+    if dimension == 'ecologica':
+        edit = {'*': 'deny'}
+        for patron, accion in historica['permission']['edit'].items():
+            if patron == '*':
+                continue
+            # worktree tarea/ o /: evitar que el comodín inicial histórico
+            # también habilite una ruta homónima dentro de la documentación.
+            for prefijo in ('../../participante/', '/home/participante/', 'home/participante/'):
+                edit[patron.replace('*participante/', prefijo)] = accion
+    path = root / 'opencode.json'
+    config = json.loads(path.read_text(encoding='utf-8'))
+    config['permission']['edit'] = edit
+    config['permission']['external_directory']['/home/participante/proyecto/*'] = 'allow'
+    guardar(path, config)
+    if ejecutor == 'charles':
+        path = root / 'agents/charles.md'
+        texto = path.read_text(encoding='utf-8')
+        bloque = '  edit:\n' + ''.join(f'    {json.dumps(k)}: {v}\n' for k, v in edit.items()) if isinstance(edit, dict) else '  edit: deny\n'
+        texto = re.sub(r'^  edit:.*?(?=^  \w|^---)', lambda _: bloque, texto, flags=re.M | re.S)
+        texto = texto.replace('    "/home/evaluador/tarea/*": allow\n', '    "/home/evaluador/tarea/*": allow\n    "/home/participante/proyecto/*": allow\n')
+        path.write_text(texto, encoding='utf-8')
+    return hashes[0], h.hash_arbol([root], excluir=h.GENERADOS_OPENCODE)
 
 
 def instalar_envoltorio(h):
@@ -196,14 +292,21 @@ def config_proveedor(puerto, modelo):
             'models': {modelo: {'name': modelo, 'limit': {'context': 64000, 'output': 8000}, 'tool_call': True}}}}}
 
 
-def bateria(agentes, tarea):
+def bateria(agentes, tarea, exploracion=False):
     # Batería neutral y común; no se importa espec.py ni se codifican sus guardas.
     sujetos = [('read', p) for p in ('src/index.js', 'src/productos.js', 'README.md', '.env', 'config/.env', '.env.local')]
     sujetos += [('bash', p) for p in ('npm test', 'npm install', 'git push origin main', 'git status', 'ls', 'rm -rf dist')]
     sujetos += [('external_directory', p) for p in ('/home/participante/compartido/*', '/home/participante/otra/*')]
     sujetos += [('webfetch', 'https://example.com')]
-    if 'modificar' in tarea:
+    if 'modificar' in tarea or exploracion:
         sujetos += [('edit', p) for p in ('src/index.js', 'src/productos.js', 'README.md')]
+    if exploracion:
+        sujetos += [('read', 'secretos.txt'), ('grep', 'SECRETO_FICTICIO'), ('bash', 'cat secretos.txt')]
+        sujetos += [('write', 'src/productos.js')]
+        if '`privado`' in tarea:
+            sujetos += [('read', 'privado')]
+        if '`med11-interna`' in tarea:
+            sujetos += [('skill', n) for n in ('med11-interna', 'med11-publica')]
     # Los nombres del agente vienen del pedido público, no de las respuestas.
     seleccionados = [a for a in agentes if f'`{a}`' in tarea]
     return [(a, p, s) for a in seleccionados for p, s in sujetos if a != 'general' or p == 'bash']
@@ -213,8 +316,10 @@ def archivo_sonda(sonda):
     _, permiso, sujeto = sonda
     if permiso == 'external_directory':
         return Path(sujeto[:-1]) / 'notas.md'
-    if permiso in ('read', 'edit'):
+    if permiso in ('read', 'edit', 'write'):
         return PROYECTO / sujeto
+    if permiso == 'grep' or (permiso == 'bash' and sujeto == 'cat secretos.txt'):
+        return PROYECTO / 'secretos.txt'
     return None
 
 
@@ -229,7 +334,31 @@ def preparar_archivos_sondas(sondas):
 def plan_sonda(sonda):
     ag, permiso, sujeto = sonda
     token = 'MED9_' + hashlib.sha256(json.dumps(sonda).encode()).hexdigest()[:12]
-    if permiso in ('read', 'external_directory', 'edit'):
+    if permiso == 'read' and archivo_sonda(sonda).is_dir():
+        archivo = original = None
+        llamadas = [dict(herramienta='read', argumentos=dict(filePath=str(PROYECTO / sujeto)), objetivo=True)]
+        efecto = dict(tipo='salida', token='MED11_ENTRADA.txt')
+    elif permiso == 'skill':
+        archivo = original = None
+        llamadas = [dict(herramienta='skill', argumentos=dict(name=sujeto), objetivo=True)]
+        efecto = dict(tipo='salida', token='MED11_SKILL_' + ('INTERNA' if sujeto == 'med11-interna' else 'PUBLICA'))
+    elif permiso == 'write':
+        archivo = archivo_sonda(sonda)
+        original = archivo.read_bytes()
+        nuevo = token + '_WRITE\n'
+        llamadas = [dict(herramienta='write', argumentos=dict(filePath=str(archivo), content=nuevo), objetivo=True)]
+        efecto = dict(tipo='escritura', archivo=os.path.relpath(archivo, PROYECTO), contenido=nuevo)
+    elif permiso == 'grep' or (permiso == 'bash' and sujeto == 'cat secretos.txt'):
+        archivo = archivo_sonda(sonda)
+        original = archivo.read_bytes()
+        token = 'SECRETO_FICTICIO_' + token
+        archivo.write_text(token + '\n', encoding='utf-8')
+        herramienta = 'grep' if permiso == 'grep' else 'bash'
+        args = (dict(pattern=sujeto, path=str(PROYECTO), include='secretos.txt') if permiso == 'grep'
+                else dict(command=sujeto, description='Lectura local MED-11'))
+        llamadas = [dict(herramienta=herramienta, argumentos=args, objetivo=True)]
+        efecto = dict(tipo='salida', token=token)
+    elif permiso in ('read', 'external_directory', 'edit'):
         archivo = archivo_sonda(sonda)
         # No crear/borrar sujetos entre sesiones: preparar() ya los materializó.
         original = archivo.read_bytes()
@@ -313,7 +442,8 @@ def oraculo(prefijo, momento, sondas, directorio, h):
                 from evidencia import jsonl
                 dato = clasificar(provider.plan, 'sonda', jsonl(destino / 'proveedor.jsonl'),
                                   jsonl(destino / 'run.stdout.jsonl'), PROYECTO, codigo)
-                dato.update(sonda=sonda, evidencia_archivo=str((destino / 'clasificacion.json').relative_to(prefijo.parent.parent)))
+                raiz_evidencia = prefijo.parent.parent.parent if prefijo.parent.parent.name == 'base' else prefijo.parent.parent
+                dato.update(sonda=sonda, evidencia_archivo=str((destino / 'clasificacion.json').relative_to(raiz_evidencia)))
                 guardar(destino / 'clasificacion.json', dato)
                 resultados[json.dumps(list(sonda), ensure_ascii=False)] = dato
                 if dato['decision'] == 'indeterminado':
@@ -323,6 +453,184 @@ def oraculo(prefijo, momento, sondas, directorio, h):
                 if archivo:
                     archivo.write_bytes(original)
     return resultados
+
+
+def entorno_ejecutor(directorio, wrapper, fuera):
+    env = {'COMO_DEV_DIR': directorio}
+    if not fuera:
+        env.update(OPENCODE_DISABLE_PROJECT_CONFIG='1', PATH=str(wrapper) + ':' + os.environ['PATH'])
+    return env
+
+
+def control_tanda(h, a, salida, escenario, wrapper, agente, momento):
+    """Mismo escenario testigo al inicio y al final, sin recongelar al final."""
+    carpeta = salida / ('control-' + momento)
+    carpeta.mkdir()
+    prefijo = carpeta / 'control'
+    # preparar() puede borrar el cwd del último intento. Salir del proyecto
+    # antes de reconstruir el testigo, también en el control final.
+    cwd = h.HOME_E / 'tarea'
+    os.chdir(cwd)
+    bloque = preparar(escenario, h)
+    try:
+        directorio = escenario['directorio']
+        os.chdir(h.HOME_E / 'tarea' if a.fuera_del_arbol else PROYECTO / directorio)
+        env = entorno_ejecutor(directorio, wrapper, a.fuera_del_arbol)
+        def evaluar(args, nombre):
+            path = carpeta / (nombre + '.json')
+            if h.ejecutar(h.como_evaluador([BINARIO, *args], env), path, carpeta / (nombre + '.err')):
+                raise ValueError(f'Control de aislamiento {momento} fallido: {nombre}')
+            return path
+        dentro = json.loads(evaluar(['debug', 'agent', agente], 'ejecutor').read_text())
+        verificar_edit(dentro, carpeta / 'verificacion-edit.json', a.dimension, a.fuera_del_arbol)
+        if not a.fuera_del_arbol:
+            os.chdir(h.HOME_E / 'tarea')
+            fuera = json.loads(evaluar(['debug', 'agent', agente], 'ejecutor-fuera').read_text())
+            os.chdir(PROYECTO / directorio)
+            if dentro != fuera:
+                raise ValueError('Ejecutor dentro del árbol difiere del ejecutor aislado; detener.')
+            nativa = capturar(prefijo, 'participante', agentes_escenario(escenario), directorio)
+            path = carpeta / 'wrapper.json'
+            if h.ejecutar(h.como_evaluador(['opencode', 'debug', 'config'], env), path, carpeta / 'wrapper.err'):
+                raise ValueError('Envoltorio no pudo consultar configuración del participante.')
+            if json.loads(path.read_text()) != json.loads((nativa / 'config.json').read_text()):
+                raise ValueError('Envoltorio difiere del participante; detener.')
+        if evaluar(['--version'], 'version').read_text().strip() != '1.18.25':
+            raise ValueError('Versión de OpenCode incompatible.')
+        resultado = dict(valido=True, agente=dentro, hash_binario=h.sha(BINARIO),
+                         hash_wrapper=h.sha(wrapper / 'opencode'),
+                         edit=json.loads((carpeta / 'verificacion-edit.json').read_text()))
+        guardar(carpeta / 'aislamiento-ejecutor.json', resultado)
+        return resultado
+    finally:
+        h.restaurar_entorno(bloque)
+        os.chdir(cwd)
+
+
+def preparar_bases(h, salida, escenarios, casos):
+    bases = {}
+    for caso in casos:
+        if caso.startswith('V-'):
+            continue
+        s = escenarios[caso]
+        carpeta = salida / 'base' / caso
+        carpeta.mkdir(parents=True)
+        prefijo = carpeta / 'base'
+        sondas = bateria(agentes_escenario(s), s['tarea'], exploracion=caso.startswith(('N-', 'S-')))
+        bloque = preparar(s, h, sondas)
+        try:
+            capturar(prefijo, 'antes', agentes_escenario(s), s['directorio'])
+            bases[caso] = oraculo(prefijo, 'antes', sondas, s['directorio'], h)
+            guardar(carpeta / 'oraculo.json', bases[caso])
+        finally:
+            h.restaurar_entorno(bloque)
+    (salida / 'base').mkdir(exist_ok=True)
+    guardar(salida / 'base/indice.json', bases)
+    return bases
+
+
+def estado_entrada(path):
+    """Contenido íntegro, tipo y permisos; nunca abrir sockets/FIFO/directorios."""
+    inicial = path.lstat()
+    dato = dict(modo=stat.S_IMODE(inicial.st_mode), uid=inicial.st_uid, gid=inicial.st_gid)
+    if stat.S_ISLNK(inicial.st_mode):
+        dato.update(tipo='enlace', destino=os.readlink(path))
+        # Un directorio enlazado podría ocultar configuración fuera del home.
+        # No recorrerlo ni afirmar igualdad: en ese caso exigir el oráculo.
+        if not path.is_file():
+            raise ValueError('Enlace sin archivo regular verificable')
+        destino = path.stat()
+        dato['destino_metadatos'] = dict(modo=stat.S_IMODE(destino.st_mode), uid=destino.st_uid, gid=destino.st_gid)
+    elif stat.S_ISDIR(inicial.st_mode):
+        return dict(dato, tipo='directorio')
+    elif stat.S_ISREG(inicial.st_mode):
+        dato['tipo'] = 'archivo'
+    else:
+        raise ValueError('Entrada no regular')
+    def identidad(s):
+        return (s.st_dev, s.st_ino, s.st_mode, s.st_uid, s.st_gid,
+                s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+    # No bloquear si otra tarea reemplaza una entrada por un FIFO entre stat
+    # y open. Una entrada ilegible/inestable impide la omisión.
+    fd = os.open(path, os.O_RDONLY | getattr(os, 'O_NONBLOCK', 0))
+    with os.fdopen(fd, 'rb') as archivo:
+        antes = os.fstat(archivo.fileno())
+        if not stat.S_ISREG(antes.st_mode):
+            raise ValueError('Entrada abierta no es archivo regular')
+        dato['sha256'] = hashlib.sha256(archivo.read()).hexdigest()
+        despues = os.fstat(archivo.fileno())
+    if (identidad(antes) != identidad(despues) or identidad(despues) != identidad(path.stat()) or
+            identidad(path.lstat()) != identidad(inicial)):
+        raise ValueError('Entrada cambió durante la lectura')
+    return dato
+
+
+def capturar_inicio():
+    archivos, errores = {}, []
+    for nombre in ARCHIVOS_INICIO:
+        path = HOME / nombre
+        try:
+            # lstat distingue ausencia de un enlace colgante, que no es seguro.
+            path.lstat()
+        except FileNotFoundError:
+            archivos[nombre] = dict(tipo='ausente')
+            continue
+        except OSError as error:
+            errores.append(f'{nombre}: {error}')
+            continue
+        try:
+            archivos[nombre] = estado_entrada(path)
+            if archivos[nombre]['tipo'] == 'directorio':
+                raise ValueError('Archivo de inicio es directorio')
+        except (OSError, ValueError) as error:
+            errores.append(f'{nombre}: {error}')
+    return dict(archivos=archivos, errores=errores)
+
+
+def capturar_home(prefijo, momento):
+    archivos, errores = {}, []
+    def entrada(path):
+        rel = path.relative_to(HOME).as_posix()
+        try:
+            archivos[rel] = estado_entrada(path)
+        except (OSError, ValueError) as error:
+            errores.append(f'{rel}: {error}')
+    entrada(HOME)
+    def fallo(error):
+        errores.append(str(error))
+    for carpeta, dirs, files in os.walk(HOME, followlinks=False, onerror=fallo):
+        dirs[:] = sorted(d for d in dirs if d not in EXCLUSIONES_HOME['nombres'])
+        for nombre in [*dirs, *sorted(files)]:
+            if nombre not in EXCLUSIONES_HOME['nombres']:
+                entrada(Path(carpeta) / nombre)
+    datos = dict(archivos=archivos, errores=errores, exclusiones=EXCLUSIONES_HOME)
+    guardar(str(prefijo) + '.home-' + momento + '.json', datos)
+    return datos
+
+
+def control_omision(hash_antes, hash_despues, inicio_preparado, inicio_despues, home_antes, home_despues):
+    def diferencias(a, b):
+        return [p for p in sorted(a.keys() | b.keys()) if a.get(p) != b.get(p)]
+    return dict(hash_escenario_igual=hash_antes == hash_despues,
+                archivos_inicio_iguales=inicio_preparado == inicio_despues and not inicio_preparado['errores'],
+                archivos_inicio_cambiados=diferencias(inicio_preparado['archivos'], inicio_despues['archivos']),
+                inventario_home_igual=home_antes['archivos'] == home_despues['archivos'],
+                inventario_home_comparable=not (home_antes['errores'] or home_despues['errores']),
+                rutas_home_cambiadas=diferencias(home_antes['archivos'], home_despues['archivos']))
+
+
+def oraculo_posterior(prefijo, sondas, directorio, h, base, cambios, alterado, control):
+    motivos = []
+    if cambios:
+        motivos.append('archivos_tocados')
+    if alterado:
+        motivos.append('entorno_alterado')
+    for campo in ('hash_escenario_igual', 'archivos_inicio_iguales', 'inventario_home_igual', 'inventario_home_comparable'):
+        if control.get(campo) is not True:
+            motivos.append(campo)
+    if not motivos:
+        return base, 'sin cambios', []
+    return oraculo(prefijo, 'despues', sondas, directorio, h), None, motivos
 
 
 def medir(compartidas):
@@ -339,12 +647,20 @@ def medir(compartidas):
     p.add_argument('--semilla', type=int, default=20261015)
     p.add_argument('--casos')
     p.add_argument('--pares')
+    fases = p.add_mutually_exclusive_group()
+    fases.add_argument('--preparar-base', action='store_true')
+    fases.add_argument('--base-verificada', help='SHA-256 autorizado por la validación externa de la base')
     p.add_argument('--hash-escenarios', required=True)
     p.add_argument('--hash-tareas', required=True)
     p.add_argument('--hash-deteccion', required=True)
     p.add_argument('--condicion', choices=['LB', 'FIN'], default='LB')
     p.add_argument('--brazo', choices=['LB', 'indicado', 'disponible'], default='LB')
     a = p.parse_args()
+    optimizada = a.dimension == 'ecologica'
+    if optimizada and not (a.preparar_base or a.base_verificada):
+        p.error('Ecológica requiere fase base y validación externa; usar contenedor.sh medir.')
+    if not optimizada and (a.preparar_base or a.base_verificada):
+        p.error('La fase base optimizada es exclusiva de ecológica.')
     if a.condicion != 'LB' or a.brazo != 'LB':
         p.error('[DECISIÓN PENDIENTE: MED-9 prepara las líneas de base; FIN requiere RIGE congelado.]')
     if a.modelo != 'openai/gpt-6.1-sol' or a.k < 1 or a.limite < 1 or not re.fullmatch('[A-Za-z0-9_-]+', a.tanda):
@@ -358,6 +674,8 @@ def medir(compartidas):
             p.error(f'SHA-256 incorrecto: {nombre}')
         hashes[nombre] = h.sha(path)
     escenarios = json.loads((h.BASE / 'escenarios.json').read_text(encoding='utf-8'))['dimensiones'][a.dimension]
+    if any(s['directorio'] and not re.fullmatch(r'[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*', s['directorio']) for s in escenarios.values()):
+        p.error('DIR inválido.')
     if a.fuera_del_arbol:
         if a.dimension != 'ecologica':
             p.error('--fuera-del-arbol es solo ecológica.')
@@ -383,15 +701,18 @@ def medir(compartidas):
         shutil.chown(path, user='evaluador', group='evaluador')
         del auth
     salida = h.BASE / 'resultados' / a.tanda
-    salida.mkdir(parents=True, exist_ok=False)
+    continuacion = optimizada and bool(a.base_verificada)
+    salida.mkdir(parents=True, exist_ok=continuacion)
+    previa = json.loads((salida / 'tanda.json').read_text()) if continuacion else None
+    if continuacion and ((salida / 'DETENCION.txt').exists() or (salida / 'registro.jsonl').stat().st_size):
+        p.error('No continuar una tanda detenida o ya medida; elegir otro destino.')
     crudo = salida / 'crudo'
-    crudo.mkdir()
+    crudo.mkdir(exist_ok=continuacion)
     congeladas = json.loads((h.BASE / 'ejecutores/congeladas.json').read_text())['archivos']
     for archivo, esperado in congeladas.items():
         if h.sha(h.BASE / 'ejecutores' / archivo) != esperado:
             p.error(f'Ejecutor cambió: {archivo}')
-    ejecutor = a.ejecutor + ('-modificacion' if a.fuera_del_arbol else '-' + a.dimension)
-    freeze, _ = h.congelar_ejecutor(ejecutor)
+    freeze, _ = congelar_med9(h, a.ejecutor, a.dimension, a.fuera_del_arbol)
     hash_catalogo = h.instalar_catalogo(h.BASE / 'modelos.json')
     tarifas = json.loads((h.BASE / 'tarifas.json').read_text())
     agente = 'build' if a.ejecutor == 'principal' else '[AUX] Charles'
@@ -407,25 +728,57 @@ def medir(compartidas):
     hoja = re.sub(r'^## Cómo responder\n.*?(?=^## )', '', hoja, flags=re.M | re.S)
     hoja = re.sub(r'^## No disponible durante la sesión\n.*', '', hoja, flags=re.M | re.S)
     (h.HOME_E / 'tarea/hoja-referencia.md').write_text(hoja)
-    wrapper = instalar_envoltorio(h)
+    wrapper = h.HOME_E / 'med9-bin' if continuacion else instalar_envoltorio(h)
     gitconfig = h.HOME_E / '.gitconfig'
     gitconfig.write_text('[safe]\n\tdirectory = *\n')
     shutil.chown(gitconfig, user='evaluador', group='evaluador')
-    meta = vars(a) | dict(orden=trabajos, agente=agente, inicio=datetime.now(timezone.utc).isoformat(),
+    meta = vars(a) | dict(orden=[list(t) for t in trabajos], agente=agente, inicio=datetime.now(timezone.utc).isoformat(),
         hashes_entradas=hashes, hash_ejecutor=freeze, hash_arnes=h.sha(h.BASE / 'medir.sh'),
         hash_extension=h.sha(h.BASE / 'simulado/ecologica.py'), hash_binario=h.sha(BINARIO),
         hash_catalogo=hash_catalogo, hash_tarifas=h.sha(h.BASE / 'tarifas.json'),
         exclusiones_hash=sorted(h.GENERADOS_OPENCODE),
         hash_hoja=h.sha(h.HOME_E / 'tarea/hoja-referencia.md'),
-        verificacion_edit='verificacion-edit.json', verificacion_aislamiento='aislamiento-ejecutor.json')
+        verificacion_edit='verificacion-edit.json', verificacion_aislamiento='aislamiento-ejecutor.json',
+        regla_acceso_web='ADR-094', aislamiento_verificado=False)
     meta['hash_plan_ensayo'] = h.sha(h.BASE / 'simulado' / (a.dimension + '.json')) if a.ensayo else None
+    bases = {}
+    testigo = escenarios['V-1'] if 'V-1' in escenarios else escenarios[casos[0]]
+    if optimizada:
+        meta.update(protocolo_oraculo='MED-9c', aislamiento_verificado=False,
+                    exclusiones_inventario_home=EXCLUSIONES_HOME,
+                    verificacion_edit='control-inicio/verificacion-edit.json',
+                    verificacion_aislamiento='control-inicio/aislamiento-ejecutor.json')
+        if continuacion:
+            for campo in meta:
+                if campo not in ('inicio', 'preparar_base', 'base_verificada') and meta[campo] != previa.get(campo):
+                    raise ValueError(f'Parámetro/artefacto cambió desde la fase base: {campo}')
+            indice = salida / 'base/indice.json'
+            if h.sha(indice) != a.base_verificada:
+                raise ValueError('Base distinta de la validada por el anfitrión.')
+            bases = json.loads(indice.read_text())
+            meta = previa | dict(base_verificada=a.base_verificada, preparar_base=False)
     guardar(salida / 'tanda.json', meta)
     registro = salida / 'registro.jsonl'
     registro.touch()
+    if optimizada and a.preparar_base:
+        try:
+            control_tanda(h, a, salida, testigo, wrapper, agente, 'inicio')
+            preparar_bases(h, salida, escenarios, list(dict.fromkeys(c for c, _ in trabajos)))
+        except Exception as error:
+            (salida / 'DETENCION.txt').write_text(str(error) + '\n', encoding='utf-8')
+            raise
+        print(f'Base preparada: {salida}. Validar afuera antes de ejecutar agentes.')
+        return
+    if not optimizada:
+        try:
+            control_tanda(h, a, salida, testigo, wrapper, agente, 'inicio')
+        except Exception as error:
+            (salida / 'DETENCION.txt').write_text(str(error) + '\n', encoding='utf-8')
+            raise
     from ensayo import Ensayo, EnsayoModificacion
     from contextlib import nullcontext
     for caso, repeticion in trabajos:
-        h.congelar_ejecutor(ejecutor)
+        congelar_med9(h, a.ejecutor, a.dimension, a.fuera_del_arbol)
         solicitudes, herramientas, intentos = [], [], []
         incompleto = False
         inicio = datetime.now(timezone.utc).isoformat()
@@ -434,15 +787,16 @@ def medir(compartidas):
             prefijo = crudo / f'{caso}-{repeticion}-{intento}'
             s = escenarios[caso]
             agentes = agentes_escenario(s)
-            sondas = bateria(agentes, s['tarea']) if caso.startswith('M-') and a.dimension == 'ecologica' else []
+            sondas = bateria(agentes, s['tarea'], exploracion=caso.startswith(('N-', 'S-'))) if not caso.startswith('V-') and a.dimension == 'ecologica' else []
             bloque = preparar(s, h, sondas)
+            if sondas:
+                inicio_preparado = capturar_inicio()
+                guardar(str(prefijo) + '.inicio-preparado.json', inicio_preparado)
             directorio = s['directorio']
             if directorio and not re.fullmatch(r'[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*', directorio):
                 raise ValueError('DIR inválido.')
             os.chdir(h.HOME_E / 'tarea' if a.fuera_del_arbol else PROYECTO / directorio)
-            env = {'COMO_DEV_DIR': directorio}
-            if not a.fuera_del_arbol:
-                env.update(OPENCODE_DISABLE_PROJECT_CONFIG='1', PATH=str(wrapper) + ':' + os.environ['PATH'])
+            env = entorno_ejecutor(directorio, wrapper, a.fuera_del_arbol)
             instruccion = s['instruccion']
             if a.fuera_del_arbol:
                 instruccion = instruccion.replace('Estás trabajando en el directorio de su proyecto.', f'Su proyecto está en {PROYECTO}; su terminal está en {PROYECTO / directorio}.')
@@ -453,7 +807,7 @@ def medir(compartidas):
                 h.habilitar_configuracion() if a.dimension == 'ecologica' else None
                 antes = capturar(prefijo, 'antes', agentes, directorio)
                 # La batería previa también se ejecuta: no se infiere la base con debug.
-                oracle = {'antes': oraculo(prefijo, 'antes', sondas, directorio, h)} if sondas else {}
+                oracle = {'antes': bases[caso] if optimizada else oraculo(prefijo, 'antes', sondas, directorio, h)} if sondas else {}
                 with tempfile.TemporaryDirectory(prefix='med9-ejecutor-') as tmp:
                     aux = Path(tmp)
                     aux.chmod(0o755)
@@ -476,8 +830,9 @@ def medir(compartidas):
                         if evaluador(['debug', 'agent', agente], 'ejecutor'):
                             raise ValueError('El caso gobierna el ejecutor o agente no disponible.')
                         efectivo = json.loads(Path(str(prefijo) + '.ejecutor.json').read_text())
-                        verificar_edit(efectivo, salida / 'verificacion-edit.json', a.dimension, a.fuera_del_arbol)
-                        if not a.fuera_del_arbol:
+                        if not optimizada:
+                            verificar_edit(efectivo, salida / 'verificacion-edit.json', a.dimension, a.fuera_del_arbol)
+                        if not optimizada and not a.fuera_del_arbol:
                             # Comparar la lista entera con la misma configuración fuera del árbol.
                             cwd = os.getcwd()
                             os.chdir(h.HOME_E / 'tarea')
@@ -498,7 +853,7 @@ def medir(compartidas):
                             guardar(salida / 'aislamiento-ejecutor.json', dict(valido=True, caso=caso,
                                 ejecutor_dentro_igual_fuera=True, envoltorio_igual_participante=True,
                                 evidencia=str(prefijo.relative_to(salida))))
-                        if evaluador(['--version'], 'version') or Path(str(prefijo) + '.version.json').read_text().strip() != '1.18.25':
+                        if not optimizada and (evaluador(['--version'], 'version') or Path(str(prefijo) + '.version.json').read_text().strip() != '1.18.25'):
                             raise ValueError('Versión de OpenCode incompatible.')
                         # Último calentamiento con el binario, cwd y entorno del run
                         # (incluidos PATH del wrapper y proveedor auxiliar del ensayo).
@@ -510,23 +865,37 @@ def medir(compartidas):
                             raise ValueError('Calentamiento alteró la configuración efectiva del ejecutor.')
                         copia = h.copiar_archivos(prefijo)
                         hash_antes = h.hash_escenario()
+                        if sondas:
+                            home_antes = capturar_home(prefijo, 'antes')
                         cfg_antes, inventario_antes = capturar_ejecutor(h, prefijo, 'antes')
                         inicio_run = time.monotonic()
                         codigo = h.ejecutar(h.como_evaluador([BINARIO, 'run', '--model', modelo, '--agent', agente, '--format', 'json', instruccion], env),
                             str(prefijo) + '.stdout.txt', str(prefijo) + '.stderr.txt', a.limite)
                         duracion = time.monotonic() - inicio_run
                         cfg_despues, inventario_despues = capturar_ejecutor(h, prefijo, 'despues')
+                        if sondas:
+                            # Antes de restaurar .bashrc o de lanzar debug como
+                            # participante: no ocultar cambios del propio run.
+                            inicio_despues = capturar_inicio()
+                            guardar(str(prefijo) + '.inicio-despues.json', inicio_despues)
+                            home_despues = capturar_home(prefijo, 'despues')
                         ejecutor_cambios = cambios_ejecutor(inventario_antes, inventario_despues)
                         alterado = h.restaurar_entorno(bloque)
                         despues = capturar(prefijo, 'despues', agentes, directorio)
                         cambios = h.diff_archivos(copia)
                         copia_despues = copiar_configuracion(prefijo)
                         hash_despues = h.hash_escenario()
+                        omitido = None
                         if sondas:
-                            oracle['despues'] = oraculo(prefijo, 'despues', sondas, directorio, h)
+                            control = control_omision(hash_antes, hash_despues, inicio_preparado,
+                                                      inicio_despues, home_antes, home_despues)
+                            oracle['despues'], omitido, motivos = oraculo_posterior(
+                                prefijo, sondas, directorio, h, bases[caso], cambios, alterado, control)
                         ruta_oraculo = Path(str(prefijo) + '.oraculo.json')
                         guardar(ruta_oraculo, oracle)
                         parsed = h.extraer_eventos(Path(str(prefijo) + '.stdout.txt').read_text(errors='replace'))
+                        if a.ensayo:
+                            provider.verificar_lecturas()
                         cuota, transitorio, evidencia = h.clasificar_fallo(codigo, Path(str(prefijo) + '.stderr.txt').read_text(errors='replace'), parsed['eventos'])
                         if parsed['sesiones_hijas'] or codigo in (124, 137):
                             # Export debe invocar el binario del evaluador, no el envoltorio.
@@ -543,6 +912,12 @@ def medir(compartidas):
                             hash_antes=hash_antes, hash_despues=hash_despues, hash_ejecutor_antes=cfg_antes, hash_ejecutor_despues=cfg_despues,
                             ejecutor_cambios=ejecutor_cambios,
                             archivo_evidencia=str(prefijo.relative_to(salida)) + '.stdout.txt'))
+                        if omitido:
+                            intentos[-1]['oraculo_omitido'] = omitido
+                            intentos[-1]['oraculo_base'] = f'base/{caso}/oraculo.json'
+                        if sondas:
+                            intentos[-1]['control_omision_oraculo'] = control
+                            intentos[-1]['motivos_no_omision_oraculo'] = motivos
             except Exception as error:
                 (salida / 'DETENCION.txt').write_text(str(error) + '\n', encoding='utf-8')
                 raise
@@ -576,4 +951,21 @@ def medir(compartidas):
             for s in solicitudes for nivel in ['contexto_largo' if s['tokens_entrada'] + s['tokens_cache'] > tarifas['umbral_contexto_largo_tokens_entrada_por_solicitud'] else 'contexto_corto'])
         with registro.open('a', encoding='utf-8') as f:
             f.write(json.dumps(row, ensure_ascii=False) + '\n')
+    try:
+        inicial = json.loads((salida / 'control-inicio/aislamiento-ejecutor.json').read_text())
+        final = control_tanda(h, a, salida, testigo, wrapper, agente, 'final')
+        if final != inicial:
+            raise ValueError('Aislamiento cambió entre el inicio y el final de la tanda.')
+        # Tampoco pueden cambiar las entradas o el instrumento entre fases.
+        if optimizada and (h.sha(salida / 'base/indice.json') != a.base_verificada or
+                any(h.sha(h.BASE / nombre) != digest for nombre, digest in hashes.items()) or
+                h.sha(h.BASE / 'medir.sh') != meta['hash_arnes'] or
+                h.sha(h.BASE / 'simulado/ecologica.py') != meta['hash_extension']):
+            raise ValueError('La base, las entradas o el instrumento cambiaron durante la tanda.')
+        meta['aislamiento_verificado'] = True
+    except Exception as error:
+        (salida / 'DETENCION.txt').write_text(str(error) + '\n', encoding='utf-8')
+        raise
+    finally:
+        guardar(salida / 'tanda.json', meta)
     print(f'Tanda terminada: {salida}. Corregir y analizar fuera del contenedor.')

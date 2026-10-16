@@ -1,0 +1,59 @@
+{
+  "accion": "sonda",
+  "decision": "deny",
+  "regla": "La herramienta objetivo no fue ofrecida en su sesión; hay retorno de la llamada fija",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "webfetch",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'webfetch'. Available tools: bash, edit, glob, grep, invalid, read, skill, task, todowrite, write."
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "tool": "webfetch",
+          "error": "Model tried to call unavailable tool 'webfetch'. Available tools: bash, edit, glob, grep, invalid, read, skill, task, todowrite, write."
+        },
+        "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'webfetch'. Available tools: bash, edit, glob, grep, invalid, read, skill, task, todowrite, write.",
+        "metadata": {
+          "truncated": false
+        },
+        "title": "Invalid Tool",
+        "time": {
+          "start": 1792094910404,
+          "end": 1792094910409
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "write"
+    ],
+    "efecto": false,
+    "detalleEfecto": [],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "webfetch",
+    "https://example.com"
+  ],
+  "evidencia_archivo": "base/captura.oraculo-ejecucion/0/clasificacion.json"
+}

@@ -1,0 +1,21 @@
+{
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/privado"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "salida",
+        "token": "MED11_ENTRADA.txt"
+      }
+    }
+  ]
+}

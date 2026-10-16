@@ -19,12 +19,12 @@
     "charles-modificacion/agents/charles.md": "9b5296664c3e582e96173273efc9eed89baa296aafb77e183f8b20ef3d9ebfe5",
     "charles-modificacion/opencode.json": "3a252f1313978bb01973e305a3447bc5510263887c52669db216b551ec5bc17d",
     "principal-modificacion/opencode.json": "545d282fa0952a5a06c0164cd0d8cd0492b646e01b68859e1af21d96d08601be",
-    "principal-ecologica/opencode.json": "2622f27107e3ed2fc2d0acf4421c00c6b1021c9f569ac594b18e03dbc795df81",
-    "charles-ecologica/agents/charles.md": "2696a322357ce0ef8b60b2e68981cfa343c171d36b9ce51fc183f70914e54428",
-    "charles-ecologica/opencode.json": "53ef9b798009951692f461d65ce1971b9e3630a5500475df2139115fc8c05686",
-    "principal-deteccion/opencode.json": "cf864c3ca7a42b4d32b39cee1fad669936804e30fee1ca440d5bbad56e6f9545",
-    "charles-deteccion/agents/charles.md": "eb38e2b74b15f8c78bb5ec3c5e19803896b2086e78bf1c8e5d1ff6bc45cc6e11",
-    "charles-deteccion/opencode.json": "27b5c50b544f44384820c9b5667d5b7261d43f3283ffe5a34a131fa942a0ef72"
+    "principal-ecologica/opencode.json": "e6fede4cc03fda873539eda6a86b635d97509687f1d6f3755b55650a4ac11ce6",
+    "charles-ecologica/agents/charles.md": "a81d644b060cc0fadccff35800a5e19b58497128eb4b6bee0ef4c981c63d0f42",
+    "charles-ecologica/opencode.json": "4b01588c888f1e443f70d9656901f235d0fb99e76246039d517a82bdf1ce729d",
+    "principal-deteccion/opencode.json": "d067d73b349ad80e65c13b1830a4a1a02f0ec8964a1e7ad170a1738017edbf7c",
+    "charles-deteccion/agents/charles.md": "d75362fb4e7492f468ef47771e87a4ebf75a3b91836de6b4d486cb641644f731",
+    "charles-deteccion/opencode.json": "00d3b1f774eaca2b7bb80e111c7ae476f9cb1163cb70b0694bdbcc01c17589c2"
   },
   "modificacion": {
     "adr": "ADR-085",
@@ -41,5 +41,13 @@
       "Charles conserva el resto de la configuraci?n y su prompt."
     ],
     "verificacion_efectiva": "Control nativo obligatorio en cada tanda; verificacion-edit.json y aislamiento-ejecutor.json. Sin corrida Docker del escritor."
+  },
+  "documentacion_y_web": {
+    "adr": "ADR-094",
+    "cambios": [
+      "external_directory permite /home/evaluador/tarea/*; edit sigue denegado en esa carpeta.",
+      "webfetch allow en principal/Charles, ecol?gica/detecci?n; websearch deny sin EXA.",
+      "Sin cambios en bash ni prompt de Charles, ni en variantes de otras dimensiones."
+    ]
   }
 }

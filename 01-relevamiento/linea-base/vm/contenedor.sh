@@ -98,6 +98,7 @@ case "$SUBCOMANDO" in
   medir)
     ENSAYO=0
     DIMENSION=atribucion
+    TANDA=ensayo
     SONDA=
     DESTINO=''
     ARGUMENTOS=()
@@ -107,6 +108,9 @@ case "$SUBCOMANDO" in
         --sonda=*) SONDA=${1#--sonda=}; ARGUMENTOS+=(--sonda "/opt/linea-base/$(basename "$SONDA")"); shift ;;
         --ensayo) ENSAYO=1; ARGUMENTOS+=(--ensayo); shift ;;
         --destino) [[ $# -ge 2 ]] || fallar 'Falta carpeta para --destino.'; DESTINO=$2; shift 2 ;;
+        --tanda) [[ $# -ge 2 ]] || fallar 'Falta valor para --tanda.'; TANDA=$2; ARGUMENTOS+=(--tanda "$2"); shift 2 ;;
+        --tanda=*) TANDA=${1#--tanda=}; ARGUMENTOS+=("$1"); shift ;;
+        --preparar-base|--preparar-base=*|--base-verificada|--base-verificada=*) fallar 'La validación de la base la administra contenedor.sh.' ;;
         --dimension) [[ $# -ge 2 ]] || fallar 'Falta valor para --dimension.'; DIMENSION=$2; ARGUMENTOS+=(--dimension "$2"); shift 2 ;;
         --dimension=*) DIMENSION=${1#--dimension=}; ARGUMENTOS+=("$1"); shift ;;
         *) ARGUMENTOS+=("$1"); shift ;;
@@ -171,7 +175,20 @@ case "$SUBCOMANDO" in
     fi
     # exec no imprime ni exporta la credencial en el registro de la tarea.
     CODIGO=0
-    docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" || CODIGO=$?
+    if [[ $DIMENSION == ecologica ]]; then
+      # Fase 0 sin agente: las respuestas y las capturas de referencia siguen
+      # afuera. Sólo vuelve al contenedor el hash de la base aprobada.
+      [[ $TANDA =~ ^[A-Za-z0-9_-]+$ ]] || fallar 'Tanda inválida.'
+      docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" --preparar-base || CODIGO=$?
+      docker cp "$CONTENEDOR:/opt/linea-base/resultados/." "$(ruta_docker "$EVIDENCIA")" || fallar 'No se pudo conservar la fase base.'
+      [[ $CODIGO -eq 0 ]] || exit "$CODIGO"
+      HASH_BASE=$("${PYTHON:-python}" "$(ruta_docker "$ORIGEN/../herramientas/verificar_base_ecologica.py")" \
+        "$(ruta_docker "$EVIDENCIA/$TANDA")") || fallar 'Base inicial distinta o incompleta: tanda detenida antes de ejecutar agentes.'
+      [[ $HASH_BASE =~ ^[[:xdigit:]]{64}$ ]] || fallar 'Confirmación de base inválida.'
+      docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" --base-verificada "$HASH_BASE" || CODIGO=$?
+    else
+      docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" || CODIGO=$?
+    fi
     # Preservar también la evidencia de un fallo o detención de fase 0.
     docker cp "$CONTENEDOR:/opt/linea-base/resultados/." "$(ruta_docker "$EVIDENCIA")" || {
       echo 'La medición se detuvo antes de crear resultados; revisar el error anterior.' >&2

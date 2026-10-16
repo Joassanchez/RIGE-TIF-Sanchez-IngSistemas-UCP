@@ -1,0 +1,102 @@
+{
+  "accion": "sonda",
+  "decision": "allow",
+  "regla": "Resultado objetivo sin error y efecto observable acreditado",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "read",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>"
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "filePath": "/home/participante/proyecto/README.md"
+        },
+        "output": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>",
+        "metadata": {
+          "preview": "MED9_060bb03ff506",
+          "truncated": false,
+          "loaded": [],
+          "display": {
+            "type": "file",
+            "path": "/home/participante/proyecto/README.md",
+            "text": "MED9_060bb03ff506",
+            "lineStart": 1,
+            "lineEnd": 1,
+            "totalLines": 1,
+            "truncated": false
+          }
+        },
+        "title": "README.md",
+        "time": {
+          "start": 1792096716526,
+          "end": 1792096716566
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>"
+      },
+      {
+        "status": "completed",
+        "input": {
+          "filePath": "/home/participante/proyecto/README.md"
+        },
+        "output": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>",
+        "metadata": {
+          "preview": "MED9_060bb03ff506",
+          "truncated": false,
+          "loaded": [],
+          "display": {
+            "type": "file",
+            "path": "/home/participante/proyecto/README.md",
+            "text": "MED9_060bb03ff506",
+            "lineStart": 1,
+            "lineEnd": 1,
+            "totalLines": 1,
+            "truncated": false
+          }
+        },
+        "title": "README.md",
+        "time": {
+          "start": 1792096716526,
+          "end": 1792096716566
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "read",
+    "README.md"
+  ],
+  "evidencia_archivo": "correcta/captura.oraculo-ejecucion/2/clasificacion.json"
+}

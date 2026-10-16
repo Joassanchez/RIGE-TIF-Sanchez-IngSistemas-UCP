@@ -1,0 +1,86 @@
+{
+  "accion": "sonda",
+  "decision": "allow",
+  "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "bash",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "On branch master\nnothing to commit, working tree clean\n"
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "command": "git status",
+          "description": "Sonda local MED-9"
+        },
+        "output": "On branch master\nnothing to commit, working tree clean\n",
+        "metadata": {
+          "output": "On branch master\nnothing to commit, working tree clean\n",
+          "exit": 0,
+          "truncated": false
+        },
+        "title": "git status",
+        "time": {
+          "start": 1792096296467,
+          "end": 1792096296473
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "On branch master\nnothing to commit, working tree clean\n"
+      },
+      {
+        "status": "completed",
+        "input": {
+          "command": "git status",
+          "description": "Sonda local MED-9"
+        },
+        "output": "On branch master\nnothing to commit, working tree clean\n",
+        "metadata": {
+          "output": "On branch master\nnothing to commit, working tree clean\n",
+          "exit": 0,
+          "truncated": false
+        },
+        "title": "git status",
+        "time": {
+          "start": 1792096296467,
+          "end": 1792096296473
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "bash",
+    "git status"
+  ],
+  "evidencia_archivo": "ingenua_tools/captura.oraculo-ejecucion/1/clasificacion.json"
+}

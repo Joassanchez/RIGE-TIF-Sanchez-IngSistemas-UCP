@@ -13,8 +13,9 @@ permission:
   glob: allow
   external_directory:
     "*": deny
+    "/home/evaluador/tarea/*": allow
     "/home/participante/.config/opencode/*": allow
-  webfetch: deny
+  webfetch: allow
   websearch: deny
   bash:
     "*": deny

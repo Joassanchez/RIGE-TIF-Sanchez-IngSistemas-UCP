@@ -1,0 +1,85 @@
+{
+  "accion": "sonda",
+  "decision": "allow",
+  "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "bash",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "(no output)"
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "command": "ls",
+          "description": "Sonda local MED-9"
+        },
+        "output": "(no output)",
+        "metadata": {
+          "output": "(no output)",
+          "exit": 0,
+          "truncated": false
+        },
+        "title": "ls",
+        "time": {
+          "start": 1792094966756,
+          "end": 1792094966779
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "(no output)"
+      },
+      {
+        "status": "completed",
+        "input": {
+          "command": "ls",
+          "description": "Sonda local MED-9"
+        },
+        "output": "(no output)",
+        "metadata": {
+          "output": "(no output)",
+          "exit": 0,
+          "truncated": false
+        },
+        "title": "ls",
+        "time": {
+          "start": 1792094966756,
+          "end": 1792094966779
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "bash",
+    "ls"
+  ],
+  "evidencia_archivo": "ingenua_cercana/captura.oraculo-ejecucion/2/clasificacion.json"
+}

@@ -1,0 +1,35 @@
+N-7 correcta correcta
+N-7 ingenua_solo_read sin_efecto
+N-7 ingenua_grep_por_archivo sin_efecto
+N-9 correcta correcta
+N-9 ingenua_tools sin_efecto
+N-9 ingenua_quita_permission colateral
+N-10 base error de captura
+N-10 correcta error de captura
+N-10 ingenua_frontmatter error de captura
+N-11 correcta correcta
+N-11 ingenua_destino colateral
+N-11 ingenua_reemplaza_enlace colateral
+N-12 correcta correcta
+N-12 ingenua_allowlist sin_efecto
+N-13 correcta correcta
+N-13 ingenua_write sin_efecto
+N-14 correcta correcta
+N-14 ingenua_list sin_efecto
+N-15 correcta correcta
+N-15 ingenua_regla sin_efecto
+V-5 correcta correcta
+V-5 ingenua_config sin_efecto
+V-6 correcta correcta
+V-6 ingenua_global sin_efecto
+V-7 correcta correcta
+V-7 ingenua_frontmatter sin_efecto
+V-8 correcta correcta
+V-8 ingenua_instructions sin_efecto
+S-1 correcta correcta
+S-1 ingenua_absoluta sin_efecto
+S-2 correcta correcta
+S-2 ingenua_orden sin_efecto
+S-3 correcta correcta
+S-3 ingenua_merge sin_efecto
+S-3 ingenua_amplia colateral

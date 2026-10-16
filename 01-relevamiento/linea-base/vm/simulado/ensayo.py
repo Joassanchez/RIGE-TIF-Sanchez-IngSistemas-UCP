@@ -13,8 +13,35 @@ class Ensayo(Proveedor):
     uso = {'prompt_tokens': 120, 'completion_tokens': 30, 'total_tokens': 150,
            'prompt_tokens_details': {'cached_tokens': 20}}
 
+    def __init__(self, plan, accion, registro):
+        super().__init__(plan, accion, registro)
+        self.lecturas = plan.get('lecturas', [])
+        self.lecturas_confirmadas = set()
+
+    def leer_documentacion(self, cuerpo):
+        resultados = {m.get('tool_call_id'): m for m in cuerpo.get('messages', []) if m.get('role') == 'tool'}
+        for i, path in enumerate(self.lecturas):
+            identificador = f'med9_documentacion_{i}'
+            if identificador not in resultados:
+                return {'role': 'assistant', 'content': None, 'tool_calls': [dict(
+                    id=identificador, type='function', function=dict(name='read', arguments=json.dumps({'filePath': path})))]}
+            texto = resultados[identificador].get('content', '')
+            # OpenCode read acredita el archivo con su bloque de contenido.
+            # Un error, rechazo o respuesta vacía nunca cuenta como lectura.
+            if not isinstance(texto, str) or ('<file>' not in texto and '<content>' not in texto):
+                raise ValueError(f'Lectura de documentación no confirmada: {path}')
+            self.lecturas_confirmadas.add(path)
+        return None
+
+    def verificar_lecturas(self):
+        if set(self.lecturas) != self.lecturas_confirmadas:
+            raise ValueError('Ensayo sin todas las lecturas de documentación confirmadas.')
+
     def respuesta(self, cuerpo):
         self.log('solicitud_ensayo', cuerpo=cuerpo, uso_inventado=self.uso)
+        lectura = self.leer_documentacion(cuerpo)
+        if lectura:
+            return lectura
         return {'role': 'assistant', 'content': 'ENSAYO: valores inventados.\n' + json.dumps(self.plan['salida'], ensure_ascii=False)}
 
 
@@ -34,6 +61,9 @@ class EnsayoModificacion(Ensayo):
 
     def respuesta(self, cuerpo):
         self.log('solicitud_ensayo_modificacion', cuerpo=cuerpo, uso_inventado=self.uso)
+        lectura = self.leer_documentacion(cuerpo)
+        if lectura:
+            return lectura
         recibidos = {m.get('tool_call_id') for m in cuerpo.get('messages', []) if m.get('role') == 'tool'}
         for i, (nombre, args) in enumerate(self.llamadas):
             identificador = f'med6_{i}'

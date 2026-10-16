@@ -1,0 +1,260 @@
+{
+  "[\"build\", \"bash\", \"npm test\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm test",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm test",
+          "time": {
+            "start": 1792094835877,
+            "end": 1792094835883
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm test",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm test",
+          "time": {
+            "start": 1792094835877,
+            "end": 1792094835883
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "npm test"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/0/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"npm install\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm install",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm install",
+          "time": {
+            "start": 1792094841353,
+            "end": 1792094841358
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm install",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm install",
+          "time": {
+            "start": 1792094841353,
+            "end": 1792094841358
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "npm install"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/1/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"ls\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "README.md\npackage.json\nsrc\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "ls",
+            "description": "Sonda local MED-9"
+          },
+          "output": "README.md\npackage.json\nsrc\n",
+          "metadata": {
+            "output": "README.md\npackage.json\nsrc\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "ls",
+          "time": {
+            "start": 1792094846688,
+            "end": 1792094846715
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "README.md\npackage.json\nsrc\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "ls",
+            "description": "Sonda local MED-9"
+          },
+          "output": "README.md\npackage.json\nsrc\n",
+          "metadata": {
+            "output": "README.md\npackage.json\nsrc\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "ls",
+          "time": {
+            "start": 1792094846688,
+            "end": 1792094846715
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "ls"
+    ],
+    "evidencia_archivo": "base/captura.oraculo-ejecucion/2/clasificacion.json"
+  }
+}

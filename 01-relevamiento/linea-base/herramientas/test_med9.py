@@ -24,14 +24,17 @@ FIXTURES = ROOT / 'verificacion/20261014-tareas-ecologica/salida'
 
 
 def captura(tid, variante):
+    if tid.startswith(('N-', 'S-')) or ESPEC[tid].get('candidato'):
+        from test_med11_fixtures import captura_sintetica
+        return captura_sintetica(tid, variante)
     return {p.stem[7:]: json.loads(p.read_text(encoding='utf-8'))
             for p in (FIXTURES / tid / variante).glob('agente-*.json')}
 
 
 def oraculo_fixture(regla, *agentes):
     # Fixture estático para probar la corrección; NO acredita una ejecución.
-    return {momento: {eco.clave(s): {'decision': eco.decidir(a[s[0]]['permission'], s[1], s[2])}
-                     for s in [regla['objetivo'], *regla['guardas']]}
+    return {momento: {eco.clave(s): {'decision': eco.decidir(a[s[0]]['permission'], eco.permiso_sonda(s), s[2])}
+                     for s in [*eco.objetivos(regla), *regla['guardas']]}
             for momento, a in zip(('antes', 'despues'), agentes)} if 'objetivo' in regla else {}
 
 
@@ -44,14 +47,15 @@ def fila(caso, dimension='ecologica', **kw):
 
 class GeneracionTests(unittest.TestCase):
     def test_determinista_cerrada_y_sin_respuestas(self):
-        self.assertEqual(len(PUBLICO['dimensiones']['ecologica']), 14)
+        self.assertEqual(len(PUBLICO['dimensiones']['ecologica']), len(ESPEC))
         self.assertEqual(len(PUBLICO['dimensiones']['deteccion']), 3)
         for nombre, esperado in [('escenarios.json', PUBLICO), ('respuestas-ecologica.json', HOJA), ('respuestas-deteccion.json', CORPUS)]:
             self.assertEqual(json.loads((ROOT / 'ecologica' / nombre).read_text(encoding='utf-8')), esperado)
         for escenarios in PUBLICO['dimensiones'].values():
             for s in escenarios.values():
                 self.assertEqual(set(s), {'archivos', 'env', 'directorio', 'tarea', 'instruccion'})
-        self.assertIs(HOJA['hoja_cerrada'], True)
+        self.assertIs(HOJA['hoja_cerrada'], False)
+        self.assertEqual(HOJA['adr'], 'ADR-095')
         self.assertIs(CORPUS['hoja_cerrada'], True)
         self.assertNotIn('variantes', json.dumps(PUBLICO))
 
@@ -66,6 +70,7 @@ class GeneracionTests(unittest.TestCase):
             textos = [(ROOT / 'vm/ejecutores' / n / 'agents/charles.md').read_text(encoding='utf-8')
                       for n in (fuente, 'charles-' + dim)]
             def quitar_bloques(t):
+                t = t.replace('  webfetch: allow', '  webfetch: deny')  # Excepción explícita ADR-094.
                 t = re.sub(r'^  edit:.*?(?=^  grep:)', '', t, flags=re.M | re.S)
                 return re.sub(r'^  external_directory:.*?(?=^  webfetch:)', '', t, flags=re.M | re.S)
             self.assertEqual(*map(quitar_bloques, textos))
@@ -83,6 +88,8 @@ class EcologicaTests(unittest.TestCase):
     def test_todas_las_variantes_capturadas(self):
         cuenta = 0
         for tid, t in ESPEC.items():
+            if tid.startswith(('N-', 'S-')) or ESPEC[tid].get('candidato'):
+                continue  # Las capturas nativas históricas se mantienen congeladas.
             regla = HOJA['casos'][tid]
             base = captura(tid, 'base')
             inicial = eco.observar_captura(base, regla)
@@ -174,7 +181,7 @@ class AnalisisTests(unittest.TestCase):
         self.assertEqual(datos['tareas_permiso_con_problema_LB'], ['M-1'])
         self.assertTrue(datos['rama_respaldo'])
         self.assertEqual(datos['tareas']['LB']['M-1']['mediana_tokens'], 150)
-        e[-1]['exito_declarado_falso'] = True
+        next(r for r in e if r['caso'] == 'V-4')['exito_declarado_falso'] = True
         datos = analisis.analizar_med9(e, 'ecologica', d)['grupos']['principal|openai/gpt-6.1-sol']
         self.assertFalse(datos['valida'])
         self.assertIsNone(datos['rama_respaldo'])
@@ -199,6 +206,12 @@ class AnalisisTests(unittest.TestCase):
 
 class CLITests(unittest.TestCase):
     def test_generar_corregir_analizar_con_fixture_externa(self):
+        self.probar_cli(3)
+
+    def test_generar_corregir_analizar_k1(self):
+        self.probar_cli(1)
+
+    def probar_cli(self, k):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             def ejecutar(*args):
@@ -209,15 +222,24 @@ class CLITests(unittest.TestCase):
             for dimension in ('ecologica', 'deteccion'):
                 rows = []
                 for caso in (analisis.ECO if dimension == 'ecologica' else analisis.DET):
-                    for rep in range(1, 4):
+                    for rep in range(1, k + 1):
                         r = fila(caso, dimension, ensayo=True)
+                        r['k'] = k
                         r['repeticion'] = rep
                         if dimension == 'ecologica':
                             regla = HOJA['casos'][caso]
                             oracle = root / f'{caso}-{rep}-oraculo.json'
                             oracle.write_text(json.dumps(oraculo_fixture(regla, captura(caso, 'base'), captura(caso, 'correcta'))), encoding='utf-8')
-                            r['intentos'] = [dict(intento=0, captura_antes=str(FIXTURES / caso / 'base'),
-                                                captura_despues=str(FIXTURES / caso / 'correcta'), oraculo=str(oracle))]
+                            fixtures = FIXTURES
+                            if caso.startswith(('N-', 'S-')) or ESPEC[caso].get('candidato'):
+                                fixtures = root / 'capturas-sinteticas'
+                                for variante in ('base', 'correcta'):
+                                    carpeta = fixtures / caso / variante
+                                    carpeta.mkdir(parents=True, exist_ok=True)
+                                    for ag, datos in captura(caso, variante).items():
+                                        (carpeta / f'agente-{ag}.json').write_text(json.dumps(datos), encoding='utf-8')
+                            r['intentos'] = [dict(intento=0, captura_antes=str(fixtures / caso / 'base'),
+                                                captura_despues=str(fixtures / caso / 'correcta'), oraculo=str(oracle))]
                         else:
                             r['respuesta_textual'] = json.dumps({'sin_efecto': [dict(archivo=i['archivo'].replace('G/', '~/.config/opencode/').replace('P/', '~/proyecto/'),
                                 clave=i['clave'], motivo='fixture sintética') for i in CORPUS['casos'][caso]['items'] if not i['efecto']]})
@@ -233,8 +255,8 @@ class CLITests(unittest.TestCase):
                 ejecutar('herramientas/analizar.py', path, '--dimension', dimension, '--complemento', registros[otra], '--destino', destino)
                 datos = json.loads((destino / 'analisis.json').read_text(encoding='utf-8'))
                 g = datos['grupos']['principal|openai/gpt-6.1-sol']
-                self.assertTrue(g['valida'])
-                self.assertTrue(g['rama_respaldo'])
+                self.assertTrue(g['valida'], g['motivos_invalidez'])
+                self.assertEqual(g['rama_respaldo'], True if k > 1 else None)
                 self.assertTrue((destino / 'informe.md').exists())
 
 

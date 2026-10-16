@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "habilidades": {
+      "mode": "primary",
+      "options": {},
+      "permission": {},
+      "name": "habilidades",
+      "prompt": "***\ndescription: Agente del equipo\nmode: primary\npermission:\n  skill:\n    med11-interna: deny\n***\nConsultá los procedimientos del equipo."
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

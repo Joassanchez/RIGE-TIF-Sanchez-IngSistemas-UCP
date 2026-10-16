@@ -25,7 +25,10 @@ def compartidas():
 
 
 class RegistroTests(unittest.TestCase):
-    def correr(self, dimension='ecologica', ensayo=True, mutacion=False):
+    def correr(self, dimension='ecologica', ensayo=True, mutacion=False, caso=None,
+               k=1, cambio_escenario=False, cambio_entorno=False, base_incorrecta=False,
+               fallo_final=False, cambio_fuera_bloque=False, cambio_home=None,
+               hoja_denegada=False, fuera=False, ejecutor='principal', lectura_faltante=False):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         base = Path(tmp.name) / 'base'
@@ -38,28 +41,46 @@ class RegistroTests(unittest.TestCase):
         (h.HOME_P / '.config/opencode').mkdir(parents=True)
         (h.HOME_P / '.bashrc').write_text('')
         config = h.HOME_E / '.config/opencode'
-        origen = base / 'ejecutores' / ('principal-' + dimension)
+        origen = base / 'ejecutores' / (ejecutor + '-' + dimension)
         origen.mkdir(parents=True)
-        shutil.copyfile(ROOT / 'vm/ejecutores' / ('principal-' + dimension) / 'opencode.json', origen / 'opencode.json')
+        shutil.copyfile(ROOT / 'vm/ejecutores' / (ejecutor + '-' + dimension) / 'opencode.json', origen / 'opencode.json')
         (origen / 'agents').mkdir()
+        if ejecutor == 'charles':
+            shutil.copyfile(ROOT / 'vm/ejecutores' / (ejecutor + '-' + dimension) / 'agents/charles.md', origen / 'agents/charles.md')
+        if fuera:
+            shutil.copytree(ROOT / 'vm/ejecutores' / (ejecutor + '-modificacion'), base / 'ejecutores' / (ejecutor + '-modificacion'))
         (origen / 'agents/anterior.md').write_text('agente anterior')
         (base / 'ejecutores/congeladas.json').write_text('{"archivos":{}}')
         for nombre in ('medir.sh', 'hoja-referencia.md', 'modelos.json', 'opencode'):
             (base / nombre).write_text('fixture')
         shutil.copyfile(ROOT / 'tarifas-congeladas-20261001.json', base / 'tarifas.json')
-        caso = 'V-1' if dimension == 'ecologica' else 'D-A'
+        caso = caso or ('V-1' if dimension == 'ecologica' else 'D-A')
         escenario = dict(archivos={}, env={}, directorio='sub', tarea='Consulta local', instruccion='Consulta local')
+        hojas = json.loads((ROOT / 'ecologica/escenarios.json').read_text(encoding='utf-8'))['dimensiones']
+        regla = json.loads((ROOT / 'ecologica/respuestas-ecologica.json').read_text(encoding='utf-8'))['casos'].get(caso, {})
+        nueva = caso.startswith(('N-', 'S-')) or bool(regla.get('candidato'))
+        if caso.startswith(('M-', 'N-', 'S-')) or nueva:
+            escenario['tarea'] = hojas['ecologica'][caso]['tarea']
+        if nueva:
+            escenario['archivos'] = hojas['ecologica'][caso]['archivos']
         eco.guardar(base / 'escenarios.json', {'dimensiones': {dimension: {caso: escenario}}})
         for nombre in ('tareas.md', 'deteccion.md'):
             (base / nombre).write_text('hoja cerrada')
         (base / 'simulado').mkdir()
         (base / 'simulado/ecologica.py').write_text('extension fixture')
-        eco.guardar(base / 'simulado' / (dimension + '.json'), {'casos': {caso: {'archivos': {}, 'respuesta': 'lista'}}})
+        plan = {'archivos': {}, 'respuesta': 'lista'}
+        if lectura_faltante:
+            plan['lecturas'] = ['/home/evaluador/tarea/hoja-referencia.md', '/home/evaluador/tarea/docs/permissions.html']
+        eco.guardar(base / 'simulado' / (dimension + '.json'), {'casos': {caso: plan}})
         permisos = json.loads((origen / 'opencode.json').read_text())['permission']
         efectivo = {'permission': [dict(permission=k, pattern=p, action=v)
                      for k, reglas in permisos.items()
                      for p, v in (reglas.items() if isinstance(reglas, dict) else [('*', reglas)])]}
+        if hoja_denegada:
+            efectivo['permission'].append(dict(permission='external_directory', pattern='/home/evaluador/tarea/hoja-referencia.md', action='deny'))
         pasos, comandos = [], []
+        self.pasos, self.comandos = pasos, comandos
+        self.salida = base / 'resultados/prueba'
         def ejecutar(cmd, stdout, stderr, limite=120):
             nombre = Path(stdout).name
             pasos.append(nombre)
@@ -79,12 +100,33 @@ class RegistroTests(unittest.TestCase):
                     (config / 'opencode.json').write_text('{"model":"intruso"}')
                     (config / 'agents/anterior.md').unlink()
                     (config / 'agents/nuevo.md').write_text('agente intruso')
+                if cambio_escenario:
+                    (proyecto / 'opencode.json').write_text('{"cambio":true}')
+                if cambio_entorno:
+                    (h.HOME_P / '.bashrc').write_text('# >>> entorno local >>>\nexport X=1\n# <<< entorno local <<<\n')
+                if cambio_fuera_bloque:
+                    with (h.HOME_P / '.bashrc').open('a', encoding='utf-8') as archivo:
+                        archivo.write('\nexport OPENCODE_PERMISSION=\'{"read":"allow"}\'\n')
+                if cambio_home:
+                    path = h.HOME_P / cambio_home
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text('export OPENCODE_CONFIG=/tmp/otra-config.json\n', encoding='utf-8')
                 out = json.dumps(dict(type='step_finish', part=dict(id='paso', tokens=dict(input=10, output=2, cache=dict(read=3))))) + '\n'
             elif 'agent' in cmd:
+                if fallo_final and 'control-final' in str(stdout):
+                    raise ValueError('Aislamiento final fallido (fixture)')
                 # Simula una inicialización dependiente del cwd que el antiguo
                 # calentamiento global no cubría; NO se excluye esta ruta.
                 if os.getcwd() == str(proyecto / 'sub'):
                     (config / 'agents/inicializado').mkdir(exist_ok=True)
+                if fuera:
+                    # En esta modalidad se inspecciona la copia adaptada, como debug agent.
+                    permisos_instalados = json.loads((config / 'opencode.json').read_text())['permission']
+                    efectivo['permission'] = [dict(permission=k, pattern=p, action=v)
+                        for k, reglas in permisos_instalados.items()
+                        for p, v in (reglas.items() if isinstance(reglas, dict) else [('*', reglas)])]
+                if ejecutor == 'charles' and not any(r['permission'] == 'read' for r in efectivo['permission']):
+                    efectivo['permission'].append(dict(permission='read', pattern='*', action='allow'))
                 out = json.dumps(efectivo)
             else:
                 out = '{}'
@@ -97,7 +139,25 @@ class RegistroTests(unittest.TestCase):
             carpeta = Path(str(prefijo) + '.' + momento)
             carpeta.mkdir()
             (carpeta / 'config.json').write_text('{}')
+            if caso.startswith(('M-', 'N-', 'S-')) or nueva:
+                sys.path.insert(0, str(ROOT / 'herramientas'))
+                from test_med9 import captura
+                for ag, datos in captura(caso, 'base').items():
+                    archivo = 'archivos.json' if ag == '__archivos__' else f'agente-{ag}.json'
+                    (carpeta / archivo).write_text(json.dumps(datos), encoding='utf-8')
             return carpeta
+
+        def oraculo(prefijo, momento, sondas, directorio, h):
+            pasos.append('oraculo-' + momento)
+            sys.path.insert(0, str(ROOT / 'herramientas'))
+            try:
+                from corregir_ecologica import decidir, permiso_sonda
+            finally:
+                sys.path.pop(0)
+            from test_med9 import captura
+            agentes = captura(caso, 'base')
+            return {json.dumps(list(s), ensure_ascii=False): dict(decision='indeterminado' if base_incorrecta else
+                    decidir(agentes[s[0]]['permission'], permiso_sonda(s), s[2])) for s in sondas}
 
         def snapshot(h, prefijo, momento):
             pasos.append('snapshot-' + momento)
@@ -111,11 +171,13 @@ class RegistroTests(unittest.TestCase):
         def leer(path, *args, **kwargs):
             return 'Iface\nlo\n' if path.as_posix() == '/proc/net/route' else lectura_real(path, *args, **kwargs)
 
-        argv = ['medir', '--dimension', dimension, '--tanda', 'prueba', '--k', '1', '--casos', caso]
+        argv = ['medir', '--dimension', dimension, '--tanda', 'prueba', '--k', str(k), '--casos', caso, '--ejecutor', ejecutor]
+        if fuera:
+            argv += ['--fuera-del-arbol']
         for flag, nombre in [('escenarios', 'escenarios.json'), ('tareas', 'tareas.md'), ('deteccion', 'deteccion.md')]:
             argv += ['--hash-' + flag, h.sha(base / nombre)]
         argv += ['--ensayo'] if ensayo else ['--modelo', 'openai/gpt-6.1-sol', '--limite', '600',
-                 '--semilla', '20261015', '--ejecutor', 'principal', '--brazo', 'LB', '--condicion', 'LB']
+                 '--semilla', '20261015', '--brazo', 'LB', '--condicion', 'LB']
         cwd = os.getcwd()
         with ExitStack() as pila:
             pila.callback(os.chdir, cwd)
@@ -135,10 +197,44 @@ class RegistroTests(unittest.TestCase):
             pila.enter_context(patch.object(eco, 'capturar', capturar))
             pila.enter_context(patch.object(eco, 'capturar_ejecutor', snapshot))
             pila.enter_context(patch.object(eco, 'servidor', servidor))
+            pila.enter_context(patch.object(eco, 'oraculo', oraculo))
             pila.enter_context(redirect_stdout(io.StringIO()))
+            if dimension == 'ecologica':
+                # Mismo protocolo de dos fases que el envoltorio del anfitrión.
+                sys.argv = argv + ['--preparar-base']
+                eco.medir(h.__dict__)
+                salida = base / 'resultados/prueba'
+                sys.path.insert(0, str(ROOT / 'herramientas'))
+                try:
+                    from verificar_base_ecologica import verificar
+                    if nueva:
+                        # Admisión artificial confinada al temporal de esta prueba.
+                        referencia = base / 'admision-sintetica'
+                        path = referencia / caso / 'base/oraculo.json'
+                        path.parent.mkdir(parents=True)
+                        datos = json.loads((salida / 'base/indice.json').read_text()).get(caso, {})
+                        eco.guardar(path, datos)
+                        from test_med9 import captura
+                        eco.guardar(path.parent / 'archivos.json', captura(caso, 'base').get('__archivos__', {}))
+                        hoja = json.loads((ROOT / 'ecologica/respuestas-ecologica.json').read_text(encoding='utf-8'))
+                        eco.guardar(referencia / 'admision.json', dict(valido=True,
+                            hash_espec=hoja['hashes_fuentes']['espec.py'],
+                            filas=[dict(tarea=caso, variante='correcta', resultado='correcta')],
+                            hashes_evidencia={f'{caso}/base/oraculo.json': h.sha(path)}))
+                        validacion = verificar(salida, ROOT / 'ecologica/respuestas-ecologica.json', exploracion=referencia)
+                    else:
+                        validacion = verificar(salida, ROOT / 'ecologica/respuestas-ecologica.json')
+                finally:
+                    sys.path.pop(0)
+                eco.guardar(salida / 'validacion-base.json', validacion)
+                sys.argv = argv + ['--base-verificada', validacion['hash_base']]
+                if not ensayo:
+                    os.environ['OPENCODE_AUTH_JSON'] = '{"openai":{}}'
             eco.medir(h.__dict__)
         salida = base / 'resultados/prueba'
-        return json.loads((salida / 'registro.jsonl').read_text()), salida, pasos, comandos
+        rows = [json.loads(l) for l in (salida / 'registro.jsonl').read_text().splitlines()]
+        self.ultimas_filas = rows
+        return rows[-1], salida, pasos, comandos
 
     def test_intento_sin_cambios_reales_conserva_tokens_en_ambas_dimensiones(self):
         for dimension in ('ecologica', 'deteccion'):

@@ -3,9 +3,9 @@
   "dimension": "deteccion",
   "hoja_cerrada": true,
   "hashes_fuentes": {
-    "espec.py": "b824ea2fc591377ad9dcdfffb45c6a28cbd49cd6b8accd8c7063ba355b2ebffd",
+    "espec.py": "a40367706dd4b171f80c9172f95502ce353ebeefc4e9747dac29d20a8c71f8e7",
     "corpus.py": "8685f07065fe1247ef4377b6ebe5fde06db1fb19d2d81a5a36c17ee3964c8d06",
-    "tareas.md": "6bf5bfb307341b8cef34fdeaeb591cf88a6a05ebb50e107ed68477e387a6f469",
+    "tareas.md": "c08c65dd4ca41256b2434c4bd784c37577786e15486c5bfd950d9eb168f4379a",
     "deteccion.md": "5e21b582d3d5f51b3a9262c2bdde710c798eacbfa97823a07a4536c8e3655da1"
   },
   "casos": {

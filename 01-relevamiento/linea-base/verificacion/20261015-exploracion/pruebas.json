@@ -1,0 +1,17 @@
+[
+  {
+    "comando": "python -m unittest discover -s herramientas -p 'test_*.py'",
+    "codigo": 0,
+    "log": "pruebas-herramientas.txt"
+  },
+  {
+    "comando": "python -m unittest discover -s vm/simulado -p 'test_*.py'",
+    "codigo": 0,
+    "log": "pruebas-simulado.txt"
+  },
+  {
+    "comando": "bash -n (siete scripts y bloques RUN del Dockerfile, sin ejecutar)",
+    "codigo": 0,
+    "log": "bash-n.json"
+  }
+]

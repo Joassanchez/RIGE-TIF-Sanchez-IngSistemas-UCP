@@ -1,0 +1,45 @@
+timestamp=2026-10-15T20:35:02.047Z level=INFO run=778ed480 message="creating instance" directory=/home/participante/proyecto
+timestamp=2026-10-15T20:35:02.051Z level=INFO run=778ed480 message=fromDirectory directory=/home/participante/proyecto
+timestamp=2026-10-15T20:35:02.151Z level=INFO run=778ed480 message=bootstrapping directory=/home/participante/proyecto
+timestamp=2026-10-15T20:35:02.164Z level=INFO run=778ed480 message=loading path=/home/participante/.config/opencode/config.json
+timestamp=2026-10-15T20:35:02.166Z level=INFO run=778ed480 message=loading path=/home/participante/.config/opencode/opencode.json
+timestamp=2026-10-15T20:35:02.168Z level=INFO run=778ed480 message=loading path=/home/participante/.config/opencode/opencode.jsonc
+timestamp=2026-10-15T20:35:02.175Z level=INFO run=778ed480 message=loading path=/tmp/med9-oraculo-2cou8_jy/proveedor.json
+timestamp=2026-10-15T20:35:02.191Z level=INFO run=778ed480 message=loading path=/home/participante/proyecto/opencode.json
+timestamp=2026-10-15T20:35:02.356Z level=INFO run=778ed480 message="all LSPs are disabled"
+timestamp=2026-10-15T20:35:02.362Z level=INFO run=778ed480 message="all formatters are disabled"
+timestamp=2026-10-15T20:35:02.363Z level=INFO run=778ed480 message=init
+timestamp=2026-10-15T20:35:02.650Z level=INFO run=778ed480 message=created id=ses_ebeb97c85ffeZvzM6dX8qFVGxG slug=cosmic-panda version=1.18.25 projectID=87a203782463957c868602cef2f32efa2261371d directory=/home/participante/proyecto path="" workspaceID=undefined parentID=undefined title="New session - 2026-10-15T20:35:02.650Z" agent=undefined model=undefined metadata=undefined permission="[{\"permission\":\"question\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_enter\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"plan_exit\",\"pattern\":\"*\",\"action\":\"deny\"}]" cost=0 tokens.input=0 tokens.output=0 tokens.reasoning=0 tokens.cache.read=0 tokens.cache.write=0 time.created=1792096502650 time.updated=1792096502650
+timestamp=2026-10-15T20:35:02.718Z level=INFO run=778ed480 message="event connected"
+timestamp=2026-10-15T20:35:03.605Z level=INFO run=778ed480 message=loop session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG step=0
+timestamp=2026-10-15T20:35:03.636Z level=INFO run=778ed480 message=stream providerID=simulado modelID=permisos session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG small=true agent=title mode=primary
+timestamp=2026-10-15T20:35:03.658Z level=INFO run=778ed480 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-15T20:35:03.825Z level=INFO run=778ed480 message=initialized
+timestamp=2026-10-15T20:35:03.893Z level=INFO run=778ed480 message=tracking hash=a34fa685dceb5b8ae1a0920cda25f47bbab12768 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/87a203782463957c868602cef2f32efa2261371d/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:35:03.901Z level=INFO run=778ed480 message="shell tool using shell" shell=/bin/bash
+timestamp=2026-10-15T20:35:03.911Z level=INFO run=778ed480 message=init count=1
+timestamp=2026-10-15T20:35:04.029Z level=INFO run=778ed480 message="watcher backend" directory=/home/participante/proyecto platform=linux backend=inotify
+timestamp=2026-10-15T20:35:04.039Z level=INFO run=778ed480 message="project copy refresh started" projectID=87a203782463957c868602cef2f32efa2261371d
+timestamp=2026-10-15T20:35:04.421Z level=INFO run=778ed480 message="project copy refresh done" projectID=87a203782463957c868602cef2f32efa2261371d updated=[] removed=[]
+timestamp=2026-10-15T20:35:04.436Z level=INFO run=778ed480 message="booting location services" directory=/home/participante/proyecto workspaceID=undefined
+timestamp=2026-10-15T20:35:04.441Z level=INFO run=778ed480 message=process session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG messageID=msg_14146873c001eJQkZ0cL2LemM6
+timestamp=2026-10-15T20:35:04.443Z level=INFO run=778ed480 message=stream providerID=simulado modelID=permisos session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG small=false agent=build mode=primary
+timestamp=2026-10-15T20:35:04.457Z level=INFO run=778ed480 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-15T20:35:04.485Z level=INFO run=778ed480 message=evaluated permission=read pattern=src/index.js action.permission=read action.pattern=* action.action=allow
+timestamp=2026-10-15T20:35:04.512Z level=INFO run=778ed480 message="touching file" file=/home/participante/proyecto/src/index.js
+timestamp=2026-10-15T20:35:04.550Z level=INFO run=778ed480 message=tracking hash=a34fa685dceb5b8ae1a0920cda25f47bbab12768 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/87a203782463957c868602cef2f32efa2261371d/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:35:04.586Z level=INFO run=778ed480 message=loop session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG step=1
+timestamp=2026-10-15T20:35:04.620Z level=INFO run=778ed480 message=tracking hash=a34fa685dceb5b8ae1a0920cda25f47bbab12768 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/87a203782463957c868602cef2f32efa2261371d/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:35:04.628Z level=INFO run=778ed480 message=process session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG messageID=msg_141468b0d001daLoaSoIP71YOq
+timestamp=2026-10-15T20:35:04.630Z level=INFO run=778ed480 message=stream providerID=simulado modelID=permisos session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG small=false agent=build mode=primary
+timestamp=2026-10-15T20:35:04.639Z level=INFO run=778ed480 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-15T20:35:04.704Z level=INFO run=778ed480 message=tracking hash=a34fa685dceb5b8ae1a0920cda25f47bbab12768 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/87a203782463957c868602cef2f32efa2261371d/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:35:04.736Z level=INFO run=778ed480 message=loop session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG step=2
+timestamp=2026-10-15T20:35:04.770Z level=INFO run=778ed480 message=tracking hash=a34fa685dceb5b8ae1a0920cda25f47bbab12768 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/87a203782463957c868602cef2f32efa2261371d/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:35:04.775Z level=INFO run=778ed480 message=process session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG messageID=msg_141468ba3001vanC2kuMs445m9
+timestamp=2026-10-15T20:35:04.777Z level=INFO run=778ed480 message=stream providerID=simulado modelID=permisos session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG small=false agent=build mode=primary
+timestamp=2026-10-15T20:35:04.796Z level=INFO run=778ed480 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=simulado llm.model=permisos
+timestamp=2026-10-15T20:35:04.840Z level=INFO run=778ed480 message=tracking hash=a34fa685dceb5b8ae1a0920cda25f47bbab12768 cwd=/home/participante/proyecto git=/home/participante/.local/share/opencode/snapshot/87a203782463957c868602cef2f32efa2261371d/dfb0e7b5ebe2ecb6fadc2fc3fd10715478c56778
+timestamp=2026-10-15T20:35:04.875Z level=INFO run=778ed480 message=loop session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG step=3
+timestamp=2026-10-15T20:35:04.877Z level=INFO run=778ed480 message="exiting loop" session.id=ses_ebeb97c85ffeZvzM6dX8qFVGxG
+timestamp=2026-10-15T20:35:04.886Z level=INFO run=778ed480 message="disposing instance" directory=/home/participante/proyecto

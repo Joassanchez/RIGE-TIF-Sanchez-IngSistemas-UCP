@@ -1,6 +1,18 @@
 # Medición ecológica y detección · MED-9
 
 Implementa las líneas de base de ADR-091 y ADR-092 y el análisis de ADR-093.
+La ampliación autorizada MED-11 incorpora N-1…N-7, N-9…N-15,
+S-1…S-3 y los valores V-5…V-8 (candidatos N-16…N-19), con
+k=1. La hoja ecológica pasa a exploratoria (`hoja_cerrada=false`), con hashes
+en `exploracion.json`. Antes de medir o ensayar N/S hay que admitirlas con las
+sondas nativas sin cuota: [procedimiento y tabla de tareas](../verificacion/20261015-exploracion/LEEME.md).
+N-8 se retira por falta de un inicializador determinista de aprobaciones.
+Son 22 candidatos contando la retirada, por debajo del tope autorizado de 23.
+Los valores exploratorios se informan aparte y no cuentan como problemas de
+permisos ni como controles V históricos. N-11 preserva y comprueba enlaces
+simbólicos y archivos compartidos; su preparación admite descriptores de enlace.
+Los ejemplos k=3 siguientes corresponden al protocolo histórico; para MED-11
+usar `--k 1`, sin criterio de cumplimiento ni rama de respaldo.
 Ejecutar estos comandos desde `01-relevamiento/linea-base/`, en Bash (Git Bash
 en Windows). Python 3.11 o posterior en el anfitrión; Docker para el ingeniero.
 No se requieren paquetes Python externos.
@@ -12,11 +24,11 @@ python herramientas/generar-ecologica.py --destino ecologica
 bash vm/contenedor.sh construir
 ```
 
-El generador lee las fuentes cerradas `espec.py`, `corpus.py`, `tareas.md` y
+El generador lee las fuentes `espec.py`, `corpus.py`, `tareas.md` y
 `deteccion.md`. `escenarios.json` contiene exclusivamente archivos, variables,
 directorio, tarea e instrucción pública. Las respuestas, sus hashes de fuentes,
 objetivos, guardas, variantes y clasificaciones permanecen en el anfitrión.
-`hoja_cerrada` se obtiene del texto, como en el generador existente.
+La detección conserva el cierre; la ecológica declara la exploración ADR-095.
 
 El contexto de construcción es solamente `vm/`, con lista de inclusión.
 `contenedor.sh` copia **solamente** `escenarios.json`, `tareas.md` y `deteccion.md`
@@ -173,12 +185,15 @@ no una nueva verificación nativa del escritor.
 
 - Lanza el binario absoluto como evaluador, `HOME=/home/evaluador`, desde el
   proyecto/DIR, con la exclusión de configuración del proyecto y git propio.
-  Compara `debug agent` completo dentro y fuera del proyecto en cada intento.
+  Compara `debug agent` completo dentro y fuera del proyecto al inicio y al
+  final de cada tanda ecol?gica; detecci?n conserva el control por intento.
   V-1, con un modelo de caso distinto, permite comprobar la separación de modelos
   sin modificar el caso C-1a cerrado.
 - El `opencode` del PATH delega en `como-dev`, conserva argumentos y elimina
   `OPENCODE_DISABLE_PROJECT_CONFIG` y el proveedor auxiliar del evaluador.
   Compara su `debug config` con el del participante. Registra el control en
+  `control-inicio/aislamiento-ejecutor.json` y
+  `control-final/aislamiento-ejecutor.json` para ecol?gica. Detecci?n conserva
   `aislamiento-ejecutor.json` y las capturas por intento en `crudo/`.
 - `verificacion-edit.json` comprueba sujetos relativos permitidos y denegados,
   incluidos fuentes, `.bashrc`, `~/compartido` y configuraciones ajenas. Las reglas
@@ -229,7 +244,8 @@ excluidos) no permite identificar qué ruta difería al tomar el primer hash.
 Con las mismas rutas y bytes no debería haber diferencia; la ruta responsable
 del fallo nativo queda por confirmar con la nueva evidencia, sin inventarla.
 
-En ambas dimensiones, todos los controles terminan antes de la ventana medida.
+En ambas dimensiones, los controles por intento terminan antes de la ventana medida.
+En ecol?gica, MED-9c agrega un control de cierre despu?s del ?ltimo intento.
 El último `debug agent` usa el mismo binario absoluto, entorno completo
 (incluidos PATH del wrapper y proveedor auxiliar en ensayo) y directorio/PWD
 que `run`. Además se compara el agente calentado con el ya verificado. Se toman
@@ -265,12 +281,46 @@ cualquier control de aislamiento, permisos u oráculo falla, conservar la tanda
 y detenerse antes de medir: no ampliar permisos ni sustituir ejecución por debug.
 No hay una decisión funcional nueva pendiente para ejecutar LB.
 
+## Documentación local y web (MED-9d / ADR-094)
+
+Las cuatro variantes `principal|charles-ecologica|deteccion` permiten leer
+`/home/evaluador/tarea/*`: la hoja de referencia y la documentación sin conexión
+de OpenCode 1.18.25. Esa carpeta conserva la edición denegada. `webfetch` está
+permitido; `websearch` sigue denegado y no se activa EXA. Charles conserva su
+política `bash` y su prompt. Los SHA-256 y la nota ADR-094 están en
+`vm/ejecutores/congeladas.json`; las otras variantes congeladas no cambian.
+
+En ambas dimensiones, `control-inicio/` y `control-final/` conservan las
+comprobaciones efectivas de `external_directory` para la hoja y `docs/index.html`,
+lectura, edición denegada y `webfetch` permitido. Un rechazo inicial detiene
+antes del agente; un cierre fallido o ausente invalida la tanda. En el contraste
+`--fuera-del-arbol`, se instala la variante de la dimensión y se adapta únicamente
+su copia instalada a las rutas relativas desde `tarea/`: conserva las rutas de
+edición del contraste histórico y permite acceder al proyecto del participante.
+La documentación sigue sin escritura y el resto de directorios externos sigue
+denegado. No se reescriben las variantes congeladas de modificación.
+
+Los planes simulados M-1 y D-A piden leer la hoja y `docs/permissions.html`
+antes de las operaciones anteriores. El proveedor exige resultados de lectura
+con contenido; un rechazo, error o lectura faltante detiene el ensayo sin
+aceptar el registro. Se conservan las cinco clases ecológicas y los resultados
+de detección. Las pruebas sin Docker sustituyen las herramientas; la lectura
+nativa debe acreditarse al reconstruir la imagen y repetir los ensayos.
+
+`tanda.json` y el análisis declaran `regla_acceso_web: "ADR-094"`. En ecológica
+y detección, `acceso_web` se conserva por ejecución y no invalida: el JSON
+agrega `ejecuciones_con_acceso_web` por brazo y tarea, y el Markdown muestra
+«Con acceso web». Las otras dimensiones conservan ADR-086, punto 5. La web
+observada no prueba ausencia de tráfico oculto ni fija la versión del contenido
+en línea. Las tandas del 15/10 anteriores a esta corrección quedan como
+antecedente declarado, sin computar; reconstruir y ensayar antes de repetir LB.
+
 ## Pruebas sin Docker
 
 ```bash
 python -m unittest discover -s herramientas -p 'test_*.py'
 python -m unittest discover -s vm/simulado -p 'test_*.py'
-bash -n vm/medir.sh vm/contenedor.sh
+bash -n vm/medir.sh vm/contenedor.sh herramientas/medir-med9c-paralelo.sh
 ```
 
 Las variantes usan las capturas nativas de
@@ -278,3 +328,171 @@ Las variantes usan las capturas nativas de
 oráculo y los consumos del ensayo son sintéticos y están identificados como tales.
 También se prueba generar → corregir ambas dimensiones → analizar con complemento
 por CLI, con evidencia temporal externa. No se editan pruebas históricas.
+
+## Oráculo optimizado (MED-9c)
+
+Reconstruir la imagen antes de ensayar o medir. Las 24 ejecuciones parciales del
+15/10 descartadas por el autor no se unen a estas tandas. Detección, atribución,
+modificación y sondas conservan sus recorridos. Los comandos anteriores siguen
+vigentes: `contenedor.sh` administra automáticamente estas dos fases ecológicas:
+
+1. `medir.sh --preparar-base`: controles de aislamiento iniciales y batería común
+   **ejecutada una vez por tarea M seleccionada**, con evidencia en
+   `<tanda>/base/<tarea>/` e índice completo en `base/indice.json`. No ejecuta al
+   agente evaluado. Incluye todos los sujetos anteriores, sin recortar la batería.
+2. Copia la fase base al anfitrión y ejecuta `verificar_base_ecologica.py`. La hoja
+   `respuestas-ecologica.json` identifica objetivo y guardas, pero **no contiene
+   valores iniciales**. Para esos valores se usan las capturas nativas congeladas
+   de `verificacion/20261014-tareas-ecologica/salida/<tarea>/base/agente-*.json`,
+   evaluadas con la misma función de permisos del corrector. La decisión de la
+   nueva ejecución debe coincidir para cada objetivo y guarda. El valor final
+   deseado del objetivo no se usa como estado inicial. Esta procedencia queda
+   explícita en `validacion-base.json`, con hashes de la hoja y las capturas.
+   Una diferencia detiene la tanda antes del agente. No se modifican las hojas.
+3. Solo si pasa, continúa con `--base-verificada <SHA-256 del índice>`. Vuelve al
+   contenedor únicamente ese hash; objetivos, guardas, capturas de referencia y
+   clasificaciones permanecen en el anfitrión. Cada intento reconstruye el
+   escenario y conserva captura `debug config`/`debug agent` antes y después,
+   diff, restauración del entorno, calentamiento y snapshots del ejecutor
+   inmediatamente alrededor de `run`.
+4. Solo usa la base como estado posterior si `archivos_tocados: []`,
+   `entorno_alterado: 0`, `hash_antes == hash_despues`, los archivos de inicio
+   completos permanecen iguales y el inventario del home no cambia durante
+   `run`. Registra `oraculo_omitido: "sin cambios"` y `oraculo_base`. Si alguna
+   comprobación falla, ejecuta **toda** la batería posterior, como antes, y
+   registra `motivos_no_omision_oraculo`. Los
+   controles V siguen usando las capturas por intento, sin oráculo de permisos.
+5. Repite el aislamiento al final con el mismo escenario testigo (V-1 si está
+   disponible; primera tarea seleccionada en su defecto), sin recongelar antes
+   de verificarlo. Comprueba dentro/fuera, envoltorio/participante, política de
+   edición y versión 1.18.25; compara además agente, hashes de binario/envoltorio
+   y política inicial/final. Guarda los dos controles y solo entonces escribe
+   `aislamiento_verificado: true`. Un fallo o cierre interrumpido invalida toda
+   la tanda, incluidas las filas ya escritas. Corrector, unión y carga para
+   análisis exigen ese cierre y la validación externa coincidente de la base.
+
+No se acepta invocar la fase de ejecución ecológica sin base validada. La
+evidencia de errores se conserva en el destino; elegir otro destino vacío para
+reintentar. Los reintentos por cuota usan la misma base verificada.
+
+La comprobación conservadora de omisión conserva por intento:
+
+- `.inicio-preparado.json`, tomado inmediatamente después de `preparar()` y
+  antes de cualquier introspección, y `.inicio-despues.json`, inmediatamente
+  después de la ventana de `run`: existencia y SHA-256 de **todo** el contenido
+  de `~participante/.bashrc`, `~/.profile` y `~/.bash_profile`, tipo, permisos y
+  propietario. Distingue ausencia, creación y borrado. Las capturas posteriores
+  se toman **antes** de restaurar `.bashrc` o volver a ejecutar OpenCode como
+  participante, de modo que esos pasos no oculten ni introduzcan cambios.
+- `.home-antes.json` y `.home-despues.json`: inventario del home inmediatamente
+  antes y después de la ventana de `run`, sin intercalar procesos en los hashes
+  del ejecutor. Incluye rutas, tipo, SHA-256 de archivos completos, modo y
+  propietario; en enlaces a archivos incluye destino y contenido del destino.
+  Los enlaces a directorios, entradas no regulares, errores de lectura o
+  archivos que cambian mientras se leen impiden afirmar igualdad y fuerzan el
+  oráculo. No usa atime/mtime como diferencias de inventario; las fechas solo
+  sirven para detectar una lectura inestable.
+- `control_omision_oraculo`: igualdad de hashes, archivos de inicio e inventario,
+  comparabilidad del inventario y rutas cambiadas. Un motivo identifica la
+  comprobación que falló; una omisión válida deja la lista de motivos vacía.
+
+**Exclusiones del inventario del home:** solo entradas llamadas `.git`, por los
+metadatos del repositorio que reconstruye el arnés. **Cachés excluidas: ninguna.**
+No se excluyen `.cache/`, `.local/`, `.config/`, dependencias ni archivos de
+proveedores o plugins: no hay evidencia que permita afirmar que contienen solo
+datos regenerables y no configuración leída durante la ejecución. Tampoco se
+reutilizan aquí las exclusiones históricas del hash del ejecutor. La lista
+exacta queda en cada inventario y en `tanda.json.exclusiones_inventario_home`.
+Un log o caché nuevo también fuerza el oráculo; ese costo adicional es
+intencional para evitar omisiones inseguras. El corrector rechaza una omisión
+sin las comprobaciones adicionales afirmativas.
+
+**Tiempo estimado, no medido con esta versión:** unos **90–120 s por intento M
+sin cambios**, y **140–180 s con cambios**, amortizando la base con k = 3 y
+suponiendo unos 59 s de agente como en la ficha. Es una previsión para planificar,
+no un resultado experimental. Con la comprobación conservadora, «sin cambios»
+requiere también igualdad de inicio y home; si cambian logs o cachés se paga el
+oráculo completo. El inventario añade lecturas cuyo costo no está medido y debe
+sumarse a esta previsión. La cuenta es:
+
+`T_sin_cambios = T_agente + T_controles_por_intento + T_base_tarea/k + 2*T_aislamiento/N`.
+
+Con cambios se suma `T_oraculo_despues`. N es el número de ejecuciones del
+fragmento; las copias de evidencia agregan tiempo por tanda. El ensayo nativo
+debe confirmar estos costos. `duracion_s` sigue midiendo solo el agente;
+`duracion_total_s` de cada fila no incluye la fase base ni el cierre. Para el
+tiempo total de una tanda usar el cronómetro del anfitrión. Con cuatro
+contenedores, la CPU, memoria y cuota compartidas pueden impedir una aceleración
+de cuatro veces; no cambia la semilla ni el consumo atribuido a cada ejecución.
+
+## Las seis tandas en cuatro contenedores
+
+Comandos completos para Bash desde `01-relevamiento/linea-base/`. Requieren la
+imagen reconstruida, Python y `OPENCODE_AUTH_JSON` ya cargado. No repetir la
+generación de hojas cerradas. Elegir un destino nuevo fuera del repositorio:
+
+```bash
+set -euo pipefail
+EVIDENCIA="$HOME/rige-med9c-20261015"
+mkdir -p "$EVIDENCIA/logs"
+bash vm/contenedor.sh construir
+
+bash herramientas/medir-med9c-paralelo.sh "$EVIDENCIA" LB-ecologica-principal ecologica principal
+bash herramientas/medir-med9c-paralelo.sh "$EVIDENCIA" LB-ecologica-charles ecologica charles
+bash herramientas/medir-med9c-paralelo.sh "$EVIDENCIA" LB-deteccion-principal deteccion principal
+bash herramientas/medir-med9c-paralelo.sh "$EVIDENCIA" LB-deteccion-charles deteccion charles
+bash herramientas/medir-med9c-paralelo.sh "$EVIDENCIA" contraste-principal ecologica principal --fuera-del-arbol
+bash herramientas/medir-med9c-paralelo.sh "$EVIDENCIA" contraste-charles ecologica charles --fuera-del-arbol
+
+for ejecutor in principal charles; do
+  for dimension in ecologica deteccion; do
+    otra=ecologica
+    if [[ $dimension == ecologica ]]; then otra=deteccion; fi
+    python herramientas/analizar.py \
+      "$EVIDENCIA/LB-$dimension-$ejecutor/unida/corregido.jsonl" \
+      --dimension "$dimension" \
+      --complemento "$EVIDENCIA/LB-$otra-$ejecutor/unida/corregido.jsonl" \
+      --destino "$EVIDENCIA/LB-$dimension-$ejecutor/analisis"
+  done
+  python herramientas/analizar.py \
+    "$EVIDENCIA/contraste-$ejecutor/unida/corregido.jsonl" \
+    --dimension ecologica --destino "$EVIDENCIA/contraste-$ejecutor/analisis"
+done
+```
+
+`herramientas/medir-med9c-paralelo.sh` selecciona los casos ecol?gicos en
+cuatro grupos disjuntos y usa `--casos` en cada contenedor. En detecci?n (tres
+casos), los primeros tres contenedores toman las repeticiones 1 y 2 de D-A,
+D-B y D-C respectivamente; el cuarto toma la repetici?n 3 de cada caso mediante
+`--pares`. Corrige cada fragmento y ejecuta `unir.py` antes de terminar.
+
+Cada llamada lanza cuatro contenedores y espera a los cuatro antes de la
+siguiente tanda: seis tandas lógicas, 24 fragmentos, máximo cuatro contenedores
+simultáneos. Los fragmentos comparten nombre lógico, semilla y parámetros; las
+selecciones `--casos`/`--pares` quedan en sus propios manifiestos. No se usa
+`--pares` en ecológica: cada tarea paga su base en un solo fragmento. El orden
+se baraja dentro de cada fragmento con la semilla indicada; la concurrencia no
+define un orden global de ejecución.
+
+`unir.py` reconoce las dimensiones MED-9 por `tanda.json`. Rechaza fragmentos de
+otra tanda, versión, semilla, límite, ejecutor, modelo, condición o modalidad de
+contraste; también detenciones, cierres inválidos, pares repetidos y conjuntos
+incompletos. Exige 42 pares en cada LB ecológica, 9 en detección y 30 en cada
+contraste. Conserva las filas de origen y hace absolutas las referencias de
+evidencia para no romperlas al unir. Mantener los directorios originales: el
+manifiesto unido registra y vuelve a verificar sus fuentes. Los resultados
+parciales se corrigen antes de unirlos; no concatenar JSONL manualmente.
+
+**Colisiones revisadas en el código:** cada proceso de `contenedor.sh` asigna
+nombre `rige-medir-$$-$RANDOM`, sin nombre fijo ni contenedor compartido; cada
+contenedor tiene su filesystem y namespace de red, sin volúmenes ni puertos
+publicados. El proveedor liga `127.0.0.1:0` (puerto efímero); los auxiliares usan
+`TemporaryDirectory` y los planes se reemplazan en memoria. Las rutas Linux
+iguales están aisladas por contenedor. Destinos y logs del anfitrión son
+distintos por fragmento. La imagen, el catálogo, las hojas y las tarifas solo se
+leen durante las tandas. La credencial y cuota OpenAI sí son comunes: no se
+divide ni se supone multiplicada la cuota del proveedor.
+
+La revisión de colisiones y las pruebas sustituidas no acreditan Docker ni el
+tiempo real. El ingeniero debe reconstruir, ensayar y conservar ambos controles
+de aislamiento antes de usar las nuevas tandas como evidencia.

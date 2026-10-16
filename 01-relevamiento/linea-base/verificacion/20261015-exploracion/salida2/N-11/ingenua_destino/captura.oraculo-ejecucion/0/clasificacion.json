@@ -1,0 +1,63 @@
+{
+  "accion": "sonda",
+  "decision": "ask",
+  "regla": "Resultado objetivo contiene el texto de autorrechazo de ask",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "bash",
+    "etapa": "principal",
+    "solicitudes": 2,
+    "resultados": [],
+    "estados": [
+      {
+        "status": "error",
+        "input": {
+          "command": "npm test",
+          "description": "Sonda local MED-9"
+        },
+        "error": "The user rejected permission to use this specific tool call.",
+        "time": {
+          "start": 1792096417290,
+          "end": 1792096417429
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": false,
+    "detalleEfecto": [
+      {
+        "status": "error",
+        "input": {
+          "command": "npm test",
+          "description": "Sonda local MED-9"
+        },
+        "error": "The user rejected permission to use this specific tool call.",
+        "time": {
+          "start": 1792096417290,
+          "end": 1792096417429
+        }
+      }
+    ],
+    "finProveedor": false,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "bash",
+    "npm test"
+  ],
+  "evidencia_archivo": "ingenua_destino/captura.oraculo-ejecucion/0/clasificacion.json"
+}

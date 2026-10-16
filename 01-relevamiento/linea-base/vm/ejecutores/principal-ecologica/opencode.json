@@ -4,6 +4,7 @@
     "bash": "allow",
     "external_directory": {
       "*": "deny",
+      "/home/evaluador/tarea/*": "allow",
       "/home/participante/.config/opencode/*": "allow"
     },
     "edit": {
@@ -18,7 +19,7 @@
       "/*": "deny",
       "../.config/opencode/*": "allow"
     },
-    "webfetch": "deny",
+    "webfetch": "allow",
     "websearch": "deny"
   }
 }

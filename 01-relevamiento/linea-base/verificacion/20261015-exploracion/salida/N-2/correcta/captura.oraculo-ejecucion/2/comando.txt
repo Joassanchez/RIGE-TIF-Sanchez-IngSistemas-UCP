@@ -1,0 +1,1 @@
+unset OPENCODE_DISABLE_PROJECT_CONFIG OPENCODE_CONFIG; cd /home/participante/proyecto/sub; export OPENCODE_CONFIG=/tmp/med9-oraculo-1gxhsa2u/proveedor.json; export PATH=/tmp/med9-oraculo-1gxhsa2u/bin:$PATH; opencode --print-logs run --format json --model simulado/permisos --agent build 'MED4A_ROOT: Ejecutá la llamada fija local.'

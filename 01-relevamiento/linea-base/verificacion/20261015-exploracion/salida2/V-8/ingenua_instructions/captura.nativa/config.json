@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "guia": {
+      "mode": "primary",
+      "temperature": 0.2,
+      "prompt": "MED11_GUIA_BASE",
+      "instructions": [
+        "./reglas.md"
+      ],
+      "options": {
+        "instructions": [
+          "./reglas.md"
+        ]
+      },
+      "permission": {}
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "username": "participante"
+}

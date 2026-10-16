@@ -1,0 +1,458 @@
+{
+  "[\"build\", \"read\", \"secretos.txt\"]": {
+    "accion": "sonda",
+    "decision": "deny",
+    "regla": "Resultado objetivo contiene el texto de denegación por regla",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"read\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"*.env\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.*\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.example\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"secretos.txt\",\"action\":\"deny\"}]"
+        }
+      ],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/secretos.txt"
+          },
+          "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"read\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"*.env\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.*\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.example\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"secretos.txt\",\"action\":\"deny\"}]",
+          "time": {
+            "start": 1792096111346,
+            "end": 1792096111353
+          }
+        }
+      ],
+      "toolsOffered": [
+        "edit",
+        "glob",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"read\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"*.env\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.*\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.example\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"secretos.txt\",\"action\":\"deny\"}]"
+        },
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/secretos.txt"
+          },
+          "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"read\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"*.env\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.*\",\"action\":\"ask\"},{\"permission\":\"read\",\"pattern\":\"*.env.example\",\"action\":\"allow\"},{\"permission\":\"read\",\"pattern\":\"secretos.txt\",\"action\":\"deny\"}]",
+          "time": {
+            "start": 1792096111346,
+            "end": 1792096111353
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "secretos.txt"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/0/clasificacion.json"
+  },
+  "[\"build\", \"grep\", \"SECRETO_FICTICIO\"]": {
+    "accion": "sonda",
+    "decision": "deny",
+    "regla": "La herramienta objetivo no fue ofrecida en su sesión; hay retorno de la llamada fija",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "grep",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'grep'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write."
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "tool": "grep",
+            "error": "Model tried to call unavailable tool 'grep'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write."
+          },
+          "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'grep'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write.",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "Invalid Tool",
+          "time": {
+            "start": 1792096117248,
+            "end": 1792096117253
+          }
+        }
+      ],
+      "toolsOffered": [
+        "edit",
+        "glob",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'grep'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write."
+        },
+        {
+          "status": "completed",
+          "input": {
+            "tool": "grep",
+            "error": "Model tried to call unavailable tool 'grep'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write."
+          },
+          "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'grep'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write.",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "Invalid Tool",
+          "time": {
+            "start": 1792096117248,
+            "end": 1792096117253
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "grep",
+      "SECRETO_FICTICIO"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/1/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"cat secretos.txt\"]": {
+    "accion": "sonda",
+    "decision": "deny",
+    "regla": "La herramienta objetivo no fue ofrecida en su sesión; hay retorno de la llamada fija",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'bash'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write."
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "tool": "bash",
+            "error": "Model tried to call unavailable tool 'bash'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write."
+          },
+          "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'bash'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write.",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "Invalid Tool",
+          "time": {
+            "start": 1792096123344,
+            "end": 1792096123348
+          }
+        }
+      ],
+      "toolsOffered": [
+        "edit",
+        "glob",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'bash'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write."
+        },
+        {
+          "status": "completed",
+          "input": {
+            "tool": "bash",
+            "error": "Model tried to call unavailable tool 'bash'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write."
+          },
+          "output": "The arguments provided to the tool are invalid: Model tried to call unavailable tool 'bash'. Available tools: edit, glob, invalid, read, skill, todowrite, webfetch, write.",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "Invalid Tool",
+          "time": {
+            "start": 1792096123344,
+            "end": 1792096123348
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "cat secretos.txt"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/2/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"src/index.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_5d275fb4efae",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/index.js",
+              "text": "MED9_5d275fb4efae",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792096129432,
+            "end": 1792096129457
+          }
+        }
+      ],
+      "toolsOffered": [
+        "edit",
+        "glob",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_5d275fb4efae",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/index.js",
+              "text": "MED9_5d275fb4efae",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792096129432,
+            "end": 1792096129457
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "src/index.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/3/clasificacion.json"
+  },
+  "[\"build\", \"edit\", \"src/index.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_1",
+      "herramienta": "edit",
+      "etapa": "principal",
+      "solicitudes": 4,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_1",
+          "content": "Edit applied successfully."
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "oldString": "MED9_3b3e23cf0989\n",
+            "newString": "MED9_3b3e23cf0989_EDIT\n"
+          },
+          "output": "Edit applied successfully.",
+          "metadata": {
+            "diagnostics": {},
+            "diff": "Index: /home/participante/proyecto/src/index.js\n===================================================================\n--- /home/participante/proyecto/src/index.js\n+++ /home/participante/proyecto/src/index.js\n@@ -1,1 +1,1 @@\n-MED9_3b3e23cf0989\n+MED9_3b3e23cf0989_EDIT\n",
+            "filediff": {
+              "file": "/home/participante/proyecto/src/index.js",
+              "patch": "Index: /home/participante/proyecto/src/index.js\n===================================================================\n--- /home/participante/proyecto/src/index.js\n+++ /home/participante/proyecto/src/index.js\n@@ -1,1 +1,1 @@\n-MED9_3b3e23cf0989\n+MED9_3b3e23cf0989_EDIT\n",
+              "additions": 1,
+              "deletions": 1
+            },
+            "truncated": false
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792096136135,
+            "end": 1792096136141
+          }
+        }
+      ],
+      "toolsOffered": [
+        "edit",
+        "glob",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": "MED9_3b3e23cf0989_EDIT\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "edit",
+      "src/index.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/4/clasificacion.json"
+  },
+  "[\"build\", \"webfetch\", \"https://example.com\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "webfetch",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_c0ec851b18b8"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "url": "http://127.0.0.1:39203/evidencia/MED9_c0ec851b18b8",
+            "format": "text"
+          },
+          "output": "MED9_c0ec851b18b8",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "http://127.0.0.1:39203/evidencia/MED9_c0ec851b18b8 (text/plain; charset=utf-8)",
+          "time": {
+            "start": 1792096142191,
+            "end": 1792096142197
+          }
+        }
+      ],
+      "toolsOffered": [
+        "edit",
+        "glob",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "evento": "efecto_http",
+          "hora": 1792096142.1916585,
+          "ruta": "/evidencia/MED9_c0ec851b18b8",
+          "token": "MED9_c0ec851b18b8"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "webfetch",
+      "https://example.com"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/5/clasificacion.json"
+  }
+}

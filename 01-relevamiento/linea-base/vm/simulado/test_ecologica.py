@@ -28,6 +28,9 @@ PUBLICO, HOJA, CORPUS = generador.generar(ROOT / 'ecologica')
 
 
 def captura(tid, variante):
+    if tid.startswith(('N-', 'S-')) or HOJA['casos'][tid].get('candidato'):
+        from test_med11_fixtures import captura_sintetica
+        return captura_sintetica(tid, variante)
     carpeta = ROOT / 'verificacion/20261014-tareas-ecologica/salida' / tid / variante
     return {p.stem[7:]: json.loads(p.read_text(encoding='utf-8')) for p in carpeta.glob('agente-*.json')}
 
@@ -35,8 +38,8 @@ def captura(tid, variante):
 def oracle_sintetico(regla, antes, despues):
     if 'objetivo' not in regla:
         return {}
-    return {m: {eco.clave(s): {'decision': eco.decidir(a[s[0]]['permission'], s[1], s[2])}
-                for s in [regla['objetivo'], *regla['guardas']]}
+    return {m: {eco.clave(s): {'decision': eco.decidir(a[s[0]]['permission'], eco.permiso_sonda(s), s[2])}
+                for s in [*eco.objetivos(regla), *regla['guardas']]}
             for m, a in [('antes', antes), ('despues', despues)]}
 
 
@@ -46,8 +49,8 @@ class PlanesTests(unittest.TestCase):
             if 'objetivo' not in regla:
                 continue
             s = PUBLICO['dimensiones']['ecologica'][tid]
-            bateria = arnes.bateria(arnes.agentes_escenario(s), s['tarea'])
-            for sonda in [regla['objetivo'][:3], *regla['guardas']]:
+            bateria = arnes.bateria(arnes.agentes_escenario(s), s['tarea'], exploracion=tid.startswith(('N-', 'S-')))
+            for sonda in [*(s[:3] for s in eco.objetivos(regla)), *regla['guardas']]:
                 self.assertIn(tuple(sonda), bateria, (tid, sonda))
         source = (ROOT / 'vm/simulado/ecologica.py').read_text(encoding='utf-8')
         self.assertNotIn("import espec", source)
@@ -67,6 +70,9 @@ class PlanesTests(unittest.TestCase):
                     for rel, texto in escenario['archivos'].items():
                         path = roots[rel[0]] / rel[2:]
                         path.parent.mkdir(parents=True, exist_ok=True)
+                        if isinstance(texto, dict):
+                            # Materialización artificial para probar el proveedor en Windows.
+                            texto = (path.parent / texto['enlace']).read_text(encoding='utf-8')
                         path.write_text(texto, encoding='utf-8')
                     for rel in plan['archivos']:
                         # La raíz del proyecto no recibe escritura de grupo.
@@ -84,10 +90,10 @@ class PlanesTests(unittest.TestCase):
                         fn = tool['function']
                         args = json.loads(fn['arguments'])
                         path = Path(args['filePath'])
-                        self.assertTrue(path.is_relative_to(home))
+                        self.assertTrue(path.is_relative_to(home) or str(path).replace('\\', '/') in plan.get('lecturas', []))
                         self.assertIn(fn['name'], ('read', 'edit'))
                         if fn['name'] == 'read':
-                            contenido = path.read_text(encoding='utf-8')
+                            contenido = '<file>Documentación sintética</file>' if str(path).replace('\\', '/') in plan.get('lecturas', []) else path.read_text(encoding='utf-8')
                         else:
                             self.assertEqual(path.read_text(encoding='utf-8') if path.exists() else '', args['oldString'])
                             path.parent.mkdir(parents=True, exist_ok=True)
@@ -120,7 +126,15 @@ class PlanesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             for tid, plan in planes['casos'].items():
                 provider = Ensayo(plan, 'ensayo', Path(tmp) / 'p.jsonl')
-                mensaje = provider.respuesta({'messages': []})['content']
+                cuerpo = {'messages': []}
+                while True:
+                    respuesta = provider.respuesta(cuerpo)
+                    if 'tool_calls' not in respuesta:
+                        break
+                    tool = respuesta['tool_calls'][0]
+                    cuerpo['messages'].extend([respuesta, dict(role='tool', tool_call_id=tool['id'], content='<file>Documentación sintética</file>')])
+                provider.verificar_lecturas()
+                mensaje = respuesta['content']
                 out.append(det.corregir(dict(respuesta_textual=mensaje), CORPUS['casos'][tid]['items']))
         self.assertTrue(any(r['detectados'] for r in out))
         self.assertTrue(any(r['falsos_positivos'] for r in out))

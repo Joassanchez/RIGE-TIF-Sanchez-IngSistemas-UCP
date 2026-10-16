@@ -1,0 +1,61 @@
+{
+  "accion": "sonda",
+  "decision": "ask",
+  "regla": "Resultado objetivo contiene el texto de autorrechazo de ask",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "read",
+    "etapa": "principal",
+    "solicitudes": 2,
+    "resultados": [],
+    "estados": [
+      {
+        "status": "error",
+        "input": {
+          "filePath": "/home/participante/proyecto/.env"
+        },
+        "error": "The user rejected permission to use this specific tool call.",
+        "time": {
+          "start": 1792096488684,
+          "end": 1792096488698
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": false,
+    "detalleEfecto": [
+      {
+        "status": "error",
+        "input": {
+          "filePath": "/home/participante/proyecto/.env"
+        },
+        "error": "The user rejected permission to use this specific tool call.",
+        "time": {
+          "start": 1792096488684,
+          "end": 1792096488698
+        }
+      }
+    ],
+    "finProveedor": false,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "read",
+    ".env"
+  ],
+  "evidencia_archivo": "base/captura.oraculo-ejecucion/4/clasificacion.json"
+}

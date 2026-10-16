@@ -11,7 +11,81 @@ CONGELADOS = ('k', 'semilla', 'hash_instruccion', 'hash_ejecutor', 'hash_hoja',
               'hash_tarifas', 'hash_catalogo')
 
 
+def unir_med9(registros):
+    """Fragmentos de una misma tanda; exige todos los pares y preserva evidencia."""
+    from analizar_ecologica import ECO, DET, CONTRASTE
+    campos = ('tanda', 'dimension', 'ejecutor', 'modelo', 'brazo', 'condicion', 'ensayo',
+              'fuera_del_arbol', 'k', 'limite', 'semilla', 'hash_ejecutor', 'hash_hoja',
+              'hash_tarifas', 'hash_catalogo', 'hashes_entradas', 'hash_arnes', 'hash_extension',
+              'hash_binario', 'hash_plan_ensayo', 'exclusiones_hash')
+    referencia, filas, vistos, fuentes = None, [], set(), []
+    for registro in map(Path, registros):
+        meta = json.loads((registro.parent / 'tanda.json').read_text(encoding='utf-8'))
+        if meta.get('dimension') not in ('ecologica', 'deteccion'):
+            raise ValueError('Unión MED-9 requiere ecológica o detección.')
+        for campo in campos:
+            if campo not in meta or (referencia is not None and referencia[campo] != meta[campo]):
+                raise ValueError(f'{registro}: falta o difiere {campo}.')
+        if (registro.parent / 'DETENCION.txt').exists():
+            raise ValueError(f'{registro}: tanda detenida/inválida.')
+        if referencia is not None and referencia.get('regla_acceso_web') != meta.get('regla_acceso_web'):
+            raise ValueError('No mezclar reglas de acceso web.')
+        if meta.get('regla_acceso_web') == 'ADR-094':
+            from corregir_ecologica import validar_tanda
+            validar_tanda(registro.parent, Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json')
+        if meta['dimension'] == 'ecologica':
+            from corregir_ecologica import validar_tanda
+            # La validación externa conserva su hoja en el anfitrión.
+            validar_tanda(registro.parent, Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json')
+            if meta.get('protocolo_oraculo') != 'MED-9c':
+                raise ValueError('No unir versiones distintas del oráculo ecológico.')
+        if type(meta['k']) is not int or meta['k'] < 1:
+            raise ValueError('k debe ser un entero positivo.')
+        if referencia is None:
+            referencia = meta.copy()
+        casos = (CONTRASTE if meta['fuera_del_arbol'] else ECO) if meta['dimension'] == 'ecologica' else DET
+        seleccion = {tuple(par) for par in meta['orden']}
+        encontrados = set()
+        for fila in leer_jsonl(registro):
+            for campo in ('tanda', 'dimension', 'ejecutor', 'modelo', 'brazo', 'condicion', 'ensayo', 'fuera_del_arbol', 'k', 'hash_ejecutor'):
+                if fila.get(campo) != meta[campo]:
+                    raise ValueError(f'{registro}: fila incompatible con {campo}.')
+            c, r = fila.get('caso'), fila.get('repeticion')
+            if c not in casos or type(r) is not int or not 1 <= r <= meta['k'] or (c, r) not in seleccion:
+                raise ValueError(f'{registro}: par caso/repetición ajeno al fragmento.')
+            if (c, r) in vistos:
+                raise ValueError(f'Par repetido: {c}:{r}; no se deduplica evidencia.')
+            vistos.add((c, r))
+            encontrados.add((c, r))
+            # Una unión no mueve los crudos: hacer sus referencias resolubles
+            # también si el corrector se ejecuta DESPUÉS de unir.
+            fila['_directorio_registro'] = str(registro.parent.resolve())
+            for intento in fila.get('intentos', []):
+                for campo in ('captura_antes', 'captura_despues', 'configuracion_despues', 'oraculo', 'oraculo_base', 'archivo_evidencia'):
+                    if campo in intento:
+                        intento[campo] = str((registro.parent / intento[campo]).resolve())
+            filas.append(fila)
+        if encontrados != seleccion:
+            raise ValueError(f'{registro}: fragmento incompleto respecto de su orden.')
+        fuentes.append(dict(registro=str(registro.resolve()), tanda=meta['tanda'],
+                            base_verificada=meta.get('base_verificada')))
+    if referencia is None:
+        raise ValueError('Se requiere al menos un registro.')
+    esperados = {(c, r) for c in casos for r in range(1, referencia['k'] + 1)}
+    if vistos != esperados:
+        raise ValueError('Pares incompletos: ' + ','.join(f'{c}:{r}' for c, r in sorted(esperados - vistos)))
+    referencia.update(orden=[[r['caso'], r['repeticion']] for r in filas], registros_origen=fuentes, pares_faltantes=[])
+    for campo in ('inicio', 'pares', 'casos', 'base_verificada', 'preparar_base'):
+        referencia.pop(campo, None)
+    referencia['union_med9'] = True
+    return filas, referencia, []
+
+
 def unir(registros):
+    if registros:
+        meta = json.loads((Path(registros[0]).parent / 'tanda.json').read_text(encoding='utf-8'))
+        if meta.get('dimension') in ('ecologica', 'deteccion'):
+            return unir_med9(registros)
     referencia = None
     filas, vistos, fuentes = [], set(), []
     for registro in map(Path, registros):
@@ -75,7 +149,8 @@ def main():
     meta['tanda'] = args.salida.parent.name
     args.salida.write_text(''.join(json.dumps(r, ensure_ascii=False, allow_nan=False) + '\n' for r in filas), encoding='utf-8')
     escribir_json(manifiesto, meta)
-    print(f'{len(filas)} filas de {24 * meta["k"]}; {len(faltantes)} pares faltantes.')
+    total = len(filas) if meta.get('union_med9') else 24 * meta['k']
+    print(f'{len(filas)} filas de {total}; {len(faltantes)} pares faltantes.')
     if faltantes:
         print('Faltan: ' + ','.join(f'{c}:{r}' for c, r in faltantes))
 

@@ -1,0 +1,102 @@
+{
+  "accion": "sonda",
+  "decision": "allow",
+  "regla": "Resultado objetivo sin error y efecto observable acreditado",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "read",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "filePath": "/home/participante/proyecto/src/index.js"
+        },
+        "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+        "metadata": {
+          "preview": "MED9_5d275fb4efae",
+          "truncated": false,
+          "loaded": [],
+          "display": {
+            "type": "file",
+            "path": "/home/participante/proyecto/src/index.js",
+            "text": "MED9_5d275fb4efae",
+            "lineStart": 1,
+            "lineEnd": 1,
+            "totalLines": 1,
+            "truncated": false
+          }
+        },
+        "title": "src/index.js",
+        "time": {
+          "start": 1792096565136,
+          "end": 1792096565176
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+      },
+      {
+        "status": "completed",
+        "input": {
+          "filePath": "/home/participante/proyecto/src/index.js"
+        },
+        "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+        "metadata": {
+          "preview": "MED9_5d275fb4efae",
+          "truncated": false,
+          "loaded": [],
+          "display": {
+            "type": "file",
+            "path": "/home/participante/proyecto/src/index.js",
+            "text": "MED9_5d275fb4efae",
+            "lineStart": 1,
+            "lineEnd": 1,
+            "totalLines": 1,
+            "truncated": false
+          }
+        },
+        "title": "src/index.js",
+        "time": {
+          "start": 1792096565136,
+          "end": 1792096565176
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "read",
+    "src/index.js"
+  ],
+  "evidencia_archivo": "ingenua_allowlist/captura.oraculo-ejecucion/3/clasificacion.json"
+}

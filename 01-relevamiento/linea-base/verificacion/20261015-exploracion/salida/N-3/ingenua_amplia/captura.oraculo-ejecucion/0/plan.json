@@ -1,0 +1,21 @@
+{
+  "agente": "auditor",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "npm test",
+            "description": "Sonda local MED-9"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "bash_completado"
+      }
+    }
+  ]
+}

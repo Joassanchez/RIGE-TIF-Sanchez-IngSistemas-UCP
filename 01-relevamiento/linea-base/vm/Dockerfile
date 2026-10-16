@@ -12,10 +12,16 @@ ENV OPENCODE_DISABLE_AUTOUPDATE=1 \
     OPENCODE_DISABLE_MODELS_FETCH=1
 
 USER root
+# Paquete de Ubuntu 26.04/resolute, amd64 (packages.ubuntu.com/resolute/amd64/ripgrep/download).
+# OpenCode v1.18.25: core/src/ripgrep/binary.ts busca rg en PATH antes de descargar.
+ARG RIPGREP_DEB_VERSION=15.1.0-1ubuntu1
 RUN test "$(dpkg --print-architecture)" = amd64 \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-       bash ca-certificates curl git python3 sudo util-linux \
+       bash ca-certificates curl git python3 sudo util-linux ripgrep="${RIPGREP_DEB_VERSION}" \
+    && test "$(command -v rg)" = /usr/bin/rg \
+    && test "$(dpkg-query -W -f='${Version}' ripgrep)" = "${RIPGREP_DEB_VERSION}" \
+    && rg --version \
     && rm -rf /var/lib/apt/lists/*
 
 # El contexto es exclusivamente vm/, filtrado además por .dockerignore.

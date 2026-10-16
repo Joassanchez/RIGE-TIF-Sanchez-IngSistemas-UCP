@@ -118,6 +118,10 @@ def clasificar(plan, accion_id, registros, eventos, proyecto, codigo):
             detalle = archivo.read_text(encoding="utf-8") if archivo.exists() else None
             esperado = next(c["argumentos"]["newString"] for c in accion["llamadas"] if c.get("objetivo"))
             observado = detalle == esperado
+        elif efecto["tipo"] == "escritura":
+            archivo = Path(proyecto) / efecto['archivo']
+            detalle = archivo.read_text(encoding='utf-8') if archivo.exists() else None
+            observado = detalle == efecto['contenido']
         elif efecto["tipo"] == "http":
             detalle = [r for r in registros if r.get("evento") == "efecto_http" and r.get("token") == efecto["token"]]
             observado = bool(detalle) and efecto["token"] in texto

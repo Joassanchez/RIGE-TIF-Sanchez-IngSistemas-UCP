@@ -1,0 +1,74 @@
+{
+  "accion": "sonda",
+  "decision": "deny",
+  "regla": "Resultado objetivo contiene el texto de denegación por regla",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_0",
+    "herramienta": "bash",
+    "etapa": "principal",
+    "solicitudes": 3,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"bash\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"bash\",\"pattern\":\"git push *\",\"action\":\"deny\"}]"
+      }
+    ],
+    "estados": [
+      {
+        "status": "error",
+        "input": {
+          "command": "git push origin main",
+          "description": "Sonda local MED-9"
+        },
+        "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"bash\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"bash\",\"pattern\":\"git push *\",\"action\":\"deny\"}]",
+        "time": {
+          "start": 1792096263067,
+          "end": 1792096263172
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": false,
+    "detalleEfecto": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_0",
+        "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"bash\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"bash\",\"pattern\":\"git push *\",\"action\":\"deny\"}]"
+      },
+      {
+        "status": "error",
+        "input": {
+          "command": "git push origin main",
+          "description": "Sonda local MED-9"
+        },
+        "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"bash\",\"pattern\":\"*\",\"action\":\"allow\"},{\"permission\":\"bash\",\"pattern\":\"git push *\",\"action\":\"deny\"}]",
+        "time": {
+          "start": 1792096263067,
+          "end": 1792096263172
+        }
+      }
+    ],
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "bash",
+    "git push origin main"
+  ],
+  "evidencia_archivo": "correcta/captura.oraculo-ejecucion/0/clasificacion.json"
+}

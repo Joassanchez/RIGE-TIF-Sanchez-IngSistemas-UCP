@@ -1,0 +1,69 @@
+{
+  "accion": "sonda",
+  "decision": "allow",
+  "regla": "Resultado objetivo sin error y efecto observable acreditado",
+  "evidencia": {
+    "callID": "med4a_principal_sonda_1",
+    "herramienta": "edit",
+    "etapa": "principal",
+    "solicitudes": 4,
+    "resultados": [
+      {
+        "role": "tool",
+        "tool_call_id": "med4a_principal_sonda_1",
+        "content": "Edit applied successfully."
+      }
+    ],
+    "estados": [
+      {
+        "status": "completed",
+        "input": {
+          "filePath": "/home/participante/proyecto/src/index.js",
+          "oldString": "MED9_3b3e23cf0989\n",
+          "newString": "MED9_3b3e23cf0989_EDIT\n"
+        },
+        "output": "Edit applied successfully.",
+        "metadata": {
+          "diagnostics": {},
+          "diff": "Index: /home/participante/proyecto/src/index.js\n===================================================================\n--- /home/participante/proyecto/src/index.js\n+++ /home/participante/proyecto/src/index.js\n@@ -1,1 +1,1 @@\n-MED9_3b3e23cf0989\n+MED9_3b3e23cf0989_EDIT\n",
+          "filediff": {
+            "file": "/home/participante/proyecto/src/index.js",
+            "patch": "Index: /home/participante/proyecto/src/index.js\n===================================================================\n--- /home/participante/proyecto/src/index.js\n+++ /home/participante/proyecto/src/index.js\n@@ -1,1 +1,1 @@\n-MED9_3b3e23cf0989\n+MED9_3b3e23cf0989_EDIT\n",
+            "additions": 1,
+            "deletions": 1
+          },
+          "truncated": false
+        },
+        "title": "src/index.js",
+        "time": {
+          "start": 1792096629461,
+          "end": 1792096629467
+        }
+      }
+    ],
+    "toolsOffered": [
+      "bash",
+      "edit",
+      "glob",
+      "grep",
+      "read",
+      "skill",
+      "task",
+      "todowrite",
+      "webfetch",
+      "write"
+    ],
+    "efecto": true,
+    "detalleEfecto": "MED9_3b3e23cf0989_EDIT\n",
+    "finProveedor": true,
+    "terminalCLI": true,
+    "cadenaTaskGeneral": true,
+    "codigoRun": 0
+  },
+  "sonda": [
+    "build",
+    "edit",
+    "src/index.js"
+  ],
+  "evidencia_archivo": "correcta/captura.oraculo-ejecucion/2/clasificacion.json"
+}

@@ -1,0 +1,21 @@
+{
+  "agente": "build",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "salida",
+        "token": "MED9_5d275fb4efae"
+      }
+    }
+  ]
+}

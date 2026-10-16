@@ -1,0 +1,21 @@
+{
+  "agente": "habilidades",
+  "acciones": [
+    {
+      "id": "sonda",
+      "llamadas": [
+        {
+          "herramienta": "skill",
+          "argumentos": {
+            "name": "med11-publica"
+          },
+          "objetivo": true
+        }
+      ],
+      "efecto": {
+        "tipo": "salida",
+        "token": "MED11_SKILL_PUBLICA"
+      }
+    }
+  ]
+}
