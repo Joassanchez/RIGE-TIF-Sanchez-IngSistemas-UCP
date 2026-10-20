@@ -58,11 +58,12 @@ class RegistroTests(unittest.TestCase):
         escenario = dict(archivos={}, env={}, directorio='sub', tarea='Consulta local', instruccion='Consulta local')
         hojas = json.loads((ROOT / 'ecologica/escenarios.json').read_text(encoding='utf-8'))['dimensiones']
         regla = json.loads((ROOT / 'ecologica/respuestas-ecologica.json').read_text(encoding='utf-8'))['casos'].get(caso, {})
-        nueva = caso.startswith(('N-', 'S-')) or bool(regla.get('candidato'))
+        nueva = dimension == 'ecologica' and (caso.startswith(('C-', 'N-', 'S-')) or bool(regla.get('candidato')))
         if caso.startswith(('M-', 'N-', 'S-')) or nueva:
-            escenario['tarea'] = hojas['ecologica'][caso]['tarea']
+            escenario['tarea'] = hojas[dimension][caso]['tarea']
         if nueva:
             escenario['archivos'] = hojas['ecologica'][caso]['archivos']
+            escenario['directorio'] = hojas['ecologica'][caso]['directorio']
         eco.guardar(base / 'escenarios.json', {'dimensiones': {dimension: {caso: escenario}}})
         for nombre in ('tareas.md', 'deteccion.md'):
             (base / nombre).write_text('hoja cerrada')
@@ -139,7 +140,7 @@ class RegistroTests(unittest.TestCase):
             carpeta = Path(str(prefijo) + '.' + momento)
             carpeta.mkdir()
             (carpeta / 'config.json').write_text('{}')
-            if caso.startswith(('M-', 'N-', 'S-')) or nueva:
+            if dimension == 'ecologica' and (caso.startswith(('M-', 'N-', 'S-')) or nueva):
                 sys.path.insert(0, str(ROOT / 'herramientas'))
                 from test_med9 import captura
                 for ag, datos in captura(caso, 'base').items():
@@ -205,12 +206,12 @@ class RegistroTests(unittest.TestCase):
             if dimension == 'ecologica':
                 # Mismo protocolo de dos fases que el envoltorio del anfitrión.
                 sys.argv = argv + ['--preparar-base']
-                eco.medir(h.__dict__)
+                eco.medir(h.__dict__, ejecutar_medida=ejecutar)
                 salida = base / 'resultados/prueba'
                 sys.path.insert(0, str(ROOT / 'herramientas'))
                 try:
                     from verificar_base_ecologica import verificar
-                    if nueva:
+                    if nueva or caso.startswith('V-'):
                         # Admisión artificial confinada al temporal de esta prueba.
                         referencia = base / 'admision-sintetica'
                         path = referencia / caso / 'base/oraculo.json'
@@ -233,7 +234,7 @@ class RegistroTests(unittest.TestCase):
                 sys.argv = argv + ['--base-verificada', validacion['hash_base']]
                 if not ensayo:
                     os.environ['OPENCODE_AUTH_JSON'] = '{"openai":{}}'
-            eco.medir(h.__dict__)
+            eco.medir(h.__dict__, ejecutar_medida=ejecutar)
         salida = base / 'resultados/prueba'
         rows = [json.loads(l) for l in (salida / 'registro.jsonl').read_text().splitlines()]
         self.ultimas_filas = rows

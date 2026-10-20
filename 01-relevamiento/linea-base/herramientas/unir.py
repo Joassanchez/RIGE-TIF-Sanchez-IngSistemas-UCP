@@ -30,6 +30,8 @@ def unir_med9(registros):
             raise ValueError(f'{registro}: tanda detenida/inválida.')
         if referencia is not None and referencia.get('regla_acceso_web') != meta.get('regla_acceso_web'):
             raise ValueError('No mezclar reglas de acceso web.')
+        if referencia is not None and referencia.get('hash_plan_anidado') != meta.get('hash_plan_anidado'):
+            raise ValueError('No mezclar planes de verificación anidada.')
         if meta.get('regla_acceso_web') == 'ADR-094':
             from corregir_ecologica import validar_tanda
             validar_tanda(registro.parent, Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json')
@@ -61,7 +63,7 @@ def unir_med9(registros):
             # también si el corrector se ejecuta DESPUÉS de unir.
             fila['_directorio_registro'] = str(registro.parent.resolve())
             for intento in fila.get('intentos', []):
-                for campo in ('captura_antes', 'captura_despues', 'configuracion_despues', 'oraculo', 'oraculo_base', 'archivo_evidencia'):
+                for campo in ('captura_antes', 'captura_despues', 'configuracion_despues', 'oraculo', 'oraculo_base', 'archivo_evidencia', 'anidado'):
                     if campo in intento:
                         intento[campo] = str((registro.parent / intento[campo]).resolve())
             filas.append(fila)

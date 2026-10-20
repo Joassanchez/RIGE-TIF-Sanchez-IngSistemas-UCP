@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import re
+from evidencia_portable import leer_texto
 
 CASOS = {'R': ('C-3b', 'C-3d'), 'E': ('C-1d', 'C-1f', 'C-3b', 'C-4e')}
 
@@ -51,8 +52,14 @@ def contenido_archivo(row, intento, archivo):
         rel = next((PurePosixPath(nombre) / ruta[len(root):] for root, nombre in roots if ruta.startswith(root)), None)
         if rel is None:
             raise ValueError('Archivo fuera de las copias')
-        previo = base / (prefijo + '.archivos-antes') / rel
-        texto = previo.read_text(encoding='utf-8') if previo.is_file() else ''
+        snapshot = base / (prefijo + '.archivos-antes')
+        previo = snapshot / rel
+        virtuales = {'/home/participante/.config/opencode': snapshot / 'global',
+                     '/home/participante/proyecto': snapshot / 'proyecto'}
+        try:
+            texto = leer_texto(previo, base, virtuales)
+        except FileNotFoundError:
+            texto = ''
         for tool in row.get('herramientas', []):
             if tool.get('estado') != 'completed':
                 continue

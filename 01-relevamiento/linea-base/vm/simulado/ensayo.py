@@ -4,6 +4,7 @@ import argparse
 import json
 from http.server import ThreadingHTTPServer
 from pathlib import Path
+import shlex
 
 from proveedor import Proveedor, manejador
 
@@ -50,6 +51,9 @@ class EnsayoModificacion(Ensayo):
     def __init__(self, plan, accion, registro, home=Path('/home/participante')):
         super().__init__(plan, accion, registro)
         self.llamadas = []
+        crear = plan.get('crear_como_dev', [])
+        if any(rel not in plan['archivos'] or not rel.startswith('P/') for rel in crear):
+            raise ValueError('Solo se pueden crear como desarrollador archivos de proyecto del plan')
         for rel, nuevo in plan['archivos'].items():
             if rel[:2] not in ('G/', 'P/') or '..' in Path(rel).parts or '.git' in Path(rel).parts:
                 raise ValueError('Ruta de ensayo inválida')
@@ -57,7 +61,18 @@ class EnsayoModificacion(Ensayo):
             anterior = path.read_text(encoding='utf-8') if path.exists() else ''
             if path.exists():
                 self.llamadas.append(('read', dict(filePath=str(path))))
-            self.llamadas.append(('edit', dict(filePath=str(path), oldString=anterior, newString=nuevo)))
+            elif rel in crear:
+                # Variante histórica como-dev. MED-13-c6 permite también crear
+                # directamente; el plan directo no declara crear_como_dev.
+                archivo = shlex.quote(str(path))
+                comando = f'touch -- {archivo} && chmod g+rw -- {archivo}'
+                self.llamadas.append(('bash', dict(command='como-dev ' + shlex.quote(comando))))
+            if anterior:
+                self.llamadas.append(('edit', dict(filePath=str(path), oldString=anterior, newString=nuevo)))
+            else:
+                # 1.18.25 rechaza edit(oldString='') si el destino ya existe,
+                # incluido el archivo vacío creado por la llamada anterior.
+                self.llamadas.append(('write', dict(filePath=str(path), content=nuevo)))
 
     def respuesta(self, cuerpo):
         self.log('solicitud_ensayo_modificacion', cuerpo=cuerpo, uso_inventado=self.uso)

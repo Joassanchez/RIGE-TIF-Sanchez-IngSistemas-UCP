@@ -1,7 +1,8 @@
 # ADR-098 — Línea de base consolidada: banco de problemas estratificado, alineado con el alcance de RIGE y con consecuencia por ejecución
 
-- Estado: aceptado (19/10/2026)
-- Fecha: 19/10/2026
+- Estado: aceptado (19/10/2026); modificado y aceptado el 20/10/2026 (puntos 3, 6, 9 y 10)
+- Fecha: 19/10/2026; modificación del 20/10/2026
+- **Registro único de la línea de base** (decisión del autor del 20/10/2026): todo cambio en la forma de medir se incorpora aquí, sin ADR nuevos. Absorbe el ex ADR-099 (retirado)
 - **Se decide después de conocer los resultados** de las mediciones del 13 al 15/10/2026 y **antes de ejecutar agentes sobre el banco**. La admisión de los problemas nuevos se hace en el contenedor, solo con OpenCode y sin agente.
 - Capítulos afectados: Cap. I (I.2.3, I.2.4, I.3.1, I.3.2, I.3.4); Cap. II (II.2, II.3, II.6.3); Cap. V (V.2); Anexo VI (A.VI.1, A.VI.2, A.VI.7, A.VI.8); Anexo III (D-41); diseño de la medición
 - Origen: discusión con el autor del 19/10/2026
@@ -24,6 +25,9 @@
 
    **[S]** Una consulta resuelta con RIGE en 3 solicitudes, en lugar de 5, implica una reducción cercana al 50 %. **[S]** En la modificación, el éxito declarado falso termina antes y cuesta menos. Con RIGE, el agente que descubre la falta de efecto hace más turnos para corregirla, así que comparar sin igualar el resultado castiga el acierto.
 9. **[D]** El arnés guarda la traza completa de herramientas, con argumentos, resultado y estado (`vm/medir.sh`, línea 160), y `observar()` la resume en `archivos_leidos`, `comandos_introspeccion`, `uso_documentacion`, `uso_rige` y `acceso_web` (líneas 233 a 266). La medición ecológica usa la misma función (línea 945). Las lecturas por bash no se cuentan en forma automática (`archivos_leidos_cobertura`).
+10. **[D] (20/10/2026)** En la tanda real, la credencial del modelo se instalaba solo en la cuenta del evaluador (`vm/simulado/ecologica.py`, línea 770; `vm/medir.sh`, línea 612). El agente ejecuta los comandos del desarrollador con `como-dev`, como `participante`, que no tenía credencial. Por eso no podía lanzar `opencode run` como el desarrollador para probar el efecto: solo podía inspeccionar con `opencode debug`. Así, la verificación por comportamiento del punto 10 quedaba en cero por construcción, y el éxito declarado falso podía salir inflado respecto de la práctica.
+11. **[D] (20/10/2026)** En la readmisión con la batería ampliada, la forma correcta de S-1 (y por lo tanto la de M-1) cambia `external_directory` de deny a ask. Lo hace porque agregar un `allow` a `read: deny` vuelve a ofrecer la herramienta (`como-funciona.md` §13). La forma correcta de N-12 deniega todos los comandos de bash, que es lo que pide la tarea. Con la definición original del punto 6, las dos cuentan como colateral, y un colateral cuenta como éxito declarado falso: una respuesta correcta del agente habría contado como falla (`C:/Users/Joa/evidencia-readmision-20261020/p2/admision.json`).
+12. **[D] (20/10/2026)** La raíz del proyecto del desarrollador no da escritura al grupo (decisión de MED-6). El agente medido corre como el evaluador y por eso no puede crear un archivo nuevo en la raíz (`opencode.json`, `AGENTS.md`, `.opencode/`) sin pasar por `como-dev`. En una computadora real, el agente lo crea directamente. **[S]** Ese rodeo puede costarle turnos, o hacerlo declarar éxito sin haber creado el archivo, lo que inflaría el éxito declarado falso. En las corridas reales anteriores no se encontró evidencia de ese efecto, pero tampoco se puede descartar (`C:/Users/Joa/rige-ensayo-20261020d`, N-21).
 
 ### Alternativas evaluadas
 
@@ -44,6 +48,11 @@
 1. **Objeto.** El procedimiento delegado en OpenCode 1.18.25: el agente modifica la configuración dentro del proyecto a pedido del desarrollador (ADR-090 y ADR-091).
 2. **Ejecutores.** `build` y Charles, `gpt-6.1-sol`, k = 3, semilla 20261015, 600 s por ejecución.
 3. **Condición del brazo base.** Documentación local de 1.18.25, `webfetch` registrado (ADR-094) y la skill nativa `customize-opencode` (ADR-078). **Sin la hoja de referencia.**
+   - **Verificación por comportamiento** (Contexto 10; decisión del autor del 20/10/2026 entre A, declarar el límite; B, credencial del desarrollador; y C, proveedor simulado para el desarrollador: se eligió B). En la tanda real, la cuenta `participante` recibe la misma credencial y el catálogo congelado del 13/10/2026, así que el agente puede probar con `opencode run` por medio de `como-dev`. En el ensayo no hay credencial y las sesiones anidadas usan el proveedor simulado.
+   - La instrucción no le avisa al agente que puede probar. La hoja cerrada no cambia.
+   - Las sesiones anidadas corren dentro del límite de 600 s de la ejecución; al vencer, se termina el grupo de procesos completo.
+   - Antes del oráculo final, el estado que las sesiones anidadas dejan en la carpeta de datos del desarrollador se copia como evidencia y se elimina. Una aprobación persistida invalida la ejecución.
+   - **Creación de archivos en la raíz del proyecto** (Contexto 12; decisión del autor del 20/10/2026): la raíz da escritura al grupo con *sticky bit*. El agente puede crear archivos y carpetas nuevos, como en la práctica, pero no puede borrar ni renombrar los del desarrollador. `como-dev` se conserva.
 4. **Banco** (`ecologica/banco.md`, desde la propuesta del 19/10/2026):
    - Unidad: escenario, pedido, objetivo, guardas, forma correcta e ingenua.
    - Inclusión: los criterios C1 a C5; la admisión es solo por reproducción nativa.
@@ -53,7 +62,11 @@
      - **E4 · síntoma:** S-1 a S-3.
    - Ningún problema se agrega, retira ni modifica por lo que haga un agente. Las causas de retiro se limitan a defectos del instrumento verificados sin agente.
 5. **Indicador principal.** Éxito declarado falso por problema: `hecho: true` con resultado `sin_efecto`, `incorrecta` o `colateral`. Un problema está **con problema** si lo tiene en **al menos 2 de 3** repeticiones, y siempre se informa también la lectura con 1 de 3. Modifica ADR-093 §1. Umbral elegido por el autor el 19/10/2026, entre 2 de 3 y 1 de 3.
-6. **Colaterales completos.** Una diferencia de la batería común entre el antes y el después que no sea el objetivo cuenta como colateral (`colateral_bateria`), aparte de las guardas declaradas (`colateral_guarda`).
+6. **Colaterales completos.**
+   - **Guardas declaradas** (`colateral_guarda`): se comparan con el estado inicial.
+   - **Batería** (`colateral_bateria`, redefinido el 20/10/2026 por Contexto 11): una sonda de la batería cuenta como colateral solo si su valor final difiere del que produce la **forma correcta de referencia** del problema, capturada en la admisión nativa con la batería vigente. Mide la «regla demasiado amplia»: lo que se cambió de más respecto de la solución correcta, no los efectos que la solución correcta produce necesariamente en OpenCode.
+   - Por eso todas las tareas, incluidas M-1 a M-10, se readmiten con la batería vigente.
+   - Conformidad del autor del 20/10/2026.
 7. **Consecuencia por ejecución**, con el orden deny < ask < allow:
    - **exposición**: el objetivo o una sonda queda más permisivo que lo esperado;
    - **bloqueo**: queda más restrictivo;
@@ -70,10 +83,11 @@
    - La cantidad de solicitudes se informa como indicador junto con los tokens.
    - El umbral provisorio del 50 % se confirma o se corrige con la línea de base de modificación, a partir de los turnos de exploración que muestre, antes de la medición de noviembre.
    - Las corridas en las que RIGE evita un éxito declarado falso se informan aparte, con su costo.
+   - Los tokens y las solicitudes de las sesiones anidadas (punto 3) se suman a los de la tarea y se informan también por separado (`tokens_anidados`, `solicitudes_anidadas`, con el modelo de cada sesión). Si hubo una sesión anidada y sus tokens no se pueden extraer, el registro queda incompleto.
 10. **Proceso, por traza y sin preguntarle al agente.** Fijado antes de la tanda, calculado en forma mecánica y descriptivo; no es criterio de éxito.
     - **Exploración:** archivos de configuración leídos, también por bash; documentación; `webfetch`; skill `customize-opencode`.
     - **Edición:** archivos editados y capa (global, proyecto, `.opencode/`, markdown), comparada con la capa de la forma correcta.
-    - **Verificación posterior a la última edición:** ninguna, declarativa (`debug config` o `debug agent`), de comportamiento (ejecuta la acción) o con RIGE.
+    - **Verificación posterior a la última edición:** ninguna, declarativa (`debug config` o `debug agent`), de comportamiento (ejecuta la acción, incluido un `opencode run` como el desarrollador) o con RIGE.
     - **Turnos:** cantidad de solicitudes.
     - Se informa la relación entre el tipo de verificación y el éxito declarado falso.
     - No se pide al agente que describa su método: agrega tokens, modifica la conducta y el autoinforme del modelo no acredita lo ejecutado.
@@ -102,6 +116,11 @@
 
 **Aceptado por el autor el 19/10/2026**, tal como está redactado. Las decisiones intermedias del mismo día (2 de 3, los comunes de E1, la regla de cobertura, la fusión de E3 en E1 y E2, tokens por resultado y proceso por traza) constan en el texto.
 
+**Modificación del 20/10/2026.**
+- El autor eligió B para la verificación por comportamiento (punto 3; antes ADR-099, que se retira) y dispuso que la línea de base tenga este único registro.
+- El autor dio su conformidad a la redefinición del colateral de batería (punto 6) y aceptó la creación de archivos en la raíz con *sticky bit* (punto 3, Contexto 12).
+- El autor delega en el ingeniero las decisiones de ejecución y el ensayo.
+
 ### Consecuencias
 
 **Si se acepta:**
@@ -113,6 +132,13 @@
 - Después de la línea de base y antes del corte del 07/11/2026: revisión del alcance del MVP con los hallazgos, las seis dudas de cobertura resueltas, los requisitos agregados o precisados con su revalidación (PV-03) y la columna de cobertura completa en `banco.md`.
 - **[S]** Costo de las tandas: de 38 a 46 problemas de E1 y E2 (según la admisión de los candidatos) más 3 de E4, por dos ejecutores y tres repeticiones: de 246 a 294 ejecuciones, alrededor de dos ventanas de cuota.
 - El Anexo VI y D-41 declaran que el marco y la condición del brazo base se fijaron después de las tandas del 15/10 y antes de ejecutar agentes sobre el banco.
+- **Modificación del 20/10/2026:**
+  - ficha MED-13 (credencial del desarrollador, sesiones anidadas contadas y aisladas, límite por grupo de procesos, proceso de comportamiento y guion de ensayo con verificación anidada) y sus correcciones;
+  - readmisión nativa de todas las tareas con el hash vigente de `espec.py` y la batería vigente;
+  - corrección de la batería de exploración en tareas que corren desde un subdirectorio (N-2);
+  - raíz del proyecto con escritura de grupo y *sticky bit*, seguida de una readmisión completa, porque cambia la preparación del escenario;
+  - ensayo completo antes de la tanda.
+- **[S]** El costo de las tandas crece en proporción a las veces que el agente decida probar. Se informa.
 
 ### Evidencia
 
@@ -124,3 +150,5 @@
 - `01-relevamiento/linea-base/verificacion/20261013-LB-principal-sol/registro.jsonl` (tokens por solicitud)
 - `03-requisitos/libro/catalogo/RF-02.md`, `RF-07.md`, `RF-10.md`
 - `01-relevamiento/linea-base/verificacion/20261015-exploracion/salida/` y `salida2/` (admisión nativa de N, V-5 a V-8 y S)
+- `01-relevamiento/linea-base/verificacion/20261019-admision/` (admisión del 19/10/2026) y `C:/Users/Joa/evidencia-readmision-20261020/` (readmisión del 20/10/2026, fuera del repositorio hasta su consolidación)
+- `01-relevamiento/linea-base/vm/simulado/ecologica.py`, líneas 126 y 770; `vm/como-dev`

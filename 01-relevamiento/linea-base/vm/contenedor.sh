@@ -19,6 +19,7 @@ Uso (en el anfitrión):
   bash vm/contenedor.sh medir --ensayo --destino <carpeta-vacía> [opciones de medir.sh]
   OPENCODE_AUTH_JSON='<JSON de autenticación>' bash vm/contenedor.sh medir --destino <carpeta-vacía> [opciones]
 La evidencia debe estar fuera del repositorio; no se monta ningún directorio.
+RIGE_EVIDENCIA_ADMISION: raíces completas de admisión en el anfitrión, separadas por ';'.
 USO
 }
 fallar() { echo "$*" >&2; exit 2; }
@@ -29,6 +30,17 @@ ruta_docker() {
 }
 limpiar() {
   if [[ -n $CONTENEDOR ]]; then docker rm -f "$CONTENEDOR" >/dev/null 2>&1 || true; fi
+}
+exportar_resultados() {
+  local origen=$1 fase=$2 archivo="/tmp/rige-evidencia-$2.tar" hash
+  # tar conserva los enlaces sin seguirlos. Docker solo copia un archivo regular.
+  docker exec "$CONTENEDOR" tar -cpf "$archivo" -C "$origen" . || return 1
+  hash=$(docker exec "$CONTENEDOR" sha256sum "$archivo") || return 1
+  hash=${hash%% *}
+  [[ $hash =~ ^[[:xdigit:]]{64}$ ]] || { echo 'SHA-256 del tar inválido.' >&2; return 1; }
+  docker cp "$CONTENEDOR:$archivo" "$(ruta_docker "$EVIDENCIA/evidencia-$fase.tar")" || return 1
+  "${PYTHON:-python}" "$(ruta_docker "$ORIGEN/../herramientas/evidencia_portable.py")" \
+    "$(ruta_docker "$EVIDENCIA/evidencia-$fase.tar")" --destino "$(ruta_docker "$EVIDENCIA")" --sha256 "$hash"
 }
 
 [[ $# -ge 1 ]] || { uso; exit 2; }
@@ -84,7 +96,7 @@ case "$SUBCOMANDO" in
       while [[ ! -f /opt/linea-base/captura-terminada ]]; do sleep 1; done
     '
     docker logs "$CONTENEDOR"
-    docker cp "$CONTENEDOR:/opt/linea-base/verificacion/." "$(ruta_docker "$EVIDENCIA")"
+    exportar_resultados /opt/linea-base/verificacion "$SUBCOMANDO" || fallar 'No se pudo conservar la evidencia de verificación.'
     CODIGO="$(cat "$EVIDENCIA/codigo-salida.txt")"
     [[ $CODIGO =~ ^[0-9]+$ && $CODIGO -le 255 ]] || fallar "Código de salida de la captura inválido."
     echo "Evidencia copiada a $EVIDENCIA; comparar con respuestas.md fuera del contenedor."
@@ -150,6 +162,22 @@ case "$SUBCOMANDO" in
     elif [[ -n ${OPENCODE_AUTH_JSON:-} ]]; then
       fallar 'Quitar OPENCODE_AUTH_JSON para la tanda de ensayo.'
     fi
+    ADMISION_ARGS=()
+    if [[ $DIMENSION == ecologica && -v RIGE_EVIDENCIA_ADMISION ]]; then
+      [[ -n $RIGE_EVIDENCIA_ADMISION && $RIGE_EVIDENCIA_ADMISION != \;* && $RIGE_EVIDENCIA_ADMISION != *\; && $RIGE_EVIDENCIA_ADMISION != *\;\;* ]] || fallar 'RIGE_EVIDENCIA_ADMISION contiene una raíz vacía.'
+      IFS=';' read -r -a RAICES_ADMISION <<< "$RIGE_EVIDENCIA_ADMISION"
+      for RAIZ_ADMISION in "${RAICES_ADMISION[@]}"; do
+        ADMISION_ARGS+=(--evidencia-admision "$(ruta_docker "$RAIZ_ADMISION")")
+      done
+    fi
+    PLAN_DETECCION=''
+    if [[ $DIMENSION == deteccion && $ENSAYO -eq 1 ]]; then
+      # La hoja se lee solo aquí. La VM recibe un guion sintético, como los
+      # planes históricos, sin corpus/respuestas/especificación ejecutables.
+      PLAN_DETECCION="$EVIDENCIA/planes-ensayo/deteccion.json"
+      "${PYTHON:-python}" "$(ruta_docker "$ORIGEN/../herramientas/generar-ecologica.py")" \
+        --solo-planes-deteccion --destino "$(ruta_docker "$EVIDENCIA/planes-ensayo")"
+    fi
     command -v docker >/dev/null 2>&1 || fallar 'No se encuentra el cliente Docker.'
     CONTENEDOR="rige-medir-$$-$RANDOM"
     trap limpiar EXIT
@@ -169,6 +197,9 @@ case "$SUBCOMANDO" in
         docker cp "$(ruta_docker "$ORIGEN/../ecologica/$ENTRADA")" "$CONTENEDOR:/opt/linea-base/$ENTRADA"
       done
     fi
+    if [[ -n $PLAN_DETECCION ]]; then
+      docker cp "$(ruta_docker "$PLAN_DETECCION")" "$CONTENEDOR:/opt/linea-base/simulado/deteccion.json"
+    fi
     if [[ -n $SONDA ]]; then
       [[ -f $SONDA ]] || fallar 'Archivo de sonda inexistente.'
       docker cp "$(ruta_docker "$SONDA")" "$CONTENEDOR:/opt/linea-base/$(basename "$SONDA")"
@@ -180,19 +211,20 @@ case "$SUBCOMANDO" in
       # afuera. Sólo vuelve al contenedor el hash de la base aprobada.
       [[ $TANDA =~ ^[A-Za-z0-9_-]+$ ]] || fallar 'Tanda inválida.'
       docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" --preparar-base || CODIGO=$?
-      docker cp "$CONTENEDOR:/opt/linea-base/resultados/." "$(ruta_docker "$EVIDENCIA")" || fallar 'No se pudo conservar la fase base.'
+      exportar_resultados /opt/linea-base/resultados base || fallar 'No se pudo conservar la fase base.'
       [[ $CODIGO -eq 0 ]] || exit "$CODIGO"
       HASH_BASE=$("${PYTHON:-python}" "$(ruta_docker "$ORIGEN/../herramientas/verificar_base_ecologica.py")" \
-        "$(ruta_docker "$EVIDENCIA/$TANDA")") || fallar 'Base inicial distinta o incompleta: tanda detenida antes de ejecutar agentes.'
+        "$(ruta_docker "$EVIDENCIA/$TANDA")" "${ADMISION_ARGS[@]}") || fallar 'Base inicial distinta o incompleta: tanda detenida antes de ejecutar agentes.'
       [[ $HASH_BASE =~ ^[[:xdigit:]]{64}$ ]] || fallar 'Confirmación de base inválida.'
       docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" --base-verificada "$HASH_BASE" || CODIGO=$?
     else
       docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" || CODIGO=$?
     fi
     # Preservar también la evidencia de un fallo o detención de fase 0.
-    docker cp "$CONTENEDOR:/opt/linea-base/resultados/." "$(ruta_docker "$EVIDENCIA")" || {
+    exportar_resultados /opt/linea-base/resultados final || {
       echo 'La medición se detuvo antes de crear resultados; revisar el error anterior.' >&2
-      exit "${CODIGO:-1}"
+      [[ $CODIGO -ne 0 ]] || CODIGO=2
+      exit "$CODIGO"
     }
     echo "Resultados copiados a $EVIDENCIA; corregir y analizar afuera."
     exit "$CODIGO"

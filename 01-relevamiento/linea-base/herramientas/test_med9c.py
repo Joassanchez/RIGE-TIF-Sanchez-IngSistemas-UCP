@@ -51,7 +51,20 @@ class FragmentosTests(unittest.TestCase):
                 validacion = dict(valido=True, hash_base=hashlib.sha256((root / 'base/indice.json').read_bytes()).hexdigest(),
                     hash_respuestas=hashlib.sha256((ROOT / 'ecologica/respuestas-ecologica.json').read_bytes()).hexdigest())
             else:
-                validacion = verificar(root, ROOT / 'ecologica/respuestas-ecologica.json')
+                referencia = root / 'admision-sintetica'
+                no_m = [c for c in casos if not c.startswith('M-')]
+                if no_m:
+                    import hashlib
+                    for c in no_m:
+                        guardar(referencia / c / 'base/oraculo.json', bases.get(c, {}))
+                        guardar(referencia / c / 'base/archivos.json', captura(c, 'base').get('__archivos__', {}))
+                    guardar(referencia / 'admision.json', dict(adr='ADR-098',
+                        hash_espec=HOJA['hashes_fuentes']['espec.py'],
+                        tareas={c: dict(resultado='admitida', captura_completa=True) for c in no_m},
+                        filas=[dict(tarea=c, variante='correcta', resultado='correcta') for c in no_m],
+                        hashes_evidencia={p.relative_to(referencia).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                                          for p in referencia.rglob('*.json')}))
+                validacion = verificar(root, ROOT / 'ecologica/respuestas-ecologica.json', exploracion=referencia if no_m else None)
             guardar(root / 'validacion-base.json', validacion)
             meta['base_verificada'] = validacion['hash_base']
             guardar(root / 'tanda.json', meta)

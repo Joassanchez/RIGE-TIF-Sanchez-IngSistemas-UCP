@@ -10,6 +10,7 @@ import re
 from comun import costo_solicitudes, hash_archivo, identificador, leer_jsonl
 from corregir import coincide, ultimo_json
 from deteccion import recalcular_acceso_web
+from evidencia_portable import archivos, leer_json
 
 RESULTADOS = ('correcta', 'colateral', 'sin_efecto', 'incorrecta', 'sin_respuesta')
 SONDEOS = [("edit", "src/productos.js"), ("edit", "README.md"), ("edit", "src/index.js"),
@@ -47,10 +48,10 @@ def estado(agente):
 def cargar_captura(directorio):
     directorio = Path(directorio)
     # config también debe ser íntegro; no sustituir evidencia ausente por {}.
-    if not isinstance(json.loads((directorio / 'config.json').read_text(encoding='utf-8')), dict):
+    if not isinstance(leer_json(directorio / 'config.json', directorio.parent), dict):
         raise ValueError('debug config inválido')
-    agentes = {p.name[7:-5]: json.loads(p.read_text(encoding='utf-8'))
-               for p in directorio.glob('agente-*.json')}
+    agentes = {p.name[7:-5]: leer_json(p, directorio.parent)
+               for p in archivos(directorio, 'agente-*.json')}
     if not agentes or not all(isinstance(a, dict) for a in agentes.values()):
         raise ValueError('Captura sin agentes válidos')
     return agentes

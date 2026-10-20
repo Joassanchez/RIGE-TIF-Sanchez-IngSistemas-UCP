@@ -68,7 +68,7 @@ done
 
 La red del ensayo es `none`; proveedor y página de `webfetch` escuchan solo en
 127.0.0.1. Los consumos son inventados y los registros declaran `ensayo: true`.
-El proveedor pide `read` y `edit` a OpenCode; nunca aplica las ediciones él mismo.
+El proveedor pide `read`, `edit` y `write` a OpenCode; nunca aplica las ediciones él mismo.
 Los planes producen: M-1 correcta, M-2 colateral, M-3 sin efecto, M-4 incorrecta,
 M-5 sin respuesta. Las otras tareas y los controles tienen cambios correctos.
 La corrección registra `discrepancia_oraculo: []` cuando ejecución y evaluador
@@ -199,9 +199,20 @@ no una nueva verificación nativa del escritor.
   incluidos fuentes, `.bashrc`, `~/compartido` y configuraciones ajenas. Las reglas
   finales `../*` y `/*` denegadas evitan que `*/opencode.json` admita rutas externas;
   solo se reabre `../.config/opencode/*`. En detección toda edición está denegada.
-  Como en MED-6, la raíz del proyecto no recibe escritura de grupo: crear una
-  configuración nueva allí requiere `como-dev`. Los planes de ensayo editan
+  Desde MED-13-c6 (ADR-098, punto 3 y Contexto 12), la raíz del proyecto y el
+  directorio de trabajo de la tarea reciben modo `3770`, con dueño participante:
+  el evaluador crea directamente y hereda el grupo participante; sticky impide
+  que borre o renombre entradas del desarrollador. Fuentes y otros directorios
+  conservan la política anterior. En detección la raíz sigue sin escritura de
+  grupo y OpenCode sigue con `edit: deny`. Los planes de ensayo editan
   archivos existentes o crean la configuración global en su directorio habilitado.
+  Las variantes históricas de N-21, N-23 y V-9 piden por `bash` la creación del destino vacío
+  como desarrollador y su permiso de grupo; desde MED-13-c5 aplican la variante con `write`.
+  Los once planes nuevos y sus desenlaces se detallan en
+  `vm/simulado/planes/MED-13-c3.md`.
+  El ensayo selecciona para N-21 la variante directa de `MED-13-c6-directa.json`;
+  crea `opencode.json` con `write`, sin `como-dev`. Este cambio de preparación
+  exige readmisión completa de las 46 tareas antes de otra tanda.
   Las variantes anteriores conservan sus hashes. Charles conserva su prompt y el
   resto de su política; cambian solo edit y external_directory en las variantes nuevas.
 - Una batería común derivada de los sujetos públicos captura permisos sin recibir
@@ -316,6 +327,13 @@ en línea. Las tandas del 15/10 anteriores a esta corrección quedan como
 antecedente declarado, sin computar; reconstruir y ensayar antes de repetir LB.
 
 ## Pruebas sin Docker
+
+MED-13-c2 aplica ADR-098, punto 6: las guardas declaradas se comparan con el
+estado inicial y la batería con la captura `correcta/oraculo.json` de la
+admisión vigente, validada por hashes. El corrector recibe las raíces por
+`--evidencia-admision` o `RIGE_EVIDENCIA_ADMISION`; una referencia faltante o
+incompatible detiene la corrección. La selección de sondas y su alcance por
+tarea están documentados en [sondas-exploracion.md](sondas-exploracion.md).
 
 ```bash
 python -m unittest discover -s herramientas -p 'test_*.py'

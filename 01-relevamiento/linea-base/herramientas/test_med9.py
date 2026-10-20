@@ -21,9 +21,29 @@ generador = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(generador)
 ADMISION_PATH = generador.admision_registrada(ROOT / 'ecologica')
 ADMISION = json.loads(ADMISION_PATH.read_text(encoding='utf-8')) if ADMISION_PATH else None
-PUBLICO, HOJA, CORPUS = generador.generar(ROOT / 'ecologica', ADMISION)
+PUBLICO, HOJA, CORPUS = generador.generar(ROOT / 'ecologica', ADMISION,
+    metadatos=generador.metadatos_admision(ADMISION_PATH) if ADMISION_PATH else None)
 ESPEC = generador.cargar(ROOT / 'ecologica/espec.py', 'espec_med9').T
 FIXTURES = ROOT / 'verificacion/20261014-tareas-ecologica/salida'
+
+
+def copiar_fuentes_abiertas(destino):
+    """Fixture abierto independiente del estado del banco real, solo en copias."""
+    destino = Path(destino)
+    if destino.resolve().is_relative_to((ROOT / 'ecologica').resolve()):
+        raise ValueError('El fixture abierto debe quedar fuera del banco real.')
+    destino.mkdir(parents=True)
+    for nombre in generador.FUENTES:
+        shutil.copyfile(ROOT / 'ecologica' / nombre, destino / nombre)
+    for nombre in ('tareas.md', 'deteccion.md'):
+        path = destino / nombre
+        texto, n = re.subn(r'^- \*\*Estado:.*$',
+            '- **Estado: abierto hasta la admisión nativa (ADR-098)**',
+            path.read_text(encoding='utf-8'), count=1, flags=re.M)
+        if n != 1:
+            raise ValueError('Falta el encabezado Estado en la copia de ' + nombre)
+        path.write_bytes(texto.encode('utf-8'))
+    return destino
 
 
 def captura(tid, variante):
@@ -58,10 +78,34 @@ class GeneracionTests(unittest.TestCase):
         for escenarios in PUBLICO['dimensiones'].values():
             for s in escenarios.values():
                 self.assertEqual(set(s), {'archivos', 'env', 'directorio', 'tarea', 'instruccion'})
-        self.assertIs(HOJA['hoja_cerrada'], False)
+        hashes = {n: hashlib.sha256((ROOT / 'ecologica' / n).read_bytes()).hexdigest()
+                  for n in generador.FUENTES}
+        for datos in (HOJA, CORPUS, manifiesto):
+            self.assertIs(datos['hoja_cerrada'], True)
+            self.assertEqual(datos['estado'], 'cerrada')
+            self.assertEqual(datos['fecha_cierre'], '19/10/2026')
+            self.assertEqual(datos['hashes_fuentes'], hashes)
+        self.assertEqual(manifiesto['hashes_generados'], {
+            n: hashlib.sha256((ROOT / 'ecologica' / n).read_bytes()).hexdigest()
+            for n in generador.GENERADOS})
         self.assertEqual(HOJA['adr'], 'ADR-098')
-        self.assertIs(CORPUS['hoja_cerrada'], True)
         self.assertNotIn('variantes', json.dumps(PUBLICO))
+        # El recierre reproduce el cierre real íntegro exclusivamente en una copia.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cerrada = root / 'cerrada'
+            cerrada.mkdir()
+            for nombre in (*generador.FUENTES, *generador.GENERADOS, 'exploracion.json'):
+                shutil.copyfile(ROOT / 'ecologica' / nombre, cerrada / nombre)
+            admision = root / 'admision.json'
+            shutil.copy2(ADMISION_PATH, admision)
+            self.assertEqual(hashlib.sha256(admision.read_bytes()).hexdigest(), manifiesto['hash_admision'])
+            antes = {p.name: p.read_bytes() for p in cerrada.iterdir()}
+            r = subprocess.run([sys.executable, '-B', str(ROOT / 'herramientas/generar-ecologica.py'),
+                '--origen', str(cerrada), '--destino', str(cerrada), '--admitidas', str(admision),
+                '--cerrar', '19/10/2026'], capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertEqual({p.name: p.read_bytes() for p in cerrada.iterdir()}, antes)
 
     def test_sin_admision_no_siembra_ni_retira_candidatos(self):
         publico, _, corpus = generador.generar(ROOT / 'ecologica')
@@ -229,11 +273,8 @@ class CLITests(unittest.TestCase):
             def ejecutar(*args):
                 r = subprocess.run([sys.executable, *map(str, args)], cwd=ROOT, capture_output=True, text=True)
                 self.assertEqual(r.returncode, 0, r.stderr)
-            origen = root / 'origen'
-            origen.mkdir()
-            for nombre in ('espec.py', 'corpus.py', 'tareas.md', 'deteccion.md'):
-                shutil.copyfile(ROOT / 'ecologica' / nombre, origen / nombre)
-            opciones = ['--admitidas', ADMISION_PATH] if ADMISION_PATH else []
+            origen = copiar_fuentes_abiertas(root / 'origen')
+            opciones = ['--admitidas', ADMISION_PATH, '--cerrar', '19/10/2026'] if ADMISION_PATH else []
             ejecutar('herramientas/generar-ecologica.py', '--origen', origen, '--destino', root / 'hojas', *opciones)
             registros = {}
             for dimension in ('ecologica', 'deteccion'):

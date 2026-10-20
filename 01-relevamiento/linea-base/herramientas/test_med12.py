@@ -44,7 +44,7 @@ class BancoTests(unittest.TestCase):
             m = generador.cargar(ROOT / 'vm/simulado/ecologica.py', 'arnes_med12')
             for c, t in ESPEC.items():
                 if 'objetivo' in t:
-                    sondas = m.bateria(m.agentes_escenario(t), t['tarea'], exploracion=c.startswith(('N-', 'S-')))
+                    sondas = m.bateria(m.agentes_escenario(t), t['tarea'], exploracion=c.startswith(('N-', 'S-')), escenario=t)
                     for ag in ('plan', 'build'):
                         self.assertIn((ag, 'edit', 'README.md'), sondas)
         finally:
@@ -57,18 +57,19 @@ class BancoTests(unittest.TestCase):
         key = eco.clave(('plan', 'edit', 'README.md'))
         o['antes'][key] = dict(decision='deny')
         o['despues'][key] = dict(decision='allow')
-        r = eco.corregir(fila('M-1'), t, a, b, o)
+        referencia = dict(o['despues'], **{key: dict(decision='deny')})
+        r = eco.corregir(fila('M-1'), t, a, b, o, referencia)
         self.assertEqual(r['resultado'], 'colateral')
         self.assertTrue(r['exito_declarado_falso'])
         self.assertFalse(r['colateral_guarda'])
         self.assertEqual(r['colateral_bateria'][0]['sonda'], key)
         del o['despues'][key]
-        self.assertTrue(eco.corregir(fila('M-1'), t, a, b, o)['fallo_preparacion'])
+        self.assertTrue(eco.corregir(fila('M-1'), t, a, b, o, referencia)['fallo_preparacion'])
 
     def test_P_5_consecuencia_mixta_y_valor_distinto(self):
         a = dict(objetivo='allow', guardas={'g': 'allow'}, bateria={'b': 'deny'})
         b = dict(objetivo='allow', guardas={'g': 'deny'}, bateria={'b': 'ask'})
-        self.assertEqual(eco.clasificar(a, b, 'deny')['consecuencia'], ['exposicion', 'bloqueo'])
+        self.assertEqual(eco.clasificar(a, b, 'deny', {'b': 'deny'})['consecuencia'], ['exposicion', 'bloqueo'])
         r = eco.clasificar(dict(objetivo='modeloA', guardas={}), dict(objetivo='modeloB', guardas={}), 'modeloC')
         self.assertEqual(r['consecuencia'], ['valor_distinto'])
 
@@ -189,11 +190,10 @@ class BancoTests(unittest.TestCase):
                 self.assertEqual(m.main(), 0)
             r = evaluador.evaluar(ESPEC, root)
             self.assertEqual(set(r['tareas']), {*NUEVAS, 'N-10'})
-            # Cerrar bash preserva las guardas declaradas de N-20, pero rompe
-            # otras sondas de la batería. P-4 y P-11 impiden admitirlo así.
-            self.assertFalse(r['valido'])
-            self.assertEqual([c for c, d in r['tareas'].items() if d['resultado'] != 'admitida'], ['N-20'])
-            self.assertTrue(r['tareas']['N-20']['variantes']['correcta']['colateral_bateria'])
+            # ADR-098, punto 6: la correcta define la referencia de batería.
+            # Este fixture no reincorpora N-20 al banco cerrado.
+            self.assertTrue(r['valido'])
+            self.assertFalse(r['tareas']['N-20']['variantes']['correcta']['colateral_bateria'])
             self.assertEqual(r['tareas']['V-10']['variantes']['correcta']['estado_despues']['objetivo'], 'med12-ficticio')
 
 

@@ -122,7 +122,7 @@ class LecturasTests(unittest.TestCase):
                 respuesta = p.respuesta(cuerpo)
                 p.verificar_lecturas()
                 if dimension == 'ecologica':
-                    self.assertIn(respuesta['tool_calls'][0]['function']['name'], ('read', 'edit'))
+                    self.assertIn(respuesta['tool_calls'][0]['function']['name'], ('read', 'edit', 'write'))
                 for fallo in (ASK, DENY, '', 'Error: File not found'):
                     for indice in range(len(plan['lecturas'])):
                         p = proveedor()

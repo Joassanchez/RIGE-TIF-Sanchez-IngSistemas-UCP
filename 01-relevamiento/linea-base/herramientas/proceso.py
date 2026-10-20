@@ -9,6 +9,34 @@ CONFIG = re.compile(r'(?:opencode\.jsonc?|AGENTS\.md|\.opencode/[^\s\'";]+|\.con
 LECTORES = {'cat', 'head', 'tail', 'less', 'more', 'sed', 'awk', 'grep', 'rg', 'jq', 'python', 'python3', 'node'}
 
 
+def comandos_desarrollador(cmd):
+    """Solo comandos ejecutables: una mención en echo/read no es ejecución."""
+    try:
+        lexer = shlex.shlex(cmd, posix=True, punctuation_chars=';&|()')
+        lexer.whitespace_split = True
+        palabras = list(lexer)
+    except ValueError:
+        return []
+    out = []
+    inicio = True
+    for i, palabra in enumerate(palabras):
+        if palabra and set(palabra) <= set(';&|()'):
+            inicio = True
+            continue
+        if inicio and Path(palabra).name == 'como-dev' and i + 1 < len(palabras):
+            try:
+                internos = shlex.split(palabras[i + 1])
+                if len(internos) == 1:
+                    internos = palabras[i + 1:]
+            except ValueError:
+                internos = []
+            for j, token in enumerate(internos[:-1]):
+                if Path(token).name == 'opencode' and internos[j + 1] == 'run' and (j == 0 or internos[j - 1] in ('&&', ';', '||')):
+                    out.append(shlex.join(internos[j:]))
+        inicio = False
+    return out
+
+
 def capa(ruta):
     ruta = ruta.replace('\\', '/')
     if re.search(r'/(?:agents?)/[^/]+\.md$', ruta):
@@ -25,13 +53,12 @@ def capa(ruta):
 def clasificar_proceso(registro, regla):
     lecturas, docs, web, skills, editadas, verificaciones = [], [], [], [], [], []
     ultima = -1
+    acciones_probadas = []
     herramientas = registro.get('herramientas', [])
-    vistos = set()
+    ultimos = {h['callID']: i for i, h in enumerate(herramientas) if h.get('callID')}
     for i, h in enumerate(herramientas):
-        if h.get('callID') and h['callID'] in vistos:
+        if h.get('callID') and ultimos[h['callID']] != i:
             continue
-        if h.get('callID'):
-            vistos.add(h['callID'])
         nombre, args = h.get('herramienta', ''), h.get('argumentos') or {}
         ruta = args.get('filePath', args.get('path', ''))
         cmd = args.get('command', '') if nombre == 'bash' else ''
@@ -57,19 +84,25 @@ def clasificar_proceso(registro, regla):
             web.append(args.get('url'))
         if nombre == 'skill' and args.get('name') == 'customize-opencode':
             skills.append(i)
+        anidadas = comandos_desarrollador(cmd) if h.get('estado') == 'completed' else []
         rutas = []
         if nombre in ('edit', 'write'):
             rutas = [ruta]
         if nombre == 'apply_patch':
             rutas = re.findall(r'\*\*\* (?:Update|Add|Delete) File: (.+)', args.get('patchText', args.get('patch', '')))
-        if cmd and re.search(r'(?:>|\bsed\s+-i|\btee\b|writeFile|write_text|write_bytes)', cmd):
+        if cmd and not anidadas and re.search(r'(?:>|\bsed\s+-i|\btee\b|writeFile|write_text|write_bytes)', cmd):
             rutas = CONFIG.findall(cmd) or ['indeterminada']
         if rutas and h.get('estado') != 'error':
             ultima = i
             editadas.extend(dict(archivo=r, capa=capa(r)) for r in rutas)
         tipo = None
         invocacion = r'(?:^|[;&|])\s*(?:como-dev\s+[\'"]?)?(?:[^\s]+/)?'
-        if nombre.lower().startswith('rige') or re.search(invocacion + r'rige(?:\s|$)', cmd, re.I):
+        if anidadas:
+            tipo = 'comportamiento'
+            acciones_probadas.append(dict(indice=i, comandos=anidadas,
+                objetivos_identificados=[o[:3] for o in [regla['objetivo'], *regla.get('objetivos_adicionales', [])]
+                                        if o[2] in cmd] if 'objetivo' in regla else []))
+        elif nombre.lower().startswith('rige') or re.search(invocacion + r'rige(?:\s|$)', cmd, re.I):
             tipo = 'rige'
         elif re.search(invocacion + r'opencode\s+debug\s+(?:config|agent|skill)\b', cmd):
             tipo = 'declarativa'
@@ -78,7 +111,7 @@ def clasificar_proceso(registro, regla):
             for ag, permiso, sujeto, _ in objetivos:
                 # La lectura de configuración del ejecutor no prueba el permiso
                 # del participante: exigir como-dev/opencode run en bash.
-                if cmd and ('como-dev' in cmd or 'opencode run' in cmd) and sujeto in cmd:
+                if cmd and not re.search(r'\bopencode\s+run\b', cmd) and ('como-dev' in cmd) and sujeto in cmd:
                     tipo = 'comportamiento'
                 elif nombre == permiso and sujeto == ruta and h.get('agente') == ag:
                     tipo = 'comportamiento'
@@ -89,6 +122,7 @@ def clasificar_proceso(registro, regla):
     return dict(lecturas_config=lecturas, docs=docs, webfetch=web, skill=skills,
         capas_editadas=editadas, capa_correcta=sorted({capa(r) for r in regla.get('variantes', {}).get('correcta', {})}),
         verificacion_final=max(posteriores, key=prioridad.index) if posteriores else 'ninguna',
+        acciones_probadas=[a for a in acciones_probadas if a['indice'] > ultima],
         solicitudes=len(registro['solicitudes']) if isinstance(registro.get('solicitudes'), list) else registro.get('solicitudes'))
 
 

@@ -20,14 +20,17 @@ def leer_captura(carpeta):
     return datos
 
 
-def evaluar(tareas, root):
+def evaluar(tareas, root, casos=None):
     seleccion = json.loads((root / 'captura.json').read_text(encoding='utf-8'))
     digest = hashlib.sha256((ROOT / 'ecologica/espec.py').read_bytes()).hexdigest()
     if seleccion.get('hash_espec') != digest:
         raise ValueError('Captura de otra especificación')
-    casos = seleccion['casos']
-    if not casos or len(set(casos)) != len(casos) or not set(casos) <= tareas.keys():
+    capturados = seleccion['casos']
+    if not capturados or len(set(capturados)) != len(capturados) or not set(capturados) <= tareas.keys():
         raise ValueError('Selección inválida')
+    casos = capturados if casos is None else casos
+    if not casos or len(set(casos)) != len(casos) or set(casos) != set(capturados):
+        raise ValueError('--casos debe coincidir con la partición de captura.json, sin vacíos ni duplicados')
     salida, filas = {}, []
     for tid in casos:
         t = tareas[tid]
@@ -46,7 +49,8 @@ def evaluar(tareas, root):
                 detalles[variante] = dict(resultado='error de captura')
                 continue
             r = corregir(dict(caso=tid, respuesta_textual='{"hecho":true,"cambios":[],"impedimento":""}'),
-                t, estados['base'], estados[variante], dict(antes=oraculos['base'], despues=oraculos[variante]))
+                t, estados['base'], estados[variante], dict(antes=oraculos['base'], despues=oraculos[variante]),
+                oraculos.get('correcta') if 'objetivo' in t else None)
             if r.get('fallo_preparacion'):
                 errores.append(variante + ': ' + r.get('motivo', 'evidencia incompleta'))
             detalles[variante] = r
@@ -54,21 +58,24 @@ def evaluar(tareas, root):
         motivos = list(errores)
         if detalles['base'].get('objetivo_alcanzado') is not False:
             motivos.append('Base no acredita objetivo incumplido')
-        if detalles['base'].get('colaterales'):
+        if detalles['base'].get('colateral_guarda'):
             motivos.append('Guardas de base incoherentes')
         for variante in t['variantes']:
             r = detalles[variante]
-            if variante in ('correcta', 'obvia'):
+            if variante == 'correcta':
+                valido = r.get('objetivo_alcanzado') is True and not r.get('colateral_guarda') and not r.get('fallo_preparacion')
+            elif variante == 'obvia':
                 valido = r.get('resultado') == 'correcta'
             else:
                 valido = r.get('resultado') == 'sin_efecto' or bool(r.get('colaterales'))
             if not valido:
                 motivos.append(variante + ': no reproduce el contraste requerido')
         salida[tid] = dict(resultado='no_admitida' if motivos else 'admitida',
+            referencia_bateria=f'{tid}/correcta/oraculo.json' if 'objetivo' in t else None,
             captura_completa=not errores,
             motivo='; '.join(motivos) if motivos else 'Base, correcta y contrastes nativos verificados',
             estrato=t['estrato'], familia=t['familia'], variantes=detalles)
-    return dict(adr='ADR-098', valido=all(t['resultado'] == 'admitida' for t in salida.values()),
+    return dict(adr='ADR-098', regla_colaterales='ADR-098, punto 6', valido=all(t['resultado'] == 'admitida' for t in salida.values()),
         tareas=salida, filas=filas, hash_espec=digest,
         hashes_evidencia={p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(root.rglob('*')) if p.is_file() and not p.name.startswith('admision')})
@@ -77,6 +84,7 @@ def evaluar(tareas, root):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('capturas', type=Path)
+    p.add_argument('--casos', help='Ids de la partición; deben coincidir con captura.json.')
     a = p.parse_args()
     spec = importlib.util.spec_from_file_location('med12_espec', ROOT / 'ecologica/espec.py')
     m = importlib.util.module_from_spec(spec)
@@ -84,7 +92,10 @@ def main():
     admision = a.capturas / 'admision.json'
     if admision.exists():
         p.error('Ya existe admision.json; conservar evidencia y usar una captura nueva')
-    datos = evaluar(m.T, a.capturas)
+    try:
+        datos = evaluar(m.T, a.capturas, [c.strip() for c in a.casos.split(',')] if a.casos is not None else None)
+    except (OSError, KeyError, ValueError, TypeError) as error:
+        p.error(str(error))
     admision.write_text(json.dumps(datos, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return int(not datos['valido'])
 

@@ -1,12 +1,16 @@
 {
   "version": 1,
   "dimension": "deteccion",
+  "adr": "ADR-098",
+  "k": 3,
   "hoja_cerrada": true,
+  "estado": "cerrada",
+  "admision": "hecha",
   "hashes_fuentes": {
     "espec.py": "4c04b6d241a0172c2236db8a76d64ca175b21bd15f3e9fa79a3e1b821f376572",
     "corpus.py": "af6e8ac0af9de2285826e1dc10c4e2a3a39e45999e3109d3b20abb20e30965c2",
-    "tareas.md": "969a3ce02f86318b49292f6410c46e6bec270bb3e4cf15231eafde36bea4f559",
-    "deteccion.md": "6bd6e660c2b4f107e4e83675f7ec5eb8a69f7b46f02368d6a22093794a8c671c"
+    "tareas.md": "34aa7e315883c45c55b3ba6eb1a3b8df21fb8051bb80f84a0d0e4237b1623d22",
+    "deteccion.md": "f3e30ce71a48cfa0d8f2359e787dad21001f3b7be8a97dccf10ba5ded35b1012"
   },
   "casos": {
     "D-A": {
@@ -475,5 +479,9 @@
         }
       ]
     }
-  }
+  },
+  "hash_admision": "7604913a3ddfd056e76398f17133c6a6cc1399f22a8f6dcdee2dc151919a376b",
+  "fecha_admision": "2026-10-20T02:12:27+00:00",
+  "fuente_fecha_admision": "mtime de admision.json (UTC)",
+  "fecha_cierre": "19/10/2026"
 }

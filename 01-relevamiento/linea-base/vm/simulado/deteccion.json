@@ -33,6 +33,71 @@
       "salida": {
         "sin_efecto": []
       }
+    },
+    "N-10-ingenua_frontmatter-C": {
+      "salida": {
+        "sin_efecto": []
+      }
+    },
+    "N-10-ingenua_frontmatter-D": {
+      "salida": {
+        "sin_efecto": [
+          {
+            "archivo": "~/proyecto/.opencode/agent/habilidades.md",
+            "clave": "skill",
+            "motivo": "ENSAYO: defecto del guion generado, datos inventados"
+          }
+        ]
+      }
+    },
+    "N-23-ingenua_absoluta-C": {
+      "salida": {
+        "sin_efecto": []
+      }
+    },
+    "N-23-ingenua_absoluta-D": {
+      "salida": {
+        "sin_efecto": [
+          {
+            "archivo": "~/proyecto/opencode.json",
+            "clave": "read",
+            "motivo": "ENSAYO: defecto del guion generado, datos inventados"
+          }
+        ]
+      }
+    },
+    "N-24-ingenua_dotdir-C": {
+      "salida": {
+        "sin_efecto": []
+      }
+    },
+    "N-24-ingenua_dotdir-D": {
+      "salida": {
+        "sin_efecto": [
+          {
+            "archivo": "~/proyecto/.opencode/opencode.json",
+            "clave": "webfetch",
+            "motivo": "ENSAYO: defecto del guion generado, datos inventados"
+          }
+        ]
+      }
+    },
+    "V-10-ingenua_env-C": {
+      "salida": {
+        "sin_efecto": []
+      }
+    },
+    "V-10-ingenua_env-D": {
+      "salida": {
+        "sin_efecto": [
+          {
+            "archivo": "~/proyecto/opencode.json",
+            "clave": "mcp",
+            "motivo": "ENSAYO: defecto del guion generado, datos inventados"
+          }
+        ]
+      }
     }
-  }
+  },
+  "hash_respuestas": "93628adcee474cafc1f2424e71dfae79cca85075a03b65b361a0f646c5b47538"
 }

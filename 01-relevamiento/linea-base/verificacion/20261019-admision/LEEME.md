@@ -4,6 +4,14 @@ El banco sigue **abierto hasta la admisión nativa**, con k = 3. Las pruebas
 locales usan fixtures sintéticos y procesos sustituidos: no prueban el
 comportamiento de OpenCode 1.18.25. No se ejecutaron Docker ni agentes.
 
+**MED-13-c6 (20/10/2026): readmisión completa obligatoria de las 46 tareas.**
+La preparación ecológica ahora da modo `3770` a la raíz y al directorio de
+trabajo de la tarea: creación directa, sticky y setgid. Usar nuevas raíces
+de evidencia y `--casos` con todo el banco cerrado; la selección predeterminada
+de este capturador no contiene las 46 tareas. No reutilizar las admisiones
+anteriores a este cambio aunque coincida el hash de `espec.py`. Los detalles
+y pruebas POSIX están en `vm/simulado/planes/MED-13-c6.md`.
+
 ## Comando exacto dentro del contenedor
 
 En un contenedor nuevo de `rige-linea-base:1.18.25`, sin red ni credenciales,
@@ -12,9 +20,15 @@ copiar los archivos actuales respetando estas ubicaciones:
 - `ecologica/espec.py` → `/med12/ecologica/espec.py`;
 - `herramientas/` → `/med12/herramientas/`;
 - `vm/simulado/` → `/med12/vm/simulado/`;
+- `vm/casos/` → `/med12/vm/casos/`;
 - esta carpeta → `/med12/verificacion/20261019-admision/`.
 
-El escenario común y el binario se toman de la imagen, en `/opt/linea-base`.
+El binario y la materialización del escenario común se toman de la imagen,
+en `/opt/linea-base`. También es obligatoria la copia de `vm/casos/`:
+`sondas_exploracion()` resuelve `casos/comun/proyecto` junto al módulo importado,
+en `/med12/vm/`, para seleccionar los recursos accesibles desde el directorio
+de cada tarea. Sin esa copia la captura se detiene; no puede omitir en silencio
+`write src/productos.js` ni producir una batería diferente de la tanda.
 Ejecutar como root, con un destino que todavía no exista:
 
 ```bash
@@ -58,9 +72,14 @@ manifiesto sigue abierto: la ficha no autoriza cerrar el banco automáticamente.
   mostrar el token no acredita una lectura.
 - N-22: `build → task → general → todowrite`, con una tarea que contiene un
   token. Se exige la cadena completa, el retorno y el efecto observable.
-- V-9: proveedor simulado sin llamadas a herramientas ni modelo real; se
-  conserva su solicitud cruda y se busca la instrucción exclusivamente en los
-  mensajes `system`, no en el texto del usuario.
+- V-9 (MED-13-c4): hook local `experimental.chat.system.transform` para
+  observar el prompt ensamblado por OpenCode; conserva `sistema-prompt.jsonl`,
+  `sistema-hook.mjs` y `sistema.json`. La sonda se detiene antes de la
+  inferencia, sin herramientas ni servidor simulado. En la admisión sin
+  credenciales resuelve el modelo local; en la tanda real usa el modelo real
+  seleccionado. La instrucción se busca exclusivamente en `system`, nunca
+  en el texto del usuario. Los datos de la sonda quedan aislados mediante
+  XDG y no contaminan las sesiones que MED-13 contabiliza.
 - V-10: `mcp.docs.environment.API_TOKEN` en `debug config`; el MCP queda
   deshabilitado para observar la configuración sin arrancar un servidor.
 - N-10: el control conserva ambas listas y tolera únicamente la permutación de

@@ -18,7 +18,7 @@ La imagen común del oráculo y de la medición sigue ADR-054 y §3 de `../DISEN
 
 ## Construcción en el anfitrión
 
-Requisitos: Docker con motor de contenedores Linux y Bash (Git Bash o WSL). Ejecutar desde `01-relevamiento/linea-base/`. En Git Bash, el script controla la conversión de rutas del cliente Windows; en WSL, usa rutas Linux. Los scripts deben tener fines de línea LF y UTF-8 sin BOM.
+Requisitos: Docker con motor de contenedores Linux, Bash (Git Bash o WSL) y Python 3.11 o posterior en el anfitrión. Ejecutar desde `01-relevamiento/linea-base/`. En Git Bash, el script controla la conversión de rutas del cliente Windows; en WSL, usa rutas Linux. Los scripts deben tener fines de línea LF y UTF-8 sin BOM.
 
 El ingeniero completa los dos argumentos pendientes declarados en `Dockerfile`:
 
@@ -231,11 +231,45 @@ repetir el caso antes de la medición definitiva.
 
 El registro excluye cada aparición exacta de `https://opencode.ai/config.json` del comando al detectar acceso web; las herramientas y programas web siguen contando, y los correctores conservan `acceso_web_registrado` y declaran `regla_acceso_web: "ADR-086"` ([ADR-086, punto 5](../../../00-gestion/decisiones/ADR-086-modificacion-invalida-causa-no-instrumental.md)).
 
-La evidencia sale mediante `docker cp`, también cuando la tanda falla. No hay
+La evidencia sale como tar mediante `docker cp`, también cuando la tanda falla. No hay
 montajes ni socket Docker. Las tarifas se copian por `docker cp` a un archivo
 root temporal, igual que el catálogo congelado; la hoja real de respuestas y las herramientas de corrección
 jamás entran en la imagen ni en el contenedor. `.dockerignore` es una lista de
 inclusión y rechaza explícitamente `respuestas.md` y `respuestas.json`.
+
+### Exportación portable de evidencia (MED-13-c4)
+
+En la preparación ecológica, MED-13-c6 aplica modo `3770` a la raíz del
+proyecto y al cwd de la tarea; detección conserva la raíz de solo lectura
+para el grupo. Este cambio exige readmisión completa de las 46 tareas.
+Ver `simulado/planes/MED-13-c6.md` para los controles y el plan directo de N-21.
+
+Los subcomandos `medir`, `verificar` y `permisos` empaquetan los resultados
+dentro del contenedor con `tar`, sin seguir enlaces. `docker cp` copia solo
+ese archivo regular. El anfitrión verifica el SHA-256 calculado dentro del
+contenedor y conserva `evidencia-<fase>.tar` y su `.tar.sha256`; las fases son
+`base` y `final` para la medición ecológica, `final` para las demás dimensiones,
+y `verificar` o `permisos` para esos subcomandos.
+
+`herramientas/evidencia_portable.py` extrae los archivos normales y sustituye
+cada enlace por `<nombre>.enlace.json`, con `tipo` y `destino` originales.
+Nunca crea enlaces en Windows ni sigue sus destinos durante la extracción.
+El tar conserva los enlaces íntegros, incluso los colgantes. La extracción
+rechaza hashes distintos, rutas que salgan del destino y miembros superpuestos.
+Los lectores externos resuelven los descriptores dentro de la evidencia;
+el análisis reubica los enlaces originales global/proyecto dentro del snapshot.
+No hace falta privilegio de creación de enlaces en el anfitrión.
+
+Para repetir una extracción conservando el tar íntegro:
+
+```bash
+python -B herramientas/evidencia_portable.py /ruta/evidencia-final.tar \
+  --destino /ruta/extraida --sha256 <SHA-256-registrado>
+```
+
+Si falla la copia, el checksum o la extracción, el lanzador devuelve un código
+distinto de cero. La validación externa de la fase base conserva su ubicación
+habitual y la extracción final no la elimina.
 
 ### Hoja real, adjudicación y análisis pareado
 

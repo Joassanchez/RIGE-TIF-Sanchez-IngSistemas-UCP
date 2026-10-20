@@ -81,16 +81,19 @@ class Med12SondasTests(unittest.TestCase):
                 self.assertEqual(arnes.control_captura(a, b)['estado'], 'contaminado')
 
     def test_V9_observa_solo_system_sin_modelo_real(self):
-        @contextmanager
-        def servidor(provider):
-            provider.log('solicitud', cuerpo=dict(messages=[dict(role='system', content=system),
-                dict(role='user', content='Respondé siempre en español')]))
-            yield 12345
+        import re
+        import shlex
+        def participante(cmd, stdout, stderr):
+            path = shlex.split(re.search(r'RIGE_SISTEMA_CAPTURA=(.*?) && ', cmd)[1])[0]
+            # Solo system proviene del hook: el texto de usuario no es evidencia.
+            Path(path).write_text(json.dumps(dict(evento='system', sessionID='ses_sonda',
+                modelo='simulado/permisos', system=[system], detencion='RIGE_MED13_SISTEMA_CAPTURADO')) + '\n')
+            return 0
         with tempfile.TemporaryDirectory() as tmp:
             for system, esperado in [('Respondé siempre en español', True), ('Otra instrucción', False)]:
                 carpeta = Path(tmp) / str(esperado)
                 carpeta.mkdir()
-                with patch.object(arnes, 'servidor', servidor), patch.object(arnes, 'participante', return_value=0):
+                with patch.object(arnes.shutil, 'chown'), patch.object(arnes, 'participante', participante):
                     arnes.capturar_sistema(carpeta, '')
                 self.assertIs(json.loads((carpeta / 'sistema.json').read_text())['instruccion_espanol'], esperado)
 

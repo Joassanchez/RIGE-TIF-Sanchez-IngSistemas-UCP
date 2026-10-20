@@ -1,7 +1,8 @@
 {
   "adr": "ADR-098",
-  "estado": "abierto hasta la admisión nativa",
-  "hoja_cerrada": false,
+  "estado": "cerrada",
+  "hoja_cerrada": true,
+  "admision": "hecha",
   "k": 3,
   "tareas": [
     "M-1",
@@ -92,13 +93,16 @@
   "hashes_fuentes": {
     "espec.py": "4c04b6d241a0172c2236db8a76d64ca175b21bd15f3e9fa79a3e1b821f376572",
     "corpus.py": "af6e8ac0af9de2285826e1dc10c4e2a3a39e45999e3109d3b20abb20e30965c2",
-    "tareas.md": "969a3ce02f86318b49292f6410c46e6bec270bb3e4cf15231eafde36bea4f559",
-    "deteccion.md": "6bd6e660c2b4f107e4e83675f7ec5eb8a69f7b46f02368d6a22093794a8c671c"
+    "tareas.md": "34aa7e315883c45c55b3ba6eb1a3b8df21fb8051bb80f84a0d0e4237b1623d22",
+    "deteccion.md": "f3e30ce71a48cfa0d8f2359e787dad21001f3b7be8a97dccf10ba5ded35b1012"
   },
   "hashes_generados": {
-    "escenarios.json": "776fb41f8ff05fc880a225361111ec6f97fd99d14799bffe3bf767bef4d0d0f9",
-    "respuestas-ecologica.json": "20e824f0d7e8e74e149c0e3d8c325815d9d5909568b879b55272690aca0b1412",
-    "respuestas-deteccion.json": "e8c12b95a5507baa03b889cb5f86ff12c028cf2db25ab777c85307d8fdea9041"
+    "escenarios.json": "7b41b87dfb8417c548666f9e998c7243409ebe56b007e0ad8d78d8eec35bbc47",
+    "respuestas-ecologica.json": "7255504b07b37c3b68ca3693ca48273415a53fbf3edcf69c54a9cb97e2b9a86e",
+    "respuestas-deteccion.json": "93628adcee474cafc1f2424e71dfae79cca85075a03b65b361a0f646c5b47538"
   },
-  "hash_admision": "7604913a3ddfd056e76398f17133c6a6cc1399f22a8f6dcdee2dc151919a376b"
+  "hash_admision": "7604913a3ddfd056e76398f17133c6a6cc1399f22a8f6dcdee2dc151919a376b",
+  "fecha_admision": "2026-10-20T02:12:27+00:00",
+  "fuente_fecha_admision": "mtime de admision.json (UTC)",
+  "fecha_cierre": "19/10/2026"
 }

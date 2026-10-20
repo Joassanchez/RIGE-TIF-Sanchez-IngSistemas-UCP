@@ -1,4 +1,4 @@
-"""Proveedor MED-6: las 24 recetas pasan por read/edit; sin servidor ni Docker."""
+"""Proveedor MED-6: las 24 recetas pasan por herramientas; sin servidor ni Docker."""
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -36,7 +36,7 @@ class ModificacionSimuladaTests(unittest.TestCase):
                     proveedor = EnsayoModificacion(plan,'ensayo',home/'proveedor.jsonl',home)
                     # Preparar el proveedor no aplica ninguna edición.
                     self.assertEqual(antes_archivos,{p:p.read_bytes() for p in antes_archivos})
-                    cuerpo = dict(messages=[dict(role='user',content='tarea')],tools=[dict(function=dict(name='read')),dict(function=dict(name='edit'))])
+                    cuerpo = dict(messages=[dict(role='user',content='tarea')],tools=[dict(function=dict(name=n)) for n in ('read', 'edit', 'write')])
                     vistos = set()
                     for _ in range(20):
                         respuesta = proveedor.respuesta(cuerpo)
@@ -51,13 +51,19 @@ class ModificacionSimuladaTests(unittest.TestCase):
                         self.assertTrue(path.is_relative_to(home))
                         if fn['name'] == 'read':
                             contenido = path.read_text(encoding='utf-8')
-                        else:
+                        elif fn['name'] == 'edit':
                             self.assertEqual(fn['name'],'edit')
+                            self.assertTrue(args['oldString'])
                             contenido = path.read_text(encoding='utf-8') if path.exists() else ''
                             self.assertEqual(contenido,args['oldString'])
                             path.parent.mkdir(parents=True,exist_ok=True)
                             path.write_text(args['newString'],encoding='utf-8')
                             contenido = 'Edit applied successfully.'
+                        else:
+                            self.assertEqual(fn['name'], 'write')
+                            path.parent.mkdir(parents=True, exist_ok=True)
+                            path.write_text(args['content'], encoding='utf-8')
+                            contenido = 'File written successfully.'
                         cuerpo['messages'].extend([respuesta,dict(role='tool',tool_call_id=tool['id'],content=contenido)])
                     else:
                         self.fail('El proveedor no terminó')

@@ -34,7 +34,7 @@ def main():
         p.error('--casos requiere ids activos, sin vacíos ni duplicados.')
     a.salida.mkdir(parents=True)
     errores = []
-    manifiesto = dict(casos=casos, errores=errores,
+    manifiesto = dict(casos=casos, errores=errores, sondas_exploracion={c: arnes.sondas_exploracion(tareas[c]) if c.startswith(('N-', 'S-')) else [] for c in casos},
         hash_espec=hashlib.sha256((ROOT / 'ecologica/espec.py').read_bytes()).hexdigest())
     arnes.guardar(a.salida / 'captura.json', manifiesto)
     h = SimpleNamespace(BASE=Path('/opt/linea-base'),
@@ -59,7 +59,7 @@ def main():
             carpeta = a.salida / tid / variante
             try:
                 carpeta.mkdir(parents=True)
-                sondas = arnes.bateria(arnes.agentes_escenario(tarea), tarea['tarea'], exploracion=tid.startswith(('N-', 'S-'))) if 'objetivo' in tarea else []
+                sondas = arnes.bateria(arnes.agentes_escenario(tarea), tarea['tarea'], exploracion=tid.startswith(('N-', 'S-')), escenario=tarea) if 'objetivo' in tarea else []
                 escenario = dict(archivos={**tarea['archivos'], **cambios},
                     env={'OPENCODE_DISABLE_AUTOUPDATE': '1', 'OPENCODE_DISABLE_MODELS_FETCH': '1', **tarea.get('env', {})},
                     directorio=tarea.get('directorio', ''), tarea=tarea['tarea'])

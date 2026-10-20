@@ -166,7 +166,7 @@ class OptimizacionTests(unittest.TestCase):
         self.assertNotIn('protocolo_oraculo', json.loads((salida / 'tanda.json').read_text()))
 
     def test_control_final_sale_del_proyecto_antes_de_reconstruirlo(self):
-        def preparar(s, h, *args):
+        def preparar(s, h, *args, **kwargs):
             self.assertEqual(Path.cwd(), h.HOME_E / 'tarea')
             return ''
         # El helper tiene preparar sustituido; envolver sólo control_tanda

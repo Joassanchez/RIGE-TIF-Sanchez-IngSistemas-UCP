@@ -1,6 +1,6 @@
 # Tareas · medición ecológica de modificación (ADR-091)
 
-- **Estado: abierto hasta la admisión nativa; adr: ADR-098; k: 3.** Fuente: `banco.md`. Los hashes se registran en `exploracion.json`.
+- **Estado: hoja cerrada el 19/10/2026 (ADR-098; admisión 7604913a3ddf)**
 - Entra al contenedor. Los objetivos, guardas y variantes de verificación están en `espec.py`, que **no** entra.
 
 ## Instrucción

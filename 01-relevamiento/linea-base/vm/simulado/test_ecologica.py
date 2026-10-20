@@ -28,7 +28,7 @@ PUBLICO, HOJA, CORPUS = generador.generar(ROOT / 'ecologica')
 
 
 def captura(tid, variante):
-    if tid.startswith(('N-', 'S-')) or HOJA['casos'][tid].get('candidato'):
+    if tid.startswith(('C-', 'N-', 'S-')) or tid in ('V-9', 'V-10') or HOJA['casos'][tid].get('candidato'):
         from test_med11_fixtures import captura_sintetica
         return captura_sintetica(tid, variante)
     carpeta = ROOT / 'verificacion/20261014-tareas-ecologica/salida' / tid / variante
@@ -49,7 +49,7 @@ class PlanesTests(unittest.TestCase):
             if 'objetivo' not in regla:
                 continue
             s = PUBLICO['dimensiones']['ecologica'][tid]
-            bateria = arnes.bateria(arnes.agentes_escenario(s), s['tarea'], exploracion=tid.startswith(('N-', 'S-')))
+            bateria = arnes.bateria(arnes.agentes_escenario(s), s['tarea'], exploracion=tid.startswith(('N-', 'S-')), escenario=s)
             for sonda in [*(s[:3] for s in eco.objetivos(regla)), *regla['guardas']]:
                 self.assertIn(tuple(sonda), bateria, (tid, sonda))
         source = (ROOT / 'vm/simulado/ecologica.py').read_text(encoding='utf-8')
@@ -75,9 +75,10 @@ class PlanesTests(unittest.TestCase):
                             texto = (path.parent / texto['enlace']).read_text(encoding='utf-8')
                         path.write_text(texto, encoding='utf-8')
                     for rel in plan['archivos']:
-                        # La raíz del proyecto no recibe escritura de grupo.
-                        # Los planes deben editar archivos existentes o el global.
-                        self.assertTrue(rel.startswith('G/') or (roots[rel[0]] / rel[2:]).exists())
+                        # Estas recetas históricas crean como-dev; la variante
+                        # directa de MED-13-c6 tiene su prueba de selección.
+                        self.assertTrue(rel.startswith('G/') or (roots[rel[0]] / rel[2:]).exists()
+                                        or rel in plan.get('crear_como_dev', []))
                     previos = {p: p.read_bytes() for p in home.rglob('*') if p.is_file()}
                     proveedor = EnsayoModificacion(plan, 'ensayo', home / 'proveedor.jsonl', home)
                     self.assertEqual(previos, {p: p.read_bytes() for p in previos})
@@ -89,16 +90,29 @@ class PlanesTests(unittest.TestCase):
                         tool = respuesta['tool_calls'][0]
                         fn = tool['function']
                         args = json.loads(fn['arguments'])
-                        path = Path(args['filePath'])
-                        self.assertTrue(path.is_relative_to(home) or str(path).replace('\\', '/') in plan.get('lecturas', []))
-                        self.assertIn(fn['name'], ('read', 'edit'))
+                        self.assertIn(fn['name'], ('read', 'edit', 'write', 'bash'))
+                        if fn['name'] == 'bash':
+                            self.assertTrue(args['command'].startswith('como-dev '))
+                            for rel in plan['crear_como_dev']:
+                                path = roots[rel[0]] / rel[2:]
+                                self.assertFalse(path.exists())
+                                path.touch()
+                            contenido = 'Archivo vacío creado como desarrollador.'
+                        else:
+                            path = Path(args['filePath'])
+                            self.assertTrue(path.is_relative_to(home) or str(path).replace('\\', '/') in plan.get('lecturas', []))
                         if fn['name'] == 'read':
                             contenido = '<file>Documentación sintética</file>' if str(path).replace('\\', '/') in plan.get('lecturas', []) else path.read_text(encoding='utf-8')
-                        else:
+                        elif fn['name'] == 'edit':
+                            self.assertTrue(args['oldString'], 'OpenCode rechaza oldString vacío sobre un archivo existente')
                             self.assertEqual(path.read_text(encoding='utf-8') if path.exists() else '', args['oldString'])
                             path.parent.mkdir(parents=True, exist_ok=True)
                             path.write_text(args['newString'], encoding='utf-8')
                             contenido = 'Edit applied successfully.'
+                        elif fn['name'] == 'write':
+                            path.parent.mkdir(parents=True, exist_ok=True)
+                            path.write_text(args['content'], encoding='utf-8')
+                            contenido = 'File written successfully.'
                         cuerpo['messages'].extend([respuesta, dict(role='tool', tool_call_id=tool['id'], content=contenido)])
                     else:
                         self.fail('Proveedor no finalizó.')
@@ -122,6 +136,7 @@ class PlanesTests(unittest.TestCase):
 
     def test_deteccion_simulada(self):
         planes = json.loads((ROOT / 'vm/simulado/deteccion.json').read_text(encoding='utf-8'))
+        corpus_cerrado = json.loads((ROOT / 'ecologica/respuestas-deteccion.json').read_text(encoding='utf-8'))
         out = []
         with tempfile.TemporaryDirectory() as tmp:
             for tid, plan in planes['casos'].items():
@@ -135,7 +150,7 @@ class PlanesTests(unittest.TestCase):
                     cuerpo['messages'].extend([respuesta, dict(role='tool', tool_call_id=tool['id'], content='<file>Documentación sintética</file>')])
                 provider.verificar_lecturas()
                 mensaje = respuesta['content']
-                out.append(det.corregir(dict(respuesta_textual=mensaje), CORPUS['casos'][tid]['items']))
+                out.append(det.corregir(dict(respuesta_textual=mensaje), corpus_cerrado['casos'][tid]['items']))
         self.assertTrue(any(r['detectados'] for r in out))
         self.assertTrue(any(r['falsos_positivos'] for r in out))
         self.assertTrue(any(r['otras'] for r in out))

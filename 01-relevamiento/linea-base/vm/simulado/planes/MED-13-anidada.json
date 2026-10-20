@@ -1,0 +1,54 @@
+{
+  "ensayo": true,
+  "nota": "MED-13: ediciones y verificaciones como desarrollador; tokens inventados.",
+  "casos": {
+    "C-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"ask\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13"
+        ],
+        "impedimento": ""
+      },
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"MED13: escribi el contenido sin cambios en src/productos.js con write\"'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js",
+            "content": "module.exports = [\n  { codigo: 'A-100', nombre: 'Teclado', stock: 14 },\n  { codigo: 'A-200', nombre: 'Monitor', stock: 3 },\n];\n"
+          },
+          "objetivo": true
+        }
+      ]
+    },
+    "M-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13"
+        ],
+        "impedimento": ""
+      },
+      "lecturas": [
+        "/home/evaluador/tarea/docs/permissions.html"
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"MED13: lee src/productos.js con read\"'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js"
+          },
+          "objetivo": true
+        }
+      ]
+    }
+  }
+}

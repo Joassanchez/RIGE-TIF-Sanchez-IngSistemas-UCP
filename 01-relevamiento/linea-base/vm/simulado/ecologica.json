@@ -9,12 +9,22 @@
       "salida": {
         "hecho": true,
         "cambios": [
-          "configuraci?n: cambio sint?tico de ensayo"
+          "ensayo MED-13"
         ],
         "impedimento": ""
       },
       "lecturas": [
         "/home/evaluador/tarea/docs/permissions.html"
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"MED13: lee src/productos.js con read\"'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js"
+          },
+          "objetivo": true
+        }
       ]
     },
     "M-2": {
@@ -414,7 +424,159 @@
         ],
         "impedimento": ""
       }
+    },
+    "C-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"ask\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13"
+        ],
+        "impedimento": ""
+      },
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"MED13: escribi el contenido sin cambios en src/productos.js con write\"'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js",
+            "content": "module.exports = [\n  { codigo: 'A-100', nombre: 'Teclado', stock: 14 },\n  { codigo: 'A-200', nombre: 'Monitor', stock: 3 },\n];\n"
+          },
+          "objetivo": true
+        }
+      ]
+    },
+    "C-2": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"ask\",\n      \"npm run lint\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      }
+    },
+    "C-3": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      }
+    },
+    "C-4": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"allow\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      }
+    },
+    "C-5": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git commit *\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      }
+    },
+    "C-6": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"revisor\": {\n      \"description\": \"Revisor del equipo\",\n      \"permission\": {\n        \"edit\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      }
+    },
+    "N-21": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \".env\": \"deny\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      },
+      "crear_como_dev": [
+        "P/opencode.json"
+      ]
+    },
+    "N-23": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"config/credenciales.json\": \"deny\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      },
+      "crear_como_dev": [
+        "P/opencode.json"
+      ]
+    },
+    "N-24": {
+      "archivos": {
+        "P/.opencode/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      }
+    },
+    "V-9": {
+      "archivos": {
+        "P/AGENTS.md": "Respondé siempre en español\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      },
+      "crear_como_dev": [
+        "P/AGENTS.md"
+      ]
+    },
+    "V-10": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"mcp\": {\n    \"docs\": {\n      \"type\": \"local\",\n      \"command\": [\n        \"node\",\n        \"docs.js\"\n      ],\n      \"enabled\": false,\n      \"environment\": {\n        \"API_TOKEN\": \"med12-ficticio\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c3: variante correcta"
+        ],
+        "impedimento": ""
+      }
     }
   },
-  "nota": "ENSAYO: cambios sint?ticos. Crear configuraciones globales usa el directorio habilitado; no se concede escritura al directorio ra?z del proyecto."
+  "nota": "ENSAYO: cambios sinteticos por herramientas. MED-13-c6 habilita creacion directa en raiz y cwd con modo 3770; se conservan variantes como-dev."
 }

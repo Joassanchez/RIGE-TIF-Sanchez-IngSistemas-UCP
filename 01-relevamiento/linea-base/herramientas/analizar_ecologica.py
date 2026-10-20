@@ -86,7 +86,7 @@ def grupo(rows, dimension):
                 motivos.append(f'{brazo}/{caso}: ADR-098 requiere k=3; k=1 solo es exploratorio.')
             admitidos = ('correcta', 'colateral', 'sin_efecto', 'incorrecta', 'sin_respuesta') if dimension == 'ecologica' else ('respondida', 'sin_respuesta')
             if any(r.get('resultado') not in admitidos or r.get('registro_incompleto') or r.get('fallo_preparacion') or
-                   r.get('ejecutor_alterado') or r.get('fuera_configuracion') or tokens(r) is None for r in cs):
+                   r.get('ejecutor_alterado') or r.get('ejecucion_alterada') or r.get('fuera_configuracion') or tokens(r) is None for r in cs):
                 motivos.append(f'{brazo}/{caso}: evidencia, entorno o consumo incompleto/alterado.')
         if dimension == 'ecologica' and contraste != {True}:
             for c, t in tablas[brazo].items():
@@ -137,6 +137,7 @@ def por_estrato(rows, tareas):
             grupo = [r for r in rs if r.get('proceso', {}).get('verificacion_final', 'ninguna') == tipo]
             relacion[tipo] = dict(n=len(grupo), exito_declarado_falso=sum(bool(r.get('exito_declarado_falso')) for r in grupo))
         out[estrato] = dict(tareas=ts, tareas_con_problema=problemas,
+            sesiones_anidadas=resumen_anidados(rs),
             total_tareas=len(ts), cantidad_con_problema=len(problemas),
             cantidad_familias_con_problema=len({HOJA[c]['familia'] for c in problemas}),
             tareas_con_problema_1_de_3=[c for c, v in ts.items() if v['con_problema_1_de_3']],
@@ -148,6 +149,18 @@ def por_estrato(rows, tareas):
             consumo_por_resultado={resultado: consumo([r for r in rs if r.get('resultado') == resultado])
                                    for resultado in sorted({r['resultado'] for r in rs}, key=str)})
     return out
+
+
+def resumen_anidados(rows):
+    con = [r for r in rows if r.get('sesiones_anidadas')]
+    campos = ('tokens_entrada', 'tokens_cache', 'tokens_salida')
+    return dict(n=len(rows), ejecuciones_con_sesion=len(con),
+                proporcion=len(con) / len(rows) if rows else None,
+                tokens={k: sum(r.get('tokens_anidados', {}).get(k, 0) for r in rows)
+                        if all(numero(r.get('tokens_anidados', {}).get(k, 0)) and
+                               (not r.get('sesiones_anidadas') or k in r.get('tokens_anidados', {})) for r in rows) else None for k in campos},
+                solicitudes=sum(len(r.get('solicitudes_anidadas', [])) for r in rows),
+                modelos=sorted({m for r in rows for m in r.get('modelos_anidados', [])}))
 
 
 def comparar_resultados(lb, fin):
@@ -239,6 +252,7 @@ def markdown_med9(datos):
                 lines += ['', 'Familias con problema: ' + str(resumen['familias_con_problema']),
                           'Consecuencias: ' + str(resumen['consecuencias']),
                           'Verificación y éxito falso: ' + str(resumen['verificacion_y_exito_falso']),
+                          'Sesiones anidadas (proporción, tokens y solicitudes): ' + str(resumen['sesiones_anidadas']),
                           'Tokens y solicitudes por resultado: ' + str(resumen['consumo_por_resultado']), '']
         if datos['dimension'] == 'ecologica':
             lines += ['', '### Valores (separados de permisos)', '', '| Brazo | Tarea | Candidato | Tipo | n | Resultados |', '|---|---|---|---|---:|---|']

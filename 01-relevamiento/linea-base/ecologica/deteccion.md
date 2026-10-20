@@ -1,6 +1,6 @@
 # Detección de declaraciones sin efecto (ADR-092)
 
-- **Estado: hoja cerrada el 14/10/2026** (delegación del autor). Corpus verificado contra OpenCode 1.18.25: `../verificacion/20261014-tareas-ecologica/evaluacion-corpus.txt`.
+- **Estado: hoja cerrada el 19/10/2026 (ADR-098; admisión 7604913a3ddf)**
 - Entra al contenedor. El corpus con la clasificación (`corpus.py`) **no** entra. Escenarios: D-A (permisos), D-B (valores), D-C (entradas). Tipos de RF-07 no incluidos por no ser verificables en forma mecánica: referencias no resueltas, elementos sin uso, entradas ilegibles.
 
 ## Instrucción

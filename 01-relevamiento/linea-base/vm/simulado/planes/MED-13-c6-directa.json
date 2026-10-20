@@ -1,0 +1,19 @@
+{
+  "ensayo": true,
+  "dimension": "ecologica",
+  "nota": "MED-13-c6: N-21 crea opencode.json directamente como evaluador; correcta esperada.",
+  "casos": {
+    "N-21": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \".env\": \"deny\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ensayo MED-13-c6: creacion directa con write"
+        ],
+        "impedimento": ""
+      }
+    }
+  }
+}

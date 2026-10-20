@@ -58,7 +58,8 @@ class DerivadosTests(unittest.TestCase):
             root = Path(tmp)
             raw, hoja, corregido = (root / n for n in ('registro.jsonl', 'respuestas.json', 'corregido.jsonl'))
             raw.write_text(''.join(json.dumps(r) + '\n' for r in rows), encoding='utf-8')
-            hoja.write_text(json.dumps(CORPUS), encoding='utf-8')
+            # Hoja cerrada sintética para probar los CLI; no cierra el banco real.
+            hoja.write_text(json.dumps(dict(CORPUS, hoja_cerrada=True, estado='cerrada')), encoding='utf-8')
             comandos = [
                 ['herramientas/corregir_deteccion.py', str(raw), '--respuestas', str(hoja), '--salida', str(corregido)],
                 ['herramientas/analizar.py', str(corregido), '--dimension', 'deteccion', '--destino', str(root / 'analisis')]]
