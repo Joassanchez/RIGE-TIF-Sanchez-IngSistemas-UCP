@@ -156,6 +156,9 @@ class RegistroTests(unittest.TestCase):
                 sys.path.pop(0)
             from test_med9 import captura
             agentes = captura(caso, 'base')
+            nativo = json.loads((ROOT / 'verificacion/20261014-tareas-ecologica/salida/M-5/base/agente-build.json').read_text(encoding='utf-8'))
+            agentes.setdefault('build', nativo)
+            agentes.setdefault('plan', dict(permission=[*nativo['permission'], dict(permission='edit', pattern='*', action='deny')]))
             return {json.dumps(list(s), ensure_ascii=False): dict(decision='indeterminado' if base_incorrecta else
                     decidir(agentes[s[0]]['permission'], permiso_sonda(s), s[2])) for s in sondas}
 

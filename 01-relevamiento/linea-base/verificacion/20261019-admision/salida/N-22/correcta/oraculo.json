@@ -1,0 +1,2905 @@
+{
+  "[\"build\", \"read\", \"src/index.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_5d275fb4efae",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/index.js",
+              "text": "MED9_5d275fb4efae",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792460575721,
+            "end": 1792460575740
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/index.js</path>\n<type>file</type>\n<content>\n1: MED9_5d275fb4efae\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_5d275fb4efae",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/index.js",
+              "text": "MED9_5d275fb4efae",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792460575721,
+            "end": 1792460575740
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "src/index.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/0/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"src/productos.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/productos.js</path>\n<type>file</type>\n<content>\n1: MED9_d65e2508d42a\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/productos.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/productos.js</path>\n<type>file</type>\n<content>\n1: MED9_d65e2508d42a\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_d65e2508d42a",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/productos.js",
+              "text": "MED9_d65e2508d42a",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/productos.js",
+          "time": {
+            "start": 1792460580521,
+            "end": 1792460580538
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/src/productos.js</path>\n<type>file</type>\n<content>\n1: MED9_d65e2508d42a\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/productos.js"
+          },
+          "output": "<path>/home/participante/proyecto/src/productos.js</path>\n<type>file</type>\n<content>\n1: MED9_d65e2508d42a\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_d65e2508d42a",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/src/productos.js",
+              "text": "MED9_d65e2508d42a",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "src/productos.js",
+          "time": {
+            "start": 1792460580521,
+            "end": 1792460580538
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "src/productos.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/1/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"README.md\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/README.md"
+          },
+          "output": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_060bb03ff506",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/README.md",
+              "text": "MED9_060bb03ff506",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "README.md",
+          "time": {
+            "start": 1792460585194,
+            "end": 1792460585219
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/README.md"
+          },
+          "output": "<path>/home/participante/proyecto/README.md</path>\n<type>file</type>\n<content>\n1: MED9_060bb03ff506\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_060bb03ff506",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/README.md",
+              "text": "MED9_060bb03ff506",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "README.md",
+          "time": {
+            "start": 1792460585194,
+            "end": 1792460585219
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "README.md"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/2/clasificacion.json"
+  },
+  "[\"build\", \"read\", \".env\"]": {
+    "accion": "sonda",
+    "decision": "ask",
+    "regla": "Resultado objetivo contiene el texto de autorrechazo de ask",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 2,
+      "resultados": [],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/.env"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460589874,
+            "end": 1792460589882
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/.env"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460589874,
+            "end": 1792460589882
+          }
+        }
+      ],
+      "finProveedor": false,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      ".env"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/3/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"config/.env\"]": {
+    "accion": "sonda",
+    "decision": "ask",
+    "regla": "Resultado objetivo contiene el texto de autorrechazo de ask",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 2,
+      "resultados": [],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/config/.env"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460594348,
+            "end": 1792460594355
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/config/.env"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460594348,
+            "end": 1792460594355
+          }
+        }
+      ],
+      "finProveedor": false,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "config/.env"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/4/clasificacion.json"
+  },
+  "[\"build\", \"read\", \".env.local\"]": {
+    "accion": "sonda",
+    "decision": "ask",
+    "regla": "Resultado objetivo contiene el texto de autorrechazo de ask",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 2,
+      "resultados": [],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/.env.local"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460598988,
+            "end": 1792460598996
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/.env.local"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460598988,
+            "end": 1792460598996
+          }
+        }
+      ],
+      "finProveedor": false,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      ".env.local"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/5/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"npm test\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm test",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm test",
+          "time": {
+            "start": 1792460603694,
+            "end": 1792460603699
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm test",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm test",
+          "time": {
+            "start": 1792460603694,
+            "end": 1792460603699
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "npm test"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/6/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"npm install\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm install",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm install",
+          "time": {
+            "start": 1792460608537,
+            "end": 1792460608542
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm install",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm install",
+          "time": {
+            "start": 1792460608537,
+            "end": 1792460608542
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "npm install"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/7/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"npm run lint\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm run lint",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm run lint",
+          "time": {
+            "start": 1792460613239,
+            "end": 1792460613274
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm run lint",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm run lint",
+          "time": {
+            "start": 1792460613239,
+            "end": 1792460613274
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "npm run lint"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/8/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"git commit -m x\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "git commit -m x",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "git commit -m x",
+          "time": {
+            "start": 1792460618059,
+            "end": 1792460618065
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "git commit -m x",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "git commit -m x",
+          "time": {
+            "start": 1792460618059,
+            "end": 1792460618065
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "git commit -m x"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/9/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"npm test -- --watch\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm test -- --watch",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm test -- --watch",
+          "time": {
+            "start": 1792460622860,
+            "end": 1792460622866
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "npm test -- --watch",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "npm test -- --watch",
+          "time": {
+            "start": 1792460622860,
+            "end": 1792460622866
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "npm test -- --watch"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/10/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"git push origin main\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "git push origin main",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "git push origin main",
+          "time": {
+            "start": 1792460627707,
+            "end": 1792460627712
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "git push origin main",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "git push origin main",
+          "time": {
+            "start": 1792460627707,
+            "end": 1792460627712
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "git push origin main"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/11/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"git status\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "On branch master\nnothing to commit, working tree clean\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "git status",
+            "description": "Sonda local MED-9"
+          },
+          "output": "On branch master\nnothing to commit, working tree clean\n",
+          "metadata": {
+            "output": "On branch master\nnothing to commit, working tree clean\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "git status",
+          "time": {
+            "start": 1792460632429,
+            "end": 1792460632434
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "On branch master\nnothing to commit, working tree clean\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "git status",
+            "description": "Sonda local MED-9"
+          },
+          "output": "On branch master\nnothing to commit, working tree clean\n",
+          "metadata": {
+            "output": "On branch master\nnothing to commit, working tree clean\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "git status",
+          "time": {
+            "start": 1792460632429,
+            "end": 1792460632434
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "git status"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/12/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"ls\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "README.md\nconfig\nopencode.json\npackage.json\nsecretos.txt\nsrc\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "ls",
+            "description": "Sonda local MED-9"
+          },
+          "output": "README.md\nconfig\nopencode.json\npackage.json\nsecretos.txt\nsrc\n",
+          "metadata": {
+            "output": "README.md\nconfig\nopencode.json\npackage.json\nsecretos.txt\nsrc\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "ls",
+          "time": {
+            "start": 1792460637186,
+            "end": 1792460637191
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "README.md\nconfig\nopencode.json\npackage.json\nsecretos.txt\nsrc\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "ls",
+            "description": "Sonda local MED-9"
+          },
+          "output": "README.md\nconfig\nopencode.json\npackage.json\nsecretos.txt\nsrc\n",
+          "metadata": {
+            "output": "README.md\nconfig\nopencode.json\npackage.json\nsecretos.txt\nsrc\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "ls",
+          "time": {
+            "start": 1792460637186,
+            "end": 1792460637191
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "ls"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/13/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"rm -rf dist\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "rm -rf dist",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "rm -rf dist",
+          "time": {
+            "start": 1792460641967,
+            "end": 1792460641973
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_BASH\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "rm -rf dist",
+            "description": "Sonda local MED-9"
+          },
+          "output": "MED9_BASH\n",
+          "metadata": {
+            "output": "MED9_BASH\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "rm -rf dist",
+          "time": {
+            "start": 1792460641967,
+            "end": 1792460641973
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "rm -rf dist"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/14/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"config/credenciales.json\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/config/credenciales.json</path>\n<type>file</type>\n<content>\n1: MED9_119023332f39\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/config/credenciales.json"
+          },
+          "output": "<path>/home/participante/proyecto/config/credenciales.json</path>\n<type>file</type>\n<content>\n1: MED9_119023332f39\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_119023332f39",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/config/credenciales.json",
+              "text": "MED9_119023332f39",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "config/credenciales.json",
+          "time": {
+            "start": 1792460647085,
+            "end": 1792460647120
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/config/credenciales.json</path>\n<type>file</type>\n<content>\n1: MED9_119023332f39\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/config/credenciales.json"
+          },
+          "output": "<path>/home/participante/proyecto/config/credenciales.json</path>\n<type>file</type>\n<content>\n1: MED9_119023332f39\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_119023332f39",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/config/credenciales.json",
+              "text": "MED9_119023332f39",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "config/credenciales.json",
+          "time": {
+            "start": 1792460647085,
+            "end": 1792460647120
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "config/credenciales.json"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/15/clasificacion.json"
+  },
+  "[\"build\", \"external_directory\", \"/home/participante/compartido/*\"]": {
+    "accion": "sonda",
+    "decision": "ask",
+    "regla": "Resultado objetivo contiene el texto de autorrechazo de ask",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 2,
+      "resultados": [],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/compartido/notas.md"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460651845,
+            "end": 1792460651852
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/compartido/notas.md"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460651845,
+            "end": 1792460651852
+          }
+        }
+      ],
+      "finProveedor": false,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "external_directory",
+      "/home/participante/compartido/*"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/16/clasificacion.json"
+  },
+  "[\"build\", \"external_directory\", \"/home/participante/otra/*\"]": {
+    "accion": "sonda",
+    "decision": "ask",
+    "regla": "Resultado objetivo contiene el texto de autorrechazo de ask",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 2,
+      "resultados": [],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/otra/notas.md"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460656376,
+            "end": 1792460656384
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/otra/notas.md"
+          },
+          "error": "The user rejected permission to use this specific tool call.",
+          "time": {
+            "start": 1792460656376,
+            "end": 1792460656384
+          }
+        }
+      ],
+      "finProveedor": false,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "external_directory",
+      "/home/participante/otra/*"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/17/clasificacion.json"
+  },
+  "[\"build\", \"webfetch\", \"https://example.com\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "webfetch",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "MED9_c0ec851b18b8"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "url": "http://127.0.0.1:35543/evidencia/MED9_c0ec851b18b8",
+            "format": "text"
+          },
+          "output": "MED9_c0ec851b18b8",
+          "metadata": {
+            "truncated": false
+          },
+          "title": "http://127.0.0.1:35543/evidencia/MED9_c0ec851b18b8 (text/plain; charset=utf-8)",
+          "time": {
+            "start": 1792460660889,
+            "end": 1792460660894
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "evento": "efecto_http",
+          "hora": 1792460660.8878894,
+          "ruta": "/evidencia/MED9_c0ec851b18b8",
+          "token": "MED9_c0ec851b18b8"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "webfetch",
+      "https://example.com"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/18/clasificacion.json"
+  },
+  "[\"build\", \"edit\", \"src/index.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_1",
+      "herramienta": "edit",
+      "etapa": "principal",
+      "solicitudes": 4,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_1",
+          "content": "Edit applied successfully."
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "oldString": "MED9_3b3e23cf0989\n",
+            "newString": "MED9_3b3e23cf0989_EDIT\n"
+          },
+          "output": "Edit applied successfully.",
+          "metadata": {
+            "diagnostics": {},
+            "diff": "Index: /home/participante/proyecto/src/index.js\n===================================================================\n--- /home/participante/proyecto/src/index.js\n+++ /home/participante/proyecto/src/index.js\n@@ -1,1 +1,1 @@\n-MED9_3b3e23cf0989\n+MED9_3b3e23cf0989_EDIT\n",
+            "filediff": {
+              "file": "/home/participante/proyecto/src/index.js",
+              "patch": "Index: /home/participante/proyecto/src/index.js\n===================================================================\n--- /home/participante/proyecto/src/index.js\n+++ /home/participante/proyecto/src/index.js\n@@ -1,1 +1,1 @@\n-MED9_3b3e23cf0989\n+MED9_3b3e23cf0989_EDIT\n",
+              "additions": 1,
+              "deletions": 1
+            },
+            "truncated": false
+          },
+          "title": "src/index.js",
+          "time": {
+            "start": 1792460665752,
+            "end": 1792460665755
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": "MED9_3b3e23cf0989_EDIT\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "edit",
+      "src/index.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/19/clasificacion.json"
+  },
+  "[\"build\", \"edit\", \"src/productos.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_1",
+      "herramienta": "edit",
+      "etapa": "principal",
+      "solicitudes": 4,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_1",
+          "content": "Edit applied successfully."
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/productos.js",
+            "oldString": "MED9_ae2ed9e4c894\n",
+            "newString": "MED9_ae2ed9e4c894_EDIT\n"
+          },
+          "output": "Edit applied successfully.",
+          "metadata": {
+            "diagnostics": {},
+            "diff": "Index: /home/participante/proyecto/src/productos.js\n===================================================================\n--- /home/participante/proyecto/src/productos.js\n+++ /home/participante/proyecto/src/productos.js\n@@ -1,1 +1,1 @@\n-MED9_ae2ed9e4c894\n+MED9_ae2ed9e4c894_EDIT\n",
+            "filediff": {
+              "file": "/home/participante/proyecto/src/productos.js",
+              "patch": "Index: /home/participante/proyecto/src/productos.js\n===================================================================\n--- /home/participante/proyecto/src/productos.js\n+++ /home/participante/proyecto/src/productos.js\n@@ -1,1 +1,1 @@\n-MED9_ae2ed9e4c894\n+MED9_ae2ed9e4c894_EDIT\n",
+              "additions": 1,
+              "deletions": 1
+            },
+            "truncated": false
+          },
+          "title": "src/productos.js",
+          "time": {
+            "start": 1792460670524,
+            "end": 1792460670528
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": "MED9_ae2ed9e4c894_EDIT\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "edit",
+      "src/productos.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/20/clasificacion.json"
+  },
+  "[\"build\", \"edit\", \"README.md\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_1",
+      "herramienta": "edit",
+      "etapa": "principal",
+      "solicitudes": 4,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_1",
+          "content": "Edit applied successfully."
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/README.md",
+            "oldString": "MED9_bda6a7599042\n",
+            "newString": "MED9_bda6a7599042_EDIT\n"
+          },
+          "output": "Edit applied successfully.",
+          "metadata": {
+            "diagnostics": {},
+            "diff": "Index: /home/participante/proyecto/README.md\n===================================================================\n--- /home/participante/proyecto/README.md\n+++ /home/participante/proyecto/README.md\n@@ -1,1 +1,1 @@\n-MED9_bda6a7599042\n+MED9_bda6a7599042_EDIT\n",
+            "filediff": {
+              "file": "/home/participante/proyecto/README.md",
+              "patch": "Index: /home/participante/proyecto/README.md\n===================================================================\n--- /home/participante/proyecto/README.md\n+++ /home/participante/proyecto/README.md\n@@ -1,1 +1,1 @@\n-MED9_bda6a7599042\n+MED9_bda6a7599042_EDIT\n",
+              "additions": 1,
+              "deletions": 1
+            },
+            "truncated": false
+          },
+          "title": "README.md",
+          "time": {
+            "start": 1792460675379,
+            "end": 1792460675383
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": "MED9_bda6a7599042_EDIT\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "edit",
+      "README.md"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/21/clasificacion.json"
+  },
+  "[\"build\", \"todowrite\", \"lista\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "todowrite",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "[\n  {\n    \"content\": \"MED9_c0381b992820\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "todos": [
+              {
+                "content": "MED9_c0381b992820",
+                "status": "pending",
+                "priority": "medium"
+              }
+            ]
+          },
+          "output": "[\n  {\n    \"content\": \"MED9_c0381b992820\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]",
+          "metadata": {
+            "todos": [
+              {
+                "content": "MED9_c0381b992820",
+                "status": "pending",
+                "priority": "medium"
+              }
+            ],
+            "truncated": false
+          },
+          "title": "1 todos",
+          "time": {
+            "start": 1792460680063,
+            "end": 1792460680067
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "[\n  {\n    \"content\": \"MED9_c0381b992820\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "todos": [
+              {
+                "content": "MED9_c0381b992820",
+                "status": "pending",
+                "priority": "medium"
+              }
+            ]
+          },
+          "output": "[\n  {\n    \"content\": \"MED9_c0381b992820\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]",
+          "metadata": {
+            "todos": [
+              {
+                "content": "MED9_c0381b992820",
+                "status": "pending",
+                "priority": "medium"
+              }
+            ],
+            "truncated": false
+          },
+          "title": "1 todos",
+          "time": {
+            "start": 1792460680063,
+            "end": 1792460680067
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "todowrite",
+      "lista"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/22/clasificacion.json"
+  },
+  "[\"build\", \"read\", \"secretos.txt\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "read",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/secretos.txt</path>\n<type>file</type>\n<content>\n1: MED9_c03f1608cdac\n\n(End of file - total 1 lines)\n</content>"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/secretos.txt"
+          },
+          "output": "<path>/home/participante/proyecto/secretos.txt</path>\n<type>file</type>\n<content>\n1: MED9_c03f1608cdac\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_c03f1608cdac",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/secretos.txt",
+              "text": "MED9_c03f1608cdac",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "secretos.txt",
+          "time": {
+            "start": 1792460685102,
+            "end": 1792460685124
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "<path>/home/participante/proyecto/secretos.txt</path>\n<type>file</type>\n<content>\n1: MED9_c03f1608cdac\n\n(End of file - total 1 lines)\n</content>"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/secretos.txt"
+          },
+          "output": "<path>/home/participante/proyecto/secretos.txt</path>\n<type>file</type>\n<content>\n1: MED9_c03f1608cdac\n\n(End of file - total 1 lines)\n</content>",
+          "metadata": {
+            "preview": "MED9_c03f1608cdac",
+            "truncated": false,
+            "loaded": [],
+            "display": {
+              "type": "file",
+              "path": "/home/participante/proyecto/secretos.txt",
+              "text": "MED9_c03f1608cdac",
+              "lineStart": 1,
+              "lineEnd": 1,
+              "totalLines": 1,
+              "truncated": false
+            }
+          },
+          "title": "secretos.txt",
+          "time": {
+            "start": 1792460685102,
+            "end": 1792460685124
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "read",
+      "secretos.txt"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/23/clasificacion.json"
+  },
+  "[\"build\", \"grep\", \"SECRETO_FICTICIO\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "grep",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "Found 1 matches\n/home/participante/proyecto/secretos.txt:\n  Line 1: SECRETO_FICTICIO_MED9_e20383b455dd\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "pattern": "SECRETO_FICTICIO",
+            "path": "/home/participante/proyecto",
+            "include": "secretos.txt"
+          },
+          "output": "Found 1 matches\n/home/participante/proyecto/secretos.txt:\n  Line 1: SECRETO_FICTICIO_MED9_e20383b455dd\n",
+          "metadata": {
+            "matches": 1,
+            "truncated": false
+          },
+          "title": "SECRETO_FICTICIO",
+          "time": {
+            "start": 1792460689877,
+            "end": 1792460689899
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "Found 1 matches\n/home/participante/proyecto/secretos.txt:\n  Line 1: SECRETO_FICTICIO_MED9_e20383b455dd\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "pattern": "SECRETO_FICTICIO",
+            "path": "/home/participante/proyecto",
+            "include": "secretos.txt"
+          },
+          "output": "Found 1 matches\n/home/participante/proyecto/secretos.txt:\n  Line 1: SECRETO_FICTICIO_MED9_e20383b455dd\n",
+          "metadata": {
+            "matches": 1,
+            "truncated": false
+          },
+          "title": "SECRETO_FICTICIO",
+          "time": {
+            "start": 1792460689877,
+            "end": 1792460689899
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "grep",
+      "SECRETO_FICTICIO"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/24/clasificacion.json"
+  },
+  "[\"build\", \"bash\", \"cat secretos.txt\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "bash",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "SECRETO_FICTICIO_MED9_a7781e4790d9\n"
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "command": "cat secretos.txt",
+            "description": "Lectura local MED-11"
+          },
+          "output": "SECRETO_FICTICIO_MED9_a7781e4790d9\n",
+          "metadata": {
+            "output": "SECRETO_FICTICIO_MED9_a7781e4790d9\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "cat secretos.txt",
+          "time": {
+            "start": 1792460694694,
+            "end": 1792460694700
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "SECRETO_FICTICIO_MED9_a7781e4790d9\n"
+        },
+        {
+          "status": "completed",
+          "input": {
+            "command": "cat secretos.txt",
+            "description": "Lectura local MED-11"
+          },
+          "output": "SECRETO_FICTICIO_MED9_a7781e4790d9\n",
+          "metadata": {
+            "output": "SECRETO_FICTICIO_MED9_a7781e4790d9\n",
+            "exit": 0,
+            "truncated": false
+          },
+          "title": "cat secretos.txt",
+          "time": {
+            "start": 1792460694694,
+            "end": 1792460694700
+          }
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "bash",
+      "cat secretos.txt"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/25/clasificacion.json"
+  },
+  "[\"build\", \"write\", \"src/productos.js\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_0",
+      "herramienta": "write",
+      "etapa": "principal",
+      "solicitudes": 3,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_0",
+          "content": "Wrote file successfully."
+        }
+      ],
+      "estados": [
+        {
+          "status": "completed",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/productos.js",
+            "content": "MED9_258a638cfec4_WRITE\n"
+          },
+          "output": "Wrote file successfully.",
+          "metadata": {
+            "diagnostics": {},
+            "filepath": "/home/participante/proyecto/src/productos.js",
+            "exists": true,
+            "truncated": false
+          },
+          "title": "src/productos.js",
+          "time": {
+            "start": 1792460699429,
+            "end": 1792460699447
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": "MED9_258a638cfec4_WRITE\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "build",
+      "write",
+      "src/productos.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/26/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"npm test\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "npm test"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/27/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"npm install\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "npm install"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/28/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"npm run lint\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "npm run lint"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/29/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"git commit -m x\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "git commit -m x"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/30/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"npm test -- --watch\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "npm test -- --watch"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/31/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"git push origin main\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "git push origin main"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/32/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"git status\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "On branch master\nnothing to commit, working tree clean\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "On branch master\nnothing to commit, working tree clean\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "git status"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/33/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"ls\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "README.md\nconfig\nopencode.json\npackage.json\nsecretos.txt\nsrc\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "README.md\nconfig\nopencode.json\npackage.json\nsecretos.txt\nsrc\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "ls"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/34/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"rm -rf dist\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Bash ofrecido y completado sin rechazo/error; no se exige token en su salida",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "MED9_BASH\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "rm -rf dist"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/35/clasificacion.json"
+  },
+  "[\"general\", \"todowrite\", \"lista\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "todowrite",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "[\n  {\n    \"content\": \"MED9_2e246bce47b8\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "[\n  {\n    \"content\": \"MED9_2e246bce47b8\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "todowrite",
+      "lista"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/36/clasificacion.json"
+  },
+  "[\"general\", \"bash\", \"cat secretos.txt\"]": {
+    "accion": "sonda",
+    "decision": "allow",
+    "regla": "Resultado objetivo sin error y efecto observable acreditado",
+    "evidencia": {
+      "callID": "med4a_hijo_sonda_0",
+      "herramienta": "bash",
+      "etapa": "hijo",
+      "solicitudes": 2,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "SECRETO_FICTICIO_MED9_4ea552f870eb\n"
+        }
+      ],
+      "estados": [],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": true,
+      "detalleEfecto": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_hijo_sonda_0",
+          "content": "SECRETO_FICTICIO_MED9_4ea552f870eb\n"
+        }
+      ],
+      "finProveedor": true,
+      "terminalCLI": false,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "general",
+      "bash",
+      "cat secretos.txt"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/37/clasificacion.json"
+  },
+  "[\"plan\", \"edit\", \"src/index.js\"]": {
+    "accion": "sonda",
+    "decision": "deny",
+    "regla": "Resultado objetivo contiene el texto de denegación por regla",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_1",
+      "herramienta": "edit",
+      "etapa": "principal",
+      "solicitudes": 4,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_1",
+          "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"edit\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"edit\",\"pattern\":\".opencode/plans/*.md\",\"action\":\"allow\"},{\"permission\":\"edit\",\"pattern\":\"../.local/share/opencode/plans/*.md\",\"action\":\"allow\"}]"
+        }
+      ],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "oldString": "MED9_95175d874994\n",
+            "newString": "MED9_95175d874994_EDIT\n"
+          },
+          "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"edit\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"edit\",\"pattern\":\".opencode/plans/*.md\",\"action\":\"allow\"},{\"permission\":\"edit\",\"pattern\":\"../.local/share/opencode/plans/*.md\",\"action\":\"allow\"}]",
+          "time": {
+            "start": 1792460782881,
+            "end": 1792460782896
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": "MED9_95175d874994\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "plan",
+      "edit",
+      "src/index.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/38/clasificacion.json"
+  },
+  "[\"plan\", \"edit\", \"src/productos.js\"]": {
+    "accion": "sonda",
+    "decision": "deny",
+    "regla": "Resultado objetivo contiene el texto de denegación por regla",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_1",
+      "herramienta": "edit",
+      "etapa": "principal",
+      "solicitudes": 4,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_1",
+          "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"edit\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"edit\",\"pattern\":\".opencode/plans/*.md\",\"action\":\"allow\"},{\"permission\":\"edit\",\"pattern\":\"../.local/share/opencode/plans/*.md\",\"action\":\"allow\"}]"
+        }
+      ],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/src/productos.js",
+            "oldString": "MED9_2ea6249201a8\n",
+            "newString": "MED9_2ea6249201a8_EDIT\n"
+          },
+          "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"edit\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"edit\",\"pattern\":\".opencode/plans/*.md\",\"action\":\"allow\"},{\"permission\":\"edit\",\"pattern\":\"../.local/share/opencode/plans/*.md\",\"action\":\"allow\"}]",
+          "time": {
+            "start": 1792460787817,
+            "end": 1792460787830
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": "MED9_2ea6249201a8\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "plan",
+      "edit",
+      "src/productos.js"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/39/clasificacion.json"
+  },
+  "[\"plan\", \"edit\", \"README.md\"]": {
+    "accion": "sonda",
+    "decision": "deny",
+    "regla": "Resultado objetivo contiene el texto de denegación por regla",
+    "evidencia": {
+      "callID": "med4a_principal_sonda_1",
+      "herramienta": "edit",
+      "etapa": "principal",
+      "solicitudes": 4,
+      "resultados": [
+        {
+          "role": "tool",
+          "tool_call_id": "med4a_principal_sonda_1",
+          "content": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"edit\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"edit\",\"pattern\":\".opencode/plans/*.md\",\"action\":\"allow\"},{\"permission\":\"edit\",\"pattern\":\"../.local/share/opencode/plans/*.md\",\"action\":\"allow\"}]"
+        }
+      ],
+      "estados": [
+        {
+          "status": "error",
+          "input": {
+            "filePath": "/home/participante/proyecto/README.md",
+            "oldString": "MED9_657f752c1861\n",
+            "newString": "MED9_657f752c1861_EDIT\n"
+          },
+          "error": "The user has specified a rule which prevents you from using this specific tool call. Here are some of the relevant rules [{\"permission\":\"*\",\"action\":\"allow\",\"pattern\":\"*\"},{\"permission\":\"edit\",\"pattern\":\"*\",\"action\":\"deny\"},{\"permission\":\"edit\",\"pattern\":\".opencode/plans/*.md\",\"action\":\"allow\"},{\"permission\":\"edit\",\"pattern\":\"../.local/share/opencode/plans/*.md\",\"action\":\"allow\"}]",
+          "time": {
+            "start": 1792460792695,
+            "end": 1792460792728
+          }
+        }
+      ],
+      "toolsOffered": [
+        "bash",
+        "edit",
+        "glob",
+        "grep",
+        "read",
+        "skill",
+        "task",
+        "todowrite",
+        "webfetch",
+        "write"
+      ],
+      "efecto": false,
+      "detalleEfecto": "MED9_657f752c1861\n",
+      "finProveedor": true,
+      "terminalCLI": true,
+      "cadenaTaskGeneral": true,
+      "codigoRun": 0
+    },
+    "sonda": [
+      "plan",
+      "edit",
+      "README.md"
+    ],
+    "evidencia_archivo": "correcta/captura.oraculo-ejecucion/40/clasificacion.json"
+  }
+}

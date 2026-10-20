@@ -15,7 +15,9 @@ def normalizar(texto):
 
 def corregir(row, items):
     out = dict(row, dimension='deteccion', resultado='sin_respuesta', detectados=[],
-               falsos_positivos=[], otras=[], coincidencias=[])
+               falsos_positivos=[], otras=[], coincidencias=[],
+               defectos=[i['id'] for i in items if not i['efecto']],
+               controles=[i['id'] for i in items if i['efecto']])
     try:
         texto = row.get('respuesta_textual', '')
         if texto.count('```') % 2:
@@ -41,8 +43,6 @@ def corregir(row, items):
             if i['id'] in ids and i['id'] not in out[campo]:
                 out[campo].append(i['id'])
     out['resultado'] = 'respondida'
-    out['defectos'] = [i['id'] for i in items if not i['efecto']]
-    out['controles'] = [i['id'] for i in items if i['efecto']]
     if row.get('censurado') or row.get('codigo_salida', 0) != 0:
         out.update(resultado='sin_respuesta', motivo='censura o error de ejecución', detectados=[], falsos_positivos=[])
     return out
@@ -67,8 +67,7 @@ def main():
             p.error('No mezclar dimensiones.')
         items = hoja['casos'][row['caso']]['items']
         out = corregir(row, items)
-        out.update(hash_respuestas=hash_archivo(a.respuestas), hoja_cerrada=True,
-                   defectos=[i['id'] for i in items if not i['efecto']], controles=[i['id'] for i in items if i['efecto']])
+        out.update(hash_respuestas=hash_archivo(a.respuestas), hoja_cerrada=True)
         rows.append(out)
     a.salida.parent.mkdir(parents=True, exist_ok=True)
     a.salida.write_text(''.join(json.dumps(r, ensure_ascii=False) + '\n' for r in rows), encoding='utf-8')

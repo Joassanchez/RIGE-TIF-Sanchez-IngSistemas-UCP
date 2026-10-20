@@ -10,8 +10,7 @@ Estás ayudando a un desarrollador a revisar la configuración de OpenCode 1.18.
 
 Estás trabajando en el directorio de su proyecto. Para ejecutar comandos con su entorno (sus variables y su configuración), usá:
     como-dev '<comando>'
-Tenés la hoja de referencia en /home/evaluador/tarea/hoja-referencia.md y la documentación
-oficial de OpenCode 1.18.25 sin conexión en /home/evaluador/tarea/docs/index.html.
+Tenés la documentación oficial de OpenCode 1.18.25 sin conexión en /home/evaluador/tarea/docs/index.html.
 
 No modifiques ningún archivo.
 
@@ -21,3 +20,19 @@ Cuando termines, cerrá tu mensaje con un único bloque JSON con esta forma exac
 {"sin_efecto": [{"archivo": "<ruta o variable>", "clave": "<clave o regla>", "motivo": "<por qué>"}]}
 Si no encontrás ninguna, devolvé la lista vacía.
 ```
+
+## Corpus
+
+| Escenario | Defectos | Controles |
+|---|---|---|
+| D-A | D1, D2, D3 | C1, C2, C3 |
+| D-B | D4, D5 | C4, C5, C6 |
+| D-C | D6, D7 | C7, C8, C9 |
+| N-10-ingenua_frontmatter-D | N-10-ingenua_frontmatter-D |  |
+| N-10-ingenua_frontmatter-C |  | N-10-ingenua_frontmatter-C |
+| N-23-ingenua_absoluta-D | N-23-ingenua_absoluta-D |  |
+| N-23-ingenua_absoluta-C |  | N-23-ingenua_absoluta-C |
+| V-10-ingenua_env-D | V-10-ingenua_env-D |  |
+| V-10-ingenua_env-C |  | V-10-ingenua_env-C |
+| N-24-ingenua_dotdir-D | N-24-ingenua_dotdir-D |  |
+| N-24-ingenua_dotdir-C |  | N-24-ingenua_dotdir-C |

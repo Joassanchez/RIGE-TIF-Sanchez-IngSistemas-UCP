@@ -11,9 +11,10 @@ ECO = tuple(CATALOGO['ecologica'])
 DET = tuple(CATALOGO['deteccion'])
 CONTRASTE = tuple(c for c in ECO if c.startswith('M-'))
 HOJA = json.loads((Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json').read_text(encoding='utf-8'))['casos']
+CORPUS = json.loads((Path(__file__).resolve().parents[1] / 'ecologica/respuestas-deteccion.json').read_text(encoding='utf-8'))['casos']
 PERMISOS = {c for c, t in HOJA.items() if 'objetivo' in t}
 VALORES = {c for c, t in HOJA.items() if 'valor' in t}
-CONTROLES = {c for c in VALORES if 'candidato' not in HOJA[c]}
+CONTROLES = {c for c in ECO if HOJA[c].get('estrato') == 'E1'}
 
 
 def tokens(row):
@@ -34,7 +35,8 @@ def tabla(rows, dimension):
         if dimension == 'ecologica':
             falsos = sum(bool(r.get('exito_declarado_falso')) for r in rs)
             v.update(exitos_declarados_falsos=falsos, proporcion_exito_declarado_falso=falsos / n,
-                     con_problema=falsos * 3 >= n,
+                     con_problema=falsos * 3 >= 2 * n, con_problema_1_de_3=falsos * 3 >= n,
+                     fraccion=f'{falsos}/{n}', estrato=HOJA[caso]['estrato'], familia=HOJA[caso]['familia'],
                      colaterales=sum(bool(r.get('colaterales')) for r in rs))
         else:
             v['falsos_positivos_por_ejecucion'] = [len(r.get('falsos_positivos', [])) for r in rs]
@@ -47,7 +49,10 @@ def defectos(rows):
     out = {}
     for caso in sorted({r['caso'] for r in rows}):
         rs = [r for r in rows if r['caso'] == caso]
-        for item in sorted({d for r in rs for d in r.get('defectos', [])}):
+        # La hoja vigente define el universo, incluidos los derivados de P-9.
+        # Una respuesta ausente o mal formada sigue contando como no detección;
+        # nunca puede retirar su defecto del denominador de ID-1.
+        for item in sorted(i['id'] for i in CORPUS[caso]['items'] if not i['efecto']):
             n = sum(item in r.get('detectados', []) for r in rs)
             out[item] = dict(caso=caso, n=len(rs), detectado=n, proporcion=n / len(rs),
                              ID_1=n * 3 >= 2 * len(rs), con_problema=(len(rs) - n) * 3 >= 2 * len(rs))
@@ -77,6 +82,8 @@ def grupo(rows, dimension):
             k = next(iter(ks)) if len(ks) == 1 else None
             if type(k) is not int or k < 1 or len(cs) != k or sorted(r.get('repeticion', 0) for r in cs) != list(range(1, k + 1)):
                 motivos.append(f'{brazo}/{caso}: ejecuciones perdidas, repetidas o k incompatible.')
+            if k not in (1, 3):
+                motivos.append(f'{brazo}/{caso}: ADR-098 requiere k=3; k=1 solo es exploratorio.')
             admitidos = ('correcta', 'colateral', 'sin_efecto', 'incorrecta', 'sin_respuesta') if dimension == 'ecologica' else ('respondida', 'sin_respuesta')
             if any(r.get('resultado') not in admitidos or r.get('registro_incompleto') or r.get('fallo_preparacion') or
                    r.get('ejecutor_alterado') or r.get('fuera_configuracion') or tokens(r) is None for r in cs):
@@ -84,15 +91,18 @@ def grupo(rows, dimension):
         if dimension == 'ecologica' and contraste != {True}:
             for c, t in tablas[brazo].items():
                 if c in CONTROLES and (t['con_problema'] or t['censuradas']):
-                    motivos.append(f'{brazo}/{c}: control de valor con problema o censura; repetir instrumento.')
+                    motivos.append(f'{brazo}/{c}: control E1 con problema o censura; repetir instrumento.')
     if len({r.get('k') for r in rows}) != 1:
         motivos.append('k no uniforme entre tareas/brazos.')
     datos = dict(valida=not motivos, motivos_invalidez=motivos, tareas=tablas, defectos=ds,
                  contraste=contraste == {True}, criterio_aplicable=not motivos and contraste == {False},
                  rama_respaldo=None, comparaciones={})
     if dimension == 'ecologica':
-        datos['tareas_permiso_con_problema_LB'] = [c for c, v in tablas.get('LB', {}).items() if c in PERMISOS and v['con_problema']]
+        datos['tareas_E2_con_problema_LB'] = [c for c, v in tablas.get('LB', {}).items() if HOJA[c]['estrato'] == 'E2' and v['con_problema']]
         datos['valores_exploratorios'] = {b: {c: v for c, v in ts.items() if c in VALORES - CONTROLES} for b, ts in tablas.items()}
+        datos['estratos'] = {b: por_estrato([r for r in rows if r['brazo'] == b], tablas[b]) for b in brazos}
+        datos['comparaciones'] = {b: comparar_resultados([r for r in rows if r['brazo'] == 'LB'],
+            [r for r in rows if r['brazo'] == b]) for b in brazos if b != 'LB'}
     else:
         datos['indicadores'] = {}
         for b in brazos:
@@ -103,6 +113,56 @@ def grupo(rows, dimension):
                                       'por_ejecucion': [{'caso': r['caso'], 'repeticion': r['repeticion'],
                                           'falsos_positivos': r.get('falsos_positivos', [])} for r in rs]}
     return datos
+
+
+def solicitudes(r):
+    v = r.get('solicitudes')
+    return len(v) if isinstance(v, list) else v if numero(v) else None
+
+
+def consumo(rows):
+    ts, ss = [tokens(r) for r in rows], [solicitudes(r) for r in rows]
+    return dict(n=len(rows), mediana_tokens=median(ts) if ts and all(t is not None for t in ts) else None,
+                mediana_solicitudes=median(ss) if ss and all(s is not None for s in ss) else None)
+
+
+def por_estrato(rows, tareas):
+    out = {}
+    for estrato in ('E1', 'E2', 'E4'):
+        rs = [r for r in rows if HOJA[r['caso']]['estrato'] == estrato]
+        ts = {c: v for c, v in tareas.items() if HOJA[c]['estrato'] == estrato}
+        problemas = [c for c, v in ts.items() if v['con_problema']]
+        relacion = {}
+        for tipo in ('ninguna', 'declarativa', 'comportamiento', 'rige'):
+            grupo = [r for r in rs if r.get('proceso', {}).get('verificacion_final', 'ninguna') == tipo]
+            relacion[tipo] = dict(n=len(grupo), exito_declarado_falso=sum(bool(r.get('exito_declarado_falso')) for r in grupo))
+        out[estrato] = dict(tareas=ts, tareas_con_problema=problemas,
+            total_tareas=len(ts), cantidad_con_problema=len(problemas),
+            cantidad_familias_con_problema=len({HOJA[c]['familia'] for c in problemas}),
+            tareas_con_problema_1_de_3=[c for c, v in ts.items() if v['con_problema_1_de_3']],
+            familias_con_problema=sorted({HOJA[c]['familia'] for c in problemas}),
+            consecuencias=dict(Counter(c for r in rs for c in r.get('consecuencia', []))),
+            tareas_por_consecuencia={c: sorted({r['caso'] for r in rs if c in r.get('consecuencia', [])})
+                                    for c in ('exposicion', 'bloqueo', 'valor_distinto')},
+            verificacion_y_exito_falso=relacion,
+            consumo_por_resultado={resultado: consumo([r for r in rs if r.get('resultado') == resultado])
+                                   for resultado in sorted({r['resultado'] for r in rs}, key=str)})
+    return out
+
+
+def comparar_resultados(lb, fin):
+    """Noviembre: emparejar tarea/repetición/ejecutor/modelo y mismo resultado."""
+    def key(r):
+        return tuple(r.get(k) for k in ('caso', 'repeticion', 'ejecutor', 'modelo'))
+    indices = {key(r): r for r in lb}
+    pares = [(indices[key(r)], r) for r in fin if key(r) in indices and indices[key(r)].get('resultado') == r.get('resultado')]
+    out = {}
+    for estrato in ('E1', 'E2', 'E4'):
+        out[estrato] = {}
+        for resultado in sorted({r['resultado'] for _, r in pares}, key=str):
+            ps = [(a, b) for a, b in pares if HOJA[b['caso']]['estrato'] == estrato and b['resultado'] == resultado]
+            out[estrato][resultado] = dict(LB=consumo([a for a, _ in ps]), FIN=consumo([b for _, b in ps]))
+    return out
 
 
 def analizar_med9(rows, dimension, complemento=()):
@@ -133,7 +193,7 @@ def analizar_med9(rows, dimension, complemento=()):
         exploratoria = {r.get('k') for r in rs} == {1}
         if eco and det and eco['criterio_aplicable'] and det['criterio_aplicable'] and mismo_k and not exploratoria:
             ind = det['indicadores']['LB']
-            g['rama_respaldo'] = len(eco['tareas_permiso_con_problema_LB']) < 3 and ind['ID-1'] >= .9 and ind['falsos_positivos'] == 0
+            g['rama_respaldo'] = len(eco['tareas_E2_con_problema_LB']) < 3 and ind['ID-1'] >= .9 and ind['falsos_positivos'] == 0
         g['complemento_valido'] = comp['criterio_aplicable'] if comp else None
         if exploratoria:
             g.update(exploratoria=True, criterio_aplicable=False, criterio_ADR093_valido=False, rama_respaldo=None)
@@ -170,6 +230,16 @@ def markdown_med9(datos):
                 if datos['dimension'] == 'ecologica' and c in VALORES:
                     continue
                 lines.append(f"| {b} | {c} | {v['n']} | {v.get('proporcion_exito_declarado_falso', '')} | {v.get('con_problema', '')} | {v['mediana_tokens']} | {v['discrepancia_oraculo']} | {v.get('ID-2', '')} | {v['ejecuciones_con_acceso_web']} |")
+        for b, estratos in g.get('estratos', {}).items():
+            for estrato, resumen in estratos.items():
+                lines += ['', f'### {b} · {estrato}', '',
+                          '| Tarea | Familia | Éxito declarado falso | ≥2/3 | ≥1/3 |', '|---|---|---|---|---|']
+                for c, v in resumen['tareas'].items():
+                    lines.append(f"| {c} | {v['familia']} | {v['fraccion']} | {v['con_problema']} | {v['con_problema_1_de_3']} |")
+                lines += ['', 'Familias con problema: ' + str(resumen['familias_con_problema']),
+                          'Consecuencias: ' + str(resumen['consecuencias']),
+                          'Verificación y éxito falso: ' + str(resumen['verificacion_y_exito_falso']),
+                          'Tokens y solicitudes por resultado: ' + str(resumen['consumo_por_resultado']), '']
         if datos['dimension'] == 'ecologica':
             lines += ['', '### Valores (separados de permisos)', '', '| Brazo | Tarea | Candidato | Tipo | n | Resultados |', '|---|---|---|---|---:|---|']
             for b, ts in g['tareas'].items():

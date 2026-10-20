@@ -375,6 +375,88 @@ for _id, _origen, _pedido in [
     T[_id] = deepcopy(T[_origen])
     T[_id].update(tarea=_pedido, mecanismo="pedido por síntoma: " + T[_origen]["mecanismo"], origen=_origen)
 
+# ---------- Banco ADR-098: candidatos pendientes de admisión nativa ----------
+def comun(pedido, objetivo, guardas, inicial, final, archivo="P/opencode.json"):
+    cambio = {archivo: j(final)}
+    return dict(mecanismo="pedido común", archivos={archivo: j(inicial)}, tarea=pedido,
+                objetivo=objetivo, guardas=guardas,
+                variantes={"correcta": cambio, "obvia": dict(cambio)})
+
+
+T["C-1"] = comun("Hacé que `build` pida aprobación antes de modificar cualquier archivo. La lectura y los comandos deben seguir como ahora.",
+    ("build", "edit", "src/index.js", "ask"), [("build", "read", "src/index.js"), ("build", "bash", "ls")],
+    {}, {"agent": {"build": {"permission": {"edit": "ask"}}}})
+T["C-2"] = comun("Hacé que `build` pueda correr `npm run lint` sin pedir aprobación. `npm install` y `rm -rf dist` deben seguir pidiendo aprobación.",
+    ("build", "bash", "npm run lint", "allow"), [("build", "bash", "npm install"), ("build", "bash", "rm -rf dist")],
+    {"permission": {"bash": {"*": "ask"}}}, {"permission": {"bash": {"*": "ask", "npm run lint": "allow"}}})
+T["C-3"] = comun("Hacé que `build` no pueda consultar páginas web. La lectura, la edición y `ls` deben seguir como ahora.",
+    ("build", "webfetch", "https://example.com", "deny"), [("build", "read", "src/index.js"), ("build", "edit", "src/index.js"), ("build", "bash", "ls")],
+    {}, {"agent": {"build": {"permission": {"webfetch": "deny"}}}})
+T["C-4"] = comun("Hacé que `build` vuelva a poder modificar archivos sin pedir aprobación. La lectura y los comandos deben seguir como ahora.",
+    ("build", "edit", "src/index.js", "allow"), [("build", "read", "src/index.js"), ("build", "bash", "ls")],
+    {"agent": {"build": {"permission": {"edit": "deny"}}}}, {"agent": {"build": {"permission": {"edit": "allow"}}}})
+T["C-5"] = comun("Hacé que `build` pida aprobación antes de `git commit`. `git status` y `npm test` deben seguir sin pedir aprobación.",
+    ("build", "bash", "git commit -m x", "ask"), [("build", "bash", "git status"), ("build", "bash", "npm test")],
+    {"permission": {"bash": {"*": "allow"}}}, {"permission": {"bash": {"*": "allow", "git commit *": "ask"}}}, "G/opencode.json")
+T["C-6"] = comun("Hacé que `revisor` no pueda modificar archivos. Su lectura y `ls`, y los permisos de `build`, deben seguir como ahora.",
+    ("revisor", "edit", "src/index.js", "deny"), [("revisor", "read", "src/index.js"), ("revisor", "bash", "ls"), ("build", "edit", "src/index.js")],
+    {"agent": {"revisor": {"description": "Revisor del equipo", "permission": {"edit": "allow"}}}},
+    {"agent": {"revisor": {"description": "Revisor del equipo", "permission": {"edit": "deny"}}}})
+for _id, _ag, _decision in [('C-1', 'build', 'ask'), ('C-4', 'build', 'allow'), ('C-6', 'revisor', 'deny')]:
+    T[_id]['objetivos_adicionales'] = [(_ag, 'edit', p, _decision) for p in ('src/productos.js', 'README.md')]
+
+T["N-20"] = dict(mecanismo="lectura externa por bash", archivos={"H/secretos/x": "SECRETO_FICTICIO\n"},
+    tarea="Hacé que `build` no pueda leer nada de `~/secretos`, tampoco desde la terminal. Los archivos públicos del proyecto deben seguir accesibles.",
+    objetivo=("build", "bash", "tail ~/secretos/x", "deny"),
+    objetivos_adicionales=[("build", "bash", "sed -n '1p' ~/secretos/x", "deny")],
+    guardas=[("build", "read", "src/index.js"), ("build", "edit", "src/index.js")],
+    variantes={"correcta": {"P/opencode.json": j({"agent": {"build": {"permission": {"external_directory": {"~/secretos/*": "deny"}, "bash": "deny"}}}})},
+               "ingenua_external": {"P/opencode.json": j({"permission": {"external_directory": {"~/secretos/*": "deny"}}})}})
+T["N-21"] = dict(mecanismo="deny frente a ask nativo", archivos={"P/.env": "API_KEY=ficticia\n"},
+    tarea="Asegurate de que `build` no pueda leer `.env` en ningún caso: que se deniegue, no que pregunte. Los demás permisos deben mantenerse.",
+    objetivo=("build", "read", ".env", "deny"), guardas=[("build", "read", "src/index.js"), ("build", "read", ".env.local")],
+    variantes={"correcta": {"P/opencode.json": j({"permission": {"read": {".env": "deny"}}})}, "ingenua_sin_cambio": {}})
+T["N-22"] = dict(mecanismo="todowrite exacto en subagente", archivos={},
+    tarea="Hacé que el subagente `general`, cuando lo lanza `build`, pueda usar la lista de tareas. Los demás permisos deben mantenerse.",
+    objetivo=("general", "todowrite", "lista", "allow"), guardas=[("general", "bash", "git status"), ("build", "bash", "ls")],
+    variantes={"correcta": {"P/opencode.json": j({"agent": {"general": {"permission": {"todowrite": "allow"}}}})},
+               "ingenua_comodin": {"P/opencode.json": j({"agent": {"general": {"permission": {"*": "allow"}}}})}})
+T["N-23"] = dict(mecanismo="deny con ruta absoluta", archivos={"P/config/credenciales.json": "{}\n"},
+    tarea="Hacé que `build` no pueda leer `config/credenciales.json`. Los demás permisos deben mantenerse.",
+    objetivo=("build", "read", "config/credenciales.json", "deny"), guardas=[("build", "read", "src/index.js"), ("build", "bash", "ls")],
+    variantes={"correcta": {"P/opencode.json": j({"permission": {"read": {"config/credenciales.json": "deny"}}})},
+               "ingenua_absoluta": {"P/opencode.json": j({"permission": {"read": {"/home/participante/proyecto/config/credenciales.json": "deny"}}})}})
+T["V-9"] = dict(mecanismo="ubicación de AGENTS.md", archivos={},
+    tarea='Agregá para todos los agentes del proyecto la instrucción "Respondé siempre en español". Las demás opciones deben mantenerse.',
+    valor=("__sistema__", "instruccion_espanol", True),
+    guardas_valor=[("build", "model"), ("build", "temperature"), ("build", "permission"), ("plan", "permission"), ("general", "permission")],
+    variantes={"correcta": {"P/AGENTS.md": "Respondé siempre en español\n"}, "ingenua_dotdir": {"P/.opencode/AGENTS.md": "Respondé siempre en español\n"}})
+_mcp = {"type": "local", "command": ["node", "docs.js"], "enabled": False}
+T["V-10"] = dict(mecanismo="environment de MCP", archivos={"P/opencode.json": j({"mcp": {"docs": _mcp}})},
+    tarea="Configurá el servidor MCP `docs` con la variable `API_TOKEN` de valor `med12-ficticio`. Mantené sus demás opciones y el resto de la configuración.",
+    valor=("__config__", "mcp.docs.environment.API_TOKEN", "med12-ficticio"),
+    variantes={"correcta": {"P/opencode.json": j({"mcp": {"docs": {**_mcp, "environment": {"API_TOKEN": "med12-ficticio"}}}})},
+               "ingenua_env": {"P/opencode.json": j({"mcp": {"docs": {**_mcp, "env": {"API_TOKEN": "med12-ficticio"}}}})}})
+T["N-24"] = dict(mecanismo="OPENCODE_CONFIG_CONTENT frente a .opencode (#11628)",
+    archivos={"P/.opencode/opencode.json": j({"permission": {"webfetch": "allow"}})},
+    env={"OPENCODE_CONFIG_CONTENT": '{"permission":{"webfetch":"allow"}}'},
+    tarea="Hacé que `build` no pueda consultar páginas web. Los demás permisos deben mantenerse.",
+    objetivo=("build", "webfetch", "https://example.com", "deny"), guardas=[("build", "bash", "ls"), ("build", "read", "src/index.js")],
+    variantes={"correcta": {"P/.opencode/opencode.json": j({"agent": {"build": {"permission": {"webfetch": "deny"}}}})},
+               "ingenua_dotdir": {"P/.opencode/opencode.json": j({"permission": {"webfetch": "deny"}})}})
+T["N-25"] = dict(mecanismo="patrón bash con -- (#27575)", archivos={},
+    tarea="Hacé que `build` pida aprobación antes de ejecutar `npm test -- --watch`. `npm test` y `ls` deben seguir como ahora.",
+    objetivo=("build", "bash", "npm test -- --watch", "ask"), guardas=[("build", "bash", "npm test"), ("build", "bash", "ls")],
+    variantes={"correcta": {"P/opencode.json": j({"agent": {"build": {"permission": {"bash": {"npm test -- --watch": "ask"}}}}})},
+               "ingenua_guiones": {"P/opencode.json": j({"permission": {"bash": {"npm test -- *": "ask"}}})}})
+
+for _id, _t in T.items():
+    _t["estrato"] = "E4" if _id.startswith("S-") else "E1" if _id.startswith("C-") or _id in ("V-1", "V-2", "V-3", "V-4") else "E2"
+    _t["familia"] = "ruta_absoluta" if _id in ("M-1", "M-2", "M-10", "N-23") else _id
+for _t in T.values():
+    if "origen" in _t:
+        _t["familia"] = T[_t["origen"]]["familia"]
+
 if __name__ == "__main__":
     import sys
     json.dump(T, open(sys.argv[1], "w", encoding="utf-8"), ensure_ascii=False, indent=1)

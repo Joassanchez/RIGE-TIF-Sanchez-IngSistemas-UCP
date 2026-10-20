@@ -1,6 +1,6 @@
 # ADR-093 — Objetivo general y criterio de éxito derivado de las líneas de base de modificación y de detección; tokens como criterio secundario; rama de respaldo preregistrada
 
-- Estado: aceptado (14/10/2026)
+- Estado: aceptado (14/10/2026); §1 (tarea con problema en 2 de 3) y §4 (tokens comparados por resultado) modificados por ADR-098 (19/10/2026)
 - Fecha: 14/10/2026
 - **Se decide después de conocer los resultados de atribución y antes de medir las dimensiones de ADR-091 y ADR-092.**
 - Capítulos afectados: Cap. I (I.2.3, I.2.4, OE-4, I.3.4); Anexo III (D-41)

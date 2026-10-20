@@ -1,0 +1,30 @@
+{
+  "fecha_utc": "2026-10-20T00:12:51.590673+00:00",
+  "evidencia": "pruebas locales con fixtures; no admision nativa",
+  "suites": [
+    {
+      "comando": "python -B -m unittest discover -s herramientas -p \"test*.py\"",
+      "codigo": 0,
+      "pruebas": 212,
+      "omitidas": 0
+    },
+    {
+      "comando": "python -B -m unittest discover -s vm/simulado -p \"test*.py\"",
+      "codigo": 0,
+      "pruebas": 57,
+      "omitidas": 1
+    }
+  ],
+  "bash_n": {
+    "codigo": 0,
+    "scripts": [
+      "vm/caso.sh",
+      "vm/contenedor.sh",
+      "vm/instalar.sh",
+      "vm/medir.sh",
+      "vm/permisos.sh",
+      "vm/verificar.sh"
+    ]
+  },
+  "hashes_verificados": true
+}

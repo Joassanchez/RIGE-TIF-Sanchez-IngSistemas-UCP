@@ -1,6 +1,6 @@
 # ADR-097 — Línea de base de verificabilidad sobre un marco de tareas fijado antes de medir, sin selección por la falla del agente
 
-- Estado: propuesto
+- Estado: reemplazado por ADR-098 (19/10/2026), sin ejecutarse
 - Fecha: 15/10/2026
 - **Se decide después de conocer los resultados** de las tandas del 15/10/2026 (ADR-094: un solo mecanismo con problema, la ruta absoluta) y **antes de ejecutar cualquier agente sobre las tareas nuevas**. La admisión de las tareas nuevas ya se hizo en el contenedor, solo con OpenCode y sin agente.
 - Capítulos afectados: Cap. I (I.3.2); Anexo VI (A.VI.7, A.VI.8); Anexo III (D-41); diseño de la medición

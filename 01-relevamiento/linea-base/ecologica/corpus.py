@@ -79,6 +79,66 @@ for _e in E.values():
     for _i in _e["items"]:
         _i["coincide"] = {"archivo": ARCHIVO[_i["archivo"]], "clave": CLAVE[_i["id"]]}
 
+def derivar(tareas, admision=None):
+    """P-9: nunca sembrar candidatos sin una lista explícita de admisión nativa.
+
+    Cada escenario defectuoso tiene otro escenario de control independiente;
+    no se fusionan variantes, porque eso cambiaría el mecanismo admitido.
+    """
+    from copy import deepcopy
+    import re
+    out = deepcopy(E)
+    if admision is None:
+        return out
+    if not isinstance(admision.get('tareas'), dict):
+        raise ValueError('La admisión requiere tareas con resultado y motivo.')
+    for tid, dato in admision['tareas'].items():
+        if dato.get('resultado') != 'admitida':
+            continue
+        if tid not in tareas:
+            raise ValueError('Tarea admitida desconocida: ' + tid)
+        t = tareas[tid]
+        for nombre, cambios in t['variantes'].items():
+            if not nombre.startswith('ingenua_'):
+                continue
+            objetivo = t.get('objetivo')
+            evidencia = dato.get('variantes', {}).get(nombre, {})
+            if objetivo and evidencia:
+                objetivos = [objetivo, *t.get('objetivos_adicionales', [])]
+                actual = evidencia.get('estado_despues', {}).get('objetivo')
+                actual = actual if isinstance(actual, list) else [actual]
+                incumplidos = [s for s, v in zip(objetivos, actual) if s[3] != v]
+                if not incumplidos:
+                    continue  # Colateral con objetivo logrado: no es declaración sin efecto.
+                objetivo = incumplidos[0]
+            for control, variante in [(False, nombre), (True, 'correcta')]:
+                archivos = {**t['archivos'], **t['variantes'][variante]}
+                rutas = list(cambios or t['archivos'])
+                # La declaración se reconoce por archivo y clave: no se acredita
+                # una etiqueta genérica como un defecto de cualquier archivo.
+                rutas = [r for r in rutas if r.endswith(('.json', '.jsonc', '.md'))]
+                if not rutas:
+                    continue
+                clave = objetivo[1] if objetivo else t['valor'][1].split('.')[0]
+                rutas = [r for r in rutas if isinstance(archivos.get(r), str) and re.search(r'\b' + re.escape(clave) + r'\b', archivos[r])]
+                if not rutas:
+                    continue  # Sin declaración de ese eje: no inventar un defecto sembrado.
+                ruta = rutas[0]
+                if control:
+                    ruta = next((r for r in t['variantes']['correcta'] if clave in str(archivos[r])), ruta)
+                comprobacion = (('perm', *objetivo) if objetivo else ('valor', *t['valor']))
+                iid = f'{tid}-{nombre}-' + ('C' if control else 'D')
+                out[iid] = dict(archivos=archivos, env=t.get('env', {}), directorio=t.get('directorio', ''),
+                    items=[dict(id=iid, efecto=control, tipo='control admitido' if control else 'forma ingenua admitida',
+                        archivo=ruta, clave=clave, comprobacion=comprobacion,
+                        coincide=dict(archivo=ARCHIVO.get(ruta, re.escape(ruta.split('/', 1)[1]) + '$'), clave=re.escape(clave)))])
+    # Un defecto sin su control no integra el corpus.
+    for k in list(out):
+        if k not in E and k[:-1] + ('C' if k.endswith('D') else 'D') not in out:
+            out.pop(k)
+    return out
+
+
 if __name__ == "__main__":
     import sys
     json.dump(E, open(sys.argv[1], "w", encoding="utf-8"), ensure_ascii=False, indent=1)

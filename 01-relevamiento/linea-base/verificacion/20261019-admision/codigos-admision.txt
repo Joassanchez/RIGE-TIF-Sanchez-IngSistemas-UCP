@@ -1,0 +1,2 @@
+captura: 0
+evaluacion: 1

@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 import re
+import shutil
 
 import analizar_ecologica as analisis
 import corregir_ecologica as eco
@@ -18,13 +19,15 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('generador_eco', ROOT / 'herramientas/generar-ecologica.py')
 generador = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(generador)
-PUBLICO, HOJA, CORPUS = generador.generar(ROOT / 'ecologica')
+ADMISION_PATH = generador.admision_registrada(ROOT / 'ecologica')
+ADMISION = json.loads(ADMISION_PATH.read_text(encoding='utf-8')) if ADMISION_PATH else None
+PUBLICO, HOJA, CORPUS = generador.generar(ROOT / 'ecologica', ADMISION)
 ESPEC = generador.cargar(ROOT / 'ecologica/espec.py', 'espec_med9').T
 FIXTURES = ROOT / 'verificacion/20261014-tareas-ecologica/salida'
 
 
 def captura(tid, variante):
-    if tid.startswith(('N-', 'S-')) or ESPEC[tid].get('candidato'):
+    if tid.startswith(('N-', 'S-', 'C-')) or tid in ('V-9', 'V-10') or ESPEC[tid].get('candidato'):
         from test_med11_fixtures import captura_sintetica
         return captura_sintetica(tid, variante)
     return {p.stem[7:]: json.loads(p.read_text(encoding='utf-8'))
@@ -47,17 +50,23 @@ def fila(caso, dimension='ecologica', **kw):
 
 class GeneracionTests(unittest.TestCase):
     def test_determinista_cerrada_y_sin_respuestas(self):
-        self.assertEqual(len(PUBLICO['dimensiones']['ecologica']), len(ESPEC))
-        self.assertEqual(len(PUBLICO['dimensiones']['deteccion']), 3)
+        manifiesto = json.loads((ROOT / 'ecologica/exploracion.json').read_text(encoding='utf-8'))
+        self.assertEqual(set(PUBLICO['dimensiones']['ecologica']), set(manifiesto['tareas']))
+        self.assertEqual(set(PUBLICO['dimensiones']['deteccion']), set(CORPUS['casos']))
         for nombre, esperado in [('escenarios.json', PUBLICO), ('respuestas-ecologica.json', HOJA), ('respuestas-deteccion.json', CORPUS)]:
             self.assertEqual(json.loads((ROOT / 'ecologica' / nombre).read_text(encoding='utf-8')), esperado)
         for escenarios in PUBLICO['dimensiones'].values():
             for s in escenarios.values():
                 self.assertEqual(set(s), {'archivos', 'env', 'directorio', 'tarea', 'instruccion'})
         self.assertIs(HOJA['hoja_cerrada'], False)
-        self.assertEqual(HOJA['adr'], 'ADR-095')
+        self.assertEqual(HOJA['adr'], 'ADR-098')
         self.assertIs(CORPUS['hoja_cerrada'], True)
         self.assertNotIn('variantes', json.dumps(PUBLICO))
+
+    def test_sin_admision_no_siembra_ni_retira_candidatos(self):
+        publico, _, corpus = generador.generar(ROOT / 'ecologica')
+        self.assertEqual(set(publico['dimensiones']['ecologica']), set(ESPEC))
+        self.assertEqual(set(corpus['casos']), {'D-A', 'D-B', 'D-C'})
 
     def test_hashes_previos_intactos(self):
         congeladas = json.loads((ROOT / 'vm/ejecutores/congeladas.json').read_text())
@@ -88,7 +97,7 @@ class EcologicaTests(unittest.TestCase):
     def test_todas_las_variantes_capturadas(self):
         cuenta = 0
         for tid, t in ESPEC.items():
-            if tid.startswith(('N-', 'S-')) or ESPEC[tid].get('candidato'):
+            if tid.startswith(('N-', 'S-', 'C-')) or tid in ('V-9', 'V-10') or ESPEC[tid].get('candidato'):
                 continue  # Las capturas nativas históricas se mantienen congeladas.
             regla = HOJA['casos'][tid]
             base = captura(tid, 'base')
@@ -176,12 +185,15 @@ class AnalisisTests(unittest.TestCase):
     def test_umbral_problema_validez_y_respaldo(self):
         e, d = self.rows('ecologica'), self.rows('deteccion')
         e[0]['exito_declarado_falso'] = True
+        e[1]['exito_declarado_falso'] = True
         datos = analisis.analizar_med9(e, 'ecologica', d)['grupos']['principal|openai/gpt-6.1-sol']
         self.assertTrue(datos['valida'])
-        self.assertEqual(datos['tareas_permiso_con_problema_LB'], ['M-1'])
+        self.assertEqual(datos['tareas_E2_con_problema_LB'], ['M-1'])
         self.assertTrue(datos['rama_respaldo'])
         self.assertEqual(datos['tareas']['LB']['M-1']['mediana_tokens'], 150)
-        next(r for r in e if r['caso'] == 'V-4')['exito_declarado_falso'] = True
+        for r in e:
+            if r['caso'] == 'V-4':
+                r['exito_declarado_falso'] = True
         datos = analisis.analizar_med9(e, 'ecologica', d)['grupos']['principal|openai/gpt-6.1-sol']
         self.assertFalse(datos['valida'])
         self.assertIsNone(datos['rama_respaldo'])
@@ -196,7 +208,7 @@ class AnalisisTests(unittest.TestCase):
         g = analisis.analizar_med9(d, 'deteccion', e)['grupos']['principal|openai/gpt-6.1-sol']
         self.assertTrue(g['defectos']['LB']['D1']['con_problema'])
         self.assertFalse(g['rama_respaldo'])
-        self.assertAlmostEqual(g['indicadores']['LB']['ID-2'], 1/9)
+        self.assertAlmostEqual(g['indicadores']['LB']['ID-2'], 1 / len(d))
         g = analisis.analizar_med9(e[:-1], 'ecologica')['grupos']['principal|openai/gpt-6.1-sol']
         self.assertFalse(g['valida'])
         e[0]['fuera_del_arbol'] = True
@@ -217,7 +229,12 @@ class CLITests(unittest.TestCase):
             def ejecutar(*args):
                 r = subprocess.run([sys.executable, *map(str, args)], cwd=ROOT, capture_output=True, text=True)
                 self.assertEqual(r.returncode, 0, r.stderr)
-            ejecutar('herramientas/generar-ecologica.py', '--destino', root / 'hojas')
+            origen = root / 'origen'
+            origen.mkdir()
+            for nombre in ('espec.py', 'corpus.py', 'tareas.md', 'deteccion.md'):
+                shutil.copyfile(ROOT / 'ecologica' / nombre, origen / nombre)
+            opciones = ['--admitidas', ADMISION_PATH] if ADMISION_PATH else []
+            ejecutar('herramientas/generar-ecologica.py', '--origen', origen, '--destino', root / 'hojas', *opciones)
             registros = {}
             for dimension in ('ecologica', 'deteccion'):
                 rows = []
@@ -231,7 +248,7 @@ class CLITests(unittest.TestCase):
                             oracle = root / f'{caso}-{rep}-oraculo.json'
                             oracle.write_text(json.dumps(oraculo_fixture(regla, captura(caso, 'base'), captura(caso, 'correcta'))), encoding='utf-8')
                             fixtures = FIXTURES
-                            if caso.startswith(('N-', 'S-')) or ESPEC[caso].get('candidato'):
+                            if caso.startswith(('N-', 'S-', 'C-')) or caso in ('V-9', 'V-10') or ESPEC[caso].get('candidato'):
                                 fixtures = root / 'capturas-sinteticas'
                                 for variante in ('base', 'correcta'):
                                     carpeta = fixtures / caso / variante

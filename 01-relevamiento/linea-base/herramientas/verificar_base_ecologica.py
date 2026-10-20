@@ -13,8 +13,11 @@ CAPTURAS = ROOT / 'verificacion/20261014-tareas-ecologica/salida'
 
 def admision_med11(fuente, hoja, caso):
     admision = json.loads((fuente / 'admision.json').read_text(encoding='utf-8'))
-    if (admision.get('valido') is not True or admision.get('hash_espec') != hoja['hashes_fuentes']['espec.py']):
+    if (admision.get('hash_espec') != hoja['hashes_fuentes']['espec.py'] or
+            (admision.get('adr') != 'ADR-098' and admision.get('valido') is not True)):
         raise ValueError('Admisión MED-11 ausente o de otra especificación.')
+    if admision.get('adr') == 'ADR-098' and admision.get('tareas', {}).get(caso, {}).get('resultado') != 'admitida':
+        raise ValueError('Tarea sin admisión ADR-098: ' + caso)
     if not any(r.get('tarea') == caso and r.get('variante') == 'correcta' and r.get('resultado') == 'correcta'
                for r in admision.get('filas', [])):
         raise ValueError(f'Tarea sin admisión MED-11: {caso}')
@@ -35,14 +38,14 @@ def verificar(tanda, respuestas, capturas=CAPTURAS, exploracion=None):
     if set(bases) != casos:
         raise ValueError('Base incompleta o ajena a los pares seleccionados.')
     hashes_capturas = {}
-    fuente_exploracion = exploracion or ROOT / 'verificacion/20261015-exploracion/salida'
+    fuente_exploracion = exploracion or ROOT / 'verificacion/20261019-admision/salida'
     for caso in {c for c, _ in meta['orden']}:
         regla = hoja['casos'][caso]
-        if 'valor' in regla and 'candidato' in regla:
+        if ('valor' in regla and ('candidato' in regla or caso in ('V-9', 'V-10'))) or caso.startswith('C-'):
             admision_med11(fuente_exploracion, hoja, caso)
     for caso in sorted(casos):
         regla = hoja['casos'][caso]
-        fuente = capturas if caso.startswith('M-') else (exploracion or ROOT / 'verificacion/20261015-exploracion/salida')
+        fuente = capturas if caso.startswith('M-') else fuente_exploracion
         if not caso.startswith('M-'):
             admision_med11(fuente, hoja, caso)
             if regla.get('guardas_archivos'):

@@ -60,13 +60,11 @@ class PermisosTests(unittest.TestCase):
 class AislamientoTests(unittest.TestCase):
     correr = registro.RegistroTests.correr
 
-    def test_hoja_denegada_detiene_antes_de_agentes(self):
+    def test_P_2_hoja_denegada_no_es_requisito_del_brazo_base(self):
         for dimension in ('ecologica', 'deteccion'):
-            with self.subTest(dimension=dimension), self.assertRaisesRegex(ValueError, 'documentación'):
+            with self.subTest(dimension=dimension):
                 self.correr(dimension=dimension, hoja_denegada=True)
-            self.assertFalse(any('--format' in cmd for cmd, _, _ in self.comandos))
-            self.assertEqual((self.salida / 'registro.jsonl').read_text(), '')
-            self.assertTrue((self.salida / 'DETENCION.txt').is_file())
+                self.assertEqual(json.loads((self.salida / 'tanda.json').read_text())['hoja_referencia'], 'ausente')
 
     def test_deteccion_controla_inicio_y_final(self):
         _, salida, _, _ = self.correr(dimension='deteccion')
@@ -126,7 +124,7 @@ class LecturasTests(unittest.TestCase):
                 if dimension == 'ecologica':
                     self.assertIn(respuesta['tool_calls'][0]['function']['name'], ('read', 'edit'))
                 for fallo in (ASK, DENY, '', 'Error: File not found'):
-                    for indice in (0, 1):
+                    for indice in range(len(plan['lecturas'])):
                         p = proveedor()
                         copia = deepcopy(cuerpo)
                         copia['messages'][2 * indice + 1]['content'] = fallo

@@ -1,6 +1,6 @@
 # ADR-095 — Exploración de mecanismos de OpenCode con k = 1 antes de fijar la línea de base de verificabilidad
 
-- Estado: propuesto
+- Estado: reemplazado por ADR-098 (19/10/2026), sin ejecutarse
 - Fecha: 15/10/2026
 - **Se decide después de conocer los resultados** de las tandas del 15/10/2026 (ADR-094) y su objetivo declarado es encontrar mecanismos en los que un agente declara un cambio sin efecto. Es una búsqueda deliberada, no una medición de prevalencia.
 - Capítulos afectados: Anexo VI (A.VI.7, A.VI.8); diseño de la medición

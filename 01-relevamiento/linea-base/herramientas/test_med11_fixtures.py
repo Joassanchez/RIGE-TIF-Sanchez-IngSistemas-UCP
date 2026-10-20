@@ -15,7 +15,7 @@ def captura_sintetica(tid, variante):
     t = m.T[tid]
     base = json.loads((ROOT / 'verificacion/20261014-tareas-ecologica/salida/M-5/base/agente-build.json').read_text(encoding='utf-8'))
     agentes = ({s[0] for s in [t['objetivo'], *t.get('objetivos_adicionales', []), *t['guardas']]}
-               if 'objetivo' in t else {t['valor'][0]})
+               if 'objetivo' in t else {t['valor'][0], *(s[0] for s in t.get('guardas_valor', []))})
     out = {ag: deepcopy(base) for ag in agentes}
     def regla(ag, permiso, patron, accion):
         out[ag]['permission'].append(dict(permission=permiso, pattern=patron, action=accion))
@@ -25,6 +25,10 @@ def captura_sintetica(tid, variante):
             for rel in t['guardas_archivos']}
     if 'valor' in t:
         ag, campo, esperado = t['valor']
+        if tid in ('V-9', 'V-10'):
+            if tid == 'V-9':
+                return {**out, ag: {'instruccion_espanol': variante == 'correcta'}}
+            return {ag: {'mcp': {'docs': {'environment': {'API_TOKEN': esperado} if variante == 'correcta' else {}}}}}
         out[ag].update(temperature=0.2)
         if tid == 'V-5': out[ag].update(model='openai/gpt-5-mini', prompt='Documentá el inventario.')
         if tid == 'V-6': out[ag]['description'] = 'Equipo '
@@ -49,9 +53,14 @@ def captura_sintetica(tid, variante):
     if tid == 'N-7': regla('build', 'read', 'secretos.txt', 'deny')
     if tid == 'N-13': regla('build', 'write', '*', 'deny')
     if tid == 'N-14': regla('build', 'list', '*', 'deny')
-    if variante == 'correcta':
+    if tid == 'N-22': regla('general', 'todowrite', '*', 'deny')
+    if tid in ('C-2', 'C-4'):
+        regla('build', 'bash' if tid == 'C-2' else 'edit', '*', 'ask' if tid == 'C-2' else 'deny')
+    if variante in ('correcta', 'obvia'):
         for ag, perm, sujeto, accion in [t['objetivo'], *t.get('objetivos_adicionales', [])]:
             regla(ag, 'edit' if perm == 'write' else perm, sujeto, accion)
+        if tid == 'N-20':
+            regla('build', 'bash', '*', 'deny')
     elif variante == 'ingenua_amplia':
         regla(t['objetivo'][0], 'bash', '*', 'ask' if tid == 'N-1' else 'allow')
     elif variante == 'ingenua_global':

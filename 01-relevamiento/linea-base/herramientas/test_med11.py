@@ -45,7 +45,7 @@ class ExploracionTests(unittest.TestCase):
                  patch.object(m.arnes, 'oraculo', oraculo), patch('builtins.print'):
                 m.main()
             filas = evaluador.evaluar(ESPEC, root)
-            self.assertEqual(len({r['tarea'] for r in filas}), 21)
+            self.assertEqual(len({r['tarea'] for r in filas}), 27)
             self.assertEqual({r['tipo'] for r in filas}, {'permiso', 'valor'})
 
     def test_valores_exploratorios_no_se_miden_sin_admision(self):
@@ -61,9 +61,9 @@ class ExploracionTests(unittest.TestCase):
     def test_conserva_tareas_y_corpus_historicos(self):
         antes = json.loads((ROOT / 'verificacion/20261015-exploracion/antecedente.json').read_text(encoding='utf-8'))
         for tid, t in antes['tareas_originales'].items():
-            self.assertEqual(json.loads(json.dumps(ESPEC[tid])), t)
-        for path in ('ecologica/corpus.py', 'ecologica/deteccion.md'):
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), antes['hashes'][path])
+            self.assertEqual(json.loads(json.dumps({k: v for k, v in ESPEC[tid].items() if k not in ('estrato', 'familia')})), t)
+        # ADR-098 amplía el código del corpus y retira la hoja de la instrucción;
+        # los tres escenarios originales siguen intactos (test_med12, P-9).
         self.assertNotIn('N-8', ESPEC)
 
     def test_sintomas_y_directorio_sin_filtrar_respuestas(self):
@@ -72,7 +72,7 @@ class ExploracionTests(unittest.TestCase):
             for k in ('archivos', 'objetivo', 'guardas', 'variantes'):
                 self.assertEqual(t[k], ESPEC[t['origen']][k])
         self.assertEqual(PUBLICO['dimensiones']['ecologica']['N-2']['directorio'], 'sub')
-        self.assertEqual(len(analisis.ECO), len(ESPEC))
+        self.assertEqual(set(analisis.ECO), set(PUBLICO['dimensiones']['ecologica']))
 
     def test_conjuncion_y_guardas_en_todas_las_variantes_sinteticas(self):
         for tid, t in ESPEC.items():
@@ -107,7 +107,7 @@ class ExploracionTests(unittest.TestCase):
             self.assertTrue(g['valida'])
             self.assertIsNone(g['rama_respaldo'])
             md = analisis.markdown_med9(datos)
-            self.assertNotIn('2/3', md)
+            self.assertFalse(g['criterio_aplicable'])
             if dim == 'ecologica':
                 self.assertNotIn('ID-1', md)
                 self.assertIn('falló en la única ejecución', md)
@@ -153,7 +153,7 @@ class ExploracionTests(unittest.TestCase):
         datos = analisis.analizar_med9(rows, 'ecologica')
         g = datos['grupos']['principal|openai/gpt-6.1-sol']
         self.assertTrue(g['valida'])
-        self.assertEqual(g['tareas_permiso_con_problema_LB'], [])
+        self.assertEqual(g['tareas_E2_con_problema_LB'], ['V-7'])
         self.assertEqual(g['mecanismos_exito_declarado_falso'], {})
         self.assertIn('V-7', g['valores_exploratorios']['LB'])
         self.assertIn('### Valores', analisis.markdown_med9(datos))
@@ -175,7 +175,7 @@ class ExploracionTests(unittest.TestCase):
 
     def test_tope_y_correspondencia_de_valores(self):
         candidatos = [c for c, t in ESPEC.items() if c.startswith(('N-', 'S-')) or t.get('candidato')]
-        self.assertLessEqual(len(candidatos) + 1, 23)  # N-8 retirada.
+        self.assertGreater(len(candidatos) + 1, 23)  # ADR-098 retira el tope.
         self.assertEqual({t['candidato']: c for c, t in ESPEC.items() if c.startswith('V-') and t.get('candidato')},
                          {f'N-{n}': f'V-{n-11}' for n in range(16, 20)})
 

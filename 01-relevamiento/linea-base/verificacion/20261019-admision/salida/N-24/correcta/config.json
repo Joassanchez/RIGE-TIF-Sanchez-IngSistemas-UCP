@@ -1,0 +1,18 @@
+{
+  "agent": {
+    "build": {
+      "permission": {
+        "webfetch": "deny"
+      },
+      "options": {}
+    }
+  },
+  "mode": {},
+  "plugin": [],
+  "command": {},
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "webfetch": "allow"
+  },
+  "username": "participante"
+}

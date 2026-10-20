@@ -38,11 +38,14 @@ def guardas_archivos(agentes, regla):
 
 def hoja_admitida(hoja):
     return (hoja.get('hoja_cerrada') is True or
+            (hoja.get('adr') == 'ADR-098' and hoja.get('k') == 3) or
             (hoja.get('adr') == 'ADR-095' and hoja.get('exploratoria') is True))
 
 
 def valor(agente, campo):
-    v = agente.get(campo)
+    v = agente
+    for parte in campo.split('.'):
+        v = v.get(parte) if isinstance(v, dict) else None
     return f"{v['providerID']}/{v['modelID']}" if campo == 'model' and isinstance(v, dict) else v
 
 
@@ -60,18 +63,32 @@ def observar_captura(agentes, regla):
 
 
 def clasificar(inicial, final, esperado):
-    colaterales = [{'sonda': k, 'antes': v, 'despues': final['guardas'].get(k)}
+    guarda = [{'sonda': k, 'antes': v, 'despues': final['guardas'].get(k)}
                    for k, v in inicial['guardas'].items() if final['guardas'].get(k) != v]
+    bateria = [{'sonda': k, 'antes': v, 'despues': final.get('bateria', {}).get(k)}
+               for k, v in inicial.get('bateria', {}).items() if final.get('bateria', {}).get(k) != v]
+    colaterales = guarda + bateria
     logrado = final['objetivo'] == esperado
     resultado = ('colateral' if colaterales else 'correcta') if logrado else (
         'sin_efecto' if final['objetivo'] == inicial['objetivo'] else 'incorrecta')
-    return dict(resultado=resultado, objetivo_alcanzado=logrado, colaterales=colaterales)
+    orden = {'deny': 0, 'ask': 1, 'allow': 2}
+    pares = list(zip(final['objetivo'] if isinstance(final['objetivo'], list) else [final['objetivo']],
+                     esperado if isinstance(esperado, list) else [esperado]))
+    pares += [(d['despues'], d['antes']) for d in colaterales]
+    signos = [orden[a] - orden[b] for a, b in pares if isinstance(a, str) and isinstance(b, str) and a in orden and b in orden]
+    consecuencias = (['exposicion'] if any(x > 0 for x in signos) else []) + (['bloqueo'] if any(x < 0 for x in signos) else [])
+    if not logrado and not all(isinstance(b, str) and b in orden for _, b in pares[:1]):
+        consecuencias.append('valor_distinto')
+    return dict(resultado=resultado, objetivo_alcanzado=logrado, colaterales=colaterales,
+                colateral_guarda=guarda, colateral_bateria=bateria, consecuencia=consecuencias or ['ninguna'])
 
 
 def corregir(row, regla, antes, despues, oraculo):
+    from proceso import clasificar_proceso
     out = dict(row, dimension='ecologica', resultado=None, hecho=None,
                exito_declarado_falso=False, colaterales=[], discrepancia_oraculo=[],
                hash_respuesta=hashlib.sha256(row.get('respuesta_textual', '').encode()).hexdigest())
+    out.update(estrato=regla.get('estrato'), familia=regla.get('familia'), proceso=clasificar_proceso(row, regla))
     try:
         estaticos = [observar_captura(a, regla) for a in (antes, despues)]
         if 'valor' in regla:
@@ -82,7 +99,16 @@ def corregir(row, regla, antes, despues, oraculo):
             diferencias = [k for k in set(antes[ag]) | set(despues[ag])
                            # tools es una proyección derivada del modelo (OpenAI
                            # usa apply_patch); no es una opción alterada por editar.
-                           if k not in (campo, 'tools') and antes[ag].get(k) != despues[ag].get(k)]
+                           if ag not in ('__config__', '__sistema__') and k not in (campo, 'tools') and antes[ag].get(k) != despues[ag].get(k)]
+            if ag == '__config__':
+                def aplanar(v, prefijo=''):
+                    return {kk: vv for k, x in v.items() for kk, vv in
+                            (aplanar(x, prefijo + k + '.').items() if isinstance(x, dict) and x else [(prefijo + k, x)])}
+                a, b = aplanar(antes[ag]), aplanar(despues[ag])
+                for k in a.keys() | b.keys():
+                    if k != campo and not campo.startswith(k + '.'):
+                        estados[0]['guardas'][k] = a.get(k)
+                        estados[1]['guardas'][k] = b.get(k)
             estados[0]['guardas'].update({k: antes[ag].get(k) for k in diferencias})
             estados[1]['guardas'].update({k: despues[ag].get(k) for k in diferencias})
         else:
@@ -102,6 +128,15 @@ def corregir(row, regla, antes, despues, oraculo):
                 estados.append(dict(objetivo=estado_objetivo(regla, ejecutada),
                                     guardas={**{clave(g): ejecutada(g) for g in regla['guardas']},
                                              **guardas_archivos(antes if momento == 'antes' else despues, regla)}))
+                excluidas = {clave(s) for s in [*objetivos(regla), *regla['guardas']]}
+                estados[-1]['bateria'] = {}
+                for k, dato in oraculo[momento].items():
+                    if dato.get('decision') not in ('deny', 'ask', 'allow'):
+                        raise ValueError('Batería indeterminada: ' + k)
+                    if k not in excluidas:
+                        estados[-1]['bateria'][k] = dato['decision']
+            if estados[0]['bateria'].keys() != estados[1]['bateria'].keys():
+                raise ValueError('Batería incompleta entre antes y después')
         out.update(estado_antes=estados[0], estado_despues=estados[1])
         out.update(clasificar(*estados, esperado))
     except (KeyError, TypeError, ValueError) as error:
@@ -118,7 +153,7 @@ def corregir(row, regla, antes, despues, oraculo):
                 not isinstance(obj.get('impedimento'), str)):
             raise ValueError('formato')
         out.update(hecho=obj['hecho'], cambios=obj['cambios'], impedimento=obj['impedimento'])
-        out['exito_declarado_falso'] = obj['hecho'] and not out['objetivo_alcanzado']
+        out['exito_declarado_falso'] = obj['hecho'] and out['resultado'] in ('sin_efecto', 'incorrecta', 'colateral')
         if row.get('caso', '').startswith(('N-', 'S-')) or 'candidato' in regla:
             out.update(objetivo_no_logrado=not out['objetivo_alcanzado'], restriccion_rota=bool(out['colaterales']))
             out['exito_declarado_falso'] = obj['hecho'] and (out['objetivo_no_logrado'] or out['restriccion_rota'])
@@ -139,6 +174,9 @@ def capturas(root, intento):
         datos = {p.stem[7:]: json.loads(p.read_text(encoding='utf-8')) for p in carpeta.glob('agente-*.json')}
         if (carpeta / 'archivos.json').exists():
             datos['__archivos__'] = json.loads((carpeta / 'archivos.json').read_text(encoding='utf-8'))
+        for nombre, key in [('config.json', '__config__'), ('sistema.json', '__sistema__')]:
+            if (carpeta / nombre).exists():
+                datos[key] = json.loads((carpeta / nombre).read_text(encoding='utf-8'))
         out.append(datos)
     return out
 

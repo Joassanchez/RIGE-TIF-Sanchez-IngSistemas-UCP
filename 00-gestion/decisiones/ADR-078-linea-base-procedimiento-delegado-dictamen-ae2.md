@@ -1,6 +1,6 @@
 # ADR-078 — Línea de base sobre el procedimiento delegado: fundamento ante el dictamen de la AE2, tratamiento de los datos del AE1, indicadores y condición de la skill nativa
 
-- Estado: aceptado (09/10/2026); precisado por ADR-079 (13/10/2026: criterio principal por ramas; los tokens pasan a principal solo en la rama C; condición 4 solo en la rama N). La consulta previa al docente no se realizó: el 13/10/2026 el autor decidió medir sin esperarla y el 14/10/2026, no consultar
+- Estado: aceptado (09/10/2026); precisado por ADR-079 (13/10/2026: criterio principal por ramas; los tokens pasan a principal solo en la rama C; condición 4 solo en la rama N). La consulta previa al docente no se realizó: el 13/10/2026 el autor decidió medir sin esperarla y el 14/10/2026, no consultar; condición del brazo base (sin hoja de referencia) modificada por ADR-098 (19/10/2026)
 - Fecha: 09/10/2026
 - Capítulos afectados: Cap. I (I.3.1, I.3.2, I.3.4, I.6.5 y nota sobre el estado de la entrega); Cap. II (II.1, II.2, II.3, II.6.3); Cap. IV (IV.3, IV.4); Anexo VI (A.VI.1, A.VI.6, A.VI.8); Anexo III (D-41)
 - Origen: dictamen DEV-AE2 N.º 14/2026 (apartados 7, 10 y 14; Bloque A, pregunta 1) y sesión del 09/10/2026 con el autor

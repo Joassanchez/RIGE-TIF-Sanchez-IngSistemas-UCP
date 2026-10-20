@@ -1,7 +1,8 @@
 {
-  "adr": "ADR-095",
-  "estado": "pendiente de admisión nativa",
-  "k": 1,
+  "adr": "ADR-098",
+  "estado": "abierto hasta la admisión nativa",
+  "hoja_cerrada": false,
+  "k": 3,
   "tareas": [
     "M-1",
     "M-2",
@@ -37,10 +38,24 @@
     "V-8",
     "S-1",
     "S-2",
-    "S-3"
+    "S-3",
+    "C-1",
+    "C-2",
+    "C-3",
+    "C-4",
+    "C-5",
+    "C-6",
+    "N-21",
+    "N-23",
+    "V-9",
+    "V-10",
+    "N-24"
   ],
   "retiradas": {
-    "N-8": "Sin inicializador determinista verificado de aprobaciones persistidas en el esquema archivos/env."
+    "N-8": "Sin inicializador determinista verificado de aprobaciones persistidas en el esquema archivos/env.",
+    "N-20": "correcta: no reproduce el contraste requerido",
+    "N-22": "ingenua_comodin: no reproduce el contraste requerido",
+    "N-25": "ingenua_guiones: no reproduce el contraste requerido"
   },
   "valores": {
     "N-16": "V-5",
@@ -48,7 +63,6 @@
     "N-18": "V-7",
     "N-19": "V-8"
   },
-  "tope_candidatos": 23,
   "candidatos_activos": [
     "N-1",
     "N-2",
@@ -70,17 +84,21 @@
     "V-8",
     "S-1",
     "S-2",
-    "S-3"
+    "S-3",
+    "N-21",
+    "N-23",
+    "N-24"
   ],
   "hashes_fuentes": {
-    "espec.py": "a40367706dd4b171f80c9172f95502ce353ebeefc4e9747dac29d20a8c71f8e7",
-    "corpus.py": "8685f07065fe1247ef4377b6ebe5fde06db1fb19d2d81a5a36c17ee3964c8d06",
-    "tareas.md": "c08c65dd4ca41256b2434c4bd784c37577786e15486c5bfd950d9eb168f4379a",
-    "deteccion.md": "5e21b582d3d5f51b3a9262c2bdde710c798eacbfa97823a07a4536c8e3655da1"
+    "espec.py": "4c04b6d241a0172c2236db8a76d64ca175b21bd15f3e9fa79a3e1b821f376572",
+    "corpus.py": "af6e8ac0af9de2285826e1dc10c4e2a3a39e45999e3109d3b20abb20e30965c2",
+    "tareas.md": "969a3ce02f86318b49292f6410c46e6bec270bb3e4cf15231eafde36bea4f559",
+    "deteccion.md": "6bd6e660c2b4f107e4e83675f7ec5eb8a69f7b46f02368d6a22093794a8c671c"
   },
   "hashes_generados": {
-    "escenarios.json": "08e345d61395f86b381e26760e012ffb05f7ce0a104f89c06f980dd03adf40a9",
-    "respuestas-ecologica.json": "94b0a633a478bc2a636a9938e6ae9b21945498e87073fbee3d034a5e40d16c85",
-    "respuestas-deteccion.json": "4833d33ccf44cdb6debbae60c8967afdee6ae936a16378f7755a4876e5cd1a7a"
-  }
+    "escenarios.json": "776fb41f8ff05fc880a225361111ec6f97fd99d14799bffe3bf767bef4d0d0f9",
+    "respuestas-ecologica.json": "20e824f0d7e8e74e149c0e3d8c325815d9d5909568b879b55272690aca0b1412",
+    "respuestas-deteccion.json": "e8c12b95a5507baa03b889cb5f86ff12c028cf2db25ab777c85307d8fdea9041"
+  },
+  "hash_admision": "7604913a3ddfd056e76398f17133c6a6cc1399f22a8f6dcdee2dc151919a376b"
 }
