@@ -81,10 +81,16 @@ destino vacío distinto. No mezclar resultados de ensayo con datos reales.
 
 Antes de ejecutar, cargar `OPENCODE_AUTH_JSON` en el entorno con el objeto de
 autenticación del evaluador que contiene el proveedor `openai`. No escribirlo
-en comandos, archivos del repositorio ni registros. El participante no recibe
-esa credencial. Las tandas usan `build` o `[AUX] Charles`, modelo
+en comandos, archivos del repositorio ni registros. En la tanda real, el
+participante recibe la misma credencial para las sesiones anidadas (ADR-098).
+En ensayo no debe haber `OPENCODE_AUTH_JSON`; se usa el proveedor simulado.
+Las tandas usan `build` o `[AUX] Charles`, modelo
 `openai/gpt-6.1-sol`, k = 3, límite de **ejecución del agente** de 600 s y semilla
 20261015. La preparación y las sondas del oráculo quedan fuera del cronómetro.
+El banco vigente tiene 46 casos ecológicos (138 pares con k = 3), 11 de
+detección (33 pares) y 10 M de contraste fuera del árbol (30 pares).
+Para ejecutar en paralelo, usar los comandos de «Las seis tandas en cuatro
+contenedores», incluido el ensayo final por ese mismo lanzador.
 
 ```bash
 for dimension in ecologica deteccion; do
@@ -478,28 +484,54 @@ for ejecutor in principal charles; do
 done
 ```
 
-`herramientas/medir-med9c-paralelo.sh` selecciona los casos ecol?gicos en
-cuatro grupos disjuntos y usa `--casos` en cada contenedor. En detecci?n (tres
-casos), los primeros tres contenedores toman las repeticiones 1 y 2 de D-A,
-D-B y D-C respectivamente; el cuarto toma la repetici?n 3 de cada caso mediante
-`--pares`. Corrige cada fragmento y ejecuta `unir.py` antes de terminar.
+`herramientas/medir-med9c-paralelo.sh` baraja los casos con
+`random.Random(20261015)` y los reparte por turnos en `min(4, número de casos)`
+partes disjuntas, tanto en ecológica como en detección y contraste. Cada
+contenedor recibe solo `--casos`, sin `--pares`. En ecológica son dos partes
+de 12 casos y dos de 11; en detección, tres de 3 y una de 2; en contraste,
+dos de 3 y dos de 2. Corrige cada fragmento y ejecuta `unir.py` antes de terminar.
 
 Cada llamada lanza cuatro contenedores y espera a los cuatro antes de la
 siguiente tanda: seis tandas lógicas, 24 fragmentos, máximo cuatro contenedores
 simultáneos. Los fragmentos comparten nombre lógico, semilla y parámetros; las
-selecciones `--casos`/`--pares` quedan en sus propios manifiestos. No se usa
-`--pares` en ecológica: cada tarea paga su base en un solo fragmento. El orden
-se baraja dentro de cada fragmento con la semilla indicada; la concurrencia no
-define un orden global de ejecución.
+selecciones `--casos` quedan en sus propios manifiestos. Antes de lanzar el
+primer contenedor se escribe `<evidencia>/<tanda>/reparto.json`, con `semilla`,
+`k` y `partes`: la lista de casos de p0, p1, etc., en ese orden.
+Cada tarea paga su base en un solo fragmento y sus k repeticiones quedan en
+ese contenedor. `pares()` arma casos × k y baraja esos pares con la misma
+semilla dentro de cada fragmento; la concurrencia no define un orden global.
+`--casos A,B,…` limita la selección, validada contra la dimensión del banco;
+fuera del árbol solo admite M. Con menos de cuatro casos se lanzan tantas
+partes como casos. `--ensayo` se transmite a todos los contenedores y exige
+un entorno sin `OPENCODE_AUTH_JSON`.
 
 `unir.py` reconoce las dimensiones MED-9 por `tanda.json`. Rechaza fragmentos de
 otra tanda, versión, semilla, límite, ejecutor, modelo, condición o modalidad de
 contraste; también detenciones, cierres inválidos, pares repetidos y conjuntos
-incompletos. Exige 42 pares en cada LB ecológica, 9 en detección y 30 en cada
-contraste. Conserva las filas de origen y hace absolutas las referencias de
+incompletos. Con k = 3 exige 138 pares en cada LB ecológica (46 casos), 33 en
+detección (11 casos) y 30 en cada contraste (10 M). Si el lanzador recibe
+`--casos`, pasa esa selección explícita también a `unir.py`, que exige todos
+sus casos × k, sin duplicados ni pares ajenos; sin selección sigue exigiendo
+el banco completo. Conserva las filas de origen y hace absolutas las referencias de
 evidencia para no romperlas al unir. Mantener los directorios originales: el
 manifiesto unido registra y vuelve a verificar sus fuentes. Los resultados
 parciales se corrigen antes de unirlos; no concatenar JSONL manualmente.
+
+Ensayo final (ADR-098), con destinos nuevos fuera del repositorio y la imagen
+reconstruida. El proveedor simulado se reinicia por intento y permite k = 3.
+Estos comandos recorren el mismo lanzador y unión que la tanda real:
+
+```bash
+set -euo pipefail
+unset OPENCODE_AUTH_JSON
+ENSAYO="$HOME/rige-ensayo-med14-20261020"
+bash herramientas/medir-med9c-paralelo.sh "$ENSAYO" ensayo-ecologica-principal ecologica principal \
+  --ensayo --k 3 --casos C-1,M-1,M-2,N-7,M-3,M-4,N-21,N-11,M-5,N-23,V-9,V-10,N-10,S-1
+bash herramientas/medir-med9c-paralelo.sh "$ENSAYO" ensayo-ecologica-charles ecologica charles \
+  --ensayo --k 1 --casos C-1,M-1,M-2,N-21,V-9
+bash herramientas/medir-med9c-paralelo.sh "$ENSAYO" ensayo-deteccion-principal deteccion principal --ensayo --k 1
+bash herramientas/medir-med9c-paralelo.sh "$ENSAYO" ensayo-deteccion-charles deteccion charles --ensayo --k 1
+```
 
 **Colisiones revisadas en el código:** cada proceso de `contenedor.sh` asigna
 nombre `rige-medir-$$-$RANDOM`, sin nombre fijo ni contenedor compartido; cada

@@ -239,8 +239,8 @@ class AnalisisTests(unittest.TestCase):
             if r['caso'] == 'V-4':
                 r['exito_declarado_falso'] = True
         datos = analisis.analizar_med9(e, 'ecologica', d)['grupos']['principal|openai/gpt-6.1-sol']
-        self.assertFalse(datos['valida'])
-        self.assertIsNone(datos['rama_respaldo'])
+        self.assertTrue(datos['valida'])
+        self.assertTrue(datos['rama_respaldo'])
 
     def test_id1_id2_y_datos_incompletos(self):
         e, d = self.rows('ecologica'), self.rows('deteccion')

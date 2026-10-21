@@ -184,29 +184,70 @@ def capturas(root, intento):
     return out
 
 
-def validar_tanda(root, respuestas):
-    """Una fase final ausente/fallida invalida también las filas ya escritas."""
+def buscar_control_final_sustituto(root, meta, respuestas, sustitutos):
+    """Solo una continuación validada normalmente puede cerrar una cuota."""
+    try:
+        if 'Límite de cuota persistente' not in (root / 'DETENCION.txt').read_text(encoding='utf-8'):
+            return None
+        inicio = json.loads((root / 'control-inicio/aislamiento-ejecutor.json').read_text(encoding='utf-8'))
+        if inicio.get('valido') is not True:
+            return None
+    except (OSError, ValueError, TypeError, AttributeError):
+        return None
+    campos = ('tanda', 'ejecutor', 'modelo', 'semilla', 'k', 'limite',
+              'hash_binario', 'hash_arnes', 'hash_ejecutor', 'hash_hoja',
+              'hash_escenarios', 'hash_tareas', 'hash_catalogo', 'hash_tarifas',
+              'condicion', 'brazo', 'dimension', 'fuera_del_arbol')
+    for sustituto in sustitutos:
+        sustituto = Path(sustituto)
+        try:
+            otra = json.loads((sustituto / 'tanda.json').read_text(encoding='utf-8'))
+            if otra.get('union_med9'):
+                continue
+            if any(c not in meta or c not in otra or meta[c] != otra[c] for c in campos):
+                continue
+            # Sin sustitutos: no admitir cadenas de continuaciones detenidas.
+            validar_tanda(sustituto, respuestas)
+            controles = [json.loads((sustituto / f'control-{momento}/aislamiento-ejecutor.json').read_text(encoding='utf-8'))
+                         for momento in ('inicio', 'final')]
+            if all(inicio == control for control in controles):
+                return sustituto.resolve()
+        except (KeyError, OSError, ValueError, TypeError, AttributeError):
+            continue
+    return None
+
+
+def validar_tanda(root, respuestas, controles_finales_sustitutos=(), aislamientos_sustitutos=None):
+    """Una fase final ausente/fallida exige una continuación de cuota válida."""
     path = root / 'tanda.json'
     if not path.exists():
         return None
     meta = json.loads(path.read_text(encoding='utf-8'))
     if meta.get('union_med9'):
         for fuente in meta['registros_origen']:
-            validar_tanda(Path(fuente['registro']).parent, respuestas)
+            validar_tanda(Path(fuente['registro']).parent, respuestas,
+                          controles_finales_sustitutos, aislamientos_sustitutos)
         return None
+    sustituto = None
+    if (controles_finales_sustitutos and (root / 'DETENCION.txt').exists() and
+            (meta.get('regla_acceso_web') == 'ADR-094' or meta.get('protocolo_oraculo') == 'MED-9c')):
+        sustituto = buscar_control_final_sustituto(root, meta, respuestas, controles_finales_sustitutos)
+    raices_control = (root, sustituto or root)
     if meta.get('regla_acceso_web') == 'ADR-094':
-        if (root / 'DETENCION.txt').exists() or meta.get('aislamiento_verificado') is not True:
+        if sustituto is None and ((root / 'DETENCION.txt').exists() or meta.get('aislamiento_verificado') is not True):
             raise ValueError('Tanda ADR-094 sin aislamiento inicial/final confirmado.')
-        controles = [json.loads((root / f'control-{momento}/aislamiento-ejecutor.json').read_text(encoding='utf-8'))
-                     for momento in ('inicio', 'final')]
+        controles = [json.loads((raiz / f'control-{momento}/aislamiento-ejecutor.json').read_text(encoding='utf-8'))
+                     for raiz, momento in zip(raices_control, ('inicio', 'final'))]
         if controles[0] != controles[1] or any(c.get('valido') is not True or c.get('edit', {}).get('valido') is not True for c in controles):
             raise ValueError('Controles ADR-094 de aislamiento distintos o inválidos.')
     if meta.get('protocolo_oraculo') != 'MED-9c':
+        if sustituto is not None and aislamientos_sustitutos is not None:
+            aislamientos_sustitutos[root.resolve()] = str(sustituto)
         return None
-    if (root / 'DETENCION.txt').exists() or meta.get('aislamiento_verificado') is not True:
+    if sustituto is None and ((root / 'DETENCION.txt').exists() or meta.get('aislamiento_verificado') is not True):
         raise ValueError('Tanda MED-9c sin aislamiento inicial/final confirmado.')
-    controles = [json.loads((root / f'control-{momento}/aislamiento-ejecutor.json').read_text(encoding='utf-8'))
-                 for momento in ('inicio', 'final')]
+    controles = [json.loads((raiz / f'control-{momento}/aislamiento-ejecutor.json').read_text(encoding='utf-8'))
+                 for raiz, momento in zip(raices_control, ('inicio', 'final'))]
     if controles[0] != controles[1] or any(c.get('valido') is not True for c in controles):
         raise ValueError('Controles inicial/final de aislamiento distintos o inválidos.')
     validacion = json.loads((root / 'validacion-base.json').read_text(encoding='utf-8'))
@@ -214,6 +255,8 @@ def validar_tanda(root, respuestas):
     if (validacion.get('valido') is not True or validacion.get('hash_base') != digest or
             meta.get('base_verificada') != digest or validacion.get('hash_respuestas') != hash_archivo(respuestas)):
         raise ValueError('Base sin validación externa coincidente.')
+    if sustituto is not None and aislamientos_sustitutos is not None:
+        aislamientos_sustitutos[root.resolve()] = str(sustituto)
     return json.loads((root / 'base/indice.json').read_text(encoding='utf-8'))
 
 
@@ -223,6 +266,8 @@ def main():
     p.add_argument('--respuestas', type=Path, required=True)
     p.add_argument('--salida', type=Path, required=True)
     p.add_argument('--evidencia-admision', action='append', help='Raíces ADR-098 completas; repetible o separadas por ;. También RIGE_EVIDENCIA_ADMISION.')
+    p.add_argument('--control-final-sustituto', type=Path, action='append', default=[],
+                   help='Fragmento de continuación con aislamiento final válido para una detención por cuota; repetible.')
     a = p.parse_args()
     if a.salida.resolve() == a.registro.resolve():
         p.error('No sobrescribir el registro crudo.')
@@ -230,8 +275,9 @@ def main():
     if hoja.get('dimension') != 'ecologica' or not hoja_admitida(hoja):
         p.error('Se requiere hoja cerrada o exploratoria ADR-095.')
     fallo_tanda, bases = '', None
+    aislamientos_sustitutos = {}
     try:
-        bases = validar_tanda(a.registro.parent, a.respuestas)
+        bases = validar_tanda(a.registro.parent, a.respuestas, a.control_final_sustituto, aislamientos_sustitutos)
     except (KeyError, OSError, ValueError, TypeError) as error:
         fallo_tanda = str(error)
     rows = []
@@ -248,7 +294,8 @@ def main():
         bases_fila = bases
         if row.get('_directorio_registro'):
             try:
-                bases_fila = validar_tanda(Path(row['_directorio_registro']), a.respuestas)
+                bases_fila = validar_tanda(Path(row['_directorio_registro']), a.respuestas,
+                                          a.control_final_sustituto, aislamientos_sustitutos)
             except (KeyError, OSError, ValueError, TypeError) as error:
                 fallo_tanda = str(error)
         try:
@@ -270,6 +317,10 @@ def main():
                 except (OSError, ValueError, KeyError, TypeError) as error:
                     p.error('Falta referencia correcta válida: ' + str(error))
         out = corregir(row, regla, antes, despues, oraculo, referencia)
+        if aislamientos_sustitutos:
+            origen = Path(row.get('_directorio_registro') or a.registro.parent).resolve()
+            if origen in aislamientos_sustitutos:
+                out['aislamiento_final_sustituto'] = aislamientos_sustitutos[origen]
         if procedencia:
             out['referencia_bateria'] = procedencia
         discrepancias = []

@@ -1,0 +1,67 @@
+2026-10-20T22:45:53Z Inicio de la cadena (imagen a691196f0e3e)
+2026-10-20T22:45:54Z LB-ecologica-principal: inicio
+M-4 2 incompleto= False alteradas= [] tokens= [19493, 98048, 718] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 43.76729036100005 OK
+M-8 2 incompleto= False alteradas= [] tokens= [27634, 171392, 1457] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 62.0024695230004 OK
+V-9 3 incompleto= False alteradas= [] tokens= [33881, 82432, 630] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 30.60532709600011 OK
+N-21 3 incompleto= False alteradas= [] tokens= [26118, 114048, 871] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 43.56789453499914 OK
+2026-10-20T23:48:31Z LB-ecologica-principal: parada temprana superada (4 ejecuciones)
+2026-10-21T02:31:01Z LB-ecologica-principal: 138 filas; incompletas: ninguna
+2026-10-21T02:31:01Z LB-ecologica-principal: fin
+2026-10-21T02:31:01Z Cadena completa
+2026-10-21T02:34:56Z Inicio de la cadena (imagen a691196f0e3e)
+2026-10-21T02:34:56Z LB-ecologica-charles: inicio
+M-4 2 incompleto= False alteradas= [] tokens= [63047, 62720, 449] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 37.95787924000251 OK
+M-8 2 incompleto= False alteradas= [] tokens= [38625, 310784, 1005] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 75.11999868199928 OK
+V-9 3 incompleto= False alteradas= [] tokens= [27178, 92416, 328] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 29.80347442800121 OK
+N-21 3 incompleto= False alteradas= [] tokens= [31276, 157952, 585] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 50.97243104199879 OK
+2026-10-21T03:35:30Z LB-ecologica-charles: parada temprana superada (4 ejecuciones)
+2026-10-21T05:45:17Z LB-ecologica-charles: termin贸 con c贸digo 1
+/c/Users/Joa/rige-LB-20261020/LB-ecologica-charles/p0/LB-ecologica-charles/DETENCION.txt
+/c/Users/Joa/rige-LB-20261020/LB-ecologica-charles/p1/LB-ecologica-charles/DETENCION.txt
+/c/Users/Joa/rige-LB-20261020/LB-ecologica-charles/p2/LB-ecologica-charles/DETENCION.txt
+/c/Users/Joa/rige-LB-20261020/LB-ecologica-charles/p3/LB-ecologica-charles/DETENCION.txt
+2026-10-21T05:46:17Z Espera de la renovaci贸n de cuota hasta 2026-10-21T07:12:11Z
+2026-10-21T07:12:21Z LB-ecologica-charles: continuaci贸n por cuota, 22 pares
+2026-10-21T08:32:43Z LB-ecologica-charles: 138 filas, 138 pares 鷑icos; incompletas: ninguna
+2026-10-21T08:32:44Z LB-ecologica-charles: fin
+2026-10-21T08:32:44Z Inicio de la cadena (imagen a691196f0e3e)
+2026-10-21T08:32:44Z LB-deteccion-principal: inicio
+D-B 3 incompleto= False alteradas= [] tokens= [34631, 96896, 807] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 48.87352987799932 OK
+D-C 2 incompleto= False alteradas= [] tokens= [37837, 139136, 944] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 60.623134344999926 OK
+N-24-ingenua_dotdir-D 2 incompleto= False alteradas= [] tokens= [44538, 116480, 745] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 42.5608063159998 OK
+N-10-ingenua_frontmatter-C 2 incompleto= False alteradas= [] tokens= [41750, 144896, 863] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 48.609341084000334 OK
+2026-10-21T08:35:20Z LB-deteccion-principal: parada temprana superada (4 ejecuciones)
+2026-10-21T08:47:10Z LB-deteccion-principal: 33 filas; incompletas: ninguna
+2026-10-21T08:47:10Z LB-deteccion-principal: fin
+2026-10-21T08:47:10Z LB-deteccion-charles: inicio
+D-B 3 incompleto= False alteradas= [] tokens= [31326, 207104, 673] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 61.46686603800026 OK
+D-C 2 incompleto= False alteradas= [] tokens= [36747, 246912, 1118] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 68.5088111619998 OK
+N-24-ingenua_dotdir-D 2 incompleto= False alteradas= [] tokens= [29918, 166784, 764] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 62.37029602500024 OK
+N-10-ingenua_frontmatter-C 2 incompleto= False alteradas= [] tokens= [38954, 176640, 977] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 71.251082623 OK
+2026-10-21T08:50:11Z LB-deteccion-charles: parada temprana superada (4 ejecuciones)
+2026-10-21T09:06:03Z LB-deteccion-charles: 33 filas; incompletas: ninguna
+2026-10-21T09:06:03Z LB-deteccion-charles: fin
+2026-10-21T09:06:03Z contraste-principal: inicio
+M-7 2 incompleto= False alteradas= [] tokens= [27958, 68480, 641] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 46.84527025800071 OK
+2026-10-21T09:38:37Z contraste-principal: parada temprana superada (1 ejecuciones)
+2026-10-21T09:38:52Z contraste-principal: termin贸 con c贸digo 1
+/c/Users/Joa/rige-LB-20261020/contraste-principal/p0/contraste-principal/DETENCION.txt
+/c/Users/Joa/rige-LB-20261020/contraste-principal/p1/contraste-principal/DETENCION.txt
+/c/Users/Joa/rige-LB-20261020/contraste-principal/p2/contraste-principal/DETENCION.txt
+/c/Users/Joa/rige-LB-20261020/contraste-principal/p3/contraste-principal/DETENCION.txt
+2026-10-21T09:39:39Z Espera de la renovaci贸n de cuota hasta 2026-10-21T12:20:19Z
+2026-10-21T12:20:52Z contraste-principal: continuaci贸n por cuota, 27 pares
+2026-10-21T13:57:02Z contraste-principal: 30 filas, 30 pares 鷑icos; incompletas: ninguna
+2026-10-21T13:57:03Z contraste-principal: fin
+2026-10-21T13:57:03Z Inicio de la cadena (imagen a691196f0e3e)
+2026-10-21T13:57:04Z contraste-charles: inicio
+M-5 3 incompleto= False alteradas= [] tokens= [29209, 96256, 424] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 50.62312254599965 OK
+M-3 3 incompleto= False alteradas= [] tokens= [30701, 129408, 533] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 64.44305424800041 OK
+M-7 2 incompleto= False alteradas= [] tokens= [29394, 96512, 464] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 65.84535427099945 OK
+M-2 2 incompleto= False alteradas= [] tokens= [30861, 123648, 512] anidados= {'tokens_entrada': 0, 'tokens_cache': 0, 'tokens_salida': 0} sesiones_anidadas= 0 codigo= 0 dur= 52.3965996070001 OK
+2026-10-21T14:55:14Z contraste-charles: parada temprana superada (4 ejecuciones)
+2026-10-21T15:28:45Z contraste-charles: 30 filas; incompletas: M-8:1
+2026-10-21T15:28:45Z contraste-charles: fin
+2026-10-21T15:28:45Z Cadena completa
+2026-10-21T15:29:39Z contraste-charles: repetici贸n por incompleto, M-8:1
+2026-10-21T15:38:48Z contraste-charles: repetici贸n de M-8:1 completa (correcta, sin incompletos); reemplaza la ejecuci贸n incompleta original, que se conserva

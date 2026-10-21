@@ -11,7 +11,7 @@ CONGELADOS = ('k', 'semilla', 'hash_instruccion', 'hash_ejecutor', 'hash_hoja',
               'hash_tarifas', 'hash_catalogo')
 
 
-def unir_med9(registros):
+def unir_med9(registros, casos_esperados=None):
     """Fragmentos de una misma tanda; exige todos los pares y preserva evidencia."""
     from analizar_ecologica import ECO, DET, CONTRASTE
     campos = ('tanda', 'dimension', 'ejecutor', 'modelo', 'brazo', 'condicion', 'ensayo',
@@ -46,6 +46,11 @@ def unir_med9(registros):
         if referencia is None:
             referencia = meta.copy()
         casos = (CONTRASTE if meta['fuera_del_arbol'] else ECO) if meta['dimension'] == 'ecologica' else DET
+        if casos_esperados is not None:
+            if (not casos_esperados or len(set(casos_esperados)) != len(casos_esperados)
+                    or not set(casos_esperados) <= set(casos)):
+                raise ValueError('Casos esperados inválidos para la dimensión/modalidad.')
+            casos = casos_esperados
         seleccion = {tuple(par) for par in meta['orden']}
         encontrados = set()
         for fila in leer_jsonl(registro):
@@ -83,11 +88,13 @@ def unir_med9(registros):
     return filas, referencia, []
 
 
-def unir(registros):
+def unir(registros, casos_esperados=None):
     if registros:
         meta = json.loads((Path(registros[0]).parent / 'tanda.json').read_text(encoding='utf-8'))
         if meta.get('dimension') in ('ecologica', 'deteccion'):
-            return unir_med9(registros)
+            return unir_med9(registros, casos_esperados)
+    if casos_esperados is not None:
+        raise ValueError('--casos solo está disponible para la unión MED-9.')
     referencia = None
     filas, vistos, fuentes = [], set(), []
     for registro in map(Path, registros):
@@ -136,9 +143,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('registros', nargs='+', type=Path)
     parser.add_argument('--salida', required=True, type=Path)
+    parser.add_argument('--casos', help='Selección explícita MED-9; exige todos sus pares caso × k.')
     args = parser.parse_args()
     try:
-        filas, meta, faltantes = unir(args.registros)
+        filas, meta, faltantes = unir(args.registros, args.casos.split(',') if args.casos is not None else None)
         manifiesto = args.salida.parent / 'tanda.json'
         if args.salida.name == 'tanda.json':
             raise ValueError('El registro de salida debe ser distinto de tanda.json.')

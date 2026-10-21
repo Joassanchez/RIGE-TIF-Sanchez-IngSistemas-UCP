@@ -343,7 +343,11 @@ def cargar(paths, evidencia=False):
             if tanda.get('protocolo_oraculo') == 'MED-9c' or tanda.get('regla_acceso_web') == 'ADR-094':
                 from corregir_ecologica import validar_tanda
                 try:
-                    validar_tanda(path.parent, Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json')
+                    sustituto = rs[0].get('aislamiento_final_sustituto') if rs else None
+                    controles = ([Path(sustituto)] if isinstance(sustituto, str) and sustituto and
+                                 all(r.get('aislamiento_final_sustituto') == sustituto for r in rs) else [])
+                    validar_tanda(path.parent, Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json',
+                                  controles_finales_sustitutos=controles)
                 except (KeyError, OSError, ValueError, TypeError):
                     for r in rs:
                         r.update(fallo_preparacion=True, resultado=None)

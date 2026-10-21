@@ -1,0 +1,25 @@
+{
+  "semilla": 20261015,
+  "k": 3,
+  "partes": [
+    [
+      "N-10-ingenua_frontmatter-C",
+      "N-23-ingenua_absoluta-D",
+      "V-10-ingenua_env-D"
+    ],
+    [
+      "N-24-ingenua_dotdir-D",
+      "N-23-ingenua_absoluta-C",
+      "N-24-ingenua_dotdir-C"
+    ],
+    [
+      "D-C",
+      "D-A",
+      "N-10-ingenua_frontmatter-D"
+    ],
+    [
+      "D-B",
+      "V-10-ingenua_env-C"
+    ]
+  ]
+}

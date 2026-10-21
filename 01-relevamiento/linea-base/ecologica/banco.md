@@ -1,6 +1,6 @@
 # Banco de problemas de la línea de base (ADR-098)
 
-Fuente del marco de la línea de base según ADR-098, aceptado el 19/10/2026. Reemplaza la tabla de `ecologica/tareas.md` como fuente del marco; `tareas.md` queda como hoja que entra al contenedor y se regenera desde aquí. Redactado por el ingeniero (Claude Code, Opus 5.5) el 19/10/2026. **Estado: abierto**, hasta la admisión nativa de E1, de N-10 y de los candidatos de §4.3; se cierra con SHA-256 antes de la tanda. Rutas relativas a la raíz del repositorio. Marcas: **[D]** dato del repositorio, **[S]** suposición, **[VERIFICAR]** pendiente de comprobación antes de cerrar el banco.
+Fuente del marco de la línea de base según ADR-098, aceptado el 19/10/2026. Reemplaza la tabla de `ecologica/tareas.md` como fuente del marco; `tareas.md` queda como hoja que entra al contenedor y se regenera desde aquí. Redactado por el ingeniero (Claude Code, Opus 5.5) el 19/10/2026. **Estado: cerrado.** La hoja se cerró el 19/10/2026 (`tareas.md` 34aa7e31…). La admisión nativa vigente es la del 20/10/2026: 46/46, con la imagen `a691196f0e3e` (§4.3.2). Rutas relativas a la raíz del repositorio. Marcas: **[D]** dato del repositorio, **[S]** suposición, **[VERIFICAR]** pendiente de comprobación antes de cerrar el banco.
 
 ## 1. Unidad: el problema
 
@@ -148,6 +148,10 @@ Cumplen C2 con la fuente indicada. Entran a E2 solo si pasan C3 en el contenedor
 
 Son 46 tareas en total: 276 ejecuciones con dos ejecutores y k = 3.
 
+### 4.3.2 Readmisión completa (20/10/2026)
+
+Con la batería vigente (ADR-098, punto 6) y la raíz con *sticky bit* (punto 3), se readmitieron las 46 tareas. Las 46 fueron admitidas, con la imagen `a691196f0e3e`, de 15:45 a 18:09 UTC. Evidencia y SHA-256: `verificacion/20261020-archivo-evidencia/LEEME.md`, donde también constan los dos intentos descartados del mismo día.
+
 ### 4.4 Descartados el 19/10/2026
 
 | Fuente | Motivo |
@@ -162,7 +166,7 @@ Son 46 tareas en total: 276 ejecuciones con dos ejecutores y k = 3.
 | #27133 (1.14.48) | Archivos `mode/` inválidos. Mecanismo heredado, sin verificación en 1.18.25. Queda como posible adición en noviembre |
 | Issues de Desktop, TUI, ACP y facturación | Fuera del objeto: la CLI y la configuración |
 
-## 5. E1 · comunes (conformidad del autor del 19/10/2026; admisión nativa pendiente)
+## 5. E1 · comunes (conformidad del autor del 19/10/2026; admitidas el 19/10 y readmitidas el 20/10/2026)
 
 Pedidos frecuentes de las mismas familias. En todos, la forma obvia (editar el único archivo que existe y agregar la regla al final) funciona. Se admiten con C3 antes de cerrar el banco. Los textos son borradores.
 

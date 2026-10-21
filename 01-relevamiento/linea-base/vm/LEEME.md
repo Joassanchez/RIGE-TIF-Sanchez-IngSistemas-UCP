@@ -382,14 +382,15 @@ integran esa evidencia. Los reintentos por cuota esperan 30 s y luego 120 s. Si 
 intento sigue limitado, no se agrega la fila del par a `registro.jsonl`: la
 tanda escribe `DETENCION.txt` con caso/repetición, hora UTC y evidencia, y sale
 con código 3. El envoltorio copia la evidencia parcial. Para reanudar, crear
-una tanda nueva con los mismos parámetros y `--pares C-1a:2,C-3b:1,...`; sólo
+una tanda nueva con los mismos parámetros (incluido el valor de `--tanda`)
+y `--pares C-1a:2,C-3b:1,...`; sólo
 corren esos pares, en el orden indicado, sin aleatorizarlos. La evidencia de
 los intentos detenidos permanece separada, sin integrarla como ejecución.
 
 ```bash
 # Después de la detención: completar explícitamente los pares faltantes.
 bash vm/contenedor.sh medir --destino /ruta/nueva-vacia \
-  --tanda continuacion --condicion LB --brazo LB --ejecutor principal \
+  --tanda tanda-original --condicion LB --brazo LB --ejecutor principal \
   --modelo openai/gpt-6.1-sol --k 3 --limite 600 --semilla 20261013 \
   --pares C-1a:2,C-3b:1
 python herramientas/unir.py /ruta/parcial/registro.jsonl \
@@ -402,6 +403,33 @@ instrucción (plantilla), ejecutor, hoja, tarifas o catálogo; rechaza pares
 repetidos. Conserva cada fila y su tanda de origen, genera un manifiesto unido
 y avisa todos los pares faltantes para completar 24 × k. Usar una carpeta de
 salida nueva; luego corregir y analizar el registro unido fuera del contenedor.
+
+En la corrección ecológica, corregir cada fragmento cortado por cuota con
+el directorio de su continuación como `--control-final-sustituto` (MED-16),
+antes de reunir los resultados. La opción es repetible para varias
+continuaciones. El corrector exige `Límite de cuota persistente` en
+`DETENCION.txt`, un control inicial válido y una continuación que pase la
+validación normal, con la misma tanda, ejecutor, modelo, semilla, k y límite.
+También deben estar presentes en ambos manifiestos y ser iguales
+`hash_binario`, `hash_arnes`, `hash_ejecutor`, `hash_hoja`, `hash_escenarios`,
+`hash_tareas`, `hash_catalogo`, `hash_tarifas`, `condicion`, `brazo`,
+`dimension` y `fuera_del_arbol`. Se admite un valor `null` coincidente,
+como el de `hash_hoja` cuando la hoja está ausente. El arnés no registra
+un campo `imagen`. El JSON del control inicial del cortado debe ser igual al de los
+controles inicial y final de la continuación. Cada fila conserva la marca
+`aislamiento_final_sustituto` con la ruta utilizada; sus controles de hash,
+entorno y oráculo siguen vigentes. Sin la opción, el fragmento detenido se
+rechaza como antes. Los intentos del par detenido no se corrigen como filas.
+
+```bash
+python -B herramientas/corregir_ecologica.py /ruta/parcial/registro.jsonl \
+  --respuestas ecologica/respuestas-ecologica.json \
+  --control-final-sustituto /ruta/continuacion \
+  --salida /ruta/correccion-parcial/corregido.jsonl
+python -B herramientas/corregir_ecologica.py /ruta/continuacion/registro.jsonl \
+  --respuestas ecologica/respuestas-ecologica.json \
+  --salida /ruta/correccion-continuacion/corregido.jsonl
+```
 
 **Flags:** la fase 0 acredita `--model`, `--agent` y `--format json`;
 `run --help` escribe la ayuda en stderr. Cada tanda guarda ambas salidas y se

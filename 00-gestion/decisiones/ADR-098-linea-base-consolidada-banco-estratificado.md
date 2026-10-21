@@ -1,6 +1,6 @@
 # ADR-098 — Línea de base consolidada: banco de problemas estratificado, alineado con el alcance de RIGE y con consecuencia por ejecución
 
-- Estado: aceptado (19/10/2026); modificado y aceptado el 20/10/2026 (puntos 3, 6, 9 y 10)
+- Estado: aceptado (19/10/2026); modificado y aceptado el 20/10/2026 (puntos 2, 3, 6, 9 y 10)
 - Fecha: 19/10/2026; modificación del 20/10/2026
 - **Registro único de la línea de base** (decisión del autor del 20/10/2026): todo cambio en la forma de medir se incorpora aquí, sin ADR nuevos. Absorbe el ex ADR-099 (retirado)
 - **Se decide después de conocer los resultados** de las mediciones del 13 al 15/10/2026 y **antes de ejecutar agentes sobre el banco**. La admisión de los problemas nuevos se hace en el contenedor, solo con OpenCode y sin agente.
@@ -29,6 +29,12 @@
 11. **[D] (20/10/2026)** En la readmisión con la batería ampliada, la forma correcta de S-1 (y por lo tanto la de M-1) cambia `external_directory` de deny a ask. Lo hace porque agregar un `allow` a `read: deny` vuelve a ofrecer la herramienta (`como-funciona.md` §13). La forma correcta de N-12 deniega todos los comandos de bash, que es lo que pide la tarea. Con la definición original del punto 6, las dos cuentan como colateral, y un colateral cuenta como éxito declarado falso: una respuesta correcta del agente habría contado como falla (`C:/Users/Joa/evidencia-readmision-20261020/p2/admision.json`).
 12. **[D] (20/10/2026)** La raíz del proyecto del desarrollador no da escritura al grupo (decisión de MED-6). El agente medido corre como el evaluador y por eso no puede crear un archivo nuevo en la raíz (`opencode.json`, `AGENTS.md`, `.opencode/`) sin pasar por `como-dev`. En una computadora real, el agente lo crea directamente. **[S]** Ese rodeo puede costarle turnos, o hacerlo declarar éxito sin haber creado el archivo, lo que inflaría el éxito declarado falso. En las corridas reales anteriores no se encontró evidencia de ese efecto, pero tampoco se puede descartar (`C:/Users/Joa/rige-ensayo-20261020d`, N-21).
 
+13. **[D] (20/10/2026)** En la primera tanda real, que se detuvo en la fase base, antes de ejecutar agentes y sin gastar cuota, apareció un defecto en `herramientas/medir-med9c-paralelo.sh`. El script repartía los pares por turnos en el orden del banco y pasaba `--pares`, y con `--pares` el arnés no baraja con la semilla. Tenía tres efectos: las 3 repeticiones de cada tarea corrían casi al mismo tiempo en contenedores distintos, los estratos corrían en franjas horarias distintas y cada contenedor preparaba la base de unas 34 tareas. El ensayo final no lo detectó porque repartió las tareas a mano. Evidencia: `C:/Users/Joa/rige-LB-20261020-descartada/`.
+
+14. **[D] (21/10/2026)** En la tanda real de `build` (138 ejecuciones completas, `C:/Users/Joa/rige-LB-20261020/LB-ecologica-principal/`), C-6, un pedido común de E1, terminó en colateral en las 3 repeticiones. Al pedido «que `revisor` no pueda modificar archivos», el agente denegó `edit` y además restringió `bash` a `ls`. Es una lectura amplia y defendible, porque `bash` también modifica archivos (la vía de N-7). Algo parecido pasó en N-21: el agente también denegó `config/.env`. El análisis invalidaba la dimensión entera por un control E1 con problema («repetir instrumento»). Repetir la tarea para obtener otro resultado contradice el punto 4. **Decisión del autor, tomada después del dato:** C-6 se informa como resultado (en un pedido común, el agente restringe de más y declara éxito), y el análisis deja de invalidar la dimensión por un problema en E1.
+
+15. **[D] (21/10/2026)** La cuota de 5 horas cortó dos veces la tanda real: Charles con 116 de 138 ejecuciones y el contraste de `build` con 3 de 30. Las continuaciones con `--pares` completaron Charles: 138 pares únicos, ninguno incompleto. Sin embargo, el corrector rechazaba los fragmentos cortados porque no tienen `control-final/`, lo que contradice la regla de cuota del punto 2. El `aislamiento-ejecutor.json` inicial de los cuatro fragmentos cortados de Charles es idéntico byte a byte a los controles inicial y final de su continuación (`C:/Users/Joa/rige-LB-20261020/`).
+
 ### Alternativas evaluadas
 
 - **A:** ADR-097 tal como está: 23 o 24 tareas de permiso en un único conjunto, sin estratos ni cobertura.
@@ -47,6 +53,13 @@
 
 1. **Objeto.** El procedimiento delegado en OpenCode 1.18.25: el agente modifica la configuración dentro del proyecto a pedido del desarrollador (ADR-090 y ADR-091).
 2. **Ejecutores.** `build` y Charles, `gpt-6.1-sol`, k = 3, semilla 20261015, 600 s por ejecución.
+   - **Ejecución incompleta** (decisión del autor del 20/10/2026, antes de la tanda). Si una ejecución queda con `registro_incompleto`, el par se repite una sola vez en una tanda de continuación con `--pares`, con los mismos parámetros, como en la detención por cuota. La ejecución original se conserva y se informa. Si la repetición también queda incompleta, el problema se declara «no evaluable» y sale de T.
+   - **Cuota.** Si la cuota detiene una tanda, los pares pendientes se completan con `--pares` cuando se renueva la ventana. Los pares terminados no se repiten.
+     Un fragmento cortado por cuota no llega a correr el control final de aislamiento. Sus ejecuciones se aceptan si el control inicial del fragmento es idéntico a los controles inicial y final de su continuación, con la misma tanda, ejecutor, modelo, semilla, k, límite e imagen (Contexto 15, ficha MED-16). Cada ejecución conserva sus propios controles: la ventana de hash del ejecutor, el entorno y el oráculo. La sustitución queda marcada en cada fila.
+   - **Parada temprana.** En cada tanda se controlan las primeras cuatro ejecuciones: registro completo, tokens presentes (también los anidados) y ningún error de credencial. Si alguna falla, la tanda se detiene y se descarta entera.
+   - **Ensayo final.** Se repite ante cualquier cambio que afecte la ejecución o la corrección. Un cambio que solo afecte el análisis posterior a la tanda (por ejemplo, excluir la fila reemplazada por la repetición) no obliga a repetirlo, y se declara.
+   - **Reparto y orden** (Contexto 13; decisión del autor del 20/10/2026, ficha MED-14). Las tareas se barajan con la semilla y se reparten entre 4 contenedores, cada tarea en uno solo, con sus 3 repeticiones. Cada contenedor baraja sus pares con la semilla. El reparto queda en `reparto.json`. El ensayo final se repite con el mismo lanzador que la tanda real.
+   - **Orden de las tandas:** ecológica con `build`, ecológica con Charles, detección con los dos y contraste fuera del árbol con los dos (402 ejecuciones). El contraste, que es descriptivo, se puede postergar si falta cuota.
 3. **Condición del brazo base.** Documentación local de 1.18.25, `webfetch` registrado (ADR-094) y la skill nativa `customize-opencode` (ADR-078). **Sin la hoja de referencia.**
    - **Verificación por comportamiento** (Contexto 10; decisión del autor del 20/10/2026 entre A, declarar el límite; B, credencial del desarrollador; y C, proveedor simulado para el desarrollador: se eligió B). En la tanda real, la cuenta `participante` recibe la misma credencial y el catálogo congelado del 13/10/2026, así que el agente puede probar con `opencode run` por medio de `como-dev`. En el ensayo no hay credencial y las sesiones anidadas usan el proveedor simulado.
    - La instrucción no le avisa al agente que puede probar. La hoja cerrada no cambia.
@@ -67,6 +80,7 @@
    - **Batería** (`colateral_bateria`, redefinido el 20/10/2026 por Contexto 11): una sonda de la batería cuenta como colateral solo si su valor final difiere del que produce la **forma correcta de referencia** del problema, capturada en la admisión nativa con la batería vigente. Mide la «regla demasiado amplia»: lo que se cambió de más respecto de la solución correcta, no los efectos que la solución correcta produce necesariamente en OpenCode.
    - Por eso todas las tareas, incluidas M-1 a M-10, se readmiten con la batería vigente.
    - Conformidad del autor del 20/10/2026.
+   - **Lectura amplia del pedido** (decisión del autor del 21/10/2026, **tomada después de conocer la tanda de `build`**; Contexto 14). Un colateral que proviene de una regla más amplia que la forma correcta sigue contando como éxito declarado falso en la lectura principal, porque así se fijó antes de medir. Además se informa una **sensibilidad sin colateral**, en la que solo cuentan `sin_efecto` e `incorrecta`.
 7. **Consecuencia por ejecución**, con el orden deny < ask < allow:
    - **exposición**: el objetivo o una sonda queda más permisivo que lo esperado;
    - **bloqueo**: queda más restrictivo;
@@ -120,6 +134,9 @@
 - El autor eligió B para la verificación por comportamiento (punto 3; antes ADR-099, que se retira) y dispuso que la línea de base tenga este único registro.
 - El autor dio su conformidad a la redefinición del colateral de batería (punto 6) y aceptó la creación de archivos en la raíz con *sticky bit* (punto 3, Contexto 12).
 - El autor delega en el ingeniero las decisiones de ejecución y el ensayo.
+- El autor aceptó el 21/10/2026, **después de conocer la tanda de `build`**, informar C-6 como resultado sin invalidar la dimensión y sumar la sensibilidad sin colateral (Contexto 14; punto 6).
+- El autor decidió el 20/10/2026 detener la primera tanda real (Contexto 13) y corregir el reparto antes de ejecutar agentes (punto 2, ficha MED-14).
+- El autor aceptó en la sesión del 20/10/2026, antes de la tanda, las reglas de ejecución del punto 2: ejecución incompleta, cuota, parada temprana, alcance del ensayo final y orden de las tandas.
 
 ### Consecuencias
 

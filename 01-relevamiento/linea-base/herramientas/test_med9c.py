@@ -1,5 +1,7 @@
 """MED-9c: base externa y unión estricta de fragmentos, sin Docker/red."""
+import ast
 import json
+import random
 import os
 from pathlib import Path
 import shutil
@@ -33,9 +35,11 @@ class FragmentosTests(unittest.TestCase):
                     hash_plan_ensayo='plan', exclusiones_hash=[], orden=[[c, 1] for c in casos])
         if cambio:
             meta.update(cambio)
+        if not cambio or 'orden' not in cambio:
+            meta['orden'] = [[c, r] for c in casos for r in range(1, meta['k'] + 1)]
         rows = [dict({k: meta[k] for k in ('tanda', 'dimension', 'ejecutor', 'modelo', 'brazo', 'condicion', 'ensayo', 'fuera_del_arbol', 'k', 'hash_ejecutor')},
-                     caso=c, repeticion=1, intentos=[dict(captura_antes='crudo/antes', captura_despues='crudo/despues', oraculo='crudo/oraculo.json')])
-                for c in casos]
+                     caso=c, repeticion=r, intentos=[dict(captura_antes='crudo/antes', captura_despues='crudo/despues', oraculo='crudo/oraculo.json')])
+                for c, r in meta['orden']]
         def guardar(path, dato):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps(dato), encoding='utf-8')
@@ -157,54 +161,203 @@ class FragmentosTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'aislamiento'):
             validar_tanda(salida.parent, ROOT / 'ecologica/respuestas-ecologica.json')
 
-    @unittest.skipUnless(shutil.which('bash'), 'Bash no disponible')
-    def test_lanzador_genera_cuatro_partes_disjuntas_completas_sin_docker(self):
-        self.comprobar_lanzador(3)
-
-    def test_lanzador_k1_incluye_nuevas_y_tres_partes_deteccion(self):
-        self.comprobar_lanzador(1)
-
-    def comprobar_lanzador(self, k):
-        # BASH_ENV sustituye medición/corrección/unión. Solo los fragmentos
-        # Python de selección corren realmente; no se invoca Docker.
+    def comprobar_lanzador(self, k=3, dimension='ecologica', fuera=False,
+                           seleccion=None, ensayo=False, error=False, auth=None):
+        # BASH_ENV sustituye medición/corrección/unión; la selección Python
+        # y su manifiesto se ejecutan realmente, sin Docker ni credencial.
+        if not shutil.which('bash'):
+            self.skipTest('Bash no disponible')
         def ruta_shell(path):
             return '/' + path.drive[0].lower() + path.as_posix()[2:] if os.name == 'nt' else str(path)
-        stub = self.root / 'stub.sh'
+        raiz = Path(tempfile.mkdtemp(dir=self.root))
+        stub = raiz / 'stub.sh'
         stub.write_text('''bash() {
+  [[ -f "$MED9C_REPARTO" ]] || return 1
   local linea
   printf -v linea '%s|' "$@"
   printf '%s\n' "$linea" >> "$MED9C_LOG"
 }
-python() { if [[ $1 == - ]]; then command python "$@"; fi; }
-mkdir() { :; }
+python() {
+  if [[ $1 == - ]]; then command python "$@";
+  elif [[ $1 == herramientas/unir.py ]]; then
+    printf '%s\n' "$@" > "$MED9C_UNION"
+  fi
+}
+mkdir() { command python -c 'from pathlib import Path; import sys; Path(sys.argv[1]).mkdir(parents=True, exist_ok=True)' "$2"; }
 ''', encoding='utf-8', newline='\n')
-        (self.root / 'logs').mkdir()
-        for dimension, fuera, casos in [('ecologica', False, ECO), ('ecologica', True, ECO[:10]), ('deteccion', False, DET)]:
-            nombre = f'{dimension}-{fuera}'
-            log = self.root / (nombre + '.log')
-            cmd = [shutil.which('bash'), (ROOT / 'herramientas/medir-med9c-paralelo.sh').as_posix(),
-                   ruta_shell(self.root), nombre, dimension, 'principal', '--k', str(k)]
-            if fuera:
-                cmd.append('--fuera-del-arbol')
-            r = subprocess.run(cmd, env=os.environ | {'BASH_ENV': ruta_shell(stub), 'MED9C_LOG': ruta_shell(log)},
-                               capture_output=True, text=True)
+        log, manifiesto = raiz / 'lanzadas.log', raiz / 'tanda/reparto.json'
+        union = raiz / 'union.log'
+        cmd = [shutil.which('bash'), (ROOT / 'herramientas/medir-med9c-paralelo.sh').as_posix(),
+               ruta_shell(raiz), 'tanda', dimension, 'principal', '--k', str(k)]
+        if fuera:
+            cmd.append('--fuera-del-arbol')
+        if seleccion is not None:
+            cmd.extend(['--casos', seleccion])
+        if ensayo:
+            cmd.append('--ensayo')
+        env = os.environ | {'BASH_ENV': ruta_shell(stub), 'MED9C_LOG': ruta_shell(log),
+                            'MED9C_REPARTO': ruta_shell(manifiesto), 'MED9C_UNION': ruta_shell(union)}
+        env.pop('OPENCODE_AUTH_JSON', None)
+        if auth is not None:
+            env['OPENCODE_AUTH_JSON'] = auth
+        r = subprocess.run(cmd, env=env, capture_output=True, text=True)
+        lineas = [linea.rstrip('|').split('|') for linea in log.read_text().splitlines()] if log.exists() else []
+        if error:
+            self.assertNotEqual(r.returncode, 0, r.stdout)
+            self.assertEqual(lineas, [])
+            self.assertFalse(manifiesto.exists())
+            self.assertFalse(union.exists())
+            return
+        self.assertEqual(r.returncode, 0, r.stderr)
+        casos = seleccion.split(',') if seleccion is not None else list(DET if dimension == 'deteccion' else ECO)
+        if fuera:
+            casos = [c for c in casos if c.startswith('M-')]
+        partes = min(4, len(casos))
+        self.assertEqual(len(lineas), partes, lineas)
+        vistos, destinos, grupos = set(), set(), [None] * partes
+        for args in lineas:
+            destino = args[args.index('--destino') + 1]
+            destinos.add(destino)
+            parte = int(destino.rsplit('/p', 1)[1])
+            for flag, valor in [('--k', str(k)), ('--semilla', '20261015'), ('--limite', '600'),
+                                ('--tanda', 'tanda'), ('--dimension', dimension)]:
+                self.assertEqual(args[args.index(flag) + 1], valor)
+            self.assertNotIn('--pares', args)
+            self.assertEqual('--ensayo' in args, ensayo)
+            self.assertEqual('--fuera-del-arbol' in args, fuera)
+            grupo = args[args.index('--casos') + 1].split(',')
+            self.assertEqual(len(grupo), len(set(grupo)))
+            self.assertFalse(vistos & set(grupo))
+            vistos.update(grupo)
+            grupos[parte] = grupo
+        self.assertEqual(len(destinos), partes)
+        self.assertEqual(vistos, set(casos))
+        llamada_union = union.read_text().splitlines()
+        if seleccion is None:
+            self.assertNotIn('--casos', llamada_union)
+        else:
+            self.assertEqual(llamada_union[llamada_union.index('--casos') + 1], seleccion)
+        return grupos, lineas, json.loads(manifiesto.read_text(encoding='utf-8'))
+
+    def test_R_1_ecologica_k3_disjunta_completa_sin_pares(self):
+        grupos, _, _ = self.comprobar_lanzador()
+        self.assertEqual(len(grupos), 4)
+        self.assertEqual(sum(map(len, grupos)), 46)
+
+    def test_R_2_reparto_reproducible_dependiente_de_semilla(self):
+        grupos, _, _ = self.comprobar_lanzador()
+        self.assertEqual(grupos, self.comprobar_lanzador()[0])
+        # Ejecuta el mismo bloque de selección con otra semilla, sin agregar
+        # una opción de semilla al lanzador de la tanda real.
+        codigo = (ROOT / 'herramientas/medir-med9c-paralelo.sh').read_text(encoding='utf-8')
+        codigo = codigo.split("<<'PY'\n", 1)[1].split('\nPY\n', 1)[0]
+        def reparto(semilla):
+            r = subprocess.run([sys.executable, '-B', '-', 'ecologica', '0', '3', str(semilla), '',
+                                str(self.root / f'reparto-{semilla}.json')], input=codigo,
+                               cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(r.returncode, 0, r.stderr)
-            lineas = log.read_text().splitlines()
-            partes = min(4, len(casos) * k)
-            self.assertEqual(len(lineas), partes, lineas)
-            vistos, destinos = set(), set()
-            for linea in lineas:
-                args = linea.rstrip('|').split('|')
-                destinos.add(args[args.index('--destino') + 1])
-                for flag, valor in [('--k', str(k)), ('--semilla', '20261015'), ('--limite', '600'), ('--tanda', nombre)]:
-                    self.assertEqual(args[args.index(flag) + 1], valor)
-                seleccion = args[args.index('--casos') + 1].split(',')
-                pares = ({(c, int(r)) for c, r in (p.split(':') for p in args[args.index('--pares') + 1].split(','))}
-                         if '--pares' in args else {(c, r) for c in seleccion for r in range(1, k + 1)})
-                self.assertFalse(vistos & pares)
-                vistos |= pares
-            self.assertEqual(len(destinos), partes)
-            self.assertEqual(vistos, {(c, r) for c in casos for r in range(1, k + 1)})
+            return [linea.split(',') for linea in r.stdout.splitlines()]
+        self.assertEqual(grupos, reparto(20261015))
+        otro = reparto(20261016)
+        self.assertEqual(otro, reparto(20261016))
+        self.assertNotEqual(grupos, otro)
+
+    def test_R_3_ecologica_partes_equilibradas(self):
+        grupos, _, _ = self.comprobar_lanzador()
+        self.assertEqual(sorted(map(len, grupos)), [11, 11, 12, 12])
+
+    def test_R_4_deteccion_y_contraste_disjuntos_completos(self):
+        for dimension, fuera, total in [('deteccion', False, 11), ('ecologica', True, 10)]:
+            with self.subTest(dimension=dimension, fuera=fuera):
+                grupos, _, _ = self.comprobar_lanzador(dimension=dimension, fuera=fuera)
+                self.assertEqual(len(grupos), 4)
+                self.assertEqual(sum(map(len, grupos)), total)
+                if fuera:
+                    self.assertTrue(all(c.startswith('M-') for grupo in grupos for c in grupo))
+
+    def test_R_5_seleccion_tres_partes_y_errores_antes_de_lanzar(self):
+        grupos, _, _ = self.comprobar_lanzador(seleccion='C-1,M-1,M-2')
+        self.assertEqual(list(map(len, grupos)), [1, 1, 1])
+        for dimension, fuera, seleccion in [
+                ('ecologica', False, 'NO-EXISTE'), ('deteccion', False, 'M-1'),
+                ('ecologica', True, 'C-1'), ('ecologica', False, 'M-1,M-1'),
+                ('ecologica', False, 'M-1,')]:
+            with self.subTest(dimension=dimension, fuera=fuera, seleccion=seleccion):
+                self.comprobar_lanzador(dimension=dimension, fuera=fuera, seleccion=seleccion, error=True)
+
+    def test_R_6_ensayo_explicito_sin_credencial(self):
+        for dimension, fuera in [('ecologica', False), ('deteccion', False), ('ecologica', True)]:
+            for ensayo in (False, True):
+                with self.subTest(dimension=dimension, fuera=fuera, ensayo=ensayo):
+                    self.comprobar_lanzador(k=1, dimension=dimension, fuera=fuera, ensayo=ensayo)
+        self.comprobar_lanzador(ensayo=True, auth='credencial-sintetica', error=True)
+
+    def test_R_7_manifiesto_previo_coincide_con_casos_lanzados(self):
+        for dimension, fuera in [('ecologica', False), ('deteccion', False), ('ecologica', True)]:
+            with self.subTest(dimension=dimension, fuera=fuera):
+                grupos, _, manifiesto = self.comprobar_lanzador(dimension=dimension, fuera=fuera)
+                self.assertEqual(manifiesto, dict(semilla=20261015, k=3, partes=grupos))
+        grupos, _, manifiesto = self.comprobar_lanzador(k=1, seleccion='C-1,M-1,M-2', ensayo=True)
+        self.assertEqual(manifiesto, dict(semilla=20261015, k=1, partes=grupos))
+
+    def test_R_8_pares_baraja_repeticiones_dentro_de_una_parte(self):
+        # Carga exclusivamente pares(), sin inicializar el arnés Linux.
+        fuente = ROOT / 'vm/simulado/ecologica.py'
+        funcion = next(n for n in ast.parse(fuente.read_text(encoding='utf-8')).body
+                       if isinstance(n, ast.FunctionDef) and n.name == 'pares')
+        espacio = {'random': random}
+        exec(compile(ast.Module(body=[funcion], type_ignores=[]), str(fuente), 'exec'), espacio)
+        casos = self.comprobar_lanzador()[0][0]
+        producto = [(c, r) for c in casos for r in range(1, 4)]
+        trabajos = espacio['pares'](casos, 3, 20261015, None)
+        self.assertEqual(len(trabajos), len(producto))
+        self.assertEqual(set(trabajos), set(producto))
+        self.assertEqual(trabajos, espacio['pares'](casos, 3, 20261015, None))
+        self.assertNotEqual(trabajos, producto)
+        self.assertNotEqual(trabajos, espacio['pares'](casos, 3, 20261016, None))
+        for caso in casos:
+            posiciones = [n for n, (c, _) in enumerate(trabajos) if c == caso]
+            self.assertGreater(max(posiciones) - min(posiciones), 2, caso)
+
+    def test_R_9_union_cuatro_fragmentos_solo_casos_k3(self):
+        for dimension, fuera in [('ecologica', False), ('deteccion', False), ('ecologica', True)]:
+            with self.subTest(dimension=dimension, fuera=fuera):
+                grupos, _, _ = self.comprobar_lanzador(dimension=dimension, fuera=fuera)
+                paths = [self.fragmento(f'R9-{dimension}-{fuera}-{n}', grupo, dimension, fuera,
+                                       cambio=dict(k=3, casos=','.join(grupo), pares=None))
+                         for n, grupo in enumerate(grupos)]
+                rows, meta, faltantes = unir(paths)
+                self.assertEqual(len(rows), sum(map(len, grupos)) * 3)
+                self.assertEqual(len({(r['caso'], r['repeticion']) for r in rows}), len(rows))
+                self.assertEqual(faltantes, [])
+                self.assertTrue(meta['union_med9'])
+
+    def test_union_seleccion_explicita_exige_todos_sus_pares(self):
+        casos = ['C-1', 'M-1', 'M-2']
+        paths = [self.fragmento(f'seleccion-{n}', [c], cambio=dict(k=3, casos=c, pares=None))
+                 for n, c in enumerate(casos)]
+        with self.assertRaisesRegex(ValueError, 'Pares incompletos'):
+            unir(paths)
+        for seleccion, patron in [(casos + ['M-3'], 'Pares incompletos'),
+                                  (casos[:2], 'ajeno'), (['NO-EXISTE'], 'inválidos'),
+                                  (casos + ['M-1'], 'inválidos'), ([], 'inválidos')]:
+            with self.subTest(seleccion=seleccion), self.assertRaisesRegex(ValueError, patron):
+                unir(paths, seleccion)
+        with self.assertRaisesRegex(ValueError, 'Par repetido'):
+            unir(paths + [paths[0]], casos)
+        salida = self.root / 'seleccion-unida/corregido.jsonl'
+        r = subprocess.run([sys.executable, '-B', str(ROOT / 'herramientas/unir.py'),
+                            *map(str, paths), '--salida', str(salida), '--casos', ','.join(casos)],
+                           capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn('9 filas de 9; 0 pares faltantes', r.stdout)
+        for nombre, cambio, patron in [('parametros', {'semilla': 0}, 'semilla'),
+                                      ('detenida', {}, 'detenida')]:
+            b = self.fragmento(nombre, ['M-2'], cambio=dict(k=3, **cambio))
+            if nombre == 'detenida':
+                (b.parent / 'DETENCION.txt').write_text('fallo')
+            with self.assertRaisesRegex(ValueError, patron):
+                unir(paths[:2] + [b], casos)
 
 
 if __name__ == '__main__':
