@@ -1,6 +1,6 @@
 # ADR-088 — RIGE evalúa las acciones sobre archivos con la ruta relativa al árbol de trabajo, como OpenCode, y detecta las reglas de permiso que no pueden coincidir por su forma de ruta
 
-- Estado: aceptado (14/10/2026)
+- Estado: aceptado (14/10/2026); modificado el 22/10/2026, después de la línea de base de ADR-098 (absorbe el ex ADR-100). **Pendiente:** aceptación del autor de la modificación
 - Fecha: 14/10/2026
 - **Origen posterior al resultado:** el mecanismo se observó en la línea de base de modificación (ADR-086). Se fija antes de construir el evaluador de RF-02 y antes del corte del 07/11/2026.
 - Capítulos afectados: Cap. III (Anexo I, RF-02 y RF-07); Cap. I (I.2.4, OE-2 y OE-3); `03-requisitos/libro/catalogo/RF-02.md` y `RF-07.md`; manifiesto de aceptación (ADR-080); Cap. VI (estrategia de pruebas)
@@ -56,3 +56,24 @@
 - `01-relevamiento/linea-base/verificacion/20261014-tareas-modificacion/captura-binario-20261014.txt`
 - `01-relevamiento/linea-base/verificacion/20261014-analisis-LB-mod/` (incluida `verificacion-nativa-ruta/`)
 - `03-requisitos/libro/catalogo/RF-02.md`, `RF-07.md`; `00-gestion/decisiones/ADR-080-conjunto-escenarios-aceptacion-sin-retiro.md`
+
+### Modificación del 22/10/2026 (después de la línea de base de ADR-098)
+
+**Origen:** en la línea de base de ADR-098, los 5 problemas con éxito declarado falso tienen un único mecanismo observado: la regla de permiso escrita con ruta absoluta (ADR-098, Contexto 16). Esta modificación se decide **después del dato** y absorbe el ex ADR-100, cuyo número se retira.
+
+1. **RF-02, CA-9 precisado** (decisión del autor del 22/10/2026). Abarca **archivos o directorios** del árbol de trabajo y suma el escenario de **exposición**: con reglas `read` que declaran con acción `deny` la ruta absoluta de `config/credenciales.json` y la del directorio `privado`, sin otra regla `read`, RIGE informa «permitida» para los dos por ambas formas de consulta, igual que OpenCode. Texto vigente en `03-requisitos/libro/catalogo/RF-02.md` y en el Anexo I. Los dos escenarios entran en el manifiesto de ADR-080 (pendiente LB-04).
+2. **RF-07, CA-5 nuevo: forma que coincide** (decisión del autor del 22/10/2026, alternativa B del ex ADR-100).
+   - **Alternativas evaluadas:**
+     - A: sin cambios, solo diagnóstico.
+     - **B: el hallazgo informa también la forma que coincide, verificada por el evaluador.** Es la elegida.
+     - C: proponer declaraciones a partir de una intención. Queda como línea futura.
+     - D: explicar mejor la documentación. Se descarta porque la documentación no describe el mecanismo.
+   - **Fundamento:** la corrección se deriva de la regla ya escrita (se quita el prefijo del árbol de trabajo) y se verifica con el mismo evaluador que RF-02. No interpreta intenciones.
+   - **Criterio de aceptación:** «Cuando la causa de una regla de permiso sin efecto es una ruta absoluta dentro del árbol de trabajo, el hallazgo informa además la forma relativa al árbol de trabajo y la decisión que produciría, verificada con el evaluador de RIGE. Sobre el entorno de CA-1, para la regla `read` que declara la ruta absoluta de `src/productos.js` con acción `allow`, el hallazgo informa la forma `src/productos.js` y la decisión «permitida». Si la forma relativa no produce la acción declarada, el hallazgo no informa forma alguna.»
+   - **Condición que la invalida:** que la forma relativa no produzca en OpenCode 1.18.25 la decisión declarada en algún caso del banco, o que el evaluador no reproduzca el directorio como OpenCode.
+   - **Consecuencias:**
+     - CA-5 se agrega en el libro y en el Anexo I.
+     - Se suma una tarea del escritor junto con LB-04, antes del corte del 07/11.
+     - La medición de noviembre agrega, para el brazo con RIGE indicado, la proporción de problemas de E2 corregidos al primer intento, en forma descriptiva.
+     - Fila R-06 en el registro de cambios para la referente.
+3. **Evidencia:** `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/casos-con-error.md` y ADR-098, Contextos 16 y 17.

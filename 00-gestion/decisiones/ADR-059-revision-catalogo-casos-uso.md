@@ -1,6 +1,6 @@
 # ADR-059 — Revisión del catálogo de requisitos y del modelo de casos de uso antes del diseño detallado
 
-- Estado: aceptado (29/09/2026)
+- Estado: aceptado (29/09/2026); consolidado el 22/10/2026 con ADR-064, 073 (absorbidos al final, con su texto completo). **Pendiente:** aceptación del autor de la consolidación
 - Fecha: 29/09/2026
 - Capítulos afectados: Cap. III (III.2 Tabla 5; III.3; III.4, fila de L-06; III.5 y Anexo I); Cap. V (V.1 Tabla 14; V.2; V.4 Tablas 18 y 19; V.5 Tablas 20 y 21); Cap. I del AE1 (I.2, OE-3; I.6.3, Tabla 8), por la Ventana; libro (catálogo, `trazabilidad.md`, `iteraciones.md`)
 - Origen: sesión de diseño del 29/09/2026. Revisión crítica de los 23 requisitos y los 5 casos de uso, pedida por el autor para que las prioridades del período y la formulación heredada no condicionen el diseño más de lo necesario
@@ -207,3 +207,202 @@ Modificación del autor respecto de la propuesta: el caso nuevo toma el número 
 - `00-gestion/reglas-catedra.md` §6
 - ADR-019, ADR-032, ADR-051, ADR-056, ADR-058
 - Sesión de diseño del 29/09/2026
+
+### Absorbido el 22/10/2026: ADR-064 — Horas de los requisitos incorporados por ADR-059: RNF-10 dentro de la incorporación del evaluador, RNF-09 con una hora en la iteración 1, RF-16 con tres horas en la iteración 2, financiadas con la estabilización
+
+Texto completo del ADR absorbido, sin cambios salvo el nivel de los títulos. Su archivo se eliminó (queda en el historial de git).
+
+- Estado: aceptado (29/09/2026)
+- Fecha: 29/09/2026
+- Capítulos afectados: Cap. V (V.1, orden de construcción; V.4, párrafo de capacidad, Tablas 18 y 19 y Figura 3); Cap. III (III.3, último párrafo); Cap. X (X.1); Instrumento 34; libro (`iteraciones.md`); `tools/figura_cronograma.py`
+- Origen: sesión de diseño del 29/09/2026. ADR-059 incorporó tres requisitos Must (RF-16, RNF-09, RNF-10) y dejó sus horas a decisión del autor (AR-07)
+- Relacionado: **modifica** ADR-052 en la distribución de horas por tarea y en la fila 7 de la Tabla 19. Se mantienen el presupuesto (190 h: 136 técnicas y 54 de reserva), la capacidad por días y la contingencia de un tercio. Sigue el precedente de D-38 (Anexo III)
+
+#### Contexto
+
+El plan de ADR-052 cierra con dos restricciones exactas:
+- **Las 136 h técnicas se asignan completas** en la Tabla 18 (34, 57, 30 y 15 h). La reserva de 54 h no es margen de contingencia: está comprometida con entregables de fecha fija y con la línea de base (ADR-052, P-B y C-D).
+- **La cláusula de contingencia absorbe 45 h** (un tercio), en siete órdenes de postergación. El último reduce la estabilización de 15 h a 5 h y libera 10 h.
+
+ADR-059 agregó tres requisitos Must sin horas. La Tabla 18 ya contiene, en la iteración 2, la tarea «Incorporación del evaluador de permisos de OpenCode, con atribución» (10 h).
+
+#### Alternativas evaluadas
+
+**Estimación** (juicio del ingeniero, que el autor acepta):
+- **RNF-10:** 0 h adicionales. Se incorpora a la tarea del evaluador, que ya incluye la atribución.
+- **RNF-09:** +1 h sobre la tarea «Interfaz mínima de selección del proyecto y consulta» de la iteración 1 (4 h → 5 h).
+- **RF-16:** +3 h, en una tarea nueva de la iteración 2.
+- *Alternativa descartada:* absorber las tres sin horas.
+
+**Financiamiento de las 4 h**
+- **F-A:** tomarlas de la estabilización de la iteración 4 (15 h → 11 h) y reescribir la fila 7 de la Tabla 19 como «Estabilización, reducida de 11 h a 1 h», que libera las mismas 10 h.
+- **F-B:** tomarlas de la estabilización y agregar a la Tabla 19 la postergación de la vista web del listado de agentes.
+- **F-C:** tomarlas de la reserva documental.
+- **F-D:** elevar el total técnico a 140 h.
+
+#### Análisis (trade-offs)
+
+**Estimación.**
+- Absorber RNF-09 y RF-16 sin horas ajusta la estimación para que la cuenta cierre. Es el criterio que el proyecto ya descartó en D-38.
+- RNF-10 sí está contenido en una tarea existente, cuyo enunciado nombra la atribución.
+- RNF-09 son dos funciones que envuelven al servidor y tres pruebas (ADR-058, convención 6).
+- RF-16 se apoya en la Resolución, que ya contiene los agentes. El trabajo es el subcomando, la vista web, la identificación de los nativos (condicionada a H-18) y las pruebas.
+
+**Financiamiento.**
+- **F-A** conserva el tope de 136 h y el tercio exacto de la contingencia. Sigue el precedente de D-38 (la iteración 2 tomó 2 h del margen de estabilización).
+  - Costo: la estabilización baja a 11 h en el plan y, en el peor escenario de contingencia, a 1 h en lugar de 5 h.
+  - Se sostiene porque la cuarta iteración no incorpora funcionalidad, y las acreditaciones de RNF-06 y RNF-07, que son Should, ya son lo primero que cae (Tabla 19, orden 1).
+- **F-B** reduce menos la estabilización en el peor caso, pero agrega una postergación que deja un Must sin parte de su criterio (CA-3 de RF-16, coincidencia entre interfaces) y complica la cláusula.
+- **F-C** contradice ADR-052, que separa la reserva de la contingencia.
+- **F-D** declara horas que no existen.
+
+**Capacidad por días** (V.4): con 35, 60, 30 y 11 h sobre capacidades de 28, 59, 33 y 16 h:
+- la iteración 1 excede en 7 h (antes 6) y la 2 en 1 h;
+- la holgura de la 3 y la 4 (3 y 5 h) compensa esas 8 h;
+- el total sigue en 136 h, y el argumento de V.4 (el exceso de la primera pasa a la segunda por el criterio de corte) se mantiene.
+
+#### Recomendación y fundamento
+
+Estimación 0 + 1 + 3 y financiamiento **F-A**. Es la única combinación que no infla ni recorta estimaciones, conserva el presupuesto y la contingencia de un tercio sin tocar la reserva, y sigue un precedente ya aceptado.
+
+**Condición que invalidaría la decisión:**
+- Que la iteración 1 cierre con un desvío mayor que el declarado, de modo que la holgura de las iteraciones 3 y 4 no alcance.
+- Que la verificación de H-18 resulte negativa y RF-16 se reduzca a los agentes declarados. En ese caso sobran horas y vuelven a la estabilización.
+
+#### Decisión del autor
+
+Aceptado por el autor el 29/09/2026, en la sesión de diseño, al confirmar la estimación (0 + 1 + 3 h) y la opción F-A.
+
+#### Consecuencias
+
+- **Tabla 18** (libro e informe):
+  - iteración 1: «Interfaz mínima…» pasa a RF-01 y RNF-09, con 5 h; subtotal 35;
+  - iteración 2: la tarea del evaluador cita RF-02 y RNF-10; se agrega «Listado de los agentes declarados y nativos, por ambas interfaces» con RF-16 y 3 h; subtotal 60;
+  - iteración 4: 11 h;
+  - total: 136.
+- **Tabla 19:**
+  - orden 1 agrega RF-12 a los Should sin horas;
+  - orden 7: «Estabilización, reducida de 11 h a 1 h», 10 h, acumulado 45.
+- **V.4:** el párrafo de capacidad pasa a 35, 60, 30 y 11 h, con exceso de 7 y 1 h y holgura de 3 y 5 h. El párrafo de Should dice seis e incluye RF-12. La Figura 3 se regenera.
+- **V.1, orden de construcción:**
+  - RNF-09 se construye con la interfaz del v1;
+  - RNF-10, con la incorporación del evaluador;
+  - RF-16, después de la verificación de H-18.
+- **III.3:** se retira el marcador de horas pendientes.
+- **X.1 e Instrumento 34:** «catorce» pasa a «diecisiete» requisitos Must. Las 136 h y el costo no cambian.
+- **ADR-052:** nota de modificación.
+- **Anexo III:** fila D-55.
+- **`tools/figura_cronograma.py`:** datos de las tareas actualizados.
+
+#### Evidencia
+
+- ADR-052 (presupuesto, P-B, C-D, Tabla 19)
+- ADR-059 (requisitos nuevos)
+- ADR-058, convención 6
+- Anexo III, D-38
+- `03-requisitos/libro/iteraciones.md` (Tablas 18 y 19)
+- `informe/cap-05/V.4-cronograma.md` (párrafo de capacidad por días)
+- Sesión de diseño del 29/09/2026
+
+
+### Absorbido el 22/10/2026: ADR-073 — RF-17 (conservación y recuperación de la resolución) y ajustes de criterio en RF-03, RF-04 y RF-10
+
+Texto completo del ADR absorbido, sin cambios salvo el nivel de los títulos. Su archivo se eliminó (queda en el historial de git).
+
+- Estado: aceptado (01/10/2026)
+- Fecha: 01/10/2026
+- Capítulos afectados: Cap. III (III.3 Tabla 7, III.5, Anexo I); Cap. V (V.1, V.5); libro (catálogo, trazabilidad, `iteraciones.md`); cierra en parte PV-05, PV-08 y AR-08 (V-1)
+- Origen: análisis ingenieril de los RF pedido por el autor en el documento de correcciones (`documento_de_correcciones.md` (retirado; consta en el commit `dfaf300`), III.5), sesión del 01/10/2026
+
+#### Contexto
+
+El autor pidió revisar los RF desde la ingeniería: validez, completitud y la necesidad de requisitos nuevos. Se aplicaron las características de IEEE 29148 (necesario, singular, verificable, factible y trazable) sobre los 16 RF del catálogo (`03-requisitos/libro/catalogo/`). Surgieron cuatro hallazgos:
+
+1. **Ningún RF exige conservar ni recuperar la resolución.** El caso vertical del v1 escribe la resolución en el almacén y la recupera (V.5, párrafo del v1), y la guía exige que el v1 vaya de la interfaz a la persistencia y de vuelta (`reglas-catedra.md`, §7). Sin embargo, la persistencia solo se traza a una restricción (RNF-01) y a una regla (RR-01). El almacén está diseñado (ADR-023 y ADR-061), pero ningún requisito lo justifica. Además, E-02 del acta (identificar sobre qué estado de las entradas se resolvió) no tiene criterio de aceptación (PV-05).
+2. **RF-03:** E-01 del acta, que pide códigos de salida que distingan el error de la ausencia de resultado, no tiene criterio (PV-05). El CA-5 solo cubre el proyecto inexistente. El contrato ya está decidido en ADR-058 y ADR-069, e implementado en el incremento 0.
+3. **RF-04:** el CA-1 menciona «los siete tipos declarados», pero el repositorio no los enumera (PV-08). El criterio no se puede verificar.
+4. **RF-10:** el CA-3 compara con «el conjunto de herramientas que la herramienta ofrece en ejecución», lo que exige una sesión con un modelo. Eso no se puede reproducir y choca con RNF-05 (AR-08, V-1).
+
+#### Alternativas evaluadas
+
+**Eje P · Persistencia**
+- **P-A:** Requisito funcional nuevo (RF-17), Must, iteración 1.
+- **P-B:** Ampliar RNF-01 con la recuperación.
+- **P-C:** Sin cambio; la persistencia se sostiene en ADR-061.
+
+**Eje E · Pedidos E-01 y E-02 del acta**
+- **E-A:** E-01 como CA-6 de RF-03 y E-02 como CA-2 de RF-17.
+- **E-B:** Condiciones de diseño en el Cap. VI, como dice hoy III.1.
+
+**Eje T · Tipos de entrada de RF-04**
+- **T-A:** Enumerarlos en el criterio a partir del orden de aplicación verificado en ADR-060, punto 3.
+- **T-B:** Remitir a una lista del glosario.
+
+**Eje V · RF-10, CA-3**
+- **V-A:** Verificar contra la lista de herramientas que el código del tag filtra por permisos, sin ejecutar un modelo.
+- **V-B:** Eliminar el CA-3.
+
+#### Análisis (trade-offs)
+
+- **P-B** mezcla en un no funcional una capacidad y una restricción, y RNF-01 ya es una restricción validada. **P-C** deja sin trazar la estación de persistencia del v1, que es una pregunta probable del tribunal. **P-A** no suma horas, porque el almacén ya está planificado en la iteración 1 y diseñado en ADR-061 (retención de las últimas 20 resoluciones y tabla `entrada_leida`).
+- **E-A** vuelve verificables dos pedidos de la referente con trabajo ya decidido. **E-B** los deja sin criterio comprobable en el catálogo de esta entrega.
+- **T-A** deja el criterio autocontenido. **T-B** obliga a mantener la lista en dos lugares.
+- **V-A** conserva la intención del criterio, que es comprobar el efecto real de la configuración sobre las herramientas ofrecidas, con un oráculo local. **V-B** pierde esa verificación.
+
+#### Recomendación y fundamento
+
+**P-A + E-A + T-A + V-A.**
+
+**RF-17** (nuevo):
+- **Enunciado:** «RIGE conserva cada resolución de un proyecto con su fecha y el resumen de las entradas leídas, y permite recuperarla».
+- **Tipo y prioridad:** Funcional · Must.
+- **Motivo de la prioridad:** sostiene la estación de persistencia del caso vertical del v1 y permite identificar sobre qué estado de las entradas se resolvió (E-02).
+- **CA-1:** resuelto un proyecto del entorno controlado, la resolución queda guardada en el almacén propio con su fecha, y su recuperación devuelve los mismos valores, procedencias y declaraciones desplazadas que la consulta que la produjo.
+- **CA-2:** cada resolución declara el resumen del conjunto de entradas leídas. Si cambia el contenido de una entrada, una nueva resolución del mismo proyecto declara un resumen distinto (E-02).
+- **CA-3:** el almacén conserva las últimas 20 resoluciones de cada proyecto (ADR-061).
+- **Trazabilidad:** acta del 26/09/2026, E-02; ADR-023; ADR-061; V.5 (caso vertical del v1).
+- **Estado de validación:** Pendiente.
+- **Iteración prevista:** 1.
+- **¿Integra el MVP?:** Sí.
+
+**RF-03, CA-6** (nuevo): «El código de salida distingue el resultado del error: 0 cuando la consulta se resuelve, aun sin resultado (agente sin la clave consultada, acción compuesta), con el motivo en la salida; 1 ante un error de uso o de configuración (`configuracion-invalida`, `puerto-ocupado`); 70 ante un error interno. Los errores se emiten por el canal de error» (E-01; ADR-058, ADR-069).
+
+**RF-04, CA-1** (precisado): «Dado un escenario con entradas de los siete tipos (archivos globales, archivo indicado por `OPENCODE_CONFIG`, archivos del proyecto, archivos JSON de los directorios `.opencode` y de `OPENCODE_CONFIG_DIR`, Markdown de agentes, comandos y modos de esos directorios, `OPENCODE_CONFIG_CONTENT` y `OPENCODE_PERMISSION`), el sistema las lista todas, informa su orden de precedencia y distingue las que no son archivos». Las vías remotas y la administrada quedan fuera (III.4) y se declaran como no observadas (ADR-060). **Inferencia a confirmar por el autor:** la lista sale de ADR-060, punto 3, sin las tres vías que excluye III.4. No consta en el repositorio que los «siete tipos» originales sean exactamente estos.
+
+**RF-10, CA-3** (reescrito): «Ambos resultados coinciden con la lista de herramientas que el código de OpenCode 1.18.25 ofrece al modelo para ese agente tras aplicar sus permisos, obtenida sin ejecutar un modelo».
+
+**RF-05:** sin cambios. Se mantiene el rechazo de los resultados ante otra versión (L-05) y se prepara su argumento para la defensa. Su factibilidad depende de AR-06.
+
+**Condiciones que invalidarían la decisión:**
+1. **El tag no permite obtener sin un modelo la lista de herramientas ofrecidas.** Se aplica V-B.
+2. **Los «siete tipos» originales eran otros.** Se corrige la enumeración de RF-04.
+
+#### Decisión del autor
+
+**Aceptado por el autor el 01/10/2026** (`/aceptar ADR-073`): P-A + E-A + T-A + V-A, con RF-05 sin cambios.
+
+**Comentario del autor sobre los estados de validación:** precisar un criterio de aceptación no invalida un enunciado validado. RF-03, RF-04 y RF-10 conservan «Validado» y RF-07 vuelve a «Validado», porque la precisión de su CA-1 por ADR-060 no cambia su enunciado. Quedaban 20 de 27 validados.
+
+**Actualización del autor (01/10/2026):** según informa el autor, la referente validó verbalmente los siete requisitos posteriores a la sesión (RF-12, RF-14, RF-16, RF-17, RNF-04, RNF-09 y RNF-10). Se registran en una extensión del acta (`01-relevamiento/validacion/20260925_GuiaValidacion_Sanchez_v2.md`), cuya fecha y firma completa el autor (U-04). Las 27 fichas quedan en «Validado».
+
+**Registro de la validación (15/10/2026, ingeniero):** la extensión se hizo el 01/10/2026, en una conversación presencial sin registro escrito en la fecha, sobre el catálogo del commit `8343508`. La referente la firmó el 15/10/2026 en la constancia `01-relevamiento/validacion/20261015_ConstanciaEntrevistas_Sanchez_v1_firmada.pdf`, sección 3, que cubre además la relación «una declaración origina reglas de permiso» y las multiplicidades corregidas. El acta se restituyó a lo tratado el 26/09 y la extensión consta aparte. Esto responde a la pregunta 2 del Bloque A del dictamen DEV-AE2 14/2026.
+
+#### Consecuencias
+
+- **Recuentos:** 27 requisitos (17 funcionales y 10 no funcionales), con 18 Must, 6 Should, 2 Could y 1 Won't. El conjunto Must sigue coincidiendo con el MVP.
+- **Libro:** ficha nueva `RF-17.md`; RF-03, RF-04 y RF-10 actualizados; `trazabilidad.md`; `iteraciones.md` (RF-17 en la iteración 1).
+- **Informe:**
+  - III.5: recuentos y párrafo de trazabilidad;
+  - Anexo I: ficha de RF-17, criterios de RF-03, RF-04 y RF-10, y matriz;
+  - III.3, Tabla 7: RF-17 junto a F2 o a la persistencia;
+  - III.1: el cierre deja de remitir E-01 y E-02 al Cap. VI;
+  - V.1 y V.5: RF-17 en el v1.
+- **Pendientes:** PV-05 queda cerrado; PV-08 queda cerrado en lo que respecta a RF-04; AR-08 cierra V-1.
+- **Estados de validación:** los 27 requisitos quedan «Validado» (acta del 26/09/2026 y su extensión; ver la actualización del autor).
+
+#### Evidencia
+
+- `03-requisitos/libro/catalogo/RF-03.md`, `RF-04.md`, `RF-10.md`; `informe/cap-05/V.5-descripcion-producto-minimo-viable.md`, línea 34.
+- ADR-060, punto 3 (orden de aplicación en `opencode/src/config/config.ts:370-591`, tag v1.18.25).
+- ADR-058, ADR-061, ADR-069; acta del 26/09/2026, E-01 y E-02.
+
