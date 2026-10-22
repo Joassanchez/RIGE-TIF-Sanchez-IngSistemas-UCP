@@ -42,7 +42,7 @@ class ProcesoAnidadoTests(unittest.TestCase):
         self.assertEqual(estratos['E1']['sesiones_anidadas']['proporcion'], 1)
         self.assertEqual(estratos['E2']['sesiones_anidadas']['proporcion'], 0)
         self.assertEqual(estratos['E1']['sesiones_anidadas']['tokens']['tokens_entrada'], 20)
-        self.assertEqual(estratos['E2']['verificacion_y_exito_falso']['declarativa']['exito_declarado_falso'], 1)
+        self.assertEqual(estratos['E2']['verificacion_y_exito_falso']['declarativa']['exito_declarado_falso'], 0)
         informe = markdown_med9(dict(ensayo=True, nota='sintético', dimension='ecologica', grupos={'fixture': dict(
             valida=False, criterio_ADR093_valido=False, rama_respaldo=None, motivos_invalidez=[],
             tareas={'LB': tabla(rows, 'ecologica')}, estratos={'LB': estratos}, defectos={})}))

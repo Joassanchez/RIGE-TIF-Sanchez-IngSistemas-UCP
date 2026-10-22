@@ -95,3 +95,16 @@ En los dos ejecutores, M-1, M-2 y M-10 dan 3/3 y el resto de M, 0/3. El patrón 
 - **M-1, M-2, M-10 y N-23:** RF-02 CA-9.
 - **N-14:** `[VERIFICAR]` (eje `list` frente a `read`).
 - **N-21:** el banco no tiene declarada su cobertura.
+
+## Reanálisis con MED-17 (22/10/2026)
+
+Los `informe.md` de esta carpeta son los del reanálisis con MED-17, que aplica la lectura principal de ADR-098, punto 5 (Contexto 17). En la principal, el colateral de batería pasa a exceso de alcance; la lectura preregistrada se conserva. El contraste de Charles se analizó con `--reemplazo`: M-8:1 queda sustituida por su repetición y figura en `filas_reemplazadas`. Las seis dimensiones salen válidas.
+
+| Dimensión | E2, lectura principal (≥ 2/3) | E2, preregistrada | E1 | E4 |
+|---|---|---|---|---|
+| Ecológica · `build` | M-1, M-2, M-10, N-14, N-23 | más N-21 | ninguna | S-1 |
+| Ecológica · Charles | M-1, M-2, M-10, N-14, N-23 | más N-21 | ninguna | S-1 |
+| Contraste · `build` | M-1, M-10 | más M-2 | — | — |
+| Contraste · Charles | M-1, M-2, M-10 | igual | — | — |
+
+Los `analisis.json` completos quedan archivados en `C:/Users/Joa/archivo-linea-base/final-med17-analisis.tar.gz` (SHA-256 `9bf8fcdb8edfefa3d31c1125dd930e2d28bbaaf5310b46c0cfcee5a8803c35d4`), con copia en OneDrive.

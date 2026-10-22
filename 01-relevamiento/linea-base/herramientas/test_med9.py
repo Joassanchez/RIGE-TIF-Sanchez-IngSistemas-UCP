@@ -232,7 +232,8 @@ class AnalisisTests(unittest.TestCase):
         e[1]['exito_declarado_falso'] = True
         datos = analisis.analizar_med9(e, 'ecologica', d)['grupos']['principal|openai/gpt-6.1-sol']
         self.assertTrue(datos['valida'])
-        self.assertEqual(datos['tareas_E2_con_problema_LB'], ['M-1'])
+        self.assertEqual(datos['tareas_E2_con_problema_LB'], [])
+        self.assertEqual(datos['lectura_preregistrada']['LB']['E2']['tareas_con_problema'], ['M-1'])
         self.assertTrue(datos['rama_respaldo'])
         self.assertEqual(datos['tareas']['LB']['M-1']['mediana_tokens'], 150)
         for r in e:

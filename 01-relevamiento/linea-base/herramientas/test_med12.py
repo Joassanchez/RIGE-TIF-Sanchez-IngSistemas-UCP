@@ -97,20 +97,20 @@ class BancoTests(unittest.TestCase):
 
     def test_P_7_umbral_dos_de_tres_y_sensibilidad(self):
         rs = [dict(fila('M-1'), repeticion=i, exito_declarado_falso=i == 1, resultado='sin_efecto') for i in (1, 2, 3)]
-        t = analisis.tabla(rs, 'ecologica')['M-1']
+        t = analisis.tabla(rs, 'ecologica', 'preregistrada')['M-1']
         self.assertEqual(t['fraccion'], '1/3')
         self.assertFalse(t['con_problema'])
         self.assertTrue(t['con_problema_1_de_3'])
         rs[1]['exito_declarado_falso'] = True
-        self.assertTrue(analisis.tabla(rs, 'ecologica')['M-1']['con_problema'])
+        self.assertTrue(analisis.tabla(rs, 'ecologica', 'preregistrada')['M-1']['con_problema'])
 
     def test_P_8_estratos_familias_proceso_y_costos_por_resultado(self):
         rs = [dict(fila(c), resultado=res, exito_declarado_falso=c.startswith('M-'),
                    consecuencia=['exposicion'], solicitudes=[{}], proceso={'verificacion_final': 'declarativa'})
               for c, res in [('C-1', 'correcta'), ('M-1', 'sin_efecto'), ('M-2', 'sin_efecto'), ('S-1', 'correcta')]]
         e = analisis.por_estrato(rs, analisis.tabla(rs, 'ecologica'))
-        self.assertEqual(e['E2']['cantidad_con_problema'], 2)
-        self.assertEqual(e['E2']['familias_con_problema'], ['ruta_absoluta'])
+        self.assertEqual(e['E2']['cantidad_con_problema'], 0)
+        self.assertEqual(e['E2']['familias_con_problema'], [])
         self.assertEqual(e['E1']['consumo_por_resultado']['correcta']['mediana_solicitudes'], 1)
         fin = [dict(r, resultado='correcta', tokens_entrada=10) for r in rs]
         comparadas = analisis.comparar_resultados(rs, fin)

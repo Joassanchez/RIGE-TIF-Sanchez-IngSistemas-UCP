@@ -28,10 +28,10 @@ class AnalisisMED15Tests(unittest.TestCase):
         cambiar(rows, 'C-6', ['colateral'] * 3)
         datos, g = analizar(rows)
         self.assertTrue(g['valida'])
-        self.assertEqual(g['E1_con_problema'], ['C-6'])
-        self.assertIn('C-6', g['estratos']['LB']['E1']['tareas_con_problema'])
+        self.assertEqual(g['E1_con_problema'], [])
+        self.assertIn('C-6', g['lectura_preregistrada']['LB']['E1']['tareas_con_problema'])
         informe = analisis.markdown_med9(datos)
-        self.assertIn('Pedidos comunes con éxito declarado falso (resultado, no invalida; ADR-098, Contexto 14): [\'C-6\']', informe)
+        self.assertIn('Pedidos comunes con éxito declarado falso (resultado, no invalida; ADR-098, Contexto 14): []', informe)
 
     def test_A_2_E1_censurada_invalida(self):
         rows = filas()
@@ -49,8 +49,9 @@ class AnalisisMED15Tests(unittest.TestCase):
         self.assertEqual(rows, original)
         principal = g['estratos']['LB']['E2']
         sensibilidad = g['sensibilidad_sin_colateral']['LB']['E2']
-        self.assertTrue(principal['tareas']['M-1']['con_problema'])
-        self.assertEqual(principal['tareas']['M-1']['fraccion'], '3/3')
+        self.assertFalse(principal['tareas']['M-1']['con_problema'])
+        self.assertEqual(principal['tareas']['M-1']['fraccion'], '0/3')
+        self.assertEqual(g['lectura_preregistrada']['LB']['E2']['tareas']['M-1']['fraccion'], '3/3')
         self.assertEqual(sensibilidad['tareas']['M-1']['fraccion'], '0/3')
         self.assertFalse(sensibilidad['tareas']['M-1']['con_problema'])
         self.assertFalse(sensibilidad['tareas']['M-1']['con_problema_1_de_3'])
@@ -85,12 +86,13 @@ class AnalisisMED15Tests(unittest.TestCase):
         # respectivamente; el resto 0/3. No depende del cálculo de sensibilidad.
         previo = {'M-1': ('3/3', True, True), 'M-2': ('2/3', True, True),
                   'S-1': ('1/3', False, True)}
-        for c, t in g['tareas']['LB'].items():
+        for c, t in {c: t for estrato in g['lectura_preregistrada']['LB'].values()
+                     for c, t in estrato['tareas'].items()}.items():
             self.assertEqual((t['fraccion'], t['con_problema'], t['con_problema_1_de_3']),
                              previo.get(c, ('0/3', False, False)))
         self.assertTrue(g['valida'])
         self.assertEqual(g['motivos_invalidez'], [])
-        self.assertEqual(g['tareas_E2_con_problema_LB'], ['M-1', 'M-2'])
+        self.assertEqual(g['tareas_E2_con_problema_LB'], ['M-2'])
         self.assertEqual(g['estratos']['LB']['E2']['familias_con_problema'], ['ruta_absoluta'])
         self.assertEqual(g['estratos']['LB']['E1']['tareas_con_problema'], [])
         self.assertEqual(g['estratos']['LB']['E4']['tareas_con_problema'], [])

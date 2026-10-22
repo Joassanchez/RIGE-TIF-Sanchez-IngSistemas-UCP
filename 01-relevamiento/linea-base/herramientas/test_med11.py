@@ -111,7 +111,7 @@ class ExploracionTests(unittest.TestCase):
             if dim == 'ecologica':
                 self.assertNotIn('ID-1', md)
                 self.assertIn('falló en la única ejecución', md)
-                self.assertEqual(set(g['mecanismos_exito_declarado_falso']), {'N-1', 'N-5'})
+                self.assertEqual(set(g['mecanismos_exito_declarado_falso']), set())
             else:
                 self.assertIn('detectado o no', md)
                 rows[0]['detectados'].remove('D1')
@@ -153,7 +153,8 @@ class ExploracionTests(unittest.TestCase):
         datos = analisis.analizar_med9(rows, 'ecologica')
         g = datos['grupos']['principal|openai/gpt-6.1-sol']
         self.assertTrue(g['valida'])
-        self.assertEqual(g['tareas_E2_con_problema_LB'], ['V-7'])
+        self.assertEqual(g['tareas_E2_con_problema_LB'], [])
+        self.assertEqual(g['lectura_preregistrada']['LB']['E2']['tareas_con_problema'], ['V-7'])
         self.assertEqual(g['mecanismos_exito_declarado_falso'], {})
         self.assertIn('V-7', g['valores_exploratorios']['LB'])
         self.assertIn('### Valores', analisis.markdown_med9(datos))

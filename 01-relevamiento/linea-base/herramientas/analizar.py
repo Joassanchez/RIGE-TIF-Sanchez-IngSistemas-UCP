@@ -333,7 +333,7 @@ def markdown(datos):
     return '\n'.join(lines) + '\n'
 
 
-def cargar(paths, evidencia=False):
+def cargar(paths, evidencia=False, reemplazos=(), filas_reemplazadas=None):
     rows = []
     for path in paths:
         rs = leer_jsonl(path)
@@ -359,6 +359,25 @@ def cargar(paths, evidencia=False):
             for r in rs:
                 r['_directorio_registro'] = str(path.parent.resolve())
         rows.extend(rs)
+    campos = ('dimension', 'ejecutor', 'modelo', 'brazo', 'condicion', 'caso',
+              'repeticion', 'ensayo', 'fuera_del_arbol')
+    def clave(r):
+        return tuple(bool(r.get(k)) if k in ('ensayo', 'fuera_del_arbol') else
+                     r.get(k, 'atribucion' if k == 'dimension' else None) for k in campos)
+    sustituidas = set()
+    for path in reemplazos:
+        for nueva in cargar([path], evidencia=evidencia):
+            key = clave(nueva)
+            indices = [i for i, r in enumerate(rows) if clave(r) == key]
+            if len(indices) != 1 or key in sustituidas:
+                raise ValueError(f'Reemplazo sin original único o repetido: {key}')
+            i = indices[0]
+            if not rows[i].get('registro_incompleto'):
+                raise ValueError(f'Reemplazo de fila completa no permitido: {key}')
+            if filas_reemplazadas is not None:
+                filas_reemplazadas.append(dict(archivo_reemplazo=str(path), original=rows[i], reemplazo=nueva))
+            rows[i] = nueva
+            sustituidas.add(key)
     return rows
 
 
@@ -369,21 +388,29 @@ def main():
     parser.add_argument('--piloto', nargs='+', type=Path, default=[])
     parser.add_argument('--dimension', choices=['atribucion', 'modificacion', 'ecologica', 'deteccion'], default='atribucion')
     parser.add_argument('--complemento', nargs='+', type=Path, default=[], help='MED-9: registros corregidos de la otra dimensión para la rama de respaldo.')
+    parser.add_argument('--reemplazo', action='append', type=Path, default=[], help='Sustituir filas incompletas; se puede repetir.')
     parser.add_argument('--destino', type=Path, required=True)
     parser.add_argument('--tarifas', type=Path, default=Path(__file__).resolve().parents[1] / 'tarifas-congeladas-20261001.json')
     args = parser.parse_args()
+    filas_reemplazadas = []
+    try:
+        rows = cargar(args.registros, evidencia=bool(args.sonda), reemplazos=args.reemplazo,
+                      filas_reemplazadas=filas_reemplazadas)
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.dimension in ('ecologica', 'deteccion'):
         if args.sonda or args.piloto:
             parser.error('MED-9 no usa las sondas ADR-089 ni piloto.')
         from analizar_ecologica import analizar_med9, markdown_med9
-        datos = analizar_med9(cargar(args.registros), args.dimension, cargar(args.complemento))
+        datos = analizar_med9(rows, args.dimension, cargar(args.complemento))
     elif args.sonda:
         if args.piloto:
             parser.error('Las sondas no admiten piloto.')
         from analizar_sondas import analizar_sonda, markdown_sonda
-        datos = analizar_sonda(cargar(args.registros, evidencia=True), args.sonda, args.dimension)
+        datos = analizar_sonda(rows, args.sonda, args.dimension)
     else:
-        datos = analizar(cargar(args.registros), cargar(args.piloto), json.loads(args.tarifas.read_text(encoding='utf-8')), args.dimension)
+        datos = analizar(rows, cargar(args.piloto), json.loads(args.tarifas.read_text(encoding='utf-8')), args.dimension)
+    datos['filas_reemplazadas'] = filas_reemplazadas
     args.destino.mkdir(parents=True, exist_ok=True)
     escribir_json(args.destino / 'analisis.json', datos)
     informe = markdown_med9(datos) if args.dimension in ('ecologica', 'deteccion') else (markdown_sonda(datos) if args.sonda else markdown(datos))
