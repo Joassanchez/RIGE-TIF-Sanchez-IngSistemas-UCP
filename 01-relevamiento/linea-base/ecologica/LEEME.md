@@ -193,8 +193,7 @@ no una nueva verificación nativa del escritor.
   proyecto/DIR, con la exclusión de configuración del proyecto y git propio.
   Compara `debug agent` completo dentro y fuera del proyecto al inicio y al
   final de cada tanda ecol?gica; detecci?n conserva el control por intento.
-  V-1, con un modelo de caso distinto, permite comprobar la separación de modelos
-  sin modificar el caso C-1a cerrado.
+  V-1, con un modelo de caso distinto, permite comprobar la separación de modelos.
 - El `opencode` del PATH delega en `como-dev`, conserva argumentos y elimina
   `OPENCODE_DISABLE_PROJECT_CONFIG` y el proveedor auxiliar del evaluador.
   Compara su `debug config` con el del participante. Registra el control en
@@ -356,8 +355,8 @@ por CLI, con evidencia temporal externa. No se editan pruebas históricas.
 ## Oráculo optimizado (MED-9c)
 
 Reconstruir la imagen antes de ensayar o medir. Las 24 ejecuciones parciales del
-15/10 descartadas por el autor no se unen a estas tandas. Detección, atribución,
-modificación y sondas conservan sus recorridos. Los comandos anteriores siguen
+15/10 descartadas por el autor no se unen a estas tandas. Detección conserva
+su recorrido. Los comandos anteriores siguen
 vigentes: `contenedor.sh` administra automáticamente estas dos fases ecológicas:
 
 1. `medir.sh --preparar-base`: controles de aislamiento iniciales y batería común

@@ -35,3 +35,22 @@ Mismo procedimiento. Están en `C:/Users/Joa/archivo-linea-base/`, con copia en 
 | `rige-ensayo-med14-20261020` | Ensayo final después de MED-14 | 23.161 | `79aea6df4fbdbdfbab105b67baac57e23f8ddc3d44a218448ff404875a08dcac` | `638a0b955d8a0ddb2dcdb0230087bb5aa33bad23aee94a6afe66a662f010b051` |
 | `rige-ensayo-med16-20261021` | Ensayo final después de MED-16 | 23.161 | `9b1f3e4cc4d8feb14a67b59344c7a91c79679b657a840a96ab73ad345820b337` | `c3b03516a9b50c4aa0efde645d670cead840799fdd8b82524004418b1ba58973` |
 | `rige-LB-20261020-descartada` | Primera tanda, detenida en la fase base, sin agentes (Contexto 13) | 8 | `f09feb95983808435db1bc425a959de6b85f3750b5b057343c0f2f65bb555de7` | `c0378df34645e3e556d5e1e158f655b79c6c7a9b815cc965b51b16df868fe77c` |
+
+## Tandas crudas anteriores a ADR-098 (archivadas el 22/10/2026)
+
+Datos crudos de las tandas de atribución, modificación y sondas del 13 y 14/10/2026. Salen de `verificacion/` para dejar en el repositorio solo la medición vigente. Siguen en el repositorio sus análisis (`20261014-analisis-LB/`, `20261014-analisis-LB-mod/`, `20261014-analisis-sondas-p3/` y `20261014-adjudicacion-autor/`), que el Anexo VI cita como antecedente, y `20261013-LB-principal-sol/registro.jsonl`, que cita ADR-098 en el Contexto 8. Mismo procedimiento. Están en `C:/Users/Joa/archivo-linea-base/`, con copia en OneDrive verificada con `HASHES-20261022.txt`. Cada `.tar.gz` se extrajo y se comprobó contra su `.SHA256SUMS` antes de borrar la carpeta: 0 diferencias. La carpeta también queda en el historial de git, hasta el commit `cafdb4b`.
+
+| Carpeta | Qué es | Archivos | `.tar.gz` | `.SHA256SUMS` |
+|---|---|---|---|---|
+| `20261013-LB-charles-sol` | Atribución, Charles | 517 | `ff1fb9bc89fd57a403fb19949efead236b5ea3b72beb0a34bc18631e933842f4` | `77c5b95a0525e8cd2d93b94826e65653936ef257f359b2048f987d86337ae1d7` |
+| `20261013-LB-principal-sol` | Atribución, `build` (incluye `registro.jsonl`, que se conserva en el repositorio) | 517 | `0ca4dab51b9637a09b678470351d6e7037a363c5ba167ebeab6f2789c044d47e` | `38a02bf4ac8079a65dcdc019c6cc1fbbc88beebb0f1b65a1fa87b3eaed6037d9` |
+| `20261014-LB-mod-charles-b-sol` | Modificación, Charles, repetición de C-3b | 276 | `ae108374303acddd9e8507f70aa24b237cfba86e6df795286d158de04162f72b` | `418769ebf63bcf6642c6a7785c20a564f01052b4116a31f466f5f1ee19aa4ad4` |
+| `20261014-LB-mod-charles-sol` | Modificación, Charles | 2.141 | `4f72a66988acfb52465e1c6b47e83e24e70b0c86c33048bd09994ce1a3c4acd8` | `a4293ad498c86cf8f1c9c57e9e183cddfe6bad30acdc87ab48061a56c8b70d5f` |
+| `20261014-LB-mod-principal-sol` | Modificación, `build` | 2.312 | `58729a23a413b9cf28659fffa9964c8f6d824f57910df0c650ea00205149029b` | `8ff4c16e8aa7181fea956c2a3084a3473e77a6998328b6e8f7af6416006d3509` |
+| `20261014-LB-p3-luna` | Atribución, P3 (`gpt-6-luna`) | 517 | `ed9f12bbcfa7903649d4d526d96902a972846de7a2ac95ef75b85706dbf20112` | `a4cea32c5e6de745293893690e85e24df23ba1671c6b0dce17bcd8d3cdcc9e35` |
+| `20261014-sonda-E-charles` | Sonda E, Charles | 383 | `b47c5b96e90814d65a84c2d8f8d6dae13ff57f15b89b35098e8e4892bacaa4db` | `e943cfad64d52c73597f8c1bc1dc4741fe73aa39ca3c463a785d78a6adcdacfd` |
+| `20261014-sonda-E-charles-b` | Sonda E, Charles, segunda tanda | 353 | `d184a22837a16b5034ab8475c7de5c77d06779ae5d5eeecc25e87f4ae6c86e29` | `f670550c6c801721e616175a6c177729440dd42f0f1ab0502148ab539a21649a` |
+| `20261014-sonda-E-principal` | Sonda E, `build` | 383 | `1c62ec2742a7eee4591c8da8526186d2de633395c383398d2df3d62ad9a23856` | `3c9cb7183e3d8f5d1f19d4d43bb4bdb882aab0f63d8ac9cdd5f13ed097f57b57` |
+| `20261014-sonda-E-principal-b` | Sonda E, `build`, segunda tanda | 260 | `7db8162f8c570d6798847b2c062b852de0ac54024f6b672f60622ad4961ac70c` | `2d4746c250170ae4ea4b36b7cc955614b4fdbb28dcced445ff5088d5c89c8ef0` |
+| `20261014-sonda-R-charles` | Sonda R, Charles | 55 | `ca2af1128c468f65b89f2ed232dc3aafd2930799f9a0482b133853c022f0f3b9` | `61ff3b4258f6246a6a6c70b8753eabf4cd563523ec1d2e4126001fc626e22110` |
+| `20261014-sonda-R-principal` | Sonda R, `build` | 55 | `97bce3efd9e75160482127c17d9932569a07ffcd2022530cca2f60f8b780f7f9` | `3dd1bbf99e4a5a8113eb3ca7cc4019535cf32e7bca4372f86c47401fcbf02879` |

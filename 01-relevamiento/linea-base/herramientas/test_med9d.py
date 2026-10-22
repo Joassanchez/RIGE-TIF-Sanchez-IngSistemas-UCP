@@ -41,12 +41,6 @@ class WebTests(unittest.TestCase):
                 self.assertEqual(datos['regla_acceso_web'], 'ADR-094')
                 self.assertIn('Con acceso web', eco.markdown_med9(datos))
 
-    def test_otras_dimensiones_siguen_invalidando_web(self):
-        for dimension in ('atribucion', 'modificacion'):
-            row = fixtures.fila('C-1a', dimension, resultado='correcta', acceso_web=0)
-            self.assertTrue(analizar.completa(row, dimension))
-            row['acceso_web'] = 1
-            self.assertFalse(analizar.completa(row, dimension))
 
     def test_cierre_faltante_o_fallido_de_deteccion_invalida(self):
         with tempfile.TemporaryDirectory() as tmp:

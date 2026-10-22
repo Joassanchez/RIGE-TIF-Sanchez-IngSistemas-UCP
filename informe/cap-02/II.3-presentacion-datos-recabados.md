@@ -30,9 +30,9 @@ Los valores agregados por estrato y ejecutor corresponden a la Tabla 4 del apart
 | N-23 (E2) | 3/3 | 3/3 | Ruta absoluta en regla `read` con `deny` | Exposición | Sí |
 | S-1 (E4) | 2/3 | 3/3 | Ruta absoluta en regla `read` | Bloqueo | Sí, en E4 |
 
-*Tabla 14. Éxito declarado falso por problema y ejecutor. Fuente: elaboración propia sobre `eco-principal/informe.md`, `eco-charles/informe.md` y los archivos finales documentados en `casos-con-error.md`, bajo `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/`. Las fracciones corresponden a la lectura principal; la última columna identifica la preregistrada de N-21.*
+*Tabla 14. Éxito declarado falso por problema y ejecutor. Fuente: elaboración propia sobre los informes ecológicos y los archivos finales documentados en el documento de casos con error de la medición del 20 y el 21/10/2026 (registro de la evidencia, Anexo VI, A.VI.11). Las fracciones corresponden a la lectura principal; la última columna identifica la preregistrada de N-21.*
 
-En la detección, realizada con el mismo arnés el 21/10/2026 sobre once defectos con tres repeticiones por ejecutor, D2 se detecta en 1/3 con `build` y 0/3 con Charles; N-23, en 0/3 y 1/3; y D5, en 0/3 y 1/3, respectivamente (`det-principal/informe.md` y `det-charles/informe.md`, en la misma carpeta de evidencia). La lectura de estos resultados corresponde al apartado I.3.2.
+En la detección, realizada con el mismo arnés el 21/10/2026 sobre once defectos con tres repeticiones por ejecutor, D2 se detecta en 1/3 con `build` y 0/3 con Charles; N-23, en 0/3 y 1/3; y D5, en 0/3 y 1/3, respectivamente (informes de detección, registro de la evidencia, Anexo VI, A.VI.11). La lectura de estos resultados corresponde al apartado I.3.2.
 
 El exceso de alcance se registra en el Anexo VI, A.VI.8.
 

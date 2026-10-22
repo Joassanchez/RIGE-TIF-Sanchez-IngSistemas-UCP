@@ -29,10 +29,9 @@ class BancoTests(unittest.TestCase):
         for c in NUEVAS[:6]:
             self.assertEqual(ESPEC[c]['variantes']['correcta'], ESPEC[c]['variantes']['obvia'])
 
-    def test_P_2_instrucciones_sin_hoja_atribucion_con_hoja(self):
+    def test_P_2_instrucciones_sin_hoja(self):
         for nombre in ('tareas.md', 'deteccion.md'):
             self.assertNotIn('hoja-referencia.md', (ROOT / 'ecologica' / nombre).read_text(encoding='utf-8'))
-        self.assertIn('hoja-referencia.md', (ROOT / 'vm/medir.sh').read_text(encoding='utf-8'))
 
     def test_P_3_bateria_plan_y_build(self):
         spec = importlib.util.spec_from_file_location('med12_arnes', ROOT / 'vm/simulado/ecologica.py')

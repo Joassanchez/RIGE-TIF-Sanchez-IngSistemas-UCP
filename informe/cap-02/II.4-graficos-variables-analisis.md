@@ -19,4 +19,4 @@ Cada fila de la Figura 3 corresponde a un problema de E2 y cada marcador indica 
 
 ![](../figuras/cap-02/figura-linea-base.png)
 
-*Figura 3. Éxito declarado falso por problema de E2 en la línea de base, con `build` y Charles. Eje horizontal: repeticiones de tres con éxito declarado falso. Eje vertical: problema de E2. n = 33 problemas, tres repeticiones por ejecutor, lectura principal. Fuente: elaboración propia sobre los informes del reanálisis del 22/10/2026 de la medición del 20 y el 21/10/2026, en `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/`.*
+*Figura 3. Éxito declarado falso por problema de E2 en la línea de base, con `build` y Charles. Eje horizontal: repeticiones de tres con éxito declarado falso. Eje vertical: problema de E2. n = 33 problemas, tres repeticiones por ejecutor, lectura principal. Fuente: elaboración propia sobre los informes del reanálisis del 22/10/2026 de la medición del 20 y el 21/10/2026 (registro de la evidencia, Anexo VI, A.VI.11).*

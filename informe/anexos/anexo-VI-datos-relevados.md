@@ -4,7 +4,7 @@
 
 La unidad del instrumento y los criterios C1 a C5 de inclusión se describen en el apartado II.2.1.
 
-El banco comprende 46 problemas: diez pedidos comunes de E1, 33 con mecanismo silencioso documentado de E2 y tres pedidos por síntoma de E4. La hoja queda cerrada el 19/10/2026; la admisión nativa vigente, realizada por el autor sin agente el 20/10/2026, reproduce 46 de 46 problemas con OpenCode y la batería vigente (`banco.md`, §§4.3.1 y 4.3.2). La Tabla A.VI.1 identifica cada problema; E4 se informa por separado de E2 para conservar la distinción entre un pedido preciso y su síntoma.
+El banco comprende 46 problemas: diez pedidos comunes de E1, 33 con mecanismo silencioso documentado de E2 y tres pedidos por síntoma de E4. La hoja queda cerrada el 19/10/2026; la admisión nativa vigente, realizada por el autor sin agente el 20/10/2026, reproduce 46 de 46 problemas con OpenCode y la batería vigente (banco, §§4.3.1 y 4.3.2; registro de la evidencia, A.VI.11). La Tabla A.VI.1 identifica cada problema; E4 se informa por separado de E2 para conservar la distinción entre un pedido preciso y su síntoma.
 
 | **Código** | **Estrato** | **Tipo** | **Pedido resumido** | **Mecanismo silencioso documentado** |
 |---|---|---|---|---|
@@ -55,9 +55,9 @@ El banco comprende 46 problemas: diez pedidos comunes de E1, 33 con mecanismo si
 | S-2 | E4 | Permiso | Pedir aprobación ante los borrados con `rm` | Orden de reglas con comodín, como M-7 |
 | S-3 | E4 | Permiso | Pedir aprobación ante la ejecución de `npm test` | Posición heredada al fusionar, como N-1 |
 
-*Tabla A.VI.1. Composición del banco. Fuente: `01-relevamiento/linea-base/ecologica/banco.md`, §§1 a 5, y `ecologica/tareas.md`, hoja cerrada el 19/10/2026; admisión nativa del 20/10/2026.*
+*Tabla A.VI.1. Composición del banco. Fuente: banco, §§1 a 5, y hoja de tareas cerrada el 19/10/2026; admisión nativa del 20/10/2026 (registro de la evidencia, A.VI.11).*
 
-Los retirados son N-8, por carecer de un inicializador determinista de aprobaciones persistidas; N-20, porque cerrar `bash` modifica diez sondas ajenas al objetivo; y N-22 y N-25, porque el comodín de `todowrite` y el patrón con `--`, respectivamente, funcionan en 1.18.25 y carecen del contraste requerido (`banco.md`, §§4.3.1 y 4.4).
+Los retirados son N-8, por carecer de un inicializador determinista de aprobaciones persistidas; N-20, porque cerrar `bash` modifica diez sondas ajenas al objetivo; y N-22 y N-25, porque el comodín de `todowrite` y el patrón con `--`, respectivamente, funcionan en 1.18.25 y carecen del contraste requerido (banco, §§4.3.1 y 4.4; registro de la evidencia, A.VI.11).
 
 El instrumento de atribución del 13/10/2026 y el de modificación del 14/10/2026 quedan como antecedentes, con sus datos en A.VI.8. La Tabla A.VI.2 conserva los 24 casos de atribución.
 
@@ -88,9 +88,7 @@ El instrumento de atribución del 13/10/2026 y el de modificación del 14/10/202
 | C-4e | Permisos combinados | Permiso | Decisiones para `webfetch` y edición de `src/productos.js` con `build`, con la regla y entrada de cada una. |
 | C-4f | Permisos combinados | Permiso | Decisión al modificar `src/productos.js` con `build`, regla y entrada determinantes. |
 
-*Tabla A.VI.2. Casos de atribución (antecedente). Fuente: elaboración propia sobre `01-relevamiento/linea-base/respuestas.md`, hoja cerrada el 13/10/2026.*
-
-La respuesta verificada de cada caso consta en esa hoja; el registro técnico del 13/10/2026 documenta la comprobación de los 24 casos contra OpenCode 1.18.25 mediante captura estática y ejecución de permisos con un proveedor simulado local, sin red. La evidencia de `01-relevamiento/linea-base/verificacion/20261013-captura-estatica/` y `20261013-permisos/` confirma en C-2c la fusión del agente Markdown con JSON y en C-3f las reglas propias de `general`, y permite corregir las respuestas antes del cierre.
+*Tabla A.VI.2. Casos de atribución (antecedente). Fuente: elaboración propia sobre la hoja de respuestas de atribución, cerrada el 13/10/2026 (registro de la evidencia, A.VI.11).*
 
 ## A.VI.2 · Ejecución de la medición
 
@@ -109,31 +107,25 @@ La Tabla A.VI.3 registra las seis tandas coordinadas por el autor, sobre los pro
 | Contraste, `build` | 21/10/2026 | 06:06:03 a 06:38:52; continuación 09:20:52 a 10:57:03 | 30 | Corte de cuota con 3/30; 27 pares pendientes completados con `--pares`. |
 | Contraste, Charles | 21/10/2026 | 10:57:04 a 12:28:45; repetición 12:29:39 a 12:38:48 | 30 | M-8:1 incompleta, repetida una vez; se conserva la original. |
 
-*Tabla A.VI.3. Tandas de la línea de base. Fuente: `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/ESTADO-tanda.txt` y `LEEME.md`. Las marcas UTC del registro se convierten a hora de Argentina (UTC−3).*
+*Tabla A.VI.3. Tandas de la línea de base. Fuente: estado de tanda y documento de lectura de la medición del 20 y el 21/10/2026 (registro de la evidencia, A.VI.11). Las marcas UTC del registro se convierten a hora de Argentina (UTC−3).*
 
-La primera tanda se detiene en la fase base, antes de ejecutar agentes, por el defecto de reparto del Contexto 13 de ADR-098. El ensayo final se repite tras MED-14 y MED-16; ambos ensayos reproducen los resultados de las 42 y las cinco ejecuciones de comprobación que documenta el LEEME. Los fragmentos cortados por cuota se aceptan por la equivalencia entre sus controles iniciales y los controles inicial y final de la continuación (Contexto 15). Las tandas superan la parada temprana de integridad, tokens y credencial prevista en el punto 2.
+La primera tanda se detiene en la fase base, antes de ejecutar agentes, por el defecto de reparto del Contexto 13 de ADR-098. El ensayo final se repite tras MED-14 y MED-16; ambos ensayos reproducen los resultados de las 42 y las cinco ejecuciones de comprobación que registra el documento de lectura de la medición. Los fragmentos cortados por cuota se aceptan por la equivalencia entre sus controles iniciales y los controles inicial y final de la continuación (Contexto 15). Las tandas superan la parada temprana de integridad, tokens y credencial prevista en el punto 2.
 
-La Tabla A.VI.4 conserva las tandas del instrumento anterior ejecutadas por el autor el 13 y el 14/10/2026.
+La Tabla A.VI.4 sintetiza las mediciones anteriores ejecutadas por el autor el 13 y el 14/10/2026, con tres repeticiones por caso y ejecutor, y sus consecuencias para el diseño.
 
-| **Tanda** | **Ejecutor y modelo** | **Dimensión** | **Fecha y franja horaria** | **Ejecuciones** | **Observación** |
+| **Medición** | **Fecha** | **Ejecutores** | **Ejecuciones** | **Resultado** | **Consecuencia** |
 |---|---|---|---|---|---|
-| LB principal | `build`, `gpt-6.1-sol` | Atribución | 13/10/2026, 22:07:11 a 22:51:36 | 72 | Completa, k = 3. |
-| LB Charles | Charles, `gpt-6.1-sol` | Atribución | 13/10/2026, 22:52:07 a 23:49:15 | 72 | Completa, k = 3. |
-| LB modificación principal | `build`, `gpt-6.1-sol` | Modificación | 14/10/2026, 14:59 a 16:06 | 72 | Completa. |
-| LB modificación Charles | Charles, `gpt-6.1-sol` | Modificación | 14/10/2026, 16:06 a 17:14 | 64 | Detención por cuota en C-3b:2. |
-| LB modificación Charles, reanudación | Charles, `gpt-6.1-sol` | Modificación | 14/10/2026, 17:54 a 18:02 | 8 | Pares restantes; unión con parámetros y hashes idénticos. |
-| Sonda R | `build` y Charles, `gpt-6.1-sol` | Sonda de atribución | 14/10/2026, 19:37 a 19:43 | 12 (6 por ejecutor) | Pregunta explícita sobre el carácter incorporado de la regla. |
-| Sonda E | `build` y Charles, `gpt-6.1-sol` | Sonda de modificación | 14/10/2026, 19:43 a 21:07 | 24 pares previstos; 19 perdidos | Corte de conectividad con la API; los pares perdidos se registran como sin respuesta. |
-| P3 | `build`, `gpt-5.6-luna` | Atribución | 14/10/2026, 21:07 a 21:41 | 72 | Semilla de la línea de base para comparar por caso. |
-| Sonda E, recuperación | `build` y Charles, `gpt-6.1-sol` | Sonda de modificación | 14/10/2026, 21:41 a 21:56 | 19 | Cada par perdido se reemplaza por su repetición con iguales parámetros (ADR-098, «Antecedentes absorbidos»). |
+| Atribución | 13/10/2026 (`build` y Charles) y 14/10/2026 (P3) | `build` y Charles con `gpt-6.1-sol`; P3: `build` con `gpt-5.6-luna` | 72 por tanda, 24 casos por tres repeticiones; 54 consultas de C-2 a C-4 por tanda | `build`: 0/54 errores en C-2 a C-4, «Refuta», y cero errores en C-1; Charles: 2/54 en C-4e, un caso con problema (dos errores de tres); P3: 2/54 en C-2b y C-4e, ningún caso con problema. Charles y P3: «Confirma» en IV.3. | Reorientación hacia la verificabilidad del efecto de la configuración (apartado IV.3; ADR-090). |
+| Modificación | 14/10/2026 | `build` y Charles con `gpt-6.1-sol` | 144, 24 casos por tres repeticiones y dos ejecutores | 16 sin efecto, ocho por ejecutor, con éxito declarado falso y regla con ruta absoluta; medición inválida por los controles C-1f (tres errores de tres en ambos ejecutores). | Hallazgo de la ruta absoluta, base del banco y de ADR-088; se conserva como informe descriptivo. |
+| Sondas R y E | 14/10/2026 | `build` y Charles con `gpt-6.1-sol` | R: 12, dos casos por tres repeticiones y dos ejecutores; E: 24, cuatro casos por tres repeticiones y dos ejecutores | R: 12/12 correctas; E: 13/24 sin efecto, todos con regla con ruta absoluta y éxito declarado falso. | R vincula la falla bajo el criterio estricto con la redacción; E muestra la persistencia de la ruta absoluta al retirarla de la instrucción, en los casos seleccionados y con el ejecutor fuera del árbol. |
 
-*Tabla A.VI.4. Tandas anteriores (antecedente). Fuente: `01-relevamiento/linea-base/verificacion/20261014-analisis-LB/LEEME.md`, `20261014-analisis-LB-mod/LEEME.md` y `20261014-analisis-sondas-p3/LEEME.md`; reglas de ejecución en ADR-098, «Antecedentes absorbidos».*
+*Tabla A.VI.4. Síntesis de las mediciones anteriores. Fuente: elaboración propia sobre la adjudicación del autor y los análisis de atribución, modificación y sondas R y E y P3 del 14/10/2026 (registro de la evidencia, A.VI.11); reglas de ejecución en ADR-098, «Antecedentes absorbidos».*
 
 Por decisión del autor del 14/10/2026, las sondas se ejecutan ese día antes de P3. Sus carpetas registran la fecha real; sus nombres internos y semilla conservan la fecha prevista originalmente, 20261021. La variación del orden y la recuperación por conectividad constan en el registro de las sondas y en ADR-098, «Antecedentes absorbidos» (Anexo III, D-41).
 
 ## A.VI.3 · Relevamiento técnico de OpenCode 1.18.25
 
-Documento completo en el repositorio del proyecto, bajo `01-relevamiento/opencode/como-funciona.md`. Sostiene las afirmaciones de los apartados I.1.1, I.1.3, I.6.2 y II.6.1, y se sintetiza aquí en sus resultados verificados.
+El relevamiento técnico completo de OpenCode 1.18.25 consta en el registro de la evidencia (A.VI.11). Sostiene las afirmaciones de los apartados I.1.1, I.1.3, I.6.2 y II.6.1, y se sintetiza aquí en sus resultados verificados.
 
 | **N.º** | **Resultado verificado**                                                                                                                                                                                                         | **Método**                                                                                              | **Estado**                                                                             |
 |---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
@@ -296,7 +288,7 @@ La posición expresa el eje horizontal y el vertical, en ese orden. El horizonta
 
 La incidencia n.º 32581, incluida en el relevamiento del 17/09/2026, se excluye en la revisión del 09/10/2026 porque su autor declara que corresponde a OpenClaw y no a OpenCode.
 
-**Nómina.** La nómina completa de las 46 incidencias candidatas, con número, título, fecha de apertura, estado, clasificación y motivo de inclusión o exclusión, consta en el repositorio del proyecto bajo `01-relevamiento/opencode/incidencias.md`.
+**Nómina.** La nómina completa de las 46 incidencias candidatas, con número, título, fecha de apertura, estado, clasificación y motivo de inclusión o exclusión, consta en el documento de incidencias del registro de la evidencia (A.VI.11).
 
 ### Clasificación de las incidencias por mecanismo
 
@@ -348,7 +340,7 @@ El oráculo ejecuta OpenCode 1.18.25 sobre el estado final que deja el agente y 
 
 Un problema cuenta con éxito declarado falso cuando lo presenta en al menos dos de tres repeticiones; también se informa la lectura con una de tres, según el indicador de la Tabla 3 del apartado I.3.2. El colateral de batería se registra como exceso de alcance y se informa aparte. Esta última regla se decide después del dato; la definición original, que cuenta todo colateral, se conserva como lectura preregistrada (Tabla A.VI.14; Anexo III, D-41).
 
-La comparación con la referencia distingue lo que se cambia de más de los efectos que la forma correcta produce necesariamente en OpenCode. La sensibilidad sin colateral cuenta únicamente los resultados sin efecto e incorrectos y conserva, en las tandas ecológicas del 20 y el 21/10/2026 de ambos ejecutores, los cinco problemas de E2 con al menos dos de tres repeticiones (ADR-098, punto 6; `eco-principal/informe.md` y `eco-charles/informe.md`, bajo `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/`).
+La comparación con la referencia distingue lo que se cambia de más de los efectos que la forma correcta produce necesariamente en OpenCode. La sensibilidad sin colateral cuenta únicamente los resultados sin efecto e incorrectos y conserva, en las tandas ecológicas del 20 y el 21/10/2026 de ambos ejecutores, los cinco problemas de E2 con al menos dos de tres repeticiones (ADR-098, punto 6; informes ecológicos de la medición del 20 y el 21/10/2026, registro de la evidencia, A.VI.11).
 
 La consecuencia se calcula mecánicamente por ejecución con el orden `deny < ask < allow`: exposición si el objetivo o una sonda queda más permisivo que lo esperado, bloqueo si queda más restrictivo y valor distinto cuando el valor efectivo difiere del pedido (ADR-098, punto 7).
 
@@ -356,11 +348,11 @@ El proceso se obtiene de la traza de herramientas y comandos. Se registran la ex
 
 En detección se corrige por archivo y clave del defecto sembrado, con las formas correctas como controles. Los indicadores ID-1 e ID-2 se definen en la Tabla 3 del apartado I.3.2; un defecto queda con problema si falta su detección en al menos dos repeticiones (ADR-098, punto 11; ADR-093, §2).
 
-Como antecedente, la hoja de atribución queda cerrada el 13/10/2026 y exige el valor o la decisión y la fuente al nivel que pide la pregunta; el acierto parcial cuenta como error. La regla de extracción del 14/10/2026 acepta una única decisión inequívoca entre `allow`, `ask`, `deny` y sus sinónimos, separa las partes de C-4e y remite los casos ambiguos a revisión manual, conservando texto y regla aplicada. La readjudicación del 14/10 utiliza un modelo de lenguaje como herramienta de apoyo para preclasificar a ciegas las planillas. El autor revisa contra la hoja y firma sin cambios 61 revisiones de la línea de base, 45 de P3 y seis de la sonda R. Se conserva la ronda anterior descartada y se declara que el conocimiento de los resultados por el autor limita la independencia. La enmienda exige la regla determinante en C-3b, C-3d, C-3f y C-4a a C-4d, y mantiene el criterio estricto como sensibilidad en A.VI.8 (ADR-098, «Antecedentes absorbidos»).
+Como antecedente, la hoja de atribución queda cerrada el 13/10/2026. La adjudicación firmada por el autor el 14/10/2026 utiliza un modelo de lenguaje como herramienta de apoyo para preclasificar a ciegas las planillas (registro de la evidencia, A.VI.11).
 
 ## A.VI.8 · Registro de la medición
 
-Cada ejecución conserva problema, estrato, ejecutor, agente, modelo, repetición, clasificación y motivo de corrección, junto con respuesta textual, tokens de entrada, caché y salida, duración, censura, archivos leídos o modificados, invocaciones de herramientas y comandos de introspección. `tanda.json` identifica parámetros, semilla, versión y hashes; `registro.jsonl` contiene una fila por ejecución y `crudo/` conserva las transcripciones y salidas. La evidencia de las tandas del 20 y el 21/10/2026 se documenta en `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/LEEME.md`; la captura completa queda archivada con SHA-256 según el LEEME y su remisión a `verificacion/20261020-archivo-evidencia/LEEME.md`. Los seis `informe.md` corresponden al reanálisis con MED-17 del 22/10/2026; su archivo de análisis también tiene SHA-256 documentado.
+Cada ejecución conserva problema, estrato, ejecutor, agente, modelo, repetición, clasificación y motivo de corrección, junto con respuesta textual, tokens de entrada, caché y salida, duración, censura, archivos leídos o modificados, invocaciones de herramientas y comandos de introspección. El archivo de tanda identifica parámetros, semilla, versión y hashes; el registro contiene una fila por ejecución y la captura cruda conserva las transcripciones y salidas (registro de la evidencia, A.VI.11). La evidencia de las tandas del 20 y el 21/10/2026 se documenta en el documento de lectura de la medición; la captura completa queda archivada con SHA-256 según ese documento y el de archivo de la evidencia (A.VI.11). Los seis informes corresponden al reanálisis con MED-17 del 22/10/2026; su archivo de análisis también tiene SHA-256 documentado.
 
 ### Resultado por problema
 
@@ -376,13 +368,13 @@ La Tabla A.VI.12 presenta las fracciones de la lectura principal obtenidas por c
 | S-1 (E4) | Ruta absoluta en regla `read` | 2/3 | 3/3 | Bloqueo |
 | N-21 (E2, solo con problema en la lectura preregistrada) | Sin mecanismo observado de falta de efecto; exceso de alcance | 3/3 (preregistrada) | 3/3 (preregistrada) | Bloqueo |
 
-*Tabla A.VI.12. Problemas con éxito declarado falso, lectura principal. Fuente: `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/eco-principal/informe.md`, `eco-charles/informe.md` y `casos-con-error.md`; la fila de N-21 conserva la lectura preregistrada.*
+*Tabla A.VI.12. Problemas con éxito declarado falso, lectura principal. Fuente: informes ecológicos y documento de casos con error de la medición del 20 y el 21/10/2026 (registro de la evidencia, A.VI.11); la fila de N-21 conserva la lectura preregistrada.*
 
-El mecanismo se cuenta por problema; por ejecución, la ruta absoluta explica 32 de las 33 ejecuciones sin efecto de las tandas ecológicas, según la revisión de los archivos finales documentada en `casos-con-error.md`.
+El mecanismo se cuenta por problema; por ejecución, la ruta absoluta explica 32 de las 33 ejecuciones sin efecto de las tandas ecológicas, según la revisión de los archivos finales documentada en el documento de casos con error (registro de la evidencia, A.VI.11).
 
-Con una de tres repeticiones, la lectura principal suma N-21 en `build`, por una guarda `.env.local` alterada, y N-13 en Charles, por una regla con ruta absoluta (LEEME y los dos informes ecológicos).
+Con una de tres repeticiones, la lectura principal suma N-21 en `build`, por una guarda `.env.local` alterada, y N-13 en Charles, por una regla con ruta absoluta (documento de lectura y los dos informes ecológicos, registro de la evidencia, A.VI.11).
 
-El exceso de alcance aparece en C-6, N-21, S-3 y M-2 en tres de tres repeticiones de ambos ejecutores. En C-6 se restringen `bash` y `task`; en N-21, otros `.env`; en S-3 se agrega `npm test *` en `ask`; en M-2 la regla se limita a `build`. Charles registra además una de tres repeticiones en N-7, N-12 y N-13. Los informes ecológicos separan estos resultados y los archivos finales se documentan en `casos-con-error.md`; S-3 y M-2 se registran como defectos de la referencia en la Tabla A.VI.14.
+El exceso de alcance aparece en C-6, N-21, S-3 y M-2 en tres de tres repeticiones de ambos ejecutores. En C-6 se restringen `bash` y `task`; en N-21, otros `.env`; en S-3 se agrega `npm test *` en `ask`; en M-2 la regla se limita a `build`. Charles registra además una de tres repeticiones en N-7, N-12 y N-13. Los informes ecológicos separan estos resultados y los archivos finales se documentan en el documento de casos con error (registro de la evidencia, A.VI.11); S-3 y M-2 se registran como defectos de la referencia en la Tabla A.VI.14.
 
 ### Detección y contraste
 
@@ -402,13 +394,13 @@ La detección comprende 33 ejecuciones por ejecutor, con once defectos y tres re
 | N-24-ingenua_dotdir-D | 3 | 3 |
 | V-10-ingenua_env-D | 3 | 3 |
 
-*Tabla A.VI.13. Detección por defecto sembrado. Fuente: `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/det-principal/informe.md` y `det-charles/informe.md`; D2 y D5 se describen en el LEEME de esa carpeta.*
+*Tabla A.VI.13. Detección por defecto sembrado. Fuente: informes de detección de la medición del 21/10/2026; D2 y D5 se describen en el documento de lectura de la medición (registro de la evidencia, A.VI.11).*
 
-El contraste fuera del árbol es descriptivo y comprende M-1 a M-10 con tres repeticiones por ejecutor el 21/10/2026. En la lectura principal, M-1 y M-10 registran tres de tres éxitos declarados falsos con ambos; M-2 registra una de tres con `build` y dos de tres con Charles, y el resto, cero de tres. La lectura preregistrada registra M-2 con tres de tres en ambos. MED-17 sustituye M-8:1 de Charles por la repetición completa y conserva la original como fila reemplazada; los dos informes declaran el contraste válido (`contraste-principal/informe.md` y `contraste-charles/informe.md`, en la carpeta de evidencia citada).
+El contraste fuera del árbol es descriptivo y comprende M-1 a M-10 con tres repeticiones por ejecutor el 21/10/2026. En la lectura principal, M-1 y M-10 registran tres de tres éxitos declarados falsos con ambos; M-2 registra una de tres con `build` y dos de tres con Charles, y el resto, cero de tres. La lectura preregistrada registra M-2 con tres de tres en ambos. MED-17 sustituye M-8:1 de Charles por la repetición completa y conserva la original como fila reemplazada; los dos informes declaran el contraste válido (informes de contraste, registro de la evidencia, A.VI.11).
 
 ### Proceso y costo
 
-La clasificación por traza de las 138 ejecuciones ecológicas de cada ejecutor registra que todos los éxitos declarados falsos de la lectura principal siguen a una verificación declarativa con `opencode debug`: 16 con `build` (14 en E2 y dos en E4) y 18 con Charles (15 en E2 y tres en E4). `build` registra 129 verificaciones declarativas, ocho ejecuciones sin verificación y una de comportamiento; Charles, 133, cuatro y una, respectivamente. Los informes ecológicos registran cero sesiones anidadas en ambos ejecutores. Según el LEEME, las 276 ejecuciones usan la skill y la documentación local, y ninguna utiliza `webfetch`.
+La clasificación por traza de las 138 ejecuciones ecológicas de cada ejecutor registra que todos los éxitos declarados falsos de la lectura principal siguen a una verificación declarativa con `opencode debug`: 16 con `build` (14 en E2 y dos en E4) y 18 con Charles (15 en E2 y tres en E4). `build` registra 129 verificaciones declarativas, ocho ejecuciones sin verificación y una de comportamiento; Charles, 133, cuatro y una, respectivamente. Los informes ecológicos registran cero sesiones anidadas en ambos ejecutores. Según el documento de lectura de la medición (registro de la evidencia, A.VI.11), las 276 ejecuciones usan la skill y la documentación local, y ninguna utiliza `webfetch`.
 
 El costo por ejecución se expresa en USD con las tarifas congeladas de A.VI.10, incluida la caché (ADR-098, punto 9). Para las tandas ecológicas del 20 y el 21/10/2026, el análisis de costo incorporado en ADR-098 registra medianas de USD 0,0603 en E1 y 0,0667 en E2 con `build`, y de USD 0,0717 y 0,0764 con Charles. El Contexto 19 informa un costo equivalente para ejecuciones correctas y fallidas y una proporción de caché del 82 % de los tokens totales. En E2 se registran 14 llamadas con éxito declarado falso de `build` y 15 de Charles. La derivación de los límites de la salvaguarda y las alternativas descartadas se desarrollan en el Anexo III, D-41.
 
@@ -447,52 +439,11 @@ La Tabla A.VI.14 distingue las decisiones anteriores a la medición de las que s
 | Costo como salvaguarda en USD por problema | 22/10/2026 | Después del dato | Reemplaza el umbral de reducción; los límites se fundamentan en D-41. |
 | Fila incompleta del contraste de Charles sustituida (MED-17) | 22/10/2026 | Después del dato | El análisis usa la repetición de M-8:1 y declara válidas las seis dimensiones, sin repetir el ensayo por un cambio de análisis. |
 
-*Tabla A.VI.14. Decisiones del diseño y del análisis según su momento. Fuente: `00-gestion/decisiones/ADR-098-linea-base-consolidada-banco-estratificado.md`, «Antecedentes absorbidos», puntos 2 a 13 y Contextos 13 a 21; ADR-090; `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/LEEME.md`, «Reanálisis con MED-17».*
+*Tabla A.VI.14. Decisiones del diseño y del análisis según su momento. Fuente: ADR-098, «Antecedentes absorbidos», puntos 2 a 13 y Contextos 13 a 21; ADR-090; documento de lectura de la medición, «Reanálisis con MED-17» (registro de la evidencia, A.VI.11).*
 
 ### Antecedentes
 
-Las tandas anteriores utilizan el contenedor `rige-linea-base:1.18.25`, basado en Ubuntu 26.04. El ejecutor trabaja como `evaluador`, con configuración propia, consulta el escenario de `participante` mediante `como-dev` desde fuera del árbol y dispone de la hoja de referencia y la documentación local. Charles conserva su instrucción, temperatura y estructura de permisos; P3 emplea `build` con `gpt-5.6-luna` (ADR-098, «Antecedentes absorbidos»).
-
-El indicador IB-1 de atribución es la proporción de respuestas erróneas por condición, con C-1 como control y C-2 a C-4 como condiciones difíciles. La Tabla A.VI.15 conserva la adjudicación firmada por el autor el 14/10/2026, obtenida mediante corrección automática y revisión de las planillas de A.VI.7. Cada tanda comprende 24 casos con tres repeticiones, 72 consultas, de las cuales 54 corresponden a C-2 a C-4; las primeras dos tandas se ejecutan el 13/10 y P3, el 14/10. La lectura de la Tabla 10 del apartado IV.3 se distingue de las ramas históricas de ADR-098, «Antecedentes absorbidos».
-
-| **Tanda** | **Correctas sobre 72** | **Errores en C-2 a C-4 sobre 54** | **Casos con problema (regla histórica)** | **Rama (regla histórica)** | **Lectura de la Tabla 10** |
-|---|---|---|---|---|---|
-| `build`, `gpt-6.1-sol` | 72/72 | 0/54 | 0 | N | Refuta |
-| Charles, `gpt-6.1-sol` | 70/72 | 2/54, en C-4e | 1 (C-4e, 2 de 3) | P | Confirma |
-| P3, `build`, `gpt-5.6-luna` | 70/72 | 2/54, en C-2b y C-4e | 0 | N | Confirma |
-
-*Tabla A.VI.15. Atribución por tanda según la adjudicación del autor del 14/10/2026. Fuente: `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/analisis-LB/informe.md` y `20261014-adjudicacion-autor/analisis-p3/informe.md`.*
-
-Con el criterio estricto anterior a la enmienda, el LEEME de la adjudicación registra `build` en P por C-3b; Charles en P por C-3b, C-3d y C-4e; y P3 en E por C-3b, C-3d y C-4a a C-4d. Con el criterio enmendado, las ramas son N, P y N. La Tabla A.VI.16 conserva el cálculo sobre las revisiones manuales del 14/10/2026; las comparaciones entre criterios miden sensibilidad y el registro contiene una adjudicación firmada, sin una segunda independiente bajo el mismo criterio (ADR-098, «Antecedentes absorbidos»).
-
-| **Comparación** | **Universo** | **Acuerdo** | **Kappa de Cohen** |
-|---|---|---|---|
-| Preclasificación estricta previa, frente a adjudicación vigente | 61 revisiones de la línea de base | 0,80 | 0,20 |
-| Primera preclasificación frente a adjudicación vigente | 61 revisiones de la línea de base | 0,97 | 0,65 |
-| P3, primera preclasificación estricta, frente a adjudicación vigente | 45 revisiones de P3 | 0,67 | 0,08 |
-
-*Tabla A.VI.16. Concordancia documentada en la adjudicación del autor del 14/10/2026. Fuente: `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/LEEME.md`.*
-
-La modificación del 14/10/2026 utiliza una tarea por cada caso de atribución, con enunciados cerrados en `01-relevamiento/linea-base/modificacion/tareas.md`, variables de entorno fijas e impedimento previsto para C-2e. El corrector compara objetivo y sondeos del agente objetivo, y registra descriptivamente los cambios en otros agentes. El autor ejecuta 144 modificaciones, 24 casos por tres repeticiones y dos ejecutores: 128 correctas y 16 sin efecto, ocho por ejecutor, con éxito declarado falso después de `opencode debug agent` en todas ellas. Corresponden a C-1f y C-3b con tres por ejecutor en cada caso, y C-1d y C-4e con una por ejecutor. La verificación nativa contrasta la regla absoluta que mantiene `deny` con la relativa que produce `allow` (`01-relevamiento/linea-base/verificacion/20261014-analisis-LB-mod/verificacion-nativa-ruta/`).
-
-La regla histórica de validez previa exige controles C-1 por debajo de dos errores de tres, sin censura y con resultado y tokens completos; prevé repetir una ejecución perdida, excluir el caso pareado irrecuperable e invalidar con más de dos exclusiones. C-1f registra tres errores de tres en ambos ejecutores e invalida las dos mediciones. La decisión posterior al dato conserva el informe descriptivo sin repetirlo, con la desviación desarrollada en D-41. El conjunto crudo de 144 ejecuciones se distingue del analizado: se excluye C-3f de Charles por el acceso web de la repetición 2 mediante `curl`, mientras el detector corregido deja de confundir `$schema` con acceso web (ADR-098, «Antecedentes absorbidos»).
-
-En la sonda R, el autor explicita el carácter incorporado o declarado de la regla en C-3b y C-3d el 14/10/2026, con tres repeticiones por caso y ejecutor. La adjudicación registra 12 respuestas correctas de 12 y, según la lectura fijada antes de ejecutar la sonda, la falla bajo el criterio estricto depende de la redacción. En la sonda E del mismo día se retira la ruta absoluta de la instrucción y se ejecutan C-1d, C-1f, C-3b y C-4e: tras recuperar los pares perdidos por conectividad, se registran 13 resultados sin efecto de 24, siete de `build` y seis de Charles, todos con regla absoluta y éxito declarado falso. La selección de casos por su falla y la ejecución desde fuera del árbol limitan la lectura a la persistencia en ese conjunto (`01-relevamiento/linea-base/verificacion/20261014-analisis-sondas-p3/LEEME.md`; ADR-098, «Antecedentes absorbidos»).
-
-El arnés registra los tokens por ejecución y los análisis del 14/10/2026 los valorizan con las tarifas congeladas de A.VI.10. La Tabla A.VI.17 conserva el equivalente a precio de lista informativo, redondeado a centavos, para los universos indicados. La medición utiliza la suscripción ChatGPT Plus; el equivalente expresa consumo valorizado y se distingue del desembolso de la suscripción.
-
-| **Dimensión y ejecutor** | **Universo y fecha de ejecución** | **Equivalente informativo (USD)** |
-|---|---|---|
-| Atribución, `build`, `gpt-6.1-sol` | 72 consultas, 13/10/2026 | 3,84 |
-| Atribución, Charles, `gpt-6.1-sol` | 72 consultas, 13/10/2026 | 4,01 |
-| Atribución P3, `build`, `gpt-5.6-luna` | 72 consultas, 14/10/2026 | 0,55 |
-| Modificación, `build`, `gpt-6.1-sol` | 72 ejecuciones, 14/10/2026 | 4,55 |
-| Modificación, Charles, `gpt-6.1-sol` | 72 ejecuciones crudas, 14/10/2026 | 4,86 |
-| Modificación, Charles, conjunto analizado | 69 ejecuciones, tras excluir C-3f, 14/10/2026 | 4,49 |
-
-*Tabla A.VI.17. Consumo valorizado por el arnés y los análisis de la medición del autor. Fuente: análisis LB y P3 de `20261014-adjudicacion-autor/`, y LEEME e `informe-analizar.md` de `20261014-analisis-LB-mod/`, bajo `01-relevamiento/linea-base/verificacion/`.*
-
-Las tarifas de P3 constan en `01-relevamiento/linea-base/tarifas-congeladas-20261014-p3.json`; el análisis las aplica fuera del contenedor porque la imagen conserva las tarifas del 01/10. El registro describe estos casos construidos, ejecutores y modelos de una misma familia; las repeticiones muestran su variabilidad.
+El instrumento de atribución mide las respuestas sobre el valor o la decisión y su procedencia; el de modificación comprueba si el cambio logra el objetivo y conserva los sondeos. Las sondas R y E examinan, respectivamente, la sensibilidad a la redacción sobre la regla y a la retirada de la ruta absoluta de la instrucción; P3 repite la atribución con otro modelo. La adjudicación corresponde al autor, que la firma el 14/10/2026 con preclasificación ciega de las planillas asistida por un modelo de lenguaje, y declara que su conocimiento de los resultados limita la independencia. La modificación se conserva como informe descriptivo por la invalidez de sus controles C-1f. La Tabla A.VI.4 sintetiza los resultados y sus consecuencias; el detalle consta en el registro de la evidencia (A.VI.11).
 
 La aplicación de «Refuta» y la reorientación del problema se presentan en el apartado IV.3; la deliberación del diseño se desarrolla en el Anexo III, D-41.
 
@@ -510,10 +461,50 @@ Las tarifas quedan fijadas al 01/10/2026 y se aplican a toda valorización del c
 | `gpt-6-astra` | Secundario, mayor capacidad | 10,00 / 1,00 / 50,00 | 20,00 / 2,00 / 75,00 | 5 a 45 |
 | `gpt-6-luna` | Secundario, menor capacidad | 0,10 / 0,01 / 0,50 | 0,20 / 0,02 / 0,75 | 350 a 3.000 |
 
-*Tabla A.VI.18. Tarifas de referencia congeladas al 01/10/2026, en USD por millón de tokens, nivel Standard. Fuente: OpenAI (s. f.-a, s. f.-b), consultado el 01/10/2026.*
+*Tabla A.VI.15. Tarifas de referencia congeladas al 01/10/2026, en USD por millón de tokens, nivel Standard. Fuente: OpenAI (s. f.-a, s. f.-b), consultado el 01/10/2026.*
 
 Por solicitud, se aplica la tarifa de contexto largo si la entrada total (sin caché más en caché) supera 272 000 tokens y la de contexto corto en caso contrario; el costo = (entrada sin caché × tarifa de entrada + entrada en caché × tarifa de caché + salida × tarifa de salida) / 1 000 000, y el costo de un caso es la suma de sus solicitudes.
 
 Los mensajes por ventana son estimaciones del proveedor y no límites garantizados.
 
-Los datos constan también en el archivo versionado del repositorio `01-relevamiento/linea-base/tarifas-congeladas-20261001.json` y un cambio posterior de tarifas no los modifica.
+Los datos constan también en el archivo versionado de tarifas congeladas al 01/10/2026 (registro de la evidencia, A.VI.11) y un cambio posterior de tarifas no los modifica.
+
+## A.VI.11 · Registro de la evidencia
+
+La evidencia consta en el repositorio entregado, en la revisión [DATO PENDIENTE: etiqueta o commit de la entrega del AE2] de https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP. La captura completa de la línea de base, archivada con SHA-256, consta en el Portafolio Digital: [DATO PENDIENTE: enlace a la carpeta del Portafolio Digital con el archivo de la evidencia].
+
+| **Evidencia** | **Contenido** | **Ubicación en el repositorio** |
+|---|---|---|
+| Banco ecológico | Problemas admitidos, estratos y admisión nativa. | `01-relevamiento/linea-base/ecologica/banco.md` |
+| Hoja de tareas ecológicas | Enunciados de la hoja cerrada el 19/10/2026. | `01-relevamiento/linea-base/ecologica/tareas.md` |
+| Medición del 20 y el 21/10/2026 | Documento de lectura, parámetros, archivo con SHA-256 y reanálisis con MED-17. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/LEEME.md` |
+| Estado de tanda | Fechas, ejecución y continuaciones de las seis tandas. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/ESTADO-tanda.txt` |
+| Informe ecológico de `build` | Resultados del reanálisis con MED-17 del 22/10/2026. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/eco-principal/informe.md` |
+| Informe ecológico de Charles | Resultados del reanálisis con MED-17 del 22/10/2026. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/eco-charles/informe.md` |
+| Informe de detección de `build` | Resultados del reanálisis con MED-17 del 22/10/2026. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/det-principal/informe.md` |
+| Informe de detección de Charles | Resultados del reanálisis con MED-17 del 22/10/2026. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/det-charles/informe.md` |
+| Informe de contraste de `build` | Resultados del reanálisis con MED-17 del 22/10/2026. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/contraste-principal/informe.md` |
+| Informe de contraste de Charles | Resultados del reanálisis con MED-17 del 22/10/2026. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/contraste-charles/informe.md` |
+| Casos con error | Revisión de los archivos finales y mecanismo observado. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/casos-con-error.md` |
+| Archivo de la evidencia | Captura completa archivada con SHA-256. | `01-relevamiento/linea-base/verificacion/20261020-archivo-evidencia/LEEME.md` |
+| Hoja de respuestas de atribución | Los 24 casos y sus respuestas, cierre del 13/10/2026. | `01-relevamiento/linea-base/respuestas.md` |
+| Captura estática de los 24 casos | Comprobación contra OpenCode 1.18.25 del 13/10/2026. | `01-relevamiento/linea-base/verificacion/20261013-captura-estatica/` |
+| Ejecución de permisos de los 24 casos | Comprobación del 13/10/2026 con proveedor simulado local, sin red. | `01-relevamiento/linea-base/verificacion/20261013-permisos/` |
+| Análisis inicial de atribución | Documento de lectura y análisis del 14/10/2026, conservados como antecedente. | `01-relevamiento/linea-base/verificacion/20261014-analisis-LB/LEEME.md` |
+| Adjudicación del autor | Procedimiento, asistencia declarada y aceptación del 14/10/2026. | `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/LEEME.md` |
+| Adjudicación: atribución de `build` y Charles | Informe con la adjudicación vigente del autor. | `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/analisis-LB/informe.md` |
+| Adjudicación: atribución de P3 | Informe con la adjudicación vigente del autor. | `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/analisis-p3/informe.md` |
+| Adjudicación: sonda R | Informe con la adjudicación vigente del autor. | `01-relevamiento/linea-base/verificacion/20261014-adjudicacion-autor/analisis-R/informe.md` |
+| Tareas de modificación | Enunciados cerrados de los 24 casos. | `01-relevamiento/linea-base/modificacion/tareas.md` |
+| Análisis de modificación | Resultados, invalidez, acceso web y lectura descriptiva. | `01-relevamiento/linea-base/verificacion/20261014-analisis-LB-mod/LEEME.md` |
+| Informe de modificación | Análisis de las ejecuciones del 14/10/2026. | `01-relevamiento/linea-base/verificacion/20261014-analisis-LB-mod/informe-analizar.md` |
+| Verificación nativa de ruta | Contraste entre la regla con ruta absoluta y la relativa. | `01-relevamiento/linea-base/verificacion/20261014-analisis-LB-mod/verificacion-nativa-ruta/` |
+| Sondas R y E y P3 | Diseño, ejecución, recuperación y resultado de la sonda E. | `01-relevamiento/linea-base/verificacion/20261014-analisis-sondas-p3/LEEME.md` |
+| Tarifas de P3 | Tarifas congeladas para valorizar P3 fuera del contenedor. | `01-relevamiento/linea-base/tarifas-congeladas-20261014-p3.json` |
+| Tarifas de referencia | Tarifas congeladas al 01/10/2026. | `01-relevamiento/linea-base/tarifas-congeladas-20261001.json` |
+| Relevamiento técnico | Funcionamiento verificado de OpenCode 1.18.25 y escenarios reproducibles. | `01-relevamiento/opencode/como-funciona.md` |
+| Incidencias | Nómina completa y clasificación de las 46 incidencias candidatas. | `01-relevamiento/opencode/incidencias.md` |
+| ADR-090 | Aplicación de «Refuta» y reorientación del problema. | `00-gestion/decisiones/ADR-090-refuta-reformulacion-verificabilidad.md` |
+| ADR-098 | Diseño consolidado de la línea de base y antecedentes absorbidos. | `00-gestion/decisiones/ADR-098-linea-base-consolidada-banco-estratificado.md` |
+
+*Tabla A.VI.16. Registro de la evidencia. Fuente: elaboración propia sobre el repositorio entregado.*

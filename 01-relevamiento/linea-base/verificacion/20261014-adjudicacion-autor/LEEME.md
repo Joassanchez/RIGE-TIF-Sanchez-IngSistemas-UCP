@@ -24,6 +24,8 @@
 | Charles + `gpt-6.1-sol` | 70/72 | 2/54 (C-4e) | 0 | **P** | Confirma |
 | P3 · `build` + `gpt-5.6-luna` | 70/72 | 2/54 (C-2b incorrecta, C-4e) | 0 | **N** | Confirma |
 
+*Errata del 22/10/2026 (ingeniero, Claude Code, Opus 5.5):* en la fila de Charles, «Casos con problema» es **1** (C-4e, dos errores de tres), no 0. Así lo cuenta `analisis-LB/informe.md` (conjunto C-4, «Casos con problema» = 1), y es coherente con la rama P. Se conserva el valor original de la tabla. El Anexo VI (Tabla A.VI.4) y el apartado IV.3 ya informan el valor correcto.
+
 - **Sonda R:** 12 de 12 correctas; lectura fijada de ADR-089: la falla original de C-3b y C-3d (con el criterio estricto) es **dependiente de la redacción**.
 - **Sensibilidad con el criterio estricto (E-A, anterior):** `build` P (C-3b), Charles P (C-3b, C-3d, C-4e), P3 E (6 casos: C-3b, C-3d, C-4a a C-4d).
 - **ADR-079, rama N:** no se activan la condición 4 de ADR-078 ni la 1 de ADR-053, porque el segundo ejecutor no cae en N (ADR-079, §3; ADR-087, N-A). El cumplimiento se rige por ADR-084.

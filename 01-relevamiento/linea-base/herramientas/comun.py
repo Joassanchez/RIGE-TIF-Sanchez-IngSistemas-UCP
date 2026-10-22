@@ -6,7 +6,6 @@ from pathlib import Path
 
 TOKEN_FIELDS = ('tokens_entrada', 'tokens_cache', 'tokens_salida')
 RESULTADOS = ('correcta', 'parcial', 'incorrecta', 'sin_respuesta')
-CASOS = tuple(f'C-{c}{v}' for c in range(1, 5) for v in 'abcdef')
 
 
 def leer_jsonl(path):

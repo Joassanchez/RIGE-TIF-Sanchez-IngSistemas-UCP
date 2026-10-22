@@ -1,9 +1,0 @@
-{
-  // Configuración personal
-  "$schema": "https://opencode.ai/config.json",
-  "agent": {
-    "build": {
-      "model": "mistral/codestral-latest"
-    }
-  }
-}

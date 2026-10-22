@@ -1,2 +1,0 @@
-Caso C-3a listo.
-Cerrá todas las terminales y abrí una nueva en: ~/proyecto

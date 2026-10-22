@@ -37,11 +37,11 @@ class EscriturasTests(unittest.TestCase):
         faltantes = set()
         cubiertos = set()
         extras = [p.relative_to(ROOT / 'vm/simulado').as_posix() for p in sorted((ROOT / 'vm/simulado/planes').glob('MED-13-*.json'))]
-        for fuente in ('ecologica.json', 'modificacion.json', 'ensayo.json', 'deteccion.json', *extras):
+        for fuente in ('ecologica.json', 'deteccion.json', *extras):
             planes = leer('vm/simulado/' + fuente)['casos']
             for caso, plan in planes.items():
                 if 'archivos' not in plan:
-                    # Atribución/detección no solicitan ninguna modificación.
+                    # Detección no solicita ninguna modificación.
                     continue
                 cubiertos.add((fuente, caso))
                 for estado in ('inicial', 'ausente', 'vacio'):
@@ -49,14 +49,7 @@ class EscriturasTests(unittest.TestCase):
                         home = Path(tmp)
                         shutil.copytree(ROOT / 'vm/casos/comun/proyecto', home / 'proyecto')
                         (home / '.config/opencode').mkdir(parents=True)
-                        if fuente == 'modificacion.json':
-                            origen = ROOT / 'vm/casos' / caso
-                            for nombre, destino in [('global', home / '.config/opencode'), ('proyecto', home / 'proyecto')]:
-                                if (origen / nombre).exists():
-                                    shutil.copytree(origen / nombre, destino, dirs_exist_ok=True)
-                            roots = materializar(home, {})
-                        else:
-                            roots = materializar(home, escenarios[caso]['archivos'])
+                        roots = materializar(home, escenarios[caso]['archivos'])
                         for rel in plan['archivos']:
                             path = roots[rel[0]] / rel[2:]
                             if estado == 'inicial' and not path.exists() and fuente == 'ecologica.json':
@@ -117,7 +110,7 @@ class EscriturasTests(unittest.TestCase):
                         proveedor.verificar_lecturas()
                         for rel, esperado in plan['archivos'].items():
                             self.assertEqual((roots[rel[0]] / rel[2:]).read_text(encoding='utf-8'), esperado)
-        self.assertEqual(len(cubiertos), 46 + 24 + sum(len(leer('vm/simulado/' + p)['casos']) for p in extras))
+        self.assertEqual(len(cubiertos), 46 + sum(len(leer('vm/simulado/' + p)['casos']) for p in extras))
         self.assertEqual(faltantes, {('N-21', 'P/opencode.json'), ('N-23', 'P/opencode.json'), ('V-9', 'P/AGENTS.md'),
                                     ('M-9', 'G/opencode.json'), ('M-10', 'G/opencode.json'), ('N-11', 'G/opencode.jsonc')})
 

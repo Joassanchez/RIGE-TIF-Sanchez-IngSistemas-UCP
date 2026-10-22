@@ -136,7 +136,7 @@ python() {
  else "$MED13_PYTHON" "$@"; fi
 }
 ''', encoding='utf-8', newline='\n')
-            for caso in ('verificar', 'permisos', 'atribucion', 'modificacion', 'deteccion', 'ecologica', 'fallida'):
+            for caso in ('deteccion', 'ecologica', 'fallida'):
                 with self.subTest(caso=caso):
                     out = root / caso
                     out.mkdir()
@@ -145,7 +145,7 @@ python() {
                         MED13_SHA=sha, MED13_PYTHON=sys.executable.replace('\\', '/'), PYTHON='python',
                         OPENCODE_AUTH_JSON='', MED13_CODIGO='7' if caso == 'fallida' else '0')
                     env.pop('RIGE_EVIDENCIA_ADMISION', None)
-                    args = [caso, 'todos', shell(out)] if caso in ('verificar', 'permisos') else [
+                    args = [
                         'medir', '--ensayo', '--dimension', 'ecologica' if caso == 'fallida' else caso, '--destino', shell(out)]
                     r = subprocess.run([shutil.which('bash'), (ROOT / 'vm/contenedor.sh').as_posix(), *args],
                         cwd=ROOT, env=env, capture_output=True, text=True)

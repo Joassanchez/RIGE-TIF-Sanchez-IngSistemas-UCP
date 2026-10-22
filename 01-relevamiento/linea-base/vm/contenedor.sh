@@ -13,8 +13,6 @@ uso() {
   cat >&2 <<'USO'
 Uso (en el anfitrión):
   UBUNTU_DIGEST=sha256:... OPENCODE_SHA256=... bash vm/contenedor.sh construir
-  bash vm/contenedor.sh verificar <C-1a..C-4f|practica|todos> <carpeta-vacía>
-  bash vm/contenedor.sh permisos <C-1b|C-1d|C-1f|C-3b|C-3d|C-3f|C-4a..C-4f|todos> <carpeta-vacía>
   bash vm/contenedor.sh shell
   bash vm/contenedor.sh medir --ensayo --destino <carpeta-vacía> [opciones de medir.sh]
   OPENCODE_AUTH_JSON='<JSON de autenticación>' bash vm/contenedor.sh medir --destino <carpeta-vacía> [opciones]
@@ -60,64 +58,14 @@ case "$SUBCOMANDO" in
       --build-arg "OPENCODE_SHA256=$OPENCODE_SHA256" \
       --file "$(ruta_docker "$ORIGEN/Dockerfile")" "$(ruta_docker "$ORIGEN")"
     ;;
-  verificar|permisos)
-    [[ $# -eq 2 ]] || { uso; exit 2; }
-    CASO=$1
-    [[ $CASO == todos || $CASO =~ ^(practica|C-[1-4][a-f])$ ]] || fallar "Caso inválido: '$CASO'."
-    if [[ $SUBCOMANDO == permisos ]]; then
-      [[ $CASO == todos || $CASO =~ ^C-(1[bdf]|3[bdf]|4[a-f])$ ]] || fallar "No es un caso de permiso: '$CASO'."
-    fi
-    [[ -d $2 ]] || fallar "La carpeta de evidencia debe existir y estar vacía."
-    EVIDENCIA="$(cd "$2" && pwd -P)"
-    # Windows no distingue mayúsculas: comparar también en minúsculas.
-    case "${EVIDENCIA,,}/" in
-      "${REPOSITORIO,,}/"*) fallar "La evidencia debe quedar fuera del repositorio." ;;
-    esac
-    [[ -z $(find "$EVIDENCIA" -mindepth 1 -maxdepth 1 -print -quit) ]] || fallar "La carpeta de evidencia no está vacía (incluidos archivos ocultos)."
-    command -v docker >/dev/null 2>&1 || fallar "No se encuentra el cliente Docker."
-    CONTENEDOR="rige-$SUBCOMANDO-$$-$RANDOM"
-    trap limpiar EXIT
-    trap 'exit 130' INT
-    trap 'exit 143' TERM
-    # Se mantiene vivo sólo hasta copiar la evidencia; --rm y el trap lo eliminan.
-    # La captura activa cada caso con caso.sh antes de ejecutar la introspección.
-    docker run --rm --detach --network none --platform linux/amd64 \
-      --name "$CONTENEDOR" --user root --workdir /opt/linea-base \
-      "$IMAGEN" /bin/bash -c '
-        mkdir -p /opt/linea-base/verificacion
-        if [[ $1 == todos ]]; then "/opt/linea-base/$2.sh"
-        else "/opt/linea-base/$2.sh" "$1"; fi
-        codigo=$?
-        printf "%s\n" "$codigo" > /opt/linea-base/verificacion/codigo-salida.txt
-        touch /opt/linea-base/captura-terminada
-        exec sleep infinity
-      ' _ "$CASO" "$SUBCOMANDO" >/dev/null
-    docker exec "$CONTENEDOR" /bin/bash -c '
-      while [[ ! -f /opt/linea-base/captura-terminada ]]; do sleep 1; done
-    '
-    docker logs "$CONTENEDOR"
-    exportar_resultados /opt/linea-base/verificacion "$SUBCOMANDO" || fallar 'No se pudo conservar la evidencia de verificación.'
-    CODIGO="$(cat "$EVIDENCIA/codigo-salida.txt")"
-    [[ $CODIGO =~ ^[0-9]+$ && $CODIGO -le 255 ]] || fallar "Código de salida de la captura inválido."
-    echo "Evidencia copiada a $EVIDENCIA; comparar con respuestas.md fuera del contenedor."
-    if [[ $SUBCOMANDO == verificar ]]; then
-      echo "Complementar con permisos todos <carpeta-vacía> (01-alcance.txt)."
-    else
-      echo "Revisar controles de contaminación, clasificaciones y evidencia cruda (01-alcance.txt)."
-    fi
-    exit "$CODIGO"
-    ;;
   medir)
     ENSAYO=0
-    DIMENSION=atribucion
+    DIMENSION=
     TANDA=ensayo
-    SONDA=
     DESTINO=''
     ARGUMENTOS=()
     while [[ $# -gt 0 ]]; do
       case "$1" in
-        --sonda) [[ $# -ge 2 ]] || fallar 'Falta archivo para --sonda.'; SONDA=$2; ARGUMENTOS+=(--sonda "/opt/linea-base/$(basename "$SONDA")"); shift 2 ;;
-        --sonda=*) SONDA=${1#--sonda=}; ARGUMENTOS+=(--sonda "/opt/linea-base/$(basename "$SONDA")"); shift ;;
         --ensayo) ENSAYO=1; ARGUMENTOS+=(--ensayo); shift ;;
         --destino) [[ $# -ge 2 ]] || fallar 'Falta carpeta para --destino.'; DESTINO=$2; shift 2 ;;
         --tanda) [[ $# -ge 2 ]] || fallar 'Falta valor para --tanda.'; TANDA=$2; ARGUMENTOS+=(--tanda "$2"); shift 2 ;;
@@ -128,7 +76,7 @@ case "$SUBCOMANDO" in
         *) ARGUMENTOS+=("$1"); shift ;;
       esac
     done
-    [[ $DIMENSION == atribucion || $DIMENSION == modificacion || $DIMENSION == ecologica || $DIMENSION == deteccion ]] || fallar 'Dimensión inválida.'
+    [[ $DIMENSION == ecologica || $DIMENSION == deteccion ]] || fallar 'Dimensión inválida.'
     if [[ $DIMENSION == ecologica || $DIMENSION == deteccion ]]; then
       # Hash calculado en el anfitrión y comprobado dentro antes de medir.
       # Lista de inclusión explícita: jamás copiar espec.py/corpus.py/respuestas.
@@ -141,10 +89,6 @@ case "$SUBCOMANDO" in
           deteccion.md) ARGUMENTOS+=(--hash-deteccion "${HASH_ENTRADA%% *}") ;;
         esac
       done
-    fi
-    if [[ $DIMENSION == modificacion && $ENSAYO -eq 1 && " ${ARGUMENTOS[*]} " != *' --hash-tareas '* && " ${ARGUMENTOS[*]} " != *' --hash-tareas='* ]]; then
-      HASH_TAREAS=$(sha256sum "$ORIGEN/../modificacion/tareas.md")
-      ARGUMENTOS+=(--hash-tareas "${HASH_TAREAS%% *}")
     fi
     [[ -n $DESTINO && -d $DESTINO ]] || fallar 'Indicar --destino con una carpeta existente y vacía fuera del repositorio.'
     EVIDENCIA="$(cd "$DESTINO" && pwd -P)"
@@ -189,9 +133,6 @@ case "$SUBCOMANDO" in
       "$IMAGEN" sleep infinity >/dev/null
     docker cp "$(ruta_docker "$ORIGEN/../tarifas-congeladas-20261001.json")" "$CONTENEDOR:/opt/linea-base/tarifas.json"
     docker cp "$(ruta_docker "$ORIGEN/../catalogo-modelos-20261013.json")" "$CONTENEDOR:/opt/linea-base/modelos.json"
-    if [[ $DIMENSION == modificacion ]]; then
-      docker cp "$(ruta_docker "$ORIGEN/../modificacion/tareas.md")" "$CONTENEDOR:/opt/linea-base/tareas.md"
-    fi
     if [[ $DIMENSION == ecologica || $DIMENSION == deteccion ]]; then
       for ENTRADA in escenarios.json tareas.md deteccion.md; do
         docker cp "$(ruta_docker "$ORIGEN/../ecologica/$ENTRADA")" "$CONTENEDOR:/opt/linea-base/$ENTRADA"
@@ -199,10 +140,6 @@ case "$SUBCOMANDO" in
     fi
     if [[ -n $PLAN_DETECCION ]]; then
       docker cp "$(ruta_docker "$PLAN_DETECCION")" "$CONTENEDOR:/opt/linea-base/simulado/deteccion.json"
-    fi
-    if [[ -n $SONDA ]]; then
-      [[ -f $SONDA ]] || fallar 'Archivo de sonda inexistente.'
-      docker cp "$(ruta_docker "$SONDA")" "$CONTENEDOR:/opt/linea-base/$(basename "$SONDA")"
     fi
     # exec no imprime ni exporta la credencial en el registro de la tarea.
     CODIGO=0

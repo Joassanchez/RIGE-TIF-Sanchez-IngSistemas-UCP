@@ -48,7 +48,7 @@ Con OpenCode 1.18.25 y el procedimiento delegado descrito, cinco de los 33 probl
 | E2, mediana de costo por ejecución (USD) | 0,0667 | 0,0764 |
 | Éxitos declarados falsos precedidos de verificación declarativa, E1, E2 y E4 | 16 de 16 ejecuciones | 18 de 18 ejecuciones |
 
-*Tabla 4. Línea de base por estrato y ejecutor, tandas del 20 y el 21/10/2026. Fuente: elaboración propia sobre los informes ecológicos y de detección del reanálisis con MED-17 en `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/`; costos de ADR-098, punto 9.*
+*Tabla 4. Línea de base por estrato y ejecutor, tandas del 20 y el 21/10/2026. Fuente: elaboración propia sobre los informes ecológicos y de detección del reanálisis con MED-17 (registro de la evidencia, Anexo VI, A.VI.11); costos de ADR-098, punto 9.*
 
 La lectura con una de tres repeticiones suma N-21 en `build` y N-13 en Charles. La lectura preregistrada registra seis problemas en tres mecanismos en E2 y C-6 en E1 con ambos ejecutores; el motivo del cambio de lectura y las demás decisiones posteriores al dato constan en la tabla de bifurcaciones del Anexo VI, A.VI.8, y en el Anexo III, D-41.
 

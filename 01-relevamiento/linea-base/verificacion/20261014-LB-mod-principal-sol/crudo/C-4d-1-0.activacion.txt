@@ -1,2 +1,0 @@
-Caso C-4d listo.
-Cerrá todas las terminales y abrí una nueva en: ~/proyecto

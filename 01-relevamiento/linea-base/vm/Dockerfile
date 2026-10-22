@@ -25,8 +25,9 @@ RUN test "$(dpkg --print-architecture)" = amd64 \
     && rm -rf /var/lib/apt/lists/*
 
 # El contexto es exclusivamente vm/, filtrado además por .dockerignore.
-COPY --chown=root:root --chmod=700 casos/ /opt/linea-base/casos/
-COPY --chown=root:root --chmod=700 caso.sh verificar.sh permisos.sh medir.sh /opt/linea-base/
+COPY --chown=root:root --chmod=700 casos/comun/ /opt/linea-base/casos/comun/
+COPY --chown=root:root --chmod=700 casos/practica/ /opt/linea-base/casos/practica/
+COPY --chown=root:root --chmod=700 caso.sh medir.sh /opt/linea-base/
 COPY --chown=root:root --chmod=700 ejecutores/ /opt/linea-base/ejecutores/
 COPY --chown=root:root --chmod=700 indicacion.txt /opt/linea-base/indicacion.txt
 COPY --chown=root:root --chmod=700 simulado/ /opt/linea-base/simulado/

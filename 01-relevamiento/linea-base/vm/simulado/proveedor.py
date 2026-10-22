@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Proveedor OpenAI chat/completions determinista, sólo biblioteca estándar."""
-import argparse
 import json
 import threading
 import time
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 
 
@@ -118,24 +117,3 @@ def manejador(proveedor):
             self.close_connection = True
     return Manejador
 
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--plan", required=True)
-    parser.add_argument("--accion", required=True)
-    parser.add_argument("--registro", required=True)
-    parser.add_argument("--listo", required=True)
-    args = parser.parse_args()
-    proveedor = Proveedor(json.loads(Path(args.plan).read_text(encoding="utf-8")),
-                          args.accion, args.registro)
-    # Puerto elegido por el SO; jamás escucha en una interfaz externa.
-    servidor = ThreadingHTTPServer(("127.0.0.1", 0), manejador(proveedor))
-    proveedor.plan = json.loads(json.dumps(proveedor.plan).replace(
-        "${BASE_URL}", f"http://127.0.0.1:{servidor.server_port}"))
-    Path(args.listo).write_text(str(servidor.server_port), encoding="ascii")
-    proveedor.log("inicio", direccion="127.0.0.1", puerto=servidor.server_port)
-    servidor.serve_forever()
-
-
-if __name__ == "__main__":
-    main()
