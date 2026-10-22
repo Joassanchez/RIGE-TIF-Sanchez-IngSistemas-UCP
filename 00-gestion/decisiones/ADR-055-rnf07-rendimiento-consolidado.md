@@ -1,6 +1,6 @@
 # ADR-055 — RNF-07: invocación completa por línea de comandos en menos de 2 s, sobre un proyecto sintético con el doble del mayor entre un proyecto público y el de la referente, en el contenedor de referencia, con medición por etapas también en Windows 11
 
-- Estado: aceptado (28/09/2026); consolidado el 22/10/2026 con ADR-071, 096 (absorbidos al final, con su texto completo). **Pendiente:** aceptación del autor de la consolidación
+- Estado: aceptado (28/09/2026); consolidado el 22/10/2026 con ADR-071, 096 (absorbidos al final, con su texto completo); aceptado por el autor el 22/10/2026
 - Fecha: 28/09/2026
 - Capítulos afectados: Cap. III (III.5); Anexo I (ficha RNF-07); libro (RNF-07); Cap. V (V.4, estabilización de la iteración 4); Cap. X (X.2); `01-relevamiento/fuentes.md`; diseño del v1 (tiempos por etapa)
 - Origen: consolidación del 28/09/2026 (pendiente LI-01). No es una decisión nueva: reúne lo vigente de ADR-044 (25/09/2026) y ADR-045 (28/09/2026), ambos aceptados.

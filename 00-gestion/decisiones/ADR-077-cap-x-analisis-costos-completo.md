@@ -1,6 +1,6 @@
 # ADR-077 — Cap. X como análisis de costos completo: costo económico separado del desembolso, imputación por quién paga, CAPEX/OPEX, amortización del equipo, energía, doble moneda y punto de equilibrio del sostenimiento
 
-- Estado: aceptado (01/10/2026); consolidado el 22/10/2026 con ADR-076 (absorbidos al final, con su texto completo). **Pendiente:** aceptación del autor de la consolidación
+- Estado: aceptado (01/10/2026); consolidado el 22/10/2026 con ADR-076 (absorbidos al final, con su texto completo); aceptado por el autor el 22/10/2026
 - Fecha: 01/10/2026
 - Capítulos afectados: Cap. X (X.1 a X.5); Cap. IV (IV.1, fila «Estructura de costos» del lienzo); Instrumento 34 (34.1, 34.2 y 34.3); Anexo III (D-48, D-49 y una D nueva); bibliografía
 - Origen: correcciones del docente al Cap. X, transmitidas por el autor en la sesión del 01/10/2026 (degradación y costo del equipo del desarrollador; agua, luz y alquiler, subsidiados por el espacio; CAPEX/OPEX; punto de equilibrio; recursos tecnológicos con alternativas), y elecciones del autor en la misma sesión

@@ -1,6 +1,6 @@
 # ADR-019 — Modelo del dominio mixto: Agente como entidad de primera clase y Elemento genérico con subtipos
 
-- Estado: aceptado (retroactivo); consolidado el 22/10/2026 con ADR-020, 074 (absorbidos al final, con su texto completo). **Pendiente:** aceptación del autor de la consolidación
+- Estado: aceptado (retroactivo); consolidado el 22/10/2026 con ADR-020, 074 (absorbidos al final, con su texto completo); aceptado por el autor el 22/10/2026
 - Fecha: AE2 (septiembre de 2026)
 - Capítulos afectados: Cap. III (III.2.2 y III.2.3); Anexo V (atributos); RNF-03
 - Origen: Cap. III, III.2.2 (tabla de entidades); chat «Capitulo III - AE1» (23/09/2026)

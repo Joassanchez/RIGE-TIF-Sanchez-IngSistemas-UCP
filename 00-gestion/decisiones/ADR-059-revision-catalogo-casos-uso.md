@@ -1,6 +1,6 @@
 # ADR-059 — Revisión del catálogo de requisitos y del modelo de casos de uso antes del diseño detallado
 
-- Estado: aceptado (29/09/2026); consolidado el 22/10/2026 con ADR-064, 073 (absorbidos al final, con su texto completo). **Pendiente:** aceptación del autor de la consolidación
+- Estado: aceptado (29/09/2026); consolidado el 22/10/2026 con ADR-064, 073 (absorbidos al final, con su texto completo); aceptado por el autor el 22/10/2026
 - Fecha: 29/09/2026
 - Capítulos afectados: Cap. III (III.2 Tabla 5; III.3; III.4, fila de L-06; III.5 y Anexo I); Cap. V (V.1 Tabla 14; V.2; V.4 Tablas 18 y 19; V.5 Tablas 20 y 21); Cap. I del AE1 (I.2, OE-3; I.6.3, Tabla 8), por la Ventana; libro (catálogo, `trazabilidad.md`, `iteraciones.md`)
 - Origen: sesión de diseño del 29/09/2026. Revisión crítica de los 23 requisitos y los 5 casos de uso, pedida por el autor para que las prioridades del período y la formulación heredada no condicionen el diseño más de lo necesario

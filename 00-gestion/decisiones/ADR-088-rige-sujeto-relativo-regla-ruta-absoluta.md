@@ -1,6 +1,6 @@
 # ADR-088 — RIGE evalúa las acciones sobre archivos con la ruta relativa al árbol de trabajo, como OpenCode, y detecta las reglas de permiso que no pueden coincidir por su forma de ruta
 
-- Estado: aceptado (14/10/2026); modificado el 22/10/2026, después de la línea de base de ADR-098 (absorbe el ex ADR-100). **Pendiente:** aceptación del autor de la modificación
+- Estado: aceptado (14/10/2026); modificado el 22/10/2026, después de la línea de base de ADR-098 (absorbe el ex ADR-100); aceptado por el autor el 22/10/2026
 - Fecha: 14/10/2026
 - **Origen posterior al resultado:** el mecanismo se observó en la línea de base de modificación (ADR-086). Se fija antes de construir el evaluador de RF-02 y antes del corte del 07/11/2026.
 - Capítulos afectados: Cap. III (Anexo I, RF-02 y RF-07); Cap. I (I.2.4, OE-2 y OE-3); `03-requisitos/libro/catalogo/RF-02.md` y `RF-07.md`; manifiesto de aceptación (ADR-080); Cap. VI (estrategia de pruebas)

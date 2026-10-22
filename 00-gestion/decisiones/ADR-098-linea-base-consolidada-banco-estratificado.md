@@ -1,6 +1,6 @@
 # ADR-098 — Línea de base consolidada: banco de problemas estratificado, alineado con el alcance de RIGE y con consecuencia por ejecución
 
-- Estado: aceptado (19/10/2026); modificado y aceptado el 20/10/2026 (puntos 2, 3, 6, 9 y 10); modificado el 21 y 22/10/2026 (puntos 2, 5, 6, 8, 9 y 13; Contextos 13 a 21) y consolidado el 22/10/2026. **Pendiente:** aceptación del autor de las modificaciones del 21 y 22/10 y de la consolidación
+- Estado: aceptado (19/10/2026); modificado y aceptado el 20/10/2026 (puntos 2, 3, 6, 9 y 10); modificado el 21 y 22/10/2026 (puntos 2, 5, 6, 8, 9 y 13; Contextos 13 a 21) y consolidado el 22/10/2026; aceptado por el autor el 22/10/2026
 - Fecha: 19/10/2026; modificación del 20/10/2026
 - **Registro único de la línea de base** (decisión del autor del 20/10/2026): todo cambio en la forma de medir se incorpora aquí, sin ADR nuevos. Absorbe el ex ADR-099 (retirado)
 - **Se decide después de conocer los resultados** de las mediciones del 13 al 15/10/2026 y **antes de ejecutar agentes sobre el banco**. La admisión de los problemas nuevos se hace en el contenedor, solo con OpenCode y sin agente.
