@@ -106,6 +106,10 @@ Naciones Unidas. (2015). *Transformar nuestro mundo: la Agenda 2030 para el Desa
 
 NLnet. (2026). *Apply for a grant*. https://nlnet.nl/propose/
 
+nlscott. (2026, 9 de septiembre). *Any read or edit permission rule written as an absolute path (~/.ssh, ~/.aws, /etc/hosts, etc.) silently never matches, including MDM managed rules* (Incidencia n.º 48049) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/48049
+
+ns-calvinwu. (2026, 6 de agosto). *permission.edit patterns are matched against worktree-relative paths — absolute/~ patterns silently never match (fail-open for deny rules)* (Incidencia n.º 40945) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/40945
+
 Onufriichuk, A. (2026). *Claude Code Config Manager* (Versión 0.10.0) \[Extensión de VS Code\]. Visual Studio Marketplace. https://marketplace.visualstudio.com/items?itemName=agnislav.claude-code-config-manager
 
 OpenAI. (2026). *Codex* (Versión 0.159.3) [Software]. GitHub. https://github.com/openai/codex/releases/tag/rust-v0.159.3
@@ -125,6 +129,8 @@ Open Source Collective. (s. f.-a). *Fees*. Recuperado el 2 de octubre de 2026, d
 Open Source Collective. (s. f.-b). *Is OSC right for my project?* Recuperado el 2 de octubre de 2026, de https://docs.oscollective.org/interested-in-joining-osc/is-osc-right-for-me
 
 Osterwalder, A. y Pigneur, Y. (2019). *Generación de modelos de negocio*. Deusto. (Obra original publicada en 2010).
+
+ouyangjian28. (2026, 29 de agosto). *Permission read/edit rules with absolute path patterns are silently ignored (matching appears workspace-relative only)* (Incidencia n.º 46133) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/46133
 
 Oven. (s. f.). *Bun* [Software]. GitHub. https://github.com/oven-sh/bun/blob/main/LICENSE.md
 

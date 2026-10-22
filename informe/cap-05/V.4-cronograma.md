@@ -75,7 +75,7 @@ Los seis requisitos Should se financian con las horas que quedan libres al cierr
 
 *Figura 3. Cronograma del proyecto con dependencias entre tareas consecutivas y los hitos de la cadencia. La iteración 1 se presenta por los incrementos con que se construye el v1. Las barras rayadas corresponden a la fase de cierre, cuya duración se estima. Fuente: elaboración propia sobre la Tabla 16.*
 
-La ruta crítica enlaza los incrementos 0 a 5 en la primera iteración; el evaluador, la cadena de reglas, la línea de comandos, H-18, RF-16 y las capacidades restantes de permisos en la segunda; descubrimiento y versión, hallazgos y escenarios completos en la tercera; y estabilización en la cuarta. La figura omite tres dependencias no consecutivas: núcleo → hallazgos, cadena de reglas → hallazgos y cadena de reglas → RF-06. La línea de base separa preparación y ejecución de uno o dos días, con resultado a más tardar el 16/10, que determina el orden restante de la segunda iteración según la Tabla 10 del apartado IV.3.
+La ruta crítica enlaza los incrementos 0 a 5 en la primera iteración; el evaluador, la cadena de reglas, la línea de comandos, H-18, RF-16 y las capacidades restantes de permisos en la segunda; descubrimiento y versión, hallazgos y escenarios completos en la tercera; y estabilización en la cuarta. La figura omite tres dependencias no consecutivas: núcleo → hallazgos, cadena de reglas → hallazgos y cadena de reglas → RF-06. El orden de construcción derivado de la línea de base y la ejecución de esta se describen en el apartado V.1.
 
 ### Cláusula de contingencia
 
@@ -93,6 +93,6 @@ La cláusula de contingencia opera sobre la capacidad técnica, que es la que de
 
 *Tabla 17. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 16.*
 
-Se posterga primero lo que no interviene en la medición final ni en la mitigación del riesgo principal y, dentro de ello, lo que menos debilita un objetivo específico. Las postergaciones se registran en la bitácora y el tablero y se reflejan en la prioridad del catálogo y, si afectan un Must, en el producto mínimo viable del apartado V.5. El efecto de cada orden sobre los objetivos específicos consta en el Anexo III, A.III.3.
+Se posterga primero lo que no interviene en la medición final ni en la mitigación del riesgo principal y, dentro de ello, lo que menos debilita un objetivo específico. Las postergaciones se registran en la bitácora y el tablero y se reflejan en la prioridad del catálogo y, si afectan un Must, en el producto mínimo viable del apartado V.5. El efecto de cada orden sobre los objetivos específicos consta en el Anexo III, A.III.3. Postergar RF-07 deja sin evaluar la condición de detección del criterio de éxito (apartado I.3.4).
 
 Se conservan la trazabilidad del catálogo y la ejecutabilidad de cada etiqueta, condiciones de cómputo de la cátedra; la fidelidad respecto de OpenCode 1.18.25 (RNF-02), que mitiga el riesgo principal; y la seguridad de RNF-01, RNF-04 y RNF-05. Se protegen los casos y el canal de la medición final: CU-01 mínimo con advertencia de versión; CU-02; CU-03 con la decisión de RF-02 sin explicación en prosa, RF-06, RF-08 y RF-09; y RF-03 para consultar valores y permisos por línea de comandos (apartado V.5), que sostienen el flujo de valor del apartado IV.3.

@@ -1,6 +1,6 @@
 # ADR-088 — RIGE evalúa las acciones sobre archivos con la ruta relativa al árbol de trabajo, como OpenCode, y detecta las reglas de permiso que no pueden coincidir por su forma de ruta
 
-- Estado: aceptado (14/10/2026); modificado el 22/10/2026, después de la línea de base de ADR-098 (absorbe el ex ADR-100); aceptado por el autor el 22/10/2026
+- Estado: aceptado (14/10/2026); modificado el 22/10/2026, después de la línea de base de ADR-098 (absorbe el ex ADR-100); aceptado por el autor el 22/10/2026. Punto 3 de la modificación (RE-02) agregado el 22/10/2026 por la tarde, con la recomendación del ingeniero aceptada por el autor en la sesión
 - Fecha: 14/10/2026
 - **Origen posterior al resultado:** el mecanismo se observó en la línea de base de modificación (ADR-086). Se fija antes de construir el evaluador de RF-02 y antes del corte del 07/11/2026.
 - Capítulos afectados: Cap. III (Anexo I, RF-02 y RF-07); Cap. I (I.2.4, OE-2 y OE-3); `03-requisitos/libro/catalogo/RF-02.md` y `RF-07.md`; manifiesto de aceptación (ADR-080); Cap. VI (estrategia de pruebas)
@@ -76,4 +76,7 @@
      - Se suma una tarea del escritor junto con LB-04, antes del corte del 07/11.
      - La medición de noviembre agrega, para el brazo con RIGE indicado, la proporción de problemas de E2 corregidos al primer intento, en forma descriptiva.
      - Fila R-06 en el registro de cambios para la referente.
-3. **Evidencia:** `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/casos-con-error.md` y ADR-098, Contextos 16 y 17.
+3. **RE-02 ampliada** (decisión del autor del 22/10/2026, por la tarde, a recomendación del ingeniero). La regla de negocio definía la regla sin efecto solo por una regla posterior que la abarca, y no cubría la causa de CA-1 y CA-5 de RF-07.
+   - **Alternativas:** A, ampliar RE-02; B, dejarla y confiar en RF-07.
+   - **Decisión: A.** Texto: «Una regla se marca sin efecto solo si existe una regla posterior del mismo tipo que abarca todos los casos que ella cubre, o si su patrón declara la ruta absoluta de un archivo o directorio del árbol de trabajo, que no coincide con ninguna acción porque OpenCode 1.18.25 evalúa la ruta relativa al árbol». Se precisa en el libro (`reglas.md`), en III.2 y en el Anexo V, con su revalidación ante la referente (fila R-07 del registro de cambios). Con B, el modelo del dominio contradice al catálogo.
+4. **Evidencia:** `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/casos-con-error.md` y ADR-098, Contextos 16 y 17.

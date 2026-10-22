@@ -1,6 +1,6 @@
 # ADR-098 — Línea de base consolidada: banco de problemas estratificado, alineado con el alcance de RIGE y con consecuencia por ejecución
 
-- Estado: aceptado (19/10/2026); modificado y aceptado el 20/10/2026 (puntos 2, 3, 6, 9 y 10); modificado el 21 y 22/10/2026 (puntos 2, 5, 6, 8, 9 y 13; Contextos 13 a 21) y consolidado el 22/10/2026; aceptado por el autor el 22/10/2026
+- Estado: aceptado (19/10/2026); modificado y aceptado el 20/10/2026 (puntos 2, 3, 6, 9 y 10); modificado el 21 y 22/10/2026 (puntos 2, 5, 6, 8, 9 y 13; Contextos 13 a 21) y consolidado el 22/10/2026; aceptado por el autor el 22/10/2026. Modificado el 22/10/2026 por la tarde (puntos 16 a 18: conjunto reservado, brazo con instrucción de probar y errata), con las recomendaciones del ingeniero aceptadas por el autor en la sesión
 - Fecha: 19/10/2026; modificación del 20/10/2026
 - **Registro único de la línea de base** (decisión del autor del 20/10/2026): todo cambio en la forma de medir se incorpora aquí, sin ADR nuevos. Absorbe el ex ADR-099 (retirado)
 - **Se decide después de conocer los resultados** de las mediciones del 13 al 15/10/2026 y **antes de ejecutar agentes sobre el banco**. La admisión de los problemas nuevos se hace en el contenedor, solo con OpenCode y sin agente.
@@ -35,7 +35,7 @@
 
 15. **[D] (21/10/2026)** La cuota de 5 horas cortó dos veces la tanda real: Charles con 116 de 138 ejecuciones y el contraste de `build` con 3 de 30. Las continuaciones con `--pares` completaron Charles: 138 pares únicos, ninguno incompleto. Sin embargo, el corrector rechazaba los fragmentos cortados porque no tienen `control-final/`, lo que contradice la regla de cuota del punto 2. El `aislamiento-ejecutor.json` inicial de los cuatro fragmentos cortados de Charles es idéntico byte a byte a los controles inicial y final de su continuación (`C:/Users/Joa/rige-LB-20261020/`).
 
-16. **[D] (21/10/2026)** El análisis automático cuenta los mecanismos según la familia que el banco asigna a cada tarea, y por eso informa 3 (ruta absoluta, N-14 y N-21). La revisión de los archivos que dejó el agente muestra que las 33 **ejecuciones** sin efecto (no problemas; incluyen S-1 de E4 y una de N-13) (15 de `build` y 18 de Charles) escribieron una regla con ruta absoluta, N-14 incluido. En N-14, el agente esquivó la trampa de su familia: agregó las reglas `read` del directorio, pero con ruta absoluta. En N-21 no hubo ejecuciones sin efecto: el objetivo quedó en `deny` y el resultado fue colateral por exceso de alcance. Detalle: `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/casos-con-error.md`.
+16. **[D] (21/10/2026)** El análisis automático cuenta los mecanismos según la familia que el banco asigna a cada tarea, y por eso informa 3 (ruta absoluta, N-14 y N-21). La revisión de los archivos que dejó el agente muestra que 32 de las 33 **ejecuciones** sin efecto (no problemas; incluyen S-1 de E4 y una de N-13) (15 de `build` y 18 de Charles) escribieron una regla con ruta absoluta, N-14 incluido. *Errata del 22/10/2026:* el texto original decía «las 33»; la repetición 1 de N-14 con Charles dejó solo `list: deny`, la trampa de su familia, sin ruta absoluta (`casos-con-error.md`). Por problema (al menos 2 de 3) el mecanismo observado sigue siendo uno. En N-14, el agente esquivó la trampa de su familia en 5 de sus 6 ejecuciones: agregó las reglas `read` del directorio, pero con ruta absoluta. En N-21 no hubo ejecuciones sin efecto: el objetivo quedó en `deny` y el resultado fue colateral por exceso de alcance. Detalle: `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/casos-con-error.md`.
 
 17. **[D] (21/10/2026)** El colateral de batería se compara contra una única forma de referencia, que encarna una sola lectura del pedido. En la tanda, todos los éxitos declarados falsos por colateral fueron diferencias de alcance: C-6 (restringió `bash` y `task`), N-21 (denegó otros `.env`), S-3 (`npm test *` en `ask`), M-2 (regla solo en `build`) y N-12 (`external_directory`). En S-3 y M-2, la referencia es la que se aparta del pedido. Solo una ejecución rompió una guarda declarada: N-21, repetición 1 de `build`, con `.env.local`.
 
@@ -110,7 +110,7 @@ ADR-076 (medición sobre ChatGPT Plus, valorización del consumo y tarifas conge
    - Inclusión: los criterios C1 a C5; la admisión es solo por reproducción nativa.
    - Estratos (decisión del autor del 19/10/2026, sin E3):
      - **E1 · comunes:** C-1 a C-6 de permisos (conformidad del autor con los seis pedidos, sujetos a la admisión nativa) y V-1 a V-4 de valores.
-     - **E2 · mecanismo silencioso:** M-1 a M-10, N-1 a N-7 y N-9 a N-15 de permisos, más V-5 a V-8 de valores. Son 28 problemas. El problema reformulado abarca el efecto de la configuración en general (ADR-090), y RF-01 es Must.
+     - **E2 · mecanismo silencioso:** M-1 a M-10, N-1 a N-7 y N-9 a N-15 de permisos, más V-5 a V-8 de valores. Son 28 problemas al 19/10; con N-21, N-23, N-24, V-9 y V-10, admitidos antes de cerrar la hoja, y sin N-8, la línea de base mide **33** (`banco.md`, §4.3). El problema reformulado abarca el efecto de la configuración en general (ADR-090), y RF-01 es Must.
      - **E4 · síntoma:** S-1 a S-3.
    - Ningún problema se agrega, retira ni modifica por lo que haga un agente. Las causas de retiro se limitan a defectos del instrumento verificados sin agente.
 5. **Indicador principal.** Éxito declarado falso por problema: `hecho: true` con resultado `sin_efecto` o `incorrecta`, o con un colateral sobre una **guarda declarada** (`colateral_guarda`). El colateral de **batería** (`colateral_bateria`) deja de contar como éxito declarado falso y se informa aparte como **exceso de alcance** (decisión del autor del 22/10/2026, **tomada después del dato**; Contexto 17). La definición original, en la que todo colateral contaba, se informa como **lectura preregistrada**. Un problema está **con problema** si lo tiene en **al menos 2 de 3** repeticiones, y siempre se informa también la lectura con 1 de 3. Modifica ADR-093 §1. Umbral elegido por el autor el 19/10/2026, entre 2 de 3 y 1 de 3.
@@ -119,7 +119,7 @@ ADR-076 (medición sobre ChatGPT Plus, valorización del consumo y tarifas conge
    - **Batería** (`colateral_bateria`, redefinido el 20/10/2026 por Contexto 11): una sonda de la batería cuenta como colateral solo si su valor final difiere del que produce la **forma correcta de referencia** del problema, capturada en la admisión nativa con la batería vigente. Mide la «regla demasiado amplia»: lo que se cambió de más respecto de la solución correcta, no los efectos que la solución correcta produce necesariamente en OpenCode.
    - Por eso todas las tareas, incluidas M-1 a M-10, se readmiten con la batería vigente.
    - Conformidad del autor del 20/10/2026.
-   - **Lectura amplia del pedido** (decisión del autor del 21/10/2026, **tomada después de conocer la tanda de `build`**; Contexto 14). Un colateral que proviene de una regla más amplia que la forma correcta sigue contando como éxito declarado falso en la lectura principal, porque así se fijó antes de medir. Además se informa una **sensibilidad sin colateral**, en la que solo cuentan `sin_efecto` e `incorrecta`.
+   - **Lectura amplia del pedido** (decisión del autor del 21/10/2026, **tomada después de conocer la tanda de `build`**; Contexto 14). Un colateral que proviene de una regla más amplia que la forma correcta seguía contando como éxito declarado falso en la lectura principal, porque así se fijó antes de medir. *Superado el 22/10/2026 por el punto 5:* el colateral de batería pasa a exceso de alcance; esta regla rige solo en la lectura preregistrada. Además se informa una **sensibilidad sin colateral**, en la que solo cuentan `sin_efecto` e `incorrecta`.
 7. **Consecuencia por ejecución**, con el orden deny < ask < allow:
    - **exposición**: el objetivo o una sonda queda más permisivo que lo esperado;
    - **bloqueo**: queda más restrictivo;
@@ -186,6 +186,20 @@ ADR-076 (medición sobre ChatGPT Plus, valorización del consumo y tarifas conge
 - El autor aceptó el 21/10/2026, **después de conocer la tanda de `build`**, informar C-6 como resultado sin invalidar la dimensión y sumar la sensibilidad sin colateral (Contexto 14; punto 6).
 - El autor decidió el 20/10/2026 detener la primera tanda real (Contexto 13) y corregir el reparto antes de ejecutar agentes (punto 2, ficha MED-14).
 - El autor aceptó en la sesión del 20/10/2026, antes de la tanda, las reglas de ejecución del punto 2: ejecución incompleta, cuota, parada temprana, alcance del ensayo final y orden de las tandas.
+
+
+### Modificación del 22/10/2026, tarde (después de la propagación al informe)
+
+**Origen:** revisión de tribunal (subagente `critico`) del texto propagado. Decisiones del autor del 22/10/2026, que aceptó en la sesión las recomendaciones del ingeniero. Se toman **después del dato** y no cambian esta línea de base.
+
+16. **Conjunto reservado para la medición final.** El manifiesto de aceptación de RIGE reutiliza escenarios del banco (CA-9 usa `config/credenciales.json` y `privado`, los de N-23 y N-14), de modo que la medición final probaría a RIGE en parte sobre los casos con los que se precisó el requisito.
+    - **Alternativas:** A, agregar variantes reservadas; B, declarar la amenaza sin agregar nada.
+    - **Decisión: A.** Se agregan de 3 a 5 variantes de ruta absoluta (permiso `read`, `edit` o `deny`, sobre archivos y directorios) con archivos y herramientas que el manifiesto no use. Se admiten por reproducción nativa, sin agente, antes del corte del 07/11/2026, con readmisión y ensayo. Se miden en noviembre con los dos brazos (sin RIGE y con RIGE indicado), k = 3, y se informan **aparte** como conjunto reservado; no integran el criterio principal (patrón de las adiciones de ADR-080).
+    - **Condición que la invalida:** que ninguna variante pase la admisión nativa; se declara.
+17. **Brazo con instrucción de probar el efecto.** El agente tenía la credencial para probar con `opencode run` y lo hizo una vez por ejecutor en 138 ejecuciones. La alternativa barata a RIGE es instruirlo para que pruebe.
+    - **Alternativas:** A, descartarla con un argumento sin datos; B, medirla; C, dejarla fuera como límite.
+    - **Decisión: B si la cuota alcanza; si no, C.** En noviembre se agrega un brazo descriptivo con `build`, sin RIGE, con una instrucción que pide probar el efecto ejecutando OpenCode como el desarrollador, sobre E1 y E2 y k = 3. Se informa el éxito declarado falso por problema frente a la línea de base y frente al brazo con RIGE indicado. No es criterio de éxito. Si la cuota de noviembre no alcanza, el brazo se omite y se declara como límite. El texto exacto de la instrucción se fija antes del congelamiento del 14/11/2026.
+18. **Errata** del mismo día: Contexto 16 (32 de 33 ejecuciones), punto 4 (33 problemas de E2) y punto 6 (lectura amplia superada por el punto 5).
 
 ### Consecuencias
 

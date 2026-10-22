@@ -4,33 +4,37 @@ Este apartado presenta los datos en estado ordenado y sin interpretación; el an
 
 ### II.3.1 · Datos del relevamiento documental de incidencias
 
-La aplicación del criterio registrado en el Anexo VI, A.VI.6 arroja 46 incidencias candidatas. De ellas se excluyen 12 por corresponder a pedidos de funcionalidad que no relatan un comportamiento ya experimentado, y 2 por no versar sobre el fenómeno relevado: una relativa a la expresividad de la interfaz de programación de permisos y otra a una discrepancia de nomenclatura en el esquema publicado. Quedan incluidas 32 incidencias, de las cuales 8 permanecen abiertas y 24 se encuentran cerradas a la fecha de consulta.
+La aplicación del criterio registrado en el Anexo VI, A.VI.6 arroja 46 incidencias candidatas. De ellas se excluyen 12 por corresponder a pedidos de funcionalidad que no relatan un comportamiento ya experimentado, y 3 por no versar sobre el fenómeno relevado: una relativa a la expresividad de la interfaz de programación de permisos, otra a una discrepancia de nomenclatura en el esquema publicado y la n.º 32581, que corresponde a OpenClaw y se excluye en la revisión del 09/10/2026. Quedan incluidas 31 incidencias, de las cuales 8 permanecen abiertas y 23 se encuentran cerradas a la fecha de consulta.
 
 | **Categoría**                                         | **Casos** | **Observación**                                        |
 |-------------------------------------------------------|-----------|--------------------------------------------------------|
 | Candidatas según el criterio de búsqueda              | 46        | Período 28/11/2025 a 16/09/2026                        |
 | Excluidas por corresponder a pedidos de funcionalidad | 12        | No relatan un comportamiento experimentado             |
-| Excluidas por no versar sobre el fenómeno             | 2         | Expresividad de la interfaz y nomenclatura del esquema |
-| **Incluidas**                                         | **32**    | 8 abiertas y 24 cerradas                               |
+| Excluidas por no versar sobre el fenómeno             | 3         | Expresividad de la interfaz, nomenclatura del esquema y otro proyecto (n.º 32581, excluida el 09/10/2026) |
+| **Incluidas**                                         | **31**    | 8 abiertas y 23 cerradas                               |
 
-*Tabla 13. Resultado del relevamiento de incidencias del repositorio de OpenCode. Fuente: elaboración propia sobre el relevamiento del 17/09/2026; nómina completa de las 46 incidencias en el Anexo VI, A.VI.6.*
+*Tabla 13. Resultado del relevamiento de incidencias del repositorio de OpenCode. Fuente: elaboración propia sobre el relevamiento del 17/09/2026, revisado el 09/10/2026; nómina completa de las 46 incidencias en el Anexo VI, A.VI.6.*
 
 ### II.3.2 · Datos de la medición de la línea de base
 
-Los valores agregados por condición corresponden a la Tabla 4 del apartado I.3.2. Este apartado presenta el dato en el grado de desagregación que el Capítulo I anuncia y que la síntesis no admite: por perfil de participante.
+Los valores agregados por estrato y ejecutor corresponden a la Tabla 4 del apartado I.3.2, y aquí se presenta la desagregación por problema. La Tabla 14 reúne los problemas de E2 y E4 con éxito declarado falso en al menos una repetición de la lectura principal y conserva N-21 como problema solo en la preregistrada. Las fracciones proceden de la medición que el autor coordina con el arnés del repositorio los días 20 y 21/10/2026, con tres repeticiones por problema y ejecutor; la corrección sigue el Anexo VI, A.VI.7.
 
-| **Condición** | **Perfil** | **IB-1 · Error (IC 95 %)** | **IB-2 · Tiempo (RIC)** | **IB-3 · Parciales** | **Respuestas (n)** |
-|---------------|------------|----------------------------|-------------------------|----------------------|--------------------|
-| C-1           | Habitual   | \[ \]                      | \[ \]                   | \[ \]                | \[ \]              |
-| C-1           | Ocasional  | \[ \]                      | \[ \]                   | \[ \]                | \[ \]              |
-| C-2 a C-4     | Habitual   | \[ \]                      | \[ \]                   | \[ \]                | \[ \]              |
-| C-2 a C-4     | Ocasional  | \[ \]                      | \[ \]                   | \[ \]                | \[ \]              |
+| **Problema** | **`build`** | **Charles** | **Mecanismo observado** | **Consecuencia** | **Cuenta en la lectura principal (al menos 2/3)** |
+|---|---|---|---|---|---|
+| M-1 (E2) | 2/3 | 3/3 | Ruta absoluta en regla `read` | Bloqueo | Sí |
+| M-2 (E2) | 2/3 | 2/3 | Ruta absoluta en regla `edit` | Bloqueo | Sí |
+| M-10 (E2) | 3/3 | 3/3 | Ruta absoluta en regla de lectura de `.env` | Bloqueo | Sí |
+| N-13 (E2) | 0/3 | 1/3 | Ruta absoluta en regla `edit` | Exposición | No, solo una repetición |
+| N-14 (E2) | 3/3 | 3/3 | Ruta absoluta en regla `read` del directorio (Charles: 2/3; repetición 1: solo `list: deny`, sin ruta absoluta) | Exposición | Sí |
+| N-21 (E2, solo preregistrada como problema) | 1/3 | 0/3 | Guarda `.env.local` alterada en una ejecución de `build`; exceso de alcance en la preregistrada | Bloqueo | No; preregistrada: 3/3 en ambos |
+| N-23 (E2) | 3/3 | 3/3 | Ruta absoluta en regla `read` con `deny` | Exposición | Sí |
+| S-1 (E4) | 2/3 | 3/3 | Ruta absoluta en regla `read` | Bloqueo | Sí, en E4 |
 
-*Tabla 14. Indicadores de la línea de base por condición agrupada y perfil. Fuente: elaboración propia; registro completo en el Anexo VI, A.VI.8.*
+*Tabla 14. Éxito declarado falso por problema y ejecutor. Fuente: elaboración propia sobre `eco-principal/informe.md`, `eco-charles/informe.md` y los archivos finales documentados en `casos-con-error.md`, bajo `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/`. Las fracciones corresponden a la lectura principal; la última columna identifica la preregistrada de N-21.*
 
-La desagregación se presenta con las condiciones C-2 a C-4 agrupadas, dado que el reparto de las respuestas entre cuatro condiciones y dos perfiles produce celdas demasiado pequeñas para admitir lectura. Se evalúa como alternativa informar las cuatro condiciones por separado y se la descarta por esa razón; el detalle por condición individual consta en el Anexo VI, A.VI.8.
+En la detección, realizada con el mismo arnés el 21/10/2026 sobre once defectos con tres repeticiones por ejecutor, D2 se detecta en 1/3 con `build` y 0/3 con Charles; N-23, en 0/3 y 1/3; y D5, en 0/3 y 1/3, respectivamente (`det-principal/informe.md` y `det-charles/informe.md`, en la misma carpeta de evidencia). La lectura de estos resultados corresponde al apartado I.3.2.
 
-Dado que las respuestas de un mismo participante no son independientes entre sí, IB-1 se informa también por participante como control de la unidad de análisis adoptada: el registro individual consta en el Anexo VI, A.VI.8, y en el cuerpo se consigna el rango de la proporción de error entre participantes y si algún participante concentra una parte desproporcionada de los errores. El registro incorpora, además, los recursos que el participante emplea durante cada resolución, obtenidos de la grabación: qué comandos de introspección utiliza, si recurre a la documentación o a la hoja de referencia, y la cantidad de archivos que abre. Esos valores caracterizan el procedimiento manual vigente, no integran la meta cuantificada del criterio de éxito y constan en el Anexo VI, A.VI.8. Se registra asimismo, para cada caso, si su respuesta puede obtenerse mediante la lectura de la documentación o si solo surge del comportamiento de la herramienta.
+El exceso de alcance se registra en el Anexo VI, A.VI.8.
 
 ### II.3.3 · Datos de la entrevista al referente
 

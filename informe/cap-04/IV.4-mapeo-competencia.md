@@ -1,6 +1,6 @@
 ## IV.4 · Mapeo de competencia
 
-Los ejes del mapa se construyen a partir de la definición de respuesta correcta del instrumento de la línea de base: una respuesta es correcta cuando coinciden el valor y su fuente o, en las condiciones de permisos, la decisión y la regla determinante (Anexo VI, A.VI.7). Cada mitad de esa definición origina un eje. Ambas corresponden a las dimensiones con que se relevó cada solución (A.VI.4) y a la distinción del hallazgo 5 entre listar reglas y explicar una decisión, precisada con el relevamiento del apartado IV.3.
+Los ejes del mapa se construyen a partir de la definición de respuesta correcta del instrumento de atribución: una respuesta es correcta cuando coinciden el valor y su fuente o, en las condiciones de permisos, la decisión y la regla determinante (Anexo VI, A.VI.7). Cada mitad de esa definición origina un eje. Ambas corresponden a las dimensiones con que se relevó cada solución (A.VI.4) y a la distinción del hallazgo 5 entre listar reglas y explicar una decisión, precisada con el relevamiento del apartado IV.3.
 
 El eje horizontal mide la profundidad de la explicación en cuatro niveles: no resuelve el estado efectivo, muestra el resultado de la fusión, lista valores o reglas en orden de evaluación, o evalúa la decisión para una acción con su regla determinante. El eje vertical mide la granularidad de la procedencia en tres niveles: ninguna, por alcance o capa, o por declaración, con su entrada, archivo y posición. Cada solución se ubica según el relevamiento del 01/10/2026 registrado en el Anexo VI, A.VI.4.
 

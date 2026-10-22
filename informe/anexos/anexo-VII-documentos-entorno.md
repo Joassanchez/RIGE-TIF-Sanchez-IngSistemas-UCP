@@ -14,7 +14,7 @@ Electricidad de Misiones S. A. participa como referente de validación y fuente 
 
 ## A.VII.2 · Normativa pertinente
 
-**Ley N.º 25.326 de Protección de los Datos Personales.** Alcanza al instrumento de medición del apartado I.3.2, en tanto registra grabaciones de pantalla y datos identificatorios de los participantes, y a la entrevista del apartado II.2.3, en tanto identifica a una persona con nombre, rol y organización. No alcanza al objeto sobre el que opera la plataforma. Determina el consentimiento informado, la identificación por código en la medición, la separación de los datos identificatorios respecto de los de análisis y el plazo de eliminación de las grabaciones. Refuerza, además, la exclusión de las credenciales de autenticación del alcance de RIGE, declarada en la Tabla 10.
+**Ley N.º 25.326 de Protección de los Datos Personales.** Alcanza a la entrevista del apartado II.2.3, en tanto identifica a una persona con nombre, rol y organización. La medición vigente ejecuta agentes y no registra datos personales. No alcanza al objeto sobre el que opera la plataforma. Determina el consentimiento informado y la separación de los datos identificatorios de la entrevista respecto de los de análisis. Refuerza, además, la exclusión de las credenciales de autenticación del alcance de RIGE, declarada en la Tabla 10.
 
 **Ley N.º 27.506 de Promoción de la Economía del Conocimiento.** Constituye el marco promocional de la actividad del sector del cual provienen los recursos, conforme al apartado II.5.5.
 

@@ -86,7 +86,7 @@ Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la 
 | Resultado (modificación) | Hecha el 14/10/2026 (`build` 72/72; Charles 72/72 en dos tandas). Cada uno: 64 correctas y 8 sin efecto, todas con éxito declarado falso, por reglas de permiso con ruta absoluta (C-1f 3, C-3b 3, C-1d 1, C-4e 1). **No válida** por la validez previa (C-1f); causa no instrumental verificada con OpenCode; sin repetición; informe descriptivo (ADR-086). Equivalente: USD 4,55 y 4,86 |
 | Crítica (14/10/2026) | «Prolija y sustantivamente débil»: adjudicación por IA, frontera léxica de C-3b, condición 1 de ADR-053 cumplida en sustancia, ADR-084 débil como criterio de éxito, RIGE sin capacidad comprobada de detectar la ruta absoluta. Coherencia corregida; diseño 2.2; ADR-087 a ADR-089 propuestos |
 | Sondas | Sonda E: el error de ruta absoluta es propio del agente (7/12 y 6/12 sin efecto sin la ruta en la instrucción). Sonda R: dependiente de la redacción |
-| Pendiente | Ver LB-06: el commit (autor), el umbral de tokens (punto 9), la exclusión de la fila reemplazada en el análisis del contraste, la cobertura del MVP antes del 07/11 (punto 8) y la propagación al informe |
+| Propagación al informe | **Hecha el 22/10/2026** (traspaso `20261022-propagacion-linea-base.md`): I.2.3 y OE-4, I.3.1, I.3.2, I.3.4 e I.3.5, II.2, II.3.2, II.4, II.6, IV.3, V.2, A.VI.1, A.VI.2, A.VI.7 a A.VI.9, D-41, RF-07 CA-5 (libro y Anexo I) y ajustes de coherencia en el Resumen, I.1, I.4, I.6, II.1, II.5, IV.4, V.1, V.4, V.5 y A.VII.2. Revisión cruzada y dos rondas de corrección: `.trabajo/revisiones/20261022-propagacion-LB.md`. Los estados de las secciones no se cambiaron (los asigna el autor). Decisiones abiertas en LB-07 |
 
 ## Tablero de gestión (Guía AE2, objeto 3)
 
