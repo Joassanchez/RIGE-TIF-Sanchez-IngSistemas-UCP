@@ -26,3 +26,5 @@
 - **Sonda R:** 6 revisiones manuales (`build`: C-3b 1, C-3d 3; Charles: C-3d 2). Preclasificación ciega: 6 correctas (todas con duda por la forma de la decisión). Planilla: `.trabajo/linea-base/adjudicacion-sonda-R/`.
 - **P3:** 26 correctas y 1 incorrecta (C-2b:3) por corrección automática; 45 revisiones manuales. Preclasificación ciega: 29 correctas, 16 parciales. Planilla: `.trabajo/linea-base/adjudicacion-p3/`.
 - Las lecturas (sonda R: dependiente, robusta o inestable; P3: rama descriptiva, sin decidir el cumplimiento) se calculan con la adjudicación firmada por el autor.
+
+*Errata del 22/10/2026 (ingeniero, Claude Code, Opus 5.5):* las planillas de la sonda R y de P3 estaban en `.trabajo/linea-base/`, fuera de git, que se eliminó el 22/10/2026 durante la limpieza del repositorio. No hay copia. La adjudicación firmada de las dos se conserva en `../20261014-adjudicacion-autor/`.

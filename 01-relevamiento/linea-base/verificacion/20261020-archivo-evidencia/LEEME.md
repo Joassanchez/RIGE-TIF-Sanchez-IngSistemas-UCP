@@ -54,3 +54,11 @@ Datos crudos de las tandas de atribución, modificación y sondas del 13 y 14/10
 | `20261014-sonda-E-principal-b` | Sonda E, `build`, segunda tanda | 260 | `7db8162f8c570d6798847b2c062b852de0ac54024f6b672f60622ad4961ac70c` | `2d4746c250170ae4ea4b36b7cc955614b4fdbb28dcced445ff5088d5c89c8ef0` |
 | `20261014-sonda-R-charles` | Sonda R, Charles | 55 | `ca2af1128c468f65b89f2ed232dc3aafd2930799f9a0482b133853c022f0f3b9` | `61ff3b4258f6246a6a6c70b8753eabf4cd563523ec1d2e4126001fc626e22110` |
 | `20261014-sonda-R-principal` | Sonda R, `build` | 55 | `97bce3efd9e75160482127c17d9932569a07ffcd2022530cca2f60f8b780f7f9` | `3dd1bbf99e4a5a8113eb3ca7cc4019535cf32e7bca4372f86c47401fcbf02879` |
+
+## Salida de máquina de la adjudicación del 14/10/2026 (archivada el 22/10/2026)
+
+Los dos `analisis.json` de `20261014-adjudicacion-autor/` (`analisis-LB/` y `analisis-p3/`, 19 MB) son la salida del análisis que genera los `informe.md` de esas carpetas. Los `informe.md` siguen en el repositorio; nada cita los JSON. Mismo procedimiento y ubicación, con copia en OneDrive verificada con `HASHES-20261022.txt`. Se extrajeron y se comprobaron contra su `.SHA256SUMS` antes de borrarlos: 0 diferencias.
+
+| Archivo | Contenido | `.tar.gz` | `.SHA256SUMS` |
+|---|---|---|---|
+| `20261014-adjudicacion-autor-analisis-json` | `analisis-LB/analisis.json` (`db61e5b4…`) y `analisis-p3/analisis.json` (`f007873c…`) | `6ea8270f9ef43ac449944e2c80fe6ae909fc2ad72c8f0e75afb320c799fb2301` | `e71b0f96a5f2670486c44ac1b32baf6bb3c44ae401c3744a79b425ccfe1ca50a` |

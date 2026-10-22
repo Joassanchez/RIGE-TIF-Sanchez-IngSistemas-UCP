@@ -12,6 +12,7 @@ Las mediciones del 13 y el 14/10/2026 (atribución con 24 casos, modificación y
 | `vm/` | Lo que entra al contenedor (imagen `rige-linea-base:1.18.25`): `Dockerfile`, `contenedor.sh`, `medir.sh`, arnés `simulado/`, proyecto base `casos/comun/` y documentación sin conexión `docs/` |
 | `herramientas/` | Lo que corre en el anfitrión: generación, corrección y análisis (`generar-ecologica.py`, `corregir_ecologica.py`, `corregir_deteccion.py`, `analizar.py`, `analizar_ecologica.py`), con sus pruebas |
 | `tarifas-congeladas-20261001.json` | Tarifas congeladas para valorizar el consumo (ADR-076; Anexo I, A.I.10) |
+| `catalogo-modelos-20261013.json` | Catálogo de modelos congelado; `vm/contenedor.sh` lo copia al contenedor en cada medición |
 | `verificacion/20261021-LB-ADR098/` | Tanda real: informes por dimensión, `casos-con-error.md` y estado de la tanda |
 | `verificacion/20261019-admision/`, `verificacion/20261015-exploracion/` | Admisión nativa del banco, sin agente |
 | `verificacion/20261020-archivo-evidencia/` | Ubicación y SHA-256 de la evidencia que queda fuera del repositorio |
@@ -24,8 +25,8 @@ Las mediciones del 13 y el 14/10/2026 (atribución con 24 casos, modificación y
 | `respuestas.md`, `respuestas.json` | Hoja de respuestas de los 24 casos de atribución | Anexo VI, ADR-081 |
 | `modificacion/` | Tareas y respuestas de la medición de modificación (ADR-085 y 086) | Anexo VI, ADR-088 |
 | `sondas/` | Sondas R y E (ADR-089) | Anexo VI |
-| `tarifas-congeladas-20261014-p3.json`, `catalogo-modelos-20261013.json` | Tarifas y catálogo de la tanda P3 | — |
-| `verificacion/20261013-*`, `verificacion/20261014-*` | Análisis, adjudicación del autor, captura estática, permisos y tareas. De `20261013-LB-principal-sol/` queda solo `registro.jsonl` (ADR-098, Contexto 8) | Anexo VI, ADR-081, 088, 090 y 098 |
+| `tarifas-congeladas-20261014-p3.json` | Tarifas de la tanda P3 | Anexo VI |
+| `verificacion/20261013-*`, `verificacion/20261014-*` | Análisis, adjudicación del autor (sin los `analisis.json`, archivados), captura estática, permisos y tareas. De `20261013-LB-principal-sol/` queda solo `registro.jsonl` (ADR-098, Contexto 8) | Anexo VI, ADR-081, 088, 090 y 098 |
 
 ## Relevamiento de la práctica
 

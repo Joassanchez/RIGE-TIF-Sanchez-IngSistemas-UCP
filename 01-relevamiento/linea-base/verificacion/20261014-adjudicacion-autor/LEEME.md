@@ -9,6 +9,8 @@
 3. **Aceptación:** el autor aceptó las tres preclasificaciones el 14/10/2026, sin cambios. Rige esta adjudicación. Se declara la asistencia de un modelo de lenguaje y que el autor no es independiente del resultado (ADR-087, amenaza).
 4. **Primera preclasificación:** una ronda anterior, con indicaciones distintas sobre C-3b y C-3d, se descartó antes de la firma. Se conserva en `.trabajo/linea-base/*-clave/preclasificacion-v1.csv`.
 
+*Errata del 22/10/2026 (ingeniero, Claude Code, Opus 5.5):* la carpeta de trabajo `.trabajo/linea-base/`, fuera de git, se eliminó el 22/10/2026 durante la limpieza del repositorio. Con ella se perdieron las planillas de la preclasificación ciega (paso 2) y la ronda descartada (paso 4). No hay copia. La adjudicación firmada se conserva en los `.csv` de esta carpeta, y sus análisis en `analisis-LB/`, `analisis-p3/` y `analisis-R/`. Los kappa de la sección «Concordancia» se calcularon con esas planillas y ya no se pueden recomputar; el informe no los publica desde el 22/10/2026.
+
 ## Archivos
 
 - `adjudicaciones-LB-principal-sol.csv`, `adjudicaciones-LB-charles-sol.csv` (61 revisiones manuales de la línea base).
