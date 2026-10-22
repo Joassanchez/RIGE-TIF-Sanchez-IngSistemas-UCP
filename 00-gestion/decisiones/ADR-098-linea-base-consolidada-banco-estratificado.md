@@ -35,6 +35,10 @@
 
 15. **[D] (21/10/2026)** La cuota de 5 horas cortó dos veces la tanda real: Charles con 116 de 138 ejecuciones y el contraste de `build` con 3 de 30. Las continuaciones con `--pares` completaron Charles: 138 pares únicos, ninguno incompleto. Sin embargo, el corrector rechazaba los fragmentos cortados porque no tienen `control-final/`, lo que contradice la regla de cuota del punto 2. El `aislamiento-ejecutor.json` inicial de los cuatro fragmentos cortados de Charles es idéntico byte a byte a los controles inicial y final de su continuación (`C:/Users/Joa/rige-LB-20261020/`).
 
+16. **[D] (21/10/2026)** El análisis automático cuenta los mecanismos según la familia que el banco asigna a cada tarea, y por eso informa 3 (ruta absoluta, N-14 y N-21). La revisión de los archivos que dejó el agente muestra que las 33 ejecuciones sin efecto (15 de `build` y 18 de Charles) escribieron una regla con ruta absoluta, N-14 incluido. En N-14, el agente esquivó la trampa de su familia: agregó las reglas `read` del directorio, pero con ruta absoluta. En N-21 no hubo ejecuciones sin efecto: el objetivo quedó en `deny` y el resultado fue colateral por exceso de alcance. Detalle: `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/casos-con-error.md`.
+
+17. **[D] (21/10/2026)** El colateral de batería se compara contra una única forma de referencia, que encarna una sola lectura del pedido. En la tanda, todos los éxitos declarados falsos por colateral fueron diferencias de alcance: C-6 (restringió `bash` y `task`), N-21 (denegó otros `.env`), S-3 (`npm test *` en `ask`), M-2 (regla solo en `build`) y N-12 (`external_directory`). En S-3 y M-2, la referencia es la que se aparta del pedido. Solo una ejecución rompió una guarda declarada: N-21, repetición 1 de `build`, con `.env.local`.
+
 ### Alternativas evaluadas
 
 - **A:** ADR-097 tal como está: 23 o 24 tareas de permiso en un único conjunto, sin estratos ni cobertura.
@@ -74,7 +78,7 @@
      - **E2 · mecanismo silencioso:** M-1 a M-10, N-1 a N-7 y N-9 a N-15 de permisos, más V-5 a V-8 de valores. Son 28 problemas. El problema reformulado abarca el efecto de la configuración en general (ADR-090), y RF-01 es Must.
      - **E4 · síntoma:** S-1 a S-3.
    - Ningún problema se agrega, retira ni modifica por lo que haga un agente. Las causas de retiro se limitan a defectos del instrumento verificados sin agente.
-5. **Indicador principal.** Éxito declarado falso por problema: `hecho: true` con resultado `sin_efecto`, `incorrecta` o `colateral`. Un problema está **con problema** si lo tiene en **al menos 2 de 3** repeticiones, y siempre se informa también la lectura con 1 de 3. Modifica ADR-093 §1. Umbral elegido por el autor el 19/10/2026, entre 2 de 3 y 1 de 3.
+5. **Indicador principal.** Éxito declarado falso por problema: `hecho: true` con resultado `sin_efecto` o `incorrecta`, o con un colateral sobre una **guarda declarada** (`colateral_guarda`). El colateral de **batería** (`colateral_bateria`) deja de contar como éxito declarado falso y se informa aparte como **exceso de alcance** (decisión del autor del 22/10/2026, **tomada después del dato**; Contexto 17). La definición original, en la que todo colateral contaba, se informa como **lectura preregistrada**. Un problema está **con problema** si lo tiene en **al menos 2 de 3** repeticiones, y siempre se informa también la lectura con 1 de 3. Modifica ADR-093 §1. Umbral elegido por el autor el 19/10/2026, entre 2 de 3 y 1 de 3.
 6. **Colaterales completos.**
    - **Guardas declaradas** (`colateral_guarda`): se comparan con el estado inicial.
    - **Batería** (`colateral_bateria`, redefinido el 20/10/2026 por Contexto 11): una sonda de la batería cuenta como colateral solo si su valor final difiere del que produce la **forma correcta de referencia** del problema, capturada en la admisión nativa con la batería vigente. Mide la «regla demasiado amplia»: lo que se cambió de más respecto de la solución correcta, no los efectos que la solución correcta produce necesariamente en OpenCode.
@@ -111,7 +115,7 @@
     - Por problema, la fracción de las 3 repeticiones.
     - Sin intervalos de confianza sobre el conjunto de problemas, porque no es una muestra; esto se declara así.
     - Siempre se informan Charles, la consecuencia, la cobertura y el proceso.
-13. **Frase de la línea de base:**
+13. **Frase de la línea de base.** Y cuenta el **mecanismo observado**, o sea, la causa por la que el objetivo no se logró en las ejecuciones con éxito declarado falso, según los archivos que dejó el agente, y no la familia que el banco asigna a la tarea (decisión del autor del 22/10/2026, **tomada después del dato**; Contexto 16). Un éxito declarado falso por colateral no aporta un mecanismo: se informa como exceso de alcance.
 
     > De T problemas con mecanismo silencioso documentado, X terminan con éxito declarado falso en al menos 2 de 3 repeticiones, en Y mecanismos distintos; en Z el resultado deja habilitado algo que el desarrollador pidió cerrar, y en V deja un valor distinto del pedido. En C pedidos comunes, W.
 
@@ -134,6 +138,8 @@
 - El autor eligió B para la verificación por comportamiento (punto 3; antes ADR-099, que se retira) y dispuso que la línea de base tenga este único registro.
 - El autor dio su conformidad a la redefinición del colateral de batería (punto 6) y aceptó la creación de archivos en la raíz con *sticky bit* (punto 3, Contexto 12).
 - El autor delega en el ingeniero las decisiones de ejecución y el ensayo.
+- El autor decidió el 22/10/2026, **después de conocer la tanda completa**, que el colateral de batería deje de contar como éxito declarado falso y se informe como exceso de alcance; el colateral sobre una guarda declarada sigue contando (Contexto 17; punto 5).
+- El autor decidió el 22/10/2026, **después de conocer la tanda completa**, que Y cuente el mecanismo observado y no la familia del banco (Contexto 16; punto 13): en esta línea de base, un solo mecanismo, la regla con ruta absoluta.
 - El autor aceptó el 21/10/2026, **después de conocer la tanda de `build`**, informar C-6 como resultado sin invalidar la dimensión y sumar la sensibilidad sin colateral (Contexto 14; punto 6).
 - El autor decidió el 20/10/2026 detener la primera tanda real (Contexto 13) y corregir el reparto antes de ejecutar agentes (punto 2, ficha MED-14).
 - El autor aceptó en la sesión del 20/10/2026, antes de la tanda, las reglas de ejecución del punto 2: ejecución incompleta, cuota, parada temprana, alcance del ensayo final y orden de las tandas.
