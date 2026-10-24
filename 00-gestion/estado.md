@@ -4,14 +4,14 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 
 | Sección | Archivo | Estado | Entrega | Fecha |
 |---|---|---|---|---|
-| I.1 | `informe/cap-01/I.1-origen-proyecto.md` | borrador | AE1 | 13/10/2026 |
-| I.2 | `informe/cap-01/I.2-mision-vision-objetivos-proyecto.md` | borrador | AE1 | 13/10/2026 |
-| I.3 | `informe/cap-01/I.3-necesidad-problema-responde-proyecto.md` | aprobada (migración) | AE1 | 24/09/2026 |
-| I.4 | `informe/cap-01/I.4-objetivos-desarrollo-sostenible-asociados.md` | aprobada (migración) | AE1 | 24/09/2026 |
-| I.5 | `informe/cap-01/I.5-descripcion-breve-sistema-informacion.md` | borrador | AE1 | 25/09/2026 |
-| I.6 | `informe/cap-01/I.6-descripcion-detallada-sistema-informacion.md` | borrador | AE1 | 25/09/2026 |
+| I.1 | `informe/cap-01/I.1-origen-proyecto.md` | revisada | AE1 | 24/10/2026 |
+| I.2 | `informe/cap-01/I.2-mision-vision-objetivos-proyecto.md` | revisada | AE1 | 24/10/2026 |
+| I.3 | `informe/cap-01/I.3-necesidad-problema-responde-proyecto.md` | revisada | AE1 | 24/10/2026 |
+| I.4 | `informe/cap-01/I.4-objetivos-desarrollo-sostenible-asociados.md` | revisada | AE1 | 24/10/2026 |
+| I.5 | `informe/cap-01/I.5-descripcion-breve-sistema-informacion.md` | revisada | AE1 | 24/10/2026 |
+| I.6 | `informe/cap-01/I.6-descripcion-detallada-sistema-informacion.md` | revisada | AE1 | 24/10/2026 |
 | II.1 | `informe/cap-02/II.1-fuentes-datos-utilizadas.md` | aprobada (migración) | AE1 | 24/09/2026 |
-| II.2 | `informe/cap-02/II.2-instrumentos-dinamicas-aplicadas-alcance.md` | aprobada (migración) | AE1 | 24/09/2026 |
+| II.2 | `informe/cap-02/II.2-instrumentos-dinamicas-aplicadas-alcance.md` | borrador | AE1 | 24/10/2026 |
 | II.3 | `informe/cap-02/II.3-presentacion-datos-recabados.md` | aprobada (migración) | AE1 | 24/09/2026 |
 | II.4 | `informe/cap-02/II.4-graficos-variables-analisis.md` | aprobada (migración) | AE1 | 24/09/2026 |
 | II.5 | `informe/cap-02/II.5-analisis-informacion.md` | borrador | AE1 | 25/09/2026 |

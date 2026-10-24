@@ -104,6 +104,8 @@ Microsoft. (s. f.-c). *What is the Windows Subsystem for Linux?* [Documentación
 
 Naciones Unidas. (2015). *Transformar nuestro mundo: la Agenda 2030 para el Desarrollo Sostenible* (Resolución A/RES/70/1). Asamblea General de las Naciones Unidas.
 
+Naciones Unidas, División de Estadística. (2026). *Marco de indicadores mundiales para los Objetivos de Desarrollo Sostenible y metas de la Agenda 2030 para el Desarrollo Sostenible* (versión con los refinamientos de 2026). https://unstats.un.org/sdgs/indicators/Global-Indicator-Framework-after-2026-refinement_Spa.pdf
+
 NLnet. (2026). *Apply for a grant*. https://nlnet.nl/propose/
 
 nlscott. (2026, 9 de septiembre). *Any read or edit permission rule written as an absolute path (~/.ssh, ~/.aws, /etc/hosts, etc.) silently never matches, including MDM managed rules* (Incidencia n.º 48049) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/48049

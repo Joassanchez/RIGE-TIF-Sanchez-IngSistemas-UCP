@@ -223,19 +223,23 @@ La posición expresa el eje horizontal y el vertical, en ese orden. El horizonta
 | Persona entrevistada                             | Valeria Areco                                                                                                                                                             |
 | Rol                                              | Desarrolladora del equipo de Sistemas de Electricidad de Misiones S. A.                                                                                                   |
 | Composición del equipo                           | Cinco integrantes                                                                                                                                                         |
-| Canal                                            | \[ \]                                                                                                                                                                     |
-| Fecha                                            | \[fecha\]                                                                                                                                                                 |
-| Duración                                         | \[ \]                                                                                                                                                                     |
+| Canal                                            | Presencial en ambas entrevistas, de modalidad semiestructurada |
+| Fecha                                            | 29/08/2026 y 24/09/2026; constancia firmada el 15/10/2026 |
+| Duración                                         | Aproximadamente 30 minutos por entrevista |
 | Motivo declarado                                 | Verificar la presencia del problema en la práctica del equipo, obtener los parámetros de valoración y registrar las preguntas que el desarrollador formula en su práctica |
-| Consentimiento                                   | \[ \]                                                                                                                                                                     |
-| Autorización para identificarla con nombre y rol | \[ \]                                                                                                                                                                     |
-| Registro                                         | \[grabación / notas\]                                                                                                                                                     |
+| Consentimiento                                   | [DATO PENDIENTE: constancia explícita de consentimiento para las entrevistas] |
+| Autorización para identificarla con nombre y rol | [DATO PENDIENTE: autorización explícita para publicar nombre y rol] |
+| Registro                                         | Entrevista del 29/08: respuestas registradas por el autor en el informe de la AE1. Entrevista del 24/09: registro en II.3.3 del informe de la AE2. Ambas carecen de grabación; la reconstrucción del 15/10/2026 incorpora la memoria del autor y la confirmación de la referente |
 
 *Tabla A.VI.7. Datos de la entrevista. Fuente: elaboración propia.*
 
 **Guía de entrevista aplicada.** Las preguntas se ordenan de lo general a lo particular y evitan sugerir la respuesta esperada. Se registran en el orden efectivamente aplicado: (1) herramientas de programación asistida que el equipo utiliza y desde cuándo; (2) motivo por el cual el equipo las incorporó; (3) quién configura el entorno de cada desarrollador y con qué criterio; (4) situaciones en que el comportamiento del agente difirió de lo previsto, con relato de un caso concreto; (5) procedimiento seguido para averiguar qué configuración regía en ese caso y tiempo aproximado que demandó; (6) recursos y soluciones propias que el equipo construyó para resolver estas consultas; (7) frecuencia con que se presentan consultas de esta clase; (8) valor de referencia de la hora de trabajo de desarrollo y su origen; (9) consecuencias observadas cuando la respuesta resultó incorrecta.
 
-**Transcripción.** \[Transcripción o registro completo pendiente de incorporación.\]
+El registro disponible es la constancia de entrevistas, versión 1, firmada por Valeria Areco el 15/10/2026. Se reconstruye a partir de los informes de la AE1 y la AE2 y de la memoria del autor; la referente confirma las afirmaciones. La versión 2 ratifica las secciones de entrevistas y agrega la segunda extensión del acta de validación. Ambas constancias figuran en el registro de fuentes.
+
+La entrevista del 29/08/2026 aplica un guion de siete preguntas y presenta la maqueta v0. La del 24/09/2026 corresponde a una charla de seguimiento sin guion fijo. La constancia firmada respalda la utilidad de identificar el archivo que determina cada valor efectivo; carece de una descripción de revisión de archivos uno por uno.
+
+Como consecuencia del comportamiento inesperado, se registra consumo de tokens por acciones repetidas, sin cuantificación ni atribución por separado a cada episodio. La constancia tampoco registra exposición de información ni bloqueo acreditados en esos episodios.
 
 **Síntesis de lo declarado y de lo observado.** El contenido sustantivo de la entrevista se presenta, sin interpretación, en el apartado II.3.3 del cuerpo del informe, y comprende: composición del equipo y motivo de adopción de las herramientas; frecuencia declarada de acceso a los archivos de configuración y su tendencia; procedimiento habitual de resolución; dos episodios de comportamiento distinto del esperado; tres prácticas propias relatadas por la informante; dos vías de consumo de tokens atribuibles a la configuración; y la respuesta al enfoque presentado.
 
@@ -263,11 +267,11 @@ La posición expresa el eje horizontal y el vertical, en ese orden. El horizonta
 
 *Tabla A.VI.9. Datos cuantitativos obtenidos en la entrevista, con las tres preguntas respondidas. Fuente: elaboración propia.*
 
-**Datos que la entrevista no aporta.** El informante no informó un valor de referencia de la hora de trabajo de desarrollo ni la proporción de sus accesos semanales que exige una resolución comparable a la que mide la línea de base. Ninguno de los dos se sustituye por una estimación propia, conforme a la decisión del apartado I.3.1.
+**Datos que la entrevista no aporta.** La referente informa un valor horario estimativo y después pide que no se cite; el proyecto no lo usa. La proporción de sus accesos semanales que exige una resolución comparable a la que mide la línea de base queda sin informar. El valor horario y esa proporción quedan sin sustituir por estimaciones propias, conforme a la decisión del apartado I.3.1.
 
-**Efecto de la entrevista sobre la composición de la muestra.** Durante la entrevista se describió al informante el enfoque de la plataforma y el recorrido de consulta previsto. En consecuencia, el informante queda excluido de la muestra de la medición de la línea de base, conforme al apartado II.2.4.
+La entrevista constituye un instrumento de relevamiento distinto de la medición con agentes (apartado II.2.4).
 
-**Validación del prototipo v0.** \[Observaciones del referente, cambios incorporados y fecha, pendientes de incorporación. La validación se efectúa sobre la maqueta construida y constituye un contacto distinto de esta entrevista.\]
+La fecha, la maqueta presentada y el resultado de la validación del prototipo v0 y de su reformulación constan en el Anexo II, A.II.2.
 
 ## A.VI.6 · Relevamiento documental de incidencias del repositorio de OpenCode
 
@@ -289,6 +293,12 @@ La posición expresa el eje horizontal y el vertical, en ese orden. El horizonta
 La incidencia n.º 32581, incluida en el relevamiento del 17/09/2026, se excluye en la revisión del 09/10/2026 porque su autor declara que corresponde a OpenClaw y no a OpenCode.
 
 **Nómina.** La nómina completa de las 46 incidencias candidatas, con número, título, fecha de apertura, estado, clasificación y motivo de inclusión o exclusión, consta en el documento de incidencias del registro de la evidencia (A.VI.11).
+
+El relevamiento propio utiliza un único codificador para la búsqueda y clasificación por título en el repositorio de OpenCode. Las incidencias incluidas abarcan del 28/11/2025 al 16/09/2026; la consulta corresponde al 17/09/2026 y la exclusión de otro proyecto se incorpora el 09/10/2026.
+
+La búsqueda documental complementaria del 19/10/2026, realizada sobre el mismo repositorio para verificar las fuentes del banco, identifica tres reportes anteriores a la medición del mecanismo. Corresponden a las incidencias n.º 40945, 46133 y 48049, publicadas entre el 06/08/2026 y el 09/09/2026 (ns-calvinwu, 2026; ouyangjian28, 2026; nlscott, 2026). La búsqueda por título se complementa con la lectura de los reportes completos por un codificador. Se emplea Codex con búsqueda web como herramienta de apoyo para verificar las fuentes del banco; el registro de fuentes documenta la consulta y su alcance.
+
+Estos tres antecedentes complementan el relevamiento del 17/09/2026 y se informan por separado de sus 31 incidencias incluidas. Su vigencia en OpenCode 1.18.25 se acredita mediante la admisión nativa del banco, cuyo registro consta en A.VI.11.
 
 ### Clasificación de las incidencias por mecanismo
 
@@ -374,6 +384,8 @@ El mecanismo se cuenta por problema; por ejecución, la ruta absoluta explica 32
 
 Con una de tres repeticiones, la lectura principal suma N-21 en `build`, por una guarda `.env.local` alterada, y N-13 en Charles, por una regla con ruta absoluta (documento de lectura y los dos informes ecológicos, registro de la evidencia, A.VI.11).
 
+La lectura preregistrada de las tandas del 20 y el 21/10/2026, producidas por el autor con el arnés, registra seis problemas de E2 y tres mecanismos con ambos ejecutores. En E1 suma C-6, el pedido de impedir que `revisor` modifique archivos, por las restricciones adicionales sobre `bash` y `task`.
+
 El exceso de alcance aparece en C-6, N-21, S-3 y M-2 en tres de tres repeticiones de ambos ejecutores. En C-6 se restringen `bash` y `task`; en N-21, otros `.env`; en S-3 se agrega `npm test *` en `ask`; en M-2 la regla se limita a `build`. Charles registra además una de tres repeticiones en N-7, N-12 y N-13. Los informes ecológicos separan estos resultados y los archivos finales se documentan en el documento de casos con error (registro de la evidencia, A.VI.11); S-3 y M-2 se registran como defectos de la referencia en la Tabla A.VI.14.
 
 ### Detección y contraste
@@ -402,11 +414,13 @@ El contraste fuera del árbol es descriptivo y comprende M-1 a M-10 con tres rep
 
 La clasificación por traza de las 138 ejecuciones ecológicas de cada ejecutor registra que todos los éxitos declarados falsos de la lectura principal siguen a una verificación declarativa con `opencode debug`: 16 con `build` (14 en E2 y dos en E4) y 18 con Charles (15 en E2 y tres en E4). `build` registra 129 verificaciones declarativas, ocho ejecuciones sin verificación y una de comportamiento; Charles, 133, cuatro y una, respectivamente. Los informes ecológicos registran cero sesiones anidadas en ambos ejecutores. Según el documento de lectura de la medición (registro de la evidencia, A.VI.11), las 276 ejecuciones usan la skill y la documentación local, y ninguna utiliza `webfetch`.
 
-El costo por ejecución se expresa en USD con las tarifas congeladas de A.VI.10, incluida la caché (ADR-098, punto 9). Para las tandas ecológicas del 20 y el 21/10/2026, el análisis de costo incorporado en ADR-098 registra medianas de USD 0,0603 en E1 y 0,0667 en E2 con `build`, y de USD 0,0717 y 0,0764 con Charles. El Contexto 19 informa un costo equivalente para ejecuciones correctas y fallidas y una proporción de caché del 82 % de los tokens totales. En E2 se registran 14 llamadas con éxito declarado falso de `build` y 15 de Charles. La derivación de los límites de la salvaguarda y las alternativas descartadas se desarrollan en el Anexo III, D-41.
+El costo por ejecución se expresa en USD con las tarifas congeladas de A.VI.10, incluida la caché (ADR-098, punto 9). Para las tandas ecológicas del 20 y el 21/10/2026, el análisis de costo incorporado en ADR-098 registra medianas de USD 0,0603 en E1 y 0,0667 en E2 con `build`, y de USD 0,0717 y 0,0764 con Charles. El Contexto 19 informa un costo equivalente para ejecuciones correctas y fallidas y una proporción de caché del 82 % de los tokens totales. En E2 se registran 14 llamadas con éxito declarado falso de `build` y 15 de Charles. Las fallas son casi deterministas por problema; repetir el pedido en una sesión nueva tiende a reproducirlas. La derivación de los límites de la salvaguarda y las alternativas descartadas se desarrollan en el Anexo III, D-41.
 
 ### Cobertura y decisiones del análisis
 
 La cobertura de RIGE sobre estos problemas se establece en el apartado I.3.4. La precisión de RF-02 CA-9 para archivos y directorios se acepta el 22/10/2026 (ADR-088); la revalidación ante la referente y la incorporación de los escenarios al manifiesto quedan pendientes (apartado V.2).
+
+La lectura principal deja sin éxito declarado falso los restantes problemas de E2 y los de valores. La preregistrada conserva los cinco problemas principales y suma N-21, que deniega otros `.env` además del solicitado y queda como problema observado sin cobertura declarada. La meta resulta de cuatro problemas con ambas lecturas; cambia la cobertura informada cuando ese caso se clasifica como exceso de alcance (Anexo III, D-41).
 
 La Tabla A.VI.14 distingue las decisiones anteriores a la medición de las que siguen a sus datos. Las alternativas y sus fundamentos se desarrollan en D-41.
 
@@ -440,6 +454,22 @@ La Tabla A.VI.14 distingue las decisiones anteriores a la medición de las que s
 | Fila incompleta del contraste de Charles sustituida (MED-17) | 22/10/2026 | Después del dato | El análisis usa la repetición de M-8:1 y declara válidas las seis dimensiones, sin repetir el ensayo por un cambio de análisis. |
 
 *Tabla A.VI.14. Decisiones del diseño y del análisis según su momento. Fuente: ADR-098, «Antecedentes absorbidos», puntos 2 a 13 y Contextos 13 a 21; ADR-090; documento de lectura de la medición, «Reanálisis con MED-17» (registro de la evidencia, A.VI.11).*
+
+### Informe de la medición final
+
+El criterio principal se evalúa en el brazo que indica al agente que consulte RIGE para verificar el cambio, denominado «RIGE indicado». El informe conserva por separado:
+
+- El brazo con RIGE disponible y los resultados de Charles.
+
+- La proporción descriptiva de problemas de E2 corregidos al primer intento con RIGE indicado.
+
+- La lectura con una de tres repeticiones y la lectura preregistrada.
+
+- La consecuencia, el proceso y el contraste fuera del árbol.
+
+El conjunto reservado contiene variantes de ruta absoluta sobre archivos y directorios con archivos y herramientas que el manifiesto de aceptación de RIGE no usa. Se mide con y sin RIGE y se informa aparte del criterio principal. Si alcanza la cuota, se incorpora un brazo sin RIGE que pide probar el efecto ejecutando OpenCode; su omisión se declara como límite (Anexo III, D-41).
+
+El corte del 07/11/2026 congela el MVP cuya cobertura delimita la meta. El texto de la instrucción del brazo descriptivo se fija antes del congelamiento del 14/11/2026.
 
 ### Antecedentes
 
@@ -475,6 +505,8 @@ La evidencia consta en el repositorio entregado, en la revisión [DATO PENDIENTE
 
 | **Evidencia** | **Contenido** | **Ubicación en el repositorio** |
 |---|---|---|
+| Constancia de entrevistas, v1 | Entrevistas y primera extensión del acta de validación, con firma del 15/10/2026. | `01-relevamiento/validacion/20261015_ConstanciaEntrevistas_Sanchez_v1.md` |
+| Constancia de entrevistas, v2 | Ratificación de las entrevistas y de la primera extensión, y confirmación de los once cambios de la segunda extensión, con firma del 15/10/2026. | `01-relevamiento/validacion/20261015_ConstanciaEntrevistas_Sanchez_v2.md` |
 | Banco ecológico | Problemas admitidos, estratos y admisión nativa. | `01-relevamiento/linea-base/ecologica/banco.md` |
 | Hoja de tareas ecológicas | Enunciados de la hoja cerrada el 19/10/2026. | `01-relevamiento/linea-base/ecologica/tareas.md` |
 | Medición del 20 y el 21/10/2026 | Documento de lectura, parámetros, archivo con SHA-256 y reanálisis con MED-17. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/LEEME.md` |

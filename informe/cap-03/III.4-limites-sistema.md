@@ -28,4 +28,6 @@ La delimitación es una decisión de ingeniería y no una renuncia, porque defin
 
 *Tabla 5. Límites del sistema, con su inclusión, motivo, validador y constancia. Las decisiones de ingeniería se pusieron en conocimiento de la referente en el acta del 26/09/2026, sección 2, sin observaciones. Fuente: elaboración propia.*
 
+El resumen del ecosistema (RF-11, Should, validado) queda condicionado a las horas disponibles. La matriz de agentes por tipo de permiso y la consulta inversa (RF-15, Won't, validado) quedan fuera del período.
+
 Los límites del sistema fijan su frontera funcional; los límites del período difieren capacidades o acreditaciones que el sistema puede incorporar. Ninguna exclusión queda pendiente; las trece filas de la referente (doce decisiones) constan en el acta (Anexo II, A.II.1) y las ocho de ingeniería se fundamentan en el Anexo III, A.III.3.

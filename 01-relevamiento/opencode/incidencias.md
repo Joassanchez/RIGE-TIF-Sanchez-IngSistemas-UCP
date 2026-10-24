@@ -69,7 +69,7 @@ Rango temporal de los 46 candidatos: 28/11/2025 a 16/09/2026 (un día antes de l
 | [28960](https://github.com/anomalyco/opencode/issues/28960) | cerrado | 2026-05-23 | **Incluido** | mcp config bypasses the "not user-overridable" precedence guarantee for managed/MDM configs |
 | [30415](https://github.com/anomalyco/opencode/issues/30415) | cerrado | 2026-06-02 | **Incluido** | v1.15.13 upward config loading causes local mcp sections to shadow/replace global MCP servers |
 | [31919](https://github.com/anomalyco/opencode/issues/31919) | cerrado | 2026-06-11 | **Incluido** | Per-model npm override in custom provider config is ignored |
-| [32581](https://github.com/anomalyco/opencode/issues/32581) | cerrado | 2026-06-16 | **Incluido** | ollama plugin overrides api to native protocol ignoring config api setting |
+| [32581](https://github.com/anomalyco/opencode/issues/32581) | cerrado | 2026-06-16 | Excluido en la revisión del 09/10/2026 (corresponde a OpenClaw; Anexo VI, A.VI.6) | ollama plugin overrides api to native protocol ignoring config api setting |
 | [34265](https://github.com/anomalyco/opencode/issues/34265) | cerrado | 2026-06-28 | Excluido (feature) | [FEATURE]: also provide JSON config for `Permission required` |
 | [36416](https://github.com/anomalyco/opencode/issues/36416) | cerrado | 2026-07-11 | **Incluido** | Desktop ignores permission rules in ~/.config/opencode/opencode.jsonc |
 | [36663](https://github.com/anomalyco/opencode/issues/36663) | cerrado | 2026-07-13 | **Incluido** | OPENCODE_CONFIG overridden by global agent markdown files (undocumented precedence) |

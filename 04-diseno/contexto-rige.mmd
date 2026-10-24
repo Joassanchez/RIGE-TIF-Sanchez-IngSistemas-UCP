@@ -1,0 +1,30 @@
+%% Borrador de la Figura 1 (I.6.4), diagrama de contexto de RIGE. Para revisión del autor antes de incorporarlo.
+%% Sale de la Tabla 9 corregida en la revisión del Cap. I del 24/10/2026 (hallazgos 8, 9 y 13): sin relaciones ni exportación
+%% (capacidades diferidas), localización como enlace en lugar de abrir el editor, el agente en sus dos momentos y el almacén propio.
+%%{init: {"theme": "neutral", "flowchart": {"curve": "linear"}}}%%
+flowchart LR
+    dev["Desarrollador<br/>(actor humano)"]
+    agente["Agente de programación<br/>u otra herramienta<br/>(sistema externo)"]
+
+    subgraph frontera["RIGE · equipo del desarrollador, sin conexión externa"]
+        web["Interfaz web local"]
+        cli["Interfaz de línea de comandos"]
+        nucleo["Núcleo de resolución<br/>(lectura exclusiva de la configuración)"]
+        almacen[("Almacén propio<br/>resoluciones fechadas")]
+        web --> nucleo
+        cli --> nucleo
+        nucleo <--> almacen
+    end
+
+    config[/"Entradas de configuración<br/>archivos y directorios de agentes,<br/>comandos y skills"/]
+    env[/"Variables de entorno<br/>que usa OpenCode"/]
+    oc["OpenCode 1.18.25<br/>(no se ejecuta: referencia<br/>de verificación de OE-1 y OE-2)"]
+
+    dev -- "proyecto, agente,<br/>clave o acción" --> web
+    dev -- "consulta por comandos" --> cli
+    web -- "estado efectivo, decisión de permiso<br/>con su regla y procedencia, hallazgos,<br/>localización de la declaración" --> dev
+    agente -- "antes de operar: consulta<br/>después de modificar: verificación" --> cli
+    cli -- "salida estructurada<br/>con esquema versionado" --> agente
+    config -- "solo lectura" --> nucleo
+    env -- "solo lectura" --> nucleo
+    oc -. "contraste de resultados<br/>(fuera de la frontera)" .- nucleo
