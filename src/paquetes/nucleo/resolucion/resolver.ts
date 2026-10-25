@@ -2,7 +2,8 @@ import type { Adaptador, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada } from "
 import type { EntornoLectura } from "../contrato/entorno";
 import type { Resultado } from "../resultado";
 import { biblioteca } from "./estrategias";
-import type { DeclaracionUbicada, EntradaLeida, Resolucion, RastroValor } from "./tipos";
+import { ArbolFusion } from "./estado";
+import type { DeclaracionUbicada, EntradaLeida, Resolucion } from "./tipos";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 
@@ -31,7 +32,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     if (!Object.hasOwn(adaptador.reglas, regla)) throw new Error(`Regla sin plantilla: ${regla}`);
     usados.add(regla);
   }
-  const rastros = new Map<string, RastroValor>();
+  const estado = new ArbolFusion();
   for (const aplicacion of secuencia.valor.aplicaciones) {
     const estrategia = (Object.hasOwn(adaptador.estrategias, aplicacion.estrategia) ? adaptador.estrategias[aplicacion.estrategia] : undefined)
       ?? (Object.hasOwn(biblioteca, aplicacion.estrategia) ? biblioteca[aplicacion.estrategia] : undefined);
@@ -41,12 +42,11 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     const entrada = origen.tipo === "declarado" ? entradas[origen.orden] : undefined;
     if (origen.tipo === "declarado" && !entrada) throw new Error(`Entrada inexistente para la aplicacion: ${origen.orden}`);
     const nueva: DeclaracionUbicada = {
-      origen, via: entrada?.via ?? null, referencia: entrada?.referencia ?? null,
+      origen: origen.tipo === "declarado" ? { ...origen, posicion: { ...origen.posicion } } : { ...origen },
+      via: entrada?.via ?? null, referencia: entrada?.referencia ?? null,
       valor: aplicacion.valor, regla: aplicacion.regla,
     };
-    const identificador = JSON.stringify(ruta);
-    const anterior = rastros.get(identificador);
-    rastros.set(identificador, { ...estrategia(anterior, nueva, ruta), indiceFusion: anterior?.indiceFusion ?? rastros.size });
+    estrategia(estado, nueva, ruta);
   }
   const pendientes = new Map<string, ClaveNoResuelta>();
   for (const pendiente of secuencia.valor.noResueltas) {
@@ -64,7 +64,8 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     reglas: Object.fromEntries([...usados].sort().map((regla) => [regla, adaptador.reglas[regla]!])),
     entradas,
     resumenEntradas: entorno.resumir(JSON.stringify(entradas.map((entrada) => [entrada.via, entrada.referencia, entrada.condicion, entrada.resumen]))),
-    valores: [...rastros.values()],
+    valores: estado.hojasBajo([]).map((rastro, indiceFusion) => ({ ...rastro, indiceFusion })),
+    ...(estado.eliminadas.length ? { eliminadas: estado.eliminadas.map((rastro, indiceFusion) => ({ ...rastro, indiceFusion })) } : {}),
     noResueltas: [...pendientes.values()],
   } };
 }

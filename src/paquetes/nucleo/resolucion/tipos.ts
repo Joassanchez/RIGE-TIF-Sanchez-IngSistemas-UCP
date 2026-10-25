@@ -18,6 +18,13 @@ export interface RastroValor {
   readonly desplazadas: readonly DeclaracionUbicada[];
 }
 
+/** La posicion definitiva la asigna el resolver al recorrer el arbol final. */
+export type RastroEnFusion = Omit<RastroValor, "indiceFusion">;
+export interface RastroEliminado extends RastroValor {
+  /** Declaracion que ordeno la eliminacion; determinante sigue siendo la del valor eliminado. */
+  readonly eliminacion: DeclaracionUbicada;
+}
+
 export interface EntradaLeida {
   readonly orden: number;
   readonly via: string;
@@ -35,5 +42,7 @@ export interface Resolucion {
   readonly entradas: readonly EntradaLeida[];
   readonly resumenEntradas: string;
   readonly valores: readonly RastroValor[];
+  /** Opcional para admitir documentos de formato 2 anteriores a la eliminacion. */
+  readonly eliminadas?: readonly RastroEliminado[];
   readonly noResueltas: readonly ClaveNoResuelta[];
 }

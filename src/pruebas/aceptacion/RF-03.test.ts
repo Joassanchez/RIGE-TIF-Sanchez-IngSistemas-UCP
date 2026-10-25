@@ -60,7 +60,10 @@ describe("RF-03 CA-3 (valores)", () => {
         expect(linea).toBeGreaterThan(0);
         expect(columna).toBeGreaterThan(0);
         const original = readFileSync(declaracion.referencia!, "utf8").split(/\r?\n/)[linea - 1]!;
-        expect(original.slice(columna - 1)).toStartWith(JSON.stringify(rastro.ruta.at(-1)));
+        // options.a reemplaza el subarbol global options.a.b: su desplazada sigue ubicada en b.
+        const claveOriginal = nombre === "v1-vias" && rastro.ruta.slice(2).join(".") === "options.a"
+          && declaracion !== rastro.determinante ? "b" : rastro.ruta.at(-1);
+        expect(original.slice(columna - 1)).toStartWith(JSON.stringify(claveOriginal));
       }
     }
   });

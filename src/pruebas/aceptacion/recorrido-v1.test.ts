@@ -292,13 +292,14 @@ describe("Errores de uso por la web", () => {
       const entrada = join(recorrido.proyecto, "opencode.jsonc");
       const original = readFileSync(entrada, "utf8");
       // La copia temporal conserva la linea y columna de temperature.
-      writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": 0.3, "permission": {"edit":"deny"}')
+      writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": 0.3, "tools": {}, "permission": {"edit":"deny"}')
         .replace('"build": {', '"otro": {"permission":{"bash":"deny"}}, "build": {'));
       const guardada = await recorrido.resolver("permission.edit");
       expect(guardada.estado).toBe(303);
       const rechazo = await recorrido.solicitar(ubicacion(guardada));
       expect(rechazo.estado).toBe(422);
       expect(rechazo.cuerpo).toContain("permission.edit");
+      expect(rechazo.cuerpo).toContain("tools");
       const valida = await recorrido.resolver("");
       expect(valida.estado).toBe(303);
       expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build");
@@ -309,7 +310,8 @@ describe("Errores de uso por la web", () => {
       expect(pagina.cuerpo).toContain("<li>permission:");
       const pendientes = /<h2>Claves no resueltas en el prototipo v1<\/h2>\s*<ul>(.*?)<\/ul>/s.exec(pagina.cuerpo)?.[1];
       expect(pendientes).toBeDefined();
-      expect(pendientes?.match(/<li>/g)).toHaveLength(1);
+      expect(pendientes?.match(/<li>/g)).toHaveLength(2);
+      expect(pendientes).toContain("<li>tools:");
       expect(pagina.cuerpo).not.toContain("otro.permission");
       const recuperada = await recorrido.solicitar("/resoluciones/2?agente=build&clave=permission");
       expect(recuperada.estado).toBe(422);

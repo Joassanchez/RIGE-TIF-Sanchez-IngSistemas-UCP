@@ -25,6 +25,14 @@
 | T2-03 V-1 a V-5 | `../paquetes/opencode/vendor/permiso.test.ts` — `V-1 evaluate`, `V-2 match`, `V-3 fromConfig`, `V-4 Object.entries`, `V-5 disabled` |
 | T2-03 G-1 | `arquitectura/vendor.test.ts` — `G-1 no circularidad del oraculo` (recorrido transitivo y regresion sintetica) |
 | RD-01 | `../paquetes/nucleo/resolucion/resolver.test.ts` — `N-1 RD-01` (reemplazo y procedencia); `../paquetes/opencode/ubicador.test.ts` — `U-5` (orden de archivos declarado por el adaptador) |
+| T2-04 F-1 y F-2 RD-02 | `../paquetes/nucleo/resolucion/fusion.test.ts` — `T2-04 F-1 RD-02`, `T2-04 F-2`; `../paquetes/opencode/fusion.test.ts` — `T2-04 F-1 F-2`; `../paquetes/opencode/secuenciador.test.ts` — `T2-04 F-1 F-2 secuencia` (ambos sentidos, objetos vacios e historia de subarbol) |
+| T2-04 F-3 y F-5 | `../paquetes/opencode/fusion.test.ts` — `T2-04 F-3`, `T2-04 F-5` (consulta de permiso del agente con procedencia y segmento con punto) |
+| T2-04 F-4 | `../paquetes/nucleo/resolucion/fusion.test.ts` — `T2-04 F-4` (preorden, indices enteros, limite y claves similares) |
+| T2-04 F-6 | `../paquetes/opencode/fusion.test.ts` — `T2-04 F-6` (tools bloquea su ambito completo, sin afectar otros agentes ni claves) |
+| T2-04 F-7 | `../paquetes/nucleo/resolucion/fusion.test.ts` — `T2-04 F-7` (retirada del ficticio, rastro eliminado, causa y recreacion al final) |
+| T2-04 F-8 | `aceptacion/RF-01.test.ts` — `RF-01 CA-1 v1-vias` (options.a resuelta contra la referencia, mismas entradas y procedencia) |
+| T2-04 aceptacion RF-01 CA-1 CA-2 | `aceptacion/fusion-permisos.test.ts` — `T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2` (escenario v2-fusion-permisos por CLI, posiciones, puntero JSON, orden, determinismo y SHA-256) |
+| T2-04 menores 1 a 5 | `../paquetes/nucleo/resolucion/fusion.test.ts` — `T2-04 menor 2`; `../paquetes/nucleo/resolucion/contrato.test.ts` — `C1-2 RD-02`; `../paquetes/opencode/fusion.test.ts` — `T2-04 menor 4` (indices solo en el resolver, origen copiado, z antes de b/a; web ya delega el analisis de ruta al caso de uso desde T2-02) |
 | ADR-061: preparación explícita y esquema incompatible | `../paquetes/rige/adaptadores/almacen-sqlite/esquema.test.ts` — `T0-09 preparacion explicita SQLite`, `AL-1`; `aceptacion/arranque.test.ts` — `A-6` (rechazo sin crear ni migrar) |
 | ADR-061: documento, retención e inmutabilidad | `../paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts` — `R-1 RF-17 CA-1`, `R-2 RF-17 CA-3`, `R-3`, `R-4` (persistencia, transacción, retención por proyecto, UPDATE prohibido y esquema exigido) |
 

@@ -45,10 +45,10 @@ describe("C1-1", () => {
 
 describe("C1-2 RD-02", () => {
   test("la primera declaracion fija la posicion y la ultima fija el valor", () => {
-    const { valores } = resolverSecuencia({ aplicaciones: [declarada(["a", "x"], 1, 0),
-      declarada(["a", "y"], 2, 1), declarada(["a", "x"], 3, 2)], noResueltas: [] }, 3);
+    const { valores } = resolverSecuencia({ aplicaciones: [declarada(["a", "z"], 1, 0),
+      declarada(["a", "b"], 2, 1), declarada(["a", "z"], 3, 2)], noResueltas: [] }, 3);
     expect(valores.map(({ ruta, indiceFusion, valor }) => ({ ruta, indiceFusion, valor }))).toEqual([
-      { ruta: ["a", "x"], indiceFusion: 0, valor: 3 }, { ruta: ["a", "y"], indiceFusion: 1, valor: 2 },
+      { ruta: ["a", "z"], indiceFusion: 0, valor: 3 }, { ruta: ["a", "b"], indiceFusion: 1, valor: 2 },
     ]);
     expect(valores[0]?.determinante.origen).toMatchObject({ tipo: "declarado", orden: 2 });
   });

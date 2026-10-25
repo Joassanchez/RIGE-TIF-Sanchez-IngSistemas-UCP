@@ -26,23 +26,21 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
     excluidas.set(clave, ruta);
     noResueltas.push({ ruta, regla });
   }
-  const hojas = new Map<string, readonly string[]>();
-  const objetos = new Set<string>();
-  for (const { declaraciones } of lecturas) {
-    for (const { ruta, valor } of declaraciones) {
-      for (let longitud = 1; longitud < ruta.length; longitud++) objetos.add(JSON.stringify(ruta.slice(0, longitud)));
-      const clave = JSON.stringify(ruta);
-      if (esObjeto(valor)) objetos.add(clave);
-      else hojas.set(clave, ruta);
-    }
-  }
-  const conflictos = [...hojas].filter(([clave]) => objetos.has(clave)).map(([, ruta]) => ruta);
-  for (const ruta of conflictos) excluir(ruta, "forma-en-conflicto");
   // Se conocen todos los agentes afectados antes de aplicar cualquier hoja JSON.
   for (const { via } of lecturas) {
     if (via.via !== "markdown") continue;
     if (via.elemento === undefined) throw new Error("Via Markdown sin nombre de elemento");
     excluir(["agent", via.elemento], "markdown-no-observado");
+  }
+  for (const { declaraciones } of lecturas) {
+    for (const { ruta } of declaraciones) {
+      const ambito = ruta[0] === "tools" ? []
+        : ruta[0] === "agent" && ruta[2] === "tools" ? ruta.slice(0, 2) : undefined;
+      if (ambito) {
+        excluir([...ambito, "tools"], "tools-legado-no-incorporado");
+        excluir([...ambito, "permission"], "tools-legado-no-incorporado");
+      }
+    }
   }
   // Las exclusiones de cualquier archivo afectan todas las lecturas, incluso las anteriores.
   for (const { via, declaraciones } of lecturas) {
@@ -71,17 +69,31 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
           excluir([...ruta.slice(0, 2), "options"], "fuera-del-v1");
         }
       }
-      const longitudPrefijo = ["permission", "tools", "instructions", "plugin"].includes(ruta[0]!) ? 1
-        : ruta[0] === "agent" && ruta.length >= 3 && ["permission", "tools"].includes(ruta[2]!) ? 3 : 0;
+      const longitudPrefijo = ["instructions", "plugin"].includes(ruta[0]!) ? 1 : 0;
       if (longitudPrefijo) excluir(ruta.slice(0, longitudPrefijo), "fuera-del-v1");
     }
   }
+  const hojas = new Map<string, { readonly ruta: readonly string[]; readonly valor: ValorJson }>();
   for (const lectura of lecturas) {
     for (const declaracion of lectura.declaraciones) {
       const { ruta } = declaracion;
-      if (esObjeto(declaracion.valor) || [...excluidas.values()].some(prefijo => bajo(ruta, prefijo))) continue;
+      if ([...excluidas.values()].some(prefijo => bajo(ruta, prefijo))) continue;
+      if (ruta[0] === "mode" && ruta.length === 1 && esObjeto(declaracion.valor)) continue;
+      const anteriores = [...hojas.values()];
+      const descendientes = anteriores.filter(hoja => hoja.ruta.length > ruta.length && bajo(hoja.ruta, ruta));
+      // Un objeto vacio se fusiona sin borrar las propiedades de un objeto anterior.
+      if (esObjeto(declaracion.valor) && descendientes.length) continue;
+      const ancestro = anteriores.find(hoja => hoja.ruta.length < ruta.length && bajo(ruta, hoja.ruta));
+      const anterior = hojas.get(JSON.stringify(ruta));
+      const cambiaForma = (ancestro !== undefined && !esObjeto(ancestro.valor))
+        || (descendientes.length > 0 && !esObjeto(declaracion.valor))
+        || (anterior !== undefined && esObjeto(anterior.valor) !== esObjeto(declaracion.valor));
+      for (const hoja of anteriores) {
+        if (bajo(hoja.ruta, ruta) || bajo(ruta, hoja.ruta)) hojas.delete(JSON.stringify(hoja.ruta));
+      }
+      hojas.set(JSON.stringify(ruta), { ruta, valor: declaracion.valor });
       aplicaciones.push({ origen: { tipo: "declarado", orden: lectura.orden, posicion: declaracion.posicion },
-        ruta, valor: declaracion.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" });
+        ruta, valor: declaracion.valor, estrategia: cambiaForma ? "reemplazoSubarbol" : "reemplazo", regla: "orden-de-aplicacion" });
     }
   }
   return { exito: true, valor: { aplicaciones, noResueltas } };

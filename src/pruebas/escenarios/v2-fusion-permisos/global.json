@@ -1,0 +1,14 @@
+{
+  "permission": {
+    "bash": "ask",
+    "read": "allow"
+  },
+  "agent": {
+    "build": {
+      "permission": {
+        "bash": "ask",
+        "read": "allow"
+      }
+    }
+  }
+}

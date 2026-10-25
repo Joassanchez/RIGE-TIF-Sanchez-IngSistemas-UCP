@@ -9,7 +9,7 @@ describe("V1-03 S-4", () => {
       "orden-de-aplicacion": "OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).",
       "fuera-del-v1": "Clave que OpenCode combina o deriva con reglas que el prototipo v1 no incorpora; se resuelve en una iteración posterior.",
       "markdown-no-observado": "Agente declarado también en Markdown, que el prototipo v1 no incorpora; sus claves no se informan para no presentar un valor incompleto.",
-      "forma-en-conflicto": "Clave declarada como objeto en una entrada y como valor en otra; OpenCode las combina con una fusión profunda que el prototipo v1 no reproduce en este caso.",
+      "tools-legado-no-incorporado": "El alias legado tools aporta reglas a permission; RIGE no incorpora esa derivación y no informa los permisos de ese ámbito para evitar un resultado incompleto.",
       "sustitucion-no-incorporada": "Clave cuyo valor contiene una sustitución {env:…} o {file:…}; el prototipo v1 no incorpora sustituciones y no informa su valor (RNF-04).",
     });
   });
@@ -23,14 +23,14 @@ function lectura(orden: number, declaraciones: readonly Declaracion[]): LecturaE
   return { orden, via: { via: "proyecto", referencia: "C:\\p\\opencode.jsonc", condicion: "observada" }, declaraciones };
 }
 
-describe("V1-08 F-3", () => {
+describe("T2-04 F-1 F-2 secuencia", () => {
   test.each([
     [1, ["agent", "build", "options", "a", "b"], 2],
     [2, ["agent", "build", "options", "a"], 1],
     [1, ["agent", "build", "options", "a"], {}],
     [null, ["agent", "build", "options", "a", "b"], 2],
     [[1], ["agent", "build", "options", "a", "b"], 2],
-  ] as const)("excluye conflictos de forma entre %j y %j", (valor, rutaPosterior, posterior) => {
+  ] as const)("declara reemplazo de subarbol entre %j y %j", (valor, rutaPosterior, posterior) => {
     const ruta = ["agent", "build", "options", "a"];
     const primera = typeof valor === "number" && valor === 2 ? [...ruta, "b"] : ruta;
     const otra = declaracion(["agent", "build", "temperature"], 0.4);
@@ -39,14 +39,17 @@ describe("V1-08 F-3", () => {
       lectura(1, [declaracion(rutaPosterior, posterior), similar])]);
     expect(resultado).toEqual({ exito: true, valor: {
       aplicaciones: [
+        { origen: { tipo: "declarado", orden: 0, posicion: { linea: 6, columna: 7 } }, ruta: primera, valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
         { origen: { tipo: "declarado", orden: 0, posicion: otra.posicion }, ruta: otra.ruta, valor: otra.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
+        { origen: { tipo: "declarado", orden: 1, posicion: { linea: 6, columna: 7 } }, ruta: rutaPosterior, valor: posterior, estrategia: "reemplazoSubarbol", regla: "orden-de-aplicacion" },
         { origen: { tipo: "declarado", orden: 1, posicion: similar.posicion }, ruta: similar.ruta, valor: similar.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
-      ], noResueltas: [{ ruta, regla: "forma-en-conflicto" }],
+      ], noResueltas: [],
     } });
   });
-  test("un objeto vacio sin conflicto nunca se aplica", () => {
+  test("un objeto vacio sin conflicto se aplica como hoja", () => {
     expect(secuenciar([lectura(0, [declaracion(["agent", "build", "options"], {})])])).toEqual({
-      exito: true, valor: { aplicaciones: [], noResueltas: [] },
+      exito: true, valor: { aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: { linea: 6, columna: 7 } },
+        ruta: ["agent", "build", "options"], valor: {}, estrategia: "reemplazo", regla: "orden-de-aplicacion" }], noResueltas: [] },
     });
   });
 });
@@ -197,7 +200,11 @@ describe("V1-03 S-2", () => {
     expect(secuenciar([lectura(0, [...excluidas, normal, ...nombresSimilares]), lectura(1, excluidas)])).toEqual({
       exito: true, valor: {
         aplicaciones: [normal, ...nombresSimilares].map((declaracion) => ({ origen: { tipo: "declarado", orden: 0, posicion: declaracion.posicion }, ruta: declaracion.ruta, valor: declaracion.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" })),
-        noResueltas: prefijos.map((ruta) => ({ ruta, regla: "fuera-del-v1" })),
+        noResueltas: [
+          ...[["tools"], ["permission"], ["agent", "build", "tools"], ["agent", "build", "permission"],
+            ["agent", "review", "tools"], ["agent", "review", "permission"]].map(ruta => ({ ruta, regla: "tools-legado-no-incorporado" })),
+          ...[["instructions"], ["plugin"]].map(ruta => ({ ruta, regla: "fuera-del-v1" })),
+        ],
       },
     });
   });

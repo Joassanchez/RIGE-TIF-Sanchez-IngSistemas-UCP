@@ -102,7 +102,7 @@ describe("RF-01 CA-2", () => {
 });
 
 describe("RF-01 CA-1 v1-vias", () => {
-  test("V1-08 F-8 coincide con la referencia en lo que resuelve y excluye las derivaciones y conflictos", async () => {
+  test("T2-04 F-8 coincide con la referencia, resuelve el cambio de forma y excluye las derivaciones", async () => {
     const { copiarEscenario } = await import("../utilidades/escenario");
     const escenario = copiarEscenario("v1-vias");
     limpiezas.push(() => escenario.borrar());
@@ -126,7 +126,7 @@ describe("RF-01 CA-1 v1-vias", () => {
     const resolucion = resolverEscenario(escenario.proyecto, entorno);
     const rastros = consultar(resolucion, undefined);
     expect(referencia.agente).toBe("build");
-    expect(rastros.map(r => r.ruta.slice(2).join("."))).toEqual(["temperature", "top_p", "description"]);
+    expect(rastros.map(r => r.ruta.slice(2).join("."))).toEqual(["temperature", "options.a", "top_p", "description"]);
     for (const rastro of rastros) expect(rastro.valor).toBe(referencia.valores[rastro.ruta.slice(2).join(".")]!);
     const ruta = (relativa: string) => join(escenario.raiz, relativa).replaceAll("\\", "/");
     const temperatura = rastros.find(r => r.ruta[2] === "temperature")!;
@@ -142,14 +142,18 @@ describe("RF-01 CA-1 v1-vias", () => {
     expect(topP.desplazadas.map(d => d.valor)).toEqual([0.5]);
     expect(rastros.find(r => r.ruta[2] === "description")!.determinante.referencia).toBe(ruta("proyecto/.opencode/opencode.json"));
     expect(resolucion.noResueltas).toEqual([
-      { ruta: ["agent", "build", "options", "a"], regla: "forma-en-conflicto" },
       { ruta: ["agent", "build", "steps"], regla: "fuera-del-v1" },
       { ruta: ["agent", "build", "maxSteps"], regla: "fuera-del-v1" },
     ]);
     expect(referencia.valores.steps).toBe(7);
     expect(referencia.valores["options.a"]).toBe(false);
+    expect(rastros.find(r => r.ruta[2] === "options")).toMatchObject({
+      ruta: ["agent", "build", "options", "a"], valor: false,
+      determinante: { via: "proyecto", referencia: ruta("proyecto/opencode.json"), origen: { posicion: { linea: 8, columna: 9 } } },
+      desplazadas: [{ valor: 1, via: "global", referencia: ruta("hogar/.config/opencode/opencode.json"), origen: { posicion: { linea: 9, columna: 11 } } }],
+    });
     expect(resolucion.valores.some(v => v.ruta[0] === "agent" && v.ruta[1] === "build"
-      && ["steps", "maxSteps", "options"].includes(v.ruta[2]!))).toBe(false);
+      && ["steps", "maxSteps"].includes(v.ruta[2]!))).toBe(false);
     expect(resolucion.entradas.filter(e => e.condicion === "observada")).toHaveLength(6);
     expect(resumenes()).toEqual(antes);
   });

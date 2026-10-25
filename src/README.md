@@ -220,3 +220,19 @@ pruebas de aceptacion.
 
 Para comprobar esta tarea, con `RIGE_ALMACEN` temporal como se indica en §6:
 `bun test paquetes/opencode/vendor pruebas/aceptacion/RNF-10.test.ts pruebas/arquitectura/vendor.test.ts`.
+
+Para comprobar la fusion de subarboles y los permisos con procedencia (T2-04),
+con `RIGE_ALMACEN` temporal como se indica en §6:
+
+```bash
+bun test paquetes/nucleo paquetes/opencode
+bun test paquetes/nucleo/resolucion/fusion.test.ts paquetes/nucleo/resolucion/resolver.test.ts paquetes/nucleo/resolucion/contrato.test.ts paquetes/opencode/fusion.test.ts paquetes/opencode/secuenciador.test.ts pruebas/aceptacion/fusion-permisos.test.ts pruebas/aceptacion/RF-01.test.ts
+bun test pruebas/aceptacion/RF-03.test.ts pruebas/aceptacion/recorrido-v1.test.ts
+```
+
+`pruebas/escenarios/v2-fusion-permisos/global.json` contiene la entrada global;
+la aceptacion la copia al hogar temporal y consulta el proyecto por subproceso.
+La resolucion conserva el formato 2 y puede incluir `eliminadas`, con el rastro
+original y la declaracion `eliminacion` que lo retiro. Los indices se asignan por
+preorden final; dentro de `eliminadas`, numeran los rastros retirados. `tools`
+marca su ambito de permisos como no resuelto con `tools-legado-no-incorporado`.
