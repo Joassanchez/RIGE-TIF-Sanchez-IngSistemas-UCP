@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync, realpathSync, statSync } from "node:fs";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import type { ArchivoLeido, EntornoLectura, TipoRuta } from "@rige/nucleo/contrato/entorno";
 
 function ausente(error: unknown): boolean {
@@ -40,6 +40,7 @@ export class EntornoLecturaSistema implements EntornoLectura {
   }
 
   unir(...partes: readonly string[]): string { return join(...partes); }
+  relativa(desde: string, hasta: string): string { return relative(desde, hasta); }
   padre(ruta: string): string { return dirname(ruta); }
   esAbsoluta(ruta: string): boolean { return isAbsolute(ruta); }
 

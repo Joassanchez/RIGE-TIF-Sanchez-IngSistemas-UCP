@@ -58,12 +58,39 @@ ninguna prueba requiere ese checkout.
 
 Se registran todos los archivos de esta carpeta excepto este manifiesto,
 que no puede incluir su propio resumen. permiso.test.ts y AVISOS.md son
-archivos propios; los dos .ts de produccion son las copias.
+archivos propios; los tres .ts de produccion son las copias.
 
 | Archivo | SHA-256 |
 |---|---|
 | AVISOS.md | 3d4866594b236204c8e1c092894eee1ff55b9edcd597adf846c08d466aade4f1 |
 | LICENSE | 625f0f619133f89bbbb2abe37369613dfa1885eba1e50d02170deb62bb42cb6b |
 | permiso.test.ts | 4d12d95b272d4c0d3560efab0feb226a556f6b7e896dc60e0497403c0dbaffd3 |
-| permiso.ts | c2477cc72174d4304b05c28a38573339d2d386071a547fe26f30b049817fd75f |
+| permiso.ts | c3a2f07e41afb5b245670224087ab11412331a15c83e3a61c3901c4edcf09228 |
 | wildcard.ts | 3633c01b2fc79d356999cb61a06f00a2b628d8519dd865ccda8bfa935cca70c7 |
+
+## T2-05: objetos de agentes nativos
+
+Origen: packages/opencode/src/agent/agent.ts:108-261 del mismo tag.
+SHA-256 del archivo completo: `e781c571d584fa996200e320f14c2735e32968256b8db194391e7c06aed7433e`.
+Se extraen literalmente whitelistedDirs y readonlyExternalDirectory (108-117),
+el objeto defaults (119-136) y los objetos pasados a Permission.fromConfig
+para build (147-150), plan (162-176), general (187-189), explore (200-210),
+compaction (227-229), title (243-245) y summary (258-260).
+Se conservan mode, native y hidden; se omiten descripciones, prompts y opciones
+que no participan en la cadena. Los objetos de permisos no se modifican.
+El envoltorio recibe data, tmp, worktree, skillDirs, referenceDirs y las
+operaciones puras join/relative de path; construye Global.Path y ctx locales.
+Truncate.GLOB se expresa como path.join(data, "tool-output", "*") a partir de
+truncation-dir.ts:4 y de la regla final de agent.ts:294-310.
+SHA-256 de truncation-dir.ts: `790159a022386c68212056a39571f53c9874d11079b0572d57c207f1cd1d9155`.
+Global.Path se calcula en el adaptador segun core/src/global.ts:10-15;
+SHA-256 de ese original: `37c9aae045e01cd246cd4d8c489e84ea4849b6297d3a6f9ff9b1bca57f85c013`.
+El puerto proporciona las variables de hogar y temporales; no se lee el entorno
+real desde vendor. Skills y references se reciben vacios en esta iteracion y
+external_directory se declara parcialmente observado.
+En permiso.ts solo se agrega la reexportacion de expand al envoltorio;
+no cambia el cuerpo de ninguna funcion copiada.
+
+| Archivo | SHA-256 |
+|---|---|
+| agentes-nativos.ts | fb040edb2f18bcc9359e190bcdcd2138c97a7aac02610a4ed990bad2a22cd9fb |

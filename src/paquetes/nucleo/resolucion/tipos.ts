@@ -1,5 +1,20 @@
 import type { ClaveNoResuelta, Identidad, Origen, ValorJson } from "../contrato/adaptador";
 
+export interface ReglaCadena {
+  readonly indice: number;
+  readonly sujeto: string;
+  readonly patron: string;
+  readonly efecto: string;
+  readonly origen: Origen;
+  readonly declaracion: DeclaracionUbicada | null;
+}
+
+export interface Cadena {
+  readonly agente: string;
+  readonly reglas: readonly ReglaCadena[];
+  readonly ejesParciales: readonly string[];
+}
+
 export interface DeclaracionUbicada {
   readonly origen: Origen;
   /** Presentes solo si origen.tipo === "declarado". */

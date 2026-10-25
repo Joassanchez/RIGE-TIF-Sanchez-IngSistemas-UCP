@@ -17,6 +17,10 @@ export const adaptadorFicticio: Adaptador = {
   reglas: { "primera-declaracion": "Se conserva la primera declaracion aplicada.", "base-ficticia": "Base de la herramienta ficticia.",
     "retirada-ficticia": "Se retira el grupo indicado por la capa." },
   estrategias: { primera },
+  cadena: (_, agente) => ({ exito: true, valor: { agente, ejesParciales: [], reglas: [{
+    indice: 0, sujeto: "documento", patron: "todos", efecto: "conceder",
+    origen: { tipo: "nativo", regla: "base-ficticia" }, declaracion: null,
+  }] } }),
   ubicar: (proyecto, entorno) => ({ exito: true, valor: ["capa-b", "capa-a"].map((via) => ({
     via, referencia: entorno.unir(proyecto, `${via}.json`), condicion: "observada",
   })) }),

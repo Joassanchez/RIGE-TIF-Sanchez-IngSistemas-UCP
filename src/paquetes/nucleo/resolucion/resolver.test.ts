@@ -20,6 +20,7 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
   const adaptador: Adaptador = {
     identidad: { herramienta: "ficticia", version: "1" }, prefijoAgente: ["agente"],
     reglas: { orden: "Prevalece la entrada posterior.", sinUso: "No utilizada." }, estrategias: {},
+    cadena: (_, agente) => ({ exito: true, valor: { agente, reglas: [], ejesParciales: [] } }),
     ubicar: () => ({ exito: true, valor: [...vias, ...adicionales] }),
     leer: (_, texto) => ({ exito: true, valor: JSON.parse(texto) as Declaracion[] }),
     secuenciar: (lecturas) => ({ exito: true, valor: {

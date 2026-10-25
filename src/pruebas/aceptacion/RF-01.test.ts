@@ -3,8 +3,6 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
-import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
 import { consultarAgente } from "../../paquetes/nucleo/resolucion/proyectar";
 import type { RastroValor, Resolucion } from "../../paquetes/nucleo/resolucion/tipos";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
@@ -57,9 +55,17 @@ async function preparar() {
   return { escenario, entorno, referencia };
 }
 function resolverEscenario(proyecto: string, entorno: EntornoLecturaSistema): Resolucion {
-  const resultado = resolver(adaptadorOpenCode, proyecto, entorno);
-  if (!resultado.exito) throw new Error(resultado.error.mensaje);
-  return resultado.valor;
+  const variables = crearEntornoAislado(entorno.variable("HOME")!, process.env);
+  for (const nombre of ["HOME", "USERPROFILE", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME",
+    "LOCALAPPDATA", "APPDATA", "ProgramData", "OPENCODE_CONFIG", "RIGE_ALMACEN"]) {
+    const valor = entorno.variable(nombre);
+    if (valor !== undefined) variables[nombre] = valor;
+  }
+  const proceso = Bun.spawnSync([process.execPath, "pruebas/utilidades/resolver-escenario.ts", proyecto], {
+    env: variables, stdout: "pipe", stderr: "pipe", timeout: 10000,
+  });
+  if (proceso.exitCode !== 0 || proceso.stderr.length) throw new Error(proceso.stderr.toString());
+  return JSON.parse(proceso.stdout.toString()) as Resolucion;
 }
 function consultar(resolucion: Resolucion, clave: string | undefined): readonly RastroValor[] {
   const resultado = consultarAgente(resolucion, "build", clave?.split("."));

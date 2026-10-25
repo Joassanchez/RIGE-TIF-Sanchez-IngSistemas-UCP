@@ -6,6 +6,9 @@ import { reglas } from "./reglas";
 describe("V1-03 S-4", () => {
   test("publica exactamente las plantillas del diseno y la ficha", () => {
     expect(reglas).toEqual({
+      "nativa-general": "Regla de permiso incorporada en los defaults de OpenCode 1.18.25.",
+      "nativa-agente": "Regla de permiso incorporada para el agente nativo de OpenCode 1.18.25.",
+      "nativa-final": "OpenCode agrega al final el acceso al directorio de salidas, salvo deny explicito para ese patron exacto.",
       "orden-de-aplicacion": "OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).",
       "fuera-del-v1": "Clave que OpenCode combina o deriva con reglas que el prototipo v1 no incorpora; se resuelve en una iteración posterior.",
       "markdown-no-observado": "Agente declarado también en Markdown, que el prototipo v1 no incorpora; sus claves no se informan para no presentar un valor incompleto.",

@@ -4,6 +4,7 @@ import { leerEntrada } from "./lector";
 import { reglas } from "./reglas";
 import { secuenciar } from "./secuenciador";
 import { ubicar } from "./ubicador";
+import { cadena } from "./cadena";
 
 export const adaptadorOpenCode: Adaptador = {
   identidad: { herramienta: "opencode", version: versionSoportada },
@@ -23,4 +24,5 @@ export const adaptadorOpenCode: Adaptador = {
     return { exito: true, valor: [] };
   },
   secuenciar,
+  cadena,
 };

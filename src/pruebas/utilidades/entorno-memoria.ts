@@ -25,6 +25,7 @@ export function crearEntornoMemoria(opciones: {
     },
     resumir,
     unir: (...partes) => posix.join(...partes),
+    relativa: (desde, hasta) => posix.relative(desde, hasta),
     padre: (ruta) => posix.dirname(posix.normalize(ruta)),
     esAbsoluta: (ruta) => posix.isAbsolute(ruta),
     listar(directorio) {

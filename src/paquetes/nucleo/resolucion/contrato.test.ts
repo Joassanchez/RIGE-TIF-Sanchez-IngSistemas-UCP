@@ -18,6 +18,7 @@ function resolverSecuencia(secuencia: Secuencia, cantidad = 0) {
     })) }),
     leer: () => ({ exito: true, valor: [] }),
     secuenciar: () => ({ exito: true, valor: secuencia }),
+    cadena: adaptadorFicticio.cadena,
   };
   const resultado = resolver(adaptador, "/proyecto", crearEntornoMemoria({
     archivos: Object.fromEntries(Array.from({ length: cantidad }, (_, orden) => [`/capa-${orden}`, "{}"])),

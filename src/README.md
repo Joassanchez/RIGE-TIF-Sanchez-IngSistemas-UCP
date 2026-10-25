@@ -221,6 +221,39 @@ pruebas de aceptacion.
 Para comprobar esta tarea, con `RIGE_ALMACEN` temporal como se indica en §6:
 `bun test paquetes/opencode/vendor pruebas/aceptacion/RNF-10.test.ts pruebas/arquitectura/vendor.test.ts`.
 
+T2-05 construye la cadena de permisos del agente con las reglas nativas y
+declaradas, sus indices y su procedencia. El eje `external_directory` queda
+parcialmente observado: no se buscan directorios de skills ni references.
+La evaluacion de decisiones corresponde a T2-06.
+
+Con `RIGE_ALMACEN` en un temporal, las pruebas y el oraculo se ejecutan desde `src/`:
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-pruebas'
+bun test paquetes/opencode pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-06.test.ts
+bun test herramientas/referencias-nativas pruebas/arquitectura/referencias-nativas.test.ts
+bun run referencias --raiz (npm.cmd root -g) --regenerar
+bun run referencias --raiz (npm.cmd root -g)
+bun test
+bun run verificar
+```
+
+En Bash: `bun run referencias --raiz "$(npm root -g)" --regenerar` genera las
+capturas; sin `--regenerar` solo compara y nunca escribe referencias. Se exige
+el binario oficial 1.18.25 con SHA-256 admitido. Cada `REFERENCIA.json` declara
+su directorio, hogar relativo a la copia y `OPENCODE_CONFIG` si corresponde.
+Las cadenas conservan el orden del binario; data, tmp y hogar se normalizan a
+`<data>`, `<tmp>` y `<hogar>`, con separadores `/`.
+
+La herramienta requiere Git: ejecuta `git init --quiet --initial-branch=main`
+en cada copia temporal y `git rev-parse --show-toplevel` desde el directorio
+consultado. Un `.git/HEAD` sintetico no basta para el binario y permitia que la
+busqueda ascendente de skills alcanzara el hogar real. HOME, USERPROFILE,
+APPDATA y LOCALAPPDATA se aislan en todos los escenarios. No se deshabilitan
+skills mediante flags; una regla normalizada que contenga el HOME real hace
+fallar la herramienta antes de guardar la referencia. El diagnostico se
+conserva en `procedencia.aislamiento`.
+
 Para comprobar la fusion de subarboles y los permisos con procedencia (T2-04),
 con `RIGE_ALMACEN` temporal como se indica en §6:
 

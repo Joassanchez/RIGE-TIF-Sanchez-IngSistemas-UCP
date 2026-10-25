@@ -1,6 +1,7 @@
 // Copyright (c) 2025 opencode. Licencia MIT: ver ./LICENSE.
 // Copia de opencode v1.18.25, packages/opencode/src/permission/index.ts:28-38,178-214. Ver ./PROCEDENCIA.md.
 import * as Wildcard from "./wildcard"
+export { expand }
 
 export namespace PermissionV1 {
   export type Rule = { permission: string; pattern: string; action: "allow" | "deny" | "ask" }

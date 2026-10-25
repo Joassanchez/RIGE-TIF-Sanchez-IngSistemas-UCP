@@ -1,6 +1,7 @@
 import type { Resultado } from "../resultado";
 import type { Estrategia } from "../resolucion/estrategias";
 import type { EntornoLectura } from "./entorno";
+import type { Cadena, Resolucion } from "../resolucion/tipos";
 
 export type ValorJson = null | boolean | number | string | readonly ValorJson[] | { readonly [clave: string]: ValorJson };
 export interface Posicion { readonly linea: number; readonly columna: number }
@@ -56,4 +57,5 @@ export interface Adaptador {
   ubicar(proyecto: string, entorno: EntornoLectura): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
   leer(via: ViaUbicada, texto: string): Resultado<readonly Declaracion[], ErrorAnalisis>;
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
+  cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura): Resultado<Cadena, ErrorAnalisis>;
 }

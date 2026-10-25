@@ -13,6 +13,7 @@ export interface EntornoLectura {
   leer(ruta: string): ArchivoLeido;
   resumir(texto: string): string;
   unir(...partes: readonly string[]): string;
+  relativa(desde: string, hasta: string): string;
   padre(ruta: string): string;
   esAbsoluta(ruta: string): boolean;
   listar(directorio: string): readonly string[];

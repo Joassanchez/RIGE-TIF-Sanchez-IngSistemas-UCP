@@ -1,0 +1,7 @@
+{
+  "permission": {
+    "read": {"*": "allow", "privado/*": "deny"},
+    "bash": {"*": "ask", "git *": "allow"},
+    "edit": "allow"
+  }
+}

@@ -2,6 +2,12 @@
 
 | Criterio o regla | Prueba (archivo y `describe`) |
 |---|---|
+| RF-02 CA-2 (cadena) y CA-8 | `aceptacion/RF-02.test.ts` (cuatro referencias del binario, cadenas completas por subproceso, sensibilidad y ubicacion original) |
+| RF-06 CA-2 | `aceptacion/RF-06.test.ts` (bloques nativos y declarados de v2-cadena, contrastados con la captura) |
+| T2-05 K-1 RD-07, K-2, K-3 RNF-03 | `../paquetes/opencode/cadena.test.ts` (orden, excepcion deny exacto, expansion, temporales, errores y otro vocabulario) |
+| T2-05 K-4 | `aceptacion/RF-02.test.ts` (intercambia declaraciones de la cadena de RIGE); `../herramientas/referencias-nativas/comparar.test.ts` (comparacion profunda y marcadores) |
+| T2-05 oraculo | `arquitectura/referencias-nativas.test.ts` (aislamiento declarativo, escenario desconocido, comparar sin escribir y regeneracion con doble del binario) |
+| T2-05 aislamiento (reanudacion) | `arquitectura/referencias-nativas.test.ts` (git init, worktree, hogar aislado sin flags y rechazo antes de guardar); `../herramientas/referencias-nativas/aislamiento.test.ts` (fuga del HOME real, separadores y limites de ruta) |
 | RF-01 CA-1 | `aceptacion/recorrido-v1.test.ts` — `RF-01 CA-1 · recorrido del README (guía, paso 8)`; `aceptacion/RF-01.test.ts` — `RF-01 CA-1` (referencia nativa y rastro como objeto) |
 | RF-01 CA-2 | `aceptacion/recorrido-v1.test.ts` — `RF-01 CA-2; RNF-01 CA-1 CA-2`; `aceptacion/RF-01.test.ts` — `RF-01 CA-2` (referencia nativa y rastros de todas las claves) |
 | RF-03 CA-1 (valores) | `aceptacion/RF-03.test.ts` — `RF-03 CA-1 (valores)` (dos escenarios, consulta completa y puntual, igualdad byte a byte y sin sobre) |
@@ -37,6 +43,12 @@
 | ADR-061: documento, retención e inmutabilidad | `../paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts` — `R-1 RF-17 CA-1`, `R-2 RF-17 CA-3`, `R-3`, `R-4` (persistencia, transacción, retención por proyecto, UPDATE prohibido y esquema exigido) |
 
 Las rutas son relativas a esta carpeta. Los casos del analizador se conservan en tablas: una prueba compara todos los resultados e identifica cada entrada en el diff.
+
+T2-05 usa `utilidades/consultar-cadenas.ts` como CLI del arnes: ejecuta el
+contrato del adaptador en un subproceso aislado, sin adelantar la interfaz de
+decisiones de T2-06. Las referencias provienen del binario, nunca del vendor.
+RF-01 tambien resuelve por subproceso para conservar la guarda de no circularidad.
+Los comandos para comprobar y regenerar estan en `../README.md`.
 
 - `aceptacion/`: criterios del catálogo y recorridos de las interfaces; `RF-01.test.ts` conserva además las comparaciones estructuradas con las referencias nativas.
 - `arquitectura/`: recorridos únicos del repositorio, regresiones sintéticas de las guardas y estructura del README.
