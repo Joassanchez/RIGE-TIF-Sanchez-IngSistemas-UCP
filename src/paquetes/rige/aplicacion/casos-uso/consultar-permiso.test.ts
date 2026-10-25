@@ -7,6 +7,26 @@ const deps = () => ({ adaptador: adaptadorFicticio, rutas: { canonica: () => "/p
   entorno: crearEntornoMemoria({ archivos: { "/proyecto/capa-b.json": "{}", "/proyecto/capa-a.json": "{}" } }) });
 
 describe("T2-06 consulta en memoria", () => {
+  test("T2-08 forma por herramienta delega al adaptador y conserva consulta original", () => {
+    const dependencias = { ...deps(), adaptador: { ...adaptadorFicticio,
+      prepararObjetivo: () => ({ exito: true as const, valor: { sujeto: "documento", objetivoEvaluado: "todos", motivoSinDecision: null } }) } };
+    expect(consultarPermiso(dependencias, "/proyecto", "a", { herramienta: "lector" }, "/documento")).toMatchObject({
+      exito: true, valor: { decision: "conceder", consulta: { forma: "herramienta", herramienta: "lector", sujeto: "documento", objetivo: "/documento", objetivoEvaluado: "todos" } },
+    });
+    expect(consultarPermiso(deps(), "/proyecto", "a", "documento", "./todos")).toMatchObject({
+      exito: true, valor: { consulta: { forma: "sujeto", objetivoEvaluado: "./todos" } },
+    });
+    const fuera = { ...dependencias, adaptador: { ...dependencias.adaptador,
+      reglas: { ...dependencias.adaptador.reglas, "fuera-del-arbol": "Recurso externo." },
+      prepararObjetivo: () => ({ exito: true as const, valor: { sujeto: "documento", objetivoEvaluado: "../otro", motivoSinDecision: "fuera-del-arbol" } }) } };
+    expect(consultarPermiso(fuera, "/proyecto", "a", { herramienta: "lector" }, "../otro")).toMatchObject({
+      exito: true, valor: { decision: null, motivoSinDecision: "fuera-del-arbol", cadena: [], determinante: null,
+        consulta: { objetivoEvaluado: "../otro" } },
+    });
+    for (const accion of [{ herramienta: "" }, { herramienta: "lector", sujeto: "documento" }, {}]) {
+      expect(consultarPermiso(dependencias, "/proyecto", "a", accion as { herramienta: string }, "x")).toMatchObject({ exito: false });
+    }
+  });
   test("D-1 ficticio sin reglas: ask y ninguna escritura", () => {
     const dependencias = deps();
     dependencias.adaptador = { ...adaptadorFicticio,

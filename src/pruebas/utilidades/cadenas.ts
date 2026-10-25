@@ -1,18 +1,18 @@
 import { readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 import type { Cadena } from "../../paquetes/nucleo/resolucion/tipos";
-import { copiarEscenario } from "./escenario";
+import { copiarEscenario, type OpcionesEscenario } from "./escenario";
 import { crearEntornoAislado } from "./entorno-aislado";
 import { normalizarRutas } from "../../herramientas/referencias-nativas/comparar";
 
 export interface ReferenciaCadenas {
-  procedencia: { directorio: string; hogar: string; OPENCODE_CONFIG?: string };
+  procedencia: { directorio: string; hogar: string; OPENCODE_CONFIG?: string; git?: OpcionesEscenario["git"] };
   cadenas: Record<string, { permission: string; pattern: string; action: string }[]>;
 }
 
 export function consultarCadenas(nombre: string) {
   const referencia = JSON.parse(readFileSync(join(import.meta.dir, "../escenarios", nombre, "REFERENCIA.json"), "utf8")) as ReferenciaCadenas;
-  const copia = copiarEscenario(nombre);
+  const copia = copiarEscenario(nombre, { git: referencia.procedencia.git ?? "raiz" });
   try {
     const hogar = join(copia.raiz, referencia.procedencia.hogar);
     const env = { ...crearEntornoAislado(hogar, process.env), XDG_CONFIG_HOME: join(hogar, ".config"),
@@ -25,7 +25,7 @@ export function consultarCadenas(nombre: string) {
     if (proceso.exitCode !== 0 || proceso.stderr.length) throw new Error(proceso.stderr.toString());
     const cadenas = JSON.parse(proceso.stdout.toString()) as Record<string, Cadena>;
     return { referencia, cadenas, raiz: copia.raiz, normalizar: (valor: unknown) => normalizarRutas(valor, {
-      hogar, data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"),
+      hogar, data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), "hogar-relativo-raiz": relative("/", hogar),
     }) };
   } finally { copia.borrar(); }
 }

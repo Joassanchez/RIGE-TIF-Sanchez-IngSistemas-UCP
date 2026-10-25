@@ -1,5 +1,37 @@
 # Mapa de pruebas
 
+T2-08 agrega `aceptacion/RF-02-CA-9.test.ts`: una prueba por fila a-j,
+con consultas absolutas y relativas, decision y regla determinante, aliases
+`write`/`apply_patch`, directorios y salida sin decision fuera del arbol.
+En Windows repite las reglas absolutas con `/` y con separadores nativos.
+La consulta por sujeto conserva el recurso literal.
+
+`v2-ruta-bloqueo`, `v2-ruta-env` y `v2-ruta-exposicion` guardan los esperados
+de CA-9/ADR-088 en `decisiones`; T2-14 verificara esas decisiones sobre los
+mismos escenarios. Sus cadenas base de build se capturaron del binario.
+`<RAIZ>` solo se sustituye en las copias temporales, con escape JSON.
+No se necesita que exista el archivo objetivo para consultar su permiso.
+
+`v2-worktree-valido`, `v2-worktree-sintetico` y `v2-worktree-sin-vcs`
+conservan cadenas completas build/plan de OpenCode 1.18.25 y la lectura real
+`debug agent build --tool read`: deny, allow y allow respectivamente.
+El worktree se comprobo en `message.data.path.root` del SQLite temporal
+creado por ese comando: proyecto, `/` y `/`. No se usa vendor como oraculo.
+Las capturas excluyen skills externos para evitar que la subida sin VCS
+alcance el hogar real; se declara en `procedencia.skillsExternosExcluidos`.
+Ese eje sigue parcialmente observado en RIGE.
+
+Las unitarias `../paquetes/opencode/worktree.test.ts` cubren el criterio
+autorizado (ADR-101 propuesto): HEAD, objects/refs, gitdir, commondir,
+presencia de git en PATH, variables rechazadas y variantes declaradas.
+`objetivo.test.ts` comprueba recursos Linux/Windows y proyectos anidados
+con entorno por puerto, sin modificar `process.env`.
+`utilidades/escenario.test.ts` verifica la sustitucion nativa completa y la
+inmutabilidad de la fuente. El arnes de referencias respeta `procedencia.git`:
+`proyecto` inicializa en el proyecto; `sintetico` y `ninguno` no ejecutan
+`git init`. El marcador `<hogar-relativo-raiz>` conserva la regla de plan
+relativa a `/` sin guardar rutas reales del temporal.
+
 | Criterio o regla | Prueba (archivo y `describe`) |
 |---|---|
 | RF-02 CA-2 (cadena) y CA-8 | `aceptacion/RF-02.test.ts` (cuatro referencias del binario, cadenas completas por subproceso, sensibilidad y ubicacion original) |

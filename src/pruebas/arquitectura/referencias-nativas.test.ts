@@ -29,7 +29,7 @@ const hashLinux = "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60
 type Llamada = { argumentos: string[]; cwd?: string; env: Record<string, string>; timeout: number; copia?: string };
 
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.
-function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string;
+function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
   diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
   try {
@@ -46,6 +46,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         mkdirSync(join(fuente, "pruebas/escenarios", nombre, "proyecto"), { recursive: true });
         const ref = JSON.parse(readFileSync(join(raiz, "pruebas/escenarios", nombre, "REFERENCIA.json"), "utf8"));
         ref.cadenas = { build: [{ permission: "bash", pattern: "*", action: "ask" }] };
+        if (opciones.git) { ref.procedencia.git = opciones.git; ref.procedencia.skillsExternosExcluidos = true; }
         if (opciones.referenciaFiltrada) ref.cadenas.build.push({ permission: "external_directory", pattern: join(temporal, ".agents/skills/filtrada/*"), action: "allow" });
         writeFileSync(join(fuente, "pruebas/escenarios", nombre, "REFERENCIA.json"), JSON.stringify(ref));
       }
@@ -72,7 +73,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         llamadas.push(llamada);
         if (argumentos[0] === "git") {
           writeFileSync(${JSON.stringify(registro)}, JSON.stringify(llamadas));
-          return { exitCode: 0, stdout: Buffer.from(argumentos.includes("--show-toplevel") ? dirname(opciones.cwd) : ""), stderr: Buffer.from("") };
+          return { exitCode: 0, stdout: Buffer.from(argumentos.includes("--show-toplevel") ? llamadas.findLast(l => l.argumentos.includes("init")).cwd : ""), stderr: Buffer.from("") };
         }
         if (argumentos[1] === "--version") {
           writeFileSync(${JSON.stringify(registro)}, JSON.stringify(llamadas));
@@ -81,7 +82,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         const copia = dirname(opciones.cwd);
         llamada.copia = copia;
         if (existsSync(join(copia, "REFERENCIA.json"))) throw new Error("Referencia copiada");
-        if (!readFileSync(join(copia, ".git/HEAD"), "utf8").includes("refs/heads/main")) throw new Error("Sin git");
+        if (!${Boolean(opciones.git)} && !readFileSync(join(copia, ".git/HEAD"), "utf8").includes("refs/heads/main")) throw new Error("Sin git");
         writeFileSync(join(copia, ".gitignore"), "generado por el doble nativo");
         const referencias = ${JSON.stringify(referencias)};
         const nombre = opciones.env.OPENCODE_CONFIG ? "v1-vias" : "v1-precedencia";
@@ -135,6 +136,16 @@ describe("RN-4 binario directo, version y SHA-256 verificados", () => {
 });
 
 describe("RN-5 copia, aislamiento y limite del comando nativo", () => {
+  test("T2-08 conserva proyecto, HEAD sintetico y sin VCS sin inicializarlos silenciosamente", () => {
+    for (const git of ["proyecto", "sintetico", "ninguno"] as const) {
+      const resultado = ejecutar({ git });
+      expect(resultado.codigo).toBe(0);
+      const llamadasGit = resultado.llamadas.filter(l => l.argumentos[0] === "git");
+      expect(llamadasGit).toHaveLength(git === "proyecto" ? 4 : 0);
+      if (git === "proyecto") expect(llamadasGit.every(l => l.cwd?.endsWith("proyecto"))).toBe(true);
+      expect(resultado.llamadas.filter(l => l.copia).every(l => l.env.OPENCODE_DISABLE_EXTERNAL_SKILLS === "true")).toBe(true);
+    }
+  });
   test("aisla las dos vias y borra los temporales incluso ante fallo", () => {
     const resultado = ejecutar();
     expect(resultado.codigo).toBe(0);

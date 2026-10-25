@@ -6,6 +6,9 @@ import { reglas } from "./reglas";
 describe("V1-03 S-4", () => {
   test("publica exactamente las plantillas del diseno y la ficha", () => {
     expect(reglas).toEqual({
+      "git-no-encontrado": "No se encontro un archivo ejecutable git en PATH. Se usa / como arbol de trabajo, como OpenCode sin Git.",
+      "deteccion-git-aproximada": "Se detecto core.worktree, bare=true o safe.directory. La deteccion de Git mediante lectura no modela estas variantes (ADR-101 propuesto).",
+      "fuera-del-arbol": "El archivo queda fuera del arbol de trabajo: OpenCode pide antes external_directory, un eje parcialmente observado; no se informa una decision.",
       "denegacion-subagente": "OpenCode agrega al final de la sesion hija una denegacion cuando la cadena propia no contiene el sujeto exacto (RD-05).",
       "reglas-agente-lanzador-excluidas": "Las reglas del agente que lanza mediante task no se aplican al subagente (RD-05, ADR-081).",
       "reglas-sesion-lanzadora-excluidas": "Las reglas de la sesion que lanza el subagente no integran el analisis estatico.",

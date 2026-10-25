@@ -50,6 +50,12 @@ export interface Secuencia {
 
 export interface ErrorAnalisis { readonly categoria: "uso"; readonly codigo: string; readonly mensaje: string }
 
+export interface ObjetivoPermiso {
+  readonly sujeto: string;
+  readonly objetivoEvaluado: string;
+  readonly motivoSinDecision: string | null;
+}
+
 export interface Adaptador {
   readonly permisos: Permisos;
   readonly identidad: Identidad;
@@ -60,4 +66,5 @@ export interface Adaptador {
   leer(via: ViaUbicada, texto: string): Resultado<readonly Declaracion[], ErrorAnalisis>;
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
   cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
+  prepararObjetivo?(proyecto: string, herramienta: string, objetivo: string, entorno: EntornoLectura): Resultado<ObjetivoPermiso, ErrorAnalisis>;
 }

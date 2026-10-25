@@ -1,6 +1,7 @@
 import type { ErrorAnalisis, ViaUbicada } from "@rige/nucleo/contrato/adaptador";
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { Resultado } from "@rige/nucleo/resultado";
+import { descubrirWorktree } from "./worktree";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 const noSoportada = (nombre: string): Resultado<never, ErrorAnalisis> => ({ exito: false, error: { categoria: "uso",
@@ -39,16 +40,9 @@ export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<rea
   for (const nombre of ["config.json", "opencode.json", "opencode.jsonc"]) agregar("global", entorno.unir(global, nombre));
   if (config !== undefined) agregar("variable-config", entorno.unir(config));
 
-  let worktree = proyecto;
-  for (;;) {
-    const git = entorno.unir(worktree, ".git");
-    const tipo = entorno.tipo(git);
-    if (tipo === "directorio" && entorno.tipo(entorno.unir(git, "HEAD")) === "archivo"
-      || tipo === "archivo" && entorno.leer(git).texto.startsWith("gitdir:")) break;
-    const superior = entorno.padre(worktree);
-    if (superior === worktree) break;
-    worktree = superior;
-  }
+  const descubrimiento = descubrirWorktree(proyecto, entorno);
+  if (!descubrimiento.exito) return descubrimiento;
+  const { worktree } = descubrimiento.valor;
   function subir(objetivos: readonly string[], desde: string, hasta: string): string[] {
     const rutas: string[] = [];
     let actual = desde;

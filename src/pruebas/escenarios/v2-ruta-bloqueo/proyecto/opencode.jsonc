@@ -1,0 +1,52 @@
+{
+  "agent": {
+    "a": {
+      "permission": {
+        "read": {
+          "*": "deny",
+          "<RAIZ>/proyecto/src/productos.js": "allow"
+        }
+      }
+    },
+    "b": {
+      "permission": {
+        "read": {
+          "*": "deny",
+          "src/productos.js": "allow"
+        }
+      }
+    },
+    "c": {
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "<RAIZ>/proyecto/src/index.js": "allow"
+        }
+      }
+    },
+    "d": {
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "src/index.js": "allow"
+        }
+      }
+    },
+    "e": {
+      "permission": {
+        "read": {
+          "*": "ask",
+          "<RAIZ>/proyecto/src/productos.js": "allow"
+        }
+      }
+    },
+    "control_e": {
+      "permission": {
+        "read": {
+          "*": "ask",
+          "src/productos.js": "allow"
+        }
+      }
+    }
+  }
+}

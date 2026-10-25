@@ -241,6 +241,43 @@ fuera del analisis. Un agente `primary` se evalua igualmente y se declara.
 `experimental.primary_tools` declarado produce la advertencia
 `primary-tools-no-incorporado`; sus denegaciones no se incorporan.
 
+T2-08 admite como cuarto argumento `{ herramienta: "read" }` (tambien
+`edit`, `write`, `apply_patch`, `bash`, `glob`, `grep`, `webfetch`, `task`,
+`todowrite` y `skill`). El sujeto en string, o `{ sujeto: "read" }`, conserva
+la forma literal anterior. `consulta.forma` distingue ambas formas;
+`consulta.objetivoEvaluado` presenta el recurso evaluado. Las herramientas
+de archivo resuelven el objetivo contra el proyecto y lo hacen relativo al
+worktree; `write`/`apply_patch` evalúan `edit`. Fuera del arbol se responde
+sin decision, con `fuera-del-arbol`.
+
+Por autorizacion del ingeniero del 25/10 (ADR-101 propuesto), el adaptador
+descubre Git solo mediante lectura: sube hasta un `.git` con HEAD valido,
+objects/refs, o resuelve gitdir/commondir. Sin repositorio usa `/`. Sin un
+archivo git en PATH agrega `git-no-encontrado`. `GIT_DIR` o `GIT_WORK_TREE`
+definidas producen `via-no-soportada`; core.worktree, bare=true o
+safe.directory detectados se declaran como `deteccion-git-aproximada`.
+RIGE no ejecuta Git. El arnes de pruebas y referencias si lo ejecuta para
+preparar y contrastar repositorios aislados.
+
+Para comprobar T2-08, con `RIGE_ALMACEN` temporal:
+
+```bash
+bun test pruebas/aceptacion/RF-02-CA-9.test.ts paquetes/opencode
+bun test pruebas/utilidades/escenario.test.ts paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts herramientas/referencias-nativas/comparar.test.ts pruebas/arquitectura/referencias-nativas.test.ts
+```
+
+Las referencias de los tres escenarios `v2-worktree-*` incluyen la cadena
+de plan y el resultado real de `opencode debug agent build --tool read
+--params '{"filePath":"src/a.js"}'`. El worktree procede de
+`SELECT data FROM message` en el SQLite **temporal** de OpenCode, campo
+`path.root`. Para repetir la comparacion de cadenas se usa el comando
+`bun run referencias --raiz <directorio-global-npm>` documentado abajo.
+El arnes respeta el modo Git de cada referencia. En los tres escenarios de
+descubrimiento, `OPENCODE_DISABLE_EXTERNAL_SKILLS=true` evita la busqueda
+ascendente fuera del temporal; esa exclusion figura en su procedencia.
+La regeneracion de cadenas conserva las decisiones y la captura de lectura;
+la verificacion de las demas decisiones CA-9 corresponde a T2-14.
+
 Para comprobar T2-07, con `RIGE_ALMACEN` temporal:
 
 ```bash
@@ -289,7 +326,9 @@ en cada copia temporal y `git rev-parse --show-toplevel` desde el directorio
 consultado. Un `.git/HEAD` sintetico no basta para el binario y permitia que la
 busqueda ascendente de skills alcanzara el hogar real. HOME, USERPROFILE,
 APPDATA y LOCALAPPDATA se aislan en todos los escenarios. No se deshabilitan
-skills mediante flags; una regla normalizada que contenga el HOME real hace
+skills mediante flags en los escenarios con Git validado. Los escenarios
+de descubrimiento de T2-08 declaran la excepcion de skills externos indicada
+arriba. Una regla normalizada que contenga el HOME real hace
 fallar la herramienta antes de guardar la referencia. El diagnostico se
 conserva en `procedencia.aislamiento`.
 

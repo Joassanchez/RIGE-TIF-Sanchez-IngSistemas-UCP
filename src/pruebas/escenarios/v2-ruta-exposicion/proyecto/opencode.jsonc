@@ -1,0 +1,25 @@
+{
+  "agent": {
+    "g": {
+      "permission": {
+        "read": {
+          "<RAIZ>/proyecto/config/credenciales.json": "deny",
+          "<RAIZ>/proyecto/privado": "deny",
+          "<RAIZ>/proyecto/privado/*": "deny"
+        },
+        "list": "deny"
+      }
+    },
+    "h": {
+      "permission": {
+        "read": {
+          "config/credenciales.json": "deny",
+          "privado": "deny",
+          "privado/": "deny",
+          "privado/*": "deny"
+        },
+        "list": "deny"
+      }
+    }
+  }
+}

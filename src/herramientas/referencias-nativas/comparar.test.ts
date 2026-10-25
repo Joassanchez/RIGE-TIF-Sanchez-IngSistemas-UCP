@@ -14,4 +14,10 @@ describe("T2-05 K-4 comparacion profunda y sensibilidad", () => {
       { pattern: "<data>/tool-output/*" }, { pattern: "<tmp>/*" }, { pattern: "<hogar>/x" }, { pattern: "C:/hogares/x" },
     ]);
   });
+  test("T2-08 plan sin VCS conserva la ruta relativa a / con marcador propio", () => {
+    expect(normalizarRutas([{ pattern: "Users/Joa/temporal/hogar/opencode/plans/*.md" }], {
+      data: "C:/Users/Joa/temporal/hogar/opencode", hogar: "C:/Users/Joa/temporal/hogar", tmp: "C:/tmp",
+      "hogar-relativo-raiz": "Users/Joa/temporal/hogar",
+    })).toEqual([{ pattern: "<hogar-relativo-raiz>/opencode/plans/*.md" }]);
+  });
 });

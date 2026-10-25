@@ -1,0 +1,234 @@
+{
+  "procedencia": {
+    "version": "1.18.25",
+    "directorio": "proyecto",
+    "hogar": "hogar",
+    "git": "ninguno",
+    "decisiones": "RF-02 CA-9 y ADR-088; verificacion del binario en captura-binario-20261014.txt",
+    "skillsExternosExcluidos": true,
+    "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+    "binario": "opencode-windows-x64@1.18.25",
+    "fecha": "2026-10-25",
+    "comando": "opencode debug agent plan; opencode debug agent build --tool read --params '{\"filePath\":\"src/a.js\"}'",
+    "aislamiento": "HOME, USERPROFILE, XDG_*, APPDATA, LOCALAPPDATA, ProgramData y TEMP/TMP/TMPDIR en hogar temporal; solo PATH y SystemRoot heredados. OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al hogar real fuera de VCS; external_directory sigue parcialmente observado.",
+    "worktree": "Verificado en message.data.path.root del SQLite temporal escrito por debug agent --tool read; no calculado por RIGE."
+  },
+  "agente": "build",
+  "valores": {},
+  "cadenas": {
+    "build": [
+      {
+        "permission": "*",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "doom_loop",
+        "action": "ask",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.*",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.example",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "src/a.js",
+        "action": "deny"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      }
+    ],
+    "plan": [
+      {
+        "permission": "*",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "doom_loop",
+        "action": "ask",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.*",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.example",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "task",
+        "pattern": "general",
+        "action": "deny"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/plans/*",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "edit",
+        "pattern": ".opencode/plans/*.md",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "pattern": "<hogar-relativo-raiz>/opencode/plans/*.md",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "src/a.js",
+        "action": "deny"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      }
+    ]
+  },
+  "worktree": "/",
+  "decisiones": [
+    {
+      "id": "j",
+      "agente": "build",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "src/a.js"
+      ],
+      "decision": "allow",
+      "regla": {
+        "sujeto": "read",
+        "patron": "*",
+        "efecto": "allow"
+      },
+      "procedencia": "OpenCode 1.18.25, debug agent build --tool read, 2026-10-25; cadena y worktree capturados del binario."
+    }
+  ],
+  "capturaLectura": {
+    "codigo": 0,
+    "resultado": "read ejecutado",
+    "worktree": "/"
+  }
+}

@@ -6,9 +6,11 @@ import { secuenciar } from "./secuenciador";
 import { ubicar } from "./ubicador";
 import { cadena } from "./cadena";
 import { permisos } from "./permisos";
+import { prepararObjetivo } from "./objetivo";
 
 export const adaptadorOpenCode: Adaptador = {
   permisos,
+  prepararObjetivo,
   identidad: { herramienta: "opencode", version: versionSoportada },
   prefijoAgente: ["agent"],
   reglas,

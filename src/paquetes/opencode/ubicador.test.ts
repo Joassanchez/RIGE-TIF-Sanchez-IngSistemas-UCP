@@ -9,7 +9,7 @@ function entorno(opciones: {
   archivos?: Record<string, string>; directorios?: string[];
   variables?: Record<string, string>; plataforma?: string;
 } = {}): EntornoLectura {
-  const archivos = opciones.archivos ?? {};
+  const archivos = { "/bin/git": "", ...opciones.archivos };
   const directorios = new Set(["/p", "/h", ...(opciones.directorios ?? [])]);
   for (const ruta of [...Object.keys(archivos), ...directorios]) {
     let actual = posix.dirname(ruta);
@@ -20,7 +20,7 @@ function entorno(opciones: {
     }
   }
   return crearEntornoMemoria({ archivos, directorios: [...directorios],
-    variables: opciones.variables ?? { HOME: "/h" }, plataforma: opciones.plataforma ?? "linux" });
+    variables: { PATH: "/bin", ...(opciones.variables ?? { HOME: "/h" }) }, plataforma: opciones.plataforma ?? "linux" });
 }
 async function ubicar(proyecto: string, lectura: EntornoLectura) {
   return (await import("./ubicador")).ubicar(proyecto, lectura);
@@ -113,7 +113,7 @@ describe("U-4", () => {
       "/h/.opencode/opencode.jsonc", "/etc/opencode/opencode.json", "/h/.config/opencode/opencode.json",
     ].map(r => [r, "{}"]));
     archivos["/w/.git/HEAD"] = "ref: refs/heads/main\n";
-    expect(await vias("/w/p", entorno({ archivos, variables: { HOME: "/h", XDG_CONFIG_HOME: "/x", OPENCODE_CONFIG: "/extra/../extra.json" } })))
+    expect(await vias("/w/p", entorno({ archivos, directorios: ["/w/.git/objects", "/w/.git/refs"], variables: { HOME: "/h", XDG_CONFIG_HOME: "/x", OPENCODE_CONFIG: "/extra/../extra.json" } })))
       .toEqual([
         noObservada("remota-wellknown"), observada("global", "/x/opencode/config.json"),
         observada("global", "/x/opencode/opencode.json"), observada("global", "/x/opencode/opencode.jsonc"),
@@ -133,7 +133,7 @@ describe("U-5", () => {
   test("nivel superior primero y json antes de jsonc en cada nivel", async () => {
     const archivos = Object.fromEntries(["/w/opencode.json", "/w/opencode.jsonc", "/w/p/opencode.json", "/w/p/opencode.jsonc"].map(r => [r, "{}"]));
     archivos["/w/.git/HEAD"] = "ref: refs/heads/main\n";
-    expect((await vias("/w/p", entorno({ archivos }))).filter(v => v.via === "proyecto").map(v => v.referencia))
+    expect((await vias("/w/p", entorno({ archivos, directorios: ["/w/.git/objects", "/w/.git/refs"] }))).filter(v => v.via === "proyecto").map(v => v.referencia))
       .toEqual(["/w/opencode.json", "/w/opencode.jsonc", "/w/p/opencode.json", "/w/p/opencode.jsonc"]);
   });
 });
@@ -142,11 +142,14 @@ describe("U-6", () => {
     const archivos = { "/opencode.json": "{}", "/w/opencode.json": "{}", "/w/p/opencode.json": "{}" };
     const proyectos = async (extra: Record<string, string>, directorios: string[] = []) =>
       (await vias("/w/p", entorno({ archivos: { ...archivos, ...extra }, directorios }))).filter(v => v.via === "proyecto").map(v => v.referencia);
-    expect(await proyectos({ "/w/.git/HEAD": "ref: refs/heads/main\n" }, ["/w/p/.git"]))
+    expect(await proyectos({ "/w/.git/HEAD": "ref: refs/heads/main\n" }, ["/w/p/.git", "/w/.git/objects", "/w/.git/refs"]))
       .toEqual(["/w/opencode.json", "/w/p/opencode.json"]);
-    expect(await proyectos({ "/w/.git/HEAD": "ref: refs/heads/main\n", "/w/p/.git/HEAD": "ref: refs/heads/main\n" }))
+    expect(await proyectos({ "/w/.git/HEAD": "ref: refs/heads/main\n", "/w/p/.git/HEAD": "ref: refs/heads/main\n" }, ["/w/p/.git/objects", "/w/p/.git/refs"]))
       .toEqual(["/w/p/opencode.json"]);
-    expect(await proyectos({ "/w/p/.git": "gitdir: /otro/worktree\n" })).toEqual(["/w/p/opencode.json"]);
+    expect(await proyectos({ "/w/p/.git": "gitdir: /otro/worktree\n", "/otro/worktree/HEAD": "ref: refs/heads/main" },
+      ["/otro/worktree/objects", "/otro/worktree/refs"])).toEqual(["/w/p/opencode.json"]);
+    expect(await proyectos({ "/w/p/.git": "gitdir: /ausente\n" }))
+      .toEqual(["/opencode.json", "/w/opencode.json", "/w/p/opencode.json"]);
     expect(await proyectos({ "/w/p/.git": "invalido" }, ["/w/.git"]))
       .toEqual(["/opencode.json", "/w/opencode.json", "/w/p/opencode.json"]);
   });

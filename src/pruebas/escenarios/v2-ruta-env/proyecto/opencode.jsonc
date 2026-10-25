@@ -1,0 +1,18 @@
+{
+  "agent": {
+    "f": {
+      "permission": {
+        "read": {
+          "<RAIZ>/proyecto/.env": "allow"
+        }
+      }
+    },
+    "control_f": {
+      "permission": {
+        "read": {
+          ".env": "allow"
+        }
+      }
+    }
+  }
+}

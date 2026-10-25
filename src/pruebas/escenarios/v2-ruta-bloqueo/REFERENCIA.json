@@ -1,0 +1,216 @@
+{
+  "procedencia": {
+    "version": "1.18.25",
+    "directorio": "proyecto",
+    "hogar": "hogar",
+    "git": "proyecto",
+    "decisiones": "RF-02 CA-9 y ADR-088; verificacion del binario en captura-binario-20261014.txt",
+    "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+    "binario": "opencode-windows-x64@1.18.25",
+    "fecha": "2026-10-25",
+    "comando": "opencode debug agent build (cadena base); decisiones CA-9 pendientes de regeneracion T2-14"
+  },
+  "agente": "build",
+  "valores": {},
+  "cadenas": {
+    "build": [
+      {
+        "permission": "*",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "doom_loop",
+        "action": "ask",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.*",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.example",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      }
+    ]
+  },
+  "decisiones": [
+    {
+      "id": "a",
+      "agente": "a",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "src/productos.js"
+      ],
+      "decision": "deny",
+      "regla": {
+        "sujeto": "read",
+        "patron": "*",
+        "efecto": "deny"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; verificación del binario en captura-binario-20261014.txt"
+    },
+    {
+      "id": "b",
+      "agente": "b",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "src/productos.js"
+      ],
+      "decision": "allow",
+      "regla": {
+        "sujeto": "read",
+        "patron": "src/productos.js",
+        "efecto": "allow"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; verificación del binario en captura-binario-20261014.txt"
+    },
+    {
+      "id": "c",
+      "agente": "c",
+      "herramientas": [
+        "edit",
+        "write",
+        "apply_patch"
+      ],
+      "objetivos": [
+        "src/index.js"
+      ],
+      "decision": "deny",
+      "regla": {
+        "sujeto": "edit",
+        "patron": "*",
+        "efecto": "deny"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; verificación del binario en captura-binario-20261014.txt"
+    },
+    {
+      "id": "d",
+      "agente": "d",
+      "herramientas": [
+        "edit",
+        "write",
+        "apply_patch"
+      ],
+      "objetivos": [
+        "src/index.js"
+      ],
+      "decision": "allow",
+      "regla": {
+        "sujeto": "edit",
+        "patron": "src/index.js",
+        "efecto": "allow"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; verificación del binario en captura-binario-20261014.txt"
+    },
+    {
+      "id": "e",
+      "agente": "e",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "src/productos.js"
+      ],
+      "decision": "ask",
+      "regla": {
+        "sujeto": "read",
+        "patron": "*",
+        "efecto": "ask"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; verificación del binario en captura-binario-20261014.txt"
+    },
+    {
+      "id": "e",
+      "agente": "control_e",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "src/productos.js"
+      ],
+      "decision": "allow",
+      "regla": {
+        "sujeto": "read",
+        "patron": "src/productos.js",
+        "efecto": "allow"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; verificación del binario en captura-binario-20261014.txt"
+    },
+    {
+      "id": "i",
+      "agente": "b",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "../fuera.txt"
+      ],
+      "decision": null,
+      "regla": null,
+      "motivoSinDecision": "fuera-del-arbol",
+      "procedencia": "RF-02 CA-9 y ADR-088; verificación del binario en captura-binario-20261014.txt"
+    }
+  ]
+}

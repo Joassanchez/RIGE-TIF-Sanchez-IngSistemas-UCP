@@ -34,8 +34,9 @@ function iguales(a: unknown, b: unknown): boolean {
   return Object.keys(x).length === Object.keys(y).length && Object.keys(x).every(k => Object.hasOwn(y, k) && iguales(x[k], y[k]));
 }
 
-export function normalizarRutas<T>(valor: T, rutas: { readonly data: string; readonly tmp: string; readonly hogar: string }): T {
-  const marcadores = Object.entries(rutas).map(([nombre, ruta]) => [nombre, ruta.replaceAll("\\", "/").replace(/\/$/, "")] as const)
+export function normalizarRutas<T>(valor: T, rutas: { readonly data: string; readonly tmp: string; readonly hogar: string;
+  readonly "hogar-relativo-raiz"?: string }): T {
+  const marcadores = Object.entries(rutas).flatMap(([nombre, ruta]) => ruta === undefined ? [] : [[nombre, ruta.replaceAll("\\", "/").replace(/\/$/, "")] as const])
     .sort((a, b) => b[1].length - a[1].length);
   function recorrer(v: unknown): unknown {
     if (typeof v === "string") {

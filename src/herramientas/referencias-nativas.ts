@@ -1,14 +1,14 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir, userInfo } from "node:os";
-import { join, resolve } from "node:path";
-import { copiarEscenario } from "../pruebas/utilidades/escenario";
+import { join, relative, resolve } from "node:path";
+import { copiarEscenario, type OpcionesEscenario } from "../pruebas/utilidades/escenario";
 import { comparar, normalizar, normalizarRutas } from "./referencias-nativas/comparar";
 import { comprobarAislamiento } from "./referencias-nativas/aislamiento";
 
 type Referencia = {
   readonly procedencia: { readonly version: string; readonly directorio: string; readonly hogar: string;
-    readonly OPENCODE_CONFIG?: string; readonly [clave: string]: unknown };
+    readonly OPENCODE_CONFIG?: string; readonly git?: OpcionesEscenario["git"]; readonly skillsExternosExcluidos?: boolean; readonly [clave: string]: unknown };
   readonly agente: string;
   readonly valores: Record<string, unknown>;
   readonly cadenas: Record<string, unknown[]>;
@@ -83,20 +83,24 @@ function ejecutar(): number {
   console.log(`binario: ${variante} ${obtenida}`);
   let codigo = 0;
   for (const { nombre, referencia } of referencias) {
-    const copia = copiarEscenario(nombre);
+    const copia = copiarEscenario(nombre, { git: referencia.procedencia.git ?? "raiz" });
     try {
       const hogar = join(copia.raiz, referencia.procedencia.hogar);
       const env = entornoAislado(hogar);
+      if (referencia.procedencia.skillsExternosExcluidos) env.OPENCODE_DISABLE_EXTERNAL_SKILLS = "true";
       // Un HEAD sintetico no es un repositorio: el binario requiere git rev-parse.
-      const inicializacion = Bun.spawnSync(["git", "init", "--quiet", "--initial-branch=main"], {
-        cwd: copia.raiz, env, stdout: "pipe", stderr: "pipe", timeout: 10000,
-      });
-      if (inicializacion.exitCode !== 0) throw new Error(`git init fallo: ${inicializacion.stderr.toString().trim()}`);
-      const raizGit = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"], {
-        cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 10000,
-      });
-      if (raizGit.exitCode !== 0 || resolve(raizGit.stdout.toString().trim()).toLowerCase() !== resolve(copia.raiz).toLowerCase()) {
-        throw new Error("El directorio consultado no pertenece al worktree aislado.");
+      if (referencia.procedencia.git !== "sintetico" && referencia.procedencia.git !== "ninguno") {
+        const raizRepositorio = referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz;
+        const inicializacion = Bun.spawnSync(["git", "init", "--quiet", "--initial-branch=main"], {
+          cwd: raizRepositorio, env, stdout: "pipe", stderr: "pipe", timeout: 10000,
+        });
+        if (inicializacion.exitCode !== 0) throw new Error(`git init fallo: ${inicializacion.stderr.toString().trim()}`);
+        const raizGit = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"], {
+          cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 10000,
+        });
+        if (raizGit.exitCode !== 0 || resolve(raizGit.stdout.toString().trim()).toLowerCase() !== resolve(raizRepositorio).toLowerCase()) {
+          throw new Error("El directorio consultado no pertenece al worktree aislado.");
+        }
       }
       if (referencia.procedencia.OPENCODE_CONFIG) env.OPENCODE_CONFIG = join(copia.raiz, referencia.procedencia.OPENCODE_CONFIG);
       const cadenas: Record<string, unknown[]> = {};
@@ -110,7 +114,7 @@ function ejecutar(): number {
         const salida = JSON.parse(proceso.stdout.toString());
         if (!Array.isArray(salida.permission)) throw new Error(`El agente ${agente} no tiene una cadena permission.`);
         if (Object.hasOwn(referencia.cadenas, agente)) cadenas[agente] = normalizarRutas(salida.permission, {
-          data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), hogar,
+          data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), hogar, "hogar-relativo-raiz": relative("/", hogar),
         });
         if (agente === referencia.agente) valores = normalizar(salida);
       }
@@ -125,7 +129,7 @@ function ejecutar(): number {
         writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify({ ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
-            comando: "opencode debug agent <agente>", aislamiento: "git init --initial-branch=main en la raiz de la copia y git rev-parse --show-toplevel desde el directorio consultado. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. Sin flags que deshabiliten skills. Diagnostico: el .git/HEAD sintetico anterior no era un repositorio valido para git rev-parse; la subida de skill/index.ts:197-203 escapaba del escenario y encontraba .claude/skills real. Con git init, sin cambiar el hogar aislado, desaparecen esas reglas: la fuga era la busqueda ascendente, no global.home (skill/index.ts:191-195). Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE." },
+            comando: "opencode debug agent <agente>", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse solo en los modos raiz/proyecto. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
           valores: seleccionados, cadenas,
         }, null, 2) + "\n");
       }
