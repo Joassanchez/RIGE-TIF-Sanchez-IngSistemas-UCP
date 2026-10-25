@@ -1,5 +1,15 @@
 # Mapa de pruebas
 
+T2-09 agrega `aceptacion/RF-08.test.ts`, con una prueba por CA-1 a CA-3.
+Consulta el caso de uso por subproceso aislado, tanto por herramienta como
+por sujeto `bash`, sobre la copia temporal de `escenarios/v2-bash/`.
+Comprueba ausencia de decision y rastro determinante, motivos ordenados
+sin repeticion, plantillas de advertencia y decisiones normales sobre comandos
+simples recortados. CA-3 cubre aqui el caso de uso; la CLI corresponde a T2-11.
+`../paquetes/opencode/comando.test.ts` cubre L-1, L-2 y L-3 con 46 casos:
+comillas, escapes, operadores, sustituciones anidadas y entradas no analizables.
+El comando especifico figura en `../README.md`.
+
 T2-08 agrega `aceptacion/RF-02-CA-9.test.ts`: una prueba por fila a-j,
 con consultas absolutas y relativas, decision y regla determinante, aliases
 `write`/`apply_patch`, directorios y salida sin decision fuera del arbol.

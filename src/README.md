@@ -259,6 +259,22 @@ safe.directory detectados se declaran como `deteccion-git-aproximada`.
 RIGE no ejecuta Git. El arnes de pruebas y referencias si lo ejecuta para
 preparar y contrastar repositorios aislados.
 
+T2-09 aplica la frontera de RF-08 tanto a `{ herramienta: "bash" }` como
+al sujeto `bash`. Un lexer propio respeta comillas y escapes; los comandos
+compuestos devuelven `decision: null`, `motivoSinDecision: "comando-compuesto"`
+y advertencias con motivos en orden de aparicion, sin repetir. Una comilla
+sin cerrar o un escape final produce `no-analizable`. Los simples se evaluan
+sin espacios iniciales ni finales y conservan el objetivo original en la consulta.
+La CLI de producto se agrega en T2-11; las pruebas usan el arnes aislado.
+El adaptador puede preparar consultas por sujeto mediante el puerto opcional
+`prepararSujeto`; `ObjetivoPermiso.advertencias` lleva codigos de sus plantillas.
+
+Para comprobar T2-09, con `RIGE_ALMACEN` temporal:
+
+```bash
+bun test paquetes/opencode/comando.test.ts pruebas/aceptacion/RF-08.test.ts
+```
+
 Para comprobar T2-08, con `RIGE_ALMACEN` temporal:
 
 ```bash

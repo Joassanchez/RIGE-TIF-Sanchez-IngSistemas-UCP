@@ -6,6 +6,15 @@ import { reglas } from "./reglas";
 describe("V1-03 S-4", () => {
   test("publica exactamente las plantillas del diseno y la ficha", () => {
     expect(reglas).toEqual({
+      "comando-compuesto": "El comando es compuesto o no analizable; no se informa una decision de permiso (RF-08).",
+      "tuberia": "Comando compuesto: tuberia (| o |&).",
+      "encadenamiento": "Comando compuesto: encadenamiento (&&, || o ;).",
+      "redireccion": "Comando compuesto: redireccion de entrada o salida.",
+      "subshell": "Comando compuesto: subshell (parentesis).",
+      "sustitucion": "Comando compuesto: sustitucion de comando.",
+      "segundo-plano": "Comando compuesto: segundo-plano (&).",
+      "salto-de-linea": "Comando compuesto: salto-de-linea.",
+      "no-analizable": "Comando no-analizable: comilla, sustitucion sin cerrar o escape final.",
       "git-no-encontrado": "No se encontro un archivo ejecutable git en PATH. Se usa / como arbol de trabajo, como OpenCode sin Git.",
       "deteccion-git-aproximada": "Se detecto core.worktree, bare=true o safe.directory. La deteccion de Git mediante lectura no modela estas variantes (ADR-101 propuesto).",
       "fuera-del-arbol": "El archivo queda fuera del arbol de trabajo: OpenCode pide antes external_directory, un eje parcialmente observado; no se informa una decision.",

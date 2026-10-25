@@ -7,10 +7,12 @@ import { ubicar } from "./ubicador";
 import { cadena } from "./cadena";
 import { permisos } from "./permisos";
 import { prepararObjetivo } from "./objetivo";
+import { prepararSujeto } from "./comando";
 
 export const adaptadorOpenCode: Adaptador = {
   permisos,
   prepararObjetivo,
+  prepararSujeto,
   identidad: { herramienta: "opencode", version: versionSoportada },
   prefijoAgente: ["agent"],
   reglas,

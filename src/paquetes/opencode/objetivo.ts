@@ -2,6 +2,7 @@ import type { ErrorAnalisis, ObjetivoPermiso } from "@rige/nucleo/contrato/adapt
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { Resultado } from "@rige/nucleo/resultado";
 import { descubrirWorktree } from "./worktree";
+import { prepararSujeto } from "./comando";
 
 const herramientas = ["read", "edit", "write", "apply_patch", "bash", "glob", "grep", "webfetch", "task", "todowrite", "skill"];
 
@@ -9,7 +10,7 @@ export function prepararObjetivo(proyecto: string, herramienta: string, objetivo
   if (!herramientas.includes(herramienta)) return { exito: false, error: { categoria: "uso", codigo: "solicitud-invalida",
     mensaje: `Herramienta no soportada: ${herramienta}.` } };
   if (!["read", "edit", "write", "apply_patch"].includes(herramienta)) return { exito: true,
-    valor: { sujeto: herramienta, objetivoEvaluado: objetivo, motivoSinDecision: null } };
+    valor: prepararSujeto(herramienta, objetivo) };
   const descubrimiento = descubrirWorktree(proyecto, entorno);
   if (!descubrimiento.exito) return descubrimiento;
   const absoluto = entorno.esAbsoluta(objetivo) ? entorno.unir(objetivo) : entorno.unir(proyecto, objetivo);

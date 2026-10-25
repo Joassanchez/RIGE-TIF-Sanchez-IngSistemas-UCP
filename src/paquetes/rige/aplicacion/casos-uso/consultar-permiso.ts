@@ -19,11 +19,17 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, proyecto: s
   const { adaptador, entorno } = dependencias;
   let objetivoEvaluado = objetivo;
   let motivoSinDecision: string | null = null;
+  let advertenciasObjetivo: readonly string[] = [];
   if (herramienta !== undefined) {
     if (!adaptador.prepararObjetivo) return { exito: false, error: errorSolicitudInvalida("el adaptador no admite consultas por herramienta") };
     const preparado = adaptador.prepararObjetivo(analisis.valor.proyecto, herramienta, objetivo, entorno);
     if (!preparado.exito) return { exito: false, error: errorDesdeAnalisis(preparado.error) };
     ({ sujeto, objetivoEvaluado, motivoSinDecision } = preparado.valor);
+    advertenciasObjetivo = preparado.valor.advertencias ?? [];
+  } else if (adaptador.prepararSujeto) {
+    const preparado = adaptador.prepararSujeto(sujeto, objetivo);
+    ({ sujeto, objetivoEvaluado, motivoSinDecision } = preparado);
+    advertenciasObjetivo = preparado.advertencias ?? [];
   }
   const cadena = adaptador.cadena(analisis.valor, agente, entorno, lanzadoPor);
   if (!cadena.exito) return { exito: false, error: errorDesdeAnalisis(cadena.error) };
@@ -35,7 +41,7 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, proyecto: s
       forma: herramienta === undefined ? "sujeto" as const : "herramienta" as const, ...(herramienta === undefined ? {} : { herramienta }) },
     ...(motivoSinDecision === null ? {} : { decision: null, motivoSinDecision }),
     declaraciones: [...decision.declaraciones, ...(cadena.valor.declaraciones ?? [])],
-    advertencias: [...decision.advertencias, ...(cadena.valor.advertencias ?? [])],
+    advertencias: [...decision.advertencias, ...(cadena.valor.advertencias ?? []), ...advertenciasObjetivo],
   };
   const codigos = new Set([...Object.keys(analisis.valor.reglas), ...rastro.declaraciones, ...rastro.advertencias]);
   if (motivoSinDecision !== null) codigos.add(motivoSinDecision);

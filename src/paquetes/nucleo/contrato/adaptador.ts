@@ -54,6 +54,7 @@ export interface ObjetivoPermiso {
   readonly sujeto: string;
   readonly objetivoEvaluado: string;
   readonly motivoSinDecision: string | null;
+  readonly advertencias?: readonly string[];
 }
 
 export interface Adaptador {
@@ -67,4 +68,5 @@ export interface Adaptador {
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
   cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
   prepararObjetivo?(proyecto: string, herramienta: string, objetivo: string, entorno: EntornoLectura): Resultado<ObjetivoPermiso, ErrorAnalisis>;
+  prepararSujeto?(sujeto: string, objetivo: string): ObjetivoPermiso;
 }
