@@ -52,7 +52,7 @@ describe("V1-03 L-5 V1-08 F-5", () => {
     expect(resultado.exito).toBe(true);
     expect(JSON.stringify(resultado)).not.toContain(secreto);
     if (!resultado.exito) throw new Error(resultado.error.mensaje);
-    expect(resultado.valor.valores.map(v => v.ruta)).toEqual([["agent", "otro", "steps"]]);
+    expect(resultado.valor.valores.filter(v => v.determinante.origen.tipo === "declarado").map(v => v.ruta)).toEqual([["agent", "otro", "steps"]]);
     expect(resultado.valor.noResueltas).toEqual([
       { ruta: ["agent", "build", "prompt"], regla: "sustitucion-no-incorporada" },
       { ruta: ["agent", "build", "description"], regla: "sustitucion-no-incorporada" },

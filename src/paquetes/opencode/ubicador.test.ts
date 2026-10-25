@@ -184,7 +184,7 @@ describe("U-7 V1-08 F-7", () => {
     expect(resultado.exito).toBe(true);
     if (!resultado.exito) throw new Error(resultado.error.mensaje);
     expect(resultado.valor.noResueltas).toEqual([{ ruta: ["agent", "a"], regla: "markdown-no-observado" }]);
-    expect(resultado.valor.valores.map(v => v.ruta)).toEqual([["agent", "otro", "temperature"]]);
+    expect(resultado.valor.valores.filter(v => v.determinante.origen.tipo === "declarado").map(v => v.ruta)).toEqual([["agent", "otro", "temperature"]]);
     const entrada = resultado.valor.entradas.find(v => v.via === "markdown");
     expect(entrada?.condicion).toBe("observada");
     expect(entrada?.resumen).toBe(entorno().resumir("agente"));

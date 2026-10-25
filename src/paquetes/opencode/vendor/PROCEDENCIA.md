@@ -94,3 +94,19 @@ no cambia el cuerpo de ninguna funcion copiada.
 | Archivo | SHA-256 |
 |---|---|
 | agentes-nativos.ts | fb040edb2f18bcc9359e190bcdcd2138c97a7aac02610a4ed990bad2a22cd9fb |
+
+## T2-13: valores implicitos y resumenes de prompts
+
+Los metadatos de agent.ts:140-264 se registran en ../valores-implicitos.ts.
+No cambia el cuerpo de las extracciones de vendor. Se conservan solo las
+propiedades presentes en el tag; hidden y description ausentes no se inventan.
+Los prompts se resumen sobre los bytes UTF-8 completos (sin normalizar saltos
+de linea ni recortar espacios), iguales al texto importado por Bun. Su contenido
+no se distribuye.
+
+| Archivo del tag | SHA-256 del texto |
+|---|---|
+| packages/opencode/src/agent/prompt/explore.txt | 97c4780dea390f347fed0879fb30aaa08c0fc65c8cad0f6c1aec02ca6fd91e13 |
+| packages/opencode/src/agent/prompt/compaction.txt | 552db0de0af1873a8acd4a631e2548345d4c43192de1d9be69c8feab4b41f80c |
+| packages/opencode/src/agent/prompt/title.txt | e7a6848eba328f28c7e870874cf0591e4edbaf90d7602ad8fdfe90601c6e656f |
+| packages/opencode/src/agent/prompt/summary.txt | 307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233 |

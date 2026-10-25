@@ -98,8 +98,11 @@ describe("RF-01 CA-2", () => {
     const { escenario, entorno, referencia } = await preparar();
     const resolucion = resolverEscenario(escenario.proyecto, entorno);
     const rastros = consultar(resolucion, undefined);
-    expect(rastros.map(r => r.ruta.slice(2).join("."))).toEqual(["temperature", "steps", "description"]);
-    expect(Object.fromEntries(rastros.map(r => [r.ruta.slice(2).join("."), r.valor]))).toEqual(referencia.valores);
+    const declarados = rastros.filter(r => r.determinante.origen.tipo === "declarado");
+    expect(declarados.map(r => r.ruta.slice(2).join(".")).sort()).toEqual(["description", "steps", "temperature"]);
+    expect(Object.fromEntries(declarados.map(r => [r.ruta.slice(2).join("."), r.valor]))).toEqual(referencia.valores);
+    expect(rastros.filter(r => r.determinante.origen.tipo === "implicito").map(r => r.ruta[2]).sort())
+      .toEqual(["mode", "name", "native", "options"]);
     for (const rastro of rastros) expect(consultar(resolucion, rastro.ruta.slice(2).join("."))).toEqual([rastro]);
     comprobarTemperatura(rastros.find(r => r.ruta[2] === "temperature")!, escenario.raiz, referencia.valores.temperature);
     expect(rastros.find(r => r.ruta[2] === "description")!.determinante.referencia).toBe(join(escenario.proyecto, "opencode.json").replaceAll("\\", "/"));
@@ -132,8 +135,11 @@ describe("RF-01 CA-1 v1-vias", () => {
     const resolucion = resolverEscenario(escenario.proyecto, entorno);
     const rastros = consultar(resolucion, undefined);
     expect(referencia.agente).toBe("build");
-    expect(rastros.map(r => r.ruta.slice(2).join("."))).toEqual(["temperature", "options.a", "top_p", "description"]);
-    for (const rastro of rastros) expect(rastro.valor).toBe(referencia.valores[rastro.ruta.slice(2).join(".")]!);
+    const declarados = rastros.filter(r => r.determinante.origen.tipo === "declarado");
+    expect(declarados.map(r => r.ruta.slice(2).join(".")).sort()).toEqual(["description", "options.a", "temperature", "top_p"]);
+    for (const rastro of declarados) expect(rastro.valor).toBe(referencia.valores[rastro.ruta.slice(2).join(".")]!);
+    expect(rastros.filter(r => r.determinante.origen.tipo === "implicito").map(r => r.ruta[2]).sort())
+      .toEqual(["mode", "name", "native"]);
     const ruta = (relativa: string) => join(escenario.raiz, relativa).replaceAll("\\", "/");
     const temperatura = rastros.find(r => r.ruta[2] === "temperature")!;
     expect(temperatura.determinante).toMatchObject({ valor: 0.4, via: "directorio-opencode", referencia: ruta(".opencode/opencode.json") });
@@ -156,7 +162,8 @@ describe("RF-01 CA-1 v1-vias", () => {
     expect(rastros.find(r => r.ruta[2] === "options")).toMatchObject({
       ruta: ["agent", "build", "options", "a"], valor: false,
       determinante: { via: "proyecto", referencia: ruta("proyecto/opencode.json"), origen: { posicion: { linea: 8, columna: 9 } } },
-      desplazadas: [{ valor: 1, via: "global", referencia: ruta("hogar/.config/opencode/opencode.json"), origen: { posicion: { linea: 9, columna: 11 } } }],
+      desplazadas: [expect.objectContaining({ valor: {}, origen: { tipo: "implicito", regla: "valor-implicito-del-agente" }, via: null, referencia: null }),
+        { valor: 1, via: "global", referencia: ruta("hogar/.config/opencode/opencode.json"), origen: { posicion: { linea: 9, columna: 11 } } }],
     });
     expect(resolucion.valores.some(v => v.ruta[0] === "agent" && v.ruta[1] === "build"
       && ["steps", "maxSteps"].includes(v.ruta[2]!))).toBe(false);

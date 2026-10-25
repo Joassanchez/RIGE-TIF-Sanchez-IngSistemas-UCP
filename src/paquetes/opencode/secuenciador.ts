@@ -1,5 +1,6 @@
 import type { Aplicacion, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada, Secuencia, ValorJson } from "@rige/nucleo/contrato/adaptador";
 import type { Resultado } from "@rige/nucleo/resultado";
+import { valoresNativos } from "./valores-implicitos";
 
 const esObjeto = (valor: ValorJson) => valor !== null && typeof valor === "object" && !Array.isArray(valor);
 const bajo = (ruta: readonly string[], prefijo: readonly string[]) =>
@@ -80,6 +81,18 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
     }
   }
   const hojas = new Map<string, { readonly ruta: readonly string[]; readonly valor: ValorJson }>();
+  const nombres = new Set([...Object.keys(valoresNativos), ...lecturas.flatMap(l => l.declaraciones
+    .filter(d => d.ruta[0] === "agent" && d.ruta.length >= 2).map(d => d.ruta[1]!))]);
+  for (const nombre of nombres) {
+    const valores = Object.hasOwn(valoresNativos, nombre) ? valoresNativos[nombre]! : { mode: "all", native: false };
+    for (const [clave, valor] of Object.entries(valores)) {
+      const ruta = ["agent", nombre, clave];
+      if ([...excluidas.values()].some(prefijo => bajo(ruta, prefijo))) continue;
+      aplicaciones.push({ origen: { tipo: "implicito", regla: "valor-implicito-del-agente" },
+        ruta, valor, estrategia: "reemplazo", regla: "valor-implicito-del-agente" });
+      hojas.set(JSON.stringify(ruta), { ruta, valor });
+    }
+  }
   for (const lectura of lecturas) {
     for (const declaracion of lectura.declaraciones) {
       const { ruta } = declaracion;

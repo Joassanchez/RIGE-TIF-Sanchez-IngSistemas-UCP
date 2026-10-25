@@ -1,11 +1,19 @@
 import { describe, expect, test } from "bun:test";
 import type { Aplicacion, Declaracion, LecturaEntrada, ValorJson } from "@rige/nucleo/contrato/adaptador";
-import { secuenciar } from "./secuenciador";
+import { secuenciar as secuenciarCompleto } from "./secuenciador";
+
+// Estos contratos previos comprueban la subsecuencia declarada; RF-06 cubre las implicitas.
+function secuenciar(lecturas: readonly LecturaEntrada[]) {
+  const resultado = secuenciarCompleto(lecturas);
+  return resultado.exito ? { exito: true as const, valor: { ...resultado.valor,
+    aplicaciones: resultado.valor.aplicaciones.filter(a => a.origen.tipo === "declarado") } } : resultado;
+}
 import { reglas } from "./reglas";
 
 describe("V1-03 S-4", () => {
   test("publica exactamente las plantillas del diseno y la ficha", () => {
     expect(reglas).toEqual({
+      "valor-implicito-del-agente": "Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).",
       "numeracion-sin-directorios-externos": "Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.",
       "references-no-incorporado": "La configuración declara references o reference; RIGE no incorpora los directorios externos que aportan a los permisos.",
       "agente-deshabilitado": "disable: true elimina el agente, incluso si es nativo, despues de fusionar la configuracion.",

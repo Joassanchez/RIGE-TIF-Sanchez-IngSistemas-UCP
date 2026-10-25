@@ -12,6 +12,7 @@ type Referencia = {
   readonly agente: string;
   readonly valores: Record<string, unknown>;
   readonly cadenas: Record<string, unknown[]>;
+  readonly valoresAgentes?: Record<string, Record<string, unknown>>;
   readonly agentes?: readonly { readonly nombre: string; readonly modo: string }[];
 };
 // Variantes oficiales de opencode-ai@1.18.25 por plataforma: en Windows el postinstall elige la baseline
@@ -114,14 +115,24 @@ function ejecutar(): number {
       }
       if (referencia.procedencia.OPENCODE_CONFIG) env.OPENCODE_CONFIG = join(copia.raiz, referencia.procedencia.OPENCODE_CONFIG);
       const cadenas: Record<string, unknown[]> = {};
+      const valoresAgentes: Record<string, Record<string, unknown>> = {};
       let valores: Record<string, unknown> | undefined;
-      for (const agente of new Set([referencia.agente, ...Object.keys(referencia.cadenas)])) {
+      for (const agente of new Set([referencia.agente, ...Object.keys(referencia.cadenas), "build", "plan", "general", "explore", "compaction", "title", "summary"])) {
         const proceso = Bun.spawnSync([binario, "debug", "agent", agente], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env,
           stdout: "pipe", stderr: "pipe", timeout: 120000,
         });
-        if (proceso.exitCode !== 0) throw new Error(`Comando nativo fallido (codigo ${proceso.exitCode}): ${proceso.stderr.toString().trim()}`);
+        if (proceso.exitCode !== 0) {
+          if (!Object.hasOwn(referencia.cadenas, agente) && agente !== referencia.agente
+            && proceso.stderr.toString().includes(`Agent ${agente} not found`)) continue;
+          throw new Error(`Comando nativo fallido (codigo ${proceso.exitCode}): ${proceso.stderr.toString().trim()}`);
+        }
         const salida = JSON.parse(proceso.stdout.toString());
+        valoresAgentes[agente] = Object.fromEntries(["name", "description", "mode", "native", "hidden", "temperature"]
+          .filter(clave => Object.hasOwn(salida, clave)).map(clave => [clave, salida[clave]]));
+        if (typeof salida.prompt === "string" && ["explore", "compaction", "title", "summary"].includes(agente)) {
+          valoresAgentes[agente]!.prompt = { tipo: "texto-nativo", sha256: createHash("sha256").update(salida.prompt).digest("hex") };
+        }
         if (!Array.isArray(salida.permission)) throw new Error(`El agente ${agente} no tiene una cadena permission.`);
         if (Object.hasOwn(referencia.cadenas, agente)) cadenas[agente] = normalizarRutas(salida.permission, {
           data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), hogar, "hogar-relativo-raiz": relative("/", hogar),
@@ -150,10 +161,11 @@ function ejecutar(): number {
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
             comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
-          valores: seleccionados, cadenas, ...(agentes === undefined ? {} : { agentes }),
+          valores: seleccionados, valoresAgentes, cadenas, ...(agentes === undefined ? {} : { agentes }),
         }, null, 2) + "\n");
       }
       const diferencias = regenerar ? [] : [...comparar(referencia.valores, valores), ...comparar(referencia.cadenas, cadenas),
+        ...comparar(referencia.valoresAgentes ?? {}, valoresAgentes),
         ...(agentes === undefined ? [] : comparar({ agentes: referencia.agentes }, { agentes }))];
       console.log(`${nombre}: ${diferencias.length ? JSON.stringify(diferencias) : regenerar ? "regenerada" : "ok"}`);
       if (diferencias.length) codigo = 1;

@@ -9,7 +9,7 @@ function resolverTextos(...textos: string[]) {
     ubicar: () => ({ exito: true, valor: textos.map((_, i) => ({ via: i ? "proyecto" : "global", referencia: `/capa-${i}`, condicion: "observada" as const })) }),
   }, "/p", crearEntornoMemoria({ archivos: Object.fromEntries(textos.map((texto, i) => [`/capa-${i}`, texto])), variables: { HOME: "/hogar" } }));
   if (!resultado.exito) throw new Error(resultado.error.mensaje);
-  return resultado.valor;
+  return { ...resultado.valor, valores: resultado.valor.valores.filter(v => v.determinante.origen.tipo === "declarado") };
 }
 
 describe("T2-04 F-1 F-2", () => {
@@ -18,7 +18,7 @@ describe("T2-04 F-1 F-2", () => {
     const proyecto = '{\n  "permission": {\n    "bash": {"*":"deny","git *":"allow"}\n  }\n}';
     const { valores, noResueltas } = resolverTextos(global, proyecto);
     expect(noResueltas).toEqual([]);
-    expect(valores.map(v => [v.ruta, v.valor, v.indiceFusion])).toEqual([
+    expect(valores.map(v => [v.ruta, v.valor, v.indiceFusion - valores[0]!.indiceFusion])).toEqual([
       [["permission", "bash", "*"], "deny", 0], [["permission", "bash", "git *"], "allow", 1], [["permission", "read"], "allow", 2],
     ]);
     expect(valores[0]!.determinante).toMatchObject({ via: "proyecto", referencia: "/capa-1", origen: { posicion: { linea: 3, columna: 14 } } });

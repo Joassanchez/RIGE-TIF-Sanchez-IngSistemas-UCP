@@ -9,9 +9,10 @@
     "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
     "binario": "opencode-windows-x64@1.18.25",
     "fecha": "2026-10-25",
-    "comando": "opencode debug agent plan; opencode debug agent build --tool read --params '{\"filePath\":\"src/a.js\"}'",
-    "aislamiento": "HOME, USERPROFILE, XDG_*, APPDATA, LOCALAPPDATA, ProgramData y TEMP/TMP/TMPDIR en hogar temporal; solo PATH y SystemRoot heredados. OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al hogar real fuera de VCS; external_directory sigue parcialmente observado.",
-    "worktree": "Verificado en message.data.path.root del SQLite temporal escrito por debug agent --tool read; no calculado por RIGE."
+    "comando": "opencode debug agent <agente>",
+    "aislamiento": "Modo Git: sintetico; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS. Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.",
+    "worktree": "Verificado en message.data.path.root del SQLite temporal escrito por debug agent --tool read; no calculado por RIGE.",
+    "criterio": "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario."
   },
   "agente": "build",
   "valores": {},
@@ -230,5 +231,66 @@
     "codigo": 0,
     "resultado": "read ejecutado",
     "worktree": "/"
+  },
+  "valoresAgentes": {
+    "build": {
+      "name": "build",
+      "description": "The default agent. Executes tools based on configured permissions.",
+      "mode": "primary",
+      "native": true
+    },
+    "plan": {
+      "name": "plan",
+      "description": "Plan mode. Disallows all edit tools.",
+      "mode": "primary",
+      "native": true
+    },
+    "general": {
+      "name": "general",
+      "description": "General-purpose agent for researching complex questions and executing multi-step tasks. Use this agent to execute multiple units of work in parallel.",
+      "mode": "subagent",
+      "native": true
+    },
+    "explore": {
+      "name": "explore",
+      "description": "Fast agent specialized for exploring codebases. Use this when you need to quickly find files by patterns (eg. \"src/components/**/*.tsx\"), search code for keywords (eg. \"API endpoints\"), or answer questions about the codebase (eg. \"how do API endpoints work?\"). When calling this agent, specify the desired thoroughness level: \"quick\" for basic searches, \"medium\" for moderate exploration, or \"very thorough\" for comprehensive analysis across multiple locations and naming conventions.",
+      "mode": "subagent",
+      "native": true,
+      "prompt": {
+        "tipo": "texto-nativo",
+        "sha256": "97c4780dea390f347fed0879fb30aaa08c0fc65c8cad0f6c1aec02ca6fd91e13"
+      }
+    },
+    "compaction": {
+      "name": "compaction",
+      "mode": "primary",
+      "native": true,
+      "hidden": true,
+      "prompt": {
+        "tipo": "texto-nativo",
+        "sha256": "552db0de0af1873a8acd4a631e2548345d4c43192de1d9be69c8feab4b41f80c"
+      }
+    },
+    "title": {
+      "name": "title",
+      "mode": "primary",
+      "native": true,
+      "hidden": true,
+      "temperature": 0.5,
+      "prompt": {
+        "tipo": "texto-nativo",
+        "sha256": "e7a6848eba328f28c7e870874cf0591e4edbaf90d7602ad8fdfe90601c6e656f"
+      }
+    },
+    "summary": {
+      "name": "summary",
+      "mode": "primary",
+      "native": true,
+      "hidden": true,
+      "prompt": {
+        "tipo": "texto-nativo",
+        "sha256": "307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233"
+      }
+    }
   }
 }

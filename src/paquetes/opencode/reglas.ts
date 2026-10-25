@@ -11,6 +11,7 @@ export const plantillasExplicacion: PlantillasExplicacion = {
 };
 
 export const reglas: Readonly<Record<string, string>> = {
+  "valor-implicito-del-agente": "Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).",
   "numeracion-sin-directorios-externos": "Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.",
   "references-no-incorporado": "La configuración declara references o reference; RIGE no incorpora los directorios externos que aportan a los permisos.",
   "agente-deshabilitado": "disable: true elimina el agente, incluso si es nativo, despues de fusionar la configuracion.",

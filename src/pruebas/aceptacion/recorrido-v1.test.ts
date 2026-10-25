@@ -117,7 +117,8 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
     };
     const tabla = pagina.cuerpo.split("<tbody>")[1]!.split("</tbody>")[0]!;
     const claves = [...tabla.matchAll(/<tr><td>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
-    expect(claves).toEqual(["temperature", "steps", "description"]);
+    expect(claves.filter(clave => Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["description", "steps", "temperature"]);
+    expect(claves.filter(clave => !Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["mode", "name", "native", "options"]);
     for (const [clave, valor] of Object.entries(referencia.valores)) {
       expect(tabla).toContain(`<td>${clave}</td><td>${JSON.stringify(valor).replaceAll('"', "&quot;")}</td>`);
     }

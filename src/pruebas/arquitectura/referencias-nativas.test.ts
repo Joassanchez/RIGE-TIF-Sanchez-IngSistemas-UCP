@@ -47,6 +47,9 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         mkdirSync(join(fuente, "pruebas/escenarios", nombre, "proyecto"), { recursive: true });
         const ref = JSON.parse(readFileSync(join(raiz, "pruebas/escenarios", nombre, "REFERENCIA.json"), "utf8"));
         ref.cadenas = { build: [{ permission: "bash", pattern: "*", action: "ask" }] };
+        ref.valoresAgentes = Object.fromEntries(["build", "plan", "general", "explore", "compaction", "title", "summary"]
+          .map(nombre => [nombre, { name: nombre, mode: "primary", native: true,
+            ...Object.fromEntries(Object.entries(ref.valores).filter(([clave]) => ["description", "temperature"].includes(clave))) }]));
         if (opciones.agentes) ref.agentes = [];
         if (opciones.git) { ref.procedencia.git = opciones.git; ref.procedencia.skillsExternosExcluidos = true; }
         if (opciones.referenciaFiltrada) ref.cadenas.build.push({ permission: "external_directory", pattern: join(temporal, ".agents/skills/filtrada/*"), action: "allow" });
@@ -93,7 +96,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         const referencias = ${JSON.stringify(referencias)};
         const nombre = opciones.env.OPENCODE_CONFIG ? "v1-vias" : "v1-precedencia";
         const valores = referencias[nombre];
-        const salida = {};
+        const salida = { name: argumentos[3], mode: "primary", native: true };
         for (const [clave, valor] of Object.entries(valores)) {
           if (clave === "steps") salida.maxSteps = valor;
           else if (clave === "top_p") salida.topP = valor;
@@ -156,9 +159,10 @@ describe("RN-5 copia, aislamiento y limite del comando nativo", () => {
     const resultado = ejecutar();
     expect(resultado.codigo).toBe(0);
     const llamadas = resultado.llamadas.filter(llamada => llamada.copia);
-    expect(llamadas).toHaveLength(2);
+    expect(llamadas).toHaveLength(14);
     for (const llamada of llamadas) {
-      expect(llamada.argumentos.slice(1)).toEqual(["debug", "agent", "build"]);
+      expect(llamada.argumentos.slice(1, 3)).toEqual(["debug", "agent"]);
+      expect(["build", "plan", "general", "explore", "compaction", "title", "summary"]).toContain(llamada.argumentos[3]!);
       expect(llamada.cwd).toBe(join(llamada.copia!, "proyecto"));
       expect(llamada.timeout).toBe(120000);
       expect(llamada.env).not.toHaveProperty("CONSERVAR");
@@ -202,7 +206,7 @@ describe("RN-6 informa coincidencias y diferencias sin modificar escenarios", ()
     expect(distinto.codigo).toBe(1);
     const lineas = distinto.salida.trim().split(/\r?\n/);
     expect(lineas).toHaveLength(3);
-    expect(lineas[1]).toContain(JSON.stringify([{ clave: "temperature", esperado: 0.3, obtenido: 0.2 }]));
+    expect(lineas[1]).toContain(JSON.stringify({ clave: "temperature", esperado: 0.3, obtenido: 0.2 }));
     expect(lineas[2]).toBe("v1-vias: ok");
     const desconocido = ejecutar({ desconocido: true });
     expect(desconocido.codigo).toBe(0);

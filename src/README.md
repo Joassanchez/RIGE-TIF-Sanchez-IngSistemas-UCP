@@ -11,6 +11,34 @@
 
 ## 2. Qué hace este prototipo
 
+T2-13 agrega los valores implícitos de los agentes con origen
+`implicito` y regla `valor-implicito-del-agente` (RF-06 CA-1, RD-04).
+Su rastro tiene `via` y `referencia` en `null`; una declaración posterior
+conserva el valor implícito en `desplazadas`. Los prompts nativos de explore,
+compaction, title y summary se presentan como `{ tipo: "texto-nativo", sha256 }`.
+Los resúmenes del tag figuran en `paquetes/opencode/vendor/PROCEDENCIA.md`.
+Solo se informan las propiedades presentes en el tag; por ejemplo, build
+no tiene `hidden` implícito. Los agentes declarados nuevos reciben
+`mode: "all"` y `native: false`.
+
+Para comprobar T2-13, con `RIGE_ALMACEN` temporal (sección 6):
+
+```powershell
+bun test pruebas/aceptacion/RF-06.test.ts paquetes/opencode
+bun test pruebas/arquitectura/referencias-nativas.test.ts
+bun test pruebas/aceptacion/fusion-permisos.test.ts pruebas/aceptacion/recorrido-v1.test.ts
+bun test pruebas/aceptacion/RF-01.test.ts pruebas/aceptacion/RF-06.test.ts paquetes/opencode
+bun run referencias --raiz (npm.cmd root -g) --regenerar
+bun run referencias --raiz (npm.cmd root -g)
+bun test
+bun run verificar
+```
+
+La regeneración amplía `REFERENCIA.json` con `valoresAgentes`: escalares
+de todos los agentes consultados y resúmenes SHA-256 de los prompts nativos.
+La comparación posterior vuelve a capturar esos valores con el binario oficial.
+En Bash se sustituye `(npm.cmd root -g)` por `"$(npm root -g)"`.
+
 T2-11b consolida la consulta de permisos: `consultarPermiso(dependencias,
 { proyecto, agente, sujeto, objetivo, lanzadoPor?, explicar? })`, o el mismo
 objeto con `herramienta` en lugar de `sujeto`. El adaptador prepara un contexto

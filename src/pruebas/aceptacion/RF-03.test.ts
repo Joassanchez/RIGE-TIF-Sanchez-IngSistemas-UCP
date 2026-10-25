@@ -194,6 +194,11 @@ describe("RF-03 CA-3 (valores)", () => {
     expect(respuesta.valores.length).toBeGreaterThan(0);
     for (const { rastro } of respuesta.valores) {
       for (const declaracion of [rastro.determinante, ...rastro.desplazadas]) {
+        if (declaracion.origen.tipo === "implicito") {
+          expect(declaracion.via).toBeNull();
+          expect(declaracion.referencia).toBeNull();
+          continue;
+        }
         expect(isAbsolute(declaracion.referencia!)).toBe(true);
         expect(declaracion.origen.tipo).toBe("declarado");
         if (declaracion.origen.tipo !== "declarado") throw new Error("Se esperaba una declaracion local");
