@@ -50,6 +50,23 @@ decisiones de T2-06. Las referencias provienen del binario, nunca del vendor.
 RF-01 tambien resuelve por subproceso para conservar la guarda de no circularidad.
 Los comandos para comprobar y regenerar estan en `../README.md`.
 
+T2-06 consulta la funcion de aplicacion en `utilidades/consultar-permisos.ts`,
+desde un subproceso con entorno aislado, sin implementar una interfaz de
+producto. Las aceptaciones no importan vendor ni transitivamente (G-1).
+`v2-decision/REFERENCIA.json` tiene cadenas del binario y decisiones derivadas
+a mano documentadas en `DERIVACION.md`. El modo `primera` del arnes sustituye
+solo la seleccion de la determinante para comprobar sensibilidad.
+
+| Criterio T2-06 | Prueba |
+|---|---|
+| RF-02 CA-1, CA-2 (decision), CA-5, CA-8 (decision) | `aceptacion/RF-02.test.ts` (decision, cadena, origen, declaraciones y referencia independiente) |
+| RF-09 CA-1, CA-2 | `aceptacion/RF-09.test.ts` (anulacion nativa de plan, build sin edit declarado y bash deny) |
+| D-1 | `../paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts` (ficticio sin reglas: ask); `../paquetes/nucleo/permisos/decidir.test.ts` (defecto opaco) |
+| D-2 | `aceptacion/RF-02.test.ts` CA-5; `../paquetes/nucleo/permisos/decidir.test.ts` (eje parcial) |
+| D-3 | `aceptacion/RF-02.test.ts`, `aceptacion/RF-09.test.ts` (las mismas aserciones rechazan primera coincidencia) |
+| D-4 RNF-03 | `../paquetes/nucleo/permisos/decidir.test.ts`, `../paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts` (otro vocabulario y orden de efectos) |
+| D-5 | `../paquetes/opencode/permisos.test.ts` (win32 y linux, sin cambiar process.env) |
+
 - `aceptacion/`: criterios del catálogo y recorridos de las interfaces; `RF-01.test.ts` conserva además las comparaciones estructuradas con las referencias nativas.
 - `arquitectura/`: recorridos únicos del repositorio, regresiones sintéticas de las guardas y estructura del README.
 - `escenarios/`: entradas controladas y referencias nativas; los casos que escriben usan copias temporales.

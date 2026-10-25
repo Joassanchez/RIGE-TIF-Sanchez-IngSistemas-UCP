@@ -12,10 +12,18 @@ const primera: Estrategia = (estado, nueva, ruta) => {
 };
 
 export const adaptadorFicticio: Adaptador = {
+  permisos: {
+    ordenEfectos: ["impedir", "consultar", "conceder"], efectoPorDefecto: "consultar", declaraciones: ["limite-ficticio"],
+    evaluar(reglas, sujeto, objetivo) {
+      const coincidentes = reglas.filter(r => r.sujeto === sujeto && r.patron === objetivo).map(r => r.indice);
+      return { coincidentes, determinante: coincidentes.at(-1) ?? null };
+    },
+  },
   identidad: { herramienta: "ficticia", version: "1" },
   prefijoAgente: ["perfiles"],
   reglas: { "primera-declaracion": "Se conserva la primera declaracion aplicada.", "base-ficticia": "Base de la herramienta ficticia.",
-    "retirada-ficticia": "Se retira el grupo indicado por la capa." },
+    "retirada-ficticia": "Se retira el grupo indicado por la capa.", "limite-ficticio": "Solo se analiza el perfil configurado.",
+    "proteccion-nativa-anulada": "Una declaracion concede mas acceso que una regla base anterior." },
   estrategias: { primera },
   cadena: (_, agente) => ({ exito: true, valor: { agente, ejesParciales: [], reglas: [{
     indice: 0, sujeto: "documento", patron: "todos", efecto: "conceder",

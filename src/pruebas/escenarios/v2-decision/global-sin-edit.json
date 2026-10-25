@@ -1,0 +1,6 @@
+{
+  "permission": {
+    "read": { "*.env": "allow" },
+    "bash": "deny"
+  }
+}

@@ -3,6 +3,7 @@ import type { Adaptador, Declaracion, ViaUbicada } from "../contrato/adaptador";
 import type { EntornoLectura } from "../contrato/entorno";
 import type { DeclaracionUbicada, Resolucion } from "./tipos";
 import { crearEntornoMemoria } from "../../../pruebas/utilidades/entorno-memoria";
+import { adaptadorFicticio } from "../../../pruebas/utilidades/adaptador-ficticio";
 
 const hoja = (ruta: readonly string[], valor: Declaracion["valor"], linea = 1): Declaracion => ({
   ruta, valor, posicion: { linea, columna: 3 },
@@ -18,6 +19,7 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
     directorios: ["/proyecto"],
   });
   const adaptador: Adaptador = {
+    permisos: adaptadorFicticio.permisos,
     identidad: { herramienta: "ficticia", version: "1" }, prefijoAgente: ["agente"],
     reglas: { orden: "Prevalece la entrada posterior.", sinUso: "No utilizada." }, estrategias: {},
     cadena: (_, agente) => ({ exito: true, valor: { agente, reglas: [], ejesParciales: [] } }),

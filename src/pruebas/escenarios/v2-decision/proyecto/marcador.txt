@@ -1,0 +1,1 @@
+Proyecto vacio: los permisos se declaran en la entrada global aislada.

@@ -1,0 +1,557 @@
+{
+  "procedencia": {
+    "herramienta": "opencode",
+    "version": "1.18.25",
+    "directorio": "proyecto",
+    "hogar": "hogar",
+    "binario": "opencode-windows-x64@1.18.25",
+    "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+    "fecha": "2026-10-25",
+    "criterio": "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
+    "comando": "opencode debug agent <agente>",
+    "aislamiento": "git init --initial-branch=main en la raiz de la copia y git rev-parse --show-toplevel desde el directorio consultado. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. Sin flags que deshabiliten skills. Diagnostico: el .git/HEAD sintetico anterior no era un repositorio valido para git rev-parse; la subida de skill/index.ts:197-203 escapaba del escenario y encontraba .claude/skills real. Con git init, sin cambiar el hogar aislado, desaparecen esas reglas: la fuga era la busqueda ascendente, no global.home (skill/index.ts:191-195). Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE."
+  },
+  "agente": "build",
+  "valores": {},
+  "cadenas": {
+    "build": [
+      {
+        "permission": "*",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "doom_loop",
+        "action": "ask",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.*",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.example",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "bash",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      }
+    ],
+    "plan": [
+      {
+        "permission": "*",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "doom_loop",
+        "action": "ask",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.*",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.example",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "task",
+        "pattern": "general",
+        "action": "deny"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/plans/*",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "edit",
+        "pattern": ".opencode/plans/*.md",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "pattern": "hogar/opencode/plans/*.md",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "bash",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      }
+    ],
+    "general": [
+      {
+        "permission": "*",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "doom_loop",
+        "action": "ask",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.*",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.example",
+        "action": "allow"
+      },
+      {
+        "permission": "todowrite",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "bash",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      }
+    ],
+    "explore": [
+      {
+        "permission": "*",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "doom_loop",
+        "action": "ask",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.*",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.example",
+        "action": "allow"
+      },
+      {
+        "permission": "*",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "grep",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "glob",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "list",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "bash",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "webfetch",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "websearch",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "bash",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      }
+    ]
+  },
+  "decisiones": [
+    {
+      "coincidentes": [
+        0,
+        8,
+        9,
+        14
+      ],
+      "sujeto": "read",
+      "agente": "build",
+      "decision": "allow",
+      "determinante": 14,
+      "objetivo": ".env",
+      "procedencia": "derivada de la cadena nativa"
+    },
+    {
+      "coincidentes": [
+        0,
+        16,
+        20
+      ],
+      "sujeto": "edit",
+      "agente": "plan",
+      "decision": "allow",
+      "determinante": 20,
+      "objetivo": "src/a.js",
+      "procedencia": "derivada de la cadena nativa"
+    },
+    {
+      "coincidentes": [
+        0,
+        16
+      ],
+      "sujeto": "bash",
+      "agente": "build",
+      "decision": "deny",
+      "determinante": 16,
+      "objetivo": "git status",
+      "procedencia": "derivada de la cadena nativa"
+    },
+    {
+      "coincidentes": [
+        0,
+        8,
+        10
+      ],
+      "sujeto": "read",
+      "agente": "build",
+      "decision": "ask",
+      "determinante": 10,
+      "objetivo": ".env.local",
+      "procedencia": "derivada de la cadena nativa"
+    },
+    {
+      "coincidentes": [
+        0,
+        8,
+        10,
+        11
+      ],
+      "sujeto": "read",
+      "agente": "build",
+      "decision": "allow",
+      "determinante": 11,
+      "objetivo": ".env.example",
+      "procedencia": "derivada de la cadena nativa"
+    },
+    {
+      "coincidentes": [
+        0
+      ],
+      "sujeto": "task",
+      "agente": "general",
+      "decision": "allow",
+      "determinante": 0,
+      "objetivo": "a",
+      "procedencia": "derivada de la cadena nativa"
+    },
+    {
+      "coincidentes": [
+        0,
+        16,
+        17,
+        20
+      ],
+      "sujeto": "edit",
+      "agente": "plan",
+      "decision": "allow",
+      "determinante": 20,
+      "objetivo": ".opencode/plans/x.md",
+      "procedencia": "derivada de la cadena nativa"
+    },
+    {
+      "coincidentes": [
+        0,
+        5,
+        12
+      ],
+      "sujeto": "question",
+      "agente": "build",
+      "decision": "allow",
+      "determinante": 12,
+      "objetivo": "a",
+      "procedencia": "derivada de la cadena nativa"
+    }
+  ]
+}

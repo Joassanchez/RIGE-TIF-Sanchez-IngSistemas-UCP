@@ -1,4 +1,7 @@
 export const reglas: Readonly<Record<string, string>> = {
+  "proteccion-nativa-anulada": "La declaracion determinante desactiva una proteccion nativa coincidente anterior (RD-07). El rastro identifica la regla nativa y la declaracion con su archivo y linea.",
+  "aprobaciones-permanentes-excluidas": 'Las aprobaciones permanentes ("permitir siempre") no integran el análisis.',
+  "sesion-no-interactiva-excluida": "En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.",
   "nativa-general": "Regla de permiso incorporada en los defaults de OpenCode 1.18.25.",
   "nativa-agente": "Regla de permiso incorporada para el agente nativo de OpenCode 1.18.25.",
   "nativa-final": "OpenCode agrega al final el acceso al directorio de salidas, salvo deny explicito para ese patron exacto.",

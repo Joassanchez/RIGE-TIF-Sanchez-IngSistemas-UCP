@@ -11,6 +11,7 @@ const declarada = (ruta: readonly string[], valor: number, orden: number): Aplic
 });
 function resolverSecuencia(secuencia: Secuencia, cantidad = 0) {
   const adaptador: Adaptador = {
+    permisos: adaptadorFicticio.permisos,
     identidad: { herramienta: "ficticia", version: "1" }, prefijoAgente: ["agent"],
     reglas: { ultima: "Ultima aplicacion.", base: "Valor de base.", derivada: "Valor derivado." }, estrategias: {},
     ubicar: () => ({ exito: true, valor: Array.from({ length: cantidad }, (_, orden) => ({

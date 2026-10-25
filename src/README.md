@@ -224,7 +224,32 @@ Para comprobar esta tarea, con `RIGE_ALMACEN` temporal como se indica en §6:
 T2-05 construye la cadena de permisos del agente con las reglas nativas y
 declaradas, sus indices y su procedencia. El eje `external_directory` queda
 parcialmente observado: no se buscan directorios de skills ni references.
-La evaluacion de decisiones corresponde a T2-06.
+T2-06 agrega la consulta de decisiones como funcion de aplicacion
+`consultarPermiso(dependencias, proyecto, agente, sujeto, objetivo)`, sin CLI ni
+web de permisos todavia. Evalua al consultar, sin guardar la decision. La
+respuesta presenta las coincidentes con sus indices originales, la
+determinante, las desplazadas y la proteccion nativa anulada, si corresponde.
+`external_directory` devuelve `decision: null` y motivo
+`eje-parcialmente-observado`. Todas las respuestas declaran las aprobaciones
+permanentes excluidas y las reglas adicionales de la sesion no interactiva.
+
+Para comprobar T2-06, con `RIGE_ALMACEN` temporal:
+
+```bash
+bun test paquetes pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-09.test.ts
+```
+
+Durante TDD se pueden seleccionar solo los archivos nuevos:
+
+```bash
+bun test paquetes/nucleo/permisos/decidir.test.ts paquetes/opencode/permisos.test.ts paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-09.test.ts
+```
+
+El escenario `v2-decision` usa una entrada global aislada. Sus decisiones se
+derivan a mano de la cadena capturada por el binario, como documenta
+`pruebas/escenarios/v2-decision/DERIVACION.md`; regenerar las referencias no
+recalcula ese campo. El arnes invoca el caso de uso desde un subproceso aislado
+para conservar la guarda G-1, sin incorporar la copia del evaluador al oraculo.
 
 Con `RIGE_ALMACEN` en un temporal, las pruebas y el oraculo se ejecutan desde `src/`:
 
