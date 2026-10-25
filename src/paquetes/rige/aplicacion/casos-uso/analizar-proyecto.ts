@@ -10,6 +10,7 @@ export interface DependenciasAnalisis {
   readonly adaptador: Adaptador;
   readonly entorno: EntornoLectura;
   readonly rutas: PuertoRutas;
+  readonly resolucion?: Resolucion;
 }
 
 export function analizarProyecto(dependencias: DependenciasAnalisis, proyecto: string): Resultado<Resolucion, ErrorUso> {
@@ -18,6 +19,12 @@ export function analizarProyecto(dependencias: DependenciasAnalisis, proyecto: s
 }
 
 export function prepararAnalisis(dependencias: DependenciasAnalisis, proyecto: string): Resultado<{ readonly resolucion: Resolucion; readonly contexto: ContextoConsulta }, ErrorUso> {
+  if (dependencias.resolucion) {
+    const resolucion = dependencias.resolucion;
+    const contexto = dependencias.adaptador.contexto(resolucion.proyecto, dependencias.entorno);
+    return contexto.exito ? { exito: true, valor: { resolucion, contexto: contexto.valor } }
+      : { exito: false, error: errorDesdeAnalisis(contexto.error) };
+  }
   proyecto = proyecto.trim();
   if (proyecto.length >= 2 && ((proyecto.startsWith('"') && proyecto.endsWith('"'))
     || (proyecto.startsWith("'") && proyecto.endsWith("'")))) proyecto = proyecto.slice(1, -1).trim();

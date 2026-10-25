@@ -23,6 +23,8 @@ describe("W-11 redireccion", () => {
 
 const manejarEstado = (puerto: number, consultarEstado: ConsultarEstado) => crearManejador(puerto, {
   consultarEstado, resolverProyecto: () => { throw new Error("No resolver"); },
+  consultarPermiso: () => { throw new Error("No consultar permisos"); },
+  consultarAgentes: () => { throw new Error("No consultar agentes"); },
   consultarResolucion: () => { throw new Error("No consultar"); },
 });
 

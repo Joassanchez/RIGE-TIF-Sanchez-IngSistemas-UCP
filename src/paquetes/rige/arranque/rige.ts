@@ -13,6 +13,7 @@ import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucio
 import { consultarValores } from "../aplicacion/casos-uso/consultar-valores";
 import { consultarPermiso } from "../aplicacion/casos-uso/consultar-permiso";
 import { consultarAgentes } from "../aplicacion/casos-uso/consultar-agentes";
+import { consultarPermisoGuardado, consultarAgentesGuardados } from "../aplicacion/casos-uso/consultar-guardada";
 import { versionRige } from "../aplicacion/respuestas/estado";
 import { iniciarServidor } from "../interfaces/web/servidor";
 import { ejecutarCli, type Ensamblado } from "../interfaces/cli/ejecutar";
@@ -41,6 +42,8 @@ function ensamblar(): Ensamblado {
         consultarEstado: () => consultarEstado(almacen),
         resolverProyecto: (proyecto) => resolverProyecto(dependencias, proyecto),
         consultarResolucion: (id, agente, clave) => consultarResolucion(resoluciones, id, agente, clave),
+        consultarPermiso: (id, solicitud) => consultarPermisoGuardado(dependencias, id, solicitud),
+        consultarAgentes: id => consultarAgentesGuardados(dependencias, id),
       }),
     },
   };

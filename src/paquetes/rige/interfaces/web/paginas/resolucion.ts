@@ -18,6 +18,21 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
 <html lang="es"><head><meta charset="utf-8"><title>Resolución ${sobre.id}</title></head>
 <body><h1>Resolución ${sobre.id}</h1>
 <p>Página armada con la resolución leída del almacén de RIGE.</p>
+<nav><a href="${`/agentes?id=${sobre.id}`}">Agentes</a>
+<a href="#consultar-permiso">Consultar permiso</a></nav>
+<form action="/agentes" method="get"><input type="hidden" name="id" value="${sobre.id}"><button>Listar agentes</button></form>
+<form id="consultar-permiso" action="/permiso" method="get">
+<input type="hidden" name="id" value="${sobre.id}">
+<label>Agente <input name="agente" value="${respuesta.agente}" required></label>
+<label>Herramienta <input name="herramienta" required></label>
+<label>Objetivo <input name="objetivo" required></label>
+<button>Consultar permiso</button></form>
+<form action="/permiso" method="get">
+<input type="hidden" name="id" value="${sobre.id}">
+<label>Agente <input name="agente" value="${respuesta.agente}" required></label>
+<label>Sujeto <input name="sujeto" required></label>
+<label>Objetivo <input name="objetivo" required></label>
+<button>Consultar sujeto de permiso</button></form>
 <dl><dt>Proyecto</dt><dd>${respuesta.proyecto}</dd>
 <dt>Instante (UTC)</dt><dd>${sobre.instante}</dd>
 <dt>Herramienta</dt><dd>${respuesta.herramienta} ${respuesta.versionHerramienta}</dd>

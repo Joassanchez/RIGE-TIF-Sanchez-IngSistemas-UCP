@@ -11,6 +11,8 @@ const respuesta: RespuestaEstado = {
 
 function casosEstado(consultarEstado: ConsultarEstado): CasosWeb {
   return { consultarEstado, resolverProyecto: () => { throw new Error("No resolver en pruebas de estado"); },
+    consultarPermiso: () => { throw new Error("No consultar permisos en pruebas de estado"); },
+    consultarAgentes: () => { throw new Error("No consultar agentes en pruebas de estado"); },
     consultarResolucion: () => { throw new Error("No consultar resoluciones en pruebas de estado"); } };
 }
 const manejarEstado = (puerto: number, consultar: ConsultarEstado) => crearManejador(puerto, casosEstado(consultar));
@@ -20,6 +22,7 @@ describe("W-11", () => {
   test("valida agente antes de resolver, propaga errores escapados y codifica la Location", async () => {
     const solicitudes: string[] = [];
     const casos = {
+      ...casosEstado(() => ({ exito: true, valor: respuesta })),
       consultarEstado: () => ({ exito: true as const, valor: respuesta }),
       resolverProyecto: (proyecto: string) => {
         solicitudes.push(proyecto);

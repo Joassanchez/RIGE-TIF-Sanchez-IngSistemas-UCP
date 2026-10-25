@@ -450,13 +450,32 @@ La explicacion identifica la determinante, su posicion en la cadena completa,
 el origen y las desplazadas; tambien explica el efecto por defecto, las
 protecciones nativas anuladas y los motivos sin decision. Cierra con las
 aprobaciones permanentes excluidas. `RespuestaValores` no incorpora explicacion.
-La integracion en CLI y web corresponde a T2-11 y T2-12.
+La CLI y la web integran estas explicaciones (T2-11 y T2-12).
 
 Para comprobar T2-10, con `RIGE_ALMACEN` temporal como se indica en §6:
 
 ```bash
 bun test paquetes/nucleo/permisos/explicar.test.ts pruebas/aceptacion/RF-02-explicacion.test.ts
 bun test paquetes
+bun test
+bun run verificar
+```
+
+T2-12 agrega las paginas GET `/permiso?id=…&agente=…&herramienta=…&objetivo=…`
+(o `sujeto` en lugar de `herramienta`, y opcionalmente `lanzadoPor`) y
+`/agentes?id=…`. La pagina de una resolucion guardada ofrece los enlaces y
+formularios. Las consultas usan los mismos casos de uso que la CLI sobre el
+documento guardado, con el entorno actual; cambiar una entrada no modifica esa
+resolucion. Para observar el cambio hay que resolver nuevamente desde el inicio.
+El permiso siempre muestra la explicacion. Ambas paginas incluyen la respuesta
+como JSON no ejecutable, con `<` serializado como `\u003c` para impedir el cierre
+de la etiqueta de datos.
+
+Para comprobar T2-12, con `RIGE_ALMACEN` temporal como se indica en §6:
+
+```bash
+bun test pruebas/aceptacion/T2-12.test.ts
+bun test paquetes/rige/interfaces pruebas/aceptacion
 bun test
 bun run verificar
 ```
