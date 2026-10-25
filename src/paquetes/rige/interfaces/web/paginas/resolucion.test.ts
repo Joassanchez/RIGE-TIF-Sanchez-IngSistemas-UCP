@@ -1,20 +1,19 @@
 import { describe, expect, test } from "bun:test";
-import type { RespuestaConsulta, DeclaracionUbicada } from "../../../aplicacion/respuestas/consulta";
+import type { RespuestaValores, DeclaracionUbicada } from "../../../aplicacion/respuestas/valores";
 import { versionRige } from "../../../aplicacion/respuestas/estado";
 
-function respuesta(): RespuestaConsulta {
+function respuesta(): RespuestaValores {
   const declaracion = (valor: string | number, orden: number): DeclaracionUbicada => ({
     valor, origen: { tipo: "declarado", orden, posicion: { linea: 6, columna: 7 } },
     via: "proyecto", referencia: `/proyecto/<entrada${orden}>.jsonc`, regla: "orden-de-aplicacion",
   });
   return {
-    esquema: 1, versionRige,
-    resolucion: { id: 7, instante: "2026-10-05T12:00:00.000Z", proyecto: "/proyecto/<ejemplo>",
+    esquema: 2, versionRige,
+    proyecto: "/proyecto/<ejemplo>",
       herramienta: "opencode", versionHerramienta: "1.18.25", resumenEntradas: "a".repeat(64),
       entradas: [{ orden: 0, via: "remota-wellknown", referencia: "remota-wellknown", condicion: "no_observada", resumen: null },
         { orden: 1, via: "proyecto", referencia: "/proyecto/<entrada1>.jsonc", condicion: "observada", resumen: "b".repeat(64) }],
-    },
-    agente: "a & b", clave: null,
+    agente: "a & b", ruta: null, motivo: null,
     valores: [{ clave: "description", rastro: { ruta: ["agent", "a & b", "description"], indiceFusion: 0, valor: "<script>alert(1)</script>",
       determinante: declaracion("<script>alert(1)</script>", 3), motivo: "entrada-posterior",
       desplazadas: [declaracion(0.1, 1), declaracion(0.2, 2)] } },
@@ -22,14 +21,19 @@ function respuesta(): RespuestaConsulta {
         motivo: "entrada-posterior", desplazadas: [] } }],
     reglas: { "orden-de-aplicacion": "Prevalece la ultima <declaracion> (RD-01).", "fuera-del-v1": "Sin resolver <permiso>." },
     noResueltas: [{ ruta: ["permission"], regla: "fuera-del-v1" }],
-    anteriores: [{ id: 7, instante: "2026-10-05T12:00:00.000Z", resumenEntradas: "a".repeat(64) },
-      { id: 6, instante: "2026-10-04T12:00:00.000Z", resumenEntradas: "c".repeat(64) }],
+
   };
 }
 
+const sobre = { id: 7, instante: "2026-10-05T12:00:00.000Z",
+  anteriores: [{ id: 7, instante: "2026-10-05T12:00:00.000Z", resumenEntradas: "a".repeat(64) },
+      { id: 6, instante: "2026-10-04T12:00:00.000Z", resumenEntradas: "c".repeat(64) }],
+};
+
 describe("W-13", () => {
   test("presenta las siete partes en orden, rastros y entradas sin ejecutar HTML", async () => {
-    const { paginaResolucion } = await import("./resolucion");
+    const { paginaResolucion: presentar } = await import("./resolucion");
+    const paginaResolucion = (respuesta: RespuestaValores) => presentar(respuesta, sobre);
     const recibida = paginaResolucion(respuesta());
     expect(recibida.status).toBe(200);
     expect(recibida.headers.get("content-type")).toBe("text/html; charset=utf-8");
@@ -62,8 +66,9 @@ describe("W-13", () => {
   });
 
   test("conserva agente y clave codificados en la historia y omite la lista vacia de no resueltas", async () => {
-    const { paginaResolucion } = await import("./resolucion");
-    const cuerpo = await paginaResolucion({ ...respuesta(), clave: "c & d", noResueltas: [] }).text();
+    const { paginaResolucion: presentar } = await import("./resolucion");
+    const paginaResolucion = (respuesta: RespuestaValores) => presentar(respuesta, sobre);
+    const cuerpo = await paginaResolucion({ ...respuesta(), ruta: ["c & d"], noResueltas: [] }).text();
     expect(cuerpo).toContain('href="/resoluciones/6?agente=a%20%26%20b&amp;clave=c%20%26%20d"');
     expect(cuerpo).toContain("c &amp; d");
     expect(cuerpo).not.toContain("Claves no resueltas en el prototipo v1");
@@ -72,7 +77,8 @@ describe("W-13", () => {
 
 describe("W-14", () => {
   test("presenta claves relativas y la regla opaca de cada determinante sin una regla fija", async () => {
-    const { paginaResolucion } = await import("./resolucion");
+    const { paginaResolucion: presentar } = await import("./resolucion");
+    const paginaResolucion = (respuesta: RespuestaValores) => presentar(respuesta, sobre);
     const original = respuesta();
     const valores = original.valores.map(({ clave, rastro }, indice) => ({ clave,
       rastro: { ...rastro, ruta: ["perfiles", "grupo", original.agente, clave],
@@ -96,7 +102,8 @@ describe("W-14", () => {
 
 describe("W-15", () => {
   test("sin valores presenta una sola fila informativa y la lista de claves no resueltas", async () => {
-    const { paginaResolucion } = await import("./resolucion");
+    const { paginaResolucion: presentar } = await import("./resolucion");
+    const paginaResolucion = (respuesta: RespuestaValores) => presentar(respuesta, sobre);
     const recibida = paginaResolucion({ ...respuesta(), valores: [], noResueltas: [
       { ruta: ["steps"], regla: "fuera-del-v1" },
       { ruta: ["maxSteps"], regla: "fuera-del-v1" },

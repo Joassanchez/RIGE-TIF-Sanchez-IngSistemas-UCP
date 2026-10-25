@@ -4,6 +4,14 @@
 |---|---|
 | RF-01 CA-1 | `aceptacion/recorrido-v1.test.ts` — `RF-01 CA-1 · recorrido del README (guía, paso 8)`; `aceptacion/RF-01.test.ts` — `RF-01 CA-1` (referencia nativa y rastro como objeto) |
 | RF-01 CA-2 | `aceptacion/recorrido-v1.test.ts` — `RF-01 CA-2; RNF-01 CA-1 CA-2`; `aceptacion/RF-01.test.ts` — `RF-01 CA-2` (referencia nativa y rastros de todas las claves) |
+| RF-03 CA-1 (valores) | `aceptacion/RF-03.test.ts` — `RF-03 CA-1 (valores)` (dos escenarios, consulta completa y puntual, igualdad byte a byte y sin sobre) |
+| RF-03 CA-3 (valores) | `aceptacion/RF-03.test.ts` — `RF-03 CA-3 (valores)` (ruta absoluta y posición comprobada sobre el texto original) |
+| RF-03 CA-5 | `aceptacion/RF-03.test.ts` — `RF-03 CA-5` (clave ausente exitosa, agente/proyecto inexistentes y argumentos inválidos) |
+| T2-02 S-1 | `aceptacion/RF-03.test.ts` — `S-1` (servidor por subproceso, respuesta del caso de uso web igual en profundidad a la CLI en ambos escenarios) |
+| T2-02 S-2 ADR-061 | `aceptacion/RF-03.test.ts` — `S-2 ADR-061`; `../paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts` — `S-2 ADR-061` (versión 1 rechazada al servir y consultar, sin modificar bytes) |
+| T2-02 S-3 ADR-061 | `../paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts` — `R-4` (formato SQL y formato del documento incompatibles como error de uso) |
+| T2-02 S-4 ADR-058 | `../paquetes/rige/aplicacion/errores.test.ts` — `S-4 ADR-058` (código desconocido con categoría uso: 1; categoría ausente/inválida: 70); `../paquetes/rige/interfaces/web/intermedios/errores.test.ts` — `W-9` (código nuevo como HTTP 422) |
+| T2-02 S-5 | `aceptacion/RF-03.test.ts` — `S-5` (valores sin crear el almacén ni modificar uno existente) |
 | RF-17 CA-1 | `aceptacion/recorrido-v1.test.ts` — `RF-17` → `RF-17 CA-1` (recuperación tras reiniciar) |
 | RF-17 CA-2 | `aceptacion/recorrido-v1.test.ts` — `RF-17` → `RF-17 CA-2` (resumen distinto y resolución anterior intacta) |
 | RF-17 CA-3 | `aceptacion/recorrido-v1.test.ts` — `RF-17` → `RF-17 CA-3` (últimas veinte) |

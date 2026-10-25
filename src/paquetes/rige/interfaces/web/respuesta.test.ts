@@ -57,7 +57,7 @@ describe("W-8", () => {
   test("protege todas las respuestas del manejador con CSP y nosniff", () => {
     const puerto = 12345;
     const estado: RespuestaEstado = {
-      esquema: 1, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
+      esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
     };
     const manejar = manejarEstado(puerto, () => ({ exito: true, valor: estado }));
     const solicitud = (ruta = "/", opciones: { method?: string; headers?: Record<string, string> } = {}) => new Request(`http://127.0.0.1${ruta}`, {

@@ -5,7 +5,7 @@ import { versionRige } from "../../../aplicacion/respuestas/estado";
 describe("W-2", () => {
   test("presenta la respuesta de estado y escapa la ruta sin scripts", async () => {
     const respuesta = paginaInicio({
-      esquema: 1, versionRige,
+      esquema: 2, versionRige,
       almacen: { ruta: "/temporal/<script>rige.db", versionEsquema: 7 },
     });
     expect(respuesta.status).toBe(200);
@@ -21,7 +21,7 @@ describe("W-2", () => {
 
 describe("W-10", () => {
   test("ofrece el formulario GET y conserva version y almacen", async () => {
-    const cuerpo = await paginaInicio({ esquema: 1, versionRige,
+    const cuerpo = await paginaInicio({ esquema: 2, versionRige,
       almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 } }).text();
     expect(cuerpo).toContain('<form method="get" action="/resolver">');
     expect(cuerpo).toMatch(/<input[^>]*name="proyecto"[^>]*required/);

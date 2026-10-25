@@ -27,7 +27,7 @@ export interface EntradaLeida {
 }
 
 export interface Resolucion {
-  readonly formato: 1;
+  readonly formato: 2;
   readonly identidad: Identidad;
   readonly proyecto: string;
   readonly prefijoAgente: readonly string[];

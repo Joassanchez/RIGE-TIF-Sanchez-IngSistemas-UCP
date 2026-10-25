@@ -9,7 +9,7 @@ const rastro = (ruta: readonly string[], valor: number): RastroValor => ({
 const temperatura = rastro(["perfiles", "grupo", "a", "parametros", "temperatura"], 0.3);
 const pasos = rastro(["perfiles", "grupo", "a", "pasos"], 12);
 const resolucion: Resolucion = {
-  formato: 1, identidad: { herramienta: "ficticia", version: "1" }, proyecto: "/proyecto",
+  formato: 2, identidad: { herramienta: "ficticia", version: "1" }, proyecto: "/proyecto",
   prefijoAgente: ["perfiles", "grupo"], reglas: { orden: "Orden." }, entradas: [], resumenEntradas: "",
   valores: [temperatura, pasos, rastro(["perfiles", "grupo", "ab", "pasos"], 4), rastro(["otro", "a", "pasos"], 8)], noResueltas: [],
 };
@@ -18,22 +18,19 @@ describe("N-8", () => {
   test("con clave relativa partida por puntos devuelve solo el rastro exacto", async () => {
     const { consultarAgente } = await import("./proyectar");
     expect(consultarAgente(resolucion, "a", ["parametros", "temperatura"])).toEqual({ exito: true,
-      valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }], noResueltas: [] } });
+      valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }], noResueltas: [], motivo: null } });
   });
 
   test("sin clave devuelve todas las hojas del agente ordenadas, sin otros prefijos", async () => {
     const { consultarAgente } = await import("./proyectar");
     expect(consultarAgente(resolucion, "a", undefined)).toEqual({ exito: true,
-      valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }, { clave: "pasos", rastro: pasos }], noResueltas: [] } });
+      valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }, { clave: "pasos", rastro: pasos }], noResueltas: [], motivo: null } });
   });
 
   test.each(["inexistente", "parametros", "parametros.temperatura.extra"])("la clave ausente %s produce clave-inexistente", async (clave) => {
     const { consultarAgente } = await import("./proyectar");
     const resultado = consultarAgente(resolucion, "a", clave?.split("."));
-    expect(resultado.exito).toBe(false);
-    if (resultado.exito) throw new Error("Se esperaba un error.");
-    expect(resultado.error.codigo).toBe("clave-inexistente");
-    expect(resultado.error.mensaje).toContain(clave);
+    expect(resultado).toEqual({ exito: true, valor: { valores: [], noResueltas: [], motivo: "clave-inexistente" } });
   });
 
   test.each([undefined, "pasos"])("sin hojas del agente informa agente-sin-declaraciones (clave %s)", async (clave) => {
@@ -74,7 +71,7 @@ describe("Q-1", () => {
     const { consultarAgente } = await import("./proyectar");
     const noResueltas = [{ ruta: ["perfiles", "grupo", "a", "permiso"], regla: "excluida" }];
     expect(consultarAgente({ ...resolucion, noResueltas }, "a", ["parametros", "temperatura"])).toEqual({
-      exito: true, valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }], noResueltas },
+      exito: true, valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }], noResueltas, motivo: null },
     });
   });
 });
@@ -87,7 +84,7 @@ describe("Q-2", () => {
       { ruta: ["global", "permiso"], regla: "excluida" }];
     expect(consultarAgente({ ...resolucion, noResueltas: [otras[0]!, propia, otras[1]!] }, "a", undefined)).toEqual({
       exito: true, valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura },
-        { clave: "pasos", rastro: pasos }], noResueltas: [propia] },
+        { clave: "pasos", rastro: pasos }], noResueltas: [propia], motivo: null },
     });
   });
 });
@@ -105,7 +102,7 @@ describe("Q-3", () => {
     expect(resultado.valor.prefijoAgente).toEqual(["perfiles"]);
     const consulta = consultarAgente(resultado.valor, "a", ["temperatura"]);
     if (!consulta.exito) throw new Error(consulta.error.mensaje);
-    expect(consulta.valor).toEqual({ valores: [{ clave: "temperatura", rastro: resultado.valor.valores[0]! }], noResueltas: [] });
+    expect(consulta.valor).toEqual({ valores: [{ clave: "temperatura", rastro: resultado.valor.valores[0]! }], noResueltas: [], motivo: null });
   });
 });
 
@@ -120,7 +117,7 @@ describe("Q-4", () => {
         ...noResueltas, { ruta: [...resolucion.prefijoAgente, "ab", "steps"], regla: "excluida" },
       ] };
     expect(consultarAgente(pendiente, "a", undefined)).toEqual({
-      exito: true, valor: { valores: [], noResueltas },
+      exito: true, valor: { valores: [], noResueltas, motivo: null },
     });
     for (const clave of ["steps", "maxSteps", "steps.extra"]) {
       expect(consultarAgente(pendiente, "a", clave?.split("."))).toMatchObject({
@@ -128,7 +125,7 @@ describe("Q-4", () => {
       });
     }
     expect(consultarAgente(pendiente, "a", ["temperature"])).toMatchObject({
-      exito: false, error: { codigo: "clave-inexistente" },
+      exito: true, valor: { valores: [], motivo: "clave-inexistente" },
     });
     for (const clave of [undefined, "steps"]) {
       expect(consultarAgente(pendiente, "ausente", clave?.split("."))).toMatchObject({

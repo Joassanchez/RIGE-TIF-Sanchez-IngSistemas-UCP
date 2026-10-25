@@ -20,7 +20,7 @@ const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
 
 export function paginaErrorUso(error: ErrorUso): Response {
   const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Error de RIGE</title></head><body><p>${error.mensaje}</p></body></html>`;
-  return responderHtml(estadoPorCodigo[error.codigo], pagina);
+  return responderHtml(Object.hasOwn(estadoPorCodigo, error.codigo) ? estadoPorCodigo[error.codigo]! : 422, pagina);
 }
 
 export function conErrores(manejador: (solicitud: Request) => Response): (solicitud: Request) => Response {

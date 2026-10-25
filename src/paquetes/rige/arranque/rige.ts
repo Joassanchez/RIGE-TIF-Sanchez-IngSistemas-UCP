@@ -10,6 +10,7 @@ import { prepararAlmacen } from "../aplicacion/casos-uso/preparar-almacen";
 import { consultarEstado } from "../aplicacion/casos-uso/consultar-estado";
 import { resolverProyecto } from "../aplicacion/casos-uso/resolver-proyecto";
 import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucion";
+import { consultarValores } from "../aplicacion/casos-uso/consultar-valores";
 import { versionRige } from "../aplicacion/respuestas/estado";
 import { iniciarServidor } from "../interfaces/web/servidor";
 import { ejecutarCli, type Ensamblado } from "../interfaces/cli/ejecutar";
@@ -29,11 +30,12 @@ function ensamblar(): Ensamblado {
   const dependencias = { adaptador: adaptadorOpenCode, entorno, rutas: entorno, resoluciones, reloj: new RelojSistema() };
   return {
     exito: true, valor: {
+      consultarValores: (proyecto, agente, clave) => consultarValores(dependencias, proyecto, agente, clave),
       prepararAlmacen: () => prepararAlmacen(almacen),
       consultarEstado: () => consultarEstado(almacen),
       iniciarServidor: () => iniciarServidor(resultado.valor.puerto, {
         consultarEstado: () => consultarEstado(almacen),
-        resolverProyecto: (proyecto, agente, clave) => resolverProyecto(dependencias, proyecto, agente, clave),
+        resolverProyecto: (proyecto) => resolverProyecto(dependencias, proyecto),
         consultarResolucion: (id, agente, clave) => consultarResolucion(resoluciones, id, agente, clave),
       }),
     },

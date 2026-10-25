@@ -14,7 +14,7 @@ describe("V1-03 L-5 V1-08 F-5", () => {
     ['\n/* {env:} */ {"a": {file:./x}} // CONTENIDO_NO_EMITIR', "{file:./x}", 2, 20],
   ] as const)("rechaza la primera sustitucion de %j antes de parsear", (texto, patron, linea, columna) => {
     const resultado = leerEntrada({ ...via, referencia: "C:\\p\\opencode.jsonc" }, texto);
-    expect(resultado).toEqual({ exito: false, error: {
+    expect(resultado).toEqual({ exito: false, error: { categoria: "uso",
       codigo: "contenido-no-soportado",
       mensaje: `El prototipo v1 no incorpora ${patron} (C:/p/opencode.jsonc:${linea}:${columna}).`,
     } });
@@ -71,7 +71,7 @@ describe("V1-03 L-4", () => {
   ] as const)("rechaza %j con la primera posicion y referencia normalizada", (texto, linea, columna) => {
     expect(leerEntrada({ ...via, referencia: "C:\\p\\opencode.jsonc" }, texto)).toEqual({
       exito: false,
-      error: { codigo: "entrada-ilegible", mensaje: `La entrada C:/p/opencode.jsonc no se puede leer (${linea}:${columna}).` },
+      error: { categoria: "uso", codigo: "entrada-ilegible", mensaje: `La entrada C:/p/opencode.jsonc no se puede leer (${linea}:${columna}).` },
     });
   });
 });

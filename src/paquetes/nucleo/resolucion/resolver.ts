@@ -57,7 +57,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     }
   }
   return { exito: true, valor: {
-    formato: 1,
+    formato: 2,
     identidad: { herramienta: adaptador.identidad.herramienta, version: adaptador.identidad.version },
     proyecto: normalizar(proyecto),
     prefijoAgente: adaptador.prefijoAgente,

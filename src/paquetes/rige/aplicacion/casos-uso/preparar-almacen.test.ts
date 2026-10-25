@@ -14,7 +14,7 @@ describe("T0-09 preparacion por puerto en memoria", () => {
     };
     const esperado = {
       exito: true,
-      valor: { esquema: 1, versionRige, almacen: estado },
+      valor: { esquema: 2, versionRige, almacen: estado },
     } as const;
     expect(prepararAlmacen(almacen)).toEqual(esperado);
     expect(prepararAlmacen(almacen)).toEqual(esperado);

@@ -70,7 +70,7 @@ describe("R-1 RF-17 CA-1", () => {
       })));
     expect(base.query("SELECT herramienta, version_herramienta, version_rige, formato_documento, documento FROM resolucion WHERE id = ?")
       .get(guardada.valor)).toEqual({ herramienta: "ficticia", version_herramienta: "1", version_rige: versionRige,
-        formato_documento: 1, documento: JSON.stringify(resolucion) });
+        formato_documento: 2, documento: JSON.stringify(resolucion) });
   });
 
   test("una entrada invalida revierte el alta completa", async () => {
@@ -158,13 +158,30 @@ describe("R-4", () => {
     }
   });
 
-  test("un formato de documento desconocido falla de forma visible", async () => {
+  test.each([[1, 2], [2, 1], [99, 2], [2, 99]])("S-3 ADR-061: formato SQL %i y documento %i incompatibles son error de uso", async (formatoSql, formato) => {
     const { repositorio, abrir } = await escenario();
     const base = abrir();
     base.run("INSERT INTO proyecto (ruta) VALUES ('/proyecto')");
     base.query(`INSERT INTO resolucion (proyecto_id, instante, resumen_entradas, herramienta, version_herramienta,
-      version_rige, formato_documento, documento) VALUES (1, ?, ?, 'ficticia', '1', ?, 2, ?)`).run(
-      instante, documento().resumenEntradas, versionRige, JSON.stringify(documento()));
-    expect(() => repositorio.leer(1)).toThrow("formato");
+      version_rige, formato_documento, documento) VALUES (1, ?, ?, 'ficticia', '1', ?, ?, ?)`).run(
+      instante, documento().resumenEntradas, versionRige, formatoSql, JSON.stringify({ ...documento(), formato }));
+    const resultado = repositorio.leer(1);
+    expect(resultado.exito).toBe(false);
+    if (resultado.exito) throw new Error("Formato incompatible aceptado");
+    expect(resultado.error.codigo).toBe("almacen-sin-esquema");
+    expect(resultado.error.mensaje).toContain("bun run esquema");
+  });
+});
+
+describe("S-2 ADR-061", () => {
+  test("la consulta rechaza user_version 1 sin modificar los bytes", async () => {
+    const { repositorio, ruta, abrir } = await escenario();
+    const base = abrir();
+    base.exec("PRAGMA user_version = 1");
+    base.close();
+    conexiones.pop();
+    const antes = await Bun.file(ruta).bytes();
+    expect(repositorio.leer(1)).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+    expect(await Bun.file(ruta).bytes()).toEqual(antes);
   });
 });

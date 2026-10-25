@@ -1,7 +1,7 @@
 import type { Database } from "bun:sqlite";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
 import type { Resultado } from "@rige/nucleo/resultado";
-import type { PuertoExistenciaAlmacen } from "../../aplicacion/puertos/almacen";
+import { errorAlmacenSinEsquema, type PuertoExistenciaAlmacen } from "../../aplicacion/puertos/almacen";
 import { errorResolucionInexistente } from "../../aplicacion/puertos/resoluciones";
 import type { PuertoResoluciones, ResolucionGuardada, ResumenResolucion } from "../../aplicacion/puertos/resoluciones";
 import { AlmacenSqlite, abrirConexion } from "./esquema";
@@ -34,7 +34,7 @@ export class RepositorioResolucionesSqlite implements PuertoResoluciones {
       const alta = base.query(`INSERT INTO resolucion (proyecto_id, instante, resumen_entradas, herramienta,
         version_herramienta, version_rige, formato_documento, documento) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(
         proyecto.id, instante, resolucion.resumenEntradas, resolucion.identidad.herramienta,
-        resolucion.identidad.version, this.versionRige, 1, JSON.stringify(resolucion));
+        resolucion.identidad.version, this.versionRige, resolucion.formato, JSON.stringify(resolucion));
       const id = Number(alta.lastInsertRowid);
       const insertarEntrada = base.query(`INSERT INTO entrada_leida
         (resolucion_id, orden, via, referencia, resumen, condicion) VALUES (?, ?, ?, ?, ?, ?)`);
@@ -54,8 +54,12 @@ export class RepositorioResolucionesSqlite implements PuertoResoluciones {
         "SELECT id, instante, formato_documento, documento FROM resolucion WHERE id = ?",
       ).get(id);
       if (fila === null) return { exito: false, error: errorResolucionInexistente(id) };
-      if (fila.formato_documento !== 1) throw new Error(`No se admite el formato de documento ${fila.formato_documento}`);
-      return { exito: true, valor: { id: fila.id, instante: fila.instante, resolucion: JSON.parse(fila.documento) as Resolucion } };
+      if (fila.formato_documento !== 2) return { exito: false, error: errorAlmacenSinEsquema };
+      const documento: unknown = JSON.parse(fila.documento);
+      if (typeof documento !== "object" || documento === null || !("formato" in documento) || documento.formato !== 2) {
+        return { exito: false, error: errorAlmacenSinEsquema };
+      }
+      return { exito: true, valor: { id: fila.id, instante: fila.instante, resolucion: documento as Resolucion } };
     });
   }
 

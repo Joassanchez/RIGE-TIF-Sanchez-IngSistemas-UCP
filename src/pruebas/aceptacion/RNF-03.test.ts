@@ -35,7 +35,7 @@ describe("RNF-03 CA-3", () => {
       determinante: { origen: { tipo: "declarado", orden: 0, posicion: { linea: 1, columna: 2 } }, via: "capa-b", referencia: "/proyecto/capa-b.json", valor: 0.2, regla: "primera-declaracion" },
       motivo: "primera-declaracion",
       desplazadas: [{ origen: { tipo: "declarado", orden: 1, posicion: { linea: 1, columna: 2 } }, via: "capa-a", referencia: "/proyecto/capa-a.json", valor: 0.1, regla: "primera-declaracion" }],
-    } }], noResueltas: [] });
+    } }], noResueltas: [], motivo: null });
     const conReemplazo = resolver({ ...adaptadorFicticio, secuenciar(lecturas) {
       const secuencia = adaptadorFicticio.secuenciar(lecturas);
       if (!secuencia.exito) return secuencia;

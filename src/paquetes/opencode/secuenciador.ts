@@ -48,7 +48,7 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
   for (const { via, declaraciones } of lecturas) {
     for (const { ruta, valor, posicion } of declaraciones) {
       if (ruta[0] === "mode") {
-        if (ruta.length === 1 && !esObjeto(valor)) return { exito: false, error: {
+        if (ruta.length === 1 && !esObjeto(valor)) return { exito: false, error: { categoria: "uso",
           codigo: "contenido-no-soportado",
           mensaje: `El prototipo v1 no incorpora mode (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).`,
         } };

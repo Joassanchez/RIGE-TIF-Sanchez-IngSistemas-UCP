@@ -149,7 +149,7 @@ describe("V1-03 S-5 V1-08 F-7", () => {
 describe("V1-03 S-3 V1-08 F-6", () => {
   test.each([null, 1, "modo", []].map(valor => [valor] as const))("rechaza mode no objeto %j con referencia y posicion", (valor) => {
     expect(secuenciar([lectura(0, [declaracion(["steps"]), declaracion(["mode"], valor)])])).toEqual({
-      exito: false, error: {
+      exito: false, error: { categoria: "uso",
         codigo: "contenido-no-soportado",
         mensaje: "El prototipo v1 no incorpora mode (C:/p/opencode.jsonc:6:7).",
       },

@@ -46,7 +46,7 @@ export interface Secuencia {
   readonly noResueltas: readonly ClaveNoResuelta[];
 }
 
-export interface ErrorAnalisis { readonly codigo: string; readonly mensaje: string }
+export interface ErrorAnalisis { readonly categoria: "uso"; readonly codigo: string; readonly mensaje: string }
 
 export interface Adaptador {
   readonly identidad: Identidad;

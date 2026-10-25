@@ -39,9 +39,10 @@ describe("CLI-7", () => {
 });
 
 const respuesta: RespuestaEstado = {
-  esquema: 1, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
+  esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
 const noWeb = {
+  consultarValores: () => { throw new Error("No consultar valores"); },
   consultarEstado: () => { throw new Error("No debe consultar estado"); },
   iniciarServidor: () => { throw new Error("No debe iniciar servidor"); },
 };
@@ -77,7 +78,7 @@ describe("CLI-2", () => {
         ? { exito: false, error }
         : { exito: true, valor: { ...noWeb, prepararAlmacen: () => ({ exito: false, error }) } };
       expect(ejecutar(["esquema"], ensamblar)).toEqual({
-        codigo: 1, salida: "", error: JSON.stringify({ esquema: 1, error }) + "\n",
+        codigo: 1, salida: "", error: JSON.stringify({ esquema: 2, error }) + "\n",
       });
     }
   });
@@ -89,7 +90,7 @@ describe("CLI-3", () => {
       expect(ejecutar(argumentos, () => { throw new Error("No debe ensamblar"); })).toEqual({
         codigo: 2, salida: "",
         error: JSON.stringify({
-          esquema: 1, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos invalidos: ${argumentos.join(" ")}.` },
+          esquema: 2, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos invalidos: ${argumentos.join(" ")}.` },
         }) + "\n",
       });
     }
@@ -101,6 +102,11 @@ describe("CLI-3", () => {
       { argumentos: ["esquema", "extra"], mencionado: "extra" },
       { argumentos: ["esquema", "--x"], mencionado: "--x" },
       { argumentos: ["esquema", "--depurar=si"], mencionado: "--depurar" },
+      { argumentos: ["esquema", "--proyecto", "/p"], mencionado: "--proyecto" },
+      { argumentos: ["servir", "--agente", "a"], mencionado: "--agente" },
+      { argumentos: ["valores", "--proyecto", "/p"], mencionado: "--agente" },
+      { argumentos: ["valores", "--agente", "a"], mencionado: "--proyecto" },
+      { argumentos: ["valores", "--proyecto", "/p", "--agente", "a", "--clave", ""], mencionado: "--clave" },
     ];
     for (const { argumentos, mencionado } of invalidos) {
       let llamadas = 0;
@@ -109,7 +115,7 @@ describe("CLI-3", () => {
       expect(resultado.salida).toBe("");
       const error = JSON.parse(resultado.error);
       expect(error).toEqual({
-        esquema: 1,
+        esquema: 2,
         error: { codigo: "argumentos-invalidos", mensaje: expect.stringContaining(mencionado) },
       });
       expect(resultado.error).toBe(JSON.stringify(error) + "\n");
@@ -129,7 +135,7 @@ describe("CLI-4", () => {
     for (const ensamblar of ensamblados) {
       expect(ejecutar(["esquema"], ensamblar)).toEqual({
         codigo: 70, salida: "",
-        error: JSON.stringify({ esquema: 1, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
+        error: JSON.stringify({ esquema: 2, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
       });
     }
   });
@@ -159,7 +165,7 @@ describe("CLI-5", () => {
       for (const depurados of [["--depurar", ...argumentos], [...argumentos, "--depurar"]]) {
         const esperado = argumentos.some((argumento) => argumento === "--x" || argumento === "--depurar=si")
           ? { ...normal, error: JSON.stringify({
-            esquema: 1, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos invalidos: ${depurados.join(" ")}.` },
+            esquema: 2, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos invalidos: ${depurados.join(" ")}.` },
           }) + "\n" }
           : normal;
         expect(ejecutar(depurados, ensamblar)).toEqual(esperado);
@@ -174,7 +180,7 @@ describe("CLI-5", () => {
         expect(ejecutar(argumentos, ensamblar)).toEqual({
           codigo: 70, salida: "",
           error: JSON.stringify({
-            esquema: 1, error: { codigo: "interno", mensaje: "Falla interna de RIGE.", stack: falla.stack },
+            esquema: 2, error: { codigo: "interno", mensaje: "Falla interna de RIGE.", stack: falla.stack },
           }) + "\n",
         });
       }
@@ -188,13 +194,14 @@ describe("CLI-6", () => {
     const orden: string[] = [];
     const ensamblado: Ensamblado = {
       exito: true, valor: {
+        consultarValores: noWeb.consultarValores,
         prepararAlmacen: () => { throw new Error("No debe preparar almacen"); },
         consultarEstado: () => { orden.push("consultar"); return { exito: true, valor: respuesta }; },
         iniciarServidor: () => { orden.push("iniciar"); return { exito: true, valor: { direccion, detener() {} } }; },
       },
     };
     expect(ejecutar(["servir"], () => { orden.push("ensamblar"); return ensamblado; })).toEqual({
-      codigo: 0, salida: JSON.stringify({ esquema: 1, direccion }) + "\n", error: "",
+      codigo: 0, salida: JSON.stringify({ esquema: 2, direccion }) + "\n", error: "",
     });
     expect(orden).toEqual(["ensamblar", "consultar", "iniciar"]);
     if (!ensamblado.exito) throw new Error("Doble invalido");
@@ -205,7 +212,7 @@ describe("CLI-6", () => {
       const iniciarServidor = error.codigo === "almacen-sin-esquema"
         ? noWeb.iniciarServidor : () => ({ exito: false as const, error });
       expect(ejecutar(["servir"], () => ({ exito: true, valor: { ...casos, consultarEstado, iniciarServidor } }))).toEqual({
-        codigo: 1, salida: "", error: JSON.stringify({ esquema: 1, error }) + "\n",
+        codigo: 1, salida: "", error: JSON.stringify({ esquema: 2, error }) + "\n",
       });
     }
     const falla = new Error("Detalle privado");
@@ -217,7 +224,7 @@ describe("CLI-6", () => {
     for (const ensamblar of fallas) {
       expect(ejecutar(["servir"], ensamblar)).toEqual({
         codigo: 70, salida: "",
-        error: JSON.stringify({ esquema: 1, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
+        error: JSON.stringify({ esquema: 2, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
       });
     }
     expect(ejecutar(["servir"], () => ({ exito: false, error: errorAlmacenSinEsquema })).codigo).toBe(1);

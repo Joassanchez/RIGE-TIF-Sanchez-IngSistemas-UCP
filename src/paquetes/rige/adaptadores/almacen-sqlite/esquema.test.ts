@@ -83,7 +83,7 @@ describe("AL-1", () => {
 
 describe("AL-2", () => {
   test("lee la version del guion en la referencia en memoria sin fijarla en el adaptador", () => {
-    const guion = readFileSync(new URL("../../../../esquemas/almacen/001_inicial.sql", import.meta.url), "utf8");
+    const guion = readFileSync(new URL("../../../../esquemas/almacen/002_formato2.sql", import.meta.url), "utf8");
     const guionPrueba = guion.replace(/PRAGMA user_version = \d+;/, "PRAGMA user_version = 7;");
     const original = Database.prototype.exec;
     const sonda = spyOn(Database.prototype, "exec").mockImplementation(function (this: Database, sql, ...parametros) {
@@ -128,11 +128,11 @@ describe("T0-09 preparacion explicita SQLite", () => {
     const { temporal, directorio, ruta, almacen } = escenario();
     expect(readdirSync(temporal)).toEqual([]);
     expect(almacen.preparar()).toEqual({
-      exito: true, valor: { ruta: resolve(ruta).replaceAll("\\", "/"), versionEsquema: 1 },
+      exito: true, valor: { ruta: resolve(ruta).replaceAll("\\", "/"), versionEsquema: 2 },
     });
     expect(existsSync(directorio)).toBe(true);
     expect(readdirSync(directorio)).toEqual(["rige.db"]);
-    expect(abrir(ruta).query("PRAGMA user_version").get()).toEqual({ user_version: 1 });
+    expect(abrir(ruta).query("PRAGMA user_version").get()).toEqual({ user_version: 2 });
   });
 
   test("una base vacia se prepara; repetir conserva esquema, registros y bytes", () => {
@@ -168,7 +168,7 @@ describe("T0-09 preparacion explicita SQLite", () => {
 
   test.each(["DROP TRIGGER resolucion_inmutable", "DROP INDEX resolucion_por_resumen",
     "CREATE TABLE adicional (id INTEGER)", "DROP TABLE entrada_leida"])(
-    "rechaza estructura incompatible con user_version 1: %s", (sql) => {
+    "rechaza estructura incompatible con user_version 2: %s", (sql) => {
       const { base, ruta, almacen } = preparada();
       base.exec(sql);
       const antes = inventario(base);

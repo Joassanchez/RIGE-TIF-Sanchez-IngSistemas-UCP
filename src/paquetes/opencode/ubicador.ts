@@ -3,12 +3,12 @@ import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { Resultado } from "@rige/nucleo/resultado";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
-const noSoportada = (nombre: string): Resultado<never, ErrorAnalisis> => ({ exito: false, error: {
+const noSoportada = (nombre: string): Resultado<never, ErrorAnalisis> => ({ exito: false, error: { categoria: "uso",
   codigo: "via-no-soportada", mensaje: `El prototipo v1 no incorpora ${normalizar(nombre)}.`,
 } });
 
 export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<readonly ViaUbicada[], ErrorAnalisis> {
-  if (!entorno.esAbsoluta(proyecto) || entorno.tipo(proyecto) !== "directorio") return { exito: false, error: {
+  if (!entorno.esAbsoluta(proyecto) || entorno.tipo(proyecto) !== "directorio") return { exito: false, error: { categoria: "uso",
     codigo: "proyecto-inexistente", mensaje: `El proyecto ${proyecto} no existe o no es un directorio.`,
   } };
   const variable = (nombre: string) => entorno.variable(nombre);
@@ -24,7 +24,7 @@ export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<rea
   if (config !== undefined && !entorno.esAbsoluta(config)) return noSoportada("OPENCODE_CONFIG");
   const nombreHome = entorno.plataforma === "win32" ? "USERPROFILE" : "HOME";
   const hogar = variable(nombreHome);
-  if (!hogar) return { exito: false, error: {
+  if (!hogar) return { exito: false, error: { categoria: "uso",
     codigo: "entorno-incompleto", mensaje: `Falta la variable ${nombreHome} para ubicar las entradas globales.`,
   } };
   const vias: ViaUbicada[] = [];

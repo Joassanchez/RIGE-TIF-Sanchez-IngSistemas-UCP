@@ -1,10 +1,13 @@
 import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
+import type { ConsultarValores } from "../../aplicacion/casos-uso/consultar-valores";
+import { versionEsquemaSalida } from "../../aplicacion/respuestas/valores";
 import type { ErrorUso } from "../../aplicacion/errores";
 import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
 import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { parseArgs } from "node:util";
 
 export interface CasosUsoCli {
+  readonly consultarValores: ConsultarValores;
   readonly prepararAlmacen: () => Resultado<RespuestaEstado, ErrorUso>;
   readonly consultarEstado: ConsultarEstado;
   readonly iniciarServidor: () => Resultado<{ readonly direccion: string }, ErrorUso>;
@@ -12,16 +15,19 @@ export interface CasosUsoCli {
 
 export type Ensamblado = Resultado<CasosUsoCli, ErrorUso>;
 
+interface OpcionesValores { readonly proyecto: string; readonly agente: string; readonly clave: string | undefined }
+
 const subcomandos = {
   esquema: (casos) => casos.prepararAlmacen(),
+  valores: (casos, opciones) => casos.consultarValores(opciones.proyecto, opciones.agente, opciones.clave),
   servir: (casos) => {
     const estado = casos.consultarEstado();
     if (!estado.exito) return estado;
     const servidor = casos.iniciarServidor();
     if (!servidor.exito) return servidor;
-    return { exito: true, valor: { esquema: 1, direccion: servidor.valor.direccion } };
+    return { exito: true, valor: { esquema: versionEsquemaSalida, direccion: servidor.valor.direccion } };
   },
-} satisfies Record<string, (casos: CasosUsoCli) => Resultado<object, ErrorUso>>;
+} satisfies Record<string, (casos: CasosUsoCli, opciones: OpcionesValores) => Resultado<object, ErrorUso>>;
 
 export interface CanalesCli {
   escribirSalida(texto: string): void;
@@ -29,7 +35,7 @@ export interface CanalesCli {
 }
 
 function escribirError(canales: CanalesCli, error: { readonly codigo: string; readonly mensaje: string; readonly stack?: string | undefined }): void {
-  canales.escribirError(JSON.stringify({ esquema: 1, error }) + "\n");
+  canales.escribirError(JSON.stringify({ esquema: versionEsquemaSalida, error }) + "\n");
 }
 
 function argumentosInvalidos(canales: CanalesCli, mensaje: string): number {
@@ -41,7 +47,9 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: () => Ensa
   let opciones: ReturnType<typeof parseArgs>;
   try {
     opciones = parseArgs({
-      args: [...argumentos], options: { depurar: { type: "boolean" } }, strict: true, allowPositionals: true,
+      args: [...argumentos], options: {
+        depurar: { type: "boolean" }, proyecto: { type: "string" }, agente: { type: "string" }, clave: { type: "string" },
+      }, strict: true, allowPositionals: true,
     });
   } catch {
     return argumentosInvalidos(canales, `Argumentos invalidos: ${argumentos.join(" ")}.`);
@@ -52,13 +60,24 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: () => Ensa
   if (!Object.hasOwn(subcomandos, posicionales[0]!)) {
     return argumentosInvalidos(canales, `Subcomando desconocido: ${posicionales[0]}.`);
   }
+  const { proyecto, agente, clave } = opciones.values;
+  if (posicionales[0] === "valores") {
+    if (typeof proyecto !== "string" || !proyecto.trim() || typeof agente !== "string" || !agente.trim()
+      || (clave !== undefined && (typeof clave !== "string" || !clave.trim()))) {
+      return argumentosInvalidos(canales, "valores requiere --proyecto y --agente no vacios; --clave es opcional y no puede estar vacia.");
+    }
+  } else if (proyecto !== undefined || agente !== undefined || clave !== undefined) {
+    return argumentosInvalidos(canales, `El subcomando ${posicionales[0]} no admite --proyecto, --agente ni --clave.`);
+  }
   try {
     const casos = ensamblar();
     if (!casos.exito) {
       escribirError(canales, casos.error);
       return 1;
     }
-    const resultado = subcomandos[posicionales[0] as keyof typeof subcomandos](casos.valor);
+    const resultado = subcomandos[posicionales[0] as keyof typeof subcomandos](casos.valor, {
+      proyecto: proyecto as string, agente: agente as string, clave: clave as string | undefined,
+    });
     if (!resultado.exito) {
       escribirError(canales, resultado.error);
       return 1;

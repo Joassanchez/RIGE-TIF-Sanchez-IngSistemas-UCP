@@ -169,7 +169,7 @@ describe("U-7 V1-08 F-7", () => {
     const ruta = "/h/.config/opencode/agent/a.md";
     const { adaptadorOpenCode } = await import("./adaptador");
     const markdown = { ...observada("markdown", ruta), elemento: "a" };
-    expect(adaptadorOpenCode.leer(markdown, "---\nname: otro\n---\ncuerpo")).toEqual({ exito: false, error: {
+    expect(adaptadorOpenCode.leer(markdown, "---\nname: otro\n---\ncuerpo")).toEqual({ exito: false, error: { categoria: "uso",
       codigo: "via-no-soportada", mensaje: `El prototipo v1 no incorpora ${ruta}.`,
     } });
     expect((await vias("/p", entorno({ archivos: { [ruta]: "---\ndescription: ejemplo\n---\nname: otro" } })))

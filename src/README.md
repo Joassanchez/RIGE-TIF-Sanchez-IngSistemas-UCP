@@ -99,7 +99,17 @@ La prelación es: variable de entorno → `rige.env` → valor por defecto. El a
 bun run esquema
 ```
 
-La salida contiene una línea JSON con `esquema: 1`, `versionRige: "0.1.0"`, `almacen.ruta` (ruta del archivo de la base) y `almacen.versionEsquema: 1`. El código de salida es 0. Repetir el comando no cambia el esquema ni los datos.
+La salida contiene una línea JSON con `esquema: 2`, `versionRige: "0.1.0"`, `almacen.ruta` (ruta del archivo de la base) y `almacen.versionEsquema: 2`. El código de salida es 0. Repetir el comando no cambia el esquema ni los datos. El comando aplica `001_inicial.sql` y `002_formato2.sql` sobre un almacén vacío. Un almacén de versión 1 se rechaza sin modificarlo: se debe mover o borrar explícitamente su directorio antes de ejecutar `bun run esquema`. Las resoluciones nuevas declaran `formato: 2`; un documento de otro formato produce `almacen-sin-esquema`.
+
+**Consultar valores por CLI (RF-03), sin preparar el almacén:**
+
+```bash
+bun --silent run rige -- valores --proyecto pruebas/escenarios/v1-precedencia/proyecto --agente build --clave temperature
+```
+
+La forma general es `bun run rige -- valores --proyecto <ruta> --agente <nombre> [--clave <ruta>]`. Omitir `--clave` consulta todas las claves del agente. La clave admite segmentos separados por puntos o un puntero JSON (por ejemplo, `/options/a.b` conserva el punto dentro del segmento). La salida es una `RespuestaValores` con `esquema: 2`, proyecto, herramienta y versión, resumen y entradas leídas, agente, `ruta` como arreglo o `null`, valores con sus rastros, reglas, claves no resueltas y `motivo`. No incluye id, instante ni historia: dos consultas sobre las mismas entradas producen el mismo JSON byte a byte. Este subcomando resuelve en memoria y no crea ni modifica el almacén.
+
+Una clave ausente en un agente con declaraciones devuelve código 0, `valores: []` y `motivo: "clave-inexistente"`. Un proyecto o agente inexistente produce código 1 por el canal de error; omitir `--agente` o `--proyecto` produce código 2. La web presenta la misma `RespuestaValores`, acompañada de un `SobreAlmacen` con id, instante e historia.
 
 **2. Arrancar el servidor:**
 
@@ -107,7 +117,7 @@ La salida contiene una línea JSON con `esquema: 1`, `versionRige: "0.1.0"`, `al
 bun run servir
 ```
 
-Con el puerto por defecto, se escribe `{"esquema":1,"direccion":"http://127.0.0.1:4747"}` y el proceso queda escuchando. En el navegador, `http://127.0.0.1:4747` muestra «RIGE 0.1.0», la ruta del almacén y la versión de su esquema. Si se cambia `RIGE_PUERTO`, se usa el puerto configurado en la dirección.
+Con el puerto por defecto, se escribe `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y el proceso queda escuchando. En el navegador, `http://127.0.0.1:4747` muestra «RIGE 0.1.0», la ruta del almacén y la versión de su esquema. Si se cambia `RIGE_PUERTO`, se usa el puerto configurado en la dirección.
 
 **3. Recorrido vertical (caso de uso del Instrumento 35):**
 
@@ -135,7 +145,9 @@ bun run verificar
 bun test
 ```
 
-`verificar` comprueba los tipos y la construcción y termina con código 0. Todas las pruebas pasan; `bun test` termina con código 0.
+`verificar` comprueba los tipos y la construcción y termina con código 0. Todas las pruebas pasan; `bun test` termina con código 0. Durante el desarrollo se ejecutan solo los archivos afectados con `bun test <archivos>`; las reglas de esta tarea se comprueban con `bun test pruebas/aceptacion/RF-03.test.ts paquetes/rige/aplicacion/errores.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts`.
+
+Para las ejecuciones del agente, `RIGE_ALMACEN` siempre apunta a un directorio temporal. En Bash se configura con `export RIGE_ALMACEN="$(mktemp -d)"`; en PowerShell, con `$env:RIGE_ALMACEN = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())`. El arnés crea además un entorno aislado para cada subproceso de aceptación.
 
 **5. Comprobar las referencias nativas (opcional, separado de `bun test`):**
 
@@ -160,13 +172,13 @@ Produce el mismo JSON de estado que `bun run esquema`. Sin `--silent`, `bun run`
 | Código de salida | Situación | Canal de salida | Canal de error |
 |---|---|---|---|
 | 0 | Respuesta válida | JSON de respuesta | Vacío |
-| 1 | Error de uso de la CLI | Vacío | JSON de error: `almacen-sin-esquema`, `configuracion-invalida` o `puerto-ocupado` |
+| 1 | Error de uso de la CLI | Vacío | JSON de error con su código: por ejemplo, `almacen-sin-esquema`, `proyecto-inexistente` o `agente-sin-declaraciones` |
 | 2 | Argumentos inválidos | Vacío | JSON de error: `argumentos-invalidos` |
 | 70 | Falla interna | Vacío | JSON de error: `interno`; `--depurar` agrega el stack, sin logs a disco |
 
-La forma del error es `{"esquema":1,"error":{"codigo":"…","mensaje":"…"}}`. La tabla describe los canales de la CLI; la línea propia de `bun run` se evita con `--silent`.
+La forma del error es `{"esquema":2,"error":{"codigo":"…","mensaje":"…"}}`. La tabla describe los canales de la CLI; la línea propia de `bun run` se evita con `--silent`.
 
-La web presenta los errores de uso con estado HTTP 400 (`solicitud-invalida`), 404 (`proyecto-inexistente`, `resolucion-inexistente`, `agente-sin-declaraciones`, `clave-inexistente`) o 422 (`via-no-soportada`, `contenido-no-soportado`, `entrada-ilegible`, `clave-no-resuelta`).
+La web presenta los errores de uso con estado HTTP 400 (`solicitud-invalida`), 404 (`proyecto-inexistente`, `resolucion-inexistente`, `agente-sin-declaraciones`) o 422 (`via-no-soportada`, `contenido-no-soportado`, `entrada-ilegible`, `clave-no-resuelta` y códigos nuevos del adaptador). La ruta `/resolver` guarda el proyecto completo y redirige a la consulta; la existencia del agente y de la clave se evalúa al recuperar esa resolución. Una clave ausente se presenta con éxito y con su motivo.
 
 La etiqueta `v1` corresponde a la versión `0.1.0` de RIGE.
 

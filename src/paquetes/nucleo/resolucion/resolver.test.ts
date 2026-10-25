@@ -139,7 +139,7 @@ describe("N-5", () => {
 describe("N-6", () => {
   test.each(["ubicar", "leer", "secuenciar"] as const)("devuelve el mismo fallo de %s y no avanza", async (etapa) => {
     const { adaptador, entorno } = escenario([[hoja(ruta, 1)]]);
-    const fallo = { exito: false as const, error: { codigo: "fallo-doble", mensaje: "Fallo del adaptador." } };
+    const fallo = { exito: false as const, error: { categoria: "uso" as const, codigo: "fallo-doble", mensaje: "Fallo del adaptador." } };
     const llamadas: string[] = [];
     const doble: Adaptador = { ...adaptador,
       ubicar(proyecto, entorno) { llamadas.push("ubicar"); return etapa === "ubicar" ? fallo : adaptador.ubicar(proyecto, entorno); },

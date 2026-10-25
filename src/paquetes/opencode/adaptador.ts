@@ -16,7 +16,7 @@ export const adaptadorOpenCode: Adaptador = {
     if (texto.startsWith("---")) {
       const lineas = texto.split(/\r?\n/);
       const cierre = lineas.findIndex((linea, indice) => indice > 0 && linea.trim() === "---");
-      if (cierre > 0 && lineas.slice(1, cierre).some(linea => /^\s*name\s*:/.test(linea))) return { exito: false, error: {
+      if (cierre > 0 && lineas.slice(1, cierre).some(linea => /^\s*name\s*:/.test(linea))) return { exito: false, error: { categoria: "uso",
         codigo: "via-no-soportada", mensaje: `El prototipo v1 no incorpora ${via.referencia.replaceAll("\\", "/")}.`,
       } };
     }

@@ -31,7 +31,7 @@ export function leerEntrada(via: ViaUbicada, texto: string): Resultado<readonly 
       && sustitucion.index + sustitucion[0].length <= scanner.getTokenOffset() + scanner.getTokenLength();
     if (dentro && [SyntaxKind.StringLiteral, SyntaxKind.LineCommentTrivia, SyntaxKind.BlockCommentTrivia].includes(token)) continue;
     const { linea, columna } = posicion(texto, sustitucion.index);
-    return { exito: false, error: {
+    return { exito: false, error: { categoria: "uso",
       codigo: "contenido-no-soportado",
       mensaje: `El prototipo v1 no incorpora ${sustitucion[0]} (${via.referencia.replaceAll("\\", "/")}:${linea}:${columna}).`,
     } };
@@ -40,7 +40,7 @@ export function leerEntrada(via: ViaUbicada, texto: string): Resultado<readonly 
   const raiz = parseTree(texto, errores, { allowTrailingComma: true });
   if (errores.length || raiz?.type !== "object") {
     const { linea, columna } = posicion(texto, errores[0]?.offset ?? raiz?.offset ?? 0);
-    return { exito: false, error: {
+    return { exito: false, error: { categoria: "uso",
       codigo: "entrada-ilegible",
       mensaje: `La entrada ${via.referencia.replaceAll("\\", "/")} no se puede leer (${linea}:${columna}).`,
     } };

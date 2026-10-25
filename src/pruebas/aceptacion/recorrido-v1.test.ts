@@ -264,21 +264,22 @@ describe("Errores de uso por la web", () => {
 
   describe("Clave o agente inexistentes", () => {
     const preparar = prepararRecorrido();
-    test("clave o agente inexistentes dan 404 y la siguiente resolucion valida sigue siendo la 1", async () => {
+    test("guarda el proyecto y consulta una clave ausente con exito o un agente ausente con error", async () => {
       const recorrido = preparar();
       const clave = await recorrido.resolver("temperaturre");
-      expect(clave.estado).toBe(404);
-      expect(clave.cuerpo).toContain("La clave temperaturre no existe para el agente build.");
-      expect(clave.cabeceras.location).toBeUndefined();
+      expect(clave.estado).toBe(303);
+      const sinClave = await recorrido.solicitar(ubicacion(clave));
+      expect(sinClave.estado).toBe(200);
+      expect(sinClave.cuerpo).toContain("clave-inexistente");
       const agente = await recorrido.solicitar(`/resolver?proyecto=${encodeURIComponent(recorrido.proyecto)}&agente=ausente`);
-      expect(agente.estado).toBe(404);
-      expect(agente.cuerpo).toContain("El agente ausente no tiene declaraciones.");
-      expect(agente.cabeceras.location).toBeUndefined();
-      expect((await recorrido.solicitar(paginaPrimera)).estado).toBe(404);
+      expect(agente.estado).toBe(303);
+      const sinAgente = await recorrido.solicitar(ubicacion(agente));
+      expect(sinAgente.estado).toBe(404);
+      expect(sinAgente.cuerpo).toContain("El agente ausente no tiene declaraciones.");
       const valida = await recorrido.resolver();
       expect(valida.estado).toBe(303);
-      expect(valida.cabeceras.location).toBe(paginaPrimera);
-      const pagina = await recorrido.solicitar(paginaPrimera);
+      expect(valida.cabeceras.location).toBe("/resoluciones/3?agente=build&clave=temperature");
+      const pagina = await recorrido.solicitar(ubicacion(valida));
       expect(pagina.estado).toBe(200);
       comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     });
@@ -286,21 +287,22 @@ describe("Errores de uso por la web", () => {
 
   describe("Claves no resueltas", () => {
     const preparar = prepararRecorrido();
-    test("no guarda la clave no resuelta y sin clave muestra solo las pendientes del agente consultado", async () => {
+    test("guarda sin consultar claves y presenta el error de la clave no resuelta al recuperar", async () => {
       const recorrido = preparar();
       const entrada = join(recorrido.proyecto, "opencode.jsonc");
       const original = readFileSync(entrada, "utf8");
       // La copia temporal conserva la linea y columna de temperature.
       writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": 0.3, "permission": {"edit":"deny"}')
         .replace('"build": {', '"otro": {"permission":{"bash":"deny"}}, "build": {'));
-      const rechazo = await recorrido.resolver("permission.edit");
+      const guardada = await recorrido.resolver("permission.edit");
+      expect(guardada.estado).toBe(303);
+      const rechazo = await recorrido.solicitar(ubicacion(guardada));
       expect(rechazo.estado).toBe(422);
       expect(rechazo.cuerpo).toContain("permission.edit");
-      expect(rechazo.cabeceras.location).toBeUndefined();
       const valida = await recorrido.resolver("");
       expect(valida.estado).toBe(303);
-      expect(valida.cabeceras.location).toBe("/resoluciones/1?agente=build");
-      const pagina = await recorrido.solicitar("/resoluciones/1?agente=build");
+      expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build");
+      const pagina = await recorrido.solicitar("/resoluciones/2?agente=build");
       expect(pagina.estado).toBe(200);
       expect(pagina.cuerpo).toContain("<td>temperature</td><td>0.3</td>");
       expect(pagina.cuerpo).toContain("Claves no resueltas en el prototipo v1");
@@ -309,7 +311,7 @@ describe("Errores de uso por la web", () => {
       expect(pendientes).toBeDefined();
       expect(pendientes?.match(/<li>/g)).toHaveLength(1);
       expect(pagina.cuerpo).not.toContain("otro.permission");
-      const recuperada = await recorrido.solicitar("/resoluciones/1?agente=build&clave=permission");
+      const recuperada = await recorrido.solicitar("/resoluciones/2?agente=build&clave=permission");
       expect(recuperada.estado).toBe(422);
       expect(recuperada.cuerpo).toContain("permission");
     });

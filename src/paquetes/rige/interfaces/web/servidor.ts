@@ -23,15 +23,15 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       const agente = url.searchParams.get("agente") ?? "";
       const clave = url.searchParams.get("clave") ?? "";
       if (!agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente esta vacio"));
-      const resultado = casos.resolverProyecto(url.searchParams.get("proyecto") ?? "", agente, clave === "" ? undefined : clave.split("."));
+      const resultado = casos.resolverProyecto(url.searchParams.get("proyecto") ?? "");
       if (!resultado.exito) return paginaErrorUso(resultado.error);
       return redirigir(`/resoluciones/${resultado.valor.id}?agente=${encodeURIComponent(agente)}${clave ? `&clave=${encodeURIComponent(clave)}` : ""}`);
     }
     const id = /^\/resoluciones\/([0-9]+)$/.exec(url.pathname)?.[1];
     if (id !== undefined) {
       const clave = url.searchParams.get("clave") ?? "";
-      const resultado = casos.consultarResolucion(id, url.searchParams.get("agente") ?? "", clave === "" ? undefined : clave.split("."));
-      return resultado.exito ? paginaResolucion(resultado.valor) : paginaErrorUso(resultado.error);
+      const resultado = casos.consultarResolucion(id, url.searchParams.get("agente") ?? "", clave);
+      return resultado.exito ? paginaResolucion(resultado.valor.respuesta, resultado.valor.sobre) : paginaErrorUso(resultado.error);
     }
     if (url.pathname !== "/") {
       const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>RIGE</title></head><body><p>Página no encontrada.</p></body></html>`;

@@ -3,6 +3,7 @@ import { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import guion from "../../../../esquemas/almacen/001_inicial.sql" with { type: "text" };
+import formato2 from "../../../../esquemas/almacen/002_formato2.sql" with { type: "text" };
 import { errorAlmacenSinEsquema, errorAlmacenIncompatible } from "../../aplicacion/puertos/almacen";
 import type { EstadoAlmacen, PuertoAlmacen, PuertoExistenciaAlmacen } from "../../aplicacion/puertos/almacen";
 import type { Resultado } from "@rige/nucleo/resultado";
@@ -29,6 +30,7 @@ function esquemaEsperado(): { readonly inventario: string; readonly version: num
   const referencia = abrirConexion(":memory:");
   try {
     referencia.exec(guion);
+    referencia.exec(formato2);
     return { inventario: inventario(referencia), version: versionEsquema(referencia) };
   } finally {
     referencia.close();
@@ -63,6 +65,7 @@ export class AlmacenSqlite implements PuertoAlmacen {
         const version = versionEsquema(base);
         if (version === 0 && inventario(base) === "[]") {
           base.exec(guion);
+          base.exec(formato2);
         } else if (version !== esperado.version || inventario(base) !== esperado.inventario) {
           return { exito: false, error: errorAlmacenIncompatible };
         }
