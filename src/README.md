@@ -616,6 +616,15 @@ bun run verificar
 En Bash, la referencia se comprueba con
 `bun run referencias --raiz "$(npm root -g)"`.
 
+T2-18 comprueba el fallo del gitfile con el estado de salida y los diagnosticos
+conocidos de Git en Windows y Linux. El diagnostico `not a git repository`
+debe citar el destino del `gitdir:` del escenario. Para probar esa comprobacion,
+con `RIGE_ALMACEN` temporal como en §6:
+
+```powershell
+bun test herramientas/referencias-nativas/aislamiento.test.ts
+```
+
 Para comprobar T2-17, con `RIGE_ALMACEN` temporal como en §6:
 
 ```powershell

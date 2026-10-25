@@ -1,3 +1,15 @@
+import { resolve } from "node:path";
+
+/** Git para Windows y Git 2.53 en Linux diagnostican distinto un gitdir inexistente. */
+export function esFalloGitfile(codigo: number, error: string, gitfile: string, directorio: string): boolean {
+  if (codigo === 0) return false;
+  if (/^fatal: gitfile does not point to a valid repository: .+$/m.test(error.trim())) return true;
+  const citada = /^fatal: not a git repository: (.+)$/.exec(error.trim())?.[1];
+  const destino = /^gitdir: (.+)$/.exec(gitfile.trim())?.[1];
+  return citada !== undefined && destino !== undefined
+    && resolve(directorio, citada) === resolve(directorio, destino);
+}
+
 /** Se comprueba despues de sustituir las rutas del hogar aislado por marcadores. */
 export function comprobarAislamiento(cadenas: Readonly<Record<string, readonly unknown[]>>, hogarReal: string, plataforma: string): void {
   const normalizar = (texto: string) => {

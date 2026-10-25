@@ -4,7 +4,7 @@ import { tmpdir, userInfo } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { copiarEscenario, type OpcionesEscenario } from "../pruebas/utilidades/escenario";
 import { comparar, normalizar, normalizarRutas } from "./referencias-nativas/comparar";
-import { comprobarAislamiento } from "./referencias-nativas/aislamiento";
+import { comprobarAislamiento, esFalloGitfile } from "./referencias-nativas/aislamiento";
 
 type Referencia = {
   readonly procedencia: { readonly version: string; readonly directorio: string; readonly hogar: string;
@@ -108,7 +108,8 @@ function ejecutar(): number {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 10000,
         });
         if (referencia.procedencia.git === "gitfile-roto"
-          ? raizGit.exitCode === 0 || !raizGit.stderr.toString().includes("gitfile does not point to a valid repository")
+          ? !esFalloGitfile(raizGit.exitCode, raizGit.stderr.toString(),
+            readFileSync(join(copia.proyecto, ".git"), "utf8"), copia.proyecto)
           : raizGit.exitCode !== 0 || resolve(raizGit.stdout.toString().trim()).toLowerCase() !== resolve(raizRepositorio).toLowerCase()) {
           throw new Error("El directorio consultado no pertenece al worktree aislado.");
         }
