@@ -1,5 +1,6 @@
 import type { Resultado } from "@rige/nucleo/resultado";
 import { decidir } from "@rige/nucleo/permisos/decidir";
+import { explicar } from "@rige/nucleo/permisos/explicar";
 import { errorDesdeAnalisis, errorSolicitudInvalida, type ErrorUso } from "../errores";
 import { versionEsquemaSalida } from "../respuestas/valores";
 import type { RespuestaPermiso } from "../respuestas/permiso";
@@ -7,7 +8,7 @@ import { analizarProyecto, type DependenciasAnalisis } from "./analizar-proyecto
 
 export type AccionPermiso = string | { readonly sujeto: string; readonly herramienta?: never } | { readonly herramienta: string; readonly sujeto?: never };
 
-export function consultarPermiso(dependencias: DependenciasAnalisis, proyecto: string, agente: string, accion: AccionPermiso, objetivo: string, lanzadoPor?: string): Resultado<RespuestaPermiso, ErrorUso> {
+export function consultarPermiso(dependencias: DependenciasAnalisis, proyecto: string, agente: string, accion: AccionPermiso, objetivo: string, lanzadoPor?: string, opciones: { readonly explicar?: boolean } = {}): Resultado<RespuestaPermiso, ErrorUso> {
   const herramienta = typeof accion === "object" ? accion.herramienta : undefined;
   let sujeto = typeof accion === "string" ? accion : accion.sujeto ?? "";
   if (typeof accion === "object" && ((accion.sujeto !== undefined) === (herramienta !== undefined))) return { exito: false,
@@ -57,5 +58,8 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, proyecto: s
     esquema: versionEsquemaSalida, proyecto: analisis.valor.proyecto,
     entradas: analisis.valor.entradas, resumenEntradas: analisis.valor.resumenEntradas,
     ...rastro, cadena: coincidentes, reglas,
+    explicacion: opciones.explicar ? explicar({ ...rastro, coincidentes }, {
+      ...adaptador.permisos.plantillas, reglas: adaptador.reglas,
+    }, cadena.valor.reglas.length) : null,
   } };
 }

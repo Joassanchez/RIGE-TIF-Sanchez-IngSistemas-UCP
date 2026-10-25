@@ -4,7 +4,7 @@ import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas
 import { copiarEscenario, type OpcionesEscenario } from "./escenario";
 import { crearEntornoAislado } from "./entorno-aislado";
 
-export interface ConsultaPermiso { agente: string; sujeto?: string; herramienta?: string; objetivo: string; lanzadoPor?: string }
+export interface ConsultaPermiso { agente: string; sujeto?: string; herramienta?: string; objetivo: string; lanzadoPor?: string; explicar?: boolean }
 export interface DecisionReferencia extends ConsultaPermiso {
   decision: string; determinante: number; coincidentes: number[]; procedencia: string;
 }

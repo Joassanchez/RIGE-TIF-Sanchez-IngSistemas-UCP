@@ -363,3 +363,23 @@ La resolucion conserva el formato 2 y puede incluir `eliminadas`, con el rastro
 original y la declaracion `eliminacion` que lo retiro. Los indices se asignan por
 preorden final; dentro de `eliminadas`, numeran los rastros retirados. `tools`
 marca su ambito de permisos como no resuelto con `tools-legado-no-incorporado`.
+
+T2-10 agrega explicaciones deterministas de decisiones de permiso en el nucleo.
+El adaptador aporta las plantillas y el vocabulario; los marcadores desconocidos,
+sin valor y las reglas sin plantilla producen una falla visible. El caso de uso
+admite `consultarPermiso(dependencias, proyecto, agente, accion, objetivo,
+lanzadoPor, { explicar: true })`; sin esa opcion, `explicacion` es `null`.
+La explicacion identifica la determinante, su posicion en la cadena completa,
+el origen y las desplazadas; tambien explica el efecto por defecto, las
+protecciones nativas anuladas y los motivos sin decision. Cierra con las
+aprobaciones permanentes excluidas. `RespuestaValores` no incorpora explicacion.
+La integracion en CLI y web corresponde a T2-11 y T2-12.
+
+Para comprobar T2-10, con `RIGE_ALMACEN` temporal como se indica en §6:
+
+```bash
+bun test paquetes/nucleo/permisos/explicar.test.ts pruebas/aceptacion/RF-02-explicacion.test.ts
+bun test paquetes
+bun test
+bun run verificar
+```

@@ -1,4 +1,17 @@
+import type { PlantillasExplicacion } from "@rige/nucleo/permisos/explicar";
+
+export const plantillasExplicacion: PlantillasExplicacion = {
+  determinante: "La regla {indice} de {total}, {sujeto} {patron} → {efecto}, {origen}, es la última regla coincidente; OpenCode 1.18.25 aplica la última coincidencia.",
+  defecto: "No hay reglas coincidentes; la decisión es {efecto} por defecto.",
+  desplazadas: "Hay {desplazadas} reglas coincidentes desplazadas.",
+  anulada: "La protección nativa de la regla {indice}, {sujeto} {patron} → {efecto}, queda anulada por la declaración determinante.",
+  origenes: { declarado: "declarada en {archivo}:{linea}", implicito: "implícita", nativo: "nativa" },
+  efectos: { allow: "permitida", deny: "denegada", ask: "sujeta a confirmación" },
+  cierre: ["aprobaciones-permanentes-excluidas"],
+};
+
 export const reglas: Readonly<Record<string, string>> = {
+  "eje-parcialmente-observado": "El eje consultado está parcialmente observado; no se informa una decisión de permiso.",
   "comando-compuesto": "El comando es compuesto o no analizable; no se informa una decision de permiso (RF-08).",
   "tuberia": "Comando compuesto: tuberia (| o |&).",
   "encadenamiento": "Comando compuesto: encadenamiento (&&, || o ;).",

@@ -3,6 +3,7 @@ import type { RastroDecision } from "@rige/nucleo/permisos/tipos";
 import type { versionEsquemaSalida } from "./valores";
 
 export interface RespuestaPermiso extends Omit<RastroDecision, "coincidentes"> {
+  readonly explicacion: readonly string[] | null;
   readonly consulta: RastroDecision["consulta"] & { readonly forma: "sujeto" | "herramienta"; readonly herramienta?: string };
   readonly esquema: typeof versionEsquemaSalida;
   readonly proyecto: string;

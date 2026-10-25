@@ -2,6 +2,7 @@ import type { Permisos, EvaluacionPermiso } from "@rige/nucleo/permisos/tipos";
 import type { ReglaCadena } from "@rige/nucleo/resolucion/tipos";
 import { evaluate, type PermissionV1 } from "./vendor/permiso";
 import { match } from "./vendor/wildcard";
+import { plantillasExplicacion } from "./reglas";
 
 export function evaluar(reglas: readonly ReglaCadena[], sujeto: string, objetivo: string, plataforma: string): EvaluacionPermiso {
   const nativas: PermissionV1.Ruleset = reglas.map(r => {
@@ -15,6 +16,7 @@ export function evaluar(reglas: readonly ReglaCadena[], sujeto: string, objetivo
 }
 
 export const permisos: Permisos = {
+  plantillas: plantillasExplicacion,
   evaluar, ordenEfectos: ["deny", "ask", "allow"], efectoPorDefecto: "ask",
   declaraciones: ["aprobaciones-permanentes-excluidas", "sesion-no-interactiva-excluida"],
 };

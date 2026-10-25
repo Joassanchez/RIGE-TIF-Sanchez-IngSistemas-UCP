@@ -13,6 +13,13 @@ const primera: Estrategia = (estado, nueva, ruta) => {
 
 export const adaptadorFicticio: Adaptador = {
   permisos: {
+    plantillas: {
+      determinante: "Ficha {indice}/{total}: {sujeto} {patron}, {efecto}, {origen}. Ultimo acierto del perfil.",
+      defecto: "Sin aciertos: {efecto} por defecto.", desplazadas: "Se retiran {desplazadas} fichas.",
+      anulada: "Se retira la ficha de fabrica {indice}.",
+      origenes: { nativo: "de fabrica", implicito: "calculada", declarado: "en {archivo}:{linea}" },
+      efectos: { conceder: "concedida", consultar: "consultada", impedir: "impedida" }, cierre: ["limite-ficticio"],
+    },
     ordenEfectos: ["impedir", "consultar", "conceder"], efectoPorDefecto: "consultar", declaraciones: ["limite-ficticio"],
     evaluar(reglas, sujeto, objetivo) {
       const coincidentes = reglas.filter(r => r.sujeto === sujeto && r.patron === objetivo).map(r => r.indice);
