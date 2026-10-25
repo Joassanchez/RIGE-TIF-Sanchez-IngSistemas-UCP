@@ -20,6 +20,7 @@ describe("A5-8", () => {
     const entorno = crearEntornoMemoria({ archivos: {}, plataforma: "win32", variables: { USERPROFILE: "C:/hogar", SystemRoot: "C:/Windows" } });
     const contexto = contextoOpenCode("C:/p", entorno);
     if (!contexto.exito) throw new Error(contexto.error.mensaje);
+    expect(contexto.valor.tmp.replaceAll("\\", "/")).toBe("C:/Windows/temp/opencode");
     // La captura de Bun corre aislada; el entorno del ejecutor no se modifica.
     if (process.platform === "win32") {
       const captura = Bun.spawnSync([process.execPath, "--eval", 'console.log(require("node:os").tmpdir())'], {

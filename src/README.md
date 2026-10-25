@@ -248,6 +248,7 @@ Se detiene el servidor con Ctrl+C antes de continuar.
 ```bash
 bun run verificar
 bun test
+bun run prueba:lenta
 ```
 
 `verificar` comprueba los tipos y la construcción y termina con código 0. Todas las pruebas pasan; `bun test` termina con código 0. Durante el desarrollo se ejecutan solo los archivos afectados con `bun test <archivos>`; las reglas de esta tarea se comprueban con `bun test pruebas/aceptacion/RF-03.test.ts paquetes/rige/aplicacion/errores.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts`.
@@ -438,9 +439,9 @@ de plan y el resultado real de `opencode debug agent build --tool read
 `SELECT data FROM message` en el SQLite **temporal** de OpenCode, campo
 `path.root`. Para repetir la comparacion de cadenas se usa el comando
 `bun run referencias --raiz <directorio-global-npm>` documentado abajo.
-El arnes respeta el modo Git de cada referencia. En los tres escenarios de
-descubrimiento, `OPENCODE_DISABLE_EXTERNAL_SKILLS=true` evita la busqueda
-ascendente fuera del temporal; esa exclusion figura en su procedencia.
+El arnes respeta el modo Git de cada referencia. En los escenarios sin worktree valido, `OPENCODE_DISABLE_EXTERNAL_SKILLS=true`
+evita que la busqueda ascendente de skills salga del temporal. No se usa en
+`v2-worktree-valido`; cada exclusion figura en la procedencia.
 La regeneracion de cadenas conserva las decisiones y la captura de lectura;
 la verificacion de las demas decisiones CA-9 corresponde a T2-14.
 
@@ -465,8 +466,8 @@ bun test paquetes/nucleo/permisos/decidir.test.ts paquetes/opencode/permisos.tes
 El escenario `v2-decision` usa una entrada global aislada. Sus decisiones se
 derivan a mano de la cadena capturada por el binario, como documenta
 `pruebas/escenarios/v2-decision/DERIVACION.md`; regenerar las referencias no
-recalcula ese campo. El arnes invoca el caso de uso desde un subproceso aislado
-para conservar la guarda G-1, sin incorporar la copia del evaluador al oraculo.
+recalcula ese campo. El arnes consulta el caso de uso en el mismo proceso, con un entorno inyectado
+y aislado. La guarda G-1 comprueba la procedencia de los esperados.
 
 Con `RIGE_ALMACEN` en un temporal, las pruebas y el oraculo se ejecutan desde `src/`:
 
@@ -508,10 +509,11 @@ bun test pruebas/aceptacion/RF-03.test.ts pruebas/aceptacion/recorrido-v1.test.t
 ```
 
 `pruebas/escenarios/v2-fusion-permisos/global.json` contiene la entrada global;
-la aceptacion la copia al hogar temporal y consulta el proyecto por subproceso.
-La resolucion conserva el formato 2 y puede incluir `eliminadas`, con el rastro
-original y la declaracion `eliminacion` que lo retiro. Los indices se asignan por
-preorden final; dentro de `eliminadas`, numeran los rastros retirados. `tools`
+la aceptacion la copia al hogar temporal y consulta el caso de uso en memoria,
+con ese entorno inyectado.
+La resolucion conserva el formato 2 y siempre incluye `eliminadas`, con el rastro
+original y la declaracion `eliminacion` que lo retiro. Los indices de fusion se asignan por
+preorden final; `eliminadas` usa su propio `ordenEliminacion`. `tools`
 marca su ambito de permisos como no resuelto con `tools-legado-no-incorporado`.
 
 T2-10 agrega explicaciones deterministas de decisiones de permiso en el nucleo.
@@ -562,3 +564,23 @@ bun test paquetes/rige/interfaces pruebas/aceptacion
 bun test
 bun run verificar
 ```
+
+Para comprobar T2-15 (incluida la sonda M-3 sobre una copia temporal):
+
+```bash
+bun test paquetes pruebas herramientas
+bun run prueba:lenta
+bun run verificar
+```
+
+Las aceptaciones de repositorios validos requieren Git disponible en PATH, como
+se indica en los requisitos previos. RIGE solo comprueba su archivo ejecutable;
+el oraculo nativo ejecuta Git. Las capturas manuales que no reproduce el arnes
+se identifican expresamente como manuales en su procedencia.
+
+T2-15 agrega `porDefecto` a permisos: si es true, la decision es el efecto
+por defecto y `motivoSinDecision` es null. `eliminadas`, y las declaraciones
+y advertencias de cada cadena, son arreglos siempre presentes. Los valores y
+el listado de agentes incluyen las declaraciones del descubrimiento del arbol.
+Los agentes solo en Markdown figuran en el listado incompleto; consultarlos
+o usarlos como lanzador produce `cadena-incompleta` con `markdown-no-observado`.

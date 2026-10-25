@@ -73,34 +73,6 @@ describe("M-8 subprocesos compartidos", () => {
   });
 });
 
-describe("M-3 verificar legible y efectivo", () => {
-  test("comprueba tipos, falla con un error temporal y no imprime el bundle", async () => {
-    const raiz = resolve(import.meta.dir, "../..");
-    const temporal = mkdtempSync(join(tmpdir(), "rige-verificacion-"));
-    const fuente = join(raiz, "paquetes/rige/aplicacion/puertos/almacen.ts");
-    const original = readFileSync(fuente);
-    const comprobar = () => Bun.spawnSync([process.execPath, "run", "verificar"], {
-      cwd: raiz, env: crearEntornoAislado(temporal, process.env), stdout: "pipe", stderr: "pipe",
-    });
-    try {
-      writeFileSync(fuente, original.toString() + '\nconst sondaTipos: number = "incorrecto";\n');
-      const incorrecto = comprobar();
-      expect(incorrecto.exitCode).not.toBe(0);
-      expect(incorrecto.stdout.toString() + incorrecto.stderr.toString()).toContain("TS2322");
-      writeFileSync(fuente, original);
-      const correcto = comprobar();
-      expect(correcto.exitCode).toBe(0);
-      expect(correcto.stdout.toString().includes("// paquetes/")).toBe(false);
-      const manifiesto = await Bun.file(join(raiz, "package.json")).json();
-      expect(manifiesto.scripts.verificar).toBe("bun ./herramientas/verificar.ts");
-      expect((await Bun.file(join(raiz, "tsconfig.json")).json()).include).toContain("herramientas/**/*.ts");
-    } finally {
-      writeFileSync(fuente, original);
-      rmSync(temporal, { recursive: true, force: true });
-    }
-  });
-});
-
 describe("M-4 tsconfigs sin aliases", () => {
   const raiz = resolve(import.meta.dir, "../..");
   async function comprobar(carpeta = raiz) {
@@ -215,7 +187,7 @@ describe("T0-04 andamiaje", () => {
     expect(manifiesto).toMatchObject({ name: "rige", version: versionRige, private: true,
       packageManager: "bun@1.3.14", workspaces: ["paquetes/*"],
       devDependencies: { typescript: "7.0.2", "@types/bun": "1.3.14" } });
-    expect(Object.keys(manifiesto.scripts).sort()).toEqual(["cobertura", "decisiones", "esquema", "referencias", "rige", "servir", "verificar"]);
+    expect(Object.keys(manifiesto.scripts).sort()).toEqual(["cobertura", "decisiones", "esquema", "prueba:lenta", "referencias", "rige", "servir", "verificar"]);
     for (const nombre of ["nucleo", "opencode", "rige"]) {
       const paquete = await Bun.file(join(raiz, "paquetes", nombre, "package.json")).json();
       expect(paquete.name).toBe(`@rige/${nombre}`);

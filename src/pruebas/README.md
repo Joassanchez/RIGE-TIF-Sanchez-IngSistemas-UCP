@@ -124,28 +124,26 @@ relativa a `/` sin guardar rutas reales del temporal.
 | T2-04 F-6 | `../paquetes/opencode/fusion.test.ts` — `T2-04 F-6` (tools bloquea su ambito completo, sin afectar otros agentes ni claves) |
 | T2-04 F-7 | `../paquetes/nucleo/resolucion/fusion.test.ts` — `T2-04 F-7` (retirada del ficticio, rastro eliminado, causa y recreacion al final) |
 | T2-04 F-8 | `aceptacion/RF-01.test.ts` — `RF-01 CA-1 v1-vias` (options.a resuelta contra la referencia, mismas entradas y procedencia) |
-| T2-04 aceptacion RF-01 CA-1 CA-2 | `aceptacion/fusion-permisos.test.ts` — `T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2` (escenario v2-fusion-permisos por CLI, posiciones, puntero JSON, orden, determinismo y SHA-256) |
-| T2-04 menores 1 a 5 | `../paquetes/nucleo/resolucion/fusion.test.ts` — `T2-04 menor 2`; `../paquetes/nucleo/resolucion/contrato.test.ts` — `C1-2 RD-02`; `../paquetes/opencode/fusion.test.ts` — `T2-04 menor 4` (indices solo en el resolver, origen copiado, z antes de b/a; web ya delega el analisis de ruta al caso de uso desde T2-02) |
+| T2-04 aceptacion RF-01 CA-1 CA-2 | `aceptacion/fusion-permisos.test.ts` — `T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2` (escenario v2-fusion-permisos en memoria, posiciones, puntero JSON, orden, determinismo y SHA-256) |
+| T2-04 menores 1 a 5 | `../paquetes/nucleo/resolucion/fusion.test.ts` — `A4-6`; `../paquetes/nucleo/resolucion/contrato.test.ts` — `C1-2 RD-02`; `../paquetes/opencode/fusion.test.ts` — `T2-04 menor 4` (indices solo en el resolver, origen copiado, z antes de b/a; web ya delega el analisis de ruta al caso de uso desde T2-02) |
 | ADR-061: preparación explícita y esquema incompatible | `../paquetes/rige/adaptadores/almacen-sqlite/esquema.test.ts` — `T0-09 preparacion explicita SQLite`, `AL-1`; `aceptacion/arranque.test.ts` — `A-6` (rechazo sin crear ni migrar) |
 | ADR-061: documento, retención e inmutabilidad | `../paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts` — `R-1 RF-17 CA-1`, `R-2 RF-17 CA-3`, `R-3`, `R-4` (persistencia, transacción, retención por proyecto, UPDATE prohibido y esquema exigido) |
 
 Las rutas son relativas a esta carpeta. Los casos del analizador se conservan en tablas: una prueba compara todos los resultados e identifica cada entrada en el diff.
 
-T2-05 usa `utilidades/consultar-cadenas.ts` como CLI del arnes: ejecuta el
-contrato del adaptador en un subproceso aislado, sin adelantar la interfaz de
-decisiones de T2-06. Las referencias provienen del binario, nunca del vendor.
-RF-01 tambien resuelve por subproceso para conservar la guarda de no circularidad.
-Los comandos para comprobar y regenerar estan en `../README.md`.
+T2-15 K-5 consulta cadenas, valores y permisos en el mismo proceso, siempre
+con el entorno aislado inyectado. G-1 controla la procedencia de los esperados
+y exige comando del binario o DERIVACION.md para cadenas y decisiones.
+Se retiraron los tres scripts de subprocesos del arnes. La CLI de producto
+se comprueba en RF-03, RF-08 CA-3 y RF-16; las pruebas de arranque y seguridad
+conservan sus subprocesos de interfaz. Los comandos estan en ../README.md.
 
-T2-06 consulta la funcion de aplicacion en `utilidades/consultar-permisos.ts`,
-desde un subproceso con entorno aislado, sin implementar una interfaz de
-producto. Las aceptaciones no importan vendor ni transitivamente (G-1).
 `v2-decision/REFERENCIA.json` tiene cadenas del binario y decisiones derivadas
 a mano documentadas en `DERIVACION.md`. El modo `primera` del arnes sustituye
 solo la seleccion de la determinante para comprobar sensibilidad.
 
-T2-07 amplia ese arnes con `lanzadoPor` y conserva el aislamiento por
-subproceso. `v2-subagente/REFERENCIA.json` registra las cuatro decisiones
+T2-07 amplia ese arnes con `lanzadoPor`; T2-15 conserva el aislamiento
+mediante el puerto de entorno. `v2-subagente/REFERENCIA.json` registra las cuatro decisiones
 de RF-02 CA-3 y su procedencia del tag y de ADR-081, C-3f. Las variantes
 `v2-subagente-comodin` y `v2-subagente-task` conservan el nombre `general`
 y cambian solo su permiso: `* allow` o `task ask`. Las cadenas base se
@@ -175,3 +173,6 @@ regeneran con el binario; la regeneracion no recalcula las decisiones.
 - `escenarios/`: entradas controladas y referencias nativas; los casos que escriben usan copias temporales.
 - `utilidades/`: aislamiento, dobles, copia de escenarios, subprocesos y cliente HTTP local del arnés.
 - `../paquetes/`: unitarias junto al código; cada regla se verifica en su capa y los casos de uso comprueban su integración con los puertos.
+
+M-3 corre fuera de bun test con `bun run prueba:lenta`, sobre una copia del
+proyecto. Comprueba el hash del fuente real durante el rojo y el verde.
