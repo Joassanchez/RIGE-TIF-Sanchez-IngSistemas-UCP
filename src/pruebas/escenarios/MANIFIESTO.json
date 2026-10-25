@@ -900,7 +900,7 @@
     {
       "id": "v2-worktree-dir-invalido-anidado",
       "entradas": {
-        "proyecto/LEEME.md": "4c8f557f804007226247ffbcc1b660ae6efe3c9b923a7bdfd919c439c6e93d0a"
+        "proyecto/LEEME.md": "0c93ea3de457b55f2dbd3b9683106c9b9aeb78d0dbf018d9216a11ed86febf3b"
       },
       "referencia": "637e1a856e0c06d52c5a649962c495da4abd060c94eb197fdcffb3ac7d7c6c2f",
       "agentes": [
@@ -926,7 +926,7 @@
     {
       "id": "v2-worktree-gitfile-roto",
       "entradas": {
-        "proyecto/LEEME.md": "4c8f557f804007226247ffbcc1b660ae6efe3c9b923a7bdfd919c439c6e93d0a"
+        "proyecto/LEEME.md": "0c93ea3de457b55f2dbd3b9683106c9b9aeb78d0dbf018d9216a11ed86febf3b"
       },
       "referencia": "bfe632445602b5d90b9fe9d9f3c657c3ce73aebb78bb5f0314737167e996c157",
       "agentes": [

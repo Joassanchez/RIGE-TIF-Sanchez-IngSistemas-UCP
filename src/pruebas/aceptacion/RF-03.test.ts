@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -26,6 +26,17 @@ function prepararCli() {
   return escenario;
 }
 
+const capturadas = new Map<string, ReturnType<ReturnType<typeof prepararConsultas>["consultar"]>[]>();
+const claveCaptura = (comando: string, opciones: readonly string[]) => JSON.stringify([comando, opciones]);
+beforeAll(() => {
+  const escenario = prepararConsultas();
+  afterAll(escenario.borrar);
+  for (const [comando, opciones] of [...consultas, ["permiso", []]] as [string, string[]][]) {
+    capturadas.set(claveCaptura(comando, opciones), [escenario.consultar(comando, opciones), escenario.consultar(comando, opciones)]);
+  }
+});
+const captura = (comando: string, opciones: readonly string[] = [], indice = 0) => capturadas.get(claveCaptura(comando, opciones))![indice]!;
+
 async function validarRespuesta(nombre: string, valor: unknown) {
   const esquema = await Bun.file(new URL(`../../esquemas/salida/${nombre}.json`, import.meta.url)).json();
   expect(validarEsquema(esquema, valor)).toEqual([]);
@@ -33,8 +44,7 @@ async function validarRespuesta(nombre: string, valor: unknown) {
 
 describe("RF-03 CA-2", () => {
   test.each(consultas)("%s %j valida contra el esquema publicado", async (comando, opciones) => {
-    const escenario = prepararCli();
-    const resultado = escenario.consultar(comando, opciones);
+    const resultado = captura(comando, opciones);
     expect(resultado.codigo).toBe(0);
     const respuesta = JSON.parse(resultado.salida);
     expect(respuesta.esquema).toBe(2);
@@ -42,7 +52,7 @@ describe("RF-03 CA-2", () => {
   });
   test("errores de uso y argumentos validan contra error.json", async () => {
     const escenario = prepararCli();
-    for (const resultado of [escenario.consultar("agentes", [], { RIGE_PUERTO: "x" }),
+    for (const resultado of [lanzar(escenario.raiz, ["agentes", "--proyecto", join(escenario.raiz, "ausente")], escenario.variables),
       escenario.consultar("permiso", []), escenario.consultar("valores", [])]) {
       expect(resultado.salida).toBe("");
       await validarRespuesta("error", JSON.parse(resultado.error));
@@ -50,9 +60,8 @@ describe("RF-03 CA-2", () => {
   });
   for (const mutacion of ["extra", "ausente", "tipo", "version"] as const) {
     test(`sensibilidad: rechaza campo ${mutacion}`, async () => {
-      const escenario = prepararCli();
       for (const [comando, opciones] of [...consultas.slice(0, 2), consultas[3]!, ["error", []]] as [string, string[]][]) {
-        const valor = JSON.parse(comando === "error" ? escenario.consultar("permiso").error : escenario.consultar(comando, opciones).salida);
+        const valor = structuredClone(JSON.parse(comando === "error" ? captura("permiso").error : captura(comando, opciones).salida));
         const esquema = await Bun.file(new URL(`../../esquemas/salida/${comando}.json`, import.meta.url)).json();
         expect(validarEsquema(esquema, valor)).toEqual([]);
         if (mutacion === "extra") valor.extra = true;
@@ -65,13 +74,12 @@ describe("RF-03 CA-2", () => {
   }
 });
 
-describe("RF-03 CA-1 (CLI v2)", () => {
+describe("K-6 RF-03 CA-1 (CLI v2)", () => {
   test.each(consultas)("%s %j es identica byte a byte", (comando, opciones) => {
-    const escenario = prepararCli();
-    const primera = escenario.consultar(comando, opciones);
+    const primera = captura(comando, opciones);
     expect(primera.codigo).toBe(0);
     expect(primera.error).toBe("");
-    expect(escenario.consultar(comando, opciones)).toEqual(primera);
+    expect(captura(comando, opciones, 1)).toEqual(primera);
     const respuesta = JSON.parse(primera.salida);
     expect(respuesta).not.toHaveProperty("instante");
     expect(respuesta).not.toHaveProperty("id");
@@ -99,10 +107,9 @@ describe("RF-03 CA-5 (CLI v2)", () => {
       const escenario = prepararCli();
       expect(escenario.consultar(comando, opciones).codigo).toBe(0);
     });
-    test(`${comando} codigo 1: proyecto y configuracion`, () => {
+    test(`${comando} codigo 1: proyecto`, () => {
       const escenario = prepararCli();
-      for (const resultado of [escenario.consultar(comando, opciones, { RIGE_PUERTO: "invalido" }),
-        lanzar(escenario.raiz, [comando, "--proyecto", join(escenario.raiz, "ausente"), ...opciones], escenario.variables)]) {
+      for (const resultado of [lanzar(escenario.raiz, [comando, "--proyecto", join(escenario.raiz, "ausente"), ...opciones], escenario.variables)]) {
         expect(resultado.codigo).toBe(1);
         expect(resultado.salida).toBe("");
         expect(JSON.parse(resultado.error).esquema).toBe(2);
@@ -206,7 +213,7 @@ describe("RF-03 CA-3 (valores)", () => {
         expect(linea).toBeGreaterThan(0);
         expect(columna).toBeGreaterThan(0);
         const original = readFileSync(declaracion.referencia!, "utf8").split(/\r?\n/)[linea - 1]!;
-        // options.a reemplaza el subarbol global options.a.b: su desplazada sigue ubicada en b.
+        // El contrato conserva la posicion pero no la ruta original de cada desplazada.
         const claveOriginal = nombre === "v1-vias" && rastro.ruta.slice(2).join(".") === "options.a"
           && declaracion !== rastro.determinante ? "b" : rastro.ruta.at(-1);
         expect(original.slice(columna - 1)).toStartWith(JSON.stringify(claveOriginal));
@@ -265,7 +272,7 @@ describe("S-2 ADR-061", () => {
 });
 
 describe("S-1", () => {
-  test.each(["v1-precedencia", "v1-vias"])("la respuesta consultada por la web de %s es igual a la CLI", async (nombre) => {
+  describe("A2-2 A2-8", () => { test.each(["v1-precedencia", "v1-vias"])("la respuesta consultada por la web de %s es igual a la CLI", async (nombre) => {
     const escenario = preparar(nombre);
     expect(lanzar(escenario.temporal, ["esquema"], escenario.variables).codigo).toBe(0);
     const servidor = await lanzarServidor(escenario.temporal, escenario.variables);
@@ -276,13 +283,16 @@ describe("S-1", () => {
       expect(guardada.estado).toBe(303);
       const pagina = await solicitar(String(guardada.cabeceras.location));
       expect(pagina.estado).toBe(200);
+      for (const clave of ["", "temperature", "inexistente"]) {
+      const puntual = await solicitar(`/resoluciones/1?agente=build${clave ? `&clave=${clave}` : ""}`);
+      expect(puntual.estado).toBe(200);
       const codigo = `
         import { consultarResolucion } from ${JSON.stringify(new URL("../../paquetes/rige/aplicacion/casos-uso/consultar-resolucion.ts", import.meta.url).href)};
         import { RepositorioResolucionesSqlite } from ${JSON.stringify(new URL("../../paquetes/rige/adaptadores/almacen-sqlite/resoluciones.ts", import.meta.url).href)};
         import { versionRige } from ${JSON.stringify(new URL("../../paquetes/rige/aplicacion/respuestas/estado.ts", import.meta.url).href)};
         import { existsSync } from "node:fs";
         const repositorio = new RepositorioResolucionesSqlite(process.env.RIGE_ALMACEN, { existe: existsSync }, versionRige);
-        console.log(JSON.stringify(consultarResolucion(repositorio, "1", "build", "")));
+        console.log(JSON.stringify(consultarResolucion(repositorio, "1", "build", ${JSON.stringify(clave)})));
       `;
       const proceso = Bun.spawnSync([process.execPath, "-e", codigo], {
         env: { ...crearEntornoAislado(escenario.temporal, process.env), ...escenario.variables }, stdout: "pipe", stderr: "pipe",
@@ -291,8 +301,37 @@ describe("S-1", () => {
       expect(proceso.stderr.toString()).toBe("");
       const web = JSON.parse(proceso.stdout.toString());
       expect(web.exito).toBe(true);
-      expect(web.valor.respuesta).toEqual(JSON.parse(escenario.consultar().salida));
+      expect(web.valor.respuesta).toEqual(JSON.parse(escenario.consultar(...(clave ? ["--clave", clave] : [])).salida));
+      if (clave === "temperature") expect(puntual.cuerpo).toContain(`<td>${web.valor.respuesta.valores[0].rastro.valor}</td>`);
+      if (clave === "inexistente") expect(puntual.cuerpo).toContain("clave-inexistente");
       expect(web.valor.sobre).toMatchObject({ id: 1, instante: expect.any(String), anteriores: [expect.objectContaining({ id: 1 })] });
+      }
     } finally { await servidor.detener(); }
+  }); });
+});
+
+describe("A2-6", () => {
+  test("agente inexistente en resolver no guarda ninguna fila", async () => {
+    const escenario = preparar();
+    expect(lanzar(escenario.temporal, ["esquema"], escenario.variables).codigo).toBe(0);
+    const servidor = await lanzarServidor(escenario.temporal, escenario.variables);
+    try {
+      const url = new URL(servidor.direccion);
+      const resultado = await solicitarLocal({ host: "127.0.0.1", puerto: Number(url.port),
+        ruta: `/resolver?proyecto=${encodeURIComponent(escenario.proyecto)}&agente=ausente` });
+      expect(resultado.estado).toBe(404);
+      const base = new Database(escenario.base, { readonly: true });
+      try { expect(base.query("SELECT count(*) AS n FROM resolucion").get()).toEqual({ n: 0 }); }
+      finally { base.close(); }
+    } finally { await servidor.detener(); }
+  });
+});
+
+describe("A2-5", () => {
+  test.each(["valores", "permiso", "agentes"])("%s ignora configuracion propia que no utiliza", comando => {
+    const escenario = prepararCli();
+    const opciones = comando === "valores" ? ["--agente", "build"] : comando === "permiso"
+      ? ["--agente", "build", "--sujeto", "read", "--objetivo", "a"] : [];
+    expect(escenario.consultar(comando, opciones, { RIGE_PUERTO: "abc", RIGE_ALMACEN: import.meta.path }).codigo).toBe(0);
   });
 });

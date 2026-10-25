@@ -10,7 +10,6 @@ const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
   "proyecto-inexistente": 404,
   "resolucion-inexistente": 404,
   "agente-sin-declaraciones": 404,
-  "clave-inexistente": 404,
   "clave-no-resuelta": 422,
   "via-no-soportada": 422,
   "contenido-no-soportado": 422,

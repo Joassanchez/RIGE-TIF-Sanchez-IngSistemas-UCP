@@ -263,7 +263,7 @@ describe("Errores de uso por la web", () => {
     });
   });
 
-  describe("Clave o agente inexistentes", () => {
+  describe("A2-6 Clave o agente inexistentes", () => {
     const preparar = prepararRecorrido();
     test("guarda el proyecto y consulta una clave ausente con exito o un agente ausente con error", async () => {
       const recorrido = preparar();
@@ -273,13 +273,12 @@ describe("Errores de uso por la web", () => {
       expect(sinClave.estado).toBe(200);
       expect(sinClave.cuerpo).toContain("clave-inexistente");
       const agente = await recorrido.solicitar(`/resolver?proyecto=${encodeURIComponent(recorrido.proyecto)}&agente=ausente`);
-      expect(agente.estado).toBe(303);
-      const sinAgente = await recorrido.solicitar(ubicacion(agente));
-      expect(sinAgente.estado).toBe(404);
-      expect(sinAgente.cuerpo).toContain("El agente ausente no tiene declaraciones.");
+      expect(agente.estado).toBe(404);
+      expect(agente.cabeceras.location).toBeUndefined();
+      expect(agente.cuerpo).toContain("El agente ausente no tiene declaraciones.");
       const valida = await recorrido.resolver();
       expect(valida.estado).toBe(303);
-      expect(valida.cabeceras.location).toBe("/resoluciones/3?agente=build&clave=temperature");
+      expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build&clave=temperature");
       const pagina = await recorrido.solicitar(ubicacion(valida));
       expect(pagina.estado).toBe(200);
       comprobarTemperatura(pagina.cuerpo, recorrido.raiz);

@@ -53,7 +53,7 @@ function argumentosInvalidos(canales: CanalesCli, mensaje: string): number {
   return 2;
 }
 
-export function ejecutarCli(argumentos: readonly string[], ensamblar: () => Ensamblado, canales: CanalesCli): number {
+export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: string) => Ensamblado, canales: CanalesCli): number {
   let opciones: ReturnType<typeof parseArgs>;
   try {
     opciones = parseArgs({
@@ -95,7 +95,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: () => Ensa
     return argumentosInvalidos(canales, "permiso requiere --proyecto, --agente, --objetivo y --herramienta o --sujeto excluyentes; --lanzado-por no puede estar vacio.");
   }
   try {
-    const casos = ensamblar();
+    const casos = ensamblar(comando);
     if (!casos.exito) {
       escribirError(canales, casos.error);
       return 1;

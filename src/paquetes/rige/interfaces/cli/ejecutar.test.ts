@@ -4,6 +4,23 @@ import { errorAlmacenSinEsquema, errorConfiguracionInvalida, errorPuertoOcupado 
 import { ejecutarCli, type Ensamblado } from "./ejecutar";
 import { analizarFuente, tokenizar } from "../../../../pruebas/utilidades/analisis-arquitectura";
 import { resolve } from "node:path";
+import { consultarValores } from "../../aplicacion/casos-uso/consultar-valores";
+import { adaptadorFicticio } from "../../../../pruebas/utilidades/adaptador-ficticio";
+import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memoria";
+
+describe("A2-3 S-4", () => {
+  test("propaga un codigo de uso desconocido del adaptador hasta la CLI", () => {
+    const error = { categoria: "uso" as const, codigo: "codigo-nuevo", mensaje: "Codigo del adaptador" };
+    const deps = { adaptador: { ...adaptadorFicticio, ubicar: () => ({ exito: false as const, error }) },
+      entorno: crearEntornoMemoria({ archivos: {} }), rutas: { canonica: () => "/proyecto" } };
+    const resultado = ejecutar(["valores", "--proyecto", "/proyecto", "--agente", "a"], () => ({ exito: true,
+      valor: { ...noWeb, prepararAlmacen: () => { throw new Error("No preparar"); },
+        consultarValores: (proyecto, agente, clave) => consultarValores(deps, proyecto, agente, clave) } }));
+    expect(resultado.codigo).toBe(1);
+    expect(resultado.salida).toBe("");
+    expect(JSON.parse(resultado.error).error.codigo).toBe(error.codigo);
+  });
+});
 
 describe("V-1", () => {
   test("la version coincide con el manifiesto y solo se declara en estado.ts", async () => {

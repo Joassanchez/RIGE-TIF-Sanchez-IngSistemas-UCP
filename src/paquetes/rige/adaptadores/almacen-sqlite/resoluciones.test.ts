@@ -158,7 +158,10 @@ describe("R-4", () => {
     }
   });
 
-  test.each([[1, 2], [2, 1], [99, 2], [2, 99]])("S-3 ADR-061: formato SQL %i y documento %i incompatibles son error de uso", async (formatoSql, formato) => {
+});
+
+describe("S-3 ADR-061", () => {
+  describe("A2-1", () => { test.each([[1, 2], [2, 1], [99, 2], [2, 99]])("formato SQL %i y documento %i incompatibles son error de uso", async (formatoSql, formato) => {
     const { repositorio, abrir } = await escenario();
     const base = abrir();
     base.run("INSERT INTO proyecto (ruta) VALUES ('/proyecto')");
@@ -170,7 +173,7 @@ describe("R-4", () => {
     if (resultado.exito) throw new Error("Formato incompatible aceptado");
     expect(resultado.error.codigo).toBe("almacen-sin-esquema");
     expect(resultado.error.mensaje).toContain("bun run esquema");
-  });
+  }); });
 });
 
 describe("S-2 ADR-061", () => {

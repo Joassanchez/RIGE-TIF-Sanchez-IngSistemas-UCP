@@ -81,6 +81,19 @@ describe("AL-1", () => {
   });
 });
 
+describe("A2-4", () => {
+  test("preparar rechaza un almacen v1 genuino sin modificarlo", () => {
+    const { directorio, ruta, almacen } = escenario();
+    mkdirSync(directorio, { recursive: true });
+    const base = new Database(ruta, { create: true });
+    base.exec(readFileSync(new URL("../../../../esquemas/almacen/001_inicial.sql", import.meta.url), "utf8"));
+    base.close();
+    const antes = readFileSync(ruta);
+    expect(almacen.preparar()).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+    expect(readFileSync(ruta)).toEqual(antes);
+  });
+});
+
 describe("AL-2", () => {
   test("lee la version del guion en la referencia en memoria sin fijarla en el adaptador", () => {
     const guion = readFileSync(new URL("../../../../esquemas/almacen/002_formato2.sql", import.meta.url), "utf8");
