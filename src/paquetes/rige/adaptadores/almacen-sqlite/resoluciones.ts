@@ -30,7 +30,7 @@ export class RepositorioResolucionesSqlite implements PuertoResoluciones {
     return this.conBase(false, (base) => base.transaction(() => {
       base.query("INSERT INTO proyecto (ruta) VALUES (?) ON CONFLICT(ruta) DO NOTHING").run(resolucion.proyecto);
       const proyecto = base.query<{ id: number }, [string]>("SELECT id FROM proyecto WHERE ruta = ?").get(resolucion.proyecto);
-      if (proyecto === null) throw new Error("No se encontro el proyecto recien registrado");
+      if (proyecto === null) throw new Error("No se encontró el proyecto recién registrado");
       const alta = base.query(`INSERT INTO resolucion (proyecto_id, instante, resumen_entradas, herramienta,
         version_herramienta, version_rige, formato_documento, documento) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(
         proyecto.id, instante, resolucion.resumenEntradas, resolucion.identidad.herramienta,
@@ -56,7 +56,8 @@ export class RepositorioResolucionesSqlite implements PuertoResoluciones {
       if (fila === null) return { exito: false, error: errorResolucionInexistente(id) };
       if (fila.formato_documento !== 2) return { exito: false, error: errorAlmacenSinEsquema };
       const documento: unknown = JSON.parse(fila.documento);
-      if (typeof documento !== "object" || documento === null || !("formato" in documento) || documento.formato !== 2) {
+      if (typeof documento !== "object" || documento === null || !("formato" in documento) || documento.formato !== 2
+        || !("contexto" in documento) || typeof documento.contexto !== "object" || documento.contexto === null) {
         return { exito: false, error: errorAlmacenSinEsquema };
       }
       return { exito: true, valor: { id: fila.id, instante: fila.instante, resolucion: documento as Resolucion } };

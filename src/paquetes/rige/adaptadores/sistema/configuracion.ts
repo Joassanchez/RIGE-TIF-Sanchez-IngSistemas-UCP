@@ -23,7 +23,7 @@ export class ConfiguracionSistema implements PuertoConfiguracion {
         if (!linea || linea.startsWith("#")) continue;
         const separador = linea.indexOf("=");
         if (separador === -1) {
-          return { exito: false, error: errorConfiguracionInvalida(`linea ${indice + 1}`, "falta el separador =") };
+          return { exito: false, error: errorConfiguracionInvalida(`línea ${indice + 1}`, "falta el separador =") };
         }
         const clave = linea.slice(0, separador).trim();
         if (clave !== "RIGE_PUERTO" && clave !== "RIGE_ALMACEN") {
@@ -47,7 +47,7 @@ export class ConfiguracionSistema implements PuertoConfiguracion {
     if (!directorio) {
       if (plataforma === "win32") {
         const base = entorno.LOCALAPPDATA?.trim();
-        if (!base) return { exito: false, error: errorConfiguracionInvalida("LOCALAPPDATA", "falta la base del almacen") };
+        if (!base) return { exito: false, error: errorConfiguracionInvalida("LOCALAPPDATA", "falta la base del almacén") };
         directorio = resolve(base, "rige");
       } else {
         const baseXdg = entorno.XDG_DATA_HOME?.trim();
@@ -55,7 +55,7 @@ export class ConfiguracionSistema implements PuertoConfiguracion {
           directorio = resolve(baseXdg, "rige");
         } else {
           const base = entorno.HOME?.trim();
-          if (!base) return { exito: false, error: errorConfiguracionInvalida("HOME", "falta la base del almacen") };
+          if (!base) return { exito: false, error: errorConfiguracionInvalida("HOME", "falta la base del almacén") };
           directorio = resolve(base, ".local", "share", "rige");
         }
       }
@@ -64,7 +64,7 @@ export class ConfiguracionSistema implements PuertoConfiguracion {
     let existente = directorioAlmacen;
     while (!existsSync(existente)) {
       const padre = dirname(existente);
-      if (padre === existente) throw new Error("No se pudo observar un ancestro del almacen.");
+      if (padre === existente) throw new Error("No se pudo observar un ancestro del almacén.");
       existente = padre;
     }
     if (!statSync(existente).isDirectory()) {

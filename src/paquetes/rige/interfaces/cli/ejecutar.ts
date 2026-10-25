@@ -64,11 +64,11 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
       }, strict: true, allowPositionals: true,
     });
   } catch {
-    return argumentosInvalidos(canales, `Argumentos invalidos: ${argumentos.join(" ")}.`);
+    return argumentosInvalidos(canales, `Argumentos inválidos: ${argumentos.join(" ")}.`);
   }
   const posicionales = opciones.positionals;
   if (posicionales.length === 0) return argumentosInvalidos(canales, `Falta el subcomando ${Object.keys(subcomandos).join(" o ")}.`);
-  if (posicionales.length > 1) return argumentosInvalidos(canales, `Posicionales invalidos: ${posicionales.join(" ")}.`);
+  if (posicionales.length > 1) return argumentosInvalidos(canales, `Posicionales inválidos: ${posicionales.join(" ")}.`);
   if (!Object.hasOwn(subcomandos, posicionales[0]!)) {
     return argumentosInvalidos(canales, `Subcomando desconocido: ${posicionales[0]}.`);
   }
@@ -85,14 +85,14 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
   if (posicionales[0] === "valores") {
     if (typeof proyecto !== "string" || !proyecto.trim() || typeof agente !== "string" || !agente.trim()
       || (clave !== undefined && (typeof clave !== "string" || !clave.trim()))) {
-      return argumentosInvalidos(canales, "valores requiere --proyecto y --agente no vacios; --clave es opcional y no puede estar vacia.");
+      return argumentosInvalidos(canales, "valores requiere --proyecto y --agente no vacíos; --clave es opcional y no puede estar vacía.");
     }
   } else if (comando === "agentes" && !noVacio(proyecto)) {
-    return argumentosInvalidos(canales, "agentes requiere --proyecto no vacio.");
+    return argumentosInvalidos(canales, "agentes requiere --proyecto no vacío.");
   } else if (comando === "permiso" && (!noVacio(proyecto) || !noVacio(agente) || !noVacio(objetivo)
     || (herramienta !== undefined) === (sujeto !== undefined) || !noVacio(herramienta ?? sujeto)
     || (lanzadoPor !== undefined && !noVacio(lanzadoPor)))) {
-    return argumentosInvalidos(canales, "permiso requiere --proyecto, --agente, --objetivo y --herramienta o --sujeto excluyentes; --lanzado-por no puede estar vacio.");
+    return argumentosInvalidos(canales, "permiso requiere --proyecto, --agente, --objetivo y --herramienta o --sujeto excluyentes; --lanzado-por no puede estar vacío.");
   }
   try {
     const casos = ensamblar(comando);

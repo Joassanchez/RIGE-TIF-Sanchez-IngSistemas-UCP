@@ -58,7 +58,7 @@ describe("W-12", () => {
     const manejar = crearManejador(12345, { ...casosEstado(() => ({ exito: true, valor: respuesta })),
       consultarResolucion: (id, agente, clave) => {
         consultas.push([id, agente, clave]);
-        return { exito: false, error: { codigo: "resolucion-inexistente", mensaje: "No existe la resolucion 7 en el almacen." } };
+        return { exito: false, error: { codigo: "resolucion-inexistente", mensaje: "No existe la resolución 7 en el almacén." } };
       },
     });
     const solicitar = (ruta: string) => manejar(new Request(`http://127.0.0.1${ruta}`, {
@@ -72,7 +72,7 @@ describe("W-12", () => {
     expect(consultas).toEqual([]);
     const inexistente = solicitar("/resoluciones/7?agente=a%20%26%20b&clave=c%20%26%20d");
     expect(inexistente.status).toBe(404);
-    expect(await inexistente.text()).toContain("No existe la resolucion 7 en el almacen.");
+    expect(await inexistente.text()).toContain("No existe la resolución 7 en el almacén.");
     solicitar("/resoluciones/7");
     expect(consultas).toEqual([["7", "a & b", "c & d"], ["7", "", ""]]);
   });
@@ -114,7 +114,7 @@ describe("W-5", () => {
       });
       if (!ocupado.exito) {
         expect(ocupado.error.mensaje).toContain(String(puerto));
-        expect(ocupado.error.mensaje).not.toMatch(/[áéíóúñ]/i);
+        expect(ocupado.error.mensaje).toBe(`El puerto ${puerto} de RIGE_PUERTO no está disponible.`);
       }
     } finally { escucha.stop(true); }
     const iniciado = iniciarEstado(puerto, () => ({ exito: true, valor: respuesta }));

@@ -39,7 +39,7 @@ function esquemaEsperado(): { readonly inventario: string; readonly version: num
 
 function versionEsquema(base: Database): number {
   const fila = base.query<{ user_version: number }, []>("PRAGMA user_version").get();
-  if (fila === null) throw new Error("SQLite no devolvio user_version");
+  if (fila === null) throw new Error("SQLite no devolvió user_version");
   return fila.user_version;
 }
 

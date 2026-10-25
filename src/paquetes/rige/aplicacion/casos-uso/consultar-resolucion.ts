@@ -11,7 +11,7 @@ export function consultarResolucion(resoluciones: PuertoResoluciones, id: string
   if (!id || /[^0-9]/.test(id) || !Number.isSafeInteger(numero) || numero <= 0) {
     return { exito: false, error: errorSolicitudInvalida("el id debe ser un entero positivo en decimal") };
   }
-  if (!agente.trim()) return { exito: false, error: errorSolicitudInvalida("el agente esta vacio") };
+  if (!agente.trim()) return { exito: false, error: errorSolicitudInvalida("el agente está vacío") };
   const guardada = resoluciones.leer(numero);
   if (!guardada.exito) return guardada;
   const { resolucion } = guardada.valor;

@@ -6,7 +6,7 @@ import { versionRige } from "../respuestas/estado";
 import { versionEsquemaSalida, type RespuestaValores } from "../respuestas/valores";
 
 export function respuestaValores(resolucion: Resolucion, agente: string, clave: string | undefined): Resultado<RespuestaValores, ErrorUso> {
-  if (!agente.trim()) return { exito: false, error: errorSolicitudInvalida("el agente esta vacio") };
+  if (!agente.trim()) return { exito: false, error: errorSolicitudInvalida("el agente está vacío") };
   const ruta = clave === undefined ? undefined : rutaDesdeTexto(clave);
   if (ruta && !ruta.exito) return { exito: false, error: errorDesdeAnalisis(ruta.error) };
   const segmentos = ruta?.valor;

@@ -23,17 +23,16 @@ export function prepararAnalisis(dependencias: DependenciasAnalisis, proyecto: s
     const resolucion = dependencias.resolucion;
     const { plataforma, ...datos } = resolucion.contexto;
     const actual = dependencias.entorno;
-    const noLeer = (): never => { throw new Error("Una resolucion guardada no consulta el entorno actual."); };
+    const noLeer = (): never => { throw new Error("Una resolución guardada no consulta el entorno actual."); };
     const entorno: EntornoLectura = { plataforma, variable: noLeer, tipo: noLeer, leer: noLeer, listar: noLeer,
-      resumir: texto => actual.resumir(texto), unir: (...partes) => actual.unir(...partes),
-      relativa: (desde, hasta) => actual.relativa(desde, hasta), padre: ruta => actual.padre(ruta),
-      esAbsoluta: ruta => actual.esAbsoluta(ruta) };
+      resumir: texto => actual.resumir(texto), rutasPara: plataforma => actual.rutasPara(plataforma),
+      ...actual.rutasPara(plataforma) };
     return { exito: true, valor: { resolucion, contexto: { ...datos, entorno } } };
   }
   proyecto = proyecto.trim();
   if (proyecto.length >= 2 && ((proyecto.startsWith('"') && proyecto.endsWith('"'))
     || (proyecto.startsWith("'") && proyecto.endsWith("'")))) proyecto = proyecto.slice(1, -1).trim();
-  if (!proyecto) return { exito: false, error: errorSolicitudInvalida("el proyecto esta vacio") };
+  if (!proyecto) return { exito: false, error: errorSolicitudInvalida("el proyecto está vacío") };
   const canonica = dependencias.rutas.canonica(proyecto);
   if (canonica === null) return { exito: false, error: {
     codigo: "proyecto-inexistente", mensaje: `El proyecto ${proyecto} no existe o no es un directorio.`,

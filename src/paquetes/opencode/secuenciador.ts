@@ -30,7 +30,7 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
   // Se conocen todos los agentes afectados antes de aplicar cualquier hoja JSON.
   for (const { via } of lecturas) {
     if (via.via !== "markdown") continue;
-    if (via.elemento === undefined) throw new Error("Via Markdown sin nombre de elemento");
+    if (via.elemento === undefined) throw new Error("Vía Markdown sin nombre de elemento");
     excluir(["agent", via.elemento], "markdown-no-observado");
   }
   for (const { declaraciones } of lecturas) {
@@ -61,7 +61,7 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
         const valido = ruta.length === 3 && (ruta[2] === "mode"
           ? typeof valor === "string" && ["primary", "subagent", "all"].includes(valor) : typeof valor === "boolean");
         if (!valido) return { exito: false, error: { categoria: "uso", codigo: "configuracion-invalida",
-          mensaje: `Configuracion invalida en ${ruta.slice(0, 3).join(".")} (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).` } };
+          mensaje: `Configuración inválida en ${ruta.slice(0, 3).join(".")} (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).` } };
       }
       const indiceSustitucion = ruta.findIndex(segmento => sustitucion.test(segmento));
       if (indiceSustitucion >= 0) excluir(ruta.slice(0, indiceSustitucion + 1), "sustitucion-no-incorporada");

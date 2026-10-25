@@ -70,7 +70,7 @@ describe("C-1", () => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias } = dobles();
     const adaptador = { ...adaptadorFicticio, ubicar: () => ({ exito: false, error: { categoria: undefined as unknown as "uso", codigo: "desconocido", mensaje: "defecto" } } as const) };
-    expect(() => resolverProyecto({ ...dependencias, adaptador }, "pedido")).toThrow("Categoria de analisis invalida");
+    expect(() => resolverProyecto({ ...dependencias, adaptador }, "pedido")).toThrow("Categoría de análisis inválida");
     const falla = new Error("Falla de infraestructura");
     expect(() => resolverProyecto({ ...dependencias, rutas: { canonica: () => { throw falla; } } }, "pedido")).toThrow(falla);
   });

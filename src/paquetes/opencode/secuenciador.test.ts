@@ -214,7 +214,7 @@ describe("V1-03 S-3 V1-08 F-6", () => {
   test("T2-11b B-2 disable anidado invalido es un error de uso ubicado", () => {
     expect(secuenciar([lectura(0, [declaracion(["agent", "build", "disable", "x"], true)])]))
       .toMatchObject({ exito: false, error: { codigo: "configuracion-invalida",
-        mensaje: "Configuracion invalida en agent.build.disable (C:/p/opencode.jsonc:6:7)." } });
+        mensaje: "Configuración inválida en agent.build.disable (C:/p/opencode.jsonc:6:7)." } });
   });
   test("no confunde segmentos parecidos ni disable dentro de options", () => {
     const declaraciones = [["modes"], ["disable"], ["agent", "build", "options", "disable"]].map((ruta) => declaracion(ruta));

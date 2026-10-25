@@ -7,6 +7,8 @@ export interface ArchivoLeido {
 
 export interface EntornoLectura {
   readonly plataforma: string;
+  /** Operaciones puras con la semantica de la plataforma solicitada. */
+  rutasPara(plataforma: string): Pick<EntornoLectura, "unir" | "relativa" | "padre" | "esAbsoluta">;
   /** Valor literal, incluso vacio o con espacios; undefined solo si no existe. */
   variable(nombre: string): string | undefined;
   tipo(ruta: string): TipoRuta;

@@ -8,7 +8,7 @@ export interface Worktree { readonly worktree: string; readonly declaraciones: r
 export function descubrirWorktree(proyecto: string, entorno: EntornoLectura): Resultado<Worktree, ErrorAnalisis> {
   for (const nombre of ["GIT_DIR", "GIT_WORK_TREE", "GIT_CEILING_DIRECTORIES", "GIT_COMMON_DIR"]) {
     if (entorno.variable(nombre) !== undefined) return { exito: false, error: { categoria: "uso",
-      codigo: "via-no-soportada", mensaje: `La deteccion del arbol no incorpora ${nombre}.` } };
+      codigo: "via-no-soportada", mensaje: `La detección del árbol no incorpora ${nombre}.` } };
   }
   const resolver = (base: string, ruta: string) => entorno.esAbsoluta(ruta) ? entorno.unir(ruta) : entorno.unir(base, ruta);
   const ejecutables = entorno.plataforma === "win32" ? ["git", "git.exe", "git.cmd"] : ["git"];

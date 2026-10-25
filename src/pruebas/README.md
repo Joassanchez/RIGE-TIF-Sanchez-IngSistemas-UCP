@@ -137,6 +137,10 @@ relativa a `/` sin guardar rutas reales del temporal.
 
 Las rutas son relativas a esta carpeta. Los casos del analizador se conservan en tablas: una prueba compara todos los resultados e identifica cada entrada en el diff.
 
+Límite del contraste nativo: los 4 registros con `herramientaNoOfrecida`
+no tienen contraste nativo de su decisión derivada. La ausencia de una
+evaluación nativa no valida esa derivada.
+
 T2-15 K-5 consulta cadenas, valores y permisos en el mismo proceso, siempre
 con el entorno aislado inyectado. G-1 controla la procedencia de los esperados
 y exige comando del binario o DERIVACION.md para cadenas y decisiones.

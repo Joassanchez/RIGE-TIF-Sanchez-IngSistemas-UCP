@@ -131,7 +131,7 @@ describe("R-4", () => {
   test("id inexistente, proyecto vacio y orden por instante e id descendentes", async () => {
     const { repositorio } = await escenario();
     expect(repositorio.leer(45)).toEqual({ exito: false, error: {
-      codigo: "resolucion-inexistente", mensaje: "No existe la resolucion 45 en el almacen.",
+      codigo: "resolucion-inexistente", mensaje: "No existe la resolución 45 en el almacén.",
     } });
     expect(repositorio.listar("/sin-resoluciones")).toEqual({ exito: true, valor: [] });
     const ids = [instante, "2026-10-04T00:00:00.000Z", instante].map((fecha) => {
@@ -161,6 +161,16 @@ describe("R-4", () => {
 });
 
 describe("S-3 ADR-061", () => {
+  test("T2-17 Z-2 formato 2 sin contexto es ilegible", async () => {
+    const { repositorio, abrir } = await escenario();
+    const base = abrir();
+    base.run("INSERT INTO proyecto (ruta) VALUES ('/proyecto')");
+    const { contexto: _, ...anterior } = documento();
+    base.query(`INSERT INTO resolucion (proyecto_id, instante, resumen_entradas, herramienta, version_herramienta,
+      version_rige, formato_documento, documento) VALUES (1, ?, ?, 'ficticia', '1', ?, 2, ?)`).run(
+      instante, anterior.resumenEntradas, versionRige, JSON.stringify(anterior));
+    expect(repositorio.leer(1)).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+  });
   describe("A2-1", () => { test.each([[1, 2], [2, 1], [99, 2], [2, 99]])("formato SQL %i y documento %i incompatibles son error de uso", async (formatoSql, formato) => {
     const { repositorio, abrir } = await escenario();
     const base = abrir();

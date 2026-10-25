@@ -85,7 +85,7 @@ describe("C-2", () => {
   test("propaga errores de leer y listar sin fabricar una respuesta", async () => {
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, llamadas } = dobles();
-    const inexistente = { codigo: "resolucion-inexistente", mensaje: "No existe la resolucion 7 en el almacen." } as const;
+    const inexistente = { codigo: "resolucion-inexistente", mensaje: "No existe la resolución 7 en el almacén." } as const;
     expect(consultarResolucion({ ...puerto, leer: () => ({ exito: false, error: inexistente }) }, "7", "a", ""))
       .toEqual({ exito: false, error: inexistente });
     expect(llamadas).toEqual([]);

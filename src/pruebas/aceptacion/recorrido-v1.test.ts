@@ -198,7 +198,7 @@ describe("RF-17", () => {
       expect(ids).toEqual(guardadas.slice(1).reverse());
       const retirada = await recorrido.solicitar(ruta(guardadas[0]!));
       expect(retirada.estado).toBe(404);
-      expect(retirada.cuerpo).toContain(`No existe la resolucion ${guardadas[0]} en el almacen.`);
+      expect(retirada.cuerpo).toContain(`No existe la resolución ${guardadas[0]} en el almacén.`);
       expect((await recorrido.solicitar(ruta(guardadas[1]!))).estado).toBe(200);
     });
   });

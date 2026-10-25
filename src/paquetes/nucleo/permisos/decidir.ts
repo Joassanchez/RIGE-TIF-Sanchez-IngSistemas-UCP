@@ -11,7 +11,7 @@ export function decidir(cadena: Cadena, consulta: ConsultaPermiso, evaluacion: E
   };
   const coincidentes = evaluacion.coincidentes.map(indice => {
     const regla = cadena.reglas.find(r => r.indice === indice);
-    if (!regla) throw new Error("El evaluador devolvio un indice inexistente.");
+    if (!regla) throw new Error("El evaluador devolvió un índice inexistente.");
     return regla;
   });
   const determinante = evaluacion.determinante === null ? null

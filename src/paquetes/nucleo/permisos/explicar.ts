@@ -62,20 +62,20 @@ export function explicar(rastro: RastroDecision, plantillas: PlantillasExplicaci
   const oraciones: string[] = [];
   let parametros = base;
   if (rastro.decision === null) {
-    if (rastro.motivoSinDecision === null) throw new Error("Falta el motivo sin decision.");
+    if (rastro.motivoSinDecision === null) throw new Error("Falta el motivo sin decisión.");
     oraciones.push(aplicar(obtener(plantillas.reglas, rastro.motivoSinDecision), parametros));
   } else if (rastro.determinante === null) {
     oraciones.push(aplicar(plantillas.defecto, parametros));
   } else {
     const contexto = contextos.get(rastro.determinante);
-    if (!contexto) throw new Error("La determinante no esta entre las coincidentes.");
+    if (!contexto) throw new Error("La determinante no está entre las coincidentes.");
     parametros = contexto;
     oraciones.push(aplicar(plantillas.determinante, parametros));
     if (rastro.desplazadas.length) oraciones.push(aplicar(plantillas.desplazadas, parametros));
   }
   if (rastro.nativaAnulada !== null) {
     const nativa = rastro.coincidentes.find(r => r.indice === rastro.nativaAnulada!.regla);
-    if (!nativa || nativa.origen.tipo !== "nativo") throw new Error("La regla nativa anulada no esta en el rastro.");
+    if (!nativa || nativa.origen.tipo !== "nativo") throw new Error("La regla nativa anulada no está en el rastro.");
     oraciones.push(aplicar(plantillas.anulada, contextos.get(nativa.indice)!));
   }
   for (const codigo of [...new Set(rastro.advertencias)]) {

@@ -22,7 +22,7 @@ export function clave(ruta: readonly string[]): string {
 export function rutaDesdeTexto(texto: string): Resultado<readonly string[], ErrorConsulta> {
   if (!texto || (texto.startsWith("/") && /~(?![01])/.test(texto))) return { exito: false, error: {
     categoria: "uso",
-    codigo: "solicitud-invalida", mensaje: "La clave esta vacia o el puntero JSON tiene un escape invalido.",
+    codigo: "solicitud-invalida", mensaje: "La clave está vacía o el puntero JSON tiene un escape inválido.",
   } };
   return { exito: true, valor: texto.startsWith("/")
     ? texto.slice(1).split("/").map((parte) => parte.replaceAll("~1", "/").replaceAll("~0", "~"))
@@ -44,7 +44,7 @@ export function consultarAgente(resolucion: Resolucion, agente: string, relativa
   if (pendiente) return { exito: false, error: {
     categoria: "uso",
     codigo: "clave-no-resuelta",
-    mensaje: `La clave ${textoClave} no esta resuelta para el agente ${agente}: ${resolucion.reglas[pendiente.regla]}`,
+    mensaje: `La clave ${textoClave} no está resuelta para el agente ${agente}: ${resolucion.reglas[pendiente.regla]}`,
   } };
   const valores = resolucion.valores.filter((valor) => valor.ruta.length > prefijo.length
     && esPrefijo(prefijo, valor.ruta));

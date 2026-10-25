@@ -42,7 +42,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     usarRegla(aplicacion.regla);
     const { origen, ruta } = aplicacion;
     const entrada = origen.tipo === "declarado" ? entradas[origen.orden] : undefined;
-    if (origen.tipo === "declarado" && !entrada) throw new Error(`Entrada inexistente para la aplicacion: ${origen.orden}`);
+    if (origen.tipo === "declarado" && !entrada) throw new Error(`Entrada inexistente para la aplicación: ${origen.orden}`);
     const nueva: DeclaracionUbicada = {
       origen: origen.tipo === "declarado" ? { ...origen, posicion: { ...origen.posicion } } : { ...origen },
       via: entrada?.via ?? null, referencia: entrada?.referencia ?? null,

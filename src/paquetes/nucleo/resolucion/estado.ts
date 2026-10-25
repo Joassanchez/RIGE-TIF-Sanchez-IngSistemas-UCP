@@ -44,7 +44,7 @@ export class ArbolFusion implements EstadoFusion {
       if (!actual.hijos.has(segmento)) actual.hijos.set(segmento, nodo());
       actual = actual.hijos.get(segmento)!;
     }
-    if (actual.hijos.size) throw new Error("El subarbol requiere una estrategia de reemplazo explicita");
+    if (actual.hijos.size) throw new Error("El subárbol requiere una estrategia de reemplazo explícita");
     actual.rastro = { ...rastro, ruta: [...ruta], desplazadas: [...new Set([...heredadas, ...rastro.desplazadas])] };
   }
   vaciarBajo(ruta: readonly string[]): readonly RastroEnFusion[] {

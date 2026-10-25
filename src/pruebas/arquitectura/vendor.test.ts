@@ -27,7 +27,7 @@ describe("K-5 G-1 no circularidad del oraculo", () => {
     }
     expect(detectarVendor(archivos)).toEqual([]);
   });
-  test("permite usar el adaptador real para producir el resultado observado", () => {
+  test("permite consultas con el adaptador real y rechaza evaluaciones directas en aceptacion", () => {
     expect(detectarVendor({ "pruebas/aceptacion/a.test.ts": 'import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador"; const actual = consultar(adaptadorOpenCode); expect(actual).toEqual(referencia);' })).toEqual([]);
     expect(detectarVendor({ "pruebas/aceptacion/a.test.ts": 'const esperado = adaptador.permisos.evaluar(reglas); expect(actual).toEqual(esperado);' })).toEqual(["pruebas/aceptacion/a.test.ts"]);
     expect(detectarVendor({ "pruebas/aceptacion/a.test.ts": 'import { evaluate } from "../../paquetes/opencode/vendor/permiso"; const actual = evaluate("read", "x", "linux", []); expect(actual).toEqual({ action: "ask" });' })).toEqual(["pruebas/aceptacion/a.test.ts"]);

@@ -15,7 +15,7 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, solicitud: 
   if ((solicitud.sujeto !== undefined) === (herramienta !== undefined)) return { exito: false,
     error: errorSolicitudInvalida("indique sujeto o herramienta, en forma excluyente") };
   if (!agente.trim() || !(herramienta ?? sujeto).trim() || !objetivo.trim() || (lanzadoPor !== undefined && !lanzadoPor.trim())) return { exito: false,
-    error: errorSolicitudInvalida("el agente, sujeto u objetivo esta vacio") };
+    error: errorSolicitudInvalida("el agente, sujeto u objetivo está vacío") };
   const analisis = prepararAnalisis(dependencias, proyecto);
   if (!analisis.exito) return analisis;
   const { adaptador } = dependencias;

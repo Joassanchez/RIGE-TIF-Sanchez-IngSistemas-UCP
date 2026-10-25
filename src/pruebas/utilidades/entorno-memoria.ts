@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { posix } from "node:path";
+import { posix, win32 } from "node:path";
 import type { EntornoLectura } from "../../paquetes/nucleo/contrato/entorno";
 
 export function crearEntornoMemoria(opciones: {
@@ -13,6 +13,10 @@ export function crearEntornoMemoria(opciones: {
   const resumir = (texto: string) => createHash("sha256").update(texto, "utf8").digest("hex");
   return {
     plataforma: opciones.plataforma ?? "linux",
+    rutasPara(plataforma) {
+      const rutas = plataforma === "win32" ? win32 : posix;
+      return { unir: rutas.join, relativa: rutas.relative, padre: rutas.dirname, esAbsoluta: rutas.isAbsolute };
+    },
     variable: (nombre) => Object.hasOwn(opciones.variables ?? {}, nombre) ? opciones.variables![nombre] : undefined,
     tipo(ruta) {
       const normalizada = posix.normalize(ruta);

@@ -109,7 +109,7 @@ describe("CLI-3", () => {
       expect(ejecutar(argumentos, () => { throw new Error("No debe ensamblar"); })).toEqual({
         codigo: 2, salida: "",
         error: JSON.stringify({
-          esquema: 2, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos invalidos: ${argumentos.join(" ")}.` },
+          esquema: 2, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos inválidos: ${argumentos.join(" ")}.` },
         }) + "\n",
       });
     }
@@ -184,7 +184,7 @@ describe("CLI-5", () => {
       for (const depurados of [["--depurar", ...argumentos], [...argumentos, "--depurar"]]) {
         const esperado = argumentos.some((argumento) => argumento === "--x" || argumento === "--depurar=si")
           ? { ...normal, error: JSON.stringify({
-            esquema: 2, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos invalidos: ${depurados.join(" ")}.` },
+            esquema: 2, error: { codigo: "argumentos-invalidos", mensaje: `Argumentos inválidos: ${depurados.join(" ")}.` },
           }) + "\n" }
           : normal;
         expect(ejecutar(depurados, ensamblar)).toEqual(esperado);

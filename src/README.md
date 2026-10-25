@@ -615,3 +615,15 @@ bun run verificar
 
 En Bash, la referencia se comprueba con
 `bun run referencias --raiz "$(npm root -g)"`.
+
+Para comprobar T2-17, con `RIGE_ALMACEN` temporal como en §6:
+
+```powershell
+bun test pruebas/arquitectura/ortografia.test.ts
+bun test paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts paquetes/rige/aplicacion/casos-uso/analizar-proyecto.test.ts
+bun test pruebas/arquitectura/vendor.test.ts
+bun test paquetes/nucleo paquetes/opencode paquetes/rige pruebas/aceptacion/recorrido-v1.test.ts
+bun test
+bun run verificar
+bun run referencias --raiz (npm.cmd root -g)
+```
