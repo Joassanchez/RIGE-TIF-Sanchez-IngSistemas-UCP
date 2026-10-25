@@ -614,5 +614,245 @@
         "sha256": "307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233"
       }
     }
-  }
+  },
+  "decisionesNativas": [
+    {
+      "consulta": "q0-read-.env",
+      "agente": "build",
+      "sujeto": "read",
+      "objetivo": ".env",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "proyecto\\.env",
+          "regla": {
+            "permission": "read",
+            "pattern": "*.env",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:00.341Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q1-edit-src/a.js",
+      "agente": "plan",
+      "sujeto": "edit",
+      "objetivo": "src/a.js",
+      "herramienta": "edit",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "proyecto\\src\\a.js",
+          "regla": {
+            "permission": "edit",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "plan",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:04.967Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q2-bash-git status",
+      "agente": "build",
+      "sujeto": "bash",
+      "objetivo": "git status",
+      "herramienta": "bash",
+      "evaluaciones": [],
+      "herramientaNoOfrecida": true,
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:08.742Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q3-read-.env.local",
+      "agente": "build",
+      "sujeto": "read",
+      "objetivo": ".env.local",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "proyecto\\.env.local",
+          "regla": {
+            "permission": "read",
+            "pattern": "*.env.*",
+            "action": "ask"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:12.697Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q4-read-.env.example",
+      "agente": "build",
+      "sujeto": "read",
+      "objetivo": ".env.example",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "proyecto\\.env.example",
+          "regla": {
+            "permission": "read",
+            "pattern": "*.env.example",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:17.250Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q5-task-a",
+      "agente": "general",
+      "sujeto": "task",
+      "objetivo": "a",
+      "herramienta": "task",
+      "evaluaciones": [
+        {
+          "sujeto": "task",
+          "patronEvaluado": "a",
+          "regla": {
+            "permission": "*",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "general",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:22.058Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q6-edit-.opencode/plans/x.md",
+      "agente": "plan",
+      "sujeto": "edit",
+      "objetivo": ".opencode/plans/x.md",
+      "herramienta": "edit",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "proyecto\\.opencode\\plans\\x.md",
+          "regla": {
+            "permission": "edit",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "plan",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:26.856Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q7-question-a",
+      "agente": "build",
+      "sujeto": "question",
+      "objetivo": "a",
+      "herramienta": "question",
+      "evaluaciones": [],
+      "herramientaNoOfrecida": true,
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:31.202Z",
+        "plataforma": "win32-x64"
+      }
+    }
+  ]
 }

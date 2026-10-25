@@ -311,6 +311,8 @@ se usa un caché temporal. OpenCode puede instalar ese paquete desde npm: la
 corrida real corresponde al ingeniero fuera del sandbox. RIGE no incorpora
 esta herramienta al runtime. La configuración auxiliar agrega proveedor y
 modelo y conserva las reglas de permiso del escenario.
+La inicialización Git aislada admite hasta 30 segundos; si falla, informa
+escenario, consulta, estado y el diagnóstico de Git sin guardar referencias.
 
 Sin `--regenerar`, compara sin escribir; con él, guarda `decisionesNativas`
 en cada referencia, incluidas todas las evaluaciones, regla ganadora y

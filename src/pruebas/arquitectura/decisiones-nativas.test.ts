@@ -7,7 +7,7 @@ import { crearProveedor } from "../../herramientas/decisiones-nativas/proveedor"
 
 const raiz = resolve(import.meta.dir, "../..");
 const hash = "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff";
-function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: boolean; evaluacionAjena?: boolean; regenerar?: boolean; distinta?: boolean; falla?: boolean; cacheInterno?: boolean } = {}) {
+function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: boolean; evaluacionAjena?: boolean; regenerar?: boolean; distinta?: boolean; falla?: boolean; fallaGit?: boolean; cacheInterno?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-decisiones-test-"));
   try {
     const fuente = join(temporal, "repositorio/src");
@@ -43,6 +43,7 @@ function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: b
       const guardar=()=>writeFileSync(${JSON.stringify(registro)},JSON.stringify(llamadas));
       Bun.spawnSync=(argumentos,opciones)=>{
         llamadas.push({argumentos,...opciones}); guardar();
+        if(argumentos[1]==="init" && ${Boolean(opciones.fallaGit)}) return {exitCode:128,stdout:Buffer.from(""),stderr:Buffer.from("fatal: bloqueo de prueba")};
         return {exitCode:0,stdout:Buffer.from(argumentos[1]==="--version"?${JSON.stringify(opciones.version ?? "1.18.25")}:argumentos.includes("--show-toplevel")?opciones.cwd:""),stderr:Buffer.from("")};
       };
       Bun.spawn=(argumentos,opciones)=>{
@@ -67,6 +68,16 @@ function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: b
 }
 
 describe("T2-14 O-1", () => {
+  test("T2-14b informa escenario, estado y diagnostico de git sin escribir referencias", () => {
+    const r = ejecutar({ fallaGit: true, regenerar: true });
+    expect(r.codigo).toBe(1);
+    expect(r.error).toContain("doble/lectura");
+    expect(r.error).toContain("128");
+    expect(r.error).toContain("fatal: bloqueo de prueba");
+    expect(r.llamadas.find((l: { argumentos: string[] }) => l.argumentos[1] === "init").timeout).toBe(30000);
+    expect(r.referencia.decisionesNativas[0]).not.toHaveProperty("procedencia");
+    expect(r.borradas).toBe(true);
+  });
   test("extrae varias evaluated mezcladas, conserva escenario, procedencia y compara sin escribir", () => {
     const r = ejecutar({ regenerar: true });
     expect(r.codigo).toBe(0);

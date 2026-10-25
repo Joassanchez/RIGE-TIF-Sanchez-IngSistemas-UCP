@@ -275,5 +275,309 @@
         "sha256": "307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233"
       }
     }
-  }
+  },
+  "decisionesNativas": [
+    {
+      "consulta": "q0-read-src/productos.js",
+      "agente": "a",
+      "sujeto": "read",
+      "objetivo": "src/productos.js",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "src\\productos.js",
+          "regla": {
+            "permission": "read",
+            "pattern": "*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "a",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:36.165Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q1-read-src/productos.js",
+      "agente": "b",
+      "sujeto": "read",
+      "objetivo": "src/productos.js",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "src\\productos.js",
+          "regla": {
+            "permission": "read",
+            "pattern": "src/productos.js",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "b",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:40.858Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q2-edit-src/index.js",
+      "agente": "c",
+      "sujeto": "edit",
+      "objetivo": "src/index.js",
+      "herramienta": "edit",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "src\\index.js",
+          "regla": {
+            "permission": "edit",
+            "pattern": "*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "c",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:45.541Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q2-write-src/index.js",
+      "agente": "c",
+      "sujeto": "edit",
+      "objetivo": "src/index.js",
+      "herramienta": "write",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "src\\index.js",
+          "regla": {
+            "permission": "edit",
+            "pattern": "*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "c",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:50.351Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q2-apply_patch-src/index.js",
+      "agente": "c",
+      "sujeto": "edit",
+      "objetivo": "src/index.js",
+      "herramienta": "apply_patch",
+      "evaluaciones": [],
+      "herramientaNoOfrecida": true,
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "c",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:54.422Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q3-edit-src/index.js",
+      "agente": "d",
+      "sujeto": "edit",
+      "objetivo": "src/index.js",
+      "herramienta": "edit",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "src\\index.js",
+          "regla": {
+            "permission": "edit",
+            "pattern": "src/index.js",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "d",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:38:59.344Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q3-write-src/index.js",
+      "agente": "d",
+      "sujeto": "edit",
+      "objetivo": "src/index.js",
+      "herramienta": "write",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "src\\index.js",
+          "regla": {
+            "permission": "edit",
+            "pattern": "src/index.js",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "d",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:04.292Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q3-apply_patch-src/index.js",
+      "agente": "d",
+      "sujeto": "edit",
+      "objetivo": "src/index.js",
+      "herramienta": "apply_patch",
+      "evaluaciones": [],
+      "herramientaNoOfrecida": true,
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "d",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:08.483Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q4-read-src/productos.js",
+      "agente": "e",
+      "sujeto": "read",
+      "objetivo": "src/productos.js",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "src\\productos.js",
+          "regla": {
+            "permission": "read",
+            "pattern": "*",
+            "action": "ask"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "e",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:12.537Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q5-read-src/productos.js",
+      "agente": "control_e",
+      "sujeto": "read",
+      "objetivo": "src/productos.js",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "src\\productos.js",
+          "regla": {
+            "permission": "read",
+            "pattern": "src/productos.js",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "control_e",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:17.374Z",
+        "plataforma": "win32-x64"
+      }
+    }
+  ]
 }

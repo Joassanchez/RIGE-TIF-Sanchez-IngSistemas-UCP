@@ -191,5 +191,71 @@
         "sha256": "307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233"
       }
     }
-  }
+  },
+  "decisionesNativas": [
+    {
+      "consulta": "q0-read-.env",
+      "agente": "f",
+      "sujeto": "read",
+      "objetivo": ".env",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": ".env",
+          "regla": {
+            "permission": "read",
+            "pattern": "*.env",
+            "action": "ask"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "f",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:21.468Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q1-read-.env",
+      "agente": "control_f",
+      "sujeto": "read",
+      "objetivo": ".env",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": ".env",
+          "regla": {
+            "permission": "read",
+            "pattern": ".env",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "control_f",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:26.379Z",
+        "plataforma": "win32-x64"
+      }
+    }
+  ]
 }

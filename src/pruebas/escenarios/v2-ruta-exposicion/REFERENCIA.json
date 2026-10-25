@@ -208,5 +208,135 @@
         "sha256": "307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233"
       }
     }
-  }
+  },
+  "decisionesNativas": [
+    {
+      "consulta": "q0-read-config/credenciales.json",
+      "agente": "g",
+      "sujeto": "read",
+      "objetivo": "config/credenciales.json",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "config\\credenciales.json",
+          "regla": {
+            "permission": "read",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:31.133Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q0-read-privado",
+      "agente": "g",
+      "sujeto": "read",
+      "objetivo": "privado",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "privado",
+          "regla": {
+            "permission": "read",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:35.932Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q1-read-config/credenciales.json",
+      "agente": "h",
+      "sujeto": "read",
+      "objetivo": "config/credenciales.json",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "config\\credenciales.json",
+          "regla": {
+            "permission": "read",
+            "pattern": "config/credenciales.json",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "h",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:40.798Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "q2-read-privado",
+      "agente": "h",
+      "sujeto": "read",
+      "objetivo": "privado",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "privado",
+          "regla": {
+            "permission": "read",
+            "pattern": "privado",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "h",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-10-25T12:39:45.674Z",
+        "plataforma": "win32-x64"
+      }
+    }
+  ]
 }

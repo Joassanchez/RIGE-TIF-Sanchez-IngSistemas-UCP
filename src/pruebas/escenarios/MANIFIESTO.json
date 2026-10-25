@@ -249,7 +249,7 @@
         "hogar/.config/opencode/opencode.json": "e67a3c6b9828dcada77c0d7f60dc3ce2231adbded42fb682c226ecefdc302159",
         "proyecto/marcador.txt": "1467addcf20897867dbba1a69b01d714981c6218e8430b59acca2ad3b2d808bc"
       },
-      "referencia": "93d6afd5617f5eb608a3a59028b2a3fb064a48ef9a18b022303bc57905130207",
+      "referencia": "bcb7a9fd9ade2d38cf81a34d6d63d88f8a6470f26393f98b2d4d8a0fd175d214",
       "agentes": [
         "build",
         "plan",
@@ -472,7 +472,7 @@
         "proyecto/src/index.js": "106b97f66908b8a357f9d9b76930b209803b5c5241fda9b14ec64541f8cc70b4",
         "proyecto/src/productos.js": "106b97f66908b8a357f9d9b76930b209803b5c5241fda9b14ec64541f8cc70b4"
       },
-      "referencia": "1657869237aacb9a60cdd23713492641ee11674e944909582d53d5e12bb97c21",
+      "referencia": "6868657ae9e9bd7ef2116825d4a819c41d4e342d022142ccc1035b328cd41a73",
       "agentes": [
         "build",
         "a",
@@ -632,7 +632,7 @@
       "entradas": {
         "proyecto/opencode.jsonc": "460fb4a79a3b7a755252787c69bf70a4345c8290129ad33ae7d62622e36bba2a"
       },
-      "referencia": "565117de01ba4d386cac624aab5d674eaaa7778b55d37976a52ca03907e796e4",
+      "referencia": "f68082fd9701e05c87b2ff5ba43e9d34f30028f6e23d3012757e8b428a353ff4",
       "agentes": [
         "build",
         "f",
@@ -685,7 +685,7 @@
         "proyecto/opencode.jsonc": "f2646377f8c878580b3528c00b5ae2727230c3003c7731122d3710e563f8ef85",
         "proyecto/privado/LEEME.txt": "ee39cbc677e726a72e5fa1f943c58ed0f2739703599031e9ff928e5546e11e16"
       },
-      "referencia": "251383c34f570d6915869b5439f97f385e80abeb8fa53708f2a55c2cfce6f5b3",
+      "referencia": "66d541b94c2e18063298cb3d312686b60de1a63ddd9f92519a9f607b45933bec",
       "agentes": [
         "build",
         "g",
@@ -955,7 +955,7 @@
         "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
         "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
       },
-      "referencia": "955eb2423863a93d52c56960abd41ba3b43aa8e4dbcfe81bc924b36222b2cf23",
+      "referencia": "f0a8260f313dacacdbae7ec3a22c9de6441ae77bca00e83f1166a48755f41302",
       "agentes": [
         "build",
         "plan"
@@ -995,7 +995,7 @@
         "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
         "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
       },
-      "referencia": "70afcae0775e4721a6de14da6a021f07ff37d49c83b87278aff84e784c646185",
+      "referencia": "ada13a10829271ae62d120b4ccbeb2fc9fc22843707d9b354664f228497e7433",
       "agentes": [
         "build",
         "plan"
@@ -1035,7 +1035,7 @@
         "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
         "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
       },
-      "referencia": "2a1eb714b061865e9b1a63cd4ba28212693a3dce799c8b074f2576517c14b272",
+      "referencia": "a3b06266f56b62d5a9daf9c964b64cc76bff4e28d61f8547d5054d13a0ab1f2d",
       "agentes": [
         "build",
         "plan"

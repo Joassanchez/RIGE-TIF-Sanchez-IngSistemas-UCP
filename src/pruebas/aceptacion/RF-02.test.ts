@@ -85,8 +85,8 @@ function comprobarLectura(r: ReturnType<typeof consultarPermisos>["respuestas"][
 }
 describe("RF-02 CA-1 (decision)", () => {
   test("ultima coincidencia declarada permite leer .env y conserva el rastro ordenado", () => {
-    const { respuestas: [r] } = consultarPermisos([{ agente: "build", sujeto: "read", objetivo: ".env" }]);
-    const nativa = decisionNativa(referenciaDecisiones(), { agente: "build", sujeto: "read", objetivo: ".env" }, ".env");
+    const { respuestas: [r] } = consultarPermisos([{ agente: "build", herramienta: "read", objetivo: ".env" }]);
+    const nativa = decisionNativa(referenciaDecisiones(), { agente: "build", sujeto: "read", objetivo: ".env" }, r!.consulta.objetivoEvaluado!);
     if (nativa) {
       expect(r!.decision).toBe(nativa.decision);
       expect(r!.cadena.find(regla => regla.indice === r!.determinante)).toMatchObject(nativa.regla);
@@ -99,7 +99,8 @@ describe("RF-02 CA-2 (decision)", () => {
   test("compara decisiones derivadas a mano de la cadena nativa sin importar vendor", () => {
     const referencia = referenciaDecisiones();
     expect(referencia.decisiones.length).toBeGreaterThanOrEqual(5);
-    const { respuestas } = consultarPermisos(referencia.decisiones);
+    const { respuestas } = consultarPermisos(referencia.decisiones.map(caso =>
+      caso.sujeto === "read" || caso.sujeto === "edit" ? { ...caso, herramienta: caso.sujeto } : caso));
     for (const [i, esperada] of referencia.decisiones.entries()) {
       const nativa = decisionNativa(referencia, esperada, respuestas[i]!.consulta.objetivoEvaluado!);
       if (nativa) {

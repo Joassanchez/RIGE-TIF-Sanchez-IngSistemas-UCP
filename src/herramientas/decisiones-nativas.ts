@@ -76,9 +76,9 @@ async function ejecutar(): Promise<number> {
         const cwd = join(copia.raiz, referencia.procedencia.directorio);
         if (!["sintetico", "ninguno"].includes(referencia.procedencia.git ?? "raiz")) {
           const git = Bun.spawnSync(["git", "init", "--quiet", "--initial-branch=main"], {
-            cwd: referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz, env, stdout: "pipe", stderr: "pipe", timeout: 10000,
+            cwd: referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz, env, stdout: "pipe", stderr: "pipe", timeout: 30000,
           });
-          if (git.exitCode !== 0) throw new Error("git init fallo en el escenario aislado");
+          if (git.exitCode !== 0) throw new Error(`git init fallo en ${escenario.id}/${consulta.id} (estado ${git.exitCode}): ${git.stderr.toString().trim()}`);
           const verificacion = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"], { cwd, env, stdout: "pipe", stderr: "pipe", timeout: 10000 });
           const esperada = referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz;
           if (verificacion.exitCode !== 0 || resolve(verificacion.stdout.toString().trim()).toLowerCase() !== resolve(esperada).toLowerCase()) throw new Error("Worktree nativo no aislado");
