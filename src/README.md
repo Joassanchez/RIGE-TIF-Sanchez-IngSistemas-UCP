@@ -111,6 +111,54 @@ La forma general es `bun run rige -- valores --proyecto <ruta> --agente <nombre>
 
 Una clave ausente en un agente con declaraciones devuelve código 0, `valores: []` y `motivo: "clave-inexistente"`. Un proyecto o agente inexistente produce código 1 por el canal de error; omitir `--agente` o `--proyecto` produce código 2. La web presenta la misma `RespuestaValores`, acompañada de un `SobreAlmacen` con id, instante e historia.
 
+**Consultar permisos y listar agentes por CLI (T2-11), sin preparar el almacén:**
+
+```bash
+bun run rige -- permiso --proyecto pruebas/escenarios/v2-cadena/proyecto --agente build --herramienta bash --objetivo "ls" --explicar
+bun run rige -- permiso --proyecto pruebas/escenarios/v2-cadena/proyecto --agente revisor --sujeto bash --objetivo "ls" --lanzado-por build
+bun run rige -- permiso --proyecto pruebas/escenarios/v2-cadena/proyecto --agente build --herramienta bash --objetivo "ls && rm x"
+bun run rige -- agentes --proyecto pruebas/escenarios/v2-agentes/proyecto
+```
+
+`permiso` requiere proyecto, agente, objetivo y exactamente una de las opciones
+`--herramienta` o `--sujeto`. `--lanzado-por` es opcional. `--explicar` incluye
+la explicación por plantillas de la decisión; sin ella `explicacion` es `null`.
+Un comando compuesto conserva el código 0, con `decision: null` y su motivo.
+Los errores se escriben solo por stderr: uso o configuración, código 1;
+argumentos inválidos, 2; falla interna, 70 (`--depurar` agrega el stack).
+`valores --explicar` es un argumento inválido: la explicación corresponde a
+decisiones y hallazgos (ADR-051).
+
+`agentes` lista también los ocultos y admite `--explicar`, sin agregar prosa
+porque no toma decisiones. Informa nombre, origen, modo y condición de oculto.
+Ordena primero los nativos y luego cada grupo por nombre con colación inglesa
+explícita (`Intl.Collator("en")`) y desempate por unidades UTF-16. Para ASCII
+es equivalente al `localeCompare` del tag, independientemente del locale del
+proceso. `disable: true` elimina incluso un agente nativo y deja su declaración
+en `eliminados`. La lista vacía es código 0. Si hay agentes Markdown que RIGE
+no observa, `incompleta: true` y `motivos` explicitan la limitación.
+
+Los contratos de las tres respuestas y de los errores están en
+`esquemas/salida/` (JSON Schema 2020-12, `esquema: 2`). Son la fuente de verdad
+de los tipos de respuesta; se regeneran con `bun herramientas/tipos-salida.ts`.
+Para comprobar T2-11 se ejecuta
+`bun test pruebas/aceptacion/RF-03.test.ts pruebas/aceptacion/RF-16.test.ts pruebas/aceptacion/RF-08.test.ts`.
+Las pruebas de sensibilidad del validador y la generación se comprueban con
+`bun test pruebas/utilidades/validar-esquema.test.ts herramientas/tipos-salida.test.ts`.
+
+Para regenerar solo las referencias de agentes, con el binario oficial instalado:
+
+```powershell
+$raizNpm = npm.cmd root -g
+bun run referencias --raiz $raizNpm --regenerar --escenario v2-cadena --escenario v2-agentes
+```
+
+En Bash, el equivalente es
+`bun run referencias --raiz "$(npm root -g)" --regenerar --escenario v2-cadena --escenario v2-agentes`.
+Sin `--regenerar`, el mismo comando compara sin escribir; sin `--escenario`,
+comprueba todas las referencias. En `v2-cadena` y `v2-agentes` también captura
+`opencode agent list`, conserva nombres y modos y verifica su coincidencia.
+
 **2. Arrancar el servidor:**
 
 ```bash
@@ -134,7 +182,7 @@ Con el servidor en marcha:
 
    Abrir la misma dirección de la resolución: la página muestra los mismos datos, leídos del almacén, y el texto «Página armada con la resolución leída del almacén de RIGE.» «Resoluciones de este proyecto» lista la resolución 1.
 5. **Variante:** volver a la página inicial, completar el mismo proyecto y agente, dejar **Clave** vacía y pulsar «Resolver y guardar»: la tabla «Valores efectivos» muestra `description`, `steps` y `temperature` en una nueva resolución.
-6. Los valores coinciden con los de OpenCode 1.18.25 registrados en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`; si el equipo tiene configuración global de OpenCode, RIGE la incorpora y la muestra con su procedencia, de modo que pueden aparecer entradas adicionales. Si esa configuración tiene sustituciones, agentes en Markdown, `mode`, `disable` o claves derivadas, las claves afectadas figuran como «no resueltas en el prototipo v1». Si lo afectado es la clave o el agente consultado, la página de error lo informa (`clave-no-resuelta`, HTTP 422) y no se crea la resolución. Una sustitución fuera de una cadena o un `mode` que no es objeto detienen el análisis con `contenido-no-soportado`.
+6. Los valores coinciden con los de OpenCode 1.18.25 registrados en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`; si el equipo tiene configuración global de OpenCode, RIGE la incorpora y la muestra con su procedencia, de modo que pueden aparecer entradas adicionales. Si esa configuración tiene sustituciones, agentes en Markdown, `mode` legado o claves derivadas, las claves afectadas figuran como «no resueltas en el prototipo v1». `agent.<nombre>.disable: true` elimina el agente desde T2-11. Si lo afectado es la clave o el agente consultado, la página de error lo informa (`clave-no-resuelta`, HTTP 422) y no se crea la resolución. Una sustitución fuera de una cadena o un `mode` que no es objeto detienen el análisis con `contenido-no-soportado`.
 
 Se detiene el servidor con Ctrl+C antes de continuar.
 

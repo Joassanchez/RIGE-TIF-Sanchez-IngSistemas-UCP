@@ -43,6 +43,13 @@ export interface Aplicacion {
 
 export interface ClaveNoResuelta { readonly ruta: readonly string[]; readonly regla: string }
 
+export interface AgenteListado {
+  readonly nombre: string;
+  readonly origen: "nativo" | "declarado";
+  readonly modo: string;
+  readonly oculto: boolean;
+}
+
 export interface Secuencia {
   readonly aplicaciones: readonly Aplicacion[];
   readonly noResueltas: readonly ClaveNoResuelta[];
@@ -69,4 +76,5 @@ export interface Adaptador {
   cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
   prepararObjetivo?(proyecto: string, herramienta: string, objetivo: string, entorno: EntornoLectura): Resultado<ObjetivoPermiso, ErrorAnalisis>;
   prepararSujeto?(sujeto: string, objetivo: string): ObjetivoPermiso;
+  listarAgentes?(resolucion: Resolucion): readonly AgenteListado[];
 }

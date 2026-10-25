@@ -8,8 +8,10 @@ import { cadena } from "./cadena";
 import { permisos } from "./permisos";
 import { prepararObjetivo } from "./objetivo";
 import { prepararSujeto } from "./comando";
+import { listarAgentes } from "./agentes";
 
 export const adaptadorOpenCode: Adaptador = {
+  listarAgentes,
   permisos,
   prepararObjetivo,
   prepararSujeto,

@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Respuesta agentes de RIGE v2",
+  "type": "object",
+  "properties": {
+    "esquema": {
+      "const": 2
+    },
+    "proyecto": {
+      "type": "string"
+    },
+    "entradas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Entrada"
+      }
+    },
+    "resumenEntradas": {
+      "type": "string"
+    },
+    "agentes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string"
+          },
+          "origen": {
+            "enum": [
+              "nativo",
+              "declarado"
+            ]
+          },
+          "modo": {
+            "type": "string"
+          },
+          "oculto": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nombre",
+          "origen",
+          "modo",
+          "oculto"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "eliminados": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string"
+          },
+          "declaracion": {
+            "$ref": "#/$defs/Declaracion"
+          }
+        },
+        "required": [
+          "nombre",
+          "declaracion"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "incompleta": {
+      "type": "boolean"
+    },
+    "motivos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reglas": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "esquema",
+    "proyecto",
+    "entradas",
+    "resumenEntradas",
+    "agentes",
+    "eliminados",
+    "incompleta",
+    "motivos",
+    "reglas"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Valor": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Valor"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Valor"
+          }
+        }
+      ]
+    },
+    "Origen": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "const": "declarado"
+            },
+            "orden": {
+              "type": "integer"
+            },
+            "posicion": {
+              "type": "object",
+              "properties": {
+                "linea": {
+                  "type": "integer"
+                },
+                "columna": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "linea",
+                "columna"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "tipo",
+            "orden",
+            "posicion"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "enum": [
+                "implicito",
+                "nativo"
+              ]
+            },
+            "regla": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tipo",
+            "regla"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Declaracion": {
+      "type": "object",
+      "properties": {
+        "origen": {
+          "$ref": "#/$defs/Origen"
+        },
+        "via": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "referencia": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valor": {
+          "$ref": "#/$defs/Valor"
+        },
+        "regla": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "origen",
+        "via",
+        "referencia",
+        "valor",
+        "regla"
+      ],
+      "additionalProperties": false
+    },
+    "Entrada": {
+      "type": "object",
+      "properties": {
+        "orden": {
+          "type": "integer"
+        },
+        "via": {
+          "type": "string"
+        },
+        "referencia": {
+          "type": "string"
+        },
+        "condicion": {
+          "enum": [
+            "observada",
+            "no_observada"
+          ]
+        },
+        "resumen": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "orden",
+        "via",
+        "referencia",
+        "condicion",
+        "resumen"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

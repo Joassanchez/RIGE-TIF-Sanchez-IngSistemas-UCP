@@ -30,7 +30,8 @@ type Llamada = { argumentos: string[]; cwd?: string; env: Record<string, string>
 
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.
 function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
-  diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean } = {}) {
+  diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
+  agentes?: boolean; agentesInvalidos?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
   try {
     mkdirSync(join(temporal, "opencode-ai/bin"), { recursive: true });
@@ -46,6 +47,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         mkdirSync(join(fuente, "pruebas/escenarios", nombre, "proyecto"), { recursive: true });
         const ref = JSON.parse(readFileSync(join(raiz, "pruebas/escenarios", nombre, "REFERENCIA.json"), "utf8"));
         ref.cadenas = { build: [{ permission: "bash", pattern: "*", action: "ask" }] };
+        if (opciones.agentes) ref.agentes = [];
         if (opciones.git) { ref.procedencia.git = opciones.git; ref.procedencia.skillsExternosExcluidos = true; }
         if (opciones.referenciaFiltrada) ref.cadenas.build.push({ permission: "external_directory", pattern: join(temporal, ".agents/skills/filtrada/*"), action: "allow" });
         writeFileSync(join(fuente, "pruebas/escenarios", nombre, "REFERENCIA.json"), JSON.stringify(ref));
@@ -84,6 +86,10 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         if (existsSync(join(copia, "REFERENCIA.json"))) throw new Error("Referencia copiada");
         if (!${Boolean(opciones.git)} && !readFileSync(join(copia, ".git/HEAD"), "utf8").includes("refs/heads/main")) throw new Error("Sin git");
         writeFileSync(join(copia, ".gitignore"), "generado por el doble nativo");
+        if (argumentos[1] === "agent") {
+          writeFileSync(${JSON.stringify(registro)}, JSON.stringify(llamadas));
+          return { exitCode: 0, stdout: Buffer.from(${JSON.stringify(opciones.agentesInvalidos ? "salida inesperada" : "build (primary)\n  []\nrevisor (all)\n  []\n")}), stderr: Buffer.from("") };
+        }
         const referencias = ${JSON.stringify(referencias)};
         const nombre = opciones.env.OPENCODE_CONFIG ? "v1-vias" : "v1-precedencia";
         const valores = referencias[nombre];
@@ -216,6 +222,14 @@ describe("RN-7 informa la variante oficial verificada", () => {
 });
 
 describe("T2-05 generacion y comparacion", () => {
+  test("T2-11 registra nombres y modos del comando agent list y detecta referencia diferente", () => {
+    const regenerada = ejecutar({ agentes: true, regenerar: true });
+    expect(regenerada.codigo).toBe(0);
+    expect(regenerada.regenerada.agentes).toEqual([{ nombre: "build", modo: "primary" }, { nombre: "revisor", modo: "all" }]);
+    expect(regenerada.llamadas.some(l => l.argumentos.slice(1).join(" ") === "agent list")).toBe(true);
+    expect(ejecutar({ agentes: true }).codigo).toBe(1);
+    expect(ejecutar({ agentes: true, agentesInvalidos: true, regenerar: true }).codigo).toBe(1);
+  });
   test("inicializa un repositorio valido antes del comando nativo y comprueba su raiz", () => {
     const resultado = ejecutar();
     expect(resultado.codigo).toBe(0);

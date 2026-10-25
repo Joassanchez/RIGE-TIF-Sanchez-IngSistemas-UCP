@@ -12,6 +12,7 @@ type Referencia = {
   readonly agente: string;
   readonly valores: Record<string, unknown>;
   readonly cadenas: Record<string, unknown[]>;
+  readonly agentes?: readonly { readonly nombre: string; readonly modo: string }[];
 };
 // Variantes oficiales de opencode-ai@1.18.25 por plataforma: en Windows el postinstall elige la baseline
 // si no detecta AVX2; en Linux las dos variantes son el mismo binario.
@@ -43,17 +44,24 @@ function entornoAislado(hogar: string): Record<string, string> {
 function ejecutar(): number {
   const hogarReal = userInfo().homedir;
   const argumentos = process.argv.slice(2);
-  const regenerar = argumentos.length === 3 && argumentos[2] === "--regenerar";
-  if ((!regenerar && argumentos.length !== 2) || argumentos[0] !== "--raiz" || !argumentos[1]?.trim()) {
-    throw new Error("Uso: bun run referencias --raiz <directorio global de npm> [--regenerar].");
+  const uso = "Uso: bun run referencias --raiz <directorio global de npm> [--regenerar] [--escenario <nombre>] (repetible).";
+  if (argumentos[0] !== "--raiz" || !argumentos[1]?.trim()) throw new Error(uso);
+  let regenerar = false;
+  const seleccion = new Set<string>();
+  for (let indice = 2; indice < argumentos.length; indice++) {
+    if (argumentos[indice] === "--regenerar" && !regenerar) regenerar = true;
+    else if (argumentos[indice] === "--escenario" && argumentos[indice + 1]?.trim() && !argumentos[indice + 1]!.startsWith("--")) seleccion.add(argumentos[++indice]!);
+    else throw new Error(uso);
   }
   const escenarios = join(import.meta.dir, "../pruebas/escenarios");
   const referencias = readdirSync(escenarios, { withFileTypes: true })
     .filter(entrada => entrada.isDirectory() && existsSync(join(escenarios, entrada.name, "REFERENCIA.json")))
+    .filter(entrada => !seleccion.size || seleccion.has(entrada.name))
     .map(entrada => entrada.name).sort().map(nombre => ({ nombre,
       referencia: JSON.parse(readFileSync(join(escenarios, nombre, "REFERENCIA.json"), "utf8")) as Referencia,
     }));
   if (!referencias.length) throw new Error("No se encontraron referencias nativas.");
+  if ([...seleccion].some(nombre => !referencias.some(r => r.nombre === nombre))) throw new Error("Escenario sin referencia nativa.");
   for (const { nombre, referencia } of referencias) {
     if (!referencia.procedencia.hogar || !referencia.procedencia.directorio || !referencia.cadenas || !Object.keys(referencia.cadenas).length) {
       throw new Error(`Referencia sin hogar, directorio o agentes de cadenas: ${nombre}.`);
@@ -119,6 +127,16 @@ function ejecutar(): number {
         if (agente === referencia.agente) valores = normalizar(salida);
       }
       if (!valores) throw new Error("No se obtuvo el agente de valores.");
+      let agentes: Referencia["agentes"];
+      if (referencia.agentes !== undefined) {
+        const proceso = Bun.spawnSync([binario, "agent", "list"], {
+          cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
+        });
+        if (proceso.exitCode !== 0) throw new Error(`agent list fallo (codigo ${proceso.exitCode}): ${proceso.stderr.toString().trim()}`);
+        agentes = [...proceso.stdout.toString().matchAll(/^([^\r\n]+) \((primary|subagent|all)\)\r?$/gm)]
+          .map(([, nombre, modo]) => ({ nombre: nombre!, modo: modo! }));
+        if (!agentes.length) throw new Error("agent list no produjo lineas nombre (modo).");
+      }
       comprobarAislamiento(cadenas, hogarReal, process.platform);
       if (!regenerar) comprobarAislamiento(referencia.cadenas, hogarReal, process.platform);
       if (regenerar) {
@@ -129,11 +147,12 @@ function ejecutar(): number {
         writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify({ ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
-            comando: "opencode debug agent <agente>", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse solo en los modos raiz/proyecto. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
-          valores: seleccionados, cadenas,
+            comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse solo en los modos raiz/proyecto. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
+          valores: seleccionados, cadenas, ...(agentes === undefined ? {} : { agentes }),
         }, null, 2) + "\n");
       }
-      const diferencias = regenerar ? [] : [...comparar(referencia.valores, valores), ...comparar(referencia.cadenas, cadenas)];
+      const diferencias = regenerar ? [] : [...comparar(referencia.valores, valores), ...comparar(referencia.cadenas, cadenas),
+        ...(agentes === undefined ? [] : comparar({ agentes: referencia.agentes }, { agentes }))];
       console.log(`${nombre}: ${diferencias.length ? JSON.stringify(diferencias) : regenerar ? "regenerada" : "ok"}`);
       if (diferencias.length) codigo = 1;
     } catch (error) {

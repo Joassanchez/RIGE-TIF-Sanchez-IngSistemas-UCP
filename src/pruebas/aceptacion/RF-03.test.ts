@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
@@ -8,9 +8,150 @@ import { crearEntornoAislado } from "../utilidades/entorno-aislado";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal } from "../utilidades/cliente-http-local";
 import type { RespuestaValores } from "../../paquetes/rige/aplicacion/respuestas/valores";
+import { prepararConsultas } from "../utilidades/consultas-cli";
+import { validarEsquema } from "../utilidades/validar-esquema";
 
 const limpiezas: (() => void)[] = [];
 afterEach(() => { for (const limpiar of limpiezas.splice(0).reverse()) limpiar(); });
+
+const consultas = [
+  ["valores", ["--agente", "revisor"]],
+  ["agentes", []], ["agentes", ["--explicar"]],
+  ...["ls", "ls && rm x"].flatMap(objetivo => [[], ["--explicar"]].map(opciones =>
+    ["permiso", ["--agente", "build", "--herramienta", "bash", "--objetivo", objetivo, ...opciones]])),
+] as [string, string[]][];
+function prepararCli() {
+  const escenario = prepararConsultas();
+  limpiezas.push(escenario.borrar);
+  return escenario;
+}
+
+async function validarRespuesta(nombre: string, valor: unknown) {
+  const esquema = await Bun.file(new URL(`../../esquemas/salida/${nombre}.json`, import.meta.url)).json();
+  expect(validarEsquema(esquema, valor)).toEqual([]);
+}
+
+describe("RF-03 CA-2", () => {
+  test.each(consultas)("%s %j valida contra el esquema publicado", async (comando, opciones) => {
+    const escenario = prepararCli();
+    const resultado = escenario.consultar(comando, opciones);
+    expect(resultado.codigo).toBe(0);
+    const respuesta = JSON.parse(resultado.salida);
+    expect(respuesta.esquema).toBe(2);
+    await validarRespuesta(comando, respuesta);
+  });
+  test("errores de uso y argumentos validan contra error.json", async () => {
+    const escenario = prepararCli();
+    for (const resultado of [escenario.consultar("agentes", [], { RIGE_PUERTO: "x" }),
+      escenario.consultar("permiso", []), escenario.consultar("valores", [])]) {
+      expect(resultado.salida).toBe("");
+      await validarRespuesta("error", JSON.parse(resultado.error));
+    }
+  });
+  for (const mutacion of ["extra", "ausente", "tipo", "version"] as const) {
+    test(`sensibilidad: rechaza campo ${mutacion}`, async () => {
+      const escenario = prepararCli();
+      for (const [comando, opciones] of [...consultas.slice(0, 2), consultas[3]!, ["error", []]] as [string, string[]][]) {
+        const valor = JSON.parse(comando === "error" ? escenario.consultar("permiso").error : escenario.consultar(comando, opciones).salida);
+        const esquema = await Bun.file(new URL(`../../esquemas/salida/${comando}.json`, import.meta.url)).json();
+        expect(validarEsquema(esquema, valor)).toEqual([]);
+        if (mutacion === "extra") valor.extra = true;
+        if (mutacion === "ausente") delete valor[comando === "error" ? "error" : "proyecto"];
+        if (mutacion === "tipo") valor[comando === "error" ? "error" : "entradas"] = "incorrecto";
+        if (mutacion === "version") valor.esquema = 1;
+        expect(validarEsquema(esquema, valor).length).toBeGreaterThan(0);
+      }
+    });
+  }
+});
+
+describe("RF-03 CA-1 (CLI v2)", () => {
+  test.each(consultas)("%s %j es identica byte a byte", (comando, opciones) => {
+    const escenario = prepararCli();
+    const primera = escenario.consultar(comando, opciones);
+    expect(primera.codigo).toBe(0);
+    expect(primera.error).toBe("");
+    expect(escenario.consultar(comando, opciones)).toEqual(primera);
+    const respuesta = JSON.parse(primera.salida);
+    expect(respuesta).not.toHaveProperty("instante");
+    expect(respuesta).not.toHaveProperty("id");
+    if (comando === "permiso") expect(respuesta.explicacion === null).toBe(!opciones.includes("--explicar"));
+  });
+});
+
+describe("RF-03 CA-3 (permiso CLI)", () => {
+  test.each(["edit", "question"])("%s ubica la regla determinante declarada o nativa", sujeto => {
+    const escenario = prepararCli();
+    const resultado = escenario.consultar("permiso", ["--agente", "build", "--sujeto", sujeto, "--objetivo", "a"]);
+    expect(resultado.codigo).toBe(0);
+    const respuesta = JSON.parse(resultado.salida);
+    const regla = respuesta.cadena.find((r: { indice: number }) => r.indice === respuesta.determinante);
+    if (sujeto === "edit") {
+      expect(isAbsolute(regla.declaracion.referencia)).toBe(true);
+      expect(regla.origen.posicion.linea).toBe(5);
+    } else expect(regla.origen.tipo).toBe("nativo");
+  });
+});
+
+describe("RF-03 CA-5 (CLI v2)", () => {
+  for (const [comando, opciones] of consultas.filter(([, opciones]) => !opciones.includes("--explicar")).slice(0, 3)) {
+    test(`${comando} codigo 0`, () => {
+      const escenario = prepararCli();
+      expect(escenario.consultar(comando, opciones).codigo).toBe(0);
+    });
+    test(`${comando} codigo 1: proyecto y configuracion`, () => {
+      const escenario = prepararCli();
+      for (const resultado of [escenario.consultar(comando, opciones, { RIGE_PUERTO: "invalido" }),
+        lanzar(escenario.raiz, [comando, "--proyecto", join(escenario.raiz, "ausente"), ...opciones], escenario.variables)]) {
+        expect(resultado.codigo).toBe(1);
+        expect(resultado.salida).toBe("");
+        expect(JSON.parse(resultado.error).esquema).toBe(2);
+      }
+    });
+    test(`${comando} codigo 2: argumentos`, () => {
+      const escenario = prepararCli();
+      const resultado = escenario.consultar(comando, [...opciones, "--desconocido"]);
+      expect(resultado.codigo).toBe(2);
+      expect(resultado.salida).toBe("");
+      expect(JSON.parse(resultado.error).error.codigo).toBe("argumentos-invalidos");
+    });
+    test(`${comando} codigo 70: falla interna`, async () => {
+      const escenario = prepararCli();
+      const precarga = join(escenario.raiz, "falla.ts");
+      writeFileSync(precarga, `import { mock } from "bun:test";
+        const fs = await import("node:fs");
+        mock.module("node:fs", () => ({ ...fs, readFileSync: (...args) => {
+          if (String(args[0]).endsWith("opencode.json")) throw new Error("Falla de lectura simulada");
+          return fs.readFileSync(...args);
+        } }));`);
+      const proceso = Bun.spawnSync([process.execPath, "--preload", precarga, "paquetes/rige/arranque/rige.ts",
+        comando, "--proyecto", escenario.proyecto, ...opciones], { env: { ...crearEntornoAislado(escenario.raiz, process.env),
+          ...escenario.variables }, stdout: "pipe", stderr: "pipe" });
+      expect(proceso.exitCode).toBe(70);
+      expect(proceso.stdout.toString()).toBe("");
+      expect(JSON.parse(proceso.stderr.toString())).toMatchObject({ esquema: 2, error: { codigo: "interno" } });
+      await validarRespuesta("error", JSON.parse(proceso.stderr.toString()));
+    });
+  }
+  test("rechaza explicar en valores y exige herramienta o sujeto excluyentes", () => {
+    const escenario = prepararCli();
+    for (const [comando, opciones] of [["valores", ["--agente", "revisor", "--explicar"]],
+      ["permiso", ["--agente", "build", "--objetivo", "a"]],
+      ["permiso", ["--agente", "build", "--objetivo", "a", "--sujeto", "read", "--herramienta", "read"]]] as [string, string[]][]) {
+      expect(escenario.consultar(comando, opciones).codigo).toBe(2);
+    }
+  });
+  test("permiso informa fuera-del-arbol y agente inexistente", () => {
+    const escenario = prepararCli();
+    const opciones = ["--agente", "build", "--herramienta", "read", "--objetivo", join(escenario.raiz, "../fuera.txt")];
+    const respuesta = escenario.consultar("permiso", opciones);
+    expect(respuesta.codigo).toBe(0);
+    expect(JSON.parse(respuesta.salida)).toMatchObject({ decision: null, motivoSinDecision: "fuera-del-arbol" });
+    const ausente = escenario.consultar("permiso", ["--agente", "ausente", "--sujeto", "read", "--objetivo", "a"]);
+    expect(ausente.codigo).toBe(1);
+    expect(JSON.parse(ausente.error).error.codigo).toBe("agente-inexistente");
+  });
+});
 
 function preparar(nombre = "v1-precedencia") {
   const escenario = copiarEscenario(nombre);

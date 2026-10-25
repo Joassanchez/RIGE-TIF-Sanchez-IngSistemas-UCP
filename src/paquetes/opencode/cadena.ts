@@ -5,8 +5,13 @@ import type { Cadena, ReglaCadena, Resolucion } from "@rige/nucleo/resolucion/ti
 import { agentesNativos } from "./vendor/agentes-nativos";
 import { expand, fromConfig } from "./vendor/permiso";
 import { descubrirWorktree } from "./worktree";
+import { agenteEliminado } from "./agentes";
 
 export function cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis> {
+  for (const nombre of [agente, ...(lanzadoPor === undefined ? [] : [lanzadoPor])]) {
+    if (agenteEliminado(resolucion, nombre)) return { exito: false, error: { categoria: "uso", codigo: "agente-inexistente",
+      mensaje: `El agente ${nombre} esta deshabilitado.` } };
+  }
   const path = { join: (...partes: string[]) => entorno.unir(...partes),
     relative: (desde: string, hasta: string) => entorno.relativa(desde, hasta),
     dirname: (ruta: string) => entorno.padre(ruta) };

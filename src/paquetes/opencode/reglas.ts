@@ -11,6 +11,7 @@ export const plantillasExplicacion: PlantillasExplicacion = {
 };
 
 export const reglas: Readonly<Record<string, string>> = {
+  "agente-deshabilitado": "disable: true elimina el agente, incluso si es nativo, despues de fusionar la configuracion.",
   "eje-parcialmente-observado": "El eje consultado está parcialmente observado; no se informa una decisión de permiso.",
   "comando-compuesto": "El comando es compuesto o no analizable; no se informa una decision de permiso (RF-08).",
   "tuberia": "Comando compuesto: tuberia (| o |&).",

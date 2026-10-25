@@ -42,6 +42,8 @@ const respuesta: RespuestaEstado = {
   esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
 const noWeb = {
+  consultarPermiso: () => { throw new Error("No consultar permiso"); },
+  consultarAgentes: () => { throw new Error("No consultar agentes"); },
   consultarValores: () => { throw new Error("No consultar valores"); },
   consultarEstado: () => { throw new Error("No debe consultar estado"); },
   iniciarServidor: () => { throw new Error("No debe iniciar servidor"); },
@@ -194,6 +196,7 @@ describe("CLI-6", () => {
     const orden: string[] = [];
     const ensamblado: Ensamblado = {
       exito: true, valor: {
+        ...noWeb,
         consultarValores: noWeb.consultarValores,
         prepararAlmacen: () => { throw new Error("No debe preparar almacen"); },
         consultarEstado: () => { orden.push("consultar"); return { exito: true, valor: respuesta }; },

@@ -55,7 +55,9 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
           excluir(ruta.slice(0, 2), "fuera-del-v1");
         }
       }
-      if (ruta[0] === "agent" && ruta[2] === "disable") excluir(ruta.slice(0, 2), "fuera-del-v1");
+      if (ruta[0] === "agent" && ruta[2] === "disable" && (ruta.length !== 3 || typeof valor !== "boolean")) {
+        excluir(ruta.slice(0, 2), "fuera-del-v1");
+      }
       const indiceSustitucion = ruta.findIndex(segmento => sustitucion.test(segmento));
       if (indiceSustitucion >= 0) excluir(ruta.slice(0, indiceSustitucion + 1), "sustitucion-no-incorporada");
       else if (contieneSustitucion(valor)) excluir(ruta, "sustitucion-no-incorporada");
@@ -95,6 +97,13 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
       aplicaciones.push({ origen: { tipo: "declarado", orden: lectura.orden, posicion: declaracion.posicion },
         ruta, valor: declaracion.valor, estrategia: cambiaForma ? "reemplazoSubarbol" : "reemplazo", regla: "orden-de-aplicacion" });
     }
+  }
+  // disable se evalua tras fusionar las entradas, como en Agent.list del tag.
+  // La propia hoja disable garantiza un rastro aun para un agente sin otras hojas.
+  for (const { ruta, valor } of hojas.values()) {
+    if (ruta.length !== 3 || ruta[0] !== "agent" || ruta[2] !== "disable" || valor !== true) continue;
+    const declaracion = aplicaciones.findLast(a => a.ruta.length === 3 && a.ruta.every((s, i) => s === ruta[i]))!;
+    aplicaciones.push({ ...declaracion, ruta: ruta.slice(0, 2), estrategia: "eliminacion", regla: "agente-deshabilitado" });
   }
   return { exito: true, valor: { aplicaciones, noResueltas } };
 }

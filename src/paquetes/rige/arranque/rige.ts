@@ -11,6 +11,8 @@ import { consultarEstado } from "../aplicacion/casos-uso/consultar-estado";
 import { resolverProyecto } from "../aplicacion/casos-uso/resolver-proyecto";
 import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucion";
 import { consultarValores } from "../aplicacion/casos-uso/consultar-valores";
+import { consultarPermiso } from "../aplicacion/casos-uso/consultar-permiso";
+import { consultarAgentes } from "../aplicacion/casos-uso/consultar-agentes";
 import { versionRige } from "../aplicacion/respuestas/estado";
 import { iniciarServidor } from "../interfaces/web/servidor";
 import { ejecutarCli, type Ensamblado } from "../interfaces/cli/ejecutar";
@@ -31,6 +33,8 @@ function ensamblar(): Ensamblado {
   return {
     exito: true, valor: {
       consultarValores: (proyecto, agente, clave) => consultarValores(dependencias, proyecto, agente, clave),
+      consultarPermiso: (proyecto, agente, accion, objetivo, lanzadoPor, opciones) => consultarPermiso(dependencias, proyecto, agente, accion, objetivo, lanzadoPor, opciones),
+      consultarAgentes: (proyecto) => consultarAgentes(dependencias, proyecto),
       prepararAlmacen: () => prepararAlmacen(almacen),
       consultarEstado: () => consultarEstado(almacen),
       iniciarServidor: () => iniciarServidor(resultado.valor.puerto, {

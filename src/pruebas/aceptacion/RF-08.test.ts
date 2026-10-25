@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { consultarPermisos } from "../utilidades/permisos";
+import { prepararConsultas } from "../utilidades/consultas-cli";
 
 function consultar(objetivos: string[]) {
   return consultarPermisos(objetivos.flatMap(objetivo => [
@@ -46,6 +47,15 @@ describe("RF-08 CA-2", () => {
 });
 
 describe("RF-08 CA-3", () => {
+  test("la CLI devuelve codigo 0 con decision null y motivo para ls && rm x", () => {
+    const escenario = prepararConsultas("v2-bash");
+    try {
+      const resultado = escenario.consultar("permiso", ["--agente", "build", "--herramienta", "bash", "--objetivo", "ls && rm x"]);
+      expect(resultado.codigo).toBe(0);
+      expect(resultado.error).toBe("");
+      expect(JSON.parse(resultado.salida)).toMatchObject({ decision: null, motivoSinDecision: "comando-compuesto" });
+    } finally { escenario.borrar(); }
+  });
   test("el caso de uso devuelve una respuesta serializable exitosa sin decision", () => {
     const respuestas = consultar(["ls && rm -rf x"]);
     for (const respuesta of JSON.parse(JSON.stringify(respuestas))) {

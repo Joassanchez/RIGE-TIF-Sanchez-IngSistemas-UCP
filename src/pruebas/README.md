@@ -1,11 +1,29 @@
 # Mapa de pruebas
 
+T2-11 ejecuta la CLI real en subprocesos aislados mediante
+`utilidades/consultas-cli.ts`. `aceptacion/RF-03.test.ts` cubre determinismo,
+esquemas, cuatro mutaciones independientes por contrato, procedencia y códigos
+0/1/2/70 por consulta. La falla de infraestructura se inyecta en la lectura de
+archivos del subproceso; no modifica el entorno del proceso de pruebas.
+`aceptacion/RF-16.test.ts` cubre nativos, declarados, ocultos, eliminación,
+reactivación con `disable: false`, lista vacía y listado incompleto por Markdown.
+Los nombres y modos se contrastan con las referencias del binario en
+`v2-cadena` y `v2-agentes`; el generador captura `opencode agent list` además
+de las cadenas. `RF-08 CA-3` comprueba también la CLI pública.
+
+El validador de `utilidades/validar-esquema.ts` admite solo las keywords de
+los esquemas publicados y lanza ante otras, incluso en ramas no recorridas.
+Su unitaria cubre referencias locales, arrays, tipos, enum y uniones.
+`../herramientas/tipos-salida.test.ts` impide divergencias entre JSON Schema y
+los tipos generados. Los comandos específicos y de regeneración están en
+`../README.md`.
+
 T2-09 agrega `aceptacion/RF-08.test.ts`, con una prueba por CA-1 a CA-3.
 Consulta el caso de uso por subproceso aislado, tanto por herramienta como
 por sujeto `bash`, sobre la copia temporal de `escenarios/v2-bash/`.
 Comprueba ausencia de decision y rastro determinante, motivos ordenados
 sin repeticion, plantillas de advertencia y decisiones normales sobre comandos
-simples recortados. CA-3 cubre aqui el caso de uso; la CLI corresponde a T2-11.
+simples recortados. CA-3 cubre el caso de uso y, desde T2-11, la CLI.
 `../paquetes/opencode/comando.test.ts` cubre L-1, L-2 y L-3 con 46 casos:
 comillas, escapes, operadores, sustituciones anidadas y entradas no analizables.
 El comando especifico figura en `../README.md`.
