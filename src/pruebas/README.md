@@ -21,6 +21,9 @@
 | RNF-03 CA-2 | `aceptacion/RNF-03.test.ts` — `RNF-03 CA-2` (único recorrido de identificaciones) |
 | RNF-03 CA-3 | `aceptacion/RNF-03.test.ts` — `RNF-03 CA-3` (adaptador ficticio) |
 | RNF-09 CA-1, CA-2 y CA-3 | `aceptacion/RNF-09.test.ts` — `RNF-09 CA-1`, `RNF-09 CA-2`, `RNF-09 CA-3`; `aceptacion/recorrido-v1.test.ts` — `V-7 RNF-09 ADR-062 C7` (defensas en resolver/recuperar, sin guardar ante rechazo) |
+| RNF-10 CA-1, CA-2 y CA-3 | `aceptacion/RNF-10.test.ts` — `RNF-10 CA-1`, `RNF-10 CA-2`, `RNF-10 CA-3` (cabeceras, licencia exacta, avisos y SHA-256) |
+| T2-03 V-1 a V-5 | `../paquetes/opencode/vendor/permiso.test.ts` — `V-1 evaluate`, `V-2 match`, `V-3 fromConfig`, `V-4 Object.entries`, `V-5 disabled` |
+| T2-03 G-1 | `arquitectura/vendor.test.ts` — `G-1 no circularidad del oraculo` (recorrido transitivo y regresion sintetica) |
 | RD-01 | `../paquetes/nucleo/resolucion/resolver.test.ts` — `N-1 RD-01` (reemplazo y procedencia); `../paquetes/opencode/ubicador.test.ts` — `U-5` (orden de archivos declarado por el adaptador) |
 | ADR-061: preparación explícita y esquema incompatible | `../paquetes/rige/adaptadores/almacen-sqlite/esquema.test.ts` — `T0-09 preparacion explicita SQLite`, `AL-1`; `aceptacion/arranque.test.ts` — `A-6` (rechazo sin crear ni migrar) |
 | ADR-061: documento, retención e inmutabilidad | `../paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts` — `R-1 RF-17 CA-1`, `R-2 RF-17 CA-3`, `R-3`, `R-4` (persistencia, transacción, retención por proyecto, UPDATE prohibido y esquema exigido) |

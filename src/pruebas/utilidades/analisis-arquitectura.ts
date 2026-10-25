@@ -86,7 +86,7 @@ export function tokenizar(codigo: string): Token[] {
   return resultado;
 }
 
-function extraerImports(codigo: string): { destino: string; clausula: Token[] }[] {
+export function extraerImports(codigo: string): { destino: string; clausula: Token[] }[] {
   const encontrados: { destino: string; clausula: Token[] }[] = [];
   const lista = tokenizar(codigo);
   for (let indice = 0; indice < lista.length; indice++) {

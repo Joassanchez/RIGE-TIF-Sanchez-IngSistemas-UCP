@@ -207,3 +207,16 @@ El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSis
 El diseño, los requisitos y las decisiones (ADR) son del autor; las herramientas escriben y revisan código bajo esas decisiones.
 
 Uso conforme al Protocolo de Uso Autorizado, en los períodos declarados en la tabla.
+
+### Licencia del evaluador incorporado
+
+RIGE incorpora las funciones puras del evaluador de permisos v1 y Wildcard de
+OpenCode 1.18.25, Copyright (c) 2025 opencode, bajo licencia MIT. Se distribuyen
+el texto completo en [LICENSE](paquetes/opencode/vendor/LICENSE) y el archivo de
+[avisos](paquetes/opencode/vendor/AVISOS.md). La
+[procedencia](paquetes/opencode/vendor/PROCEDENCIA.md) registra los origenes,
+los cambios de envoltorio y los SHA-256. Esta copia no es el oraculo de las
+pruebas de aceptacion.
+
+Para comprobar esta tarea, con `RIGE_ALMACEN` temporal como se indica en §6:
+`bun test paquetes/opencode/vendor pruebas/aceptacion/RNF-10.test.ts pruebas/arquitectura/vendor.test.ts`.
