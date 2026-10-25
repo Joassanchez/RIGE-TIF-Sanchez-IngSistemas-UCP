@@ -3,11 +3,14 @@ import { consultarCadenas } from "../utilidades/cadenas";
 import { comparar } from "../../herramientas/referencias-nativas/comparar";
 import { consultarPermisos, referenciaDecisiones } from "../utilidades/permisos";
 import { readFileSync } from "node:fs";
+import { decisionNativa } from "../utilidades/decision-nativa";
+import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";
 
 describe("RF-02 CA-3", () => {
   const referencia = JSON.parse(readFileSync(new URL("../escenarios/v2-subagente/REFERENCIA.json", import.meta.url), "utf8")) as {
     decisiones: { variante: string; agente: string; sujeto: string; objetivo: string; lanzadoPor: string; decision: string; escenario?: string }[];
     cadenas: Record<string, { permission: string; pattern: string; action: string }[]>;
+    decisionesNativas?: DecisionNativa[];
   };
   const consultar = (consultas: Parameters<typeof consultarPermisos>[0], variante = "global", modo = "ultima") =>
     consultarPermisos(consultas, modo, variante, "v2-subagente").respuestas;
@@ -23,7 +26,10 @@ describe("RF-02 CA-3", () => {
   for (const caso of referencia.decisiones) {
     test(`(${caso.variante}) decision y procedencia de la cadena propia`, () => {
       const [r] = consultarPermisos([caso], "ultima", "global", caso.escenario ?? "v2-subagente").respuestas;
-      expect(r!.decision).toBe(caso.decision);
+      const refCaso = caso.escenario ? JSON.parse(readFileSync(new URL(`../escenarios/${caso.escenario}/REFERENCIA.json`, import.meta.url), "utf8")) : referencia;
+      const nativa = decisionNativa(refCaso, caso, r!.consulta.objetivoEvaluado!);
+      expect(r!.decision).toBe(nativa?.decision ?? caso.decision);
+      if (nativa) expect(r!.cadena.find(regla => regla.indice === r!.determinante)).toMatchObject(nativa.regla);
       const base = caso.escenario
         ? (JSON.parse(readFileSync(new URL(`../escenarios/${caso.escenario}/REFERENCIA.json`, import.meta.url), "utf8")) as typeof referencia).cadenas[caso.agente]!
         : referencia.cadenas[caso.agente]!;
@@ -80,6 +86,11 @@ function comprobarLectura(r: ReturnType<typeof consultarPermisos>["respuestas"][
 describe("RF-02 CA-1 (decision)", () => {
   test("ultima coincidencia declarada permite leer .env y conserva el rastro ordenado", () => {
     const { respuestas: [r] } = consultarPermisos([{ agente: "build", sujeto: "read", objetivo: ".env" }]);
+    const nativa = decisionNativa(referenciaDecisiones(), { agente: "build", sujeto: "read", objetivo: ".env" }, ".env");
+    if (nativa) {
+      expect(r!.decision).toBe(nativa.decision);
+      expect(r!.cadena.find(regla => regla.indice === r!.determinante)).toMatchObject(nativa.regla);
+    }
     comprobarLectura(r!);
   });
 });
@@ -90,9 +101,15 @@ describe("RF-02 CA-2 (decision)", () => {
     expect(referencia.decisiones.length).toBeGreaterThanOrEqual(5);
     const { respuestas } = consultarPermisos(referencia.decisiones);
     for (const [i, esperada] of referencia.decisiones.entries()) {
-      expect(esperada.procedencia).toBe("derivada de la cadena nativa");
-      expect(respuestas[i]).toMatchObject({ decision: esperada.decision, determinante: esperada.determinante });
-      expect(respuestas[i]!.cadena.map(r => r.indice)).toEqual(esperada.coincidentes);
+      const nativa = decisionNativa(referencia, esperada, respuestas[i]!.consulta.objetivoEvaluado!);
+      if (nativa) {
+        expect(respuestas[i]!.decision).toBe(nativa.decision);
+        expect(respuestas[i]!.cadena.find(r => r.indice === respuestas[i]!.determinante)).toMatchObject(nativa.regla);
+      } else {
+        expect(esperada.procedencia).toBe("derivada de la cadena nativa");
+        expect(respuestas[i]).toMatchObject({ decision: esperada.decision, determinante: esperada.determinante });
+        expect(respuestas[i]!.cadena.map(r => r.indice)).toEqual(esperada.coincidentes);
+      }
     }
   });
 });

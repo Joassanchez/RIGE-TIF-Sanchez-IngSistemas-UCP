@@ -24,13 +24,15 @@ for (const [id, clave, valor] of [["B-1", "mode", "foo"], ["B-2", "hidden", "si"
   });
 }
 
-for (const [id, escenario] of [["W-1", "v2-worktree-gitfile-roto"], ["W-2", "v2-worktree-dir-invalido-anidado"]]) {
-  test(`T2-11b ${id} cadena de plan coincide con el binario en ${escenario}`, () => {
-    const { cadenas, referencia, normalizar } = consultarCadenas(escenario!);
-    expect(normalizar(cadenas.plan!.reglas.map(r => ({ permission: r.sujeto, pattern: r.patron, action: r.efecto }))))
-      .toEqual(referencia.cadenas.plan);
-  });
-}
+describe("RF-02 CA-9 (worktrees anidados)", () => {
+  for (const [id, escenario] of [["W-1", "v2-worktree-gitfile-roto"], ["W-2", "v2-worktree-dir-invalido-anidado"]]) {
+    test(`T2-11b ${id} cadena de plan coincide con el binario en ${escenario}`, () => {
+      const { cadenas, referencia, normalizar } = consultarCadenas(escenario!);
+      expect(normalizar(cadenas.plan!.reglas.map(r => ({ permission: r.sujeto, pattern: r.patron, action: r.efecto }))))
+        .toEqual(referencia.cadenas.plan);
+    });
+  }
+});
 
 test("T2-11b N-1 numeracion declarada siempre; references/reference advierten", () => {
   const copia = prepararConsultas();

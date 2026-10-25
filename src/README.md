@@ -287,6 +287,49 @@ La web presenta los errores de uso con estado HTTP 400 (`solicitud-invalida`), 4
 
 La etiqueta `v1` corresponde a la versión `0.1.0` de RIGE.
 
+Herramientas de desarrollo de T2-14 (con `RIGE_ALMACEN` temporal):
+
+```bash
+bun run cobertura
+bun run decisiones --raiz <directorio-global-npm> --cache <directorio-externo>
+bun run decisiones --raiz <directorio-global-npm> --cache <directorio-externo> --regenerar
+```
+
+`cobertura` valida SHA-256, inventario y citas a pruebas de
+`pruebas/escenarios/MANIFIESTO.json` frente a `COBERTURA.json`, e imprime JSON
+con cobertura por ítem, escenarios y retiros. «Cubierto» indica vinculación a
+comprobaciones existentes; los resultados de ejecución los entrega `bun test`.
+RF-07 permanece pendiente de la iteración 3. El corte es `null` hasta que el
+ingeniero fije la revisión de `main` del 07/11/2026; resultados de base y
+adiciones quedan pendientes, sin conteos inventados.
+
+`decisiones` verifica el SHA-256 y la versión del binario oficial, copia cada
+escenario y consulta un proveedor SSE fijo en `127.0.0.1`, en puerto libre.
+Solo ejecuta consultas con `nativa: true`. `--cache` es opcional, apunta fuera
+del repositorio y conserva el paquete del proveedor entre corridas; sin él
+se usa un caché temporal. OpenCode puede instalar ese paquete desde npm: la
+corrida real corresponde al ingeniero fuera del sandbox. RIGE no incorpora
+esta herramienta al runtime. La configuración auxiliar agrega proveedor y
+modelo y conserva las reglas de permiso del escenario.
+
+Sin `--regenerar`, compara sin escribir; con él, guarda `decisionesNativas`
+en cada referencia, incluidas todas las evaluaciones, regla ganadora y
+procedencia (comando, hash, versión, fecha y plataforma). Después de regenerar
+se actualiza el SHA-256 de `REFERENCIA.json` en el manifiesto y se revisa el
+diff; las entradas del escenario conservan sus resúmenes. Una referencia de
+otra plataforma no se acepta como comparación equivalente. La ausencia de
+líneas `evaluated` queda como `herramientaNoOfrecida: true`, sin decisión.
+Las aceptaciones RF-02 CA-1/2/3/9 prefieren la evaluación nativa de su consulta;
+si aún no hay una evaluación usan las decisiones derivadas conservadas. Las
+consultas contextuales de subagentes quedan declaradas con `nativa: false`:
+ejecutar `run --agent` sobre el subagente no reproduce el contexto de `task`.
+El selector admite esas referencias cuando se obtengan con ese contexto.
+
+Las reglas de modificación y retiro son las de ADR-080: todo cambio posterior
+al corte conserva su obligación de prueba y requiere evidencia y autorización
+del autor; una falla de RIGE no autoriza un retiro. `retiros` registra todos
+los retiros desde la incorporación, incluidos los anteriores al corte.
+
 ## 7. Estado del canal de construcción
 
 El archivo `.github/workflows/ci.yml` ejecuta en cada push, en `ubuntu-26.04` y `windows-latest` con Bun 1.3.14, `bun install --frozen-lockfile`, `bun run verificar` y `bun test`. Las pruebas de aceptación ligadas a criterios del catálogo son:
@@ -498,6 +541,16 @@ resolucion. Para observar el cambio hay que resolver nuevamente desde el inicio.
 El permiso siempre muestra la explicacion. Ambas paginas incluyen la respuesta
 como JSON no ejecutable, con `<` serializado como `\u003c` para impedir el cierre
 de la etiqueta de datos.
+
+Para comprobar T2-14, con `RIGE_ALMACEN` temporal como se indica en §6:
+
+```bash
+bun test pruebas/arquitectura herramientas
+bun test pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-02-CA-9.test.ts pruebas/aceptacion/T2-11b.test.ts pruebas/utilidades/decision-nativa.test.ts
+bun run cobertura
+bun test
+bun run verificar
+```
 
 Para comprobar T2-12, con `RIGE_ALMACEN` temporal como se indica en §6:
 

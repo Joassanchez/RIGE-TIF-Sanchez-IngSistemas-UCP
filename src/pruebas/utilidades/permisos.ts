@@ -3,6 +3,7 @@ import { join, resolve } from "node:path";
 import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas/permiso";
 import { copiarEscenario, type OpcionesEscenario } from "./escenario";
 import { crearEntornoAislado } from "./entorno-aislado";
+import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";
 
 export interface ConsultaPermiso { agente: string; sujeto?: string; herramienta?: string; objetivo: string; lanzadoPor?: string; explicar?: boolean }
 export interface DecisionReferencia extends ConsultaPermiso {
@@ -11,6 +12,7 @@ export interface DecisionReferencia extends ConsultaPermiso {
 export function referenciaDecisiones() {
   return JSON.parse(readFileSync(join(import.meta.dir, "../escenarios/v2-decision/REFERENCIA.json"), "utf8")) as {
     decisiones: DecisionReferencia[];
+    decisionesNativas?: DecisionNativa[];
     cadenas: Record<string, { permission: string; pattern: string; action: string }[]>;
   };
 }

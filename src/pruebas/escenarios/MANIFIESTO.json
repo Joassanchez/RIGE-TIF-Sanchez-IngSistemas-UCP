@@ -1,0 +1,1091 @@
+{
+  "corte": null,
+  "retiros": [],
+  "escenarios": [
+    {
+      "id": "v1-precedencia",
+      "entradas": {
+        "opencode.json": "b5ed45d46159b07292d6c6723cafbb442e8b782bfed92b71fd339341723970c3",
+        "proyecto/opencode.json": "defc00a1fb48eaa29bb2de50369bcbc2eebdb5de738a451158a273670411da0e",
+        "proyecto/opencode.jsonc": "07f85a893f34357526d700ed779e8fda8d9d62733ee30d3e862e8d296415992f"
+      },
+      "referencia": "393d831602391e5fefc0a62faa0703250ca04da38c185170d796ba8c6de95f6a",
+      "agentes": [
+        "build",
+        "plan",
+        "general",
+        "explore"
+      ],
+      "claves": [
+        "description",
+        "steps",
+        "temperature"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-01 CA-1",
+          "archivo": "pruebas/aceptacion/RF-01.test.ts",
+          "describe": "RF-01 CA-1",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-01 CA-2",
+          "archivo": "pruebas/aceptacion/RF-01.test.ts",
+          "describe": "RF-01 CA-2",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-03",
+          "archivo": "pruebas/aceptacion/RNF-03.test.ts",
+          "describe": "RNF-03 CA-1",
+          "fuente": "analisis-arquitectura-y-adaptador-ficticio"
+        },
+        {
+          "item": "RNF-03",
+          "archivo": "pruebas/aceptacion/RNF-03.test.ts",
+          "describe": "RNF-03 CA-2",
+          "fuente": "analisis-arquitectura-y-adaptador-ficticio"
+        },
+        {
+          "item": "RNF-03",
+          "archivo": "pruebas/aceptacion/RNF-03.test.ts",
+          "describe": "RNF-03 CA-3",
+          "fuente": "analisis-arquitectura-y-adaptador-ficticio"
+        }
+      ]
+    },
+    {
+      "id": "v1-vias",
+      "entradas": {
+        ".opencode/opencode.json": "2543b85ac839a46b5a68e68edb43f5c267dc90985a82ce0d301c053e0deed5a2",
+        "externa/config.json": "a90dbcc392cc65ca7c70bed6d7519e910b1301bb2b63eb51c7a4f782a62104c2",
+        "hogar/.config/opencode/opencode.json": "0bc298d0fadc032d797c2b45099d0b731ce381dddde005c674634551eb9ef90b",
+        "hogar/.opencode/opencode.json": "263533c3770b359c06f069feb069e21a41bb415c01dd7e999f37bacee9bd6fb1",
+        "proyecto/.opencode/opencode.json": "e29d6c83b92c92d6a89169ca61a22099b7672b5f69c9dc1fd320e8e6f85841c5",
+        "proyecto/opencode.json": "170b2ecc3af34bd075d3ec5d256cd66e4cc2a9aa14970f486e8582d6df9f9e35"
+      },
+      "referencia": "9443569f44208b1014035596efd857018343b9d679385fbc8a45306d1904d847",
+      "agentes": [
+        "build",
+        "plan",
+        "general",
+        "explore"
+      ],
+      "claves": [
+        "description",
+        "options.a",
+        "steps",
+        "temperature",
+        "top_p"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-01 CA-1",
+          "archivo": "pruebas/aceptacion/RF-01.test.ts",
+          "describe": "RF-01 CA-1 v1-vias",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-01 CA-2",
+          "archivo": "pruebas/aceptacion/RF-01.test.ts",
+          "describe": "RF-01 CA-1 v1-vias",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-agentes",
+      "entradas": {
+        "proyecto/opencode.json": "5e9273c8f37a7197c87a936d7caadab883462594f9c940daf2b4dbdf805f65b3"
+      },
+      "referencia": "ac7f776fcd9662b564a815e091d57a88a39f94b54f15c533333808633e92060a",
+      "agentes": [
+        "build"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-16.test.ts",
+          "describe": "RF-16 CA-1",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-bash",
+      "entradas": {
+        "proyecto/opencode.jsonc": "400662bfb715b9154c6858794c25192c7e2fafa8fccb1a9cf9da07dbfb81c475"
+      },
+      "referencia": null,
+      "agentes": [
+        "build"
+      ],
+      "claves": [
+        "permission"
+      ],
+      "consultas": [
+        {
+          "id": "bash-0",
+          "agente": "build",
+          "sujeto": "bash",
+          "herramienta": "bash",
+          "objetivo": "git status",
+          "argumentos": {
+            "command": "git status",
+            "description": "Consulta fija"
+          },
+          "nativa": false
+        },
+        {
+          "id": "bash-1",
+          "agente": "build",
+          "sujeto": "bash",
+          "herramienta": "bash",
+          "objetivo": "rm archivo",
+          "argumentos": {
+            "command": "rm archivo",
+            "description": "Consulta fija"
+          },
+          "nativa": false
+        },
+        {
+          "id": "bash-2",
+          "agente": "build",
+          "sujeto": "bash",
+          "herramienta": "bash",
+          "objetivo": "echo a && echo b",
+          "argumentos": {
+            "command": "echo a && echo b",
+            "description": "Consulta fija"
+          },
+          "nativa": false
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-08 CA-1",
+          "archivo": "pruebas/aceptacion/RF-08.test.ts",
+          "describe": "RF-08 CA-1",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-08 CA-2",
+          "archivo": "pruebas/aceptacion/RF-08.test.ts",
+          "describe": "RF-08 CA-2",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-08 CA-3",
+          "archivo": "pruebas/aceptacion/RF-08.test.ts",
+          "describe": "RF-08 CA-3",
+          "fuente": "caso-de-uso"
+        }
+      ]
+    },
+    {
+      "id": "v2-cadena",
+      "entradas": {
+        "hogar/.config/opencode/opencode.json": "329cfb98ebdabd190ee51a7526bba826626e3b1e42356b6e98f484c1f43d2911",
+        "proyecto/opencode.json": "f20555c0a445121c81d9a153189901062d25cdab94c07f860a02264d483e7f3b"
+      },
+      "referencia": "8c4d28d038931ce4ff046e13a2e525b889be0cdc30341a3ed8f540444bd8c1e8",
+      "agentes": [
+        "build",
+        "plan",
+        "general",
+        "explore",
+        "revisor"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-decision",
+      "entradas": {
+        "DERIVACION.md": "925cf24f7499a8b9a7a64b7caef0e03103f0c403185785616708c341127ebf88",
+        "global-sin-edit.json": "699fc42ce8c5cb78160236396117cf78d06ffdf7754ec4d57fa29e5e79c98a74",
+        "hogar/.config/opencode/opencode.json": "e67a3c6b9828dcada77c0d7f60dc3ce2231adbded42fb682c226ecefdc302159",
+        "proyecto/marcador.txt": "1467addcf20897867dbba1a69b01d714981c6218e8430b59acca2ad3b2d808bc"
+      },
+      "referencia": "93d6afd5617f5eb608a3a59028b2a3fb064a48ef9a18b022303bc57905130207",
+      "agentes": [
+        "build",
+        "plan",
+        "general",
+        "explore"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-.env",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": ".env",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/.env"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q1-edit-src/a.js",
+          "agente": "plan",
+          "sujeto": "edit",
+          "objetivo": "src/a.js",
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/a.js",
+            "oldString": "",
+            "newString": "oraculo"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q2-bash-git status",
+          "agente": "build",
+          "sujeto": "bash",
+          "objetivo": "git status",
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git status",
+            "description": "Consulta fija"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q3-read-.env.local",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": ".env.local",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/.env.local"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q4-read-.env.example",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": ".env.example",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/.env.example"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q5-task-a",
+          "agente": "general",
+          "sujeto": "task",
+          "objetivo": "a",
+          "herramienta": "task",
+          "argumentos": {
+            "description": "Consulta fija",
+            "prompt": "Consulta fija",
+            "subagent_type": "a"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q6-edit-.opencode/plans/x.md",
+          "agente": "plan",
+          "sujeto": "edit",
+          "objetivo": ".opencode/plans/x.md",
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "<PROYECTO>/.opencode/plans/x.md",
+            "oldString": "",
+            "newString": "oraculo"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q7-question-a",
+          "agente": "build",
+          "sujeto": "question",
+          "objetivo": "a",
+          "herramienta": "question",
+          "argumentos": {
+            "questions": [
+              {
+                "question": "Consulta fija",
+                "header": "Prueba",
+                "options": [
+                  {
+                    "label": "Si",
+                    "description": "Si"
+                  }
+                ]
+              }
+            ]
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-02 CA-1",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-1 (decision)",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (decision)",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RF-02 CA-4",
+          "archivo": "pruebas/aceptacion/RF-02-explicacion.test.ts",
+          "describe": "RF-02 CA-4 explicacion",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-02 CA-5",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-5",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-02 CA-6",
+          "archivo": "pruebas/aceptacion/T2-12.test.ts",
+          "describe": "RF-02 CA-6 / RF-03 CA-4",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-02 CA-7",
+          "archivo": "pruebas/aceptacion/T2-12.test.ts",
+          "describe": "RF-02 CA-7",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-02 CA-8",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-8 (decision)",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-fusion-permisos",
+      "entradas": {
+        "global.json": "dc5b12230a1dc3104b017587d396b97e2a66810b2cd1aa42e70c5b6bc7196fdc",
+        "proyecto/opencode.json": "87a430784155b5e3445d065d01e09e8fe0004cdfe4af7154ffb7a0663d2b9f5d"
+      },
+      "referencia": "9e8ba433ba1ca059edf085a00cb7cf6ae5a0d855c41d1d8801f9df9c483fe58c",
+      "agentes": [
+        "build",
+        "plan",
+        "general",
+        "explore"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-01 CA-1",
+          "archivo": "pruebas/aceptacion/fusion-permisos.test.ts",
+          "describe": "T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-01 CA-2",
+          "archivo": "pruebas/aceptacion/fusion-permisos.test.ts",
+          "describe": "T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-ruta-bloqueo",
+      "entradas": {
+        "fuera.txt": "8bd57b153bdf871b8f5344451a8623875ecd7ef0146e1900651fdd0aca1baf67",
+        "proyecto/opencode.jsonc": "c40c5cac7fcfe896da3e6a702459bd96cf0c4dcb0c6a6001673f721b1cd0e2ae",
+        "proyecto/src/index.js": "106b97f66908b8a357f9d9b76930b209803b5c5241fda9b14ec64541f8cc70b4",
+        "proyecto/src/productos.js": "106b97f66908b8a357f9d9b76930b209803b5c5241fda9b14ec64541f8cc70b4"
+      },
+      "referencia": "1657869237aacb9a60cdd23713492641ee11674e944909582d53d5e12bb97c21",
+      "agentes": [
+        "build",
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "control_e"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-src/productos.js",
+          "agente": "a",
+          "sujeto": "read",
+          "objetivo": "src/productos.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/productos.js"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q1-read-src/productos.js",
+          "agente": "b",
+          "sujeto": "read",
+          "objetivo": "src/productos.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/productos.js"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q2-edit-src/index.js",
+          "agente": "c",
+          "sujeto": "edit",
+          "objetivo": "src/index.js",
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/index.js",
+            "oldString": "// escenario",
+            "newString": "oraculo"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q2-write-src/index.js",
+          "agente": "c",
+          "sujeto": "edit",
+          "objetivo": "src/index.js",
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/index.js",
+            "content": "oraculo"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q2-apply_patch-src/index.js",
+          "agente": "c",
+          "sujeto": "edit",
+          "objetivo": "src/index.js",
+          "herramienta": "apply_patch",
+          "argumentos": {
+            "patchText": "*** Begin Patch\n*** Add File: src/index.js\n+oraculo\n*** End Patch"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q3-edit-src/index.js",
+          "agente": "d",
+          "sujeto": "edit",
+          "objetivo": "src/index.js",
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/index.js",
+            "oldString": "// escenario",
+            "newString": "oraculo"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q3-write-src/index.js",
+          "agente": "d",
+          "sujeto": "edit",
+          "objetivo": "src/index.js",
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/index.js",
+            "content": "oraculo"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q3-apply_patch-src/index.js",
+          "agente": "d",
+          "sujeto": "edit",
+          "objetivo": "src/index.js",
+          "herramienta": "apply_patch",
+          "argumentos": {
+            "patchText": "*** Begin Patch\n*** Add File: src/index.js\n+oraculo\n*** End Patch"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q4-read-src/productos.js",
+          "agente": "e",
+          "sujeto": "read",
+          "objetivo": "src/productos.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/productos.js"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q5-read-src/productos.js",
+          "agente": "control_e",
+          "sujeto": "read",
+          "objetivo": "src/productos.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/productos.js"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q6-read-../fuera.txt",
+          "agente": "b",
+          "sujeto": "read",
+          "objetivo": "../fuera.txt",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/../fuera.txt"
+          },
+          "nativa": false
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-ruta-env",
+      "entradas": {
+        "proyecto/opencode.jsonc": "460fb4a79a3b7a755252787c69bf70a4345c8290129ad33ae7d62622e36bba2a"
+      },
+      "referencia": "565117de01ba4d386cac624aab5d674eaaa7778b55d37976a52ca03907e796e4",
+      "agentes": [
+        "build",
+        "f",
+        "control_f"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-.env",
+          "agente": "f",
+          "sujeto": "read",
+          "objetivo": ".env",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/.env"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q1-read-.env",
+          "agente": "control_f",
+          "sujeto": "read",
+          "objetivo": ".env",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/.env"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-ruta-exposicion",
+      "entradas": {
+        "proyecto/config/credenciales.json": "e155a6c85e1b0806589fb9ff93447b6990ff63ccce3ee8c06fbd72fdde77e52c",
+        "proyecto/opencode.jsonc": "f2646377f8c878580b3528c00b5ae2727230c3003c7731122d3710e563f8ef85",
+        "proyecto/privado/LEEME.txt": "ee39cbc677e726a72e5fa1f943c58ed0f2739703599031e9ff928e5546e11e16"
+      },
+      "referencia": "251383c34f570d6915869b5439f97f385e80abeb8fa53708f2a55c2cfce6f5b3",
+      "agentes": [
+        "build",
+        "g",
+        "h"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-config/credenciales.json",
+          "agente": "g",
+          "sujeto": "read",
+          "objetivo": "config/credenciales.json",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/config/credenciales.json"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q0-read-privado",
+          "agente": "g",
+          "sujeto": "read",
+          "objetivo": "privado",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q1-read-config/credenciales.json",
+          "agente": "h",
+          "sujeto": "read",
+          "objetivo": "config/credenciales.json",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/config/credenciales.json"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q2-read-privado",
+          "agente": "h",
+          "sujeto": "read",
+          "objetivo": "privado",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-subagente",
+      "entradas": {
+        "hogar/.config/opencode/opencode.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "primary.json": "e788a87d0a131012fe245172fffacc649628a1c80ddea3625bf2770758e56ee9",
+        "proyecto/opencode.json": "2c98b7c1e3052d93d73fce2164df7cfb4bb2f51ddca32a5e6debca010fad0b01"
+      },
+      "referencia": "15d44e9a8f9d3856dd4678ff769a65b29ad5b70f230b9d1ec6b1fac0bf7199a8",
+      "agentes": [
+        "build",
+        "general",
+        "vacio"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-bash-git status",
+          "agente": "general",
+          "sujeto": "bash",
+          "objetivo": "git status",
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git status",
+            "description": "Consulta fija"
+          },
+          "nativa": false,
+          "lanzadoPor": "build"
+        },
+        {
+          "id": "q1-task-general",
+          "agente": "general",
+          "sujeto": "task",
+          "objetivo": "general",
+          "herramienta": "task",
+          "argumentos": {
+            "description": "Consulta fija",
+            "prompt": "Consulta fija",
+            "subagent_type": "general"
+          },
+          "nativa": false,
+          "lanzadoPor": "build"
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-3",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-3",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-3",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-subagente-comodin",
+      "entradas": {
+        "hogar/.config/opencode/opencode.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "proyecto/opencode.json": "e71383c12fcec9a103d7bf0c240d4e908381a40ae0eb1d15a34e3ab2fdf482ad"
+      },
+      "referencia": "88cd4cd82c051ee05eebc97c13e393b98338fb7f25bba9d7b13a423832fc8e94",
+      "agentes": [
+        "build",
+        "general"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "c-task",
+          "agente": "general",
+          "sujeto": "task",
+          "objetivo": "general",
+          "herramienta": "task",
+          "argumentos": {
+            "subagent_type": "general",
+            "description": "Consulta fija",
+            "prompt": "Consulta fija"
+          },
+          "nativa": false,
+          "lanzadoPor": "build"
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-3",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-3",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-3",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-subagente-task",
+      "entradas": {
+        "hogar/.config/opencode/opencode.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "proyecto/opencode.json": "796f782103db5ec12b5ba73c547d1d8894992297ea4fef5b8260b6cd75baa792"
+      },
+      "referencia": "8d91f2d367b136a7589729dee141b166df8e27c81a0bec86b61fc0801dd0e867",
+      "agentes": [
+        "build",
+        "general"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "d-task",
+          "agente": "general",
+          "sujeto": "task",
+          "objetivo": "general",
+          "herramienta": "task",
+          "argumentos": {
+            "subagent_type": "general",
+            "description": "Consulta fija",
+            "prompt": "Consulta fija"
+          },
+          "nativa": false,
+          "lanzadoPor": "build"
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-3",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-3",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-3",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-worktree-dir-invalido-anidado",
+      "entradas": {
+        "proyecto/LEEME.md": "4c8f557f804007226247ffbcc1b660ae6efe3c9b923a7bdfd919c439c6e93d0a"
+      },
+      "referencia": "637e1a856e0c06d52c5a649962c495da4abd060c94eb197fdcffb3ac7d7c6c2f",
+      "agentes": [
+        "plan"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T2-11b.test.ts",
+          "describe": "RF-02 CA-9 (worktrees anidados)",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/T2-11b.test.ts",
+          "describe": "RF-02 CA-9 (worktrees anidados)",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-worktree-gitfile-roto",
+      "entradas": {
+        "proyecto/LEEME.md": "4c8f557f804007226247ffbcc1b660ae6efe3c9b923a7bdfd919c439c6e93d0a"
+      },
+      "referencia": "bfe632445602b5d90b9fe9d9f3c657c3ce73aebb78bb5f0314737167e996c157",
+      "agentes": [
+        "plan"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T2-11b.test.ts",
+          "describe": "RF-02 CA-9 (worktrees anidados)",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/T2-11b.test.ts",
+          "describe": "RF-02 CA-9 (worktrees anidados)",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-worktree-sin-vcs",
+      "entradas": {
+        "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
+        "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
+      },
+      "referencia": "955eb2423863a93d52c56960abd41ba3b43aa8e4dbcfe81bc924b36222b2cf23",
+      "agentes": [
+        "build",
+        "plan"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-src/a.js",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "src/a.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/a.js"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-worktree-sintetico",
+      "entradas": {
+        "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
+        "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
+      },
+      "referencia": "70afcae0775e4721a6de14da6a021f07ff37d49c83b87278aff84e784c646185",
+      "agentes": [
+        "build",
+        "plan"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-src/a.js",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "src/a.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/a.js"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v2-worktree-valido",
+      "entradas": {
+        "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
+        "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
+      },
+      "referencia": "2a1eb714b061865e9b1a63cd4ba28212693a3dce799c8b074f2576517c14b272",
+      "agentes": [
+        "build",
+        "plan"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-src/a.js",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "src/a.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/a.js"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
+          "describe": "RF-02 CA-9",
+          "fuente": "referencia-binario"
+        }
+      ]
+    }
+  ],
+  "defectosSembrados": [
+    {
+      "id": "ADR-088-ruta-absoluta",
+      "escenario": "v2-ruta-bloqueo",
+      "tipo": "reglas-permiso-sin-efecto",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 7
+      },
+      "hallazgoEsperado": "La regla read con ruta absoluta del arbol no coincide: OpenCode evalua la ruta relativa al arbol de trabajo.",
+      "controlCorrecto": {
+        "agente": "b",
+        "patron": "src/productos.js",
+        "evidencia": "REFERENCIA.json: decisiones a/b; control conserva orden y cambia solo el patron. Pendiente verificacion RF-07 en iteracion 3."
+      },
+      "pendiente": "RF-07, iteración 3"
+    }
+  ]
+}

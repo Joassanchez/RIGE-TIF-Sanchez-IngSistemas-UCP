@@ -1,5 +1,32 @@
 # Mapa de pruebas
 
+T2-14 agrega `escenarios/MANIFIESTO.json` y `COBERTURA.json` (ADR-080).
+Cada directorio figura con SHA-256 de todos sus archivos y de la referencia,
+agentes, claves, consultas y comprobaciones con archivo/`describe`/fuente.
+`arquitectura/manifiesto.test.ts` cubre M-1/M-2/M-3: mutación de un byte,
+inventario agregado, referencia alterada, eliminación de la comprobación de
+CA-7, cita inexistente y los seis tipos RF-07 pendientes. El defecto ADR-088
+queda declarado en `v2-ruta-bloqueo`, con control relativo y sin atribuirle
+detección RF-07 antes de la iteración 3. `corte: null` y `retiros: []` no
+declaran resultados del corte ni del conjunto congelado.
+
+`arquitectura/decisiones-nativas.test.ts` cubre O-1 a O-4 con un doble del
+binario solo en un subproceso: múltiples logs `evaluated`, comparación y
+regeneración, procedencia, hash/versión, aislamiento, limpieza ante fallas,
+caché externo, ausencia de evaluación y proveedor SSE local. No ejecuta
+OpenCode real ni instala paquetes. `utilidades/decision-nativa.test.ts`
+verifica preferencia frente a una decisión derivada contradictoria, fallback,
+contexto de lanzador, referencias incompletas y plataforma incompatible.
+RF-02 CA-1/2/3/9 usan ese selector. Las consultas de subagentes registran
+`nativa: false`: requieren `task` del lanzador; `run` directo no equivale.
+
+`bun run cobertura` imprime la vinculación por ítem, escenarios y retiros;
+no reemplaza los resultados de `bun test`. Después del corte, los retiros o
+cambios conservan la obligación probada y llevan evidencia y autorización
+del autor según ADR-080. Una falla del producto nunca es causa de retiro.
+Los comandos y el procedimiento de actualización de SHA-256 figuran en
+`../README.md`. La corrida real de decisiones la realiza el ingeniero.
+
 T2-11 ejecuta la CLI real en subprocesos aislados mediante
 `utilidades/consultas-cli.ts`. `aceptacion/RF-03.test.ts` cubre determinismo,
 esquemas, cuatro mutaciones independientes por contrato, procedencia y códigos

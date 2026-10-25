@@ -10,7 +10,9 @@
     "servir": "bun ./paquetes/rige/arranque/rige.ts servir",
     "rige": "bun ./paquetes/rige/arranque/rige.ts",
     "verificar": "bun ./herramientas/verificar.ts",
-    "referencias": "bun ./herramientas/referencias-nativas.ts"
+    "referencias": "bun ./herramientas/referencias-nativas.ts",
+    "decisiones": "bun ./herramientas/decisiones-nativas.ts",
+    "cobertura": "bun ./herramientas/cobertura.ts"
   },
   "devDependencies": {
     "typescript": "7.0.2",

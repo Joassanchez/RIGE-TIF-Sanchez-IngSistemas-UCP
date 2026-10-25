@@ -3,6 +3,8 @@ import { readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { consultarPermisos } from "../utilidades/permisos";
 import { consultarCadenas } from "../utilidades/cadenas";
+import { decisionNativa } from "../utilidades/decision-nativa";
+import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";
 
 interface Caso {
   id: string; agente: string; herramientas: string[]; objetivos: string[];
@@ -10,7 +12,7 @@ interface Caso {
   origen?: "declarado" | "nativo"; motivoSinDecision?: string;
 }
 function referencia(nombre: string) {
-  return JSON.parse(readFileSync(join(import.meta.dir, "../escenarios", nombre, "REFERENCIA.json"), "utf8")) as { decisiones: Caso[] };
+  return JSON.parse(readFileSync(join(import.meta.dir, "../escenarios", nombre, "REFERENCIA.json"), "utf8")) as { decisiones: Caso[]; decisionesNativas?: DecisionNativa[] };
 }
 const escenarios = ["v2-ruta-bloqueo", "v2-ruta-env", "v2-ruta-exposicion"];
 
@@ -27,8 +29,10 @@ describe("RF-02 CA-9", () => {
           for (let i = 0; i < respuestas.length; i += 2) {
             const relativa = respuestas[i]!, absoluta = respuestas[i + 1]!;
             const consulta = consultas[i]!;
-            expect(relativa.decision).toBe(caso.decision);
-            expect(absoluta.decision).toBe(caso.decision);
+            const nativa = decisionNativa(referencia(escenario), consulta, relativa.consulta.objetivoEvaluado!, raiz);
+            const decision = nativa?.decision ?? caso.decision;
+            expect(relativa.decision).toBe(decision);
+            expect(absoluta.decision).toBe(decision);
             expect(absoluta.determinante).toBe(relativa.determinante);
             expect(absoluta.cadena).toEqual(relativa.cadena);
             const evaluado = relative(join(raiz, "proyecto"), resolve(raiz, "proyecto", consulta.objetivo));
@@ -43,7 +47,7 @@ describe("RF-02 CA-9", () => {
             }
             const determinante = relativa.cadena.find(r => r.indice === relativa.determinante)!;
             expect(caso.regla).not.toBeNull();
-            expect(determinante).toMatchObject(caso.regla!);
+            expect(determinante).toMatchObject(nativa?.regla ?? caso.regla!);
             expect(determinante.origen.tipo).toBe(caso.origen ?? "declarado");
             if (determinante.declaracion) {
               expect(determinante.declaracion.referencia).toBe(`${raiz}/proyecto/opencode.jsonc`);
@@ -62,8 +66,9 @@ describe("RF-02 CA-9", () => {
         { agente: "build", herramienta: "read", objetivo: "<RAIZ>/proyecto/src/a.js" },
       ], "ultima", "global", escenario, { git });
       for (const respuesta of respuestas) {
-        expect(respuesta.decision).toBe(caso.decision);
-        expect(respuesta.cadena.find(r => r.indice === respuesta.determinante)).toMatchObject(caso.regla!);
+        const nativa = decisionNativa(referencia(escenario), { agente: "build", herramienta: "read", objetivo: "src/a.js" }, respuesta.consulta.objetivoEvaluado!, raiz);
+        expect(respuesta.decision).toBe(nativa?.decision ?? caso.decision);
+        expect(respuesta.cadena.find(r => r.indice === respuesta.determinante)).toMatchObject(nativa?.regla ?? caso.regla!);
         expect(respuesta.consulta.objetivoEvaluado).toBe(relative(git === "proyecto" ? join(raiz, "proyecto") : "/", join(raiz, "proyecto/src/a.js")));
       }
       const { referencia: ref, cadenas, normalizar } = consultarCadenas(escenario);
