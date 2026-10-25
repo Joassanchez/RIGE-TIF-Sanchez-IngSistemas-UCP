@@ -110,7 +110,7 @@ describe("N-4", () => {
     expect(modificada.valores).toEqual(primera.valores);
     expect(modificada.entradas[0]?.resumen).not.toBe(primera.entradas[0]?.resumen);
     expect(modificada.resumenEntradas).not.toBe(primera.resumenEntradas);
-    expect(Object.keys(primera)).toEqual(["formato", "identidad", "proyecto", "prefijoAgente", "declaraciones", "reglas", "entradas", "resumenEntradas", "valores", "eliminadas", "noResueltas"]);
+    expect(Object.keys(primera)).toEqual(["formato", "identidad", "proyecto", "prefijoAgente", "declaraciones", "contexto", "reglas", "entradas", "resumenEntradas", "valores", "eliminadas", "noResueltas"]);
   });
 
   test("normaliza las rutas mostradas y conserva la letra de unidad", async () => {

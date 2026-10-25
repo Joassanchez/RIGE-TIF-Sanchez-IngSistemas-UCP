@@ -19,5 +19,5 @@ export function consultarAgentes(dependencias: DependenciasAnalisis, proyecto: s
   return { exito: true, valor: { esquema: versionEsquemaSalida, proyecto: resolucion.proyecto,
     entradas: resolucion.entradas, resumenEntradas: resolucion.resumenEntradas, agentes,
     eliminados, incompleta: listado.motivos.length > 0, motivos: listado.motivos, reglas: resolucion.reglas,
-    declaraciones: resolucion.declaraciones ?? [] } };
+    declaraciones: resolucion.declaraciones } };
 }

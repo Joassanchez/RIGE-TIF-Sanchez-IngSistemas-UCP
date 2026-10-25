@@ -16,7 +16,7 @@ describe("V1-03 L-5 V1-08 F-5", () => {
     const resultado = leerEntrada({ ...via, referencia: "C:\\p\\opencode.jsonc" }, texto);
     expect(resultado).toEqual({ exito: false, error: { categoria: "uso",
       codigo: "contenido-no-soportado",
-      mensaje: `El prototipo v1 no incorpora ${patron} (C:/p/opencode.jsonc:${linea}:${columna}).`,
+      mensaje: `RIGE no incorpora ${patron} (C:/p/opencode.jsonc:${linea}:${columna}).`,
     } });
     expect(JSON.stringify(resultado)).not.toContain("CONTENIDO_NO_EMITIR");
   });

@@ -25,7 +25,9 @@ describe("RF-08 CA-1", () => {
         expect(respuesta).toMatchObject({ decision: null, motivoSinDecision: "comando-compuesto",
           determinante: null, cadena: [], desplazadas: [], nativaAnulada: null });
         expect(respuesta.advertencias).toEqual(motivos);
-        for (const motivo of motivos) expect(respuesta.reglas[motivo]).toContain(motivo);
+        const textos: Record<string, string> = { tuberia: "tubería", redireccion: "redirección",
+          sustitucion: "sustitución", "salto-de-linea": "salto-de-línea" };
+        for (const motivo of motivos) expect(respuesta.reglas[motivo]).toContain(textos[motivo] ?? motivo);
       }
     });
   });

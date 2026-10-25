@@ -36,7 +36,11 @@ export function informarCobertura(manifiesto: Manifiesto, matriz: Matriz) {
     // Este informe mide inventario y vinculacion, no inventa resultados de bun test.
     items: matriz.items.map(item => {
       const escenarios = manifiesto.escenarios.filter(e => e.comprobaciones.some(c => c.item === item.id)).map(e => e.id);
-      return { ...item, estado: item.iteracion === 3 ? "pendiente" : escenarios.length ? "cubierto" : "sin cobertura", escenarios };
+      const comprobaciones = manifiesto.escenarios.flatMap(e => e.comprobaciones).filter(c => c.item === item.id);
+      const derivadaSubagente = item.id === "RF-02 CA-3" && comprobaciones.length > 0
+        && comprobaciones.every(c => c.fuente === "derivada");
+      return { ...item, estado: item.iteracion === 3 ? "pendiente" : derivadaSubagente
+        ? "cubierto con oráculo derivado; sin ejecución nativa de task" : escenarios.length ? "cubierto" : "sin cobertura", escenarios };
     }),
     escenarios: manifiesto.escenarios.map(e => ({ id: e.id, comprobaciones: e.comprobaciones.length, resultado: "no ejecutado por este informe" })),
     retiros: manifiesto.retiros,
@@ -64,7 +68,7 @@ export function validarManifiesto(manifiesto: Manifiesto, matriz: Matriz, direct
     }
   }
   for (const item of informarCobertura(manifiesto, matriz).items) {
-    if (item.obligatorioV2 && item.estado !== "cubierto") errores.push(`${item.id} sin comprobacion`);
+    if (item.obligatorioV2 && !item.estado.startsWith("cubierto")) errores.push(`${item.id} sin comprobacion`);
   }
   return errores;
 }

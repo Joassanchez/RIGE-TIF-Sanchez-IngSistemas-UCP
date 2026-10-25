@@ -18,7 +18,7 @@ export function respuestaValores(resolucion: Resolucion, agente: string, clave: 
     versionHerramienta: resolucion.identidad.version,
     resumenEntradas: resolucion.resumenEntradas, entradas: resolucion.entradas,
     agente, ruta: segmentos ?? null, valores: consulta.valor.valores, reglas: resolucion.reglas,
-    declaraciones: resolucion.declaraciones ?? [],
+    declaraciones: resolucion.declaraciones,
     noResueltas: consulta.valor.noResueltas.map(pendiente => ({ ...pendiente,
       ruta: pendiente.ruta.slice(resolucion.prefijoAgente.length + 1),
     })),

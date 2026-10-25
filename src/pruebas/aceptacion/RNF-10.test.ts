@@ -13,6 +13,9 @@ describe("RNF-10 CA-1", () => {
     const archivos = readdirSync(vendor).filter(nombre => nombre.endsWith(".ts"));
     expect(archivos).toContain("permiso.ts");
     expect(archivos).toContain("wildcard.ts");
+    expect(archivos).toContain("textos-agentes.ts");
+    const metadatos = readFileSync(resolve(raiz, "paquetes/opencode/valores-implicitos.ts"), "utf8");
+    expect(metadatos).not.toContain('"description": "');
     for (const archivo of archivos) expect(leer(archivo).toString().startsWith("// Copyright (c) 2025 opencode. Licencia MIT: ver ./LICENSE.\n")).toBe(true);
   });
 });

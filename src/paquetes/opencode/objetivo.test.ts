@@ -20,9 +20,9 @@ describe("A8-1", () => {
       .toMatchObject({ valor: { motivoSinDecision: "fuera-del-arbol" } });
     expect(prepararConsulta(contexto.valor, { herramienta: "read", objetivo: "a.txt" }))
       .toMatchObject({ valor: { motivoSinDecision: null } });
-    expect(prepararConsulta({ ...contexto.valor, proyecto: "/externo/p", worktree: "/w" }, { herramienta: "read", objetivo: "a.txt" }))
+    expect(prepararConsulta({ ...contexto.valor, proyecto: "/externo/p", parametros: { ...contexto.valor.parametros, worktree: "/w" } }, { herramienta: "read", objetivo: "a.txt" }))
       .toMatchObject({ valor: { motivoSinDecision: null } });
-    expect(prepararConsulta({ ...contexto.valor, proyecto: "/externo/p", worktree: "/w" }, { herramienta: "read", objetivo: "/w/a.txt" }))
+    expect(prepararConsulta({ ...contexto.valor, proyecto: "/externo/p", parametros: { ...contexto.valor.parametros, worktree: "/w" } }, { herramienta: "read", objetivo: "/w/a.txt" }))
       .toMatchObject({ valor: { motivoSinDecision: null } });
   });
 });

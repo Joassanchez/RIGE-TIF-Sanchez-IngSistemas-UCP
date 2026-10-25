@@ -18,7 +18,7 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, solicitud: 
     error: errorSolicitudInvalida("el agente, sujeto u objetivo esta vacio") };
   const analisis = prepararAnalisis(dependencias, proyecto);
   if (!analisis.exito) return analisis;
-  const { adaptador, entorno } = dependencias;
+  const { adaptador } = dependencias;
   const { resolucion, contexto } = analisis.valor;
   const preparado = adaptador.prepararConsulta(contexto, solicitud);
   if (!preparado.exito) return { exito: false, error: errorDesdeAnalisis(preparado.error) };
@@ -28,10 +28,10 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, solicitud: 
   const cadena = adaptador.cadena(resolucion, agente, contexto, lanzadoPor);
   if (!cadena.exito) return { exito: false, error: errorDesdeAnalisis(cadena.error) };
   const evaluacion = motivoSinDecision !== null ? { determinante: null, coincidentes: [] }
-    : adaptador.permisos.evaluar(cadena.valor.reglas, sujeto, objetivoEvaluado, entorno.plataforma);
+    : adaptador.permisos.evaluar(cadena.valor.reglas, sujeto, objetivoEvaluado, contexto.entorno.plataforma);
   const { coincidentes, ...decision } = decidir(cadena.valor, { sujeto, objetivo: objetivoEvaluado }, { ...adaptador.permisos, ...evaluacion }, motivoSinDecision);
   const rastro = { ...decision,
-    consulta: { sujeto, objetivo, objetivoEvaluado: herramienta === undefined ? decision.consulta.objetivoEvaluado : objetivoEvaluado,
+    consulta: { ...decision.consulta, objetivo,
       forma: herramienta === undefined ? "sujeto" as const : "herramienta" as const, ...(herramienta === undefined ? {} : { herramienta }) },
     declaraciones: [...decision.declaraciones, ...cadena.valor.declaraciones],
     advertencias: [...decision.advertencias, ...cadena.valor.advertencias, ...advertenciasObjetivo],

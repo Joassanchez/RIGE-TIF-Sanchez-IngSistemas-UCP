@@ -540,7 +540,8 @@ T2-12 agrega las paginas GET `/permiso?id=…&agente=…&herramienta=…&objetiv
 (o `sujeto` en lugar de `herramienta`, y opcionalmente `lanzadoPor`) y
 `/agentes?id=…`. La pagina de una resolucion guardada ofrece los enlaces y
 formularios. Las consultas usan los mismos casos de uso que la CLI sobre el
-documento guardado, con el entorno actual; cambiar una entrada no modifica esa
+documento guardado y su contexto original (worktree, hogar, data, tmp,
+plataforma y declaraciones); cambiar una entrada o el entorno no modifica esa
 resolucion. Para observar el cambio hay que resolver nuevamente desde el inicio.
 El permiso siempre muestra la explicacion. Ambas paginas incluyen la respuesta
 como JSON no ejecutable, con `<` serializado como `\u003c` para impedir el cierre
@@ -584,3 +585,33 @@ y advertencias de cada cadena, son arreglos siempre presentes. Los valores y
 el listado de agentes incluyen las declaraciones del descubrimiento del arbol.
 Los agentes solo en Markdown figuran en el listado incompleto; consultarlos
 o usarlos como lanzador produce `cadena-incompleta` con `markdown-no-observado`.
+
+T2-16 valida las decisiones derivadas contra las capturas nativas disponibles.
+En Linux se usa el oráculo derivado si la captura pertenece a Windows; cada
+título indica el oráculo. RF-02 CA-3 permanece cubierto con oráculo derivado,
+sin ejecución nativa de `task`. Las resoluciones de formato 2 conservan los
+datos del contexto original, sin guardar variables de entorno ni puertos de E/S;
+las consultas guardadas no vuelven a descubrir `.git`. No hay migración.
+RF-09 advierte cuando una declaración supera una denegación nativa; superar
+una nativa `ask` no produce esa advertencia. La web numera las reglas desde 1.
+
+Para comprobar T2-16, con `RIGE_ALMACEN` temporal como en §6:
+
+```powershell
+bun test pruebas/utilidades/decision-nativa.test.ts pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-02-CA-9.test.ts
+bun test paquetes/opencode/contexto.test.ts pruebas/aceptacion/T2-12.test.ts
+bun test pruebas/arquitectura/vendor.test.ts pruebas/arquitectura/manifiesto.test.ts
+bun test paquetes/nucleo/permisos/decidir.test.ts pruebas/aceptacion/RF-09.test.ts pruebas/aceptacion/RF-02-explicacion.test.ts
+bun test paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts paquetes/opencode/secuenciador.test.ts paquetes/rige/interfaces/web/paginas/resolucion.test.ts pruebas/aceptacion/recorrido-v1.test.ts
+bun test paquetes/opencode/lector.test.ts paquetes/opencode/ubicador.test.ts paquetes/opencode/cadena.test.ts paquetes/nucleo/resolucion/proyectar.test.ts pruebas/aceptacion/RF-03.test.ts
+bun test paquetes/opencode/objetivo.test.ts paquetes/rige/aplicacion/casos-uso/resolver-proyecto.test.ts paquetes/nucleo/resolucion/resolver.test.ts pruebas/aceptacion/RF-08.test.ts
+bun test pruebas/aceptacion/RNF-10.test.ts pruebas/aceptacion/RF-06.test.ts
+bun run cobertura
+bun test
+bun run prueba:lenta
+bun run referencias --raiz (npm.cmd root -g)
+bun run verificar
+```
+
+En Bash, la referencia se comprueba con
+`bun run referencias --raiz "$(npm root -g)"`.

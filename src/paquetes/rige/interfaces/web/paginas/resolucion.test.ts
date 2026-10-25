@@ -39,7 +39,7 @@ describe("W-13", () => {
     expect(recibida.headers.get("content-type")).toBe("text/html; charset=utf-8");
     const cuerpo = await recibida.text();
     const partes = ["<h1>Resolución 7</h1>", "Página armada con la resolución leída del almacén de RIGE.",
-      "Proyecto", "Valores efectivos", "Regla aplicada", "Claves no resueltas en el prototipo v1",
+      "Proyecto", "Valores efectivos", "Regla aplicada", "Claves no incorporadas por RIGE",
       "Entradas leídas", "Resoluciones de este proyecto"];
     let posicion = -1;
     for (const parte of partes) {
@@ -71,7 +71,7 @@ describe("W-13", () => {
     const cuerpo = await paginaResolucion({ ...respuesta(), ruta: ["c & d"], noResueltas: [] }).text();
     expect(cuerpo).toContain('href="/resoluciones/6?agente=a%20%26%20b&amp;clave=c%20%26%20d"');
     expect(cuerpo).toContain("c &amp; d");
-    expect(cuerpo).not.toContain("Claves no resueltas en el prototipo v1");
+    expect(cuerpo).not.toContain("Claves no incorporadas por RIGE");
   });
 });
 
@@ -112,8 +112,8 @@ describe("W-15", () => {
     const cuerpo = await recibida.text();
     const tabla = cuerpo.split("<tbody>")[1]!.split("</tbody>")[0]!;
     expect(tabla.match(/<tr>/g)).toHaveLength(1);
-    expect(tabla).toContain('<td colspan="5">El agente no tiene claves resueltas en el prototipo v1.</td>');
-    expect(cuerpo).toContain("Claves no resueltas en el prototipo v1");
+    expect(tabla).toContain('<td colspan="5">RIGE no incorpora claves resueltas para este agente.</td>');
+    expect(cuerpo).toContain("Claves no incorporadas por RIGE");
     expect(cuerpo).toContain("<li>steps: Sin resolver &lt;permiso&gt;.</li>");
     expect(cuerpo).toContain("<li>maxSteps: Sin resolver &lt;permiso&gt;.</li>");
   });

@@ -473,7 +473,7 @@
         "proyecto/src/index.js": "106b97f66908b8a357f9d9b76930b209803b5c5241fda9b14ec64541f8cc70b4",
         "proyecto/src/productos.js": "106b97f66908b8a357f9d9b76930b209803b5c5241fda9b14ec64541f8cc70b4"
       },
-      "referencia": "82925ed263fc1430b14ced6204fd8cd0764de2bea2e9b89523636e7ff100725f",
+      "referencia": "0045afd45b8c894f978629a46af1d84c9432fe4d8e6dcd7a1280a1ac799c7d8c",
       "agentes": [
         "build",
         "a",
@@ -634,7 +634,7 @@
         "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
         "proyecto/opencode.jsonc": "460fb4a79a3b7a755252787c69bf70a4345c8290129ad33ae7d62622e36bba2a"
       },
-      "referencia": "d469b80e3fe996df66fe78c1384ede6590b9f0825bf641d994c9b4d1bd27967e",
+      "referencia": "6f327e38b2fe199c6f031d242d3844c322b8b2dd92460bf92b510d4c079afa33",
       "agentes": [
         "build",
         "f",
@@ -688,7 +688,7 @@
         "proyecto/opencode.jsonc": "f2646377f8c878580b3528c00b5ae2727230c3003c7731122d3710e563f8ef85",
         "proyecto/privado/LEEME.txt": "ee39cbc677e726a72e5fa1f943c58ed0f2739703599031e9ff928e5546e11e16"
       },
-      "referencia": "bf4dbbde2705b27da75ba0694b7981e06cf1473ee70a67874a0104f51424ea37",
+      "referencia": "09c5dddd619055a2f68a2e12ee9f0693929ac099b06dc65f32955efd7ea64fee",
       "agentes": [
         "build",
         "g",
@@ -805,7 +805,7 @@
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
           "describe": "K-10 RF-02 CA-3",
-          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+          "fuente": "derivada"
         },
         {
           "item": "RNF-02",
@@ -848,7 +848,7 @@
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
           "describe": "K-10 RF-02 CA-3",
-          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+          "fuente": "derivada"
         },
         {
           "item": "RNF-02",
@@ -891,7 +891,7 @@
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
           "describe": "K-10 RF-02 CA-3",
-          "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
+          "fuente": "derivada"
         },
         {
           "item": "RNF-02",

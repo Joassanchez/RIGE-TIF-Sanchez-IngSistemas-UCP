@@ -45,9 +45,9 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
 <td>${presentarDeclaracion(rastro.determinante)}</td><td>${rastro.desplazadas.length
     ? html`<ol>${rastro.desplazadas.map((declaracion) => html`<li>${presentarDeclaracion(declaracion)}</li>`)}</ol>`
     : "ninguna"}</td><td>${respuesta.reglas[rastro.determinante.regla]}</td></tr>`)
-    : html`<tr><td colspan="5">${respuesta.motivo === "clave-inexistente" ? "La clave consultada no existe para el agente." : "El agente no tiene claves resueltas en el prototipo v1."}</td></tr>`}</tbody></table>
+    : html`<tr><td colspan="5">${respuesta.motivo === "clave-inexistente" ? "La clave consultada no existe para el agente." : "RIGE no incorpora claves resueltas para este agente."}</td></tr>`}</tbody></table>
 ${respuesta.motivo ? html`<p>Motivo: ${respuesta.motivo}</p>` : html``}
-${respuesta.noResueltas.length ? html`<h2>Claves no resueltas en el prototipo v1</h2>
+${respuesta.noResueltas.length ? html`<h2>Claves no incorporadas por RIGE</h2>
 <ul>${respuesta.noResueltas.map((clave) => html`<li>${clave.ruta.join(".")}: ${respuesta.reglas[clave.regla]}</li>`)}</ul>` : html``}
 <h2>Entradas leídas</h2>
 <table><thead><tr><th>Orden</th><th>Vía</th><th>Referencia</th><th>Condición</th><th>Resumen SHA-256</th></tr></thead>

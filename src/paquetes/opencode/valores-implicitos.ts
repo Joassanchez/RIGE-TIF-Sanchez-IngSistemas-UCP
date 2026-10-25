@@ -1,31 +1,32 @@
 import type { ValorJson } from "@rige/nucleo/contrato/adaptador";
+import { descripcionesAgentes } from "./vendor/textos-agentes";
 
 // Metadatos de agent.ts del tag 1.18.25. Resumenes: vendor/PROCEDENCIA.md.
 export const valoresNativos: Readonly<Record<string, Readonly<Record<string, ValorJson>>>> = {
   "build": {
     "name": "build",
-    "description": "The default agent. Executes tools based on configured permissions.",
+    "description": descripcionesAgentes.build,
     "options": {},
     "mode": "primary",
     "native": true
   },
   "plan": {
     "name": "plan",
-    "description": "Plan mode. Disallows all edit tools.",
+    "description": descripcionesAgentes.plan,
     "options": {},
     "mode": "primary",
     "native": true
   },
   "general": {
     "name": "general",
-    "description": "General-purpose agent for researching complex questions and executing multi-step tasks. Use this agent to execute multiple units of work in parallel.",
+    "description": descripcionesAgentes.general,
     "options": {},
     "mode": "subagent",
     "native": true
   },
   "explore": {
     "name": "explore",
-    "description": "Fast agent specialized for exploring codebases. Use this when you need to quickly find files by patterns (eg. \"src/components/**/*.tsx\"), search code for keywords (eg. \"API endpoints\"), or answer questions about the codebase (eg. \"how do API endpoints work?\"). When calling this agent, specify the desired thoroughness level: \"quick\" for basic searches, \"medium\" for moderate exploration, or \"very thorough\" for comprehensive analysis across multiple locations and naming conventions.",
+    "description": descripcionesAgentes.explore,
     "prompt": {
       "tipo": "texto-nativo",
       "sha256": "97c4780dea390f347fed0879fb30aaa08c0fc65c8cad0f6c1aec02ca6fd91e13"

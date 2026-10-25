@@ -58,7 +58,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       pendientes.set(identificador, { ruta: pendiente.ruta, regla: pendiente.regla });
     }
   }
-  const declaraciones = [...(contexto.declaraciones ?? [])];
+  const declaraciones = [...contexto.declaraciones];
   for (const codigo of declaraciones) usarRegla(codigo);
   return { exito: true, valor: {
     formato: 2,
@@ -66,6 +66,8 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     proyecto: normalizar(proyecto),
     prefijoAgente: adaptador.prefijoAgente,
     declaraciones,
+    contexto: { proyecto: contexto.proyecto, plataforma: contexto.entorno.plataforma,
+      parametros: { ...contexto.parametros }, declaraciones: [...contexto.declaraciones] },
     reglas: Object.fromEntries([...usados].sort().map((regla) => [regla, adaptador.reglas[regla]!])),
     entradas,
     resumenEntradas: entorno.resumir(JSON.stringify(entradas.map((entrada) => [entrada.via, entrada.referencia, entrada.condicion, entrada.resumen]))),

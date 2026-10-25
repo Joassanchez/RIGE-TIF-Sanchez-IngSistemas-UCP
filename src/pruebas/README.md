@@ -16,7 +16,9 @@ regeneración, procedencia, hash/versión, aislamiento, limpieza ante fallas,
 caché externo, ausencia de evaluación y proveedor SSE local. No ejecuta
 OpenCode real ni instala paquetes. `utilidades/decision-nativa.test.ts`
 verifica preferencia frente a una decisión derivada contradictoria, fallback,
-contexto de lanzador, referencias incompletas y plataforma incompatible.
+contexto de lanzador, referencias incompletas y fallback derivado ante otra
+plataforma (Linux inyectado). X-1 compara cada derivada con su captura nativa
+disponible, incluida la determinante. Los títulos indican el oráculo usado.
 RF-02 CA-1/2/3/9 usan ese selector. Las consultas de subagentes registran
 `nativa: false`: requieren `task` del lanzador; `run` directo no equivale.
 
@@ -62,10 +64,14 @@ En Windows repite las reglas absolutas con `/` y con separadores nativos.
 La consulta por sujeto conserva el recurso literal.
 
 `v2-ruta-bloqueo`, `v2-ruta-env` y `v2-ruta-exposicion` guardan los esperados
-de CA-9/ADR-088 en `decisiones`; T2-14 verificara esas decisiones sobre los
-mismos escenarios. Sus cadenas base de build se capturaron del binario.
+de CA-9/ADR-088 en `decisiones`; están verificadas con el binario
+(win32-x64, T2-14b). Sus cadenas base de build se capturaron del binario.
 `<RAIZ>` solo se sustituye en las copias temporales, con escape JSON.
 No se necesita que exista el archivo objetivo para consultar su permiso.
+
+Límite conocido: el rastro de una declaración desplazada no conserva su ruta
+original (A4-2 omitido). RF-03 CA-3 usa la clave fija `b` en `v1-vias` para
+comprobar la posición de ese caso; no generaliza la comprobación de la ruta.
 
 `v2-worktree-valido`, `v2-worktree-sintetico` y `v2-worktree-sin-vcs`
 conservan cadenas completas build/plan de OpenCode 1.18.25 y la lectura real

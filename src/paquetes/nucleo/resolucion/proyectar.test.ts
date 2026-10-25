@@ -9,7 +9,9 @@ const rastro = (ruta: readonly string[], valor: number): RastroValor => ({
 const temperatura = rastro(["perfiles", "grupo", "a", "parametros", "temperatura"], 0.3);
 const pasos = rastro(["perfiles", "grupo", "a", "pasos"], 12);
 const resolucion: Resolucion = {
-  formato: 2, eliminadas: [], identidad: { herramienta: "ficticia", version: "1" }, proyecto: "/proyecto",
+  formato: 2, eliminadas: [], declaraciones: [],
+  contexto: { proyecto: "/proyecto", plataforma: "linux", parametros: {}, declaraciones: [] },
+  identidad: { herramienta: "ficticia", version: "1" }, proyecto: "/proyecto",
   prefijoAgente: ["perfiles", "grupo"], reglas: { orden: "Orden." }, entradas: [], resumenEntradas: "",
   valores: [temperatura, pasos, rastro(["perfiles", "grupo", "ab", "pasos"], 4), rastro(["otro", "a", "pasos"], 8)], noResueltas: [],
 };

@@ -11,12 +11,12 @@ export function paginaPermiso(respuesta: RespuestaPermiso): Response {
 <h2>Decisión</h2><p>${respuesta.decision ?? respuesta.motivoSinDecision}</p>
 <h2>Reglas coincidentes</h2>
 <table><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalencia</th></tr></thead>
-<tbody>${respuesta.cadena.map(regla => html`<tr><td>${regla.indice}</td><td>${regla.sujeto}</td><td>${regla.patron}</td><td>${regla.efecto}</td>
+<tbody>${respuesta.cadena.map(regla => html`<tr><td>${regla.indice + 1}</td><td>${regla.sujeto}</td><td>${regla.patron}</td><td>${regla.efecto}</td>
 <td>${regla.origen.tipo === "declarado"
     ? `${regla.declaracion?.referencia}:${regla.origen.posicion.linea}:${regla.origen.posicion.columna} (${regla.declaracion?.via})`
     : `${regla.origen.tipo}: ${regla.origen.regla}`}</td>
 <td>${regla.indice === respuesta.determinante ? html`<strong>Determinante</strong>` : "Desplazada"}</td></tr>`)}</tbody></table>
-${respuesta.nativaAnulada ? html`<p>Advertencia RF-09: protección nativa anulada (regla ${respuesta.nativaAnulada.regla}, por ${respuesta.nativaAnulada.por}).</p>` : html``}
+${respuesta.nativaAnulada ? html`<p>Advertencia RF-09: protección nativa anulada (regla ${respuesta.nativaAnulada.regla + 1}, por ${respuesta.nativaAnulada.por + 1}).</p>` : html``}
 <h2>Advertencias</h2><ul>${respuesta.advertencias.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
 <h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
 <h2>Explicación</h2>${respuesta.explicacion?.map(oracion => html`<p>${oracion}</p>`) ?? html``}

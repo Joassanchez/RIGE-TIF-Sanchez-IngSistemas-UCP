@@ -82,7 +82,7 @@ describe("C-1", () => {
     const adaptador = { ...adaptadorFicticio, ubicar: (proyecto: string, entornoLectura: typeof dependencias.entorno) => {
       expect(entornoLectura).toBe(dependencias.entorno);
       ubicadas.push(proyecto);
-      return adaptadorFicticio.ubicar(proyecto, entornoLectura, { proyecto, entorno: entornoLectura });
+      return adaptadorFicticio.ubicar(proyecto, entornoLectura, { proyecto, entorno: entornoLectura, parametros: {}, declaraciones: [] });
     } };
     expect(resolverProyecto({ ...dependencias, adaptador }, "./pedido")).toEqual({ exito: true, valor: { id: 1 } });
     const esperada = resolver(adaptadorFicticio, "/canonico", dependencias.entorno);

@@ -27,7 +27,7 @@ export function decidir(cadena: Cadena, consulta: ConsultaPermiso, evaluacion: E
   };
   const ultimaNativa = desplazadas.findLast(r => r.origen.tipo === "nativo");
   const nativa = determinante?.origen.tipo === "declarado" && ultimaNativa
-    && rango(ultimaNativa.efecto) < rango(determinante.efecto) ? ultimaNativa : undefined;
+    && rango(ultimaNativa.efecto) === 0 && rango(determinante.efecto) > 0 ? ultimaNativa : undefined;
   return { ...base, consulta: { ...consulta, objetivoEvaluado: consulta.objetivo },
     decision: determinante?.efecto ?? evaluacion.efectoPorDefecto,
     motivoSinDecision: null, porDefecto: determinante === null,

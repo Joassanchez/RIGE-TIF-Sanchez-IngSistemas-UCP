@@ -40,7 +40,7 @@ describe("RF-02 CA-5 explicacion", () => {
 
 describe("T2-10 E-4", () => {
   test("RF-09 explica la proteccion nativa anulada por la declaracion", () => {
-    const { respuestas: [r] } = consultarPermisos([lectura]);
+    const { respuestas: [r] } = consultarPermisos([{ ...lectura, agente: "plan", sujeto: "edit", objetivo: "src/a.js" }]);
     expect(r!.nativaAnulada).not.toBeNull();
     expect(r!.explicacion?.join(" ")).toContain("protección nativa");
     expect(r!.explicacion?.join(" ")).toContain("anulada");
@@ -49,12 +49,12 @@ describe("T2-10 E-4", () => {
     const { respuestas: [r] } = consultarPermisos([{ ...lectura, sujeto: "bash", objetivo: "echo a | cat" }]);
     expect(r!.decision).toBeNull();
     expect(r!.explicacion?.join(" ")).toContain("compuesto");
-    expect(r!.explicacion?.join(" ")).toContain("tuberia");
+    expect(r!.explicacion?.join(" ")).toContain("tubería");
   });
   test("explica archivo fuera del arbol", () => {
     const { respuestas: [r] } = consultarPermisos([{ agente: "build", herramienta: "read", objetivo: "<RAIZ>/../externo.txt", explicar: true }]);
     expect(r!.decision).toBeNull();
-    expect(r!.explicacion?.join(" ")).toContain("fuera del arbol");
+    expect(r!.explicacion?.join(" ")).toContain("fuera del árbol");
   });
   test("explica eje parcialmente observado", () => {
     const { respuestas: [r] } = consultarPermisos([{ ...lectura, sujeto: "external_directory" }]);

@@ -30,7 +30,22 @@ describe("K-5 G-1 no circularidad del oraculo", () => {
   test("permite usar el adaptador real para producir el resultado observado", () => {
     expect(detectarVendor({ "pruebas/aceptacion/a.test.ts": 'import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador"; const actual = consultar(adaptadorOpenCode); expect(actual).toEqual(referencia);' })).toEqual([]);
     expect(detectarVendor({ "pruebas/aceptacion/a.test.ts": 'const esperado = adaptador.permisos.evaluar(reglas); expect(actual).toEqual(esperado);' })).toEqual(["pruebas/aceptacion/a.test.ts"]);
-    expect(detectarVendor({ "pruebas/aceptacion/a.test.ts": 'import { evaluate } from "../../paquetes/opencode/vendor/permiso"; const actual = evaluate("read", "x", "linux", []); expect(actual).toEqual({ action: "ask" });' })).toEqual([]);
+    expect(detectarVendor({ "pruebas/aceptacion/a.test.ts": 'import { evaluate } from "../../paquetes/opencode/vendor/permiso"; const actual = evaluate("read", "x", "linux", []); expect(actual).toEqual({ action: "ask" });' })).toEqual(["pruebas/aceptacion/a.test.ts"]);
+  });
+  test.each([
+    'import { evaluar } from "../../paquetes/opencode/permisos"; evaluar(reglas);',
+    'const { evaluar: decidir } = obj; decidir(reglas);',
+    'obj["evaluar"](reglas);',
+    'import * as permisos from "../../paquetes/opencode/permisos";',
+  ])("X-2 rechaza acceso directo en aceptacion: %s", codigo => {
+    expect(detectarVendor({ "pruebas/aceptacion/sonda.test.ts": codigo })).toEqual(["pruebas/aceptacion/sonda.test.ts"]);
+  });
+  test("X-2 las cadenas exigen debug agent, nunca agent list ni derivacion", () => {
+    for (const comando of ["opencode agent list", ["opencode", "agent", "list"]]) {
+      expect(validarProcedenciaReferencia({ cadenas: {}, procedencia: { comando } }, () => true)).not.toEqual([]);
+    }
+    expect(validarProcedenciaReferencia({ cadenas: {}, procedencia: { tipo: "derivada a mano", derivacion: "DERIVACION.md" } }, () => true)).not.toEqual([]);
+    expect(validarProcedenciaReferencia({ cadenas: {}, procedencia: { comando: ["opencode", "debug", "agent", "build"] } }, () => false)).toEqual([]);
   });
   test("referencias de cadenas y decisiones declaran binario o derivacion comprobable", () => {
     const raiz = resolve(import.meta.dir, "../escenarios");

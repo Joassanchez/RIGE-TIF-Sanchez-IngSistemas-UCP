@@ -5,7 +5,7 @@ import type { ContextoOpenCode } from "./contexto";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 const noSoportada = (nombre: string): Resultado<never, ErrorAnalisis> => ({ exito: false, error: { categoria: "uso",
-  codigo: "via-no-soportada", mensaje: `El prototipo v1 no incorpora ${normalizar(nombre)}.`,
+  codigo: "via-no-soportada", mensaje: `RIGE no incorpora ${normalizar(nombre)}.`,
 } });
 
 export function validarVias(entorno: EntornoLectura): Resultado<void, ErrorAnalisis> {
@@ -29,7 +29,7 @@ export function ubicar(proyecto: string, entorno: EntornoLectura, contexto: Cont
   } };
   const variable = (nombre: string) => entorno.variable(nombre);
   const config = variable("OPENCODE_CONFIG") || undefined;
-  const { hogar, config: global, worktree } = contexto;
+  const { hogar, config: global, worktree } = contexto.parametros;
   const vias: ViaUbicada[] = [];
   const noObservada = (via: string) => vias.push({ via, referencia: via, condicion: "no_observada" });
   function agregar(via: string, ruta: string): void {

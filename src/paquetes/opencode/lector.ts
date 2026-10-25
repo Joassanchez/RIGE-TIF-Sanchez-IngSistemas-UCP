@@ -33,7 +33,7 @@ export function leerEntrada(via: ViaUbicada, texto: string): Resultado<readonly 
     const { linea, columna } = posicion(texto, sustitucion.index);
     return { exito: false, error: { categoria: "uso",
       codigo: "contenido-no-soportado",
-      mensaje: `El prototipo v1 no incorpora ${sustitucion[0]} (${via.referencia.replaceAll("\\", "/")}:${linea}:${columna}).`,
+      mensaje: `RIGE no incorpora ${sustitucion[0]} (${via.referencia.replaceAll("\\", "/")}:${linea}:${columna}).`,
     } };
   }
   const errores: ParseError[] = [];

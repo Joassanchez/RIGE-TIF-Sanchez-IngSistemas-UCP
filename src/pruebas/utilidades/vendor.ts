@@ -1,8 +1,12 @@
 import { posix } from "node:path";
 import { extraerImports, tokenizar } from "./analisis-arquitectura";
 
-/** Sigue los auxiliares de esperados; importar el sistema bajo prueba es licito. */
+/** Guarda heuristica: sigue auxiliares, no demuestra flujo de datos arbitrario.
+ * La garantia de fondo es X-1: las derivadas se contrastan con capturas nativas.
+ * Se admite importar el adaptador para producir el observado.
+ */
 export function detectarVendor(archivos: Readonly<Record<string, string>>): string[] {
+  const prohibido = (destino: string) => /(?:\/vendor(?:\/|$)|\/opencode\/permisos(?:\.ts)?$)/.test(destino);
   const contaminados = new Map<string, Set<string>>();
   const fuentes = Object.entries(archivos).filter(([ruta]) => ruta.startsWith("pruebas/"));
   const tokens = new Map(fuentes.map(([ruta, codigo]) => [ruta, tokenizar(codigo)]));
@@ -20,12 +24,12 @@ export function detectarVendor(archivos: Readonly<Record<string, string>>): stri
         const inicio = t.slice(0, indice).findLastIndex(token => ["import", "export"].includes(token.valor));
         const nombres = t.slice(inicio + 1, indice).filter(token => !token.cadena && /^[\w$]+$/.test(token.valor)
           && !["from", "as", "type"].includes(token.valor)).map(token => token.valor);
-        if (destino.includes("/vendor/")) for (const nombre of nombres) marcar(nombre);
+        if (prohibido(destino)) for (const nombre of nombres) marcar(nombre);
         else for (const nombre of nombres) if (contaminados.get(resuelta)?.has(nombre)) marcar(nombre);
       }
       const impura = (expresion: typeof t) => expresion.some((token, i) => token.cadena
-        ? token.valor.includes("/vendor/") && ["import", "require"].includes(expresion[i - 2]?.valor ?? "")
-        : marcados.has(token.valor) || token.valor === "evaluar" && expresion[i - 1]?.valor === ".");
+        ? token.valor === "evaluar" || prohibido(token.valor) && ["import", "require"].includes(expresion[i - 2]?.valor ?? "")
+        : marcados.has(token.valor) || token.valor === "evaluar");
       for (let i = 0; i < t.length; i++) {
         if (["const", "let", "var"].includes(t[i]!.valor) && t[i + 2]?.valor === "=") {
           let fin = i + 3;
@@ -48,9 +52,10 @@ export function detectarVendor(archivos: Readonly<Record<string, string>>): stri
   return fuentes.filter(([ruta]) => {
     if (!ruta.startsWith("pruebas/aceptacion/")) return false;
     const t = tokens.get(ruta)!;
+    if (extraerImports(archivos[ruta]!).some(({ destino }) => prohibido(destino))) return true;
     const marcados = contaminados.get(ruta)!;
     for (let i = 0; i < t.length; i++) {
-      if (t[i]!.valor === "evaluar" && t[i - 1]?.valor === ".") return true;
+      if (t[i]!.valor === "evaluar") return true;
       if (/^(esperad[oa]s?|referencia|expected\w*)$/.test(t[i]!.valor) && marcados.has(t[i]!.valor)) return true;
       if (["toEqual", "toBe", "toMatchObject"].includes(t[i]!.valor) && t[i + 1]?.valor === "(") {
         let profundidad = 1;
@@ -71,6 +76,12 @@ export function validarProcedenciaReferencia(referencia: Record<string, any>, ha
     if (!Object.hasOwn(referencia, campo)) continue;
     const procedencia = referencia.procedencia?.[campo] ?? (campo === "cadenas" ? referencia.procedencia : undefined);
     const comando = procedencia?.comando;
+    if (campo === "cadenas") {
+      if (typeof comando === "string" && /^opencode\s+debug\s+agent(?:\s|$)/.test(comando)
+        || Array.isArray(comando) && comando[0] === "opencode" && comando[1] === "debug" && comando[2] === "agent") continue;
+      errores.push("cadenas: falta comando debug agent del binario");
+      continue;
+    }
     if (typeof comando === "string" && /^opencode\s/.test(comando) || Array.isArray(comando) && comando[0] === "opencode") continue;
     if (procedencia?.tipo === "derivada a mano" && procedencia.derivacion === "DERIVACION.md" && hayArchivo(procedencia.derivacion)) continue;
     errores.push(`${campo}: falta comando del binario o DERIVACION.md`);

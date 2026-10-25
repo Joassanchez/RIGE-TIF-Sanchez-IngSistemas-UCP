@@ -27,6 +27,14 @@ describe("T2-14 M-1", () => {
 });
 
 describe("T2-14 M-2", () => {
+  test("R-M1 CA-3 declara oraculo derivado sin ejecucion nativa de task", () => {
+    const manifiesto = leer();
+    const comprobaciones = manifiesto.escenarios.flatMap(e => e.comprobaciones).filter(c => c.item === "RF-02 CA-3");
+    expect(comprobaciones.length).toBeGreaterThan(0);
+    expect(comprobaciones.every(c => c.fuente === "derivada")).toBe(true);
+    expect(informarCobertura(manifiesto, matriz()).items.find(i => i.id === "RF-02 CA-3")!.estado)
+      .toBe("cubierto con oráculo derivado; sin ejecución nativa de task");
+  });
   test("comentarios y ejemplos de texto no son describes existentes", () => {
     expect(describes('// describe("comentario", () => {});\nconst ejemplo = \'describe("texto", () => {});\';\ndescribe("real", () => {});')).toEqual(["real"]);
   });
@@ -41,7 +49,7 @@ describe("T2-14 M-2", () => {
     inexistente.escenarios[0]!.comprobaciones[0]!.describe = "describe inexistente";
     expect(validarManifiesto(inexistente, matriz(), escenarios, raiz).join("\n")).toContain("describe inexistente");
     const informe = informarCobertura(leer(), matriz());
-    expect(informe.items.filter(i => i.iteracion === 2).every(i => i.estado === "cubierto")).toBe(true);
+    expect(informe.items.filter(i => i.iteracion === 2).every(i => i.estado.startsWith("cubierto"))).toBe(true);
     expect(informe.escenarios.length).toBe(leer().escenarios.length);
     expect(informe.retiros).toEqual([]);
     expect(informe.corte).toBeNull();

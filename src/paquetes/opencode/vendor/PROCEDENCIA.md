@@ -110,3 +110,16 @@ no se distribuye.
 | packages/opencode/src/agent/prompt/compaction.txt | 552db0de0af1873a8acd4a631e2548345d4c43192de1d9be69c8feab4b41f80c |
 | packages/opencode/src/agent/prompt/title.txt | e7a6848eba328f28c7e870874cf0591e4edbaf90d7602ad8fdfe90601c6e656f |
 | packages/opencode/src/agent/prompt/summary.txt | 307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233 |
+
+## T2-16: descripciones de agentes
+
+Las descripciones literales de build, plan, general y explore pasan de
+../valores-implicitos.ts a textos-agentes.ts, bajo el mismo copyright y LICENSE.
+Origen: packages/opencode/src/agent/agent.ts:140-264, tag v1.18.25.
+SHA-256 del original completo: `e781c571d584fa996200e320f14c2735e32968256b8db194391e7c06aed7433e`.
+Solo se extraen esos textos, sin cambios; el envoltorio exporta un objeto puro.
+Los metadatos propios siguen en ../valores-implicitos.ts e importan los textos.
+
+| Archivo | SHA-256 |
+|---|---|
+| textos-agentes.ts | ab55b0d657dd923987d0787dba899cf5188afefb092456cdb40ee5c9d64c0124 |

@@ -87,7 +87,7 @@ describe("T2-05 K-2", () => {
 describe("T2-05 K-3 RNF-03", () => {
   test("el contrato representa otro vocabulario", () => {
     const { resolucion, entorno } = preparar();
-    const resultado = adaptadorFicticio.cadena(resolucion, "a", { proyecto: resolucion.proyecto, entorno });
+    const resultado = adaptadorFicticio.cadena(resolucion, "a", { proyecto: resolucion.proyecto, entorno, parametros: {}, declaraciones: [] });
     expect(resultado).toMatchObject({ exito: true, valor: { agente: "a", reglas: [{ sujeto: "documento", patron: "todos", efecto: "conceder" }], ejesParciales: [] } });
   });
 });

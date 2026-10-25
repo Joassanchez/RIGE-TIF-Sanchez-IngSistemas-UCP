@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { writeFileSync } from "node:fs";
+import { rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas/permiso";
 import { prepararConsultas } from "../utilidades/consultas-cli";
@@ -18,8 +18,8 @@ async function conWeb(nombre: string, probar: (datos: {
   escenario: ReturnType<typeof prepararConsultas>;
   solicitar: (ruta: string, opciones?: Omit<SolicitudLocal, "host" | "puerto" | "ruta">) => ReturnType<typeof solicitarLocal>;
   id: string;
-}) => Promise<void>, preparar?: (proyecto: string) => void) {
-  const escenario = prepararConsultas(nombre);
+}) => Promise<void>, preparar?: (proyecto: string) => void, opciones: Parameters<typeof prepararConsultas>[1] = {}) {
+  const escenario = prepararConsultas(nombre, opciones);
   let servidor: Awaited<ReturnType<typeof lanzarServidor>> | undefined;
   try {
     preparar?.(escenario.proyecto);
@@ -41,6 +41,21 @@ const consultas = [
 ] as const;
 
 describe("RF-02 CA-6 / RF-03 CA-4", () => {
+  test("X-3 permiso y agentes guardados conservan el contexto despues de borrar .git", async () => {
+    await conWeb("v2-worktree-valido", async ({ escenario, solicitar, id }) => {
+      const ruta = `/permiso?id=${id}&agente=build&herramienta=read&objetivo=src/a.js`;
+      const antes = await solicitar(ruta);
+      expect(antes.estado).toBe(200);
+      expect(incrustada(antes.cuerpo)).toMatchObject({ decision: "deny" });
+      const agentes = incrustada((await solicitar(`/agentes?id=${id}`)).cuerpo);
+      // Solo se elimina el repositorio de la copia temporal del escenario.
+      rmSync(join(escenario.proyecto, ".git"), { recursive: true });
+      const despues = await solicitar(ruta);
+      expect(despues.estado).toBe(200);
+      expect(incrustada(despues.cuerpo)).toEqual(incrustada(antes.cuerpo));
+      expect(incrustada((await solicitar(`/agentes?id=${id}`)).cuerpo)).toEqual(agentes);
+    }, undefined, { git: "proyecto" });
+  });
   test.each(consultas)("paridad completa de permiso en %s", async (nombre, consulta) => {
     await conWeb(nombre, async ({ escenario, solicitar, id }) => {
       const opciones = Object.entries(consulta).flatMap(([clave, valor]) => [`--${clave === "lanzadoPor" ? "lanzado-por" : clave}`, valor]);
@@ -60,6 +75,16 @@ describe("RF-02 CA-6 / RF-03 CA-4", () => {
 });
 
 describe("RF-02 CA-7", () => {
+  test("X-4 tabla y advertencia RF-09 presentan posiciones desde uno", async () => {
+    await conWeb("v2-decision", async ({ solicitar, id }) => {
+      const pagina = await solicitar(`/permiso?id=${id}&agente=plan&sujeto=edit&objetivo=src/a.js`);
+      expect(pagina.estado).toBe(200);
+      const respuesta = incrustada(pagina.cuerpo) as RespuestaPermiso;
+      for (const regla of respuesta.cadena) expect(pagina.cuerpo).toContain(`<tr><td>${regla.indice + 1}</td>`);
+      expect(respuesta.nativaAnulada).not.toBeNull();
+      expect(pagina.cuerpo).toContain(`(regla ${respuesta.nativaAnulada!.regla + 1}, por ${respuesta.nativaAnulada!.por + 1})`);
+    }, proyecto => writeFileSync(join(proyecto, "opencode.jsonc"), '{"permission":{"edit":"allow"}}'));
+  });
   test("presenta cada oracion de la explicacion y acceso desde la resolucion", async () => {
     await conWeb("v2-decision", async ({ escenario, solicitar, id }) => {
       const cli = escenario.consultar("permiso", ["--agente", "build", "--sujeto", "read", "--objetivo", ".env", "--explicar"]);

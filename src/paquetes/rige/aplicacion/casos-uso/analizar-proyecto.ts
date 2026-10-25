@@ -21,9 +21,14 @@ export function analizarProyecto(dependencias: DependenciasAnalisis, proyecto: s
 export function prepararAnalisis(dependencias: DependenciasAnalisis, proyecto: string): Resultado<{ readonly resolucion: Resolucion; readonly contexto: ContextoConsulta }, ErrorUso> {
   if (dependencias.resolucion) {
     const resolucion = dependencias.resolucion;
-    const contexto = dependencias.adaptador.contexto(resolucion.proyecto, dependencias.entorno);
-    return contexto.exito ? { exito: true, valor: { resolucion, contexto: contexto.valor } }
-      : { exito: false, error: errorDesdeAnalisis(contexto.error) };
+    const { plataforma, ...datos } = resolucion.contexto;
+    const actual = dependencias.entorno;
+    const noLeer = (): never => { throw new Error("Una resolucion guardada no consulta el entorno actual."); };
+    const entorno: EntornoLectura = { plataforma, variable: noLeer, tipo: noLeer, leer: noLeer, listar: noLeer,
+      resumir: texto => actual.resumir(texto), unir: (...partes) => actual.unir(...partes),
+      relativa: (desde, hasta) => actual.relativa(desde, hasta), padre: ruta => actual.padre(ruta),
+      esAbsoluta: ruta => actual.esAbsoluta(ruta) };
+    return { exito: true, valor: { resolucion, contexto: { ...datos, entorno } } };
   }
   proyecto = proyecto.trim();
   if (proyecto.length >= 2 && ((proyecto.startsWith('"') && proyecto.endsWith('"'))

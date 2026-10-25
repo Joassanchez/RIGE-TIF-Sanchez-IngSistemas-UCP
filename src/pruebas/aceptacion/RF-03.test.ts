@@ -213,7 +213,8 @@ describe("RF-03 CA-3 (valores)", () => {
         expect(linea).toBeGreaterThan(0);
         expect(columna).toBeGreaterThan(0);
         const original = readFileSync(declaracion.referencia!, "utf8").split(/\r?\n/)[linea - 1]!;
-        // El contrato conserva la posicion pero no la ruta original de cada desplazada.
+        // Limite conocido (A4-2 omitido): el rastro conserva la posicion, pero no
+        // la ruta original de cada desplazada. "b" acredita solo este escenario.
         const claveOriginal = nombre === "v1-vias" && rastro.ruta.slice(2).join(".") === "options.a"
           && declaracion !== rastro.determinante ? "b" : rastro.ruta.at(-1);
         expect(original.slice(columna - 1)).toStartWith(JSON.stringify(claveOriginal));

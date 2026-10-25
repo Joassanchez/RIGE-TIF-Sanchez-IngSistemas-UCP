@@ -253,7 +253,7 @@ describe("Errores de uso por la web", () => {
       writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": {env:X}'));
       const noSoportado = await recorrido.resolver();
       expect(noSoportado.estado).toBe(422);
-      expect(noSoportado.cuerpo).toContain("El prototipo v1 no incorpora {env:X}");
+      expect(noSoportado.cuerpo).toContain("RIGE no incorpora {env:X}");
       expect(noSoportado.cabeceras.location).toBeUndefined();
       expect((await recorrido.solicitar(paginaPrimera)).estado).toBe(404);
       writeFileSync(entrada, original);
@@ -306,9 +306,9 @@ describe("Errores de uso por la web", () => {
       const pagina = await recorrido.solicitar("/resoluciones/2?agente=build");
       expect(pagina.estado).toBe(200);
       expect(pagina.cuerpo).toContain("<td>temperature</td><td>0.3</td>");
-      expect(pagina.cuerpo).toContain("Claves no resueltas en el prototipo v1");
+      expect(pagina.cuerpo).toContain("Claves no incorporadas por RIGE");
       expect(pagina.cuerpo).toContain("<li>permission:");
-      const pendientes = /<h2>Claves no resueltas en el prototipo v1<\/h2>\s*<ul>(.*?)<\/ul>/s.exec(pagina.cuerpo)?.[1];
+      const pendientes = /<h2>Claves no incorporadas por RIGE<\/h2>\s*<ul>(.*?)<\/ul>/s.exec(pagina.cuerpo)?.[1];
       expect(pendientes).toBeDefined();
       expect(pendientes?.match(/<li>/g)).toHaveLength(2);
       expect(pendientes).toContain("<li>tools:");

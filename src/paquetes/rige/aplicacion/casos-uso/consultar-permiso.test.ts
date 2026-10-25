@@ -49,19 +49,20 @@ describe("T2-06 consulta en memoria", () => {
     expect(resultado).toMatchObject({ exito: true, valor: { motivoSinDecision: "eje-parcialmente-observado",
       reglas: { "eje-parcialmente-observado": "Eje parcial." } } });
   }); });
-  test("T2-11b K-2 el caso de uso conserva decision y motivo emitidos por el nucleo", () => {
+  test.each([{ sujeto: "documento" }, { herramienta: "lector" }])("X-5 conserva decision, motivo y objetivo emitidos por el nucleo (%j)", accion => {
     const original = nucleo.decidir;
-    const espia = spyOn(nucleo, "decidir").mockImplementation((...args) => ({
-      ...original(...args), motivoSinDecision: "motivo-del-nucleo",
-    }));
+    const espia = spyOn(nucleo, "decidir").mockImplementation((...args) => {
+      const decision = original(...args);
+      return { ...decision, motivoSinDecision: "motivo-del-nucleo", consulta: { ...decision.consulta, objetivoEvaluado: null } };
+    });
     try {
       const base = deps();
       const resultado = consultarPermiso({ ...base, adaptador: { ...base.adaptador,
         prepararConsulta: () => ({ exito: true, valor: { sujeto: "documento", objetivoEvaluado: "todos", motivoSinDecision: "no-observado" } }),
         reglas: { ...base.adaptador.reglas, "no-observado": "Sin observacion.", "motivo-del-nucleo": "Motivo del nucleo." },
-      } }, { proyecto: "/proyecto", agente: "a", sujeto: "documento", objetivo: "todos" });
+      } }, { proyecto: "/proyecto", agente: "a", ...accion, objetivo: "todos" });
       expect(espia).toHaveBeenCalledTimes(1);
-      expect(resultado).toMatchObject({ exito: true, valor: { decision: null, motivoSinDecision: "motivo-del-nucleo" } });
+      expect(resultado).toMatchObject({ exito: true, valor: { decision: null, motivoSinDecision: "motivo-del-nucleo", consulta: { objetivoEvaluado: null } } });
     } finally { espia.mockRestore(); }
   });
   test("T2-08 forma por herramienta delega al adaptador y conserva consulta original", () => {

@@ -7,7 +7,7 @@ import type { ContextoOpenCode } from "./contexto";
 import { agentesEfectivos } from "./agentes";
 
 export function cadena(resolucion: Resolucion, agente: string, contexto: ContextoOpenCode, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis> {
-  const { entorno, hogar, data, tmp, worktree } = contexto;
+  const { entorno, parametros: { hogar, data, tmp, worktree } } = contexto;
   const efectivos = agentesEfectivos(resolucion, contexto).agentes;
   for (const nombre of [agente, ...(lanzadoPor === undefined ? [] : [lanzadoPor])]) {
     const efectivo = efectivos.find(a => a.nombre === nombre);

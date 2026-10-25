@@ -32,17 +32,17 @@ describe("T2-06 rastro generico", () => {
       decision: null, motivoSinDecision: "eje-parcialmente-observado", consulta: { objetivoEvaluado: null }, declaraciones: ["limite"],
     });
   });
-  test("D-4 orden opaco: conserva indices completos y elige la ultima proteccion nativa anulada", () => {
+  test("D-4 orden opaco: conserva indices y una ultima nativa intermedia no advierte", () => {
     const reglas = [regla(0, "impedir"), regla(1, "conceder"), regla(2, "consultar"), regla(3, "conceder", true)];
     const rastro = decidir(cadena(reglas), consulta, { ...politica, determinante: 3, coincidentes: [0, 2, 3] });
     expect(rastro).toMatchObject({ decision: "conceder", determinante: 3, desplazadas: [0, 2],
-      nativaAnulada: { regla: 2, por: 3 }, advertencias: ["proteccion-nativa-anulada"] });
+      nativaAnulada: null, advertencias: [] });
     expect(rastro.coincidentes).toEqual([reglas[0]!, reglas[2]!, reglas[3]!]);
     expect(reglas[3]!.indice).toBe(3);
   });
   test.each([
     ["impedir", "consultar", true, true], ["impedir", "conceder", true, true],
-    ["consultar", "conceder", true, true], ["conceder", "impedir", true, false],
+    ["consultar", "conceder", true, false], ["conceder", "impedir", true, false],
     ["consultar", "consultar", true, false], ["impedir", "conceder", false, false],
   ] as const)("anulacion %s -> %s, declarada=%s", (antes, despues, declarada, advertir) => {
     const rastro = decidir(cadena([regla(0, antes), regla(1, despues, declarada)]), consulta,

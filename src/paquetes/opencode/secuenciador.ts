@@ -49,7 +49,7 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
       if (ruta[0] === "mode") {
         if (ruta.length === 1 && !esObjeto(valor)) return { exito: false, error: { categoria: "uso",
           codigo: "contenido-no-soportado",
-          mensaje: `El prototipo v1 no incorpora mode (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).`,
+          mensaje: `RIGE no incorpora mode (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).`,
         } };
         if (ruta.length >= 2) {
           excluir(["agent", ruta[1]!], "fuera-del-v1");

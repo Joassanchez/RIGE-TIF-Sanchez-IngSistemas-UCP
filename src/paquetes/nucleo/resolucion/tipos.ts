@@ -1,4 +1,4 @@
-import type { ClaveNoResuelta, Identidad, Origen, ValorJson } from "../contrato/adaptador";
+import type { ClaveNoResuelta, ContextoResolucion, Identidad, Origen, ValorJson } from "../contrato/adaptador";
 
 export interface ReglaCadena {
   readonly indice: number;
@@ -57,7 +57,8 @@ export interface Resolucion {
   readonly proyecto: string;
   readonly prefijoAgente: readonly string[];
   readonly reglas: Readonly<Record<string, string>>;
-  readonly declaraciones?: readonly string[];
+  readonly declaraciones: readonly string[];
+  readonly contexto: ContextoResolucion;
   readonly entradas: readonly EntradaLeida[];
   readonly resumenEntradas: string;
   readonly valores: readonly RastroValor[];

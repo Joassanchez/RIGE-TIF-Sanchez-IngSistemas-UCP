@@ -5,12 +5,13 @@ import { descubrirWorktree } from "./worktree";
 import { validarVias } from "./ubicador";
 
 export interface ContextoOpenCode extends ContextoConsulta {
-  readonly hogar: string;
-  readonly config: string;
-  readonly data: string;
-  readonly tmp: string;
-  readonly worktree: string;
-  readonly declaraciones: readonly string[];
+  readonly parametros: {
+    readonly hogar: string;
+    readonly config: string;
+    readonly data: string;
+    readonly tmp: string;
+    readonly worktree: string;
+  };
 }
 
 export function contextoOpenCode(proyecto: string, entorno: EntornoLectura): Resultado<ContextoOpenCode, ErrorAnalisis> {
@@ -26,8 +27,8 @@ export function contextoOpenCode(proyecto: string, entorno: EntornoLectura): Res
   const temporal = entorno.plataforma === "win32"
     ? variable("TEMP") || variable("TMP") || entorno.unir(variable("SystemRoot") || "C:\\Windows", "temp")
     : variable("TMPDIR") || variable("TMP") || variable("TEMP") || "/tmp";
-  return { exito: true, valor: { proyecto, entorno, hogar,
+  return { exito: true, valor: { proyecto, entorno, declaraciones: descubrimiento.valor.declaraciones, parametros: { hogar,
     config: entorno.unir(variable("XDG_CONFIG_HOME") || entorno.unir(hogar, ".config"), "opencode"),
     data: entorno.unir(variable("XDG_DATA_HOME") || entorno.unir(hogar, ".local", "share"), "opencode"),
-    tmp: entorno.unir(temporal, "opencode"), ...descubrimiento.valor } };
+    tmp: entorno.unir(temporal, "opencode"), worktree: descubrimiento.valor.worktree } } };
 }

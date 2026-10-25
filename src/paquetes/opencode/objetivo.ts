@@ -6,7 +6,7 @@ import { prepararSujeto } from "./comando";
 const herramientas = ["read", "edit", "write", "apply_patch", "bash", "glob", "grep", "webfetch", "task", "todowrite", "skill"];
 
 export function prepararConsulta(contexto: ContextoOpenCode, solicitud: SolicitudPermiso): Resultado<ObjetivoPermiso, ErrorAnalisis> {
-  const { proyecto, entorno, worktree } = contexto;
+  const { proyecto, entorno, parametros: { worktree } } = contexto;
   const { herramienta, objetivo } = solicitud;
   if (herramienta === undefined) return { exito: true, valor: prepararSujeto(solicitud.sujeto, objetivo) };
   if (!herramientas.includes(herramienta)) return { exito: false, error: { categoria: "uso", codigo: "solicitud-invalida",

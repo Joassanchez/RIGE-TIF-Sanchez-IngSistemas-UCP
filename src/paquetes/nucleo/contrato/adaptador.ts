@@ -59,7 +59,14 @@ export interface ListadoAgentes {
   readonly agentes: readonly AgenteEfectivo[];
   readonly motivos: readonly string[];
 }
-export interface ContextoConsulta { readonly proyecto: string; readonly entorno: EntornoLectura; readonly declaraciones?: readonly string[] }
+/** Datos puros necesarios para reproducir consultas, sin variables ni puertos de E/S. */
+export interface ContextoResolucion {
+  readonly proyecto: string;
+  readonly plataforma: string;
+  readonly parametros: Readonly<Record<string, string>>;
+  readonly declaraciones: readonly string[];
+}
+export interface ContextoConsulta extends Omit<ContextoResolucion, "plataforma"> { readonly entorno: EntornoLectura }
 export type SolicitudPermiso = ({ readonly sujeto: string; readonly herramienta?: never }
   | { readonly herramienta: string; readonly sujeto?: never }) & { readonly objetivo: string; readonly lanzadoPor?: string | undefined };
 

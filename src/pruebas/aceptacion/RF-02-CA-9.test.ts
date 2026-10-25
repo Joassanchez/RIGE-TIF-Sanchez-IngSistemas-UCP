@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { consultarPermisos } from "../utilidades/permisos";
 import { consultarCadenas } from "../utilidades/cadenas";
-import { decisionNativa } from "../utilidades/decision-nativa";
+import { decisionNativa, oraculoDecision } from "../utilidades/decision-nativa";
 import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";
 
 interface Caso {
@@ -18,7 +18,10 @@ const escenarios = ["v2-ruta-bloqueo", "v2-ruta-env", "v2-ruta-exposicion"];
 
 describe("RF-02 CA-9", () => {
   for (const id of "abcdefghi") {
-    test(`${id}: absoluta y relativa conservan decision, determinante y procedencia`, () => {
+    const oraculos = [...new Set(escenarios.flatMap(escenario => referencia(escenario).decisiones.filter(c => c.id === id)
+      .flatMap(c => c.herramientas.flatMap(herramienta => c.objetivos.map(objetivo =>
+        oraculoDecision(referencia(escenario), { agente: c.agente, herramienta, objetivo }))))))].join(" / ");
+    test(`${id} [${oraculos}]: absoluta y relativa conservan decision, determinante y procedencia`, () => {
       for (const escenario of escenarios) for (const caso of referencia(escenario).decisiones.filter(c => c.id === id)) {
         for (const rutasNativas of process.platform === "win32" ? [false, true] : [false]) {
           const consultas = caso.herramientas.flatMap(herramienta => caso.objetivos.flatMap(objetivo => [
@@ -58,7 +61,7 @@ describe("RF-02 CA-9", () => {
       }
     });
   }
-  test("j: repo valido, HEAD sintetico y sin VCS reproducen el binario; plan usa el mismo worktree", () => {
+  test(`j [${oraculoDecision(referencia("v2-worktree-valido"), { agente: "build", herramienta: "read", objetivo: "src/a.js" })}]: repo valido, HEAD sintetico y sin VCS reproducen el binario; plan usa el mismo worktree`, () => {
     for (const [escenario, git] of [["v2-worktree-valido", "proyecto"], ["v2-worktree-sintetico", "sintetico"], ["v2-worktree-sin-vcs", "ninguno"]] as const) {
       const caso = referencia(escenario).decisiones[0]!;
       const { respuestas, raiz } = consultarPermisos([

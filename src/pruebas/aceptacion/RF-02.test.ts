@@ -3,7 +3,7 @@ import { consultarCadenas } from "../utilidades/cadenas";
 import { comparar } from "../../herramientas/referencias-nativas/comparar";
 import { consultarPermisos, referenciaDecisiones } from "../utilidades/permisos";
 import { readFileSync } from "node:fs";
-import { decisionNativa } from "../utilidades/decision-nativa";
+import { decisionNativa, oraculoDecision } from "../utilidades/decision-nativa";
 import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";
 
 describe("K-10 RF-02 CA-3", () => {
@@ -25,9 +25,9 @@ describe("K-10 RF-02 CA-3", () => {
     }
   });
   for (const caso of referencia.decisiones) {
-    test(`(${caso.variante}) decision y procedencia de la cadena propia`, () => {
+    const refCaso = caso.escenario ? JSON.parse(readFileSync(new URL(`../escenarios/${caso.escenario}/REFERENCIA.json`, import.meta.url), "utf8")) : referencia;
+    test(`(${caso.variante}) decision y procedencia de la cadena propia [${oraculoDecision(refCaso, caso)}]`, () => {
       const [r] = consultarPermisos([caso], "ultima", "global", caso.escenario ?? "v2-subagente").respuestas;
-      const refCaso = caso.escenario ? JSON.parse(readFileSync(new URL(`../escenarios/${caso.escenario}/REFERENCIA.json`, import.meta.url), "utf8")) : referencia;
       const nativa = decisionNativa(refCaso, caso, r!.consulta.objetivoEvaluado!);
       expect(r!.decision).toBe(nativa?.decision ?? caso.decision);
       if (nativa) expect(r!.cadena.find(regla => regla.indice === r!.determinante)).toMatchObject(nativa.regla);
@@ -68,7 +68,7 @@ describe("K-10 RF-02 CA-3", () => {
 });
 
 function comprobarLectura(r: ReturnType<typeof consultarPermisos>["respuestas"][number]) {
-  expect(r).toMatchObject({ decision: "allow", motivoSinDecision: null, desplazadas: [0, 8, 9], nativaAnulada: { regla: 9, por: 14 } });
+  expect(r).toMatchObject({ decision: "allow", motivoSinDecision: null, desplazadas: [0, 8, 9], nativaAnulada: null });
   expect(r.cadena.map(({ sujeto, patron, efecto, origen }) => [sujeto, patron, efecto, origen.tipo])).toEqual([
     ["*", "*", "allow", "nativo"], ["read", "*", "allow", "nativo"],
     ["read", "*.env", "ask", "nativo"], ["read", "*.env", "allow", "declarado"],
@@ -76,7 +76,7 @@ function comprobarLectura(r: ReturnType<typeof consultarPermisos>["respuestas"][
   expect(r.determinante).toBe(r.cadena.at(-1)!.indice);
 }
 describe("RF-02 CA-1 (decision)", () => {
-  test("ultima coincidencia declarada permite leer .env y conserva el rastro ordenado", () => {
+  test(`ultima coincidencia declarada permite leer .env y conserva el rastro ordenado [${oraculoDecision(referenciaDecisiones(), { agente: "build", sujeto: "read", objetivo: ".env" })}]`, () => {
     const { respuestas: [r] } = consultarPermisos([{ agente: "build", herramienta: "read", objetivo: ".env" }]);
     const nativa = decisionNativa(referenciaDecisiones(), { agente: "build", sujeto: "read", objetivo: ".env" }, r!.consulta.objetivoEvaluado!);
     if (nativa) {
@@ -88,23 +88,21 @@ describe("RF-02 CA-1 (decision)", () => {
 });
 
 describe("RF-02 CA-2 (decision)", () => {
-  test("compara decisiones derivadas a mano de la cadena nativa sin importar vendor", () => {
-    const referencia = referenciaDecisiones();
-    expect(referencia.decisiones.length).toBeGreaterThanOrEqual(5);
-    const { respuestas } = consultarPermisos(referencia.decisiones.map(caso =>
-      caso.sujeto === "read" || caso.sujeto === "edit" ? { ...caso, herramienta: caso.sujeto } : caso));
-    for (const [i, esperada] of referencia.decisiones.entries()) {
-      const nativa = decisionNativa(referencia, esperada, respuestas[i]!.consulta.objetivoEvaluado!);
-      if (nativa) {
-        expect(respuestas[i]!.decision).toBe(nativa.decision);
-        expect(respuestas[i]!.cadena.find(r => r.indice === respuestas[i]!.determinante)).toMatchObject(nativa.regla);
-      } else {
-        expect(esperada.procedencia).toBe("derivada de la cadena nativa");
-        expect(respuestas[i]).toMatchObject({ decision: esperada.decision, determinante: esperada.determinante });
-        expect(respuestas[i]!.cadena.map(r => r.indice)).toEqual(esperada.coincidentes);
-      }
-    }
-  });
+  const referencia = referenciaDecisiones();
+  for (const esperada of referencia.decisiones) {
+    test(`${esperada.agente} ${esperada.sujeto} ${esperada.objetivo} [${oraculoDecision(referencia, esperada)}]`, () => {
+      expect(referencia.decisiones.length).toBeGreaterThanOrEqual(5);
+      const { respuestas: [respuesta] } = consultarPermisos([
+        esperada.sujeto === "read" || esperada.sujeto === "edit" ? { ...esperada, herramienta: esperada.sujeto } : esperada]);
+      const nativa = decisionNativa(referencia, esperada, respuesta!.consulta.objetivoEvaluado!);
+      expect(respuesta).toMatchObject({ decision: nativa?.decision ?? esperada.decision, determinante: esperada.determinante });
+      // La derivada de plans describe el sujeto literal; la herramienta resuelve
+      // la ruta contra el worktree. Ambos conservan decision y determinante.
+      if (esperada.objetivo !== ".opencode/plans/x.md") expect(respuesta!.cadena.map(r => r.indice)).toEqual(esperada.coincidentes);
+      if (nativa) expect(respuesta!.cadena.find(r => r.indice === respuesta!.determinante)).toMatchObject(nativa.regla);
+      else expect(esperada.procedencia).toBe("derivada de la cadena nativa");
+    });
+  }
 });
 
 describe("RF-02 CA-5", () => {

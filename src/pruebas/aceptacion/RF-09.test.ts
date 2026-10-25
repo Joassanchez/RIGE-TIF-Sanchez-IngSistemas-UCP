@@ -20,6 +20,11 @@ describe("RF-09 CA-1", () => {
   });
 });
 describe("RF-09 CA-2", () => {
+  test("R-M2 read .env ask superada por allow no anula una denegacion nativa", () => {
+    const { respuestas: [r] } = consultarPermisos([{ agente: "build", herramienta: "read", objetivo: ".env" }]);
+    expect(r).toMatchObject({ decision: "allow", nativaAnulada: null, advertencias: [] });
+    expect(r!.cadena.some(regla => regla.origen.tipo === "nativo" && regla.efecto === "ask")).toBe(true);
+  });
   test("build sin edit declarado y bash deny no anulan protecciones", () => {
     const { respuestas } = consultarPermisos([
       { agente: "build", sujeto: "edit", objetivo: "src/a.js" },

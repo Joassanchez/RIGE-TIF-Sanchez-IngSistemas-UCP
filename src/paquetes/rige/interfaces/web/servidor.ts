@@ -45,7 +45,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
     if (url.pathname === "/resolver") {
       const agente = url.searchParams.get("agente") ?? "";
       const clave = url.searchParams.get("clave") ?? "";
-      if (!agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente esta vacio"));
+      if (!agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
       const resultado = casos.resolverProyecto(url.searchParams.get("proyecto") ?? "", agente);
       if (!resultado.exito) return paginaErrorUso(resultado.error);
       return redirigir(`/resoluciones/${resultado.valor.id}?agente=${encodeURIComponent(agente)}${clave ? `&clave=${encodeURIComponent(clave)}` : ""}`);

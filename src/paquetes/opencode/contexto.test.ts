@@ -6,6 +6,7 @@ import { consultarValores } from "../rige/aplicacion/casos-uso/consultar-valores
 import { adaptadorOpenCode } from "./adaptador";
 import * as worktree from "./worktree";
 import { contextoOpenCode } from "./contexto";
+import { analizarProyecto } from "../rige/aplicacion/casos-uso/analizar-proyecto";
 
 describe("A5-5", () => {
   test("sin hogar devuelve entorno-incompleto de uso", () => {
@@ -20,7 +21,7 @@ describe("A5-8", () => {
     const entorno = crearEntornoMemoria({ archivos: {}, plataforma: "win32", variables: { USERPROFILE: "C:/hogar", SystemRoot: "C:/Windows" } });
     const contexto = contextoOpenCode("C:/p", entorno);
     if (!contexto.exito) throw new Error(contexto.error.mensaje);
-    expect(contexto.valor.tmp.replaceAll("\\", "/")).toBe("C:/Windows/temp/opencode");
+    expect(contexto.valor.parametros.tmp.replaceAll("\\", "/")).toBe("C:/Windows/temp/opencode");
     // La captura de Bun corre aislada; el entorno del ejecutor no se modifica.
     if (process.platform === "win32") {
       const captura = Bun.spawnSync([process.execPath, "--eval", 'console.log(require("node:os").tmpdir())'], {
@@ -28,12 +29,31 @@ describe("A5-8", () => {
           RIGE_ALMACEN: process.env.RIGE_ALMACEN! }, stdout: "pipe", stderr: "pipe",
       });
       expect(captura.exitCode).toBe(0);
-      expect(contexto.valor.tmp.replaceAll("\\", "/")).toBe(captura.stdout.toString().trim().replaceAll("\\", "/") + "/opencode");
+      expect(contexto.valor.parametros.tmp.replaceAll("\\", "/")).toBe(captura.stdout.toString().trim().replaceAll("\\", "/") + "/opencode");
     }
   });
 });
 
 describe("T2-11b contexto", () => {
+  test("X-3 guarda solo los datos del contexto y consulta sin descubrir el entorno actual", () => {
+    const entorno = crearEntornoMemoria({ archivos: {}, directorios: ["/p"], plataforma: "linux",
+      variables: { HOME: "/hogar", XDG_DATA_HOME: "/datos", TMPDIR: "/temporal", SECRETO: "no-guardar" } });
+    const deps = { adaptador: adaptadorOpenCode, entorno, rutas: { canonica: () => "/p" } };
+    const analisis = analizarProyecto(deps, "/p");
+    if (!analisis.exito) throw new Error(analisis.error.mensaje);
+    expect(analisis.valor).toMatchObject({ contexto: { plataforma: "linux", declaraciones: ["git-no-encontrado"],
+      parametros: { worktree: "/", hogar: "/hogar", data: "/datos/opencode", tmp: "/temporal/opencode" } } });
+    expect(JSON.stringify(analisis.valor)).not.toContain("no-guardar");
+    const esperado = consultarPermiso(deps, { proyecto: "/p", agente: "plan", sujeto: "edit", objetivo: "a" });
+    const hoy = crearEntornoMemoria({ archivos: {}, plataforma: "win32", variables: {} });
+    const guardada = consultarPermiso({ ...deps, entorno: hoy, resolucion: JSON.parse(JSON.stringify(analisis.valor)),
+      adaptador: { ...adaptadorOpenCode, contexto: () => { throw new Error("No redescubrir"); },
+        permisos: { ...adaptadorOpenCode.permisos, evaluar: (...args) => {
+          expect(args[3]).toBe("linux");
+          return adaptadorOpenCode.permisos.evaluar(...args);
+        } } } }, { proyecto: "/p", agente: "plan", sujeto: "edit", objetivo: "a" });
+    expect(guardada).toEqual(esperado);
+  });
   describe("A8-5", () => { test("las declaraciones de descubrimiento llegan a valores y agentes", () => {
     for (const aproximada of [false, true]) {
       const entorno = crearEntornoMemoria({ archivos: aproximada ? { "/p/.git/HEAD": "ref: refs/heads/main", "/bin/git": "",
