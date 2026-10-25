@@ -1,14 +1,22 @@
 import { describe, expect, test } from "bun:test";
 import { posix, win32 } from "node:path";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
-import { prepararObjetivo } from "./objetivo";
+import { prepararConsulta } from "./objetivo";
+import { contextoOpenCode } from "./contexto";
+import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
+
+function prepararObjetivo(proyecto: string, herramienta: string, objetivo: string, entorno: EntornoLectura) {
+  const contexto = contextoOpenCode(proyecto, entorno);
+  if (!contexto.exito) return contexto;
+  return prepararConsulta(contexto.valor, { herramienta, objetivo });
+}
 
 describe("T2-08 objetivos por herramienta", () => {
   for (const plataforma of ["linux", "win32"]) {
     const path = plataforma === "win32" ? win32 : posix;
     const raiz = plataforma === "win32" ? "C:/w" : "/w";
     const memoria = crearEntornoMemoria({ archivos: { [`${raiz}/.git/HEAD`]: "ref: refs/heads/main", [`${raiz}/bin/git`]: "" },
-      directorios: [`${raiz}/.git`, `${raiz}/.git/objects`, `${raiz}/.git/refs`], variables: { PATH: `${raiz}/bin` }, plataforma });
+      directorios: [`${raiz}/.git`, `${raiz}/.git/objects`, `${raiz}/.git/refs`], variables: { PATH: `${raiz}/bin`, HOME: "/hogar", USERPROFILE: "C:/hogar" }, plataforma });
     const entorno = { ...memoria, unir: path.join, padre: path.dirname, relativa: path.relative, esAbsoluta: path.isAbsolute,
       tipo: (ruta: string) => memoria.tipo(ruta.replaceAll("\\", "/")), leer: (ruta: string) => memoria.leer(ruta.replaceAll("\\", "/")) };
     test(`${plataforma}: proyecto anidado, aliases y directorios sin barra final`, () => {

@@ -60,6 +60,9 @@ export function descubrirWorktree(proyecto: string, entorno: EntornoLectura): Re
       }
       return { exito: true, valor: { worktree: actual, declaraciones: [...declaraciones] } };
     }
+    // Git aborta ante el primer gitfile roto; un directorio incompleto si se ignora.
+    if (entorno.tipo(candidato) === "archivo") return { exito: true,
+      valor: { worktree: "/", declaraciones: [...declaraciones] } };
     const padre = entorno.padre(actual);
     if (padre === actual) break;
     actual = padre;

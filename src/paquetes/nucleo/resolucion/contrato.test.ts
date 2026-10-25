@@ -11,6 +11,9 @@ const declarada = (ruta: readonly string[], valor: number, orden: number): Aplic
 });
 function resolverSecuencia(secuencia: Secuencia, cantidad = 0) {
   const adaptador: Adaptador = {
+    contexto: adaptadorFicticio.contexto,
+    prepararConsulta: adaptadorFicticio.prepararConsulta,
+    listarAgentes: adaptadorFicticio.listarAgentes,
     permisos: adaptadorFicticio.permisos,
     identidad: { herramienta: "ficticia", version: "1" }, prefijoAgente: ["agent"],
     reglas: { ultima: "Ultima aplicacion.", base: "Valor de base.", derivada: "Valor derivado." }, estrategias: {},
@@ -101,6 +104,16 @@ describe("C1-6", () => {
 });
 
 describe("C1-7 RNF-03", () => {
+  test("T2-11b K-1 preparacion y listado son obligatorios con vocabulario ficticio", () => {
+    const obligatorio: Required<Pick<Adaptador, "prepararConsulta" | "listarAgentes">> = adaptadorFicticio;
+    const entorno = crearEntornoMemoria({ archivos: { "/proyecto/capa-a.json": "{}", "/proyecto/capa-b.json": "{}" } });
+    const contexto = adaptadorFicticio.contexto("/proyecto", entorno);
+    const resolucion = resolver(adaptadorFicticio, "/proyecto", entorno);
+    if (!contexto.exito || !resolucion.exito) throw new Error("Preparacion fallida");
+    expect(obligatorio.prepararConsulta(contexto.valor, { sujeto: "documento", objetivo: "todos" }))
+      .toEqual({ exito: true, valor: { sujeto: "documento", objetivoEvaluado: "todos", motivoSinDecision: null } });
+    expect(obligatorio.listarAgentes(resolucion.valor, contexto.valor).agentes.map(a => a.nombre)).toEqual(["a"]);
+  });
   test("el adaptador ficticio declara su propio vocabulario nativo", () => {
     const resultado = resolver(adaptadorFicticio, "/proyecto", crearEntornoMemoria({ archivos: {
       "/proyecto/capa-b.json": "{}", "/proyecto/capa-a.json": "{}",

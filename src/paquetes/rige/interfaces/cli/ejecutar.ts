@@ -27,9 +27,9 @@ const subcomandos = {
   esquema: (casos) => casos.prepararAlmacen(),
   valores: (casos, opciones) => casos.consultarValores(opciones.proyecto, opciones.agente, opciones.clave),
   agentes: (casos, opciones) => casos.consultarAgentes(opciones.proyecto),
-  permiso: (casos, opciones) => casos.consultarPermiso(opciones.proyecto, opciones.agente,
-    opciones.herramienta === undefined ? { sujeto: opciones.sujeto! } : { herramienta: opciones.herramienta },
-    opciones.objetivo, opciones.lanzadoPor, { explicar: opciones.explicar }),
+  permiso: (casos, opciones) => casos.consultarPermiso({ proyecto: opciones.proyecto, agente: opciones.agente,
+    ...(opciones.herramienta === undefined ? { sujeto: opciones.sujeto! } : { herramienta: opciones.herramienta }),
+    objetivo: opciones.objetivo, lanzadoPor: opciones.lanzadoPor, explicar: opciones.explicar }),
   servir: (casos) => {
     const estado = casos.consultarEstado();
     if (!estado.exito) return estado;

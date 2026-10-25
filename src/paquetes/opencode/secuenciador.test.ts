@@ -6,6 +6,8 @@ import { reglas } from "./reglas";
 describe("V1-03 S-4", () => {
   test("publica exactamente las plantillas del diseno y la ficha", () => {
     expect(reglas).toEqual({
+      "numeracion-sin-directorios-externos": "Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.",
+      "references-no-incorporado": "La configuración declara references o reference; RIGE no incorpora los directorios externos que aportan a los permisos.",
       "agente-deshabilitado": "disable: true elimina el agente, incluso si es nativo, despues de fusionar la configuracion.",
       "eje-parcialmente-observado": "El eje consultado está parcialmente observado; no se informa una decisión de permiso.",
       "comando-compuesto": "El comando es compuesto o no analizable; no se informa una decision de permiso (RF-08).",
@@ -185,7 +187,6 @@ describe("V1-03 S-3 V1-08 F-6", () => {
   });
   test.each([
     ["mode", "build", "temperature"], ["mode", "build"],
-    ["agent", "build", "disable", "x"],
   ].map(ruta => [ruta] as const))("%j marca no resueltas sin abortar ni aplicar el agente en otras lecturas", (ruta) => {
     const otra = declaracion(["agent", "otro", "temperature"], 0.4);
     for (const valor of [true, {}]) {
@@ -201,6 +202,11 @@ describe("V1-03 S-3 V1-08 F-6", () => {
         } });
       }
     }
+  });
+  test("T2-11b B-2 disable anidado invalido es un error de uso ubicado", () => {
+    expect(secuenciar([lectura(0, [declaracion(["agent", "build", "disable", "x"], true)])]))
+      .toMatchObject({ exito: false, error: { codigo: "configuracion-invalida",
+        mensaje: "Configuracion invalida en agent.build.disable (C:/p/opencode.jsonc:6:7)." } });
   });
   test("no confunde segmentos parecidos ni disable dentro de options", () => {
     const declaraciones = [["modes"], ["disable"], ["agent", "build", "options", "disable"]].map((ruta) => declaracion(ruta));

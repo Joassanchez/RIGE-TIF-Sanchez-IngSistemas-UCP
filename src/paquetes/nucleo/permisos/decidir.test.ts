@@ -12,6 +12,13 @@ const politica = { ordenEfectos: ["impedir", "consultar", "conceder"], efectoPor
 const consulta = { sujeto: "documento", objetivo: "a" };
 
 describe("T2-06 rastro generico", () => {
+  test("T2-11b K-2 motivo previo prevalece y el nucleo es dueno de sin decision", () => {
+    expect(decidir(cadena([regla(0, "conceder")]), consulta,
+      { ...politica, determinante: 0, coincidentes: [0] }, "no-analizable")).toMatchObject({
+      decision: null, motivoSinDecision: "no-analizable", coincidentes: [], determinante: null,
+      consulta: { objetivoEvaluado: "a" },
+    });
+  });
   test("D-1 sin coincidencia conserva el efecto por defecto, sin determinante", () => {
     expect(decidir(cadena([]), consulta, { ...politica, determinante: null, coincidentes: [] })).toEqual({
       agente: "perfil", consulta: { ...consulta, objetivoEvaluado: "a" }, decision: "consultar",

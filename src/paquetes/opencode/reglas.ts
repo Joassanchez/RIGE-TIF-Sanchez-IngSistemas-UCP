@@ -11,6 +11,8 @@ export const plantillasExplicacion: PlantillasExplicacion = {
 };
 
 export const reglas: Readonly<Record<string, string>> = {
+  "numeracion-sin-directorios-externos": "Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.",
+  "references-no-incorporado": "La configuración declara references o reference; RIGE no incorpora los directorios externos que aportan a los permisos.",
   "agente-deshabilitado": "disable: true elimina el agente, incluso si es nativo, despues de fusionar la configuracion.",
   "eje-parcialmente-observado": "El eje consultado está parcialmente observado; no se informa una decisión de permiso.",
   "comando-compuesto": "El comando es compuesto o no analizable; no se informa una decision de permiso (RF-08).",

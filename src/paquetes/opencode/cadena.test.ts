@@ -14,7 +14,9 @@ function preparar(textos: readonly string[] = [], plataforma = "linux", variable
     via: i ? "proyecto" : "global", referencia: `/capa-${i}`, condicion: "observada" as const,
   })) }) }, plataforma === "win32" ? "C:\\proyecto" : "/proyecto", entorno);
   if (!resultado.exito) throw new Error(resultado.error.mensaje);
-  const cadena = (agente = "build") => adaptadorOpenCode.cadena(resultado.valor, agente, entorno);
+  const contexto = adaptadorOpenCode.contexto(resultado.valor.proyecto, entorno);
+  if (!contexto.exito) throw new Error(contexto.error.mensaje);
+  const cadena = (agente = "build") => adaptadorOpenCode.cadena(resultado.valor, agente, contexto.valor);
   return { cadena, resolucion: resultado.valor, entorno };
 }
 function obtener(textos: readonly string[] = [], agente = "build") {
@@ -85,7 +87,7 @@ describe("T2-05 K-2", () => {
 describe("T2-05 K-3 RNF-03", () => {
   test("el contrato representa otro vocabulario", () => {
     const { resolucion, entorno } = preparar();
-    const resultado = adaptadorFicticio.cadena(resolucion, "a", entorno);
+    const resultado = adaptadorFicticio.cadena(resolucion, "a", { proyecto: resolucion.proyecto, entorno });
     expect(resultado).toMatchObject({ exito: true, valor: { agente: "a", reglas: [{ sujeto: "documento", patron: "todos", efecto: "conceder" }], ejesParciales: [] } });
   });
 });

@@ -1,4 +1,4 @@
-import type { Adaptador, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada } from "../contrato/adaptador";
+import type { Adaptador, ContextoConsulta, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada } from "../contrato/adaptador";
 import type { EntornoLectura } from "../contrato/entorno";
 import type { Resultado } from "../resultado";
 import { biblioteca } from "./estrategias";
@@ -7,8 +7,10 @@ import type { DeclaracionUbicada, EntradaLeida, Resolucion } from "./tipos";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 
-export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura): Resultado<Resolucion, ErrorAnalisis> {
-  const ubicacion = adaptador.ubicar(proyecto, entorno);
+export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura, contexto?: ContextoConsulta): Resultado<Resolucion, ErrorAnalisis> {
+  const preparado = contexto ? { exito: true as const, valor: contexto } : adaptador.contexto(proyecto, entorno);
+  if (!preparado.exito) return preparado;
+  const ubicacion = adaptador.ubicar(proyecto, entorno, preparado.valor);
   if (!ubicacion.exito) return ubicacion;
   const entradas: EntradaLeida[] = [];
   const lecturas: LecturaEntrada[] = [];

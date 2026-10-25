@@ -2,7 +2,7 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 
-export interface OpcionesEscenario { readonly git?: "raiz" | "proyecto" | "sintetico" | "ninguno"; readonly rutasNativas?: boolean }
+export interface OpcionesEscenario { readonly git?: "raiz" | "proyecto" | "sintetico" | "ninguno" | "gitfile-roto" | "dir-invalido-anidado"; readonly rutasNativas?: boolean }
 
 export function copiarEscenario(nombre: string, opciones: OpcionesEscenario = {}): { readonly raiz: string; readonly proyecto: string; borrar(): void } {
   const origen = join(import.meta.dir, "../escenarios", nombre);
@@ -26,6 +26,11 @@ export function copiarEscenario(nombre: string, opciones: OpcionesEscenario = {}
     mkdirSync(git);
     writeFileSync(join(git, "HEAD"), "ref: refs/heads/main\n");
     if (opciones.git !== "sintetico") for (const nombre of ["objects", "refs"]) mkdirSync(join(git, nombre));
+  }
+  if (opciones.git === "gitfile-roto") writeFileSync(join(raiz, "proyecto/.git"), "gitdir: ../inexistente\n");
+  if (opciones.git === "dir-invalido-anidado") {
+    mkdirSync(join(raiz, "proyecto/.git"));
+    writeFileSync(join(raiz, "proyecto/.git/HEAD"), "ref: refs/heads/main\n");
   }
   return { raiz, proyecto: realpathSync.native(join(raiz, "proyecto")), borrar: () => rmSync(raiz, { recursive: true, force: true }) };
 }

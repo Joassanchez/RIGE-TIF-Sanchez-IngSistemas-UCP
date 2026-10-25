@@ -55,8 +55,12 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
           excluir(ruta.slice(0, 2), "fuera-del-v1");
         }
       }
-      if (ruta[0] === "agent" && ruta[2] === "disable" && (ruta.length !== 3 || typeof valor !== "boolean")) {
-        excluir(ruta.slice(0, 2), "fuera-del-v1");
+      if (ruta[0] === "agent" && ["mode", "hidden", "disable"].includes(ruta[2] ?? "")
+        && !contieneSustitucion(valor) && !ruta.some(segmento => sustitucion.test(segmento))) {
+        const valido = ruta.length === 3 && (ruta[2] === "mode"
+          ? typeof valor === "string" && ["primary", "subagent", "all"].includes(valor) : typeof valor === "boolean");
+        if (!valido) return { exito: false, error: { categoria: "uso", codigo: "configuracion-invalida",
+          mensaje: `Configuracion invalida en ${ruta.slice(0, 3).join(".")} (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).` } };
       }
       const indiceSustitucion = ruta.findIndex(segmento => sustitucion.test(segmento));
       if (indiceSustitucion >= 0) excluir(ruta.slice(0, indiceSustitucion + 1), "sustitucion-no-incorporada");

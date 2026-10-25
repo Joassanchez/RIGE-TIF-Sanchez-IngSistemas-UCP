@@ -1,14 +1,14 @@
 import type { ErrorAnalisis, ViaUbicada } from "@rige/nucleo/contrato/adaptador";
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { Resultado } from "@rige/nucleo/resultado";
-import { descubrirWorktree } from "./worktree";
+import { contextoOpenCode, type ContextoOpenCode } from "./contexto";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 const noSoportada = (nombre: string): Resultado<never, ErrorAnalisis> => ({ exito: false, error: { categoria: "uso",
   codigo: "via-no-soportada", mensaje: `El prototipo v1 no incorpora ${normalizar(nombre)}.`,
 } });
 
-export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<readonly ViaUbicada[], ErrorAnalisis> {
+export function ubicar(proyecto: string, entorno: EntornoLectura, contexto?: ContextoOpenCode): Resultado<readonly ViaUbicada[], ErrorAnalisis> {
   if (!entorno.esAbsoluta(proyecto) || entorno.tipo(proyecto) !== "directorio") return { exito: false, error: { categoria: "uso",
     codigo: "proyecto-inexistente", mensaje: `El proyecto ${proyecto} no existe o no es un directorio.`,
   } };
@@ -23,26 +23,20 @@ export function ubicar(proyecto: string, entorno: EntornoLectura): Resultado<rea
   }
   const config = variable("OPENCODE_CONFIG") || undefined;
   if (config !== undefined && !entorno.esAbsoluta(config)) return noSoportada("OPENCODE_CONFIG");
-  const nombreHome = entorno.plataforma === "win32" ? "USERPROFILE" : "HOME";
-  const hogar = variable(nombreHome);
-  if (!hogar) return { exito: false, error: { categoria: "uso",
-    codigo: "entorno-incompleto", mensaje: `Falta la variable ${nombreHome} para ubicar las entradas globales.`,
-  } };
+  const preparado = contexto ? { exito: true as const, valor: contexto } : contextoOpenCode(proyecto, entorno);
+  if (!preparado.exito) return preparado;
+  const { hogar, config: global, worktree } = preparado.valor;
   const vias: ViaUbicada[] = [];
   const noObservada = (via: string) => vias.push({ via, referencia: via, condicion: "no_observada" });
   function agregar(via: string, ruta: string): void {
     if (entorno.tipo(ruta) === "archivo") vias.push({ via, referencia: normalizar(ruta), condicion: "observada" });
   }
-  const global = entorno.unir(variable("XDG_CONFIG_HOME") || entorno.unir(hogar, ".config"), "opencode");
   const heredada = entorno.unir(global, "config");
   if (entorno.tipo(heredada) !== "inexistente") return noSoportada(heredada);
   noObservada("remota-wellknown");
   for (const nombre of ["config.json", "opencode.json", "opencode.jsonc"]) agregar("global", entorno.unir(global, nombre));
   if (config !== undefined) agregar("variable-config", entorno.unir(config));
 
-  const descubrimiento = descubrirWorktree(proyecto, entorno);
-  if (!descubrimiento.exito) return descubrimiento;
-  const { worktree } = descubrimiento.valor;
   function subir(objetivos: readonly string[], desde: string, hasta: string): string[] {
     const rutas: string[] = [];
     let actual = desde;

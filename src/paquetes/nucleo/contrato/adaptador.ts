@@ -1,7 +1,7 @@
 import type { Resultado } from "../resultado";
 import type { Estrategia } from "../resolucion/estrategias";
 import type { EntornoLectura } from "./entorno";
-import type { Cadena, Resolucion } from "../resolucion/tipos";
+import type { Cadena, DeclaracionUbicada, Resolucion } from "../resolucion/tipos";
 import type { Permisos } from "../permisos/tipos";
 
 export type ValorJson = null | boolean | number | string | readonly ValorJson[] | { readonly [clave: string]: ValorJson };
@@ -50,6 +50,19 @@ export interface AgenteListado {
   readonly oculto: boolean;
 }
 
+export interface AgenteEfectivo extends AgenteListado {
+  readonly estado: "activo" | "deshabilitado";
+  readonly motivo: string | null;
+  readonly eliminacion?: DeclaracionUbicada;
+}
+export interface ListadoAgentes {
+  readonly agentes: readonly AgenteEfectivo[];
+  readonly motivos: readonly string[];
+}
+export interface ContextoConsulta { readonly proyecto: string; readonly entorno: EntornoLectura }
+export type SolicitudPermiso = ({ readonly sujeto: string; readonly herramienta?: never }
+  | { readonly herramienta: string; readonly sujeto?: never }) & { readonly objetivo: string; readonly lanzadoPor?: string | undefined };
+
 export interface Secuencia {
   readonly aplicaciones: readonly Aplicacion[];
   readonly noResueltas: readonly ClaveNoResuelta[];
@@ -64,17 +77,17 @@ export interface ObjetivoPermiso {
   readonly advertencias?: readonly string[];
 }
 
-export interface Adaptador {
+export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   readonly permisos: Permisos;
   readonly identidad: Identidad;
   readonly prefijoAgente: readonly string[];
   readonly reglas: Readonly<Record<string, string>>;
   readonly estrategias: Readonly<Record<string, Estrategia>>;
-  ubicar(proyecto: string, entorno: EntornoLectura): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
+  contexto(proyecto: string, entorno: EntornoLectura): Resultado<C, ErrorAnalisis>;
+  ubicar(proyecto: string, entorno: EntornoLectura, contexto?: C): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
   leer(via: ViaUbicada, texto: string): Resultado<readonly Declaracion[], ErrorAnalisis>;
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
-  cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
-  prepararObjetivo?(proyecto: string, herramienta: string, objetivo: string, entorno: EntornoLectura): Resultado<ObjetivoPermiso, ErrorAnalisis>;
-  prepararSujeto?(sujeto: string, objetivo: string): ObjetivoPermiso;
-  listarAgentes?(resolucion: Resolucion): readonly AgenteListado[];
+  cadena(resolucion: Resolucion, agente: string, contexto: C, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
+  prepararConsulta(contexto: C, solicitud: SolicitudPermiso): Resultado<ObjetivoPermiso, ErrorAnalisis>;
+  listarAgentes(resolucion: Resolucion, contexto: C): ListadoAgentes;
 }

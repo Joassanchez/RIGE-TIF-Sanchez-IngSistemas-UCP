@@ -6,15 +6,15 @@ import { secuenciar } from "./secuenciador";
 import { ubicar } from "./ubicador";
 import { cadena } from "./cadena";
 import { permisos } from "./permisos";
-import { prepararObjetivo } from "./objetivo";
-import { prepararSujeto } from "./comando";
+import { prepararConsulta } from "./objetivo";
 import { listarAgentes } from "./agentes";
+import { contextoOpenCode, type ContextoOpenCode } from "./contexto";
 
-export const adaptadorOpenCode: Adaptador = {
+export const adaptadorOpenCode: Adaptador<ContextoOpenCode> = {
+  contexto: contextoOpenCode,
   listarAgentes,
   permisos,
-  prepararObjetivo,
-  prepararSujeto,
+  prepararConsulta,
   identidad: { herramienta: "opencode", version: versionSoportada },
   prefijoAgente: ["agent"],
   reglas,

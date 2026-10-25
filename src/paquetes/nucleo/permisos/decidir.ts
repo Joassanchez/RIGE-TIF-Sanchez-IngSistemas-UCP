@@ -1,10 +1,12 @@
 import type { Cadena } from "../resolucion/tipos";
 import type { ConsultaPermiso, EvaluacionPermiso, PoliticaDecision, RastroDecision } from "./tipos";
 
-export function decidir(cadena: Cadena, consulta: ConsultaPermiso, evaluacion: EvaluacionPermiso & PoliticaDecision): RastroDecision {
+export function decidir(cadena: Cadena, consulta: ConsultaPermiso, evaluacion: EvaluacionPermiso & PoliticaDecision, motivoPrevio: string | null = null): RastroDecision {
   const base = { agente: cadena.agente, declaraciones: evaluacion.declaraciones };
-  if (cadena.ejesParciales.includes(consulta.sujeto)) return { ...base,
-    consulta: { ...consulta, objetivoEvaluado: null }, decision: null, motivoSinDecision: "eje-parcialmente-observado",
+  const parcial = cadena.ejesParciales.includes(consulta.sujeto);
+  if (motivoPrevio !== null || parcial) return { ...base,
+    consulta: { ...consulta, objetivoEvaluado: motivoPrevio === null ? null : consulta.objetivo }, decision: null,
+    motivoSinDecision: motivoPrevio ?? "eje-parcialmente-observado",
     coincidentes: [], determinante: null, desplazadas: [], nativaAnulada: null, advertencias: [],
   };
   const coincidentes = evaluacion.coincidentes.map(indice => {

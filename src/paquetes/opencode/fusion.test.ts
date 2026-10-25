@@ -7,7 +7,7 @@ import { adaptadorOpenCode } from "./adaptador";
 function resolverTextos(...textos: string[]) {
   const resultado = resolver({ ...adaptadorOpenCode,
     ubicar: () => ({ exito: true, valor: textos.map((_, i) => ({ via: i ? "proyecto" : "global", referencia: `/capa-${i}`, condicion: "observada" as const })) }),
-  }, "/p", crearEntornoMemoria({ archivos: Object.fromEntries(textos.map((texto, i) => [`/capa-${i}`, texto])) }));
+  }, "/p", crearEntornoMemoria({ archivos: Object.fromEntries(textos.map((texto, i) => [`/capa-${i}`, texto])), variables: { HOME: "/hogar" } }));
   if (!resultado.exito) throw new Error(resultado.error.mensaje);
   return resultado.valor;
 }

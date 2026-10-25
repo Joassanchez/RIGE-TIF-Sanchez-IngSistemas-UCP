@@ -106,7 +106,9 @@ function ejecutar(): number {
         const raizGit = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 10000,
         });
-        if (raizGit.exitCode !== 0 || resolve(raizGit.stdout.toString().trim()).toLowerCase() !== resolve(raizRepositorio).toLowerCase()) {
+        if (referencia.procedencia.git === "gitfile-roto"
+          ? raizGit.exitCode === 0 || !raizGit.stderr.toString().includes("gitfile does not point to a valid repository")
+          : raizGit.exitCode !== 0 || resolve(raizGit.stdout.toString().trim()).toLowerCase() !== resolve(raizRepositorio).toLowerCase()) {
           throw new Error("El directorio consultado no pertenece al worktree aislado.");
         }
       }
@@ -147,7 +149,7 @@ function ejecutar(): number {
         writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify({ ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
-            comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse solo en los modos raiz/proyecto. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
+            comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
           valores: seleccionados, cadenas, ...(agentes === undefined ? {} : { agentes }),
         }, null, 2) + "\n");
       }

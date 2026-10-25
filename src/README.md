@@ -11,6 +11,35 @@
 
 ## 2. Qué hace este prototipo
 
+T2-11b consolida la consulta de permisos: `consultarPermiso(dependencias,
+{ proyecto, agente, sujeto, objetivo, lanzadoPor?, explicar? })`, o el mismo
+objeto con `herramienta` en lugar de `sujeto`. El adaptador prepara un contexto
+por consulta y aporta `prepararConsulta` y `listarAgentes` obligatorios. El
+nucleo es el unico responsable de resolver los casos sin decision.
+Los metadatos `mode`, `hidden` y `disable` invalidos producen
+`configuracion-invalida` con clave, archivo y linea en las tres consultas.
+Toda respuesta de permiso declara `numeracion-sin-directorios-externos`;
+`references` o `reference` declarados agregan `references-no-incorporado`.
+
+Para comprobar T2-11b, con `RIGE_ALMACEN` temporal (seccion 6):
+
+```powershell
+bun test pruebas/aceptacion/T2-11b.test.ts paquetes/opencode/contexto.test.ts paquetes/opencode/agentes.test.ts paquetes/nucleo/permisos/decidir.test.ts paquetes/nucleo/resolucion/contrato.test.ts paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts
+bun test paquetes/opencode/cadena.test.ts paquetes/opencode/objetivo.test.ts paquetes/opencode/worktree.test.ts paquetes/opencode/secuenciador.test.ts paquetes/nucleo/resolucion/resolver.test.ts pruebas/utilidades/escenario.test.ts pruebas/aceptacion/RF-02.test.ts
+bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v2-worktree-gitfile-roto --escenario v2-worktree-dir-invalido-anidado
+bun run referencias --raiz (npm.cmd root -g)
+bun test
+bun run verificar
+```
+
+Los dos escenarios nuevos crean en el temporal un repositorio exterior y un
+`.git` anidado invalido. El gitfile roto detiene la busqueda y deja worktree
+`/`; el directorio incompleto permite encontrar el repositorio exterior.
+Las referencias capturan las cadenas completas de `plan` del binario oficial
+verificado. El arnes exige que `git rev-parse` falle ante el gitfile roto, y
+que devuelva la raiz exterior ante el directorio invalido. Ambos declaran
+`OPENCODE_DISABLE_EXTERNAL_SKILLS=true` para aislar la busqueda fuera de VCS.
+
 El prototipo implementa el caso de uso vertical «consultar el valor efectivo de una clave de un agente de OpenCode 1.18.25, con su procedencia»: la interfaz web recibe un proyecto, un agente y una clave; la lógica aplica la regla de negocio validada RD-01 (prevalece la declaración de la última entrada que declara la clave), la resolución se guarda en el almacén SQLite propio y la página se arma con lo que se lee del almacén, con el valor, la declaración que lo determina y las declaraciones desplazadas. El recorrido prueba la decisión arquitectónica de separar un núcleo genérico, que ejecuta la combinación, de un adaptador por herramienta que declara el orden de las entradas y su estrategia (RNF-03; ADR-058 y ADR-060): el núcleo no depende del adaptador y un adaptador ficticio se resuelve sin modificarlo.
 
 ## 3. Requisitos previos

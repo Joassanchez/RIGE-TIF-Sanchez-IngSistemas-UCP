@@ -101,7 +101,7 @@ describe("RF-02 CA-5", () => {
   test("incluye ambas declaraciones con plantilla, tambien sin decision", () => {
     const { respuestas } = consultarPermisos(["read", "external_directory"].map(sujeto => ({ agente: "build", sujeto, objetivo: ".env" })));
     for (const r of respuestas) {
-      expect(r.declaraciones).toEqual(["aprobaciones-permanentes-excluidas", "sesion-no-interactiva-excluida"]);
+      expect(r.declaraciones).toEqual(["aprobaciones-permanentes-excluidas", "sesion-no-interactiva-excluida", "numeracion-sin-directorios-externos"]);
       expect(r.reglas[r.declaraciones[0]!]).toContain('"permitir siempre"');
       expect(r.reglas[r.declaraciones[1]!]).toContain("question");
       expect(r.reglas[r.declaraciones[1]!]).toContain("plan_enter");

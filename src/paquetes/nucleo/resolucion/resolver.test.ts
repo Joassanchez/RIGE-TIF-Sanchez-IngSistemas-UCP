@@ -19,6 +19,9 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
     directorios: ["/proyecto"],
   });
   const adaptador: Adaptador = {
+    contexto: adaptadorFicticio.contexto,
+    prepararConsulta: adaptadorFicticio.prepararConsulta,
+    listarAgentes: adaptadorFicticio.listarAgentes,
     permisos: adaptadorFicticio.permisos,
     identidad: { herramienta: "ficticia", version: "1" }, prefijoAgente: ["agente"],
     reglas: { orden: "Prevalece la entrada posterior.", sinUso: "No utilizada." }, estrategias: {},

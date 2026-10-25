@@ -10,6 +10,13 @@ const head = { "/w/.git/HEAD": "ref: refs/heads/main\n" };
 const estructura = ["/w/.git", "/w/.git/objects", "/w/.git/refs"];
 
 describe("T2-08 descubrimiento autorizado ADR-101", () => {
+  test("T2-11b W-1 un gitfile invalido detiene la subida aunque haya repositorio exterior", () => {
+    for (const gitfile of ["basura", "gitdir: ../inexistente\n", "gitdir: ../roto\n"]) {
+      expect(descubrirWorktree("/w/p", entorno({ ...head, "/w/p/.git": gitfile,
+        "/w/roto/HEAD": "basura" }, [...estructura, "/w/roto"])))
+        .toMatchObject({ valor: { worktree: "/" } });
+    }
+  });
   test("repositorio valido, HEAD sintetico y ausencia de .git", () => {
     expect(descubrirWorktree("/w/p", entorno(head, estructura))).toEqual({ exito: true, valor: { worktree: "/w", declaraciones: [] } });
     for (const e of [entorno(head, ["/w/.git"]), entorno()]) {

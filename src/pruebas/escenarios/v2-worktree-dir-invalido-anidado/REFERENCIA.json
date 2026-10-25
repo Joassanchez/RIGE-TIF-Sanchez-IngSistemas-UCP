@@ -1,0 +1,121 @@
+{
+  "procedencia": {
+    "version": "1.18.25",
+    "directorio": "proyecto",
+    "hogar": "hogar",
+    "git": "dir-invalido-anidado",
+    "skillsExternosExcluidos": true,
+    "binario": "opencode-windows-x64@1.18.25",
+    "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+    "fecha": "2026-10-25",
+    "criterio": "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
+    "comando": "opencode debug agent <agente>",
+    "aislamiento": "Modo Git: dir-invalido-anidado; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS. Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE."
+  },
+  "agente": "plan",
+  "valores": {},
+  "cadenas": {
+    "plan": [
+      {
+        "permission": "*",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "doom_loop",
+        "action": "ask",
+        "pattern": "*"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "*",
+        "action": "ask"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<tmp>/*",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_enter",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "deny",
+        "pattern": "*"
+      },
+      {
+        "permission": "read",
+        "pattern": "*",
+        "action": "allow"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.*",
+        "action": "ask"
+      },
+      {
+        "permission": "read",
+        "pattern": "*.env.example",
+        "action": "allow"
+      },
+      {
+        "permission": "question",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "plan_exit",
+        "action": "allow",
+        "pattern": "*"
+      },
+      {
+        "permission": "task",
+        "pattern": "general",
+        "action": "deny"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/plans/*",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "edit",
+        "pattern": ".opencode/plans/*.md",
+        "action": "allow"
+      },
+      {
+        "permission": "edit",
+        "pattern": "hogar/opencode/plans/*.md",
+        "action": "allow"
+      },
+      {
+        "permission": "external_directory",
+        "pattern": "<data>/tool-output/*",
+        "action": "allow"
+      }
+    ]
+  }
+}

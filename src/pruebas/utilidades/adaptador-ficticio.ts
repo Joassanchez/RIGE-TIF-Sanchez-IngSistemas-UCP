@@ -12,6 +12,10 @@ const primera: Estrategia = (estado, nueva, ruta) => {
 };
 
 export const adaptadorFicticio: Adaptador = {
+  contexto: (proyecto, entorno) => ({ exito: true, valor: { proyecto, entorno } }),
+  prepararConsulta: (_, solicitud) => ({ exito: true, valor: { sujeto: solicitud.sujeto ?? solicitud.herramienta,
+    objetivoEvaluado: solicitud.objetivo, motivoSinDecision: null } }),
+  listarAgentes: () => ({ agentes: [{ nombre: "a", origen: "declarado", modo: "all", oculto: false, estado: "activo", motivo: null }], motivos: [] }),
   permisos: {
     plantillas: {
       determinante: "Ficha {indice}/{total}: {sujeto} {patron}, {efecto}, {origen}. Ultimo acierto del perfil.",

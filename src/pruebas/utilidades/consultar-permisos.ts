@@ -13,8 +13,7 @@ const adaptador = modo === "primera" ? { ...adaptadorOpenCode, permisos: { ...ad
   },
 } } : adaptadorOpenCode;
 console.log(JSON.stringify(consultas.map(({ agente, sujeto, herramienta, objetivo, lanzadoPor, explicar }) => {
-  const resultado = consultarPermiso({ adaptador, entorno, rutas: { canonica: () => proyecto! } }, proyecto!, agente,
-    herramienta === undefined ? sujeto! : { herramienta }, objetivo, lanzadoPor, { explicar: explicar === true });
+  const resultado = consultarPermiso({ adaptador, entorno, rutas: { canonica: () => proyecto! } }, { proyecto: proyecto!, agente: agente, ...(herramienta === undefined ? { sujeto: sujeto! } : { herramienta }), objetivo: objetivo , lanzadoPor: lanzadoPor, ...({ explicar: explicar === true }) });
   if (!resultado.exito) {
     if (modo === "resultado") return resultado;
     throw new Error(resultado.error.mensaje);

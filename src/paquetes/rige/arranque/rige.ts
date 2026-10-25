@@ -33,7 +33,7 @@ function ensamblar(): Ensamblado {
   return {
     exito: true, valor: {
       consultarValores: (proyecto, agente, clave) => consultarValores(dependencias, proyecto, agente, clave),
-      consultarPermiso: (proyecto, agente, accion, objetivo, lanzadoPor, opciones) => consultarPermiso(dependencias, proyecto, agente, accion, objetivo, lanzadoPor, opciones),
+      consultarPermiso: solicitud => consultarPermiso(dependencias, solicitud),
       consultarAgentes: (proyecto) => consultarAgentes(dependencias, proyecto),
       prepararAlmacen: () => prepararAlmacen(almacen),
       consultarEstado: () => consultarEstado(almacen),

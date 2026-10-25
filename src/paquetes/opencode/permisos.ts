@@ -18,5 +18,5 @@ export function evaluar(reglas: readonly ReglaCadena[], sujeto: string, objetivo
 export const permisos: Permisos = {
   plantillas: plantillasExplicacion,
   evaluar, ordenEfectos: ["deny", "ask", "allow"], efectoPorDefecto: "ask",
-  declaraciones: ["aprobaciones-permanentes-excluidas", "sesion-no-interactiva-excluida"],
+  declaraciones: ["aprobaciones-permanentes-excluidas", "sesion-no-interactiva-excluida", "numeracion-sin-directorios-externos"],
 };
