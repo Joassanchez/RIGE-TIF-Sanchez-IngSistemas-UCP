@@ -4,6 +4,7 @@ export type Estrategia = (anterior: RastroValor | undefined, nueva: DeclaracionU
 
 export const reemplazo: Estrategia = (anterior, nueva, ruta) => ({
   ruta,
+  indiceFusion: anterior?.indiceFusion ?? 0,
   valor: nueva.valor,
   determinante: nueva,
   motivo: "entrada-posterior",

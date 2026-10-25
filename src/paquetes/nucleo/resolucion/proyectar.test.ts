@@ -2,8 +2,8 @@ import { describe, expect, test } from "bun:test";
 import type { Resolucion, RastroValor } from "./tipos";
 
 const rastro = (ruta: readonly string[], valor: number): RastroValor => ({
-  ruta, valor,
-  determinante: { orden: 0, via: "capa-a", referencia: "/entrada.json", posicion: { linea: 1, columna: 1 }, valor, regla: "orden" },
+  ruta, indiceFusion: 0, valor,
+  determinante: { origen: { tipo: "declarado", orden: 0, posicion: { linea: 1, columna: 1 } }, via: "capa-a", referencia: "/entrada.json", valor, regla: "orden" },
   motivo: "entrada-posterior", desplazadas: [],
 });
 const temperatura = rastro(["perfiles", "grupo", "a", "parametros", "temperatura"], 0.3);
@@ -17,7 +17,7 @@ const resolucion: Resolucion = {
 describe("N-8", () => {
   test("con clave relativa partida por puntos devuelve solo el rastro exacto", async () => {
     const { consultarAgente } = await import("./proyectar");
-    expect(consultarAgente(resolucion, "a", "parametros.temperatura")).toEqual({ exito: true,
+    expect(consultarAgente(resolucion, "a", ["parametros", "temperatura"])).toEqual({ exito: true,
       valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }], noResueltas: [] } });
   });
 
@@ -29,7 +29,7 @@ describe("N-8", () => {
 
   test.each(["inexistente", "parametros", "parametros.temperatura.extra"])("la clave ausente %s produce clave-inexistente", async (clave) => {
     const { consultarAgente } = await import("./proyectar");
-    const resultado = consultarAgente(resolucion, "a", clave);
+    const resultado = consultarAgente(resolucion, "a", clave?.split("."));
     expect(resultado.exito).toBe(false);
     if (resultado.exito) throw new Error("Se esperaba un error.");
     expect(resultado.error.codigo).toBe("clave-inexistente");
@@ -38,7 +38,7 @@ describe("N-8", () => {
 
   test.each([undefined, "pasos"])("sin hojas del agente informa agente-sin-declaraciones (clave %s)", async (clave) => {
     const { consultarAgente } = await import("./proyectar");
-    const resultado = consultarAgente(resolucion, "ausente", clave);
+    const resultado = consultarAgente(resolucion, "ausente", clave?.split("."));
     expect(resultado.exito).toBe(false);
     if (resultado.exito) throw new Error("Se esperaba un error.");
     expect(resultado.error.codigo).toBe("agente-sin-declaraciones");
@@ -63,7 +63,7 @@ describe("Q-1", () => {
   ])("rechaza consultas afectadas por $noResuelta con clave $clave", async ({ noResuelta, agente, clave }) => {
     const { consultarAgente } = await import("./proyectar");
     const resultado = consultarAgente({ ...resolucion, reglas: { excluida: "Esta forma queda sin resolver." },
-      noResueltas: [{ ruta: noResuelta, regla: "excluida" }] }, agente, clave);
+      noResueltas: [{ ruta: noResuelta, regla: "excluida" }] }, agente, clave?.split("."));
     expect(resultado).toMatchObject({ exito: false, error: { codigo: "clave-no-resuelta" } });
     if (resultado.exito) throw new Error("Se esperaba una clave no resuelta.");
     expect(resultado.error.mensaje).toContain(clave ?? agente);
@@ -73,7 +73,7 @@ describe("Q-1", () => {
   test("una clave ajena a la no resuelta conserva su valor y rastro", async () => {
     const { consultarAgente } = await import("./proyectar");
     const noResueltas = [{ ruta: ["perfiles", "grupo", "a", "permiso"], regla: "excluida" }];
-    expect(consultarAgente({ ...resolucion, noResueltas }, "a", "parametros.temperatura")).toEqual({
+    expect(consultarAgente({ ...resolucion, noResueltas }, "a", ["parametros", "temperatura"])).toEqual({
       exito: true, valor: { valores: [{ clave: "parametros.temperatura", rastro: temperatura }], noResueltas },
     });
   });
@@ -103,7 +103,7 @@ describe("Q-3", () => {
     } }));
     if (!resultado.exito) throw new Error(resultado.error.mensaje);
     expect(resultado.valor.prefijoAgente).toEqual(["perfiles"]);
-    const consulta = consultarAgente(resultado.valor, "a", "temperatura");
+    const consulta = consultarAgente(resultado.valor, "a", ["temperatura"]);
     if (!consulta.exito) throw new Error(consulta.error.mensaje);
     expect(consulta.valor).toEqual({ valores: [{ clave: "temperatura", rastro: resultado.valor.valores[0]! }], noResueltas: [] });
   });
@@ -123,15 +123,15 @@ describe("Q-4", () => {
       exito: true, valor: { valores: [], noResueltas },
     });
     for (const clave of ["steps", "maxSteps", "steps.extra"]) {
-      expect(consultarAgente(pendiente, "a", clave)).toMatchObject({
+      expect(consultarAgente(pendiente, "a", clave?.split("."))).toMatchObject({
         exito: false, error: { codigo: "clave-no-resuelta" },
       });
     }
-    expect(consultarAgente(pendiente, "a", "temperature")).toMatchObject({
+    expect(consultarAgente(pendiente, "a", ["temperature"])).toMatchObject({
       exito: false, error: { codigo: "clave-inexistente" },
     });
     for (const clave of [undefined, "steps"]) {
-      expect(consultarAgente(pendiente, "ausente", clave)).toMatchObject({
+      expect(consultarAgente(pendiente, "ausente", clave?.split("."))).toMatchObject({
         exito: false, error: { codigo: "agente-sin-declaraciones" },
       });
     }

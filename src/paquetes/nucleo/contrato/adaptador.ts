@@ -26,9 +26,15 @@ export interface LecturaEntrada {
   readonly declaraciones: readonly Declaracion[];
 }
 
+export type Origen =
+  | { readonly tipo: "declarado"; readonly orden: number; readonly posicion: Posicion }
+  | { readonly tipo: "implicito"; readonly regla: string }
+  | { readonly tipo: "nativo"; readonly regla: string };
+
 export interface Aplicacion {
-  readonly orden: number;
-  readonly declaracion: Declaracion;
+  readonly origen: Origen;
+  readonly ruta: readonly string[];
+  readonly valor: ValorJson;
   readonly estrategia: string;
   readonly regla: string;
 }

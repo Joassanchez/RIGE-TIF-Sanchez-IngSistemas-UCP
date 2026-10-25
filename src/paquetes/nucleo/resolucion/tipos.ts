@@ -1,16 +1,17 @@
-import type { ClaveNoResuelta, Identidad, Posicion, ValorJson } from "../contrato/adaptador";
+import type { ClaveNoResuelta, Identidad, Origen, ValorJson } from "../contrato/adaptador";
 
 export interface DeclaracionUbicada {
-  readonly orden: number;
-  readonly via: string;
-  readonly referencia: string;
-  readonly posicion: Posicion;
+  readonly origen: Origen;
+  /** Presentes solo si origen.tipo === "declarado". */
+  readonly via: string | null;
+  readonly referencia: string | null;
   readonly valor: ValorJson;
   readonly regla: string;
 }
 
 export interface RastroValor {
   readonly ruta: readonly string[];
+  readonly indiceFusion: number;
   readonly valor: ValorJson;
   readonly determinante: DeclaracionUbicada;
   readonly motivo: string;

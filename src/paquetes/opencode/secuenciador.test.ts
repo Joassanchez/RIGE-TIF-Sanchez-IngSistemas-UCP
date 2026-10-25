@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Declaracion, LecturaEntrada, ValorJson } from "@rige/nucleo/contrato/adaptador";
+import type { Aplicacion, Declaracion, LecturaEntrada, ValorJson } from "@rige/nucleo/contrato/adaptador";
 import { secuenciar } from "./secuenciador";
 import { reglas } from "./reglas";
 
@@ -39,8 +39,8 @@ describe("V1-08 F-3", () => {
       lectura(1, [declaracion(rutaPosterior, posterior), similar])]);
     expect(resultado).toEqual({ exito: true, valor: {
       aplicaciones: [
-        { orden: 0, declaracion: otra, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
-        { orden: 1, declaracion: similar, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
+        { origen: { tipo: "declarado", orden: 0, posicion: otra.posicion }, ruta: otra.ruta, valor: otra.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
+        { origen: { tipo: "declarado", orden: 1, posicion: similar.posicion }, ruta: similar.ruta, valor: similar.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
       ], noResueltas: [{ ruta, regla: "forma-en-conflicto" }],
     } });
   });
@@ -58,7 +58,7 @@ describe("V1-08 F-4", () => {
       lectura(1, [declaracion(["agent", "build", "maxSteps"], 7)])];
     const resultado = secuenciar(invertidas ? lecturas.toReversed() : lecturas);
     expect(resultado).toEqual({ exito: true, valor: {
-      aplicaciones: [{ orden: 0, declaracion: normal, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
+      aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: normal.posicion }, ruta: normal.ruta, valor: normal.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
       noResueltas: [
         { ruta: ["agent", "build", "steps"], regla: "fuera-del-v1" },
         { ruta: ["agent", "build", "maxSteps"], regla: "fuera-del-v1" },
@@ -71,7 +71,7 @@ describe("V1-08 F-4", () => {
       for (const invertidas of [false, true]) {
         const lecturas = [lectura(0, [declaracion(["agent", "build", "options", "propia"], 2), otra]), lectura(1, [desconocida])];
         expect(secuenciar(invertidas ? lecturas.toReversed() : lecturas)).toEqual({ exito: true, valor: {
-          aplicaciones: [{ orden: 0, declaracion: otra, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
+          aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: otra.posicion }, ruta: otra.ruta, valor: otra.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
           noResueltas: [
             { ruta: ["agent", "build", nombre], regla: "fuera-del-v1" },
             { ruta: ["agent", "build", "options"], regla: "fuera-del-v1" },
@@ -91,7 +91,7 @@ describe("V1-08 F-5", () => {
     const otra = declaracion(["agent", "build", "steps"], 12);
     const resultado = secuenciar([lectura(0, [declaracion(ruta, "anterior"), otra]), lectura(1, [declaracion(ruta, valor)])]);
     expect(resultado).toEqual({ exito: true, valor: {
-      aplicaciones: [{ orden: 0, declaracion: otra, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
+      aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: otra.posicion }, ruta: otra.ruta, valor: otra.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
       noResueltas: [{ ruta, regla: "sustitucion-no-incorporada" }],
     } });
   });
@@ -103,7 +103,7 @@ describe("V1-08 F-5", () => {
       const resultado = secuenciar([lectura(0, [declaracion([...prefijo, "description"]), otra]),
         lectura(1, [declaracion(ruta, {})])]);
       expect(resultado).toEqual({ exito: true, valor: {
-        aplicaciones: [{ orden: 0, declaracion: otra, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
+        aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: otra.posicion }, ruta: otra.ruta, valor: otra.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
         noResueltas: [{ ruta: prefijo, regla: "sustitucion-no-incorporada" }],
       } });
     }
@@ -128,7 +128,7 @@ describe("V1-03 S-5 V1-08 F-7", () => {
     const json = lectura(0, [...bloqueadas, ...otras]);
     const jsonPosterior = lectura(2, bloqueadas);
     const esperado = { exito: true as const, valor: {
-      aplicaciones: otras.map((declaracion) => ({ orden: 0, declaracion, estrategia: "reemplazo", regla: "orden-de-aplicacion" })),
+      aplicaciones: otras.map<Aplicacion>((declaracion) => ({ origen: { tipo: "declarado", orden: 0, posicion: declaracion.posicion }, ruta: declaracion.ruta, valor: declaracion.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" })),
       noResueltas: [{ ruta: ["agent", "revisor/seguridad"], regla: "markdown-no-observado" }],
     } };
     expect(secuenciar([json, markdown, jsonPosterior, { ...markdown, orden: 3 }])).toEqual(esperado);
@@ -165,7 +165,7 @@ describe("V1-03 S-3 V1-08 F-6", () => {
         lectura(1, [declaracion(ruta, valor)])];
       for (const invertidas of [false, true]) {
         expect(secuenciar(invertidas ? lecturas.toReversed() : lecturas)).toEqual({ exito: true, valor: {
-          aplicaciones: [{ orden: 0, declaracion: otra, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
+          aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: otra.posicion }, ruta: otra.ruta, valor: otra.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
           noResueltas: [
             { ruta: ["agent", "build"], regla: "fuera-del-v1" },
             ...(ruta[0] === "mode" ? [{ ruta: ["mode", "build"], regla: "fuera-del-v1" }] : []),
@@ -179,7 +179,7 @@ describe("V1-03 S-3 V1-08 F-6", () => {
     const resultado = secuenciar([lectura(0, declaraciones)]);
     expect(resultado.exito).toBe(true);
     if (!resultado.exito) throw new Error("Las rutas son soportadas");
-    expect(resultado.valor.aplicaciones.map(({ declaracion }) => declaracion)).toEqual(declaraciones);
+    expect(resultado.valor.aplicaciones.map(({ ruta, valor, origen }) => ({ ruta, valor, posicion: origen.tipo === "declarado" ? origen.posicion : undefined }))).toEqual(declaraciones);
     expect(secuenciar([lectura(0, [declaracion(["mode"], {})])])).toEqual({ exito: true, valor: {
       aplicaciones: [], noResueltas: [],
     } });
@@ -196,7 +196,7 @@ describe("V1-03 S-2", () => {
       declaracion(["agent", "build", "options", "tools"])];
     expect(secuenciar([lectura(0, [...excluidas, normal, ...nombresSimilares]), lectura(1, excluidas)])).toEqual({
       exito: true, valor: {
-        aplicaciones: [normal, ...nombresSimilares].map((declaracion) => ({ orden: 0, declaracion, estrategia: "reemplazo", regla: "orden-de-aplicacion" })),
+        aplicaciones: [normal, ...nombresSimilares].map((declaracion) => ({ origen: { tipo: "declarado", orden: 0, posicion: declaracion.posicion }, ruta: declaracion.ruta, valor: declaracion.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" })),
         noResueltas: prefijos.map((ruta) => ({ ruta, regla: "fuera-del-v1" })),
       },
     });
@@ -209,9 +209,9 @@ describe("V1-03 S-1", () => {
     const ultima = declaracion(["agent", "build", "temperature"], 0.7);
     expect(secuenciar([lectura(8, primeras), lectura(2, [ultima])])).toEqual({ exito: true, valor: {
       aplicaciones: [
-        { orden: 8, declaracion: primeras[0], estrategia: "reemplazo", regla: "orden-de-aplicacion" },
-        { orden: 8, declaracion: primeras[1], estrategia: "reemplazo", regla: "orden-de-aplicacion" },
-        { orden: 2, declaracion: ultima, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
+        { origen: { tipo: "declarado", orden: 8, posicion: primeras[0].posicion }, ruta: primeras[0].ruta, valor: primeras[0].valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
+        { origen: { tipo: "declarado", orden: 8, posicion: primeras[1].posicion }, ruta: primeras[1].ruta, valor: primeras[1].valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
+        { origen: { tipo: "declarado", orden: 2, posicion: ultima.posicion }, ruta: ultima.ruta, valor: ultima.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" },
       ], noResueltas: [],
     } });
     expect(secuenciar([])).toEqual({ exito: true, valor: { aplicaciones: [], noResueltas: [] } });

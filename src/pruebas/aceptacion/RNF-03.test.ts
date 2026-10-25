@@ -28,13 +28,13 @@ describe("RNF-03 CA-3", () => {
     if (!resultado.exito) throw new Error(resultado.error.mensaje);
     expect(resultado.valor.entradas.map((entrada) => entrada.via)).toEqual(["capa-b", "capa-a"]);
     expect(resultado.valor.prefijoAgente).toEqual(["perfiles"]);
-    const consulta = consultarAgente(resultado.valor, "a", "temperatura");
+    const consulta = consultarAgente(resultado.valor, "a", ["temperatura"]);
     if (!consulta.exito) throw new Error(consulta.error.mensaje);
     expect(consulta.valor).toEqual({ valores: [{ clave: "temperatura", rastro: {
-      ruta: ["perfiles", "a", "temperatura"], valor: 0.2,
-      determinante: { orden: 0, via: "capa-b", referencia: "/proyecto/capa-b.json", posicion: { linea: 1, columna: 2 }, valor: 0.2, regla: "primera-declaracion" },
+      ruta: ["perfiles", "a", "temperatura"], indiceFusion: 0, valor: 0.2,
+      determinante: { origen: { tipo: "declarado", orden: 0, posicion: { linea: 1, columna: 2 } }, via: "capa-b", referencia: "/proyecto/capa-b.json", valor: 0.2, regla: "primera-declaracion" },
       motivo: "primera-declaracion",
-      desplazadas: [{ orden: 1, via: "capa-a", referencia: "/proyecto/capa-a.json", posicion: { linea: 1, columna: 2 }, valor: 0.1, regla: "primera-declaracion" }],
+      desplazadas: [{ origen: { tipo: "declarado", orden: 1, posicion: { linea: 1, columna: 2 } }, via: "capa-a", referencia: "/proyecto/capa-a.json", valor: 0.1, regla: "primera-declaracion" }],
     } }], noResueltas: [] });
     const conReemplazo = resolver({ ...adaptadorFicticio, secuenciar(lecturas) {
       const secuencia = adaptadorFicticio.secuenciar(lecturas);

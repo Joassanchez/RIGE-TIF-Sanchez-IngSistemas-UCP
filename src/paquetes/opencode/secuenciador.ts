@@ -80,7 +80,8 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
     for (const declaracion of lectura.declaraciones) {
       const { ruta } = declaracion;
       if (esObjeto(declaracion.valor) || [...excluidas.values()].some(prefijo => bajo(ruta, prefijo))) continue;
-      aplicaciones.push({ orden: lectura.orden, declaracion, estrategia: "reemplazo", regla: "orden-de-aplicacion" });
+      aplicaciones.push({ origen: { tipo: "declarado", orden: lectura.orden, posicion: declaracion.posicion },
+        ruta, valor: declaracion.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" });
     }
   }
   return { exito: true, valor: { aplicaciones, noResueltas } };

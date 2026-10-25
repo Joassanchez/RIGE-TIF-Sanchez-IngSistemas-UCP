@@ -3,6 +3,7 @@ import type { Estrategia } from "../../paquetes/nucleo/resolucion/estrategias";
 
 const primera: Estrategia = (anterior, nueva, ruta) => ({
   ruta,
+  indiceFusion: anterior?.indiceFusion ?? 0,
   valor: anterior ? anterior.valor : nueva.valor,
   determinante: anterior ? anterior.determinante : nueva,
   motivo: "primera-declaracion",
@@ -12,7 +13,7 @@ const primera: Estrategia = (anterior, nueva, ruta) => ({
 export const adaptadorFicticio: Adaptador = {
   identidad: { herramienta: "ficticia", version: "1" },
   prefijoAgente: ["perfiles"],
-  reglas: { "primera-declaracion": "Se conserva la primera declaracion aplicada." },
+  reglas: { "primera-declaracion": "Se conserva la primera declaracion aplicada.", "base-ficticia": "Base de la herramienta ficticia." },
   estrategias: { primera },
   ubicar: (proyecto, entorno) => ({ exito: true, valor: ["capa-b", "capa-a"].map((via) => ({
     via, referencia: entorno.unir(proyecto, `${via}.json`), condicion: "observada",
@@ -30,8 +31,10 @@ export const adaptadorFicticio: Adaptador = {
     return { exito: true, valor: declaraciones };
   },
   secuenciar: (lecturas) => ({ exito: true, valor: {
-    aplicaciones: lecturas.flatMap((lectura) => lectura.declaraciones.map((declaracion) => ({
-      orden: lectura.orden, declaracion, estrategia: "primera", regla: "primera-declaracion",
-    }))), noResueltas: [],
+    aplicaciones: [...lecturas.flatMap((lectura) => lectura.declaraciones.map((declaracion) => ({
+      origen: { tipo: "declarado" as const, orden: lectura.orden, posicion: declaracion.posicion },
+      ruta: declaracion.ruta, valor: declaracion.valor, estrategia: "primera", regla: "primera-declaracion",
+    }))), { origen: { tipo: "nativo", regla: "base-ficticia" }, ruta: ["base"], valor: true,
+      estrategia: "primera", regla: "base-ficticia" }], noResueltas: [],
   } }),
 };

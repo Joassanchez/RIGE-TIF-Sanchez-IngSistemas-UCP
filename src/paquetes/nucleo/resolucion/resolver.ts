@@ -2,15 +2,9 @@ import type { Adaptador, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada } from "
 import type { EntornoLectura } from "../contrato/entorno";
 import type { Resultado } from "../resultado";
 import { biblioteca } from "./estrategias";
-import { clave } from "./proyectar";
 import type { DeclaracionUbicada, EntradaLeida, Resolucion, RastroValor } from "./tipos";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
-const comparar = (a: { readonly ruta: readonly string[] }, b: { readonly ruta: readonly string[] }) => {
-  const primera = clave(a.ruta);
-  const segunda = clave(b.ruta);
-  return primera < segunda ? -1 : primera > segunda ? 1 : 0;
-};
 
 export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura): Resultado<Resolucion, ErrorAnalisis> {
   const ubicacion = adaptador.ubicar(proyecto, entorno);
@@ -43,16 +37,16 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       ?? (Object.hasOwn(biblioteca, aplicacion.estrategia) ? biblioteca[aplicacion.estrategia] : undefined);
     if (!estrategia) throw new Error(`Estrategia desconocida: ${aplicacion.estrategia}`);
     usarRegla(aplicacion.regla);
-    const entrada = entradas[aplicacion.orden];
-    if (!entrada) throw new Error(`Entrada inexistente para la aplicacion: ${aplicacion.orden}`);
+    const { origen, ruta } = aplicacion;
+    const entrada = origen.tipo === "declarado" ? entradas[origen.orden] : undefined;
+    if (origen.tipo === "declarado" && !entrada) throw new Error(`Entrada inexistente para la aplicacion: ${origen.orden}`);
     const nueva: DeclaracionUbicada = {
-      orden: aplicacion.orden, via: entrada.via, referencia: entrada.referencia,
-      posicion: { linea: aplicacion.declaracion.posicion.linea, columna: aplicacion.declaracion.posicion.columna },
-      valor: aplicacion.declaracion.valor, regla: aplicacion.regla,
+      origen, via: entrada?.via ?? null, referencia: entrada?.referencia ?? null,
+      valor: aplicacion.valor, regla: aplicacion.regla,
     };
-    const ruta = aplicacion.declaracion.ruta;
     const identificador = JSON.stringify(ruta);
-    rastros.set(identificador, estrategia(rastros.get(identificador), nueva, ruta));
+    const anterior = rastros.get(identificador);
+    rastros.set(identificador, { ...estrategia(anterior, nueva, ruta), indiceFusion: anterior?.indiceFusion ?? rastros.size });
   }
   const pendientes = new Map<string, ClaveNoResuelta>();
   for (const pendiente of secuencia.valor.noResueltas) {
@@ -70,7 +64,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     reglas: Object.fromEntries([...usados].sort().map((regla) => [regla, adaptador.reglas[regla]!])),
     entradas,
     resumenEntradas: entorno.resumir(JSON.stringify(entradas.map((entrada) => [entrada.via, entrada.referencia, entrada.condicion, entrada.resumen]))),
-    valores: [...rastros.values()].sort(comparar),
-    noResueltas: [...pendientes.values()].sort(comparar),
+    valores: [...rastros.values()],
+    noResueltas: [...pendientes.values()],
   } };
 }

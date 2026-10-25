@@ -5,14 +5,20 @@ export function normalizar(salida: unknown): Record<string, unknown> {
     throw new Error("La salida nativa debe ser un objeto JSON.");
   }
   const resultado: Record<string, unknown> = {};
-  function aplanar(objeto: object, prefijo: string): void {
+  function aplanar(objeto: object, prefijo: readonly string[]): void {
     for (const [clave, valor] of Object.entries(objeto)) {
-      const nombre = prefijo ? `${prefijo}.${clave}` : clave === "topP" ? "top_p" : clave === "maxSteps" ? "steps" : clave;
-      if (valor !== null && typeof valor === "object" && !Array.isArray(valor)) aplanar(valor, nombre);
-      else Object.defineProperty(resultado, nombre, { value: valor, enumerable: true, configurable: true });
+      const segmento = prefijo.length ? clave : clave === "topP" ? "top_p" : clave === "maxSteps" ? "steps" : clave;
+      const ruta = [...prefijo, segmento];
+      if (valor !== null && typeof valor === "object" && !Array.isArray(valor)) aplanar(valor, ruta);
+      else {
+        // Las referencias del v1 usan puntos; los segmentos ambiguos se muestran como puntero JSON.
+        const nombre = ruta.some((parte) => !parte || /[./~]/.test(parte))
+          ? `/${ruta.map((parte) => parte.replaceAll("~", "~0").replaceAll("/", "~1")).join("/")}` : ruta.join(".");
+        Object.defineProperty(resultado, nombre, { value: valor, enumerable: true, configurable: true });
+      }
     }
   }
-  aplanar(salida, "");
+  aplanar(salida, []);
   return resultado;
 }
 

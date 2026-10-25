@@ -3,7 +3,9 @@ import { html } from "../plantillas";
 import { responderHtml } from "../respuesta";
 
 function presentarDeclaracion(declaracion: DeclaracionUbicada): string {
-  return `${JSON.stringify(declaracion.valor)} en ${declaracion.referencia}:${declaracion.posicion.linea}:${declaracion.posicion.columna} (${declaracion.via})`;
+  const { origen } = declaracion;
+  if (origen.tipo !== "declarado") return `${JSON.stringify(declaracion.valor)} (${origen.tipo}: ${origen.regla})`;
+  return `${JSON.stringify(declaracion.valor)} en ${declaracion.referencia}:${origen.posicion.linea}:${origen.posicion.columna} (${declaracion.via})`;
 }
 
 export function paginaResolucion(respuesta: RespuestaConsulta): Response {

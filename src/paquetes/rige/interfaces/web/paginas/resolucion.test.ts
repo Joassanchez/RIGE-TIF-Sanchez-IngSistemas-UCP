@@ -4,8 +4,8 @@ import { versionRige } from "../../../aplicacion/respuestas/estado";
 
 function respuesta(): RespuestaConsulta {
   const declaracion = (valor: string | number, orden: number): DeclaracionUbicada => ({
-    valor, orden, via: "proyecto", referencia: `/proyecto/<entrada${orden}>.jsonc`,
-    posicion: { linea: 6, columna: 7 }, regla: "orden-de-aplicacion",
+    valor, origen: { tipo: "declarado", orden, posicion: { linea: 6, columna: 7 } },
+    via: "proyecto", referencia: `/proyecto/<entrada${orden}>.jsonc`, regla: "orden-de-aplicacion",
   });
   return {
     esquema: 1, versionRige,
@@ -15,10 +15,10 @@ function respuesta(): RespuestaConsulta {
         { orden: 1, via: "proyecto", referencia: "/proyecto/<entrada1>.jsonc", condicion: "observada", resumen: "b".repeat(64) }],
     },
     agente: "a & b", clave: null,
-    valores: [{ clave: "description", rastro: { ruta: ["agent", "a & b", "description"], valor: "<script>alert(1)</script>",
+    valores: [{ clave: "description", rastro: { ruta: ["agent", "a & b", "description"], indiceFusion: 0, valor: "<script>alert(1)</script>",
       determinante: declaracion("<script>alert(1)</script>", 3), motivo: "entrada-posterior",
       desplazadas: [declaracion(0.1, 1), declaracion(0.2, 2)] } },
-      { clave: "steps", rastro: { ruta: ["agent", "a & b", "steps"], valor: 12, determinante: declaracion(12, 1),
+      { clave: "steps", rastro: { ruta: ["agent", "a & b", "steps"], indiceFusion: 1, valor: 12, determinante: declaracion(12, 1),
         motivo: "entrada-posterior", desplazadas: [] } }],
     reglas: { "orden-de-aplicacion": "Prevalece la ultima <declaracion> (RD-01).", "fuera-del-v1": "Sin resolver <permiso>." },
     noResueltas: [{ ruta: ["permission"], regla: "fuera-del-v1" }],

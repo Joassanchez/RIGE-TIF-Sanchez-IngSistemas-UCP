@@ -14,9 +14,9 @@ export interface DependenciasResolver {
   readonly reloj: PuertoReloj;
 }
 
-export type ResolverProyecto = (proyecto: string, agente: string, clave: string) => Resultado<{ readonly id: number }, ErrorUso>;
+export type ResolverProyecto = (proyecto: string, agente: string, ruta: readonly string[] | undefined) => Resultado<{ readonly id: number }, ErrorUso>;
 
-export function resolverProyecto(dependencias: DependenciasResolver, proyecto: string, agente: string, clave: string): Resultado<{ readonly id: number }, ErrorUso> {
+export function resolverProyecto(dependencias: DependenciasResolver, proyecto: string, agente: string, ruta: readonly string[] | undefined): Resultado<{ readonly id: number }, ErrorUso> {
   proyecto = proyecto.trim();
   if (proyecto.length >= 2 && ((proyecto.startsWith('"') && proyecto.endsWith('"'))
     || (proyecto.startsWith("'") && proyecto.endsWith("'")))) proyecto = proyecto.slice(1, -1).trim();
@@ -28,7 +28,7 @@ export function resolverProyecto(dependencias: DependenciasResolver, proyecto: s
   } };
   const analisis = resolver(dependencias.adaptador, canonica, dependencias.entorno);
   if (!analisis.exito) return { exito: false, error: errorDesdeAnalisis(analisis.error) };
-  const consulta = consultarAgente(analisis.valor, agente, clave === "" ? undefined : clave);
+  const consulta = consultarAgente(analisis.valor, agente, ruta);
   if (!consulta.exito) return { exito: false, error: errorDesdeAnalisis(consulta.error) };
   const guardada = dependencias.resoluciones.guardar(analisis.valor, dependencias.reloj.ahora());
   if (!guardada.exito) return guardada;

@@ -41,7 +41,7 @@ describe("C-1", () => {
   test.each(["", "   ", "\t\n"])("rechaza proyecto vacio %j sin llamar los puertos", async (proyecto) => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias, guardadas, llamadas } = dobles();
-    expect(resolverProyecto(dependencias, proyecto, "a", "")).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
+    expect(resolverProyecto(dependencias, proyecto, "a", undefined)).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
     expect(guardadas).toEqual([]);
     expect(llamadas).toEqual([]);
   });
@@ -49,7 +49,7 @@ describe("C-1", () => {
   test("ruta ausente conserva la ruta pedida en el mensaje", async () => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias, guardadas } = dobles();
-    expect(resolverProyecto({ ...dependencias, rutas: { canonica: () => null } }, "./no-existe", "a", "")).toEqual({
+    expect(resolverProyecto({ ...dependencias, rutas: { canonica: () => null } }, "./no-existe", "a", undefined)).toEqual({
       exito: false, error: { codigo: "proyecto-inexistente", mensaje: "El proyecto ./no-existe no existe o no es un directorio." },
     });
     expect(guardadas).toEqual([]);
@@ -61,7 +61,7 @@ describe("C-1", () => {
       const { dependencias, guardadas, llamadas } = dobles();
       const error = { codigo, mensaje: `Corregir ${codigo}` };
       const adaptador = { ...adaptadorFicticio, ubicar: () => ({ exito: false, error } as const) };
-      expect(resolverProyecto({ ...dependencias, adaptador }, "./pedido", "a", "")).toEqual({ exito: false, error });
+      expect(resolverProyecto({ ...dependencias, adaptador }, "./pedido", "a", undefined)).toEqual({ exito: false, error });
       expect(guardadas).toEqual([]);
       expect(llamadas).toEqual(["./pedido"]);
     },
@@ -71,9 +71,9 @@ describe("C-1", () => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias } = dobles();
     const adaptador = { ...adaptadorFicticio, ubicar: () => ({ exito: false, error: { codigo: "desconocido", mensaje: "defecto" } } as const) };
-    expect(() => resolverProyecto({ ...dependencias, adaptador }, "pedido", "a", "")).toThrow("Codigo de analisis desconocido");
+    expect(() => resolverProyecto({ ...dependencias, adaptador }, "pedido", "a", undefined)).toThrow("Codigo de analisis desconocido");
     const falla = new Error("Falla de infraestructura");
-    expect(() => resolverProyecto({ ...dependencias, rutas: { canonica: () => { throw falla; } } }, "pedido", "a", "")).toThrow(falla);
+    expect(() => resolverProyecto({ ...dependencias, rutas: { canonica: () => { throw falla; } } }, "pedido", "a", undefined)).toThrow(falla);
   });
 
   test("resuelve con el adaptador y ruta canonica, guarda con el reloj y devuelve id", async () => {
@@ -85,7 +85,7 @@ describe("C-1", () => {
       ubicadas.push(proyecto);
       return adaptadorFicticio.ubicar(proyecto, entornoLectura);
     } };
-    expect(resolverProyecto({ ...dependencias, adaptador }, "./pedido", "a", "modelo")).toEqual({ exito: true, valor: { id: 1 } });
+    expect(resolverProyecto({ ...dependencias, adaptador }, "./pedido", "a", ["modelo"])).toEqual({ exito: true, valor: { id: 1 } });
     const esperada = resolver(adaptadorFicticio, "/canonico", dependencias.entorno);
     if (!esperada.exito) throw new Error(esperada.error.mensaje);
     expect(guardadas).toEqual([{ resolucion: esperada.valor, instante }]);
@@ -99,7 +99,7 @@ describe("C-1", () => {
     const error = { codigo: "almacen-sin-esquema", mensaje: "Ejecute bun run esquema." } as const;
     expect(resolverProyecto({ ...dependencias, resoluciones: { ...dependencias.resoluciones,
       guardar: () => ({ exito: false, error }),
-    } }, "pedido", "a", "")).toEqual({ exito: false, error });
+    } }, "pedido", "a", undefined)).toEqual({ exito: false, error });
   });
 });
 
@@ -109,9 +109,9 @@ describe("C-3 RF-17 CA-2", () => {
     const { dependencias } = dobles();
     let actual = entorno();
     const entornoMutable = { ...actual, leer: (ruta: string) => actual.leer(ruta) };
-    expect(resolverProyecto({ ...dependencias, entorno: entornoMutable }, "pedido", "a", "")).toEqual({ exito: true, valor: { id: 1 } });
+    expect(resolverProyecto({ ...dependencias, entorno: entornoMutable }, "pedido", "a", undefined)).toEqual({ exito: true, valor: { id: 1 } });
     actual = entorno('{"modelo":"modificado"}');
-    expect(resolverProyecto({ ...dependencias, entorno: entornoMutable }, "pedido", "a", "")).toEqual({ exito: true, valor: { id: 2 } });
+    expect(resolverProyecto({ ...dependencias, entorno: entornoMutable }, "pedido", "a", undefined)).toEqual({ exito: true, valor: { id: 2 } });
     const lista = dependencias.resoluciones.listar("/canonico");
     if (!lista.exito) throw new Error(lista.error.mensaje);
     expect(lista.valor.map(({ id }) => id)).toEqual([2, 1]);
@@ -124,7 +124,7 @@ describe("C-4", () => {
   test.each(["", " \t"])("rechaza agente vacio %j antes de resolver", async (agente) => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias, guardadas, llamadas } = dobles();
-    expect(resolverProyecto(dependencias, "pedido", agente, "")).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
+    expect(resolverProyecto(dependencias, "pedido", agente, undefined)).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
     expect(guardadas).toEqual([]);
     expect(llamadas).toEqual([]);
   });
@@ -134,9 +134,9 @@ describe("C-4", () => {
     const { dependencias, guardadas, llamadas } = dobles();
     const analisis = resolver(dependencias.adaptador, "/canonico", dependencias.entorno);
     if (!analisis.exito) throw new Error(analisis.error.mensaje);
-    const esperado = consultarAgente(analisis.valor, "a", "ausente");
+    const esperado = consultarAgente(analisis.valor, "a", ["ausente"]);
     if (esperado.exito) throw new Error("Se esperaba un error del nucleo");
-    expect(resolverProyecto(dependencias, "pedido", "a", "ausente")).toEqual(esperado);
+    expect(resolverProyecto(dependencias, "pedido", "a", ["ausente"])).toEqual(esperado);
     expect(guardadas).toEqual([]);
     expect(llamadas).toEqual(["pedido"]);
   });
@@ -153,7 +153,7 @@ describe("C-5", () => {
   ])("normaliza %j antes de canonica como %j", async (proyecto, esperado) => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias, guardadas, llamadas } = dobles();
-    expect(resolverProyecto(dependencias, proyecto!, "a", "modelo")).toEqual({ exito: true, valor: { id: 1 } });
+    expect(resolverProyecto(dependencias, proyecto!, "a", ["modelo"])).toEqual({ exito: true, valor: { id: 1 } });
     expect(llamadas).toEqual([esperado, "reloj"]);
     expect(guardadas).toHaveLength(1);
   });
@@ -161,7 +161,7 @@ describe("C-5", () => {
   test.each(['"  "', "' '"])("rechaza ruta entre comillas vacia %j sin puertos", async (proyecto) => {
     const { resolverProyecto } = await import("./resolver-proyecto");
     const { dependencias, llamadas } = dobles();
-    expect(resolverProyecto(dependencias, proyecto, "a", "")).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
+    expect(resolverProyecto(dependencias, proyecto, "a", undefined)).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
     expect(llamadas).toEqual([]);
   });
 });

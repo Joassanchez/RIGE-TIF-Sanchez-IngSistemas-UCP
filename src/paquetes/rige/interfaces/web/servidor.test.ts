@@ -18,10 +18,10 @@ const iniciarEstado = (puerto: number, consultar: ConsultarEstado) => iniciarSer
 
 describe("W-11", () => {
   test("valida agente antes de resolver, propaga errores escapados y codifica la Location", async () => {
-    const solicitudes: string[][] = [];
+    const solicitudes: [string, string, readonly string[] | undefined][] = [];
     const casos = {
       consultarEstado: () => ({ exito: true as const, valor: respuesta }),
-      resolverProyecto: (proyecto: string, agente: string, clave: string) => {
+      resolverProyecto: (proyecto: string, agente: string, clave: readonly string[] | undefined) => {
         solicitudes.push([proyecto, agente, clave]);
         return proyecto === "malo" ? { exito: false as const,
           error: { codigo: "contenido-no-soportado" as const, mensaje: 'Contenido <script> "privado"' } }
@@ -45,13 +45,13 @@ describe("W-11", () => {
       expect(redireccion.status).toBe(303);
       expect(redireccion.headers.get("location")).toBe(`/resoluciones/7?agente=a%20%26%20b${clave ? "&clave=c%20%26%20d" : ""}`);
     }
-    expect(solicitudes).toEqual([["malo", "build", ""], ["/proyecto", "a & b", ""], ["/proyecto", "a & b", "c & d"]]);
+    expect(solicitudes).toEqual([["malo", "build", undefined], ["/proyecto", "a & b", undefined], ["/proyecto", "a & b", ["c & d"]]]);
   });
 });
 
 describe("W-12", () => {
   test("acepta solo rutas con id decimal y presenta el error del almacen", async () => {
-    const consultas: string[][] = [];
+    const consultas: [string, string, readonly string[] | undefined][] = [];
     const manejar = crearManejador(12345, { ...casosEstado(() => ({ exito: true, valor: respuesta })),
       consultarResolucion: (id, agente, clave) => {
         consultas.push([id, agente, clave]);
@@ -71,7 +71,7 @@ describe("W-12", () => {
     expect(inexistente.status).toBe(404);
     expect(await inexistente.text()).toContain("No existe la resolucion 7 en el almacen.");
     solicitar("/resoluciones/7");
-    expect(consultas).toEqual([["7", "a & b", "c & d"], ["7", "", ""]]);
+    expect(consultas).toEqual([["7", "a & b", ["c & d"]], ["7", "", undefined]]);
   });
 });
 

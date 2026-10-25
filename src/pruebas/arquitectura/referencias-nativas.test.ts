@@ -6,6 +6,11 @@ import { crearEntornoAislado } from "../utilidades/entorno-aislado";
 import { normalizar, comparar } from "../../herramientas/referencias-nativas/comparar";
 
 describe("RN-1 normalizacion de la salida nativa", () => {
+  test("aplana por segmentos y distingue puntos literales de objetos anidados", () => {
+    expect(normalizar({ options: { "a.b": 1, a: { b: 2 }, "src/productos.js": 3, "~": 4 } })).toEqual({
+      "/options/a.b": 1, "options.a.b": 2, "/options/src~1productos.js": 3, "/options/~0": 4,
+    });
+  });
   test("mapea las claves nativas y aplana objetos conservando hojas", () => {
     expect(normalizar({ topP: 0.9, maxSteps: 7, temperature: 0.4,
       options: { a: false, interior: { b: null } }, lista: [1, 2] })).toEqual({

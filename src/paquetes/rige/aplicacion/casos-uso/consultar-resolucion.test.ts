@@ -29,11 +29,21 @@ function dobles() {
 }
 
 describe("C-2", () => {
+  test("consulta la ruta como arreglo conservando puntos y barras en los segmentos", async () => {
+    const { consultarResolucion } = await import("./consultar-resolucion");
+    const { puerto, resolucion, anteriores } = dobles();
+    const rastro = { ...resolucion.valores[0]!, ruta: ["perfiles", "a", "options", "src/productos.js", "*.env"] };
+    const modificado = { ...puerto, leer: () => ({ exito: true as const,
+      valor: { id: 7, instante, resolucion: { ...resolucion, valores: [rastro] } } }) };
+    expect(consultarResolucion(modificado, "7", "a", ["options", "src/productos.js", "*.env"])).toMatchObject({
+      exito: true, valor: { valores: [{ rastro }], anteriores },
+    });
+  });
   test.each(["", "0", "-1", "+1", "1.5", "1e2", "0x10", "1a", " 1", "1 ", "1\n", "NaN", "Infinity", "9007199254740993"])(
     "rechaza id que no representa un entero positivo decimal seguro: %j", async (id) => {
       const { consultarResolucion } = await import("./consultar-resolucion");
       const { puerto, llamadas } = dobles();
-      expect(consultarResolucion(puerto, id, "a", "")).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
+      expect(consultarResolucion(puerto, id, "a", undefined)).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
       expect(llamadas).toEqual([]);
     },
   );
@@ -41,16 +51,16 @@ describe("C-2", () => {
   test.each(["", " \t"])("rechaza agente vacio %j antes de leer", async (agente) => {
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, llamadas } = dobles();
-    expect(consultarResolucion(puerto, "7", agente, "")).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
+    expect(consultarResolucion(puerto, "7", agente, undefined)).toMatchObject({ exito: false, error: { codigo: "solicitud-invalida" } });
     expect(llamadas).toEqual([]);
   });
 
   test.each(["", "modelo"])("proyecta la consulta desde el documento guardado con clave %j", async (clave) => {
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, resolucion, anteriores, llamadas } = dobles();
-    const proyeccion = consultarAgente(resolucion, "a", clave || undefined);
+    const proyeccion = consultarAgente(resolucion, "a", clave ? clave.split(".") : undefined);
     if (!proyeccion.exito) throw new Error(proyeccion.error.mensaje);
-    expect(consultarResolucion(puerto, "7", "a", clave)).toEqual({ exito: true, valor: {
+    expect(consultarResolucion(puerto, "7", "a", clave ? clave.split(".") : undefined)).toEqual({ exito: true, valor: {
       esquema: 1, versionRige,
       resolucion: { id: 7, instante, proyecto: "/proyecto", herramienta: "ficticia", versionHerramienta: "1",
         resumenEntradas: resolucion.resumenEntradas, entradas: resolucion.entradas },
@@ -65,9 +75,9 @@ describe("C-2", () => {
     const clave = "ausente";
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, resolucion, llamadas } = dobles();
-    const esperado = consultarAgente(resolucion, agente, clave || undefined);
+    const esperado = consultarAgente(resolucion, agente, clave ? clave.split(".") : undefined);
     if (esperado.exito) throw new Error("Se esperaba un error de consulta");
-    expect(consultarResolucion(puerto, "7", agente, clave)).toEqual(esperado);
+    expect(consultarResolucion(puerto, "7", agente, clave?.split("."))).toEqual(esperado);
     expect(llamadas).toEqual([7]);
   });
 
@@ -75,11 +85,11 @@ describe("C-2", () => {
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, llamadas } = dobles();
     const inexistente = { codigo: "resolucion-inexistente", mensaje: "No existe la resolucion 7 en el almacen." } as const;
-    expect(consultarResolucion({ ...puerto, leer: () => ({ exito: false, error: inexistente }) }, "7", "a", ""))
+    expect(consultarResolucion({ ...puerto, leer: () => ({ exito: false, error: inexistente }) }, "7", "a", undefined))
       .toEqual({ exito: false, error: inexistente });
     expect(llamadas).toEqual([]);
     const sinEsquema = { codigo: "almacen-sin-esquema", mensaje: "Ejecute bun run esquema." } as const;
-    expect(consultarResolucion({ ...puerto, listar: () => ({ exito: false, error: sinEsquema }) }, "7", "a", ""))
+    expect(consultarResolucion({ ...puerto, listar: () => ({ exito: false, error: sinEsquema }) }, "7", "a", undefined))
       .toEqual({ exito: false, error: sinEsquema });
     expect(llamadas).toEqual([7]);
   });
@@ -88,6 +98,6 @@ describe("C-2", () => {
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto } = dobles();
     const falla = new Error("Infraestructura");
-    expect(() => consultarResolucion({ ...puerto, leer: () => { throw falla; } }, "7", "a", "")).toThrow(falla);
+    expect(() => consultarResolucion({ ...puerto, leer: () => { throw falla; } }, "7", "a", undefined)).toThrow(falla);
   });
 });
