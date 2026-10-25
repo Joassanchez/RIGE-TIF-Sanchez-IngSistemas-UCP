@@ -1,6 +1,12 @@
 ## III.5 · Catálogo de requisitos
 
-El catálogo comprende veintisiete requisitos, diecisiete funcionales y diez no funcionales de seguridad, fiabilidad, mantenibilidad, portabilidad, rendimiento y cumplimiento normativo, validados con la referente: veinte en la sesión del 26/09/2026 y siete (RF-12, RF-14, RF-16, RF-17, RNF-04, RNF-09 y RNF-10) en la extensión del acta del 01/10/2026, con constancia firmada por la referente el 15/10/2026 (Anexo II, A.II.1). La prioridad sigue MoSCoW (Clegg y Barker, 1994): 18 Must, 6 Should, 2 Could y 1 Won't; los Must coinciden con el producto mínimo viable de V.5 y las capacidades diferidas se incluyen como Could o Won't.
+El catálogo comprende 27 requisitos: 17 funcionales y 10 no funcionales de seguridad, fiabilidad, mantenibilidad, portabilidad, rendimiento y cumplimiento normativo. La referente valida 20 en la sesión del 26/09/2026 y 7 en la extensión del 01/10/2026, cuya constancia firma el 15/10/2026. La segunda extensión del 15/10/2026 confirma precisiones posteriores a aquella sesión (Anexo II, A.II.1).
+
+La validación corresponde a las redacciones de esas instancias. Las precisiones del 16/10 y del 22/10 permanecen pendientes de revalidación, según R-01 a R-07 del registro de cambios para la referente. Las fichas consignan esa condición y la de las precisiones del 24/10 (R-10 y R-11), con el estado de validación original conservado (Anexo I, A.I.1).
+
+La prioridad sigue MoSCoW (Clegg y Barker, 1994): 18 Must, 6 Should, 2 Could y 1 Won't. Los Must coinciden con el producto mínimo viable de V.5; las capacidades diferidas se incluyen como Could o Won't. Una revisión del MVP antes del 07/11/2026 exige actualizar la prioridad correspondiente en el catálogo, según V.4.
+
+La nómina de los requisitos que se validan en la primera extensión consta en el Anexo II, A.II.1.
 
 Cada requisito se origina en un resultado del relevamiento técnico, un hallazgo del análisis o un acuerdo del acta. Las fichas y la matriz de trazabilidad en doble vía constan en el Anexo I.
 
@@ -8,14 +14,14 @@ Cada requisito se origina en un resultado del relevamiento técnico, un hallazgo
 |----------|------------------------------------------------------------------------------------------------|----------------|---------------|
 | RF-01    | Valor efectivo de cada clave de un agente, o de la solicitada, con su procedencia y las declaraciones desplazadas | Funcional      | Must          |
 | RF-02    | Decisión de permiso para una acción, con la cadena de reglas, la determinante y su explicación | Funcional      | Must          |
-| RF-03    | Consulta de valores y de permisos por línea de comandos, con salida estructurada, determinista y versionada | Funcional      | Must          |
+| RF-03    | Consulta de valores, permisos y hallazgos por línea de comandos, con salida estructurada, determinista y versionada | Funcional      | Must          |
 | RF-04    | Descubrimiento de las entradas aplicables, con precedencia y legibilidad                       | Funcional      | Must          |
 | RF-05    | Rechazo de los resultados ante una versión de OpenCode distinta de la 1.18.25                                | Funcional      | Must          |
 | RF-06    | Distinción de valores implícitos y de reglas nativas                                           | Funcional      | Must          |
 | RF-07    | Detección de los seis tipos de hallazgo, con su localización y su explicación                  | Funcional      | Must          |
 | RF-08    | Advertencia ante un comando de terminal compuesto                                              | Funcional      | Must          |
 | RF-09    | Advertencia cuando una declaración del usuario desactiva una protección nativa                 | Funcional      | Must          |
-| RF-10    | Efecto de la decisión sobre la disponibilidad de la herramienta                                | Funcional      | Should        |
+| RF-10    | Efecto de la decisión sobre la oferta de la herramienta de acción al modelo                                | Funcional      | Should        |
 | RF-11    | Resumen del ecosistema por tipo de elemento y por tipo de hallazgo                             | Funcional      | Should        |
 | RF-12    | Localización de cada declaración en el formato ruta:línea:columna                              | Funcional      | Should        |
 | RF-13    | Relaciones entre los elementos del ecosistema                                                  | Funcional      | Could         |
@@ -26,7 +32,7 @@ Cada requisito se origina en un resultado del relevamiento técnico, un hallazgo
 | RNF-01   | Solo lectura sobre las entradas de configuración                                               | Seguridad      | Must          |
 | RNF-02   | Fidelidad de la resolución respecto de OpenCode 1.18.25                                        | Fiabilidad     | Must          |
 | RNF-03   | Independencia del núcleo respecto del adaptador                                                | Mantenibilidad | Must          |
-| RNF-04   | No exposición del contenido incorporado por sustitución de variables de entorno o de archivos | Seguridad      | Must          |
+| RNF-04   | Exclusión del contenido incorporado por sustitución de variables de entorno o de archivos | Seguridad      | Must          |
 | RNF-05   | Ausencia de conexiones salientes durante el análisis                                           | Seguridad      | Must          |
 | RNF-06   | Resolución de rutas en Ubuntu 26.04 y Windows 11, con instalación sin privilegios              | Portabilidad   | Should        |
 | RNF-07   | Tiempo máximo de una consulta por línea de comandos                                            | Rendimiento    | Should        |

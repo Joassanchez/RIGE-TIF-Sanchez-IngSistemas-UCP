@@ -2,16 +2,15 @@
 
 Las Figuras 2 y 3 representan los datos del apartado II.3 y se insertan dentro del capítulo, numeradas de manera correlativa con la Figura 1 del apartado I.6.4.
 
-### II.4.1 · Distribución temporal de las incidencias relevadas
+### II.4.1 · Distribución de las incidencias por mecanismo
 
-| *\[Figura 2 — pendiente de incorporación\]* |
-|---------------------------------------------|
+![](../figuras/cap-02/figura-incidencias-mecanismo.png)
 
-*Figura 2. Incidencias de configuración y permisos del repositorio de OpenCode por mes de apertura. Eje horizontal: mes de apertura de la incidencia. Eje vertical: cantidad de incidencias incluidas en el relevamiento. n = 31 incidencias incluidas sobre 46 candidatas. Fuente: elaboración propia sobre el relevamiento del 17/09/2026; nómina completa en el Anexo VI, A.VI.6.*
+*Figura 2. Incidencias de OpenCode por mecanismo: precedencia y fusión (10), decisión de permiso (10), valor implícito (1), fuera del compromiso del período (2) y fuera de alcance (8). Eje horizontal: cantidad de incidencias. Eje vertical: mecanismo asignado. n = 31 incidencias incluidas sobre 46 candidatas. Fuente: relevamiento del autor mediante búsqueda y clasificación por título, con un codificador, sobre el historial público del repositorio. Período de apertura: 28/11/2025 a 16/09/2026; consulta del 17/09/2026 y revisión del 09/10/2026 (Anexo VI, A.VI.6).*
 
-La figura representa las 31 incidencias incluidas según el mes en que fueron abiertas. La última columna corresponde a un mes parcial, cerrado el 16 de septiembre de 2026 por ser la fecha de consulta.
+La distribución delimita los mecanismos que documenta el corpus, cuya clasificación carece de casos de ruta absoluta. Se conserva como antecedente general de configuración; la verificación del mecanismo de ruta absoluta se apoya en los antecedentes complementarios y en la línea de base (apartados II.3.1 y II.3.2).
 
-No se produce una figura para los datos de la entrevista. Con un solo informante, toda representación gráfica sugeriría una distribución que el relevamiento no tiene, y los datos del apartado II.3.3 expresan el dato con la precisión que le corresponde.
+Los datos cualitativos de la entrevista se conservan en el apartado II.3.3; el alcance del instrumento consta en el apartado II.2.4.
 
 ### II.4.2 · Éxito declarado falso por problema de E2
 

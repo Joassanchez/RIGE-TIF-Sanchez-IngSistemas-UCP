@@ -26,6 +26,8 @@ Anthropic. (2026). *Claude Code* (Versión 2.1.286) [Software]. GitHub. https://
 
 ApptwareLabs Pvt. Ltd. (s. f.). *Markr* [Extensión de VS Code]. Visual Studio Marketplace. Recuperado el 1 de octubre de 2026, de https://marketplace.visualstudio.com/items?itemName=Apptware-Product-Lab.markr
 
+Atlassian. (s. f.). *Trello pricing* [Página de precios]. Recuperado el 24 de octubre de 2026, de https://trello.com/pricing
+
 Banco de la Nación Argentina. (s. f.). *Personas*. Recuperado el 1 de octubre de 2026, de https://www.bna.com.ar/Personas
 
 broker4develop. (s. f.). *Claude Code Navigator* [Extensión de VS Code]. Visual Studio Marketplace. Recuperado el 1 de octubre de 2026, de https://marketplace.visualstudio.com/items?itemName=broker4develop.claude-settings-manager
@@ -68,7 +70,7 @@ GitHub. (s. f.-b). *GitHub Actions runner images* [Repositorio]. GitHub. Recuper
 
 GitHub. (s. f.-c). *Setting up GitHub Sponsors for your personal account*. Recuperado el 2 de octubre de 2026, de https://docs.github.com/en/sponsors/receiving-sponsorships-through-github-sponsors/setting-up-github-sponsors-for-your-personal-account
 
-GitHub, Inc. (s. f.). *GitHub Actions billing* [Documentación]. https://docs.github.com/en/billing/concepts/product-billing/github-actions
+GitHub. (s. f.-d). *GitHub Actions billing* [Documentación]. https://docs.github.com/en/billing/concepts/product-billing/github-actions
 
 Google. (2026). *Gemini CLI* (Versión 0.62.0) [Software]. GitHub. https://github.com/google-gemini/gemini-cli/releases/tag/v0.62.0
 
@@ -95,6 +97,8 @@ Leporis14. (2026). *leporis-agentlint* (Versión 0.1.3) [Software]. PyPI. https:
 Ley N.º 25.326 de Protección de los Datos Personales. (2000, 2 de noviembre). *Boletín Oficial de la República Argentina*. https://www.argentina.gob.ar/normativa/nacional/ley-25326-64790/texto
 
 Ley N.º 27.506. Régimen de Promoción de la Economía del Conocimiento. (2019, 10 de junio). *Boletín Oficial de la República Argentina*.
+
+Matplotlib Development Team. (s. f.). *License agreement* [Documentación de software, versión 3.11.2]. Recuperado el 24 de octubre de 2026, de https://matplotlib.org/stable/project/license.html
 
 Microsoft. (s. f.-a). *Debug chat interactions* [Documentación de software]. Recuperado el 1 de octubre de 2026, de https://code.visualstudio.com/docs/agents/agent-troubleshooting/chat-debug-view
 

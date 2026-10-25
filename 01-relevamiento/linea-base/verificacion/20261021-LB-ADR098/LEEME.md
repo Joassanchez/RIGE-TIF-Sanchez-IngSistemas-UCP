@@ -86,7 +86,7 @@ Lectura principal (MED-17): M-1 y M-10 dan 3/3 en los dos ejecutores; M-2, 1/3 c
 
 ### Proceso (por traza, punto 10)
 
-- **Exploración:** las 276 ejecuciones ecológicas usaron la skill `customize-opencode` y la documentación local, y ninguna usó `webfetch`.
+- **Exploración:** las 138 ejecuciones ecológicas de `build` usaron la skill `customize-opencode`; Charles, con las skills denegadas por su definición original, no la usó en ninguna de las suyas (corrección del 24/10/2026, verificada en los registros). Todas usaron la documentación local y ninguna usó `webfetch`.
 - **Verificación final:**
   - `build`: 129 declarativas, 8 sin verificación y 1 de comportamiento;
   - Charles: 133 declarativas, 4 sin verificación y 1 de comportamiento.

@@ -30,11 +30,11 @@
 
 - **12** se excluyen por ser pedidos de funcionalidad (`[FEATURE]`/`feat:`) sin relato de comportamiento ya vivido.
 - **2** se excluyen por no versar sobre el fenómeno (un límite de expresividad de la API de permisos; una inconsistencia de nomenclatura singular/plural en el esquema publicado).
-- **32 quedan incluidos**: **8 abiertos, 24 cerrados**.
+- **32 quedan incluidos** en el relevamiento del 17/09/2026: **8 abiertos, 24 cerrados**. *Revisión del 09/10/2026:* se excluye la n.º 32581 (corresponde a OpenClaw), y quedan **31 incluidos: 8 abiertos, 23 cerrados** (Anexo VI, A.VI.6).
 
 Rango temporal de los 46 candidatos: 28/11/2025 a 16/09/2026 (un día antes de la consulta) — prácticamente toda la vida útil observable del repositorio hasta la fecha.
 
-**Texto sugerido para I.3.1:** *"...con 32 casos identificados entre noviembre de 2025 y septiembre de 2026 (Anexo I, A.I.6)."*
+**Texto sugerido para I.3.1 (superado; el texto vigente usa 31 incidencias):** *"...con 32 casos identificados entre noviembre de 2025 y septiembre de 2026 (Anexo I, A.I.6)."*
 
 ---
 

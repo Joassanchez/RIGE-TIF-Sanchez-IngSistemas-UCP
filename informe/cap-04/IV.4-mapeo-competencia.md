@@ -1,15 +1,28 @@
 ## IV.4 · Mapeo de competencia
 
-Los ejes del mapa se construyen a partir de la definición de respuesta correcta del instrumento de atribución: una respuesta es correcta cuando coinciden el valor y su fuente o, en las condiciones de permisos, la decisión y la regla determinante (Anexo VI, A.VI.7). Cada mitad de esa definición origina un eje. Ambas corresponden a las dimensiones con que se relevó cada solución (A.VI.4) y a la distinción del hallazgo 5 entre listar reglas y explicar una decisión, precisada con el relevamiento del apartado IV.3.
+El mapa compara competidores, soluciones de terceros, según la profundidad de la explicación de una decisión y la granularidad de su procedencia. Los ejes expresan el diferencial que combina la decisión con su regla determinante y la procedencia por declaración (Anexo III, D-59). Se descarta situar el diferencial solo en explicar la decisión porque Amp y Codex ya ofrecen esa función (apartado II.6.1, resultado 7).
 
-El eje horizontal mide la profundidad de la explicación en cuatro niveles: no resuelve el estado efectivo, muestra el resultado de la fusión, lista valores o reglas en orden de evaluación, o evalúa la decisión para una acción con su regla determinante. El eje vertical mide la granularidad de la procedencia en tres niveles: ninguna, por alcance o capa, o por declaración, con su entrada, archivo y posición. Cada solución se ubica según el relevamiento del 01/10/2026 registrado en el Anexo VI, A.VI.4.
+El eje horizontal mide la profundidad de la explicación en cuatro niveles:
+
+0. Declaraciones o validación, sin resolución del estado efectivo.
+1. Resultado efectivo o fusionado.
+2. Valores o reglas en orden de evaluación.
+3. Decisión para una acción con su regla determinante.
+
+El eje vertical mide la granularidad de la procedencia en tres niveles:
+
+0. Sin procedencia.
+1. Alcance o capa.
+2. Declaración, con su entrada, archivo y posición.
+
+Cada solución se ubica según las capacidades relevadas al 01/10/2026 mediante el contraste de documentación oficial, README y páginas de paquetes (Anexo VI, A.VI.4).
 
 ![Mapa de posicionamiento de las soluciones relevadas](../figuras/cap-04/figura-mapeo-competencia.png){width="5.625in" height="4.21875in"}
 
 *Figura 2. Mapa de posicionamiento de las soluciones relevadas según la profundidad de la explicación y la granularidad de la procedencia. El círculo identifica soluciones sobre OpenCode y el cuadrado, sobre otras herramientas; las que comparten posición se agrupan con su cantidad. Fuente: elaboración propia sobre el relevamiento del 01/10/2026 (Anexo VI, A.VI.4).*
 
-RIGE ocupa el cuadrante de evaluación de la decisión con procedencia por declaración (3, 2), que ninguna de las 33 soluciones incluidas en el relevamiento del 01/10/2026 alcanza. Las más próximas son Amp, que evalúa la decisión con procedencia por alcance, y Codex, que evalúa comandos de shell sin procedencia de la regla; sobre OpenCode, el comando nativo de resolución por agente es el más próximo. El diferencial combina ambos ejes, en concordancia con la implicancia de los competidores potenciales del apartado IV.3.
+RIGE ocupa la celda de evaluación de la decisión con procedencia por declaración (3, 2). El relevamiento propio del 01/10/2026 no encontró esa combinación en las 33 soluciones publicadas incluidas en el contraste documental (Anexo VI, A.VI.4). Las más próximas son Amp, que evalúa la decisión con procedencia por alcance, y Codex `execpolicy check`, que evalúa comandos de shell sin archivo ni posición de la regla. Sobre OpenCode, el comando nativo de resolución por agente es el más próximo.
 
-Quedan fuera del mapa los precedentes de dominios maduros, que originan el diseño pero no operan sobre herramientas basadas en agentes, y los procedimientos manuales y delegados, cuyo resultado depende de quien los ejecuta (apartado IV.3). Los sincronizadores publicados se incluyen según sus capacidades documentadas. La skill `customize-opencode` que OpenCode 1.18.25 carga por defecto (OpenCode, 2026) integra el procedimiento delegado como oferta del fabricante y se analiza como sustituto en el apartado IV.3.
+Los precedentes de dominios maduros quedan fuera del mapa por operar sobre otros dominios y se conservan como antecedentes de diseño (apartado IV.3). Los sincronizadores publicados se incluyen según sus capacidades documentadas. Los sustitutos, el agente con la skill `customize-opencode` (OpenCode, 2026), la prueba por comportamiento y la instrucción de probar, se analizan en el apartado IV.3 y quedan fuera de este mapa.
 
-El precio se descarta como eje porque las soluciones con precio documentado ofrecen una modalidad gratuita y, en las demás, el relevamiento no encontró el precio; el eje no discrimina. La cobertura de herramientas discrimina en contra de RIGE y no mide la respuesta correcta; la desventaja se declara en L-05 y en la visión del apartado IV.2.
+El precio se descarta como eje: se comprueban licencias libres en herramientas de terceros como OCCM y CC Switch; para otras soluciones, el relevamiento no encuentra el precio. La cobertura de herramientas discrimina en contra de RIGE y mide la amplitud de compatibilidad; la desventaja se declara en L-05 y en la visión del apartado IV.2.

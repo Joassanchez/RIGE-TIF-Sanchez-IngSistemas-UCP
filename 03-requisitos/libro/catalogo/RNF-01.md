@@ -8,8 +8,8 @@
 | Categoría (si es no funcional) | Seguridad |
 | Prioridad | Must |
 | Motivo de la prioridad | Sostiene el carácter auditable de la herramienta y la exclusión de la edición |
-| Criterio de aceptación | CA-1: Calculado el resumen SHA-256 de todos los archivos alcanzados por el análisis, ejecutado un análisis completo y recalculados los resúmenes, los valores resultan idénticos en el 100 % de los archivos. CA-2: En el mismo análisis, ninguna marca de tiempo de modificación cambia. CA-3: El inventario de archivos de los directorios de configuración alcanzados, tomado antes y después del análisis, es idéntico: no aparece ni desaparece ningún archivo fuera del almacén de RIGE |
-| Trazabilidad | Acta del 26/09/2026, decisión L-01 |
+| Criterio de aceptación | CA-1: Calculado el resumen SHA-256 de todos los archivos alcanzados por el análisis, ejecutado un análisis completo y recalculados los resúmenes, los valores resultan idénticos en el 100 % de los archivos. CA-2: En el mismo análisis, las marcas de tiempo de modificación resultan idénticas. CA-3: El inventario de archivos de los directorios de configuración alcanzados, tomado antes y después del análisis, es idéntico: se registran cero altas y cero bajas de archivos fuera del almacén de RIGE |
+| Trazabilidad | Acta del 26/09/2026, decisión L-01. Validado (redacción del 26/09); precisión del 16/10 pendiente de revalidación (R-02) |
 | Estado de validación | Validado |
 | Iteración prevista | 1 |
 | ¿Integra el MVP? | Sí |

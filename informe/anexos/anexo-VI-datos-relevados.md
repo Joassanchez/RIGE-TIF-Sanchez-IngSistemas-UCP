@@ -94,7 +94,7 @@ El instrumento de atribución del 13/10/2026 y el de modificación del 14/10/202
 
 El autor es responsable de la medición y utiliza un asistente de programación como herramienta de apoyo para operar el arnés y producir los registros de ejecución. La medición utiliza la imagen `rige-linea-base:1.18.25`, identificador `a691196f0e3e`, con `build` y Charles, ambos con `gpt-6.1-sol`, k = 3, semilla 20261015 y límite de 600 s por ejecución. Charles es la variante del agente de la referente descrita en el Anexo III, D-41. Cada ejecución parte del escenario restaurado y de una sesión nueva. Las tareas se barajan con la semilla y se reparten en cuatro contenedores, cada tarea en uno solo con sus tres repeticiones; cada contenedor baraja sus pares con la misma semilla (ADR-098, punto 2).
 
-El brazo base se describe en el apartado II.2.1. Las pruebas con `opencode run` se realizan mediante `como-dev`, con el catálogo congelado y dentro del límite de la ejecución. La raíz del proyecto tiene escritura de grupo y *sticky bit*, lo que permite crear archivos y carpetas y protege los existentes del desarrollador frente al borrado o renombrado (ADR-098, punto 3).
+El brazo base se describe en el apartado II.2.1. `build` dispone de la skill `customize-opencode`; Charles conserva la denegación de su definición original, que solo habilita tres skills propias del equipo, ausentes en el laboratorio. Las condiciones de ambos ejecutores y sus motivos constan en la tabla de adaptaciones de Charles (Anexo III, D-41). Las pruebas con `opencode run` se realizan mediante `como-dev`, con el catálogo congelado y dentro del límite de la ejecución. La raíz del proyecto tiene escritura de grupo y *sticky bit*, lo que permite crear archivos y carpetas y protege los existentes del desarrollador frente al borrado o renombrado (ADR-098, punto 3).
 
 La Tabla A.VI.3 registra las seis tandas coordinadas por el autor, sobre los problemas y el corpus del repositorio, el 20 y el 21/10/2026. El conjunto comprende 402 ejecuciones válidas.
 
@@ -157,7 +157,7 @@ El relevamiento técnico completo de OpenCode 1.18.25 consta en el registro de l
 
 Dos observaciones sobre la composición de la tabla. El resultado n.º 11 corrige una afirmación de la versión anterior de este relevamiento, que sostenía que una aprobación de sesión prevalecía sobre una denegación declarada. Esa lectura provenía del motor que el resultado n.º 10 identifica como no vigente en la versión analizada, y la ejecución con un agente real la desmiente. La corrección se consigna de manera expresa, y no en silencio, porque ilustra el criterio que gobierna todo el relevamiento: leer el código del tag correcto no acredita el comportamiento de la herramienta si no se ejecuta.
 
-El resultado n.º 18 se incorpora a partir de la entrevista y no del relevamiento técnico, y se consigna como pendiente de verificación propia. Su comprobación es condición para sostener la inclusión de los elementos nativos declarada en el apartado I.6.1, y se ejecuta con el mismo procedimiento reproducible que los resultados 1 a 17.
+El resultado n.º 18 se incorpora a partir de la entrevista y no del relevamiento técnico, y se consigna como pendiente de verificación propia. Su comprobación condiciona únicamente la inclusión de los agentes internos relatados y se ejecuta con el mismo procedimiento reproducible que los resultados 1 a 17. Las reglas y los valores nativos ya verificados se incorporan sin esa condición (apartado I.6.1).
 
 Los resultados n.º 22 y 23 se incorporan después de la entrega del AE1, al construir el prototipo v1, y no alteran el recuento del resultado n.º 1: la configuración global constituye una sola entrada, integrada por hasta tres archivos.
 
@@ -226,18 +226,25 @@ La posición expresa el eje horizontal y el vertical, en ese orden. El horizonta
 | Canal                                            | Presencial en ambas entrevistas, de modalidad semiestructurada |
 | Fecha                                            | 29/08/2026 y 24/09/2026; constancia firmada el 15/10/2026 |
 | Duración                                         | Aproximadamente 30 minutos por entrevista |
-| Motivo declarado                                 | Verificar la presencia del problema en la práctica del equipo, obtener los parámetros de valoración y registrar las preguntas que el desarrollador formula en su práctica |
-| Consentimiento                                   | [DATO PENDIENTE: constancia explícita de consentimiento para las entrevistas] |
+| Motivo declarado                                 | Verificar la presencia del problema en la práctica del equipo y registrar su práctica de configuración |
+| Consentimiento                                   | Otorgado, según declaración del autor del 24/10/2026 |
 | Autorización para identificarla con nombre y rol | [DATO PENDIENTE: autorización explícita para publicar nombre y rol] |
 | Registro                                         | Entrevista del 29/08: respuestas registradas por el autor en el informe de la AE1. Entrevista del 24/09: registro en II.3.3 del informe de la AE2. Ambas carecen de grabación; la reconstrucción del 15/10/2026 incorpora la memoria del autor y la confirmación de la referente |
 
 *Tabla A.VI.7. Datos de la entrevista. Fuente: elaboración propia.*
 
-**Guía de entrevista aplicada.** Las preguntas se ordenan de lo general a lo particular y evitan sugerir la respuesta esperada. Se registran en el orden efectivamente aplicado: (1) herramientas de programación asistida que el equipo utiliza y desde cuándo; (2) motivo por el cual el equipo las incorporó; (3) quién configura el entorno de cada desarrollador y con qué criterio; (4) situaciones en que el comportamiento del agente difirió de lo previsto, con relato de un caso concreto; (5) procedimiento seguido para averiguar qué configuración regía en ese caso y tiempo aproximado que demandó; (6) recursos y soluciones propias que el equipo construyó para resolver estas consultas; (7) frecuencia con que se presentan consultas de esta clase; (8) valor de referencia de la hora de trabajo de desarrollo y su origen; (9) consecuencias observadas cuando la respuesta resultó incorrecta.
+Guía de entrevista aplicada. Las preguntas de la entrevista del 29/08/2026 se reproducen en el orden que registra la constancia:
+
+1. ¿Cuántas personas integran el equipo de desarrollo del área de Sistemas?
+2. ¿Desde cuándo el equipo utiliza herramientas de agentes de programación y qué motivó su incorporación?
+3. ¿Con qué frecuencia necesita averiguar cómo está configurado un agente, una skill o un permiso?
+4. ¿Le ocurrió modificar un archivo de configuración y que el cambio no produjera efecto?
+5. ¿Cuál es el costo horario de referencia de una hora de trabajo de desarrollo en el área?
+6. Presentada la maqueta: ¿la representación propuesta responde la pregunta que hoy resuelve de manera manual?
 
 El registro disponible es la constancia de entrevistas, versión 1, firmada por Valeria Areco el 15/10/2026. Se reconstruye a partir de los informes de la AE1 y la AE2 y de la memoria del autor; la referente confirma las afirmaciones. La versión 2 ratifica las secciones de entrevistas y agrega la segunda extensión del acta de validación. Ambas constancias figuran en el registro de fuentes.
 
-La entrevista del 29/08/2026 aplica un guion de siete preguntas y presenta la maqueta v0. La del 24/09/2026 corresponde a una charla de seguimiento sin guion fijo. La constancia firmada respalda la utilidad de identificar el archivo que determina cada valor efectivo; carece de una descripción de revisión de archivos uno por uno.
+La entrevista del 29/08/2026 presenta la maqueta v0. La constancia menciona un guion de siete preguntas y registra las seis reproducidas en la guía. La del 24/09/2026 corresponde a una charla de seguimiento sin guion fijo. La constancia firmada respalda la utilidad de identificar el archivo que determina cada valor efectivo; carece de una descripción de revisión de archivos uno por uno.
 
 Como consecuencia del comportamiento inesperado, se registra consumo de tokens por acciones repetidas, sin cuantificación ni atribución por separado a cada episodio. La constancia tampoco registra exposición de información ni bloqueo acreditados en esos episodios.
 
@@ -412,7 +419,7 @@ El contraste fuera del árbol es descriptivo y comprende M-1 a M-10 con tres rep
 
 ### Proceso y costo
 
-La clasificación por traza de las 138 ejecuciones ecológicas de cada ejecutor registra que todos los éxitos declarados falsos de la lectura principal siguen a una verificación declarativa con `opencode debug`: 16 con `build` (14 en E2 y dos en E4) y 18 con Charles (15 en E2 y tres en E4). `build` registra 129 verificaciones declarativas, ocho ejecuciones sin verificación y una de comportamiento; Charles, 133, cuatro y una, respectivamente. Los informes ecológicos registran cero sesiones anidadas en ambos ejecutores. Según el documento de lectura de la medición (registro de la evidencia, A.VI.11), las 276 ejecuciones usan la skill y la documentación local, y ninguna utiliza `webfetch`.
+La clasificación por traza de las 138 ejecuciones ecológicas de cada ejecutor registra que todos los éxitos declarados falsos de la lectura principal siguen a una verificación declarativa con `opencode debug`: 16 con `build` (14 en E2 y dos en E4) y 18 con Charles (15 en E2 y tres en E4). `build` registra 129 verificaciones declarativas, ocho ejecuciones sin verificación y una de comportamiento; Charles, 133, cuatro y una, respectivamente. Los informes ecológicos registran cero sesiones anidadas en ambos ejecutores. Según el documento de lectura de la medición, las 138 ejecuciones ecológicas de `build` usan la skill `customize-opencode` (registro de la evidencia, A.VI.11). Charles conserva las skills denegadas por su definición original. Ninguna de sus ejecuciones usa `customize-opencode` (Anexo III, D-41). Todas las ejecuciones usan la documentación local y ninguna utiliza `webfetch`.
 
 El costo por ejecución se expresa en USD con las tarifas congeladas de A.VI.10, incluida la caché (ADR-098, punto 9). Para las tandas ecológicas del 20 y el 21/10/2026, el análisis de costo incorporado en ADR-098 registra medianas de USD 0,0603 en E1 y 0,0667 en E2 con `build`, y de USD 0,0717 y 0,0764 con Charles. El Contexto 19 informa un costo equivalente para ejecuciones correctas y fallidas y una proporción de caché del 82 % de los tokens totales. En E2 se registran 14 llamadas con éxito declarado falso de `build` y 15 de Charles. Las fallas son casi deterministas por problema; repetir el pedido en una sesión nueva tiende a reproducirlas. La derivación de los límites de la salvaguarda y las alternativas descartadas se desarrollan en el Anexo III, D-41.
 
@@ -452,8 +459,23 @@ La Tabla A.VI.14 distingue las decisiones anteriores a la medición de las que s
 | Defectos de referencia en S-3 y M-2 | 22/10/2026 | Después del dato | Sin efecto sobre X; se dispone corregirlos antes de noviembre con readmisión y ensayo. La comparación de la medición final usa esta línea de base; la fracción de M-2 se conserva porque sus éxitos declarados falsos son sin efecto. |
 | Costo como salvaguarda en USD por problema | 22/10/2026 | Después del dato | Reemplaza el umbral de reducción; los límites se fundamentan en D-41. |
 | Fila incompleta del contraste de Charles sustituida (MED-17) | 22/10/2026 | Después del dato | El análisis usa la repetición de M-8:1 y declara válidas las seis dimensiones, sin repetir el ensayo por un cambio de análisis. |
+| Tolerancia por ruido en la no regresión | 24/10/2026 | Después del dato, antes de la medición final | Antes del corte del 07/11/2026 se estima por remuestreo la probabilidad de incumplimiento sin cambio real, por condición y ejecutor. Hasta el 5 % se conserva la condición; por encima, la tolerancia es el percentil 95. |
+| Conjunto reservado como condición de no regresión | 24/10/2026 | Después del dato, antes de la medición final | Con RIGE indicado, las variantes con éxito declarado falso no superan las del brazo sin RIGE. Con menos de tres variantes admitidas, la condición queda no puesta a prueba y el conjunto es descriptivo. |
+| Interpretación del brazo con instrucción de probar | 24/10/2026 | Después del dato, antes de la medición final | Si alcanza la meta sin RIGE, el aporte se acredita en el diagnóstico de RF-07 y el costo comparado entre brazos. Si se omite por cuota, constituye la principal amenaza a la validez del criterio. |
+| Rama de respaldo completa | 24/10/2026 | Después del dato, antes de la medición final | Con tres o más problemas cubiertos rige la meta. Con menos de tres, queda sin evaluar; solo hay hallazgo negativo con detección de al menos el 90 % sin falsos positivos. |
+| Tasa condicionada, productividad y origen del error por traza | 24/10/2026 | Después del dato, antes de la medición final | Agrega tres lecturas descriptivas con las condiciones de información que se detallan debajo. La productividad expresa la contribución al ODS 8.2. |
 
-*Tabla A.VI.14. Decisiones del diseño y del análisis según su momento. Fuente: ADR-098, «Antecedentes absorbidos», puntos 2 a 13 y Contextos 13 a 21; ADR-090; documento de lectura de la medición, «Reanálisis con MED-17» (registro de la evidencia, A.VI.11).*
+*Tabla A.VI.14. Decisiones del diseño y del análisis según su momento. Fuente: Anexo III, D-41; ADR-098, «Antecedentes absorbidos», puntos 2 a 13 y Contextos 13 a 21; ADR-090; documento de lectura de la medición, «Reanálisis con MED-17» (registro de la evidencia, A.VI.11).*
+
+### Lecturas descriptivas del 24/10/2026
+
+Las tres lecturas se fijan después de conocer las tandas del 20 y el 21/10/2026 y antes de la medición final. Se conservan como descriptivas, por separado del criterio de éxito (Anexo III, D-41).
+
+La tasa condicionada se calcula sobre las trazas archivadas de E1 y E2 de ambos ejecutores. Entre las ejecuciones en que el agente escribe al menos una regla de permiso por archivo o directorio, se obtiene la proporción que usa una ruta absoluta, por ejecución y por problema. La identificación mecánica examina las claves de las reglas en los archivos finales: comienzan en la raíz del sistema de archivos o con letra de unidad. Si exige codificación manual o hay menos de diez ejecuciones con reglas por ruta, se omite la tasa y se declara el motivo.
+
+La productividad del procedimiento delegado se expresa como pedidos resueltos con efecto, con objetivo logrado y sin éxito declarado falso, divididos por el costo total en USD de esos pedidos. Se informa por separado para E1 y E2 y para cada ejecutor, tanto en la línea de base como en la medición final con RIGE indicado. El indicador de contribución al ODS 8.2 se fija antes del corte del 07/11/2026. La decisión carece de condición de invalidación; si E1 domina la lectura, se mantiene la separación por estrato.
+
+El origen del error se examina en las ejecuciones que escriben una regla con ruta absoluta. Con la traza archivada se clasifica la fuente leída antes de escribirla: documentación local, skill `customize-opencode`, `webfetch` o ninguna. Si la traza no conserva lo leído o hay menos de diez ejecuciones con lectura previa, se omite esta lectura y se declara el motivo.
 
 ### Informe de la medición final
 
@@ -467,7 +489,9 @@ El criterio principal se evalúa en el brazo que indica al agente que consulte R
 
 - La consecuencia, el proceso y el contraste fuera del árbol.
 
-El conjunto reservado contiene variantes de ruta absoluta sobre archivos y directorios con archivos y herramientas que el manifiesto de aceptación de RIGE no usa. Se mide con y sin RIGE y se informa aparte del criterio principal. Si alcanza la cuota, se incorpora un brazo sin RIGE que pide probar el efecto ejecutando OpenCode; su omisión se declara como límite (Anexo III, D-41).
+El conjunto reservado contiene variantes de ruta absoluta sobre archivos y directorios con archivos y herramientas que el manifiesto de aceptación de RIGE no usa. Se mide con y sin RIGE y se informa por separado del banco. Integra el criterio principal como condición de no regresión: con RIGE indicado, la cantidad de variantes con éxito declarado falso en al menos dos de tres repeticiones no supera la del brazo sin RIGE. Con menos de tres variantes admitidas, la condición se informa como no puesta a prueba y el conjunto queda descriptivo (Anexo III, D-41).
+
+Si alcanza la cuota, se incorpora un brazo sin RIGE que pide probar el efecto ejecutando OpenCode. Cuando alcanza la meta, el aporte de RIGE frente a esa alternativa se acredita en el diagnóstico de RF-07, causa y forma correcta, y en el costo según la salvaguarda comparada entre brazos. En ese supuesto, la reducción del éxito declarado falso no acredita el aporte de RIGE frente a la instrucción de probar. Si no alcanza la meta, se informa la diferencia por problema. La omisión por cuota constituye la principal amenaza a la validez del criterio (Anexo III, D-41).
 
 El corte del 07/11/2026 congela el MVP cuya cobertura delimita la meta. El texto de la instrucción del brazo descriptivo se fija antes del congelamiento del 14/11/2026.
 
@@ -507,6 +531,7 @@ La evidencia consta en el repositorio entregado, en la revisión [DATO PENDIENTE
 |---|---|---|
 | Constancia de entrevistas, v1 | Entrevistas y primera extensión del acta de validación, con firma del 15/10/2026. | `01-relevamiento/validacion/20261015_ConstanciaEntrevistas_Sanchez_v1.md` |
 | Constancia de entrevistas, v2 | Ratificación de las entrevistas y de la primera extensión, y confirmación de los once cambios de la segunda extensión, con firma del 15/10/2026. | `01-relevamiento/validacion/20261015_ConstanciaEntrevistas_Sanchez_v2.md` |
+| Definición de Charles | Definición del agente «[AUX] Charles» entregada por la referente el 13/10/2026, con consentimiento de uso; contenido privado. | `01-relevamiento/evidencia/PRIV/agente-referente-charles_20261013.md` |
 | Banco ecológico | Problemas admitidos, estratos y admisión nativa. | `01-relevamiento/linea-base/ecologica/banco.md` |
 | Hoja de tareas ecológicas | Enunciados de la hoja cerrada el 19/10/2026. | `01-relevamiento/linea-base/ecologica/tareas.md` |
 | Medición del 20 y el 21/10/2026 | Documento de lectura, parámetros, archivo con SHA-256 y reanálisis con MED-17. | `01-relevamiento/linea-base/verificacion/20261021-LB-ADR098/LEEME.md` |

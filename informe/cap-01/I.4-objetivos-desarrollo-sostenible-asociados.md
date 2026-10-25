@@ -20,4 +20,4 @@ El indicador oficial de la meta, la tasa de crecimiento anual del PIB real por p
 
 El criterio de éxito del apartado I.3.4 establece la condición de corrección del procedimiento delegado. La productividad expresa cuántos pedidos se resuelven con efecto por unidad de costo; su aumento constituye la contribución esperada a la meta 8.2.
 
-Se adopta como indicador la productividad del procedimiento delegado, expresada en pedidos resueltos con efecto por USD. Se cuenta como resuelto un pedido cuyo objetivo se logra sin éxito declarado falso. El cociente se informa por separado para E1 y E2 y para cada ejecutor, en la línea de base y en la medición final con RIGE indicado. La lectura es descriptiva [DECISIÓN PENDIENTE: aceptación de ADR-098, punto 24].
+Se adopta como indicador la productividad del procedimiento delegado, expresada en pedidos resueltos con efecto por USD. Se cuenta como resuelto un pedido cuyo objetivo se logra sin éxito declarado falso. El cociente se informa por separado para E1 y E2 y para cada ejecutor, en la línea de base y en la medición final con RIGE indicado. La lectura es descriptiva.

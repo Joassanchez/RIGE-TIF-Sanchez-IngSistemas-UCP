@@ -1,9 +1,13 @@
 ## IV.2 · Definiciones estratégicas: visión y misión
 
-La misión y la visión se toman del apartado I.2 y se expresan en términos de destinatario, diferencial y sostenimiento. Corresponden al proyecto de sistema de información y no a la organización consultada.
+La misión y la visión del proyecto se definen en I.2.1 e I.2.2, respectivamente. Su derivación de negocio establece a quién se entrega el resultado y cómo se sostiene esa entrega.
 
-**Misión.** RIGE ofrece al desarrollador que configura su propio entorno de programación basada en agentes una respuesta verificable sobre qué configuración rige sobre cada agente, de dónde proviene y qué acciones puede ejecutar, mediante una herramienta local, de código abierto y sin costo de uso. Su exactitud se comprueba contra el comportamiento de la propia herramienta.
+### IV.2.1 · Derivación de la misión
 
-**Visión.** En un horizonte de dos años desde su puesta en marcha, RIGE es la referencia abierta para auditar la configuración efectiva de la programación basada en agentes. Cubre, además de OpenCode, las herramientas de mayor adopción mediante adaptadores sobre un núcleo común, aportados por la comunidad o financiados por patrocinio. Conserva la verificación automática contra cada herramienta como condición de toda versión publicada. La visión depende de que el patrocinio cubra la readaptación ante cada versión.
+El destinatario comprende al desarrollador que configura su entorno y al agente en el que delega esa tarea, conforme a I.2.1. Frente a los competidores, el diferencial combina la decisión de permiso con su regla determinante y la procedencia por declaración (entrada, archivo y posición), incluidos los valores implícitos y las declaraciones sin efecto (Anexo III, D-59). La entrega se sostiene durante el período con las horas del autor, bajo licencia MIT y sin costo de uso (apartados IV.1 y IV.3).
 
-La misión conserva el propósito del apartado I.2.1 y agrega el diferencial de la decisión de permiso con procedencia por declaración, la ausencia de costo de uso y la verificabilidad (apartados IV.1 y IV.3). La visión conserva el horizonte y la cobertura del apartado I.2.2, con el adaptador como mecanismo, y compromete la verificación de cada versión publicada de RIGE (alternativa descartada en el Anexo III, A.III.3).
+### IV.2.2 · Derivación de la visión
+
+La ampliación en la programación agéntica prevista en I.2.2 requiere adaptadores sobre un núcleo común. Los aportes de la comunidad o el patrocinio por hito sostienen su desarrollo, según el modelo de ingresos del apartado IV.1.
+
+Se compromete la verificación automática de cada versión publicada de RIGE contra la herramienta correspondiente. La readaptación a nuevas versiones depende de que el patrocinio cubra su costo, estimado en X.3. Se descarta comprometer compatibilidad con cada nueva versión de las herramientas porque el mantenimiento sin ingresos carece de cobertura económica (Anexo III, A.III.3).

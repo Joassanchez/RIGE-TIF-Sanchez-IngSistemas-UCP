@@ -8,7 +8,9 @@ El glosario fija el vocabulario normativo del informe y, más adelante, el del m
 |--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|-------------------------|-----------------------------------------|
 | Entrada de configuración | Vía por la cual OpenCode incorpora configuración al resolver el estado efectivo, sea o no un archivo | La documentación emplea *source*; el uso corriente alterna capa, alcance y nivel | A.VI.3, resultado 1; acta del 26/09/2026 | No |
 | Archivo de configuración | Entrada que se materializa en un archivo del disco, con ruta y posición | No toda entrada es un archivo: cuatro de ellas no lo son | A.VI.3, resultado 1; acta del 26/09/2026 | No |
+| Árbol de trabajo | Directorio raíz contra el que OpenCode relativiza la ruta de una acción sobre archivos. Se supone que coincide con el del proyecto analizado; la verificación nativa de esa coincidencia queda pendiente. | — | H-24; pendiente de revalidación (R-11) | No |
 | Declaración | Asignación concreta escrita dentro de una entrada | — | A.VI.3, resultado 6; acta del 26/09/2026 | No |
+| Declaración sin efecto | Denominación general de una declaración que no produce el efecto esperado. Su causa se precisa mediante los estados de I.6.3. | Término general, sin un séptimo tipo de hallazgo | I.6.3; pendiente de revalidación (R-11) | No |
 | Valor efectivo                 | Valor que OpenCode aplica a una clave tras combinar todas las entradas                                                                                          | Se distingue del valor declarado, que puede no prevalecer                          | A.VI.3, resultado 1      | No                                      |
 | Procedencia | Cadena que conduce al valor efectivo: entrada, archivo y posición de la declaración determinante y, si esta contiene una sustitución, el origen de su contenido | — | A.VI.3, resultado 6; acta del 26/09/2026 | No |
 | Valor implícito                | Valor que la herramienta aplica sin declaración del usuario                                                                                                     | —                                                                                  | apartado I.6.3      | No                                      |
@@ -35,7 +37,7 @@ El glosario fija el vocabulario normativo del informe y, más adelante, el del m
 
 ## A.V.2 · Registro de reglas de negocio
 
-Las reglas de derivación describen el comportamiento de OpenCode 1.18.25: cinco de ellas (RD-02, RD-03, RD-05, RD-06 y RD-07) se verificaron, además, mediante la ejecución de escenarios controlados, y las dos restantes, mediante la lectura del código fuente o de la salida de los comandos de introspección.
+Las reglas de derivación describen el comportamiento de OpenCode 1.18.25. Cinco reglas (RD-02, RD-03, RD-05, RD-06 y RD-07) se verifican mediante escenarios controlados. RD-01 y RD-04 se verifican mediante la lectura del código o de los comandos de introspección. RD-08 se apoya en la evidencia técnica de H-24 y queda pendiente de revalidación (R-11).
 
 | **Cód.** | **Tipo**    | **Enunciado verificable**                                                                                                                                                                         | **Fuente**                        | **Estado**              | **Requisito derivado** |
 |----------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|-------------------------|------------------------|
@@ -46,11 +48,12 @@ Las reglas de derivación describen el comportamiento de OpenCode 1.18.25: cinco
 | RD-05 | Derivación | El subagente lanzado mediante `task` en una sesión nueva se rige por su propio conjunto de reglas, más una denegación de `task` y otra de `todowrite` cuando ese conjunto no contiene una regla con ese identificador exacto (una regla general `*` no lo evita); las reglas del agente que lo lanza no se le aplican | H-12; acta del 26/09/2026; segunda extensión del acta del 15/10/2026 | Validada | RF-02 |
 | RD-06 | Derivación | Si la última regla coincidente para una herramienta declara patrón general y efecto de denegación, la herramienta no se ofrece al modelo; una excepción posterior vuelve a exponerla por completo | H-08; acta del 26/09/2026 | Validada | RF-10 |
 | RD-07 | Derivación | Una declaración del usuario que alcanza una acción denegada por una regla nativa del agente prevalece sobre ella, dado que las declaradas se concatenan después de las nativas | H-07; acta del 26/09/2026 | Validada | RF-09 |
+| RD-08 | Derivación | El sujeto de una acción sobre archivos se evalúa con la ruta relativa al árbol de trabajo | H-24; pendiente de revalidación (R-11) | Pendiente | RF-02 |
 | RR-01 | Restricción | RIGE no modifica ninguna entrada de configuración; escribe únicamente en su propio almacén | Acta del 26/09/2026, decisión L-01 | Validada | RNF-01 |
 | RR-02 | Restricción | RIGE no expone el contenido que una sustitución incorpora; informa su origen y su condición de definido o no definido | Acta del 26/09/2026, decisión L-03; extensión del acta del 01/10/2026; segunda extensión del acta del 15/10/2026 | Validada | RNF-04 |
 | RR-03 | Restricción | RIGE resuelve únicamente sobre OpenCode 1.18.25; ante otra versión instalada advierte y no presenta sus resultados como válidos | Acta del 26/09/2026, decisión L-05 | Validada | RF-05 |
 | RE-01 | Existencia | Un elemento ingresa a la resolución si proviene de una entrada legible o si la herramienta lo incorpora sin declaración (nativo); si una entrada es ilegible, su carga se detiene con error y se registra el hallazgo correspondiente | apartado I.6.3; acta del 26/09/2026; extensión del acta del 01/10/2026; segunda extensión del acta del 15/10/2026 | Validada | RF-04, RF-07 |
-| RE-02 | Existencia | Una regla se marca sin efecto solo si existe una regla posterior del mismo tipo que abarca todos los casos que ella cubre, o si su patrón declara la ruta absoluta de un archivo o directorio del árbol de trabajo, que no coincide con ninguna acción porque OpenCode 1.18.25 evalúa la ruta relativa al árbol | H-05; adaptado de Al-Shaer y Hamed (2004); acta del 26/09/2026; ADR-088, modificación del 22/10/2026 (precisada por la línea de base, pendiente de revalidación ante la referente) | Validada | RF-07 |
+| RE-02 | Existencia | Una regla se marca sin efecto solo si una regla posterior del mismo tipo abarca todos sus casos o si su patrón declara la ruta absoluta de un archivo o directorio del árbol de trabajo (RF-07). | H-05; adaptado de Al-Shaer y Hamed (2004); acta del 26/09/2026; A.VI.8; H-24 | Validada (redacción del 26/09); precisión del 22/10 pendiente de revalidación (R-07) | RF-07 |
 | RE-03 | Existencia | Un elemento declarado se marca sin uso solo si ninguna declaración de un agente ni de un comando lo nombra | apartado I.6.3; acta del 26/09/2026; extensión del acta del 01/10/2026; segunda extensión del acta del 15/10/2026 | Validada | RF-07 |
 
 *Tabla A.V.2. Registro de reglas de negocio. Fuente: elaboración propia.*
@@ -67,9 +70,11 @@ Las reglas de derivación describen el comportamiento de OpenCode 1.18.25: cinco
 | Elemento                 | Tipo, nombre, valor efectivo como atributo derivado del elemento que resulta de cada resolución, procedencia, estado de uso                                                                                                       |
 | Agente                   | Modelo efectivo, instrucciones aplicables de alcance global y de proyecto en orden, cadena de reglas de permiso, condición de subagente invocable |
 | Regla de permiso         | Patrón de coincidencia, decisión, posición en la cadena, carácter nativo o declarado, estado efectiva o sin efecto                                |
-| Hallazgo                 | Tipo, elemento, declaración, entrada o sustitución sobre la que recae, localización, severidad                                                                |
+| Hallazgo                 | Tipo, elemento, declaración, entrada, sustitución o regla de permiso sobre la que recae, localización, severidad; ampliación pendiente de revalidación (R-11) |
 
 *Tabla A.V.3. Atributos de las entidades del dominio. Fuente: elaboración propia.*
+
+La Consulta de permiso, producto del sistema, tiene como atributo la acción (tipo de permiso, sujeto y forma de la ruta), pendiente de revalidación (R-11).
 
 ## A.V.4 · Relaciones del dominio
 
@@ -83,12 +88,12 @@ La multiplicidad sigue la notación UML y se lee del extremo de origen al extrem
 | Una entrada contiene ninguna o muchas declaraciones                                                            | 1 a 0..*          |
 | Una declaración contiene ninguna o muchas sustituciones                                              | 1 a 0..*          |
 | Una declaración puede quedar desplazada por otra declaración de mayor precedencia                    | 0..1 a 0..1       |
-| Un elemento se compone de ninguna o muchas declaraciones, de las cuales a lo sumo una resulta determinante; una declaración global compone uno o muchos elementos; sin declaración rige el valor implícito | 1..* a 0..* |
+| Un elemento se compone de cero o más declaraciones, con a lo sumo una determinante por clave del elemento, pendiente de revalidación (R-11). Una declaración global compone uno o muchos elementos; sin declaración rige el valor implícito | 1..* a 0..* |
 | Un elemento se relaciona con muchos otros elementos, con un tipo de relación declarado               | 0..* a 0..*       |
 | Un agente evalúa una cadena ordenada de muchas reglas de permiso; una regla rige sobre uno o muchos agentes                                     | 1..* a 1..* {ordenada} |
 | Una declaración origina ninguna o muchas reglas de permiso; una regla nativa no proviene de ninguna declaración | 0..1 a 0..* |
 | Un agente puede invocar muchos subagentes y un subagente puede ser invocado por muchos agentes; el subagente se rige por su propio conjunto de reglas (RD-05)                             | 0..* a 0..* |
 | Una resolución produce ninguno o muchos hallazgos                                                    | 1 a 0..*          |
-| Un hallazgo recae sobre un elemento, una declaración, una entrada o una sustitución                                   | 0..* a 1 {xor: elemento, declaración, entrada o sustitución} |
+| Un hallazgo recae sobre un elemento, una declaración, una entrada, una sustitución o una regla de permiso, pendiente de revalidación (R-11) | 0..* a 1 {xor: elemento, declaración, entrada, sustitución o regla de permiso} |
 
 *Tabla A.V.4. Relaciones del dominio y sus multiplicidades. Fuente: elaboración propia. Once relaciones validadas con la referente en la sesión del 26/09/2026; la relación entre declaración y regla de permiso y las multiplicidades, en la extensión del acta del 01/10/2026; la relación entre resolución y elemento, en la segunda extensión del 15/10/2026.*

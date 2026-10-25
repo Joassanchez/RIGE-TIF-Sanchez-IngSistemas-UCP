@@ -90,6 +90,10 @@ La medición final sigue el protocolo de validación del OE-4 sobre el mismo ban
 
 Al menos dos tercios, redondeados hacia arriba, de los problemas de E2 con éxito declarado falso que cubre el MVP congelado en el corte del 07/11/2026 dejan de tenerlo. Con los cinco problemas de la línea de base, la meta es cuatro. Ningún problema que carece de éxito declarado falso lo adquiere; ID-1 mantiene o mejora su valor e ID-2 se mantiene o disminuye. La no regresión sobre los demás problemas de E1 y E2 pone a prueba a RIGE más allá del mecanismo de la ruta absoluta.
 
+Antes del corte del 07/11/2026 se estima, para cada condición de no regresión y ejecutor, la probabilidad de incumplimiento sin cambio real. Se remuestrean las tres repeticiones de cada problema de la línea de base en 5.000 iteraciones. Hasta el 5 %, se conserva la condición y se declara la probabilidad; por encima, la tolerancia se fija en el percentil 95. La reutilización de las mismas repeticiones puede subestimar la variación (Anexo III, D-41).
+
+En el conjunto reservado, con RIGE indicado, la cantidad de variantes con éxito declarado falso en al menos dos de tres repeticiones no supera la del brazo sin RIGE. Si se admiten menos de tres variantes, la condición se informa como no puesta a prueba y el conjunto queda descriptivo (Anexo VI, A.VI.8).
+
 #### Cobertura
 
 Los cinco problemas quedan cubiertos por la normalización de rutas de RF-02, CA-9, precisada para archivos y directorios después del dato, el 22/10/2026. Todo problema observado que quede fuera del MVP congelado se informa junto a la meta, con su motivo; la lectura preregistrada agrega uno sin cobertura por exceso de alcance (Anexo VI, A.VI.8).
@@ -100,11 +104,17 @@ El costo cumple la función de salvaguarda y queda fuera del criterio de éxito.
 
 #### Rama de respaldo
 
-Si los problemas de E2 con éxito declarado falso cubiertos por el MVP congelado son menos de tres, la meta queda sin evaluar. El proyecto se informa como producto verificado (OE-1 a OE-3) con hallazgo negativo solo si, además, la detección del agente alcanza al menos el 90 % sin falsos positivos (Anexo III, D-41).
+Con tres o más problemas de E2 con éxito declarado falso cubiertos por el MVP congelado, rige la meta. La rama de respaldo solo se activa si la revisión del alcance del MVP antes del corte del 07/11/2026 deja cubiertos menos de tres de los cinco problemas. En ese caso, la meta queda sin evaluar y se distinguen dos combinaciones (Anexo III, D-41):
+
+- Con detección del agente de al menos el 90 % sin falsos positivos, se informa el producto verificado (OE-1 a OE-3) con hallazgo negativo.
+
+- Con detección menor al 90 % o con falsos positivos, se informa el producto verificado, los problemas con éxito declarado falso cubiertos y no cubiertos, y la detección. Se conserva el criterio y se informa que el problema se observa, sin declarar hallazgo negativo.
 
 Las lecturas y los brazos descriptivos se informan por separado del criterio principal para conservar los contrastes y mostrar el efecto de las decisiones posteriores al dato (Anexo VI, A.VI.8). La coincidencia de RIGE con OpenCode se verifica como propiedad del producto mediante OE-1 y OE-2, por separado de la mejora del procedimiento delegado.
 
-El conjunto reservado de variantes de ruta absoluta mitiga el ajuste a los casos con los que se precisa el requisito. Si alcanza la cuota, se incorpora además el brazo sin RIGE con instrucción de probar el efecto ejecutando OpenCode; su omisión se declara como límite (Anexo III, D-41). El corte del 07/11/2026 fija el MVP cuya cobertura delimita la meta; el congelamiento del 14/11/2026 fija el texto de la instrucción de ese brazo descriptivo.
+Se informan como lecturas descriptivas la tasa de reglas por ruta escritas con ruta absoluta, la productividad del procedimiento delegado y la fuente leída antes de escribir la ruta absoluta (Anexo VI, A.VI.8).
+
+El conjunto reservado de variantes de ruta absoluta mitiga el ajuste a los casos con los que se precisa el requisito. Si alcanza la cuota, se incorpora además el brazo sin RIGE con instrucción de probar el efecto ejecutando OpenCode. Cuando alcanza la meta sin RIGE, el aporte frente a esa alternativa se acredita en el diagnóstico de RF-07, causa y forma correcta, y en el costo comparado entre los brazos mediante la salvaguarda. En ese supuesto, la reducción del éxito declarado falso no acredita el aporte de RIGE frente a la instrucción de probar. Si el brazo no alcanza la meta, se informa la diferencia por problema. Su omisión por cuota se declara como la principal amenaza a la validez del criterio (Anexo III, D-41). El corte del 07/11/2026 fija el MVP cuya cobertura delimita la meta; el congelamiento del 14/11/2026 fija el texto de la instrucción de ese brazo descriptivo.
 
 ### I.3.5 · Primer requisito y riesgo principal
 

@@ -16,7 +16,7 @@ El modelado sigue el procedimiento de identificación de sustantivos del dominio
 | Elemento                 | Unidad de configuración que RIGE resuelve y relaciona, cuyo tipo declara el adaptador                | Sí | Sí | Sí | A.VI.3, resultado 1; AE1, Tabla 6 | Se compone de ninguna o muchas declaraciones; se relaciona con otros elementos  |
 | Agente                   | Especialización de Elemento sobre la cual se manifiesta el efecto de toda la configuración           | Sí | Sí | Sí | A.VI.3, resultados 5 y 12         | Evalúa una cadena de reglas; invoca muchos subagentes y puede ser invocado por muchos agentes                                  |
 | Regla de permiso         | Regla que produce una decisión de permiso, nativa de la herramienta o escrita por el usuario en una declaración | Sí | Sí | Sí | A.VI.3, resultados 5, 7 y 8; segunda extensión del acta del 15/10/2026 | Rige sobre uno o muchos agentes; ocupa una posición en la cadena; si es declarada, proviene de una declaración |
-| Hallazgo                 | Defecto detectado en el ecosistema, con su localización                                              | Sí | Sí | Sí | A.VI.3, resultados 3, 5, 13 y 14      | Recae sobre un elemento, una declaración, una entrada o una sustitución        |
+| Hallazgo                 | Defecto detectado en el ecosistema, con su localización                                              | Sí | Sí | Sí | A.VI.3, resultados 3, 5, 13 y 14      | Recae sobre un elemento, una declaración, una entrada, una sustitución o una regla de permiso, pendiente de revalidación (R-11) |
 
 *Tabla 2. Entidades del dominio, con su fuente y sus relaciones principales. Fuente: elaboración propia sobre el relevamiento técnico del Anexo VI, A.VI.3.*
 
@@ -27,7 +27,7 @@ Las candidatas descartadas se conservan con su reclasificación, dado que el des
 | Valor efectivo | No | No se evalúa | No se evalúa | Atributo de otra entidad | Atributo derivado del elemento que resulta de cada resolución |
 | Procedencia | No | No se evalúa | No se evalúa | Atributo de otra entidad | Atributo del elemento, junto con su valor efectivo: es la cadena que conduce a la declaración determinante, no una cosa del dominio |
 | Archivo | No | No se evalúa | No | Atributo de otra entidad | Atributo de la entrada (su ruta). Como objeto del disco pertenece al entorno: el sistema lo recibe ya formado y no lo modifica |
-| Consulta de permiso                                | No se evalúa | No | No se evalúa | Producto del sistema                              | Sus datos son referencias a otras entidades; no posee datos propios             |
+| Consulta de permiso | No | No se evalúa | No se evalúa | Producto del sistema | Tiene referencias a otras entidades y un atributo propio: la acción (tipo de permiso, sujeto y forma de la ruta), pendiente de revalidación (R-11) |
 | Desarrollador | No se evalúa | No se evalúa | No | Elemento del entorno | Actor externo, conforme al apartado III.1 |
 | Agente que consume la salida por línea de comandos | No se evalúa | No se evalúa | No | Elemento del entorno | Sistema vecino, conforme al apartado III.1 (E-01) |
 | Versión de OpenCode | No | No | No se evalúa | Atributo de otra entidad | Atributo de la resolución y del proyecto analizado; opera además como restricción del entorno. No posee datos ni reglas propios dentro del sistema |
@@ -51,9 +51,11 @@ Una sola especialización se declara en el modelo. El Agente se modela como enti
 | Elemento | Tipo, nombre, valor efectivo como atributo derivado del elemento que resulta de cada resolución, procedencia, estado de uso |
 | Agente                   | Modelo efectivo, instrucciones aplicables de alcance global y de proyecto en orden, cadena de reglas de permiso, condición de subagente invocable |
 | Regla de permiso         | Patrón de coincidencia, decisión, posición en la cadena, carácter nativo o declarado, estado efectiva o sin efecto                                |
-| Hallazgo                 | Tipo, elemento, declaración, entrada o sustitución sobre la que recae, localización, severidad                                                                |
+| Hallazgo                 | Tipo, elemento, declaración, entrada, sustitución o regla de permiso sobre la que recae, localización, severidad; ampliación pendiente de revalidación (R-11) |
 
 *Tabla A.V.3. Atributos de las entidades del dominio. Fuente: elaboración propia.*
+
+La Consulta de permiso, producto del sistema, tiene como atributo la acción (tipo de permiso, sujeto y forma de la ruta), pendiente de revalidación (R-11).
 
 ## Relaciones del dominio (III.2.3)
 
@@ -65,12 +67,12 @@ Una sola especialización se declara en el modelo. El Agente se modela como enti
 | Una entrada contiene ninguna o muchas declaraciones (una entrada vacía o ilegible no aporta declaraciones) | 1 a 0..* |
 | Una declaración contiene ninguna o muchas sustituciones                                              | 1 a 0..*          |
 | Una declaración puede quedar desplazada por otra declaración de mayor precedencia                    | 0..1 a 0..1       |
-| Un elemento se compone de ninguna o muchas declaraciones, de las cuales a lo sumo una resulta determinante; sin declaración rige el valor implícito, y una declaración global compone uno o muchos elementos | 1..* a 0..* |
+| Un elemento se compone de cero o más declaraciones, con a lo sumo una determinante por clave del elemento, pendiente de revalidación (R-11). Una declaración global compone uno o muchos elementos; sin declaración rige el valor implícito | 1..* a 0..* |
 | Un elemento se relaciona con muchos otros elementos, con un tipo de relación declarado               | 0..* a 0..*       |
 | Un agente evalúa una cadena ordenada de reglas de permiso; una regla rige sobre uno o muchos agentes | 1..* a 1..* {ordenada} |
 | Una declaración origina ninguna o muchas reglas de permiso; una regla nativa no proviene de ninguna declaración | 0..1 a 0..* |
 | Un agente puede invocar muchos subagentes y un subagente puede ser invocado por muchos agentes; el subagente se rige por su propio conjunto de reglas (RD-05)                             | 0..* a 0..* |
 | Una resolución produce ninguno o muchos hallazgos                                                    | 1 a 0..*          |
-| Un hallazgo recae sobre un elemento, una declaración, una entrada o una sustitución | 0..* a 1 {xor: elemento, declaración, entrada o sustitución} |
+| Un hallazgo recae sobre un elemento, una declaración, una entrada, una sustitución o una regla de permiso, pendiente de revalidación (R-11) | 0..* a 1 {xor: elemento, declaración, entrada, sustitución o regla de permiso} |
 
 *Tabla A.V.4. Relaciones del dominio y sus multiplicidades. Fuente: elaboración propia; precisiones aceptadas (Anexo III, D-61).*
