@@ -59,5 +59,5 @@ export interface Adaptador {
   ubicar(proyecto: string, entorno: EntornoLectura): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
   leer(via: ViaUbicada, texto: string): Resultado<readonly Declaracion[], ErrorAnalisis>;
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
-  cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura): Resultado<Cadena, ErrorAnalisis>;
+  cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
 }

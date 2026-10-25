@@ -57,6 +57,22 @@ producto. Las aceptaciones no importan vendor ni transitivamente (G-1).
 a mano documentadas en `DERIVACION.md`. El modo `primera` del arnes sustituye
 solo la seleccion de la determinante para comprobar sensibilidad.
 
+T2-07 amplia ese arnes con `lanzadoPor` y conserva el aislamiento por
+subproceso. `v2-subagente/REFERENCIA.json` registra las cuatro decisiones
+de RF-02 CA-3 y su procedencia del tag y de ADR-081, C-3f. Las variantes
+`v2-subagente-comodin` y `v2-subagente-task` conservan el nombre `general`
+y cambian solo su permiso: `* allow` o `task ask`. Las cadenas base se
+regeneran con el binario; la regeneracion no recalcula las decisiones.
+`primary.json` se copia a `opencode.jsonc` solo en el temporal del arnes.
+
+| Criterio T2-07 | Prueba en `aceptacion/RF-02.test.ts` |
+|---|---|
+| RF-02 CA-3 (a)-(d) | decision, indices, cadena propia, origen y declaraciones de exclusion |
+| RF-02 CA-3 (e) | una sola regla todowrite de general y agregado para agente sin ella |
+| RF-02 CA-3 (f) | advertencia solo con primary_tools, sin incorporar su deny |
+| S-1 | lanzador inexistente: agente-inexistente |
+| Agente primary | se evalua e informa que no es invocable como subagente |
+
 | Criterio T2-06 | Prueba |
 |---|---|
 | RF-02 CA-1, CA-2 (decision), CA-5, CA-8 (decision) | `aceptacion/RF-02.test.ts` (decision, cadena, origen, declaraciones y referencia independiente) |

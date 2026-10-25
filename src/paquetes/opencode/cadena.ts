@@ -5,7 +5,7 @@ import type { Cadena, ReglaCadena, Resolucion } from "@rige/nucleo/resolucion/ti
 import { agentesNativos } from "./vendor/agentes-nativos";
 import { expand, fromConfig } from "./vendor/permiso";
 
-export function cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura): Resultado<Cadena, ErrorAnalisis> {
+export function cadena(resolucion: Resolucion, agente: string, entorno: EntornoLectura, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis> {
   const path = { join: (...partes: string[]) => entorno.unir(...partes),
     relative: (desde: string, hasta: string) => entorno.relativa(desde, hasta),
     dirname: (ruta: string) => entorno.padre(ruta) };
@@ -24,6 +24,10 @@ export function cadena(resolucion: Resolucion, agente: string, entorno: EntornoL
   const nativos = agentesNativos({ data, tmp: path.join(temporal, "opencode"), worktree, skillDirs: [], referenceDirs: [] }, path);
   const ambito = ["agent", agente];
   const bajo = (ruta: readonly string[], prefijo: readonly string[]) => prefijo.every((s, i) => ruta[i] === s);
+  if (lanzadoPor !== undefined && !Object.hasOwn(nativos.agentes, lanzadoPor)
+    && !resolucion.valores.some(v => bajo(v.ruta, ["agent", lanzadoPor]))) {
+    return { exito: false, error: { categoria: "uso", codigo: "agente-inexistente", mensaje: `El agente ${lanzadoPor} no existe.` } };
+  }
   const afecta = resolucion.noResueltas.find(({ ruta }) => bajo(ruta, ["permission"]) || bajo(ruta, [...ambito, "permission"])
     || (ruta.length <= ambito.length && bajo(ambito, ruta)));
   if (afecta) return { exito: false, error: { categoria: "uso", codigo: "cadena-incompleta",
@@ -52,5 +56,18 @@ export function cadena(resolucion: Resolucion, agente: string, entorno: EntornoL
   if (!reglas.some(r => r.sujeto === "external_directory" && r.efecto === "deny" && r.patron === nativos.truncamiento)) {
     agregarNativas({ external_directory: { [nativos.truncamiento]: "allow" } }, "nativa-final");
   }
-  return { exito: true, valor: { agente, reglas, ejesParciales: ["external_directory"] } };
+  const declaraciones: string[] = [];
+  if (lanzadoPor !== undefined) {
+    declaraciones.push("reglas-agente-lanzador-excluidas", "reglas-sesion-lanzadora-excluidas");
+    const modo = resolucion.valores.find(v => v.ruta.length === 3 && bajo(v.ruta, [...ambito, "mode"]))?.valor
+      ?? nativos.agentes[agente]?.mode;
+    if (modo === "primary") declaraciones.push("agente-no-invocable-como-subagente");
+    for (const sujeto of ["todowrite", "task"]) {
+      if (!reglas.some(r => r.sujeto === sujeto)) agregarNativas({ [sujeto]: "deny" }, "denegacion-subagente");
+    }
+  }
+  const tienePrimaryTools = [...resolucion.valores, ...resolucion.noResueltas]
+    .some(v => bajo(v.ruta, ["experimental", "primary_tools"]));
+  return { exito: true, valor: { agente, reglas, ejesParciales: ["external_directory"],
+    declaraciones, advertencias: tienePrimaryTools ? ["primary-tools-no-incorporado"] : [] } };
 }

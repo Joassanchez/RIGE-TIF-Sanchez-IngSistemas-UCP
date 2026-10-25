@@ -13,6 +13,8 @@ export interface Cadena {
   readonly agente: string;
   readonly reglas: readonly ReglaCadena[];
   readonly ejesParciales: readonly string[];
+  readonly declaraciones?: readonly string[];
+  readonly advertencias?: readonly string[];
 }
 
 export interface DeclaracionUbicada {

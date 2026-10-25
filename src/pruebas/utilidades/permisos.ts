@@ -4,7 +4,7 @@ import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas
 import { copiarEscenario } from "./escenario";
 import { crearEntornoAislado } from "./entorno-aislado";
 
-export interface ConsultaPermiso { agente: string; sujeto: string; objetivo: string }
+export interface ConsultaPermiso { agente: string; sujeto: string; objetivo: string; lanzadoPor?: string }
 export interface DecisionReferencia extends ConsultaPermiso {
   decision: string; determinante: number; coincidentes: number[]; procedencia: string;
 }
@@ -14,11 +14,12 @@ export function referenciaDecisiones() {
     cadenas: Record<string, { permission: string; pattern: string; action: string }[]>;
   };
 }
-export function consultarPermisos(consultas: readonly ConsultaPermiso[], modo = "ultima", variante = "global") {
-  const copia = copiarEscenario("v2-decision");
+export function consultarPermisos(consultas: readonly ConsultaPermiso[], modo = "ultima", variante = "global", escenario = "v2-decision") {
+  const copia = copiarEscenario(escenario);
   try {
     const hogar = join(copia.raiz, "hogar");
     if (variante === "sin-edit") copyFileSync(join(copia.raiz, "global-sin-edit.json"), join(hogar, ".config/opencode/opencode.json"));
+    if (variante === "primary") copyFileSync(join(copia.raiz, "primary.json"), join(copia.proyecto, "opencode.jsonc"));
     const proceso = Bun.spawnSync([process.execPath, "pruebas/utilidades/consultar-permisos.ts", copia.proyecto, JSON.stringify(consultas), modo], {
       cwd: resolve(import.meta.dir, "../.."), env: { ...crearEntornoAislado(hogar, process.env),
         XDG_CONFIG_HOME: join(hogar, ".config"), ProgramData: hogar, TEMP: join(hogar, "tmp"), TMP: join(hogar, "tmp") },

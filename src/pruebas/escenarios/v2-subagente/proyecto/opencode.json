@@ -1,0 +1,6 @@
+{
+  "agent": {
+    "build": { "permission": { "bash": "deny" } },
+    "vacio": { "mode": "subagent" }
+  }
+}

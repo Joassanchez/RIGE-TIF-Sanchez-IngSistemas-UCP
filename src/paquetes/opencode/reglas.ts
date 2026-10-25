@@ -1,4 +1,9 @@
 export const reglas: Readonly<Record<string, string>> = {
+  "denegacion-subagente": "OpenCode agrega al final de la sesion hija una denegacion cuando la cadena propia no contiene el sujeto exacto (RD-05).",
+  "reglas-agente-lanzador-excluidas": "Las reglas del agente que lanza mediante task no se aplican al subagente (RD-05, ADR-081).",
+  "reglas-sesion-lanzadora-excluidas": "Las reglas de la sesion que lanza el subagente no integran el analisis estatico.",
+  "agente-no-invocable-como-subagente": "El agente tiene mode primary y no es invocable como subagente; se evalua igualmente su cadena propia.",
+  "primary-tools-no-incorporado": "Las denegaciones de sesion de experimental.primary_tools no integran el analisis.",
   "proteccion-nativa-anulada": "La declaracion determinante desactiva una proteccion nativa coincidente anterior (RD-07). El rastro identifica la regla nativa y la declaracion con su archivo y linea.",
   "aprobaciones-permanentes-excluidas": 'Las aprobaciones permanentes ("permitir siempre") no integran el análisis.',
   "sesion-no-interactiva-excluida": "En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.",

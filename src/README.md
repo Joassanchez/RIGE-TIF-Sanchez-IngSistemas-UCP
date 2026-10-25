@@ -233,6 +233,20 @@ determinante, las desplazadas y la proteccion nativa anulada, si corresponde.
 `eje-parcialmente-observado`. Todas las respuestas declaran las aprobaciones
 permanentes excluidas y las reglas adicionales de la sesion no interactiva.
 
+T2-07 admite `consultarPermiso(dependencias, proyecto, agente, sujeto, objetivo, lanzadoPor?)`.
+Con lanzador, usa la cadena propia del subagente y agrega al final las
+denegaciones de `todowrite` y `task` si falta el sujeto exacto. Declara que
+las reglas del agente lanzador no se aplican y que las de su sesion quedan
+fuera del analisis. Un agente `primary` se evalua igualmente y se declara.
+`experimental.primary_tools` declarado produce la advertencia
+`primary-tools-no-incorporado`; sus denegaciones no se incorporan.
+
+Para comprobar T2-07, con `RIGE_ALMACEN` temporal:
+
+```bash
+bun test pruebas/aceptacion/RF-02.test.ts paquetes/opencode
+```
+
 Para comprobar T2-06, con `RIGE_ALMACEN` temporal:
 
 ```bash

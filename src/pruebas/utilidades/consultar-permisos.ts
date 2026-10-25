@@ -4,7 +4,7 @@ import { consultarPermiso } from "../../paquetes/rige/aplicacion/casos-uso/consu
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 
 const [proyecto, consultasJson, modo] = process.argv.slice(2);
-const consultas = JSON.parse(consultasJson!) as { agente: string; sujeto: string; objetivo: string }[];
+const consultas = JSON.parse(consultasJson!) as { agente: string; sujeto: string; objetivo: string; lanzadoPor?: string }[];
 const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: process.env });
 const adaptador = modo === "primera" ? { ...adaptadorOpenCode, permisos: { ...adaptadorOpenCode.permisos,
   evaluar: (...args: Parameters<typeof adaptadorOpenCode.permisos.evaluar>) => {
@@ -12,8 +12,11 @@ const adaptador = modo === "primera" ? { ...adaptadorOpenCode, permisos: { ...ad
     return { ...evaluacion, determinante: evaluacion.coincidentes[0] ?? null };
   },
 } } : adaptadorOpenCode;
-console.log(JSON.stringify(consultas.map(({ agente, sujeto, objetivo }) => {
-  const resultado = consultarPermiso({ adaptador, entorno, rutas: { canonica: () => proyecto! } }, proyecto!, agente, sujeto, objetivo);
-  if (!resultado.exito) throw new Error(resultado.error.mensaje);
+console.log(JSON.stringify(consultas.map(({ agente, sujeto, objetivo, lanzadoPor }) => {
+  const resultado = consultarPermiso({ adaptador, entorno, rutas: { canonica: () => proyecto! } }, proyecto!, agente, sujeto, objetivo, lanzadoPor);
+  if (!resultado.exito) {
+    if (modo === "resultado") return resultado;
+    throw new Error(resultado.error.mensaje);
+  }
   return resultado.valor;
 })));
