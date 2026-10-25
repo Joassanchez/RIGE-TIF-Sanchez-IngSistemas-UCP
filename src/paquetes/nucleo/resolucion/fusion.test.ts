@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Adaptador, Aplicacion } from "../contrato/adaptador";
-import { resolver } from "./resolver";
+import { resolver } from "../../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../../pruebas/utilidades/entorno-memoria";
 import { adaptadorFicticio } from "../../../pruebas/utilidades/adaptador-ficticio";
 
@@ -68,12 +68,42 @@ describe("T2-04 F-7", () => {
     expect(resultado.valor.eliminadas?.every(r => r.eliminacion.regla === "retirada-ficticia")).toBe(true);
   });
 });
-describe("T2-04 menor 2", () => {
+describe("A4-6", () => {
   test("copia el origen y la posicion de la aplicacion", () => {
     const origen = { tipo: "declarado" as const, orden: 0, posicion: { linea: 2, columna: 5 } };
-    const resolucion = fusion([{ ...aplicar(["a"], 1), origen }]);
+    const valor = { lista: [1, 2] };
+    const resolucion = fusion([{ ...aplicar(["a"], valor), origen }]);
     origen.orden = 9;
     origen.posicion.linea = 99;
+    valor.lista.push(3);
+    expect(resolucion.valores[0]!.valor).toEqual({ lista: [1, 2] });
     expect(resolucion.valores[0]!.determinante.origen).toEqual({ tipo: "declarado", orden: 0, posicion: { linea: 2, columna: 5 } });
   });
 });
+
+describe("A4-4", () => {
+  test("eliminar y recrear no hereda la historia de una hoja retirada", () => {
+    const resultado = fusion([aplicar(["grupo"], "antes"), aplicar(["grupo", "x"], 1),
+      aplicar(["grupo", "x"], null, "eliminacion"), aplicar(["grupo", "nuevo"], 2)]);
+    expect(resultado.valores[0]!.desplazadas).toEqual([]);
+  });
+});
+
+describe("A4-1", () => {
+  test("expandir un objeto vacio lo fusiona sin desplazarlo", () => {
+    const resultado = fusion([aplicar(["bash"], {}), aplicar(["bash", "ls"], "allow")]);
+    expect(resultado.valores[0]!.desplazadas).toEqual([]);
+  });
+});
+
+describe("A4-5", () => {
+  test("las eliminadas tienen orden de eliminacion y no posicion de fusion", () => {
+    const resultado = fusion([aplicar(["x"], 1), aplicar(["x"], null, "eliminacion")]);
+    expect(resultado.eliminadas).toMatchObject([{ ordenEliminacion: 0 }]);
+    expect(resultado.eliminadas![0]).not.toHaveProperty("indiceFusion");
+  });
+});
+
+describe("K-9", () => { test("eliminadas siempre esta presente aunque no haya eliminaciones", () => {
+  expect(fusion([]).eliminadas).toEqual([]);
+}); });

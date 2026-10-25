@@ -6,9 +6,10 @@ import { readFileSync } from "node:fs";
 import { decisionNativa } from "../utilidades/decision-nativa";
 import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";
 
-describe("RF-02 CA-3", () => {
+describe("K-10 RF-02 CA-3", () => {
   const referencia = JSON.parse(readFileSync(new URL("../escenarios/v2-subagente/REFERENCIA.json", import.meta.url), "utf8")) as {
-    decisiones: { variante: string; agente: string; sujeto: string; objetivo: string; lanzadoPor: string; decision: string; escenario?: string }[];
+    decisiones: { variante: string; agente: string; sujeto: string; objetivo: string; lanzadoPor: string; decision: string; escenario?: string;
+      coincidentes: { indice: number; sujeto: string; patron: string; efecto: string }[]; determinante: number }[];
     cadenas: Record<string, { permission: string; pattern: string; action: string }[]>;
     decisionesNativas?: DecisionNativa[];
   };
@@ -30,18 +31,9 @@ describe("RF-02 CA-3", () => {
       const nativa = decisionNativa(refCaso, caso, r!.consulta.objetivoEvaluado!);
       expect(r!.decision).toBe(nativa?.decision ?? caso.decision);
       if (nativa) expect(r!.cadena.find(regla => regla.indice === r!.determinante)).toMatchObject(nativa.regla);
-      const base = caso.escenario
-        ? (JSON.parse(readFileSync(new URL(`../escenarios/${caso.escenario}/REFERENCIA.json`, import.meta.url), "utf8")) as typeof referencia).cadenas[caso.agente]!
-        : referencia.cadenas[caso.agente]!;
-      const esperadas = [...base];
-      for (const sujeto of ["todowrite", "task"]) {
-        if (!base.some(regla => regla.permission === sujeto)) esperadas.push({ permission: sujeto, pattern: "*", action: "deny" });
-      }
-      const coincidentes = esperadas.map((regla, indice) => ({ regla, indice }))
-        .filter(({ regla }) => regla.permission === "*" || regla.permission === caso.sujeto);
       expect(r!.cadena.map(regla => [regla.indice, regla.sujeto, regla.patron, regla.efecto]))
-        .toEqual(coincidentes.map(({ regla, indice }) => [indice, regla.permission, regla.pattern, regla.action]));
-      expect(r!.determinante).toBe(coincidentes.at(-1)!.indice);
+        .toEqual(caso.coincidentes.map(({ indice, sujeto, patron, efecto }) => [indice, sujeto, patron, efecto]));
+      expect(r!.determinante).toBe(caso.determinante);
       if (["b", "c"].includes(caso.variante)) expect(r!.cadena.at(-1)).toMatchObject({
         origen: { tipo: "nativo", regla: "denegacion-subagente" }, declaracion: null,
       });
@@ -156,6 +148,7 @@ describe("T2-06 D-3 sensibilidad RF-02 CA-1", () => {
 });
 
 describe("RF-02 CA-2 (cadena)", () => {
+  let mutaciones = 0;
   for (const escenario of ["v1-precedencia", "v1-vias", "v2-fusion-permisos", "v2-cadena", "v2-decision"]) {
     test(escenario, () => {
       const { referencia, cadenas, normalizar } = consultarCadenas(escenario);
@@ -169,6 +162,7 @@ describe("RF-02 CA-2 (cadena)", () => {
         const mutada = structuredClone(reglas);
         const declaradas = cadena.reglas.filter(r => r.origen.tipo === "declarado");
         if (declaradas.length >= 2) {
+          mutaciones++;
           const a = declaradas[0]!.indice, b = declaradas[1]!.indice;
           [mutada[a], mutada[b]] = [mutada[b]!, mutada[a]!];
           expect(comparar({ reglas: esperada }, { reglas: normalizar(mutada) })).not.toEqual([]);
@@ -176,6 +170,7 @@ describe("RF-02 CA-2 (cadena)", () => {
       }
     });
   }
+  describe("A5-3 K-4", () => { test("ejecuta al menos una mutacion", () => { expect(mutaciones).toBeGreaterThan(0); }); });
 });
 
 describe("RF-02 CA-8", () => {

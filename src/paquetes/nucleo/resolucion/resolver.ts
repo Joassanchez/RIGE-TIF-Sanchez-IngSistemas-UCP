@@ -6,11 +6,11 @@ import { ArbolFusion } from "./estado";
 import type { DeclaracionUbicada, EntradaLeida, Resolucion } from "./tipos";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
+// Primitiva de copia pura del runtime, sin E/S.
+declare function structuredClone<T>(valor: T): T;
 
-export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura, contexto?: ContextoConsulta): Resultado<Resolucion, ErrorAnalisis> {
-  const preparado = contexto ? { exito: true as const, valor: contexto } : adaptador.contexto(proyecto, entorno);
-  if (!preparado.exito) return preparado;
-  const ubicacion = adaptador.ubicar(proyecto, entorno, preparado.valor);
+export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura, contexto: ContextoConsulta): Resultado<Resolucion, ErrorAnalisis> {
+  const ubicacion = adaptador.ubicar(proyecto, entorno, contexto);
   if (!ubicacion.exito) return ubicacion;
   const entradas: EntradaLeida[] = [];
   const lecturas: LecturaEntrada[] = [];
@@ -46,7 +46,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     const nueva: DeclaracionUbicada = {
       origen: origen.tipo === "declarado" ? { ...origen, posicion: { ...origen.posicion } } : { ...origen },
       via: entrada?.via ?? null, referencia: entrada?.referencia ?? null,
-      valor: aplicacion.valor, regla: aplicacion.regla,
+      valor: structuredClone(aplicacion.valor), regla: aplicacion.regla,
     };
     estrategia(estado, nueva, ruta);
   }
@@ -58,16 +58,19 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       pendientes.set(identificador, { ruta: pendiente.ruta, regla: pendiente.regla });
     }
   }
+  const declaraciones = [...(contexto.declaraciones ?? [])];
+  for (const codigo of declaraciones) usarRegla(codigo);
   return { exito: true, valor: {
     formato: 2,
     identidad: { herramienta: adaptador.identidad.herramienta, version: adaptador.identidad.version },
     proyecto: normalizar(proyecto),
     prefijoAgente: adaptador.prefijoAgente,
+    declaraciones,
     reglas: Object.fromEntries([...usados].sort().map((regla) => [regla, adaptador.reglas[regla]!])),
     entradas,
     resumenEntradas: entorno.resumir(JSON.stringify(entradas.map((entrada) => [entrada.via, entrada.referencia, entrada.condicion, entrada.resumen]))),
     valores: estado.hojasBajo([]).map((rastro, indiceFusion) => ({ ...rastro, indiceFusion })),
-    ...(estado.eliminadas.length ? { eliminadas: estado.eliminadas.map((rastro, indiceFusion) => ({ ...rastro, indiceFusion })) } : {}),
+    eliminadas: estado.eliminadas.map((rastro, ordenEliminacion) => ({ ...rastro, ordenEliminacion })),
     noResueltas: [...pendientes.values()],
   } };
 }

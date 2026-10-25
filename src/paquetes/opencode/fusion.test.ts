@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../pruebas/utilidades/resolver";
 import { consultarAgente } from "@rige/nucleo/resolucion/proyectar";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 import { adaptadorOpenCode } from "./adaptador";

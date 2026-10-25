@@ -1,10 +1,10 @@
-import { expect, test } from "bun:test";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { describe, expect, test } from "bun:test";
+import { resolver } from "../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 import { adaptadorOpenCode } from "./adaptador";
 import { agentesEfectivos } from "./agentes";
 
-test("T2-11b C-3 listado y cadena comparten existencia, estado y exclusiones Markdown", () => {
+describe("A11-1", () => { test("T2-11b C-3 listado y cadena comparten existencia, estado y exclusiones Markdown", () => {
   const entorno = crearEntornoMemoria({ archivos: {
     "/p/opencode.json": JSON.stringify({ agent: { vacio: {}, oculto: { hidden: true }, fuera: { disable: true },
       build: { disable: true }, mixto: { mode: "subagent" } } }),
@@ -17,11 +17,17 @@ test("T2-11b C-3 listado y cadena comparten existencia, estado y exclusiones Mar
   const efectivos = agentesEfectivos(resolucion.valor, contexto.valor);
   for (const [nombre, estado, cadenaValida] of [["vacio", "activo", true], ["oculto", "activo", true],
     ["fuera", "deshabilitado", false], ["build", "deshabilitado", false], ["plan", "activo", true],
-    ["mixto", undefined, false], ["solo", undefined, false], ["ausente", undefined, false]] as const) {
+    ["mixto", "no-observado", false], ["solo", "no-observado", false], ["ausente", undefined, false]] as const) {
     expect(efectivos.agentes.find(a => a.nombre === nombre)?.estado).toBe(estado);
-    expect(adaptadorOpenCode.cadena(resolucion.valor, nombre, contexto.valor).exito).toBe(cadenaValida);
+    const resultado = adaptadorOpenCode.cadena(resolucion.valor, nombre, contexto.valor);
+    expect(resultado.exito).toBe(cadenaValida);
+    if (!cadenaValida) expect(resultado).toMatchObject({ exito: false, error: {
+      codigo: estado === "no-observado" ? "cadena-incompleta" : "agente-inexistente",
+    } });
   }
+  expect(adaptadorOpenCode.cadena(resolucion.valor, "plan", contexto.valor, "solo"))
+    .toMatchObject({ exito: false, error: { codigo: "cadena-incompleta", mensaje: expect.stringContaining("markdown-no-observado") } });
   expect(adaptadorOpenCode.listarAgentes(resolucion.valor, contexto.valor)).toEqual(efectivos);
   expect(efectivos.motivos).toContain("markdown-no-observado");
   expect(efectivos.agentes.find(a => a.nombre === "fuera")).toMatchObject({ motivo: "agente-deshabilitado", eliminacion: { regla: "agente-deshabilitado" } });
-});
+}); });

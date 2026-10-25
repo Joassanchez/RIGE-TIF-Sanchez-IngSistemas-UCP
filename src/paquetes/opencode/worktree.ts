@@ -6,7 +6,7 @@ export interface Worktree { readonly worktree: string; readonly declaraciones: r
 
 /** Aproximacion autorizada en T2-08 (ADR-101 propuesto): solo lectura, nunca ejecuta git. */
 export function descubrirWorktree(proyecto: string, entorno: EntornoLectura): Resultado<Worktree, ErrorAnalisis> {
-  for (const nombre of ["GIT_DIR", "GIT_WORK_TREE"]) {
+  for (const nombre of ["GIT_DIR", "GIT_WORK_TREE", "GIT_CEILING_DIRECTORIES", "GIT_COMMON_DIR"]) {
     if (entorno.variable(nombre) !== undefined) return { exito: false, error: { categoria: "uso",
       codigo: "via-no-soportada", mensaje: `La deteccion del arbol no incorpora ${nombre}.` } };
   }
@@ -36,8 +36,7 @@ export function descubrirWorktree(proyecto: string, entorno: EntornoLectura): Re
       const par = /^(\w+)\s*=\s*(.*?)\s*(?:[;#].*)?$/.exec(texto);
       if (!par) continue;
       const clave = par[1]!.toLowerCase();
-      if (seccion === "core" && (clave === "worktree" || clave === "bare" && /^(true|yes|on|1)$/i.test(par[2]!))
-        || seccion === "safe" && clave === "directory") return true;
+      if (seccion === "core" && (clave === "worktree" || clave === "bare" && /^(true|yes|on|1)$/i.test(par[2]!))) return true;
     }
     return false;
   }

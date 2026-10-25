@@ -7,7 +7,7 @@ export function decidir(cadena: Cadena, consulta: ConsultaPermiso, evaluacion: E
   if (motivoPrevio !== null || parcial) return { ...base,
     consulta: { ...consulta, objetivoEvaluado: motivoPrevio === null ? null : consulta.objetivo }, decision: null,
     motivoSinDecision: motivoPrevio ?? "eje-parcialmente-observado",
-    coincidentes: [], determinante: null, desplazadas: [], nativaAnulada: null, advertencias: [],
+    porDefecto: false, coincidentes: [], determinante: null, desplazadas: [], nativaAnulada: null, advertencias: [],
   };
   const coincidentes = evaluacion.coincidentes.map(indice => {
     const regla = cadena.reglas.find(r => r.indice === indice);
@@ -25,11 +25,12 @@ export function decidir(cadena: Cadena, consulta: ConsultaPermiso, evaluacion: E
     if (indice < 0) throw new Error("Efecto ausente del orden declarado por el adaptador.");
     return indice;
   };
-  const nativa = determinante?.origen.tipo === "declarado"
-    ? desplazadas.findLast(r => r.origen.tipo === "nativo" && rango(r.efecto) < rango(determinante.efecto)) : undefined;
+  const ultimaNativa = desplazadas.findLast(r => r.origen.tipo === "nativo");
+  const nativa = determinante?.origen.tipo === "declarado" && ultimaNativa
+    && rango(ultimaNativa.efecto) < rango(determinante.efecto) ? ultimaNativa : undefined;
   return { ...base, consulta: { ...consulta, objetivoEvaluado: consulta.objetivo },
     decision: determinante?.efecto ?? evaluacion.efectoPorDefecto,
-    motivoSinDecision: determinante === null ? "sin-coincidencia" : null,
+    motivoSinDecision: null, porDefecto: determinante === null,
     coincidentes, determinante: determinante?.indice ?? null, desplazadas: desplazadas.map(r => r.indice),
     nativaAnulada: nativa ? { regla: nativa.indice, por: determinante!.indice } : null,
     advertencias: nativa ? ["proteccion-nativa-anulada"] : [],

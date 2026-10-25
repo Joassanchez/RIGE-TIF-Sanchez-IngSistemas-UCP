@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../../../pruebas/utilidades/resolver";
 import { consultarAgente } from "@rige/nucleo/resolucion/proyectar";
 import type { PuertoResoluciones, ResumenResolucion } from "../puertos/resoluciones";
 import { versionRige } from "../respuestas/estado";
@@ -61,7 +61,7 @@ describe("C-2", () => {
     const proyeccion = consultarAgente(resolucion, "a", clave ? clave.split(".") : undefined);
     if (!proyeccion.exito) throw new Error(proyeccion.error.mensaje);
     expect(consultarResolucion(puerto, "7", "a", clave)).toEqual({ exito: true, valor: {
-      respuesta: { esquema: 2, versionRige,
+      respuesta: { esquema: 2, declaraciones: [], versionRige,
         proyecto: "/proyecto", herramienta: "ficticia", versionHerramienta: "1",
         resumenEntradas: resolucion.resumenEntradas, entradas: resolucion.entradas,
         agente: "a", ruta: clave ? [clave] : null, valores: proyeccion.valor.valores, reglas: resolucion.reglas,

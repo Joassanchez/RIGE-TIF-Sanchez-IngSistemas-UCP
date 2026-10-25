@@ -11,12 +11,13 @@ export function consultarAgentes(dependencias: DependenciasAnalisis, proyecto: s
   if (!analisis.exito) return analisis;
   const { resolucion, contexto } = analisis.valor;
   const listado = dependencias.adaptador.listarAgentes(resolucion, contexto);
-  const agentes = listado.agentes.filter(a => a.estado === "activo").map(({ nombre, origen, modo, oculto }) => ({ nombre, origen, modo, oculto }));
+  const agentes = listado.agentes.filter(a => a.estado !== "deshabilitado").map(({ nombre, origen, modo, oculto }) => ({ nombre, origen, modo, oculto }));
   const eliminados = listado.agentes.filter(a => a.estado === "deshabilitado").map(a => {
     if (!a.eliminacion) throw new Error("Agente deshabilitado sin declaracion de eliminacion.");
     return { nombre: a.nombre, declaracion: a.eliminacion };
   });
   return { exito: true, valor: { esquema: versionEsquemaSalida, proyecto: resolucion.proyecto,
     entradas: resolucion.entradas, resumenEntradas: resolucion.resumenEntradas, agentes,
-    eliminados, incompleta: listado.motivos.length > 0, motivos: listado.motivos, reglas: resolucion.reglas } };
+    eliminados, incompleta: listado.motivos.length > 0, motivos: listado.motivos, reglas: resolucion.reglas,
+    declaraciones: resolucion.declaraciones ?? [] } };
 }

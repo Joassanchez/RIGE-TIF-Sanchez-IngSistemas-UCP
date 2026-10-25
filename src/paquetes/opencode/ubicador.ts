@@ -1,17 +1,14 @@
 import type { ErrorAnalisis, ViaUbicada } from "@rige/nucleo/contrato/adaptador";
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { Resultado } from "@rige/nucleo/resultado";
-import { contextoOpenCode, type ContextoOpenCode } from "./contexto";
+import type { ContextoOpenCode } from "./contexto";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 const noSoportada = (nombre: string): Resultado<never, ErrorAnalisis> => ({ exito: false, error: { categoria: "uso",
   codigo: "via-no-soportada", mensaje: `El prototipo v1 no incorpora ${normalizar(nombre)}.`,
 } });
 
-export function ubicar(proyecto: string, entorno: EntornoLectura, contexto?: ContextoOpenCode): Resultado<readonly ViaUbicada[], ErrorAnalisis> {
-  if (!entorno.esAbsoluta(proyecto) || entorno.tipo(proyecto) !== "directorio") return { exito: false, error: { categoria: "uso",
-    codigo: "proyecto-inexistente", mensaje: `El proyecto ${proyecto} no existe o no es un directorio.`,
-  } };
+export function validarVias(entorno: EntornoLectura): Resultado<void, ErrorAnalisis> {
   const variable = (nombre: string) => entorno.variable(nombre);
   for (const nombre of ["OPENCODE_CONFIG_CONTENT", "OPENCODE_PERMISSION", "OPENCODE_CONFIG_DIR",
     "OPENCODE_DISABLE_PROJECT_CONFIG", "OPENCODE_TEST_HOME", "OPENCODE_TEST_MANAGED_CONFIG_DIR"]) {
@@ -23,9 +20,16 @@ export function ubicar(proyecto: string, entorno: EntornoLectura, contexto?: Con
   }
   const config = variable("OPENCODE_CONFIG") || undefined;
   if (config !== undefined && !entorno.esAbsoluta(config)) return noSoportada("OPENCODE_CONFIG");
-  const preparado = contexto ? { exito: true as const, valor: contexto } : contextoOpenCode(proyecto, entorno);
-  if (!preparado.exito) return preparado;
-  const { hogar, config: global, worktree } = preparado.valor;
+  return { exito: true, valor: undefined };
+}
+
+export function ubicar(proyecto: string, entorno: EntornoLectura, contexto: ContextoOpenCode): Resultado<readonly ViaUbicada[], ErrorAnalisis> {
+  if (!entorno.esAbsoluta(proyecto) || entorno.tipo(proyecto) !== "directorio") return { exito: false, error: { categoria: "uso",
+    codigo: "proyecto-inexistente", mensaje: `El proyecto ${proyecto} no existe o no es un directorio.`,
+  } };
+  const variable = (nombre: string) => entorno.variable(nombre);
+  const config = variable("OPENCODE_CONFIG") || undefined;
+  const { hogar, config: global, worktree } = contexto;
   const vias: ViaUbicada[] = [];
   const noObservada = (via: string) => vias.push({ via, referencia: via, condicion: "no_observada" });
   function agregar(via: string, ruta: string): void {

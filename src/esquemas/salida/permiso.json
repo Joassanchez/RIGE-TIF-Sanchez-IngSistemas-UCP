@@ -189,6 +189,9 @@
           "type": "null"
         }
       ]
+    },
+    "porDefecto": {
+      "type": "boolean"
     }
   },
   "required": [
@@ -207,7 +210,8 @@
     "declaraciones",
     "cadena",
     "reglas",
-    "explicacion"
+    "explicacion",
+    "porDefecto"
   ],
   "additionalProperties": false,
   "$defs": {

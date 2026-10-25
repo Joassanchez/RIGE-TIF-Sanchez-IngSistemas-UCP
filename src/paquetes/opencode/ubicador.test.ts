@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { posix } from "node:path";
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { ViaUbicada } from "@rige/nucleo/contrato/adaptador";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 
 function entorno(opciones: {
@@ -23,7 +23,8 @@ function entorno(opciones: {
     variables: { PATH: "/bin", ...(opciones.variables ?? { HOME: "/h" }) }, plataforma: opciones.plataforma ?? "linux" });
 }
 async function ubicar(proyecto: string, lectura: EntornoLectura) {
-  return (await import("./ubicador")).ubicar(proyecto, lectura);
+  const contexto = (await import("./contexto")).contextoOpenCode(proyecto, lectura);
+  return contexto.exito ? (await import("./ubicador")).ubicar(proyecto, lectura, contexto.valor) : contexto;
 }
 async function vias(proyecto: string, lectura: EntornoLectura): Promise<readonly ViaUbicada[]> {
   const resultado = await ubicar(proyecto, lectura);

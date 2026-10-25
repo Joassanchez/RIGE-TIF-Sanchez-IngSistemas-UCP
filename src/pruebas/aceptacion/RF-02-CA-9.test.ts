@@ -23,7 +23,7 @@ describe("RF-02 CA-9", () => {
         for (const rutasNativas of process.platform === "win32" ? [false, true] : [false]) {
           const consultas = caso.herramientas.flatMap(herramienta => caso.objetivos.flatMap(objetivo => [
             { agente: caso.agente, herramienta, objetivo },
-            { agente: caso.agente, herramienta, objetivo: `<RAIZ>/proyecto/${objetivo}` },
+            { agente: caso.agente, herramienta, objetivo: objetivo === "../fuera.txt" ? "<RAIZ>/fuera.txt" : `<RAIZ>/proyecto/${objetivo}` },
           ]));
           const { respuestas, raiz } = consultarPermisos(consultas, "ultima", "global", escenario, { git: "proyecto", rutasNativas });
           for (let i = 0; i < respuestas.length; i += 2) {
@@ -84,5 +84,13 @@ describe("RF-02 CA-9", () => {
     ], "ultima", "global", "v2-ruta-bloqueo", { git: "proyecto" });
     expect(respuesta).toMatchObject({ decision: "allow", consulta: { forma: "sujeto" } });
     expect(respuesta!.consulta.objetivoEvaluado!.replaceAll("\\", "/")).toBe(`${raiz}/proyecto/src/productos.js`);
+  });
+});
+
+describe("A8-1 CA-9 i bis", () => {
+  test("sin VCS read ../fuera.txt no tiene decision", () => {
+    const { respuestas: [respuesta] } = consultarPermisos([{ agente: "build", herramienta: "read", objetivo: "../fuera.txt" }],
+      "ultima", "global", "v2-worktree-sin-vcs", { git: "ninguno" });
+    expect(respuesta).toMatchObject({ decision: null, motivoSinDecision: "fuera-del-arbol" });
   });
 });

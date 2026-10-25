@@ -20,6 +20,7 @@ export interface RastroDecision {
   readonly consulta: ConsultaPermiso & { readonly objetivoEvaluado: string | null };
   readonly decision: string | null;
   readonly motivoSinDecision: string | null;
+  readonly porDefecto: boolean;
   readonly coincidentes: readonly ReglaCadena[];
   readonly determinante: number | null;
   readonly desplazadas: readonly number[];

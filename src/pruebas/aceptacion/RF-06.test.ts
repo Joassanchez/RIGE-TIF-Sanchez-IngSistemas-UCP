@@ -6,6 +6,9 @@ import { copiarEscenario } from "../utilidades/escenario";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
 import { consultarAgente } from "../../paquetes/nucleo/resolucion/proyectar";
 import type { Resolucion } from "../../paquetes/nucleo/resolucion/tipos";
+import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
+import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
+import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 
 function valores(nombre: string) {
   const referencia = JSON.parse(readFileSync(join(import.meta.dir, "../escenarios", nombre, "REFERENCIA.json"), "utf8"));
@@ -15,10 +18,13 @@ function valores(nombre: string) {
     const env = crearEntornoAislado(hogar, process.env);
     env.XDG_CONFIG_HOME = join(hogar, ".config");
     if (referencia.procedencia.OPENCODE_CONFIG) env.OPENCODE_CONFIG = join(copia.raiz, referencia.procedencia.OPENCODE_CONFIG);
-    const proceso = Bun.spawnSync([process.execPath, "pruebas/utilidades/resolver-escenario.ts", join(copia.raiz, referencia.procedencia.directorio)], { env, stdout: "pipe", stderr: "pipe" });
-    expect(proceso.exitCode).toBe(0);
-    expect(proceso.stderr.toString()).toBe("");
-    const resolucion = JSON.parse(proceso.stdout.toString()) as Resolucion;
+    const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: env });
+    const proyecto = join(copia.raiz, referencia.procedencia.directorio);
+    const contexto = adaptadorOpenCode.contexto(proyecto, entorno);
+    if (!contexto.exito) throw new Error(contexto.error.mensaje);
+    const resultado = resolver(adaptadorOpenCode, proyecto, entorno, contexto.valor);
+    if (!resultado.exito) throw new Error(resultado.error.mensaje);
+    const resolucion: Resolucion = resultado.valor;
     return { referencia, resolucion, consultar(agente: string, clave: string) {
       const resultado = consultarAgente(resolucion, agente, [clave]);
       if (!resultado.exito) throw new Error(resultado.error.mensaje);
@@ -69,9 +75,11 @@ describe("RF-06 CA-1", () => {
   });
 });
 
-describe("RF-06 CA-2", () => {
+describe("A5-4 RF-06 CA-2", () => {
   test("el origen de cada regla coincide con los bloques nativos y declarados del escenario", () => {
     const { cadenas, referencia } = consultarCadenas("v2-cadena");
+    // debug agent informa reglas sin su origen. Los limites de los bloques
+    // proceden de agent.ts del tag verificado, documentado en vendor/PROCEDENCIA.md.
     const extras: Record<string, number> = { build: 2, plan: 7, general: 1, explore: 11, revisor: 0 };
     const propias: Record<string, number> = { build: 1, plan: 2, general: 0, explore: 0, revisor: 1 };
     for (const [agente, cadena] of Object.entries(cadenas)) {

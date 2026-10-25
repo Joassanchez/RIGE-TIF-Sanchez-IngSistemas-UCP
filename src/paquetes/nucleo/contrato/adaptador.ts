@@ -51,7 +51,7 @@ export interface AgenteListado {
 }
 
 export interface AgenteEfectivo extends AgenteListado {
-  readonly estado: "activo" | "deshabilitado";
+  readonly estado: "activo" | "deshabilitado" | "no-observado";
   readonly motivo: string | null;
   readonly eliminacion?: DeclaracionUbicada;
 }
@@ -59,7 +59,7 @@ export interface ListadoAgentes {
   readonly agentes: readonly AgenteEfectivo[];
   readonly motivos: readonly string[];
 }
-export interface ContextoConsulta { readonly proyecto: string; readonly entorno: EntornoLectura }
+export interface ContextoConsulta { readonly proyecto: string; readonly entorno: EntornoLectura; readonly declaraciones?: readonly string[] }
 export type SolicitudPermiso = ({ readonly sujeto: string; readonly herramienta?: never }
   | { readonly herramienta: string; readonly sujeto?: never }) & { readonly objetivo: string; readonly lanzadoPor?: string | undefined };
 
@@ -84,7 +84,7 @@ export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   readonly reglas: Readonly<Record<string, string>>;
   readonly estrategias: Readonly<Record<string, Estrategia>>;
   contexto(proyecto: string, entorno: EntornoLectura): Resultado<C, ErrorAnalisis>;
-  ubicar(proyecto: string, entorno: EntornoLectura, contexto?: C): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
+  ubicar(proyecto: string, entorno: EntornoLectura, contexto: C): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
   leer(via: ViaUbicada, texto: string): Resultado<readonly Declaracion[], ErrorAnalisis>;
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
   cadena(resolucion: Resolucion, agente: string, contexto: C, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;

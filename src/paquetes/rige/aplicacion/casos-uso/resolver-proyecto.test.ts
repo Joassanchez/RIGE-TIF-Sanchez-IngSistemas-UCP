@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
 import type { PuertoResoluciones } from "../puertos/resoluciones";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../../../pruebas/utilidades/resolver";
 import { adaptadorFicticio } from "../../../../pruebas/utilidades/adaptador-ficticio";
 import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memoria";
 
@@ -82,7 +82,7 @@ describe("C-1", () => {
     const adaptador = { ...adaptadorFicticio, ubicar: (proyecto: string, entornoLectura: typeof dependencias.entorno) => {
       expect(entornoLectura).toBe(dependencias.entorno);
       ubicadas.push(proyecto);
-      return adaptadorFicticio.ubicar(proyecto, entornoLectura);
+      return adaptadorFicticio.ubicar(proyecto, entornoLectura, { proyecto, entorno: entornoLectura });
     } };
     expect(resolverProyecto({ ...dependencias, adaptador }, "./pedido")).toEqual({ exito: true, valor: { id: 1 } });
     const esperada = resolver(adaptadorFicticio, "/canonico", dependencias.entorno);

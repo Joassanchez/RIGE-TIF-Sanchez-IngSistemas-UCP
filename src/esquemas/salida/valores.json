@@ -134,6 +134,12 @@
           "type": "null"
         }
       ]
+    },
+    "declaraciones": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": [
@@ -149,7 +155,8 @@
     "valores",
     "reglas",
     "noResueltas",
-    "motivo"
+    "motivo",
+    "declaraciones"
   ],
   "additionalProperties": false,
   "$defs": {

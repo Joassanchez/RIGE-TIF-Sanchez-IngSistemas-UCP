@@ -8,7 +8,7 @@ function respuesta(): RespuestaValores {
     via: "proyecto", referencia: `/proyecto/<entrada${orden}>.jsonc`, regla: "orden-de-aplicacion",
   });
   return {
-    esquema: 2, versionRige,
+    esquema: 2, declaraciones: [], versionRige,
     proyecto: "/proyecto/<ejemplo>",
       herramienta: "opencode", versionHerramienta: "1.18.25", resumenEntradas: "a".repeat(64),
       entradas: [{ orden: 0, via: "remota-wellknown", referencia: "remota-wellknown", condicion: "no_observada", resumen: null },

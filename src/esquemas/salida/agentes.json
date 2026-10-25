@@ -81,6 +81,12 @@
       "additionalProperties": {
         "type": "string"
       }
+    },
+    "declaraciones": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": [
@@ -92,7 +98,8 @@
     "eliminados",
     "incompleta",
     "motivos",
-    "reglas"
+    "reglas",
+    "declaraciones"
   ],
   "additionalProperties": false,
   "$defs": {

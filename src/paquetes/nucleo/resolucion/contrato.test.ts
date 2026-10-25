@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Adaptador, Aplicacion, Secuencia } from "../contrato/adaptador";
 import { crearEntornoMemoria } from "../../../pruebas/utilidades/entorno-memoria";
-import { resolver } from "./resolver";
+import { resolver } from "../../../pruebas/utilidades/resolver";
 import * as proyeccion from "./proyectar";
 import { adaptadorFicticio } from "../../../pruebas/utilidades/adaptador-ficticio";
 

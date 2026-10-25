@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 export function prepararConsultas(nombre = "v2-cadena") {
   const escenario = copiarEscenario(nombre);
-  const variables = { ...crearEntornoAislado(join(escenario.raiz, "hogar"), {}),
+  const variables: Record<string, string> = { ...crearEntornoAislado(join(escenario.raiz, "hogar"), {}),
     ProgramData: join(escenario.raiz, "administrada") };
   return { ...escenario, variables,
     consultar: (comando: string, opciones: readonly string[] = [], entorno: Record<string, string> = {}) =>

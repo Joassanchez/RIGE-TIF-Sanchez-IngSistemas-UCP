@@ -249,7 +249,7 @@
         "hogar/.config/opencode/opencode.json": "e67a3c6b9828dcada77c0d7f60dc3ce2231adbded42fb682c226ecefdc302159",
         "proyecto/marcador.txt": "1467addcf20897867dbba1a69b01d714981c6218e8430b59acca2ad3b2d808bc"
       },
-      "referencia": "bcb7a9fd9ade2d38cf81a34d6d63d88f8a6470f26393f98b2d4d8a0fd175d214",
+      "referencia": "c418f63dbc5acf3614942ac50186cdfd624c2221a90761950483174e8f76da4d",
       "agentes": [
         "build",
         "plan",
@@ -467,12 +467,13 @@
     {
       "id": "v2-ruta-bloqueo",
       "entradas": {
+        "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
         "fuera.txt": "8bd57b153bdf871b8f5344451a8623875ecd7ef0146e1900651fdd0aca1baf67",
         "proyecto/opencode.jsonc": "c40c5cac7fcfe896da3e6a702459bd96cf0c4dcb0c6a6001673f721b1cd0e2ae",
         "proyecto/src/index.js": "106b97f66908b8a357f9d9b76930b209803b5c5241fda9b14ec64541f8cc70b4",
         "proyecto/src/productos.js": "106b97f66908b8a357f9d9b76930b209803b5c5241fda9b14ec64541f8cc70b4"
       },
-      "referencia": "6868657ae9e9bd7ef2116825d4a819c41d4e342d022142ccc1035b328cd41a73",
+      "referencia": "82925ed263fc1430b14ced6204fd8cd0764de2bea2e9b89523636e7ff100725f",
       "agentes": [
         "build",
         "a",
@@ -630,9 +631,10 @@
     {
       "id": "v2-ruta-env",
       "entradas": {
+        "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
         "proyecto/opencode.jsonc": "460fb4a79a3b7a755252787c69bf70a4345c8290129ad33ae7d62622e36bba2a"
       },
-      "referencia": "f68082fd9701e05c87b2ff5ba43e9d34f30028f6e23d3012757e8b428a353ff4",
+      "referencia": "d469b80e3fe996df66fe78c1384ede6590b9f0825bf641d994c9b4d1bd27967e",
       "agentes": [
         "build",
         "f",
@@ -681,11 +683,12 @@
     {
       "id": "v2-ruta-exposicion",
       "entradas": {
+        "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
         "proyecto/config/credenciales.json": "e155a6c85e1b0806589fb9ff93447b6990ff63ccce3ee8c06fbd72fdde77e52c",
         "proyecto/opencode.jsonc": "f2646377f8c878580b3528c00b5ae2727230c3003c7731122d3710e563f8ef85",
         "proyecto/privado/LEEME.txt": "ee39cbc677e726a72e5fa1f943c58ed0f2739703599031e9ff928e5546e11e16"
       },
-      "referencia": "66d541b94c2e18063298cb3d312686b60de1a63ddd9f92519a9f607b45933bec",
+      "referencia": "bf4dbbde2705b27da75ba0694b7981e06cf1473ee70a67874a0104f51424ea37",
       "agentes": [
         "build",
         "g",
@@ -756,11 +759,12 @@
     {
       "id": "v2-subagente",
       "entradas": {
+        "DERIVACION.md": "95b18c59884893059709c8ce0b789c382337d60b854c10a6427bfb3256fdf0bd",
         "hogar/.config/opencode/opencode.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
         "primary.json": "e788a87d0a131012fe245172fffacc649628a1c80ddea3625bf2770758e56ee9",
         "proyecto/opencode.json": "2c98b7c1e3052d93d73fce2164df7cfb4bb2f51ddca32a5e6debca010fad0b01"
       },
-      "referencia": "15d44e9a8f9d3856dd4678ff769a65b29ad5b70f230b9d1ec6b1fac0bf7199a8",
+      "referencia": "6fc3ef8c8c14df151272b60dee3c3eb4504b145991fe5e4d64ab01968606bec1",
       "agentes": [
         "build",
         "general",
@@ -800,13 +804,13 @@
         {
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "RF-02 CA-3",
+          "describe": "K-10 RF-02 CA-3",
           "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
         },
         {
           "item": "RNF-02",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "RF-02 CA-3",
+          "describe": "K-10 RF-02 CA-3",
           "fuente": "referencia-binario"
         }
       ]
@@ -843,13 +847,13 @@
         {
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "RF-02 CA-3",
+          "describe": "K-10 RF-02 CA-3",
           "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
         },
         {
           "item": "RNF-02",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "RF-02 CA-3",
+          "describe": "K-10 RF-02 CA-3",
           "fuente": "referencia-binario"
         }
       ]
@@ -886,13 +890,13 @@
         {
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "RF-02 CA-3",
+          "describe": "K-10 RF-02 CA-3",
           "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
         },
         {
           "item": "RNF-02",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "RF-02 CA-3",
+          "describe": "K-10 RF-02 CA-3",
           "fuente": "referencia-binario"
         }
       ]
@@ -952,10 +956,11 @@
     {
       "id": "v2-worktree-sin-vcs",
       "entradas": {
+        "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
         "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
         "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
       },
-      "referencia": "f0a8260f313dacacdbae7ec3a22c9de6441ae77bca00e83f1166a48755f41302",
+      "referencia": "613d22cc72e1e0fd4e4b5c6dbc03a841736b2a7e35f4008a287330343c2ff28b",
       "agentes": [
         "build",
         "plan"
@@ -992,10 +997,11 @@
     {
       "id": "v2-worktree-sintetico",
       "entradas": {
+        "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
         "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
         "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
       },
-      "referencia": "ada13a10829271ae62d120b4ccbeb2fc9fc22843707d9b354664f228497e7433",
+      "referencia": "0875114b217cd7c565c352403a8727c21fbd5fde896f7dfd760602cef36bb494",
       "agentes": [
         "build",
         "plan"
@@ -1032,10 +1038,11 @@
     {
       "id": "v2-worktree-valido",
       "entradas": {
+        "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
         "proyecto/opencode.jsonc": "3ab8788959592ee654f13bec4860b4d9d2f63ed462611587f3ab75280ce56e2d",
         "proyecto/src/a.js": "97d6ca188adab81fdd867138f032fb30ec661c2a36101c40768024d9f7d74afe"
       },
-      "referencia": "a3b06266f56b62d5a9daf9c964b64cc76bff4e28d61f8547d5054d13a0ab1f2d",
+      "referencia": "ff8c7054cf926d8774e678ef6b73e36c98e8272fadcc5520a208ada58c0bde91",
       "agentes": [
         "build",
         "plan"

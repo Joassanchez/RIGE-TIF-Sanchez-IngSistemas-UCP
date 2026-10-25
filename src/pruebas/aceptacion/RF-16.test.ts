@@ -65,3 +65,20 @@ describe("RF-16 CA-2", () => {
     expect(JSON.parse(resultado.salida).agentes.map(({ nombre, modo }: { nombre: string; modo: string }) => ({ nombre, modo }))).toEqual(referencia.agentes);
   });
 });
+
+describe("A11-1", () => {
+  test("un agente solo en Markdown conserva cadena-incompleta como consultado y lanzador", () => {
+    const escenario = preparar();
+    const agentes = join(escenario.variables.XDG_CONFIG_HOME!, "opencode/agents");
+    mkdirSync(agentes, { recursive: true });
+    writeFileSync(join(agentes, "solo.md"), "# Agente no observado");
+    for (const opciones of [["--agente", "solo"], ["--agente", "plan", "--lanzado-por", "solo"]]) {
+      const resultado = escenario.consultar("permiso", [...opciones, "--sujeto", "read", "--objetivo", "a"]);
+      expect(resultado.codigo).toBe(1);
+      expect(JSON.parse(resultado.error)).toMatchObject({ error: { codigo: "cadena-incompleta", mensaje: expect.stringContaining("markdown-no-observado") } });
+    }
+    const listado = JSON.parse(escenario.consultar("agentes").salida);
+    expect(listado.incompleta).toBe(true);
+    expect(listado.agentes).toContainEqual(expect.objectContaining({ nombre: "solo" }));
+  });
+});

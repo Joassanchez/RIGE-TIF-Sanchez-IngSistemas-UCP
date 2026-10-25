@@ -4,7 +4,9 @@ import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
-import { lanzar } from "../utilidades/subproceso";
+import { consultarValores } from "../../paquetes/rige/aplicacion/casos-uso/consultar-valores";
+import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
+import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 import type { RespuestaValores } from "../../paquetes/rige/aplicacion/respuestas/valores";
 
 const limpiezas: (() => void)[] = [];
@@ -16,21 +18,22 @@ function preparar() {
   const global = join(hogar, ".config/opencode/opencode.json");
   mkdirSync(join(hogar, ".config/opencode"), { recursive: true });
   copyFileSync(join(escenario.raiz, "global.json"), global);
-  const variables = { ...crearEntornoAislado(hogar, {}), XDG_CONFIG_HOME: join(hogar, ".config"),
+  const variables = { ...crearEntornoAislado(hogar, process.env), XDG_CONFIG_HOME: join(hogar, ".config"),
     RIGE_ALMACEN: join(escenario.raiz, "almacen"), ProgramData: join(escenario.raiz, "administrada") };
-  const consultar = (...opciones: string[]) => lanzar(hogar, ["valores", "--proyecto", escenario.proyecto, "--agente", "build", ...opciones], variables);
+  const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: variables });
+  const consultar = (clave?: string) => consultarValores({ adaptador: adaptadorOpenCode, entorno, rutas: entorno }, escenario.proyecto, "build", clave);
   return { ...escenario, consultar, global, proyectoJson: join(escenario.proyecto, "opencode.json") };
 }
 
-describe("T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2", () => {
-  test("valores por subproceso conserva fusion, orden, procedencia y entradas", () => {
+describe("K-5", () => { describe("T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2", () => {
+  test("valores en memoria conserva fusion, orden, procedencia y entradas", () => {
     const escenario = preparar();
     const resumenes = () => [escenario.global, escenario.proyectoJson].map(r => createHash("sha256").update(readFileSync(r)).digest("hex"));
     const antes = resumenes();
     const resultado = escenario.consultar();
-    expect(resultado.codigo).toBe(0);
-    expect(resultado.error).toBe("");
-    const respuesta = JSON.parse(resultado.salida) as RespuestaValores;
+    expect(resultado.exito).toBe(true);
+    if (!resultado.exito) throw new Error(resultado.error.mensaje);
+    const respuesta: RespuestaValores = resultado.valor;
     const declarados = respuesta.valores.filter(v => v.rastro.determinante.origen.tipo === "declarado");
     expect(respuesta.valores.filter(v => v.rastro.determinante.origen.tipo === "implicito").map(v => v.clave).sort())
       .toEqual(["description", "mode", "name", "native", "options"]);
@@ -52,11 +55,12 @@ describe("T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2", () => {
     for (const { rastro } of declarados.slice(0, 2)) expect(rastro.desplazadas).toMatchObject([
       { valor: "ask", via: "global", referencia: escenario.global.replaceAll("\\", "/"), origen: { posicion: { linea: 9, columna: 9 } } },
     ]);
-    const puntual = escenario.consultar("--clave", "/permission/read/*.env");
-    expect(puntual.codigo).toBe(0);
-    expect(JSON.parse(puntual.salida).valores).toEqual([declarados[4]]);
+    const puntual = escenario.consultar("/permission/read/*.env");
+    expect(puntual.exito).toBe(true);
+    if (!puntual.exito) throw new Error(puntual.error.mensaje);
+    expect(puntual.valor.valores).toEqual([declarados[4]!]);
     expect(escenario.consultar()).toEqual(resultado);
     expect(respuesta.entradas.filter(e => e.condicion === "observada").map(e => e.resumen)).toEqual(antes);
     expect(resumenes()).toEqual(antes);
   });
-});
+}); });

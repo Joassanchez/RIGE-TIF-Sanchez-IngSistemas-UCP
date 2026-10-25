@@ -26,6 +26,13 @@ const raiz = resolve(import.meta.dir, "../..");
 const hashWindows = "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff";
 const hashWindowsBaseline = "954f2869f9cc2131b03cb6aa7ee50c70601c1a56811fb5bcf749b827c970d290";
 const hashLinux = "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb";
+describe("A8-3", () => {
+  test("un worktree valido no excluye skills externos", () => {
+    const referencia = JSON.parse(readFileSync(join(raiz, "pruebas/escenarios/v2-worktree-valido/REFERENCIA.json"), "utf8"));
+    expect(referencia.procedencia.skillsExternosExcluidos).not.toBe(true);
+    expect(referencia.procedencia.aislamiento).not.toContain("OPENCODE_DISABLE_EXTERNAL_SKILLS=true");
+  });
+});
 type Llamada = { argumentos: string[]; cwd?: string; env: Record<string, string>; timeout: number; copia?: string };
 
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.

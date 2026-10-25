@@ -17,7 +17,7 @@ describe("RNF-03 CA-2", () => {
 describe("RNF-03 CA-3", () => {
   test("un adaptador ficticio cambia capas, estrategia y prefijo solo con el contrato", async () => {
     const { adaptadorFicticio } = await import("../utilidades/adaptador-ficticio");
-    const { resolver } = await import("../../paquetes/nucleo/resolucion/resolver");
+    const { resolver } = await import("../utilidades/resolver");
     const { consultarAgente } = await import("../../paquetes/nucleo/resolucion/proyectar");
     const entorno = crearEntornoMemoria({
       archivos: { "/proyecto/capa-a.json": '{"temperatura":0.1}', "/proyecto/capa-b.json": '{"temperatura":0.2}' },

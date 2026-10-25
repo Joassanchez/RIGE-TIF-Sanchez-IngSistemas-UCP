@@ -35,7 +35,9 @@ export class ArbolFusion implements EstadoFusion {
     const heredadas: DeclaracionUbicada[] = [];
     for (const segmento of ruta) {
       if (actual.rastro) {
-        actual.historia = [...actual.rastro.desplazadas, actual.rastro.determinante];
+        const valor = actual.rastro.valor;
+        const vacio = valor !== null && typeof valor === "object" && !Array.isArray(valor) && Object.keys(valor).length === 0;
+        actual.historia = vacio ? actual.rastro.desplazadas : [...actual.rastro.desplazadas, actual.rastro.determinante];
         delete actual.rastro;
       }
       heredadas.push(...actual.historia);
@@ -60,6 +62,10 @@ export class ArbolFusion implements EstadoFusion {
     if (!ruta.length) { this.vaciarBajo(ruta); return anteriores; }
     // Solo se borra la clave indicada: sus antecesores conservan su posicion.
     this.buscar(ruta.slice(0, -1))?.hijos.delete(ruta.at(-1)!);
+    for (let longitud = ruta.length - 1; longitud >= 0; longitud--) {
+      const antecesor = this.buscar(ruta.slice(0, longitud));
+      if (antecesor && !antecesor.hijos.size && !antecesor.rastro) antecesor.historia = [];
+    }
     return anteriores;
   }
   registrarEliminadas(rastros: readonly RastroEnFusion[], causa: DeclaracionUbicada): void {

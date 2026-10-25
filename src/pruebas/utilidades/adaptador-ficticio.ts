@@ -36,7 +36,7 @@ export const adaptadorFicticio: Adaptador = {
     "retirada-ficticia": "Se retira el grupo indicado por la capa.", "limite-ficticio": "Solo se analiza el perfil configurado.",
     "proteccion-nativa-anulada": "Una declaracion concede mas acceso que una regla base anterior." },
   estrategias: { primera },
-  cadena: (_, agente) => ({ exito: true, valor: { agente, ejesParciales: [], reglas: [{
+  cadena: (_, agente) => ({ exito: true, valor: { agente, ejesParciales: [], declaraciones: [], advertencias: [], reglas: [{
     indice: 0, sujeto: "documento", patron: "todos", efecto: "conceder",
     origen: { tipo: "nativo", regla: "base-ficticia" }, declaracion: null,
   }] } }),

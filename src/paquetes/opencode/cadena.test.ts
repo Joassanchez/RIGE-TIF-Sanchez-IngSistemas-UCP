@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { posix, win32 } from "node:path";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 import { adaptadorFicticio } from "../../pruebas/utilidades/adaptador-ficticio";
 import { adaptadorOpenCode } from "./adaptador";

@@ -9,7 +9,7 @@ const rastro = (ruta: readonly string[], valor: number): RastroValor => ({
 const temperatura = rastro(["perfiles", "grupo", "a", "parametros", "temperatura"], 0.3);
 const pasos = rastro(["perfiles", "grupo", "a", "pasos"], 12);
 const resolucion: Resolucion = {
-  formato: 2, identidad: { herramienta: "ficticia", version: "1" }, proyecto: "/proyecto",
+  formato: 2, eliminadas: [], identidad: { herramienta: "ficticia", version: "1" }, proyecto: "/proyecto",
   prefijoAgente: ["perfiles", "grupo"], reglas: { orden: "Orden." }, entradas: [], resumenEntradas: "",
   valores: [temperatura, pasos, rastro(["perfiles", "grupo", "ab", "pasos"], 4), rastro(["otro", "a", "pasos"], 8)], noResueltas: [],
 };
@@ -92,7 +92,7 @@ describe("Q-2", () => {
 describe("Q-3", () => {
   test("el adaptador ficticio devuelve claves relativas sin asumir la longitud del prefijo", async () => {
     const { consultarAgente } = await import("./proyectar");
-    const { resolver } = await import("./resolver");
+    const { resolver } = await import("../../../pruebas/utilidades/resolver");
     const { adaptadorFicticio } = await import("../../../pruebas/utilidades/adaptador-ficticio");
     const { crearEntornoMemoria } = await import("../../../pruebas/utilidades/entorno-memoria");
     const resultado = resolver(adaptadorFicticio, "/proyecto", crearEntornoMemoria({ archivos: {

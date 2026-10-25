@@ -11,6 +11,8 @@ export function cadena(resolucion: Resolucion, agente: string, contexto: Context
   const efectivos = agentesEfectivos(resolucion, contexto).agentes;
   for (const nombre of [agente, ...(lanzadoPor === undefined ? [] : [lanzadoPor])]) {
     const efectivo = efectivos.find(a => a.nombre === nombre);
+    if (efectivo?.estado === "no-observado") return { exito: false, error: { categoria: "uso", codigo: "cadena-incompleta",
+      mensaje: `La cadena de ${nombre} no se puede completar: ${efectivo.motivo}.` } };
     if (!efectivo || efectivo.estado === "deshabilitado") return { exito: false, error: { categoria: "uso", codigo: "agente-inexistente",
       mensaje: `El agente ${nombre} ${efectivo ? "esta deshabilitado" : "no existe"}.` } };
   }

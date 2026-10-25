@@ -81,7 +81,7 @@ que no participan en la cadena. Los objetos de permisos no se modifican.
 El envoltorio recibe data, tmp, worktree, skillDirs, referenceDirs y las
 operaciones puras join/relative de path; construye Global.Path y ctx locales.
 Truncate.GLOB se expresa como path.join(data, "tool-output", "*") a partir de
-truncation-dir.ts:4 y de la regla final de agent.ts:294-310.
+truncation-dir.ts:4 y de la regla final de agent.ts:296-310.
 SHA-256 de truncation-dir.ts: `790159a022386c68212056a39571f53c9874d11079b0572d57c207f1cd1d9155`.
 Global.Path se calcula en el adaptador segun core/src/global.ts:10-15;
 SHA-256 de ese original: `37c9aae045e01cd246cd4d8c489e84ea4849b6297d3a6f9ff9b1bca57f85c013`.

@@ -2,6 +2,7 @@ import type { ContextoConsulta, ErrorAnalisis } from "@rige/nucleo/contrato/adap
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { Resultado } from "@rige/nucleo/resultado";
 import { descubrirWorktree } from "./worktree";
+import { validarVias } from "./ubicador";
 
 export interface ContextoOpenCode extends ContextoConsulta {
   readonly hogar: string;
@@ -13,6 +14,8 @@ export interface ContextoOpenCode extends ContextoConsulta {
 }
 
 export function contextoOpenCode(proyecto: string, entorno: EntornoLectura): Resultado<ContextoOpenCode, ErrorAnalisis> {
+  const vias = validarVias(entorno);
+  if (!vias.exito) return vias;
   const variable = (nombre: string) => entorno.variable(nombre);
   const nombreHogar = entorno.plataforma === "win32" ? "USERPROFILE" : "HOME";
   const hogar = variable(nombreHogar);

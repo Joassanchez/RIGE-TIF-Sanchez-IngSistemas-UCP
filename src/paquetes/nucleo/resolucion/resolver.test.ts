@@ -25,7 +25,7 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
     permisos: adaptadorFicticio.permisos,
     identidad: { herramienta: "ficticia", version: "1" }, prefijoAgente: ["agente"],
     reglas: { orden: "Prevalece la entrada posterior.", sinUso: "No utilizada." }, estrategias: {},
-    cadena: (_, agente) => ({ exito: true, valor: { agente, reglas: [], ejesParciales: [] } }),
+    cadena: (_, agente) => ({ exito: true, valor: { agente, reglas: [], ejesParciales: [], declaraciones: [], advertencias: [] } }),
     ubicar: () => ({ exito: true, valor: [...vias, ...adicionales] }),
     leer: (_, texto) => ({ exito: true, valor: JSON.parse(texto) as Declaracion[] }),
     secuenciar: (lecturas) => ({ exito: true, valor: {
@@ -39,7 +39,7 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
 }
 
 async function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura) {
-  return (await import("./resolver")).resolver(adaptador, proyecto, entorno);
+  return (await import("../../../pruebas/utilidades/resolver")).resolver(adaptador, proyecto, entorno);
 }
 
 async function obtener(adaptador: Adaptador, entorno: EntornoLectura): Promise<Resolucion> {
@@ -110,7 +110,7 @@ describe("N-4", () => {
     expect(modificada.valores).toEqual(primera.valores);
     expect(modificada.entradas[0]?.resumen).not.toBe(primera.entradas[0]?.resumen);
     expect(modificada.resumenEntradas).not.toBe(primera.resumenEntradas);
-    expect(Object.keys(primera)).toEqual(["formato", "identidad", "proyecto", "prefijoAgente", "reglas", "entradas", "resumenEntradas", "valores", "noResueltas"]);
+    expect(Object.keys(primera)).toEqual(["formato", "identidad", "proyecto", "prefijoAgente", "declaraciones", "reglas", "entradas", "resumenEntradas", "valores", "eliminadas", "noResueltas"]);
   });
 
   test("normaliza las rutas mostradas y conserva la letra de unidad", async () => {
@@ -148,7 +148,7 @@ describe("N-6", () => {
     const fallo = { exito: false as const, error: { categoria: "uso" as const, codigo: "fallo-doble", mensaje: "Fallo del adaptador." } };
     const llamadas: string[] = [];
     const doble: Adaptador = { ...adaptador,
-      ubicar(proyecto, entorno) { llamadas.push("ubicar"); return etapa === "ubicar" ? fallo : adaptador.ubicar(proyecto, entorno); },
+      ubicar(proyecto, entorno, contexto) { llamadas.push("ubicar"); return etapa === "ubicar" ? fallo : adaptador.ubicar(proyecto, entorno, contexto); },
       leer(via, texto) { llamadas.push("leer"); return etapa === "leer" ? fallo : adaptador.leer(via, texto); },
       secuenciar(lecturas) { llamadas.push("secuenciar"); return etapa === "secuenciar" ? fallo : adaptador.secuenciar(lecturas); },
     };

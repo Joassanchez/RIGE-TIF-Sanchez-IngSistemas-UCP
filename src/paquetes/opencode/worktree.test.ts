@@ -58,18 +58,20 @@ describe("T2-08 descubrimiento autorizado ADR-101", () => {
     expect(descubrirWorktree("/w", { ...entorno({ ...head, "/w/git": "" }, estructura), variable: () => undefined }))
       .toMatchObject({ valor: { worktree: "/", declaraciones: ["git-no-encontrado"] } });
   });
-  test("GIT_DIR y GIT_WORK_TREE definidas incluso vacias son error de uso", () => {
-    for (const nombre of ["GIT_DIR", "GIT_WORK_TREE"]) {
+  describe("A8-5", () => { test("variables Git definidas incluso vacias son error de uso", () => {
+    for (const nombre of ["GIT_DIR", "GIT_WORK_TREE", "GIT_CEILING_DIRECTORIES", "GIT_COMMON_DIR"]) {
       expect(descubrirWorktree("/w", entorno(head, estructura, { [nombre]: "" })))
         .toMatchObject({ exito: false, error: { codigo: "via-no-soportada", mensaje: expect.stringContaining(nombre) } });
     }
-  });
-  test("solo declara aproximacion al detectar core.worktree, bare=true o safe.directory", () => {
-    for (const config of ["[core]\nworktree = ../otro", "[core]\nbare = true", "[safe]\ndirectory = *"]) {
+  }); });
+  test("solo declara aproximacion al detectar core.worktree o bare=true", () => {
+    for (const config of ["[core]\nworktree = ../otro", "[core]\nbare = true"]) {
       expect(descubrirWorktree("/w/p", entorno({ ...head, "/w/.git/config": config }, estructura)))
         .toMatchObject({ valor: { declaraciones: ["deteccion-git-aproximada"] } });
     }
     expect(descubrirWorktree("/w/p", entorno({ ...head, "/w/.git/config": "[core]\nbare = false\n# worktree = otro" }, estructura)))
+      .toMatchObject({ valor: { declaraciones: [] } });
+    expect(descubrirWorktree("/w/p", entorno({ ...head, "/w/.git/config": "[safe]\ndirectory = *" }, estructura)))
       .toMatchObject({ valor: { declaraciones: [] } });
     expect(descubrirWorktree("/bare", entorno({ "/bare/HEAD": "ref: refs/heads/main", "/bare/config": "[core]\nbare=true" },
       ["/bare", "/bare/objects", "/bare/refs"]))).toMatchObject({ valor: { worktree: "/", declaraciones: ["deteccion-git-aproximada"] } });

@@ -17,11 +17,16 @@ export interface PlantillasExplicacion {
 type Parametros = Partial<Record<"indice" | "sujeto" | "patron" | "efecto" | "archivo" | "linea" | "origen" | "total" | "desplazadas", string | number>>;
 const marcadores = ["indice", "sujeto", "patron", "efecto", "archivo", "linea", "origen", "total", "desplazadas"];
 
-function aplicar(texto: string, parametros: Parametros): string {
-  // Se valida la plantilla antes de interpolar: los datos no se reinterpretan.
+export function validarPlantilla(texto: string): void {
   if (/[{}]/.test(texto.replace(/\{[^{}]*\}/g, ""))) throw new Error("Marcador mal formado en plantilla.");
+  for (const coincidencia of texto.matchAll(/\{([^{}]*)\}/g)) {
+    if (!marcadores.includes(coincidencia[1]!)) throw new Error("Marcador desconocido en plantilla.");
+  }
+}
+
+function aplicar(texto: string, parametros: Parametros): string {
+  validarPlantilla(texto);
   return texto.replace(/\{([^{}]*)\}/g, (_, nombre: string) => {
-    if (!marcadores.includes(nombre)) throw new Error("Marcador desconocido en plantilla.");
     const valor = parametros[nombre as keyof Parametros];
     if (valor === undefined) throw new Error(`Marcador sin valor: ${nombre}`);
     return String(valor);

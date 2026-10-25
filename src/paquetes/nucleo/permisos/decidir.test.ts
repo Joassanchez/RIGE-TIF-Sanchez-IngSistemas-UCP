@@ -7,7 +7,7 @@ const regla = (indice: number, efecto: string, declarada = false): ReglaCadena =
   origen: declarada ? { tipo: "declarado", orden: 0, posicion: { linea: 3, columna: 1 } }
     : { tipo: "nativo", regla: "base" }, declaracion: null,
 });
-const cadena = (reglas: readonly ReglaCadena[]): Cadena => ({ agente: "perfil", reglas, ejesParciales: [] });
+const cadena = (reglas: readonly ReglaCadena[]): Cadena => ({ agente: "perfil", reglas, ejesParciales: [], declaraciones: [], advertencias: [] });
 const politica = { ordenEfectos: ["impedir", "consultar", "conceder"], efectoPorDefecto: "consultar", declaraciones: ["limite"] };
 const consulta = { sujeto: "documento", objetivo: "a" };
 
@@ -22,7 +22,7 @@ describe("T2-06 rastro generico", () => {
   test("D-1 sin coincidencia conserva el efecto por defecto, sin determinante", () => {
     expect(decidir(cadena([]), consulta, { ...politica, determinante: null, coincidentes: [] })).toEqual({
       agente: "perfil", consulta: { ...consulta, objetivoEvaluado: "a" }, decision: "consultar",
-      motivoSinDecision: "sin-coincidencia", coincidentes: [], determinante: null, desplazadas: [],
+      motivoSinDecision: null, porDefecto: true, coincidentes: [], determinante: null, desplazadas: [],
       nativaAnulada: null, advertencias: [], declaraciones: ["limite"],
     });
   });

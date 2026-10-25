@@ -7,6 +7,8 @@ import { consultarAgente } from "../../paquetes/nucleo/resolucion/proyectar";
 import type { RastroValor, Resolucion } from "../../paquetes/nucleo/resolucion/tipos";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
+import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
+import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
 
 const limpiezas: (() => void)[] = [];
 afterEach(() => { for (const borrar of limpiezas.splice(0).reverse()) borrar(); });
@@ -61,11 +63,12 @@ function resolverEscenario(proyecto: string, entorno: EntornoLecturaSistema): Re
     const valor = entorno.variable(nombre);
     if (valor !== undefined) variables[nombre] = valor;
   }
-  const proceso = Bun.spawnSync([process.execPath, "pruebas/utilidades/resolver-escenario.ts", proyecto], {
-    env: variables, stdout: "pipe", stderr: "pipe", timeout: 10000,
-  });
-  if (proceso.exitCode !== 0 || proceso.stderr.length) throw new Error(proceso.stderr.toString());
-  return JSON.parse(proceso.stdout.toString()) as Resolucion;
+  const lectura = new EntornoLecturaSistema({ plataforma: process.platform, entorno: variables });
+  const contexto = adaptadorOpenCode.contexto(proyecto, lectura);
+  if (!contexto.exito) throw new Error(contexto.error.mensaje);
+  const resultado = resolver(adaptadorOpenCode, proyecto, lectura, contexto.valor);
+  if (!resultado.exito) throw new Error(resultado.error.mensaje);
+  return resultado.valor;
 }
 function consultar(resolucion: Resolucion, clave: string | undefined): readonly RastroValor[] {
   const resultado = consultarAgente(resolucion, "build", clave?.split("."));
@@ -162,8 +165,7 @@ describe("RF-01 CA-1 v1-vias", () => {
     expect(rastros.find(r => r.ruta[2] === "options")).toMatchObject({
       ruta: ["agent", "build", "options", "a"], valor: false,
       determinante: { via: "proyecto", referencia: ruta("proyecto/opencode.json"), origen: { posicion: { linea: 8, columna: 9 } } },
-      desplazadas: [expect.objectContaining({ valor: {}, origen: { tipo: "implicito", regla: "valor-implicito-del-agente" }, via: null, referencia: null }),
-        { valor: 1, via: "global", referencia: ruta("hogar/.config/opencode/opencode.json"), origen: { posicion: { linea: 9, columna: 11 } } }],
+      desplazadas: [{ valor: 1, via: "global", referencia: ruta("hogar/.config/opencode/opencode.json"), origen: { posicion: { linea: 9, columna: 11 } } }],
     });
     expect(resolucion.valores.some(v => v.ruta[0] === "agent" && v.ruta[1] === "build"
       && ["steps", "maxSteps"].includes(v.ruta[2]!))).toBe(false);

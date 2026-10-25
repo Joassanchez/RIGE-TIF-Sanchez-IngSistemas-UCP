@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { ViaUbicada } from "@rige/nucleo/contrato/adaptador";
 import { leerEntrada, posicion } from "./lector";
 import { adaptadorOpenCode } from "./adaptador";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 
 const via: ViaUbicada = { via: "proyecto", referencia: "/p/opencode.jsonc", condicion: "observada" };

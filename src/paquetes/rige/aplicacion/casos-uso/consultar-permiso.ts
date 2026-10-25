@@ -33,11 +33,11 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, solicitud: 
   const rastro = { ...decision,
     consulta: { sujeto, objetivo, objetivoEvaluado: herramienta === undefined ? decision.consulta.objetivoEvaluado : objetivoEvaluado,
       forma: herramienta === undefined ? "sujeto" as const : "herramienta" as const, ...(herramienta === undefined ? {} : { herramienta }) },
-    declaraciones: [...decision.declaraciones, ...(cadena.valor.declaraciones ?? [])],
-    advertencias: [...decision.advertencias, ...(cadena.valor.advertencias ?? []), ...advertenciasObjetivo],
+    declaraciones: [...decision.declaraciones, ...cadena.valor.declaraciones],
+    advertencias: [...decision.advertencias, ...cadena.valor.advertencias, ...advertenciasObjetivo],
   };
   const codigos = new Set([...Object.keys(resolucion.reglas), ...rastro.declaraciones, ...rastro.advertencias]);
-  if (motivoSinDecision !== null) codigos.add(motivoSinDecision);
+  if (decision.motivoSinDecision !== null) codigos.add(decision.motivoSinDecision);
   for (const regla of coincidentes) {
     if (regla.origen.tipo !== "declarado") codigos.add(regla.origen.regla);
     if (regla.declaracion) codigos.add(regla.declaracion.regla);

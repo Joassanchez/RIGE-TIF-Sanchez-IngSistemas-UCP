@@ -15,7 +15,11 @@ export function prepararConsulta(contexto: ContextoOpenCode, solicitud: Solicitu
     valor: prepararSujeto(herramienta, objetivo) };
   const absoluto = entorno.esAbsoluta(objetivo) ? entorno.unir(objetivo) : entorno.unir(proyecto, objetivo);
   const relativa = entorno.relativa(worktree, absoluto);
-  const fuera = relativa === ".." || relativa.startsWith("../") || relativa.startsWith("..\\") || entorno.esAbsoluta(relativa);
+  const contiene = (base: string) => {
+    const ruta = entorno.relativa(base, absoluto);
+    return ruta !== ".." && !ruta.startsWith("../") && !ruta.startsWith("..\\") && !entorno.esAbsoluta(ruta);
+  };
+  const fuera = !contiene(proyecto) && (worktree === "/" || !contiene(worktree));
   return { exito: true, valor: { sujeto: herramienta === "read" ? "read" : "edit",
     objetivoEvaluado: herramienta === "apply_patch" ? relativa.replaceAll("\\", "/") : relativa,
     motivoSinDecision: fuera ? "fuera-del-arbol" : null } };

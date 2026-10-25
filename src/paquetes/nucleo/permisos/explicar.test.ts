@@ -5,7 +5,7 @@ import type { ReglaCadena } from "../resolucion/tipos";
 
 const regla: ReglaCadena = { indice: 0, sujeto: "documento", patron: "todos", efecto: "conceder",
   origen: { tipo: "nativo", regla: "base-ficticia" }, declaracion: null };
-const rastro = () => decidir({ agente: "a", reglas: [regla], ejesParciales: [] },
+const rastro = () => decidir({ agente: "a", reglas: [regla], ejesParciales: [], declaraciones: [], advertencias: [] },
   { sujeto: "documento", objetivo: "todos" }, { ...adaptadorFicticio.permisos, coincidentes: [0], determinante: 0 });
 const plantillas = () => ({ ...adaptadorFicticio.permisos.plantillas, reglas: adaptadorFicticio.reglas });
 
@@ -57,6 +57,6 @@ describe("T2-10 E-3 RNF-04", () => {
 
 test("T2-10 efecto por defecto sin coincidencias", async () => {
   const { explicar } = await import("./explicar");
-  expect(explicar({ ...rastro(), decision: "consultar", determinante: null, coincidentes: [], motivoSinDecision: "sin-coincidencia" }, plantillas(), 1)[0])
+  expect(explicar({ ...rastro(), decision: "consultar", determinante: null, coincidentes: [], motivoSinDecision: null, porDefecto: true }, plantillas(), 1)[0])
     .toBe("Sin aciertos: consultada por defecto.");
 });

@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import type { Database } from "bun:sqlite";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../../../pruebas/utilidades/resolver";
 import { adaptadorFicticio } from "../../../../pruebas/utilidades/adaptador-ficticio";
 import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memoria";
 import { AlmacenSqlite, abrirConexion } from "./esquema";

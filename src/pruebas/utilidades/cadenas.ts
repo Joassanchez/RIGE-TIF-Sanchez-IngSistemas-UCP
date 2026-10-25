@@ -1,9 +1,12 @@
 import { readFileSync } from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { join, relative } from "node:path";
 import type { Cadena } from "../../paquetes/nucleo/resolucion/tipos";
 import { copiarEscenario, type OpcionesEscenario } from "./escenario";
 import { crearEntornoAislado } from "./entorno-aislado";
 import { normalizarRutas } from "../../herramientas/referencias-nativas/comparar";
+import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
+import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
+import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 
 export interface ReferenciaCadenas {
   procedencia: { directorio: string; hogar: string; OPENCODE_CONFIG?: string; git?: OpcionesEscenario["git"] };
@@ -18,12 +21,17 @@ export function consultarCadenas(nombre: string) {
     const env = { ...crearEntornoAislado(hogar, process.env), XDG_CONFIG_HOME: join(hogar, ".config"),
       TEMP: join(hogar, "tmp"), TMP: join(hogar, "tmp"), TMPDIR: join(hogar, "tmp"), ProgramData: hogar };
     if (referencia.procedencia.OPENCODE_CONFIG) Object.assign(env, { OPENCODE_CONFIG: join(copia.raiz, referencia.procedencia.OPENCODE_CONFIG) });
-    // CLI del arnes: ejecuta el contrato antes de que exista la consulta de decisiones (T2-06).
-    const proceso = Bun.spawnSync([process.execPath, "pruebas/utilidades/consultar-cadenas.ts", join(copia.raiz, referencia.procedencia.directorio), ...Object.keys(referencia.cadenas)], {
-      cwd: resolve(import.meta.dir, "../.."), env, stdout: "pipe", stderr: "pipe", timeout: 10000,
-    });
-    if (proceso.exitCode !== 0 || proceso.stderr.length) throw new Error(proceso.stderr.toString());
-    const cadenas = JSON.parse(proceso.stdout.toString()) as Record<string, Cadena>;
+    const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: env });
+    const proyecto = join(copia.raiz, referencia.procedencia.directorio);
+    const contexto = adaptadorOpenCode.contexto(proyecto, entorno);
+    if (!contexto.exito) throw new Error(contexto.error.mensaje);
+    const resolucion = resolver(adaptadorOpenCode, proyecto, entorno, contexto.valor);
+    if (!resolucion.exito) throw new Error(resolucion.error.mensaje);
+    const cadenas: Record<string, Cadena> = Object.fromEntries(Object.keys(referencia.cadenas).map(agente => {
+      const resultado = adaptadorOpenCode.cadena(resolucion.valor, agente, contexto.valor);
+      if (!resultado.exito) throw new Error(resultado.error.mensaje);
+      return [agente, resultado.valor];
+    }));
     return { referencia, cadenas, raiz: copia.raiz, normalizar: (valor: unknown) => normalizarRutas(valor, {
       hogar, data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), "hogar-relativo-raiz": relative("/", hogar),
     }) };

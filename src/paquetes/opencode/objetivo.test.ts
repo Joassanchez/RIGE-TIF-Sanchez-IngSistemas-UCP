@@ -11,6 +11,22 @@ function prepararObjetivo(proyecto: string, herramienta: string, objetivo: strin
   return prepararConsulta(contexto.valor, { herramienta, objetivo });
 }
 
+describe("A8-1", () => {
+  test("sin VCS solo contiene el directorio del proyecto; permite tambien el worktree", () => {
+    const entorno = crearEntornoMemoria({ archivos: {}, variables: { HOME: "/hogar" } });
+    const contexto = contextoOpenCode("/p", entorno);
+    if (!contexto.exito) throw new Error(contexto.error.mensaje);
+    expect(prepararConsulta(contexto.valor, { herramienta: "read", objetivo: "../fuera.txt" }))
+      .toMatchObject({ valor: { motivoSinDecision: "fuera-del-arbol" } });
+    expect(prepararConsulta(contexto.valor, { herramienta: "read", objetivo: "a.txt" }))
+      .toMatchObject({ valor: { motivoSinDecision: null } });
+    expect(prepararConsulta({ ...contexto.valor, proyecto: "/externo/p", worktree: "/w" }, { herramienta: "read", objetivo: "a.txt" }))
+      .toMatchObject({ valor: { motivoSinDecision: null } });
+    expect(prepararConsulta({ ...contexto.valor, proyecto: "/externo/p", worktree: "/w" }, { herramienta: "read", objetivo: "/w/a.txt" }))
+      .toMatchObject({ valor: { motivoSinDecision: null } });
+  });
+});
+
 describe("T2-08 objetivos por herramienta", () => {
   for (const plataforma of ["linux", "win32"]) {
     const path = plataforma === "win32" ? win32 : posix;
