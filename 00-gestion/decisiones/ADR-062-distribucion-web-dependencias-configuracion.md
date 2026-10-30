@@ -238,6 +238,13 @@ La versión anterior del texto queda en el historial de git.
 - **Errores de uso nuevos** (código 1 en la CLI; estados HTTP en la web): `proyecto-inexistente`, `entrada-ilegible`, `entorno-incompleto`, `contenido-no-soportado`, `solicitud-invalida`, `agente-sin-declaraciones`, `clave-inexistente`, `clave-no-resuelta` y `resolucion-inexistente`.
 - **Resultados de referencia:** dos escenarios generados una sola vez con OpenCode 1.18.25 (`opencode debug agent build`, binario `opencode-windows-x64@1.18.25`, SHA-256 `ef06e41a…`) y versionados con su procedencia (`src/pruebas/escenarios/*/REFERENCIA.json`): `v1-precedencia` (tres niveles del proyecto, el caso del README) y `v1-vias` (global, `OPENCODE_CONFIG`, `.opencode` anidados, `.opencode` del HOME, `maxSteps` y conflicto de forma). El segundo confirmó con la herramienta que el `.opencode` más cercano al proyecto tiene **menor** prevalencia que el de un nivel superior. El CI no ejecuta OpenCode. OpenCode no modificó los archivos de configuración (con `$schema` presente) pero agregó `.gitignore` en cada directorio de configuración (AR-10).
 
+**Precisión del 30/10/2026 (C5, iteración 2; conformidad del autor en la sesión del 30/10/2026).** El esquema de salida pasa de `esquema: 1` (v1: `servir`, estado y errores) a `esquema: 2`. El cambio es incompatible: la forma de los orígenes, las rutas como arreglo y las respuestas nuevas `valores`, `permiso` y `agentes` (T2-01, T2-02 y T2-11). Queda así:
+- **Constante única:** `versionEsquemaSalida = 2` en `paquetes/rige/aplicacion/respuestas/`. Toda respuesta y todo error la declaran.
+- **Esquema publicado:** JSON Schema draft 2020-12 en `src/esquemas/salida/` (`valores`, `permiso`, `agentes` y `error`). Es la fuente de los tipos públicos: `contrato-generado.ts` se genera y una prueba exige que coincida.
+- **Regla de compatibilidad (RNF-08):** un campo opcional nuevo, o una respuesta nueva, no cambia el entero, y las salidas de referencia de la versión vigente tienen que seguir validando. Un campo que se quita, se renombra o cambia de tipo, o un campo nuevo obligatorio, incrementa el entero. En la iteración 3, los hallazgos (RF-07) y la declaración `version-no-determinada` (ADR-102) son aditivos y se mantienen en `esquema: 2`.
+- **Vías del v1 que se levantan en la iteración 3:** RF-04 exige descubrir `OPENCODE_CONFIG_CONTENT` y `OPENCODE_PERMISSION`, y RF-07 exige detectar el `OPENCODE_PERMISSION` inválido. Las dos dejan de ser `via-no-soportada` cuando su lectura se implementa. Mientras tanto, conservan la falla visible.
+- **Base:** `PRAGMA user_version = 2` (precisión de ADR-061 del 30/10/2026).
+
 ### Consecuencias
 
 **Si se acepta:**

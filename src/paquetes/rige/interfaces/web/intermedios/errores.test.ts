@@ -31,12 +31,14 @@ describe("W-9", () => {
     ["proyecto-inexistente", 404],
     ["resolucion-inexistente", 404],
     ["agente-sin-declaraciones", 404],
-    ["clave-inexistente", 404],
     ["clave-no-resuelta", 422],
     ["via-no-soportada", 422],
     ["contenido-no-soportado", 422],
     ["entrada-ilegible", 422],
     ["entorno-incompleto", 500],
+    ["nuevo-del-adaptador", 422],
+    ["toString", 422],
+    ["__proto__", 422],
   ] satisfies [ErrorUso["codigo"], number][])("asigna a %s el estado %i y escapa su mensaje", async (codigo, estado) => {
     const respuesta = paginaErrorUso({ codigo, mensaje: '<script>"&' });
     expect(respuesta.status).toBe(estado);

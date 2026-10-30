@@ -48,7 +48,7 @@ export async function lanzarServidor(temporal: string, variables: Record<string,
   try {
     const direccion = `http://127.0.0.1:${puerto}`;
     const linea = await primeraLinea(proceso.stdout);
-    if (linea !== JSON.stringify({ esquema: 1, direccion }) || proceso.exitCode !== null) {
+    if (linea !== JSON.stringify({ esquema: 2, direccion }) || proceso.exitCode !== null) {
       throw new Error("El servidor no publico la direccion esperada.");
     }
     return {

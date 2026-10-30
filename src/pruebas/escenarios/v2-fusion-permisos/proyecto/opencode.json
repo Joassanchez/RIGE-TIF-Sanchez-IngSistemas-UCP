@@ -1,0 +1,15 @@
+{
+  "permission": {
+    "bash": {"*": "deny", "git *": "allow"},
+    "read": {"*.env": "ask", "10": "deny", "a": "allow", "2": "ask"}
+  },
+  "agent": {
+    "build": {
+      "permission": {
+        "bash": {"*": "deny", "git *": "allow"},
+        "read": {"*.env": "ask", "10": "deny", "a": "allow", "2": "ask"},
+        "edit": "deny"
+      }
+    }
+  }
+}

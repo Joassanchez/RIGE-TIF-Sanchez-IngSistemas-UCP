@@ -1,19 +1,16 @@
-import type { Adaptador, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada } from "../contrato/adaptador";
+import type { Adaptador, ContextoConsulta, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada } from "../contrato/adaptador";
 import type { EntornoLectura } from "../contrato/entorno";
 import type { Resultado } from "../resultado";
 import { biblioteca } from "./estrategias";
-import { clave } from "./proyectar";
-import type { DeclaracionUbicada, EntradaLeida, Resolucion, RastroValor } from "./tipos";
+import { ArbolFusion } from "./estado";
+import type { DeclaracionUbicada, EntradaLeida, Resolucion } from "./tipos";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
-const comparar = (a: { readonly ruta: readonly string[] }, b: { readonly ruta: readonly string[] }) => {
-  const primera = clave(a.ruta);
-  const segunda = clave(b.ruta);
-  return primera < segunda ? -1 : primera > segunda ? 1 : 0;
-};
+// Primitiva de copia pura del runtime, sin E/S.
+declare function structuredClone<T>(valor: T): T;
 
-export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura): Resultado<Resolucion, ErrorAnalisis> {
-  const ubicacion = adaptador.ubicar(proyecto, entorno);
+export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura, contexto: ContextoConsulta): Resultado<Resolucion, ErrorAnalisis> {
+  const ubicacion = adaptador.ubicar(proyecto, entorno, contexto);
   if (!ubicacion.exito) return ubicacion;
   const entradas: EntradaLeida[] = [];
   const lecturas: LecturaEntrada[] = [];
@@ -37,22 +34,21 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     if (!Object.hasOwn(adaptador.reglas, regla)) throw new Error(`Regla sin plantilla: ${regla}`);
     usados.add(regla);
   }
-  const rastros = new Map<string, RastroValor>();
+  const estado = new ArbolFusion();
   for (const aplicacion of secuencia.valor.aplicaciones) {
     const estrategia = (Object.hasOwn(adaptador.estrategias, aplicacion.estrategia) ? adaptador.estrategias[aplicacion.estrategia] : undefined)
       ?? (Object.hasOwn(biblioteca, aplicacion.estrategia) ? biblioteca[aplicacion.estrategia] : undefined);
     if (!estrategia) throw new Error(`Estrategia desconocida: ${aplicacion.estrategia}`);
     usarRegla(aplicacion.regla);
-    const entrada = entradas[aplicacion.orden];
-    if (!entrada) throw new Error(`Entrada inexistente para la aplicacion: ${aplicacion.orden}`);
+    const { origen, ruta } = aplicacion;
+    const entrada = origen.tipo === "declarado" ? entradas[origen.orden] : undefined;
+    if (origen.tipo === "declarado" && !entrada) throw new Error(`Entrada inexistente para la aplicación: ${origen.orden}`);
     const nueva: DeclaracionUbicada = {
-      orden: aplicacion.orden, via: entrada.via, referencia: entrada.referencia,
-      posicion: { linea: aplicacion.declaracion.posicion.linea, columna: aplicacion.declaracion.posicion.columna },
-      valor: aplicacion.declaracion.valor, regla: aplicacion.regla,
+      origen: origen.tipo === "declarado" ? { ...origen, posicion: { ...origen.posicion } } : { ...origen },
+      via: entrada?.via ?? null, referencia: entrada?.referencia ?? null,
+      valor: structuredClone(aplicacion.valor), regla: aplicacion.regla,
     };
-    const ruta = aplicacion.declaracion.ruta;
-    const identificador = JSON.stringify(ruta);
-    rastros.set(identificador, estrategia(rastros.get(identificador), nueva, ruta));
+    estrategia(estado, nueva, ruta);
   }
   const pendientes = new Map<string, ClaveNoResuelta>();
   for (const pendiente of secuencia.valor.noResueltas) {
@@ -62,15 +58,21 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       pendientes.set(identificador, { ruta: pendiente.ruta, regla: pendiente.regla });
     }
   }
+  const declaraciones = [...contexto.declaraciones];
+  for (const codigo of declaraciones) usarRegla(codigo);
   return { exito: true, valor: {
-    formato: 1,
+    formato: 2,
     identidad: { herramienta: adaptador.identidad.herramienta, version: adaptador.identidad.version },
     proyecto: normalizar(proyecto),
     prefijoAgente: adaptador.prefijoAgente,
+    declaraciones,
+    contexto: { proyecto: contexto.proyecto, plataforma: contexto.entorno.plataforma,
+      parametros: { ...contexto.parametros }, declaraciones: [...contexto.declaraciones] },
     reglas: Object.fromEntries([...usados].sort().map((regla) => [regla, adaptador.reglas[regla]!])),
     entradas,
     resumenEntradas: entorno.resumir(JSON.stringify(entradas.map((entrada) => [entrada.via, entrada.referencia, entrada.condicion, entrada.resumen]))),
-    valores: [...rastros.values()].sort(comparar),
-    noResueltas: [...pendientes.values()].sort(comparar),
+    valores: estado.hojasBajo([]).map((rastro, indiceFusion) => ({ ...rastro, indiceFusion })),
+    eliminadas: estado.eliminadas.map((rastro, ordenEliminacion) => ({ ...rastro, ordenEliminacion })),
+    noResueltas: [...pendientes.values()],
   } };
 }

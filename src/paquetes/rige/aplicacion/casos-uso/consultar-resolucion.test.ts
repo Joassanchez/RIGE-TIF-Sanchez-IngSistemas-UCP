@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../../../pruebas/utilidades/resolver";
 import { consultarAgente } from "@rige/nucleo/resolucion/proyectar";
 import type { PuertoResoluciones, ResumenResolucion } from "../puertos/resoluciones";
 import { versionRige } from "../respuestas/estado";
@@ -29,6 +29,16 @@ function dobles() {
 }
 
 describe("C-2", () => {
+  test("consulta con puntero JSON conservando puntos y barras en los segmentos", async () => {
+    const { consultarResolucion } = await import("./consultar-resolucion");
+    const { puerto, resolucion, anteriores } = dobles();
+    const rastro = { ...resolucion.valores[0]!, ruta: ["perfiles", "a", "options", "src/productos.js", "*.env"] };
+    const modificado = { ...puerto, leer: () => ({ exito: true as const,
+      valor: { id: 7, instante, resolucion: { ...resolucion, valores: [rastro] } } }) };
+    expect(consultarResolucion(modificado, "7", "a", "/options/src~1productos.js/*.env")).toMatchObject({
+      exito: true, valor: { respuesta: { valores: [{ rastro }], ruta: ["options", "src/productos.js", "*.env"] }, sobre: { anteriores } },
+    });
+  });
   test.each(["", "0", "-1", "+1", "1.5", "1e2", "0x10", "1a", " 1", "1 ", "1\n", "NaN", "Infinity", "9007199254740993"])(
     "rechaza id que no representa un entero positivo decimal seguro: %j", async (id) => {
       const { consultarResolucion } = await import("./consultar-resolucion");
@@ -48,33 +58,34 @@ describe("C-2", () => {
   test.each(["", "modelo"])("proyecta la consulta desde el documento guardado con clave %j", async (clave) => {
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, resolucion, anteriores, llamadas } = dobles();
-    const proyeccion = consultarAgente(resolucion, "a", clave || undefined);
+    const proyeccion = consultarAgente(resolucion, "a", clave ? clave.split(".") : undefined);
     if (!proyeccion.exito) throw new Error(proyeccion.error.mensaje);
     expect(consultarResolucion(puerto, "7", "a", clave)).toEqual({ exito: true, valor: {
-      esquema: 1, versionRige,
-      resolucion: { id: 7, instante, proyecto: "/proyecto", herramienta: "ficticia", versionHerramienta: "1",
-        resumenEntradas: resolucion.resumenEntradas, entradas: resolucion.entradas },
-      agente: "a", clave: clave || null, valores: proyeccion.valor.valores, reglas: resolucion.reglas,
-      noResueltas: [{ ruta: ["permiso"], regla: "excluida" }], anteriores,
+      respuesta: { esquema: 2, declaraciones: [], versionRige,
+        proyecto: "/proyecto", herramienta: "ficticia", versionHerramienta: "1",
+        resumenEntradas: resolucion.resumenEntradas, entradas: resolucion.entradas,
+        agente: "a", ruta: clave ? [clave] : null, valores: proyeccion.valor.valores, reglas: resolucion.reglas,
+        noResueltas: [{ ruta: ["permiso"], regla: "excluida" }], motivo: null },
+      sobre: { id: 7, instante, anteriores },
     } });
     expect(llamadas).toEqual([7, "/proyecto"]);
   });
 
   test("propaga sin cambios un error del nucleo sin listar", async () => {
     const agente = "a";
-    const clave = "ausente";
+    const clave = "permiso";
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, resolucion, llamadas } = dobles();
-    const esperado = consultarAgente(resolucion, agente, clave || undefined);
+    const esperado = consultarAgente(resolucion, agente, clave ? clave.split(".") : undefined);
     if (esperado.exito) throw new Error("Se esperaba un error de consulta");
-    expect(consultarResolucion(puerto, "7", agente, clave)).toEqual(esperado);
+    expect(consultarResolucion(puerto, "7", agente, clave)).toEqual({ exito: false, error: { codigo: esperado.error.codigo, mensaje: esperado.error.mensaje } });
     expect(llamadas).toEqual([7]);
   });
 
   test("propaga errores de leer y listar sin fabricar una respuesta", async () => {
     const { consultarResolucion } = await import("./consultar-resolucion");
     const { puerto, llamadas } = dobles();
-    const inexistente = { codigo: "resolucion-inexistente", mensaje: "No existe la resolucion 7 en el almacen." } as const;
+    const inexistente = { codigo: "resolucion-inexistente", mensaje: "No existe la resolución 7 en el almacén." } as const;
     expect(consultarResolucion({ ...puerto, leer: () => ({ exito: false, error: inexistente }) }, "7", "a", ""))
       .toEqual({ exito: false, error: inexistente });
     expect(llamadas).toEqual([]);

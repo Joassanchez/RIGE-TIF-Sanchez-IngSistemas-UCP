@@ -16,7 +16,7 @@ describe("E-1", () => {
     const resultado = consultarEstado(almacen);
     expect(resultado).toEqual({
       exito: true,
-      valor: { esquema: 1, versionRige, almacen: estado },
+      valor: { esquema: 2, versionRige, almacen: estado },
     });
     if (!resultado.exito) throw new Error("Se esperaba estado compatible");
     expect(resultado.valor.almacen).toBe(estado);

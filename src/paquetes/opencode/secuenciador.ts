@@ -1,5 +1,6 @@
 import type { Aplicacion, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada, Secuencia, ValorJson } from "@rige/nucleo/contrato/adaptador";
 import type { Resultado } from "@rige/nucleo/resultado";
+import { valoresNativos } from "./valores-implicitos";
 
 const esObjeto = (valor: ValorJson) => valor !== null && typeof valor === "object" && !Array.isArray(valor);
 const bajo = (ruta: readonly string[], prefijo: readonly string[]) =>
@@ -26,38 +27,42 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
     excluidas.set(clave, ruta);
     noResueltas.push({ ruta, regla });
   }
-  const hojas = new Map<string, readonly string[]>();
-  const objetos = new Set<string>();
-  for (const { declaraciones } of lecturas) {
-    for (const { ruta, valor } of declaraciones) {
-      for (let longitud = 1; longitud < ruta.length; longitud++) objetos.add(JSON.stringify(ruta.slice(0, longitud)));
-      const clave = JSON.stringify(ruta);
-      if (esObjeto(valor)) objetos.add(clave);
-      else hojas.set(clave, ruta);
-    }
-  }
-  const conflictos = [...hojas].filter(([clave]) => objetos.has(clave)).map(([, ruta]) => ruta);
-  for (const ruta of conflictos) excluir(ruta, "forma-en-conflicto");
   // Se conocen todos los agentes afectados antes de aplicar cualquier hoja JSON.
   for (const { via } of lecturas) {
     if (via.via !== "markdown") continue;
-    if (via.elemento === undefined) throw new Error("Via Markdown sin nombre de elemento");
+    if (via.elemento === undefined) throw new Error("Vía Markdown sin nombre de elemento");
     excluir(["agent", via.elemento], "markdown-no-observado");
+  }
+  for (const { declaraciones } of lecturas) {
+    for (const { ruta } of declaraciones) {
+      const ambito = ruta[0] === "tools" ? []
+        : ruta[0] === "agent" && ruta[2] === "tools" ? ruta.slice(0, 2) : undefined;
+      if (ambito) {
+        excluir([...ambito, "tools"], "tools-legado-no-incorporado");
+        excluir([...ambito, "permission"], "tools-legado-no-incorporado");
+      }
+    }
   }
   // Las exclusiones de cualquier archivo afectan todas las lecturas, incluso las anteriores.
   for (const { via, declaraciones } of lecturas) {
     for (const { ruta, valor, posicion } of declaraciones) {
       if (ruta[0] === "mode") {
-        if (ruta.length === 1 && !esObjeto(valor)) return { exito: false, error: {
+        if (ruta.length === 1 && !esObjeto(valor)) return { exito: false, error: { categoria: "uso",
           codigo: "contenido-no-soportado",
-          mensaje: `El prototipo v1 no incorpora mode (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).`,
+          mensaje: `RIGE no incorpora mode (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).`,
         } };
         if (ruta.length >= 2) {
           excluir(["agent", ruta[1]!], "fuera-del-v1");
           excluir(ruta.slice(0, 2), "fuera-del-v1");
         }
       }
-      if (ruta[0] === "agent" && ruta[2] === "disable") excluir(ruta.slice(0, 2), "fuera-del-v1");
+      if (ruta[0] === "agent" && ["mode", "hidden", "disable"].includes(ruta[2] ?? "")
+        && !contieneSustitucion(valor) && !ruta.some(segmento => sustitucion.test(segmento))) {
+        const valido = ruta.length === 3 && (ruta[2] === "mode"
+          ? typeof valor === "string" && ["primary", "subagent", "all"].includes(valor) : typeof valor === "boolean");
+        if (!valido) return { exito: false, error: { categoria: "uso", codigo: "configuracion-invalida",
+          mensaje: `Configuración inválida en ${ruta.slice(0, 3).join(".")} (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).` } };
+      }
       const indiceSustitucion = ruta.findIndex(segmento => sustitucion.test(segmento));
       if (indiceSustitucion >= 0) excluir(ruta.slice(0, indiceSustitucion + 1), "sustitucion-no-incorporada");
       else if (contieneSustitucion(valor)) excluir(ruta, "sustitucion-no-incorporada");
@@ -71,17 +76,51 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
           excluir([...ruta.slice(0, 2), "options"], "fuera-del-v1");
         }
       }
-      const longitudPrefijo = ["permission", "tools", "instructions", "plugin"].includes(ruta[0]!) ? 1
-        : ruta[0] === "agent" && ruta.length >= 3 && ["permission", "tools"].includes(ruta[2]!) ? 3 : 0;
+      const longitudPrefijo = ["instructions", "plugin"].includes(ruta[0]!) ? 1 : 0;
       if (longitudPrefijo) excluir(ruta.slice(0, longitudPrefijo), "fuera-del-v1");
+    }
+  }
+  const hojas = new Map<string, { readonly ruta: readonly string[]; readonly valor: ValorJson }>();
+  const nombres = new Set([...Object.keys(valoresNativos), ...lecturas.flatMap(l => l.declaraciones
+    .filter(d => d.ruta[0] === "agent" && d.ruta.length >= 2).map(d => d.ruta[1]!))]);
+  for (const nombre of nombres) {
+    const valores = Object.hasOwn(valoresNativos, nombre) ? valoresNativos[nombre]! : { mode: "all", native: false };
+    for (const [clave, valor] of Object.entries(valores)) {
+      const ruta = ["agent", nombre, clave];
+      if ([...excluidas.values()].some(prefijo => bajo(ruta, prefijo))) continue;
+      aplicaciones.push({ origen: { tipo: "implicito", regla: "valor-implicito-del-agente" },
+        ruta, valor, estrategia: "reemplazo", regla: "valor-implicito-del-agente" });
+      hojas.set(JSON.stringify(ruta), { ruta, valor });
     }
   }
   for (const lectura of lecturas) {
     for (const declaracion of lectura.declaraciones) {
       const { ruta } = declaracion;
-      if (esObjeto(declaracion.valor) || [...excluidas.values()].some(prefijo => bajo(ruta, prefijo))) continue;
-      aplicaciones.push({ orden: lectura.orden, declaracion, estrategia: "reemplazo", regla: "orden-de-aplicacion" });
+      if ([...excluidas.values()].some(prefijo => bajo(ruta, prefijo))) continue;
+      if (ruta[0] === "mode" && ruta.length === 1 && esObjeto(declaracion.valor)) continue;
+      const anteriores = [...hojas.values()];
+      const descendientes = anteriores.filter(hoja => hoja.ruta.length > ruta.length && bajo(hoja.ruta, ruta));
+      // Un objeto vacio se fusiona sin borrar las propiedades de un objeto anterior.
+      if (esObjeto(declaracion.valor) && descendientes.length) continue;
+      const ancestro = anteriores.find(hoja => hoja.ruta.length < ruta.length && bajo(ruta, hoja.ruta));
+      const anterior = hojas.get(JSON.stringify(ruta));
+      const cambiaForma = (ancestro !== undefined && !esObjeto(ancestro.valor))
+        || (descendientes.length > 0 && !esObjeto(declaracion.valor))
+        || (anterior !== undefined && esObjeto(anterior.valor) !== esObjeto(declaracion.valor));
+      for (const hoja of anteriores) {
+        if (bajo(hoja.ruta, ruta) || bajo(ruta, hoja.ruta)) hojas.delete(JSON.stringify(hoja.ruta));
+      }
+      hojas.set(JSON.stringify(ruta), { ruta, valor: declaracion.valor });
+      aplicaciones.push({ origen: { tipo: "declarado", orden: lectura.orden, posicion: declaracion.posicion },
+        ruta, valor: declaracion.valor, estrategia: cambiaForma ? "reemplazoSubarbol" : "reemplazo", regla: "orden-de-aplicacion" });
     }
+  }
+  // disable se evalua tras fusionar las entradas, como en Agent.list del tag.
+  // La propia hoja disable garantiza un rastro aun para un agente sin otras hojas.
+  for (const { ruta, valor } of hojas.values()) {
+    if (ruta.length !== 3 || ruta[0] !== "agent" || ruta[2] !== "disable" || valor !== true) continue;
+    const declaracion = aplicaciones.findLast(a => a.ruta.length === 3 && a.ruta.every((s, i) => s === ruta[i]))!;
+    aplicaciones.push({ ...declaracion, ruta: ruta.slice(0, 2), estrategia: "eliminacion", regla: "agente-deshabilitado" });
   }
   return { exito: true, valor: { aplicaciones, noResueltas } };
 }

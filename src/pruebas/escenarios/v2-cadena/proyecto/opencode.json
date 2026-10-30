@@ -1,0 +1,18 @@
+{
+  "agent": {
+    "build": {
+      "permission": {
+        "edit": "deny"
+      }
+    },
+    "plan": {
+      "permission": {
+        "edit": {"*": "deny", "notas/*.md": "allow"}
+      }
+    },
+    "revisor": {
+      "description": "Revisa el proyecto",
+      "permission": {"bash": "deny"}
+    }
+  }
+}

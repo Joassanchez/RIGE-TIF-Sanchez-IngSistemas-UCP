@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import type { Database } from "bun:sqlite";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../../../pruebas/utilidades/resolver";
 import { adaptadorFicticio } from "../../../../pruebas/utilidades/adaptador-ficticio";
 import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memoria";
 import { AlmacenSqlite, abrirConexion } from "./esquema";
@@ -70,7 +70,7 @@ describe("R-1 RF-17 CA-1", () => {
       })));
     expect(base.query("SELECT herramienta, version_herramienta, version_rige, formato_documento, documento FROM resolucion WHERE id = ?")
       .get(guardada.valor)).toEqual({ herramienta: "ficticia", version_herramienta: "1", version_rige: versionRige,
-        formato_documento: 1, documento: JSON.stringify(resolucion) });
+        formato_documento: 2, documento: JSON.stringify(resolucion) });
   });
 
   test("una entrada invalida revierte el alta completa", async () => {
@@ -131,7 +131,7 @@ describe("R-4", () => {
   test("id inexistente, proyecto vacio y orden por instante e id descendentes", async () => {
     const { repositorio } = await escenario();
     expect(repositorio.leer(45)).toEqual({ exito: false, error: {
-      codigo: "resolucion-inexistente", mensaje: "No existe la resolucion 45 en el almacen.",
+      codigo: "resolucion-inexistente", mensaje: "No existe la resolución 45 en el almacén.",
     } });
     expect(repositorio.listar("/sin-resoluciones")).toEqual({ exito: true, valor: [] });
     const ids = [instante, "2026-10-04T00:00:00.000Z", instante].map((fecha) => {
@@ -158,13 +158,43 @@ describe("R-4", () => {
     }
   });
 
-  test("un formato de documento desconocido falla de forma visible", async () => {
+});
+
+describe("S-3 ADR-061", () => {
+  test("T2-17 Z-2 formato 2 sin contexto es ilegible", async () => {
+    const { repositorio, abrir } = await escenario();
+    const base = abrir();
+    base.run("INSERT INTO proyecto (ruta) VALUES ('/proyecto')");
+    const { contexto: _, ...anterior } = documento();
+    base.query(`INSERT INTO resolucion (proyecto_id, instante, resumen_entradas, herramienta, version_herramienta,
+      version_rige, formato_documento, documento) VALUES (1, ?, ?, 'ficticia', '1', ?, 2, ?)`).run(
+      instante, anterior.resumenEntradas, versionRige, JSON.stringify(anterior));
+    expect(repositorio.leer(1)).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+  });
+  describe("A2-1", () => { test.each([[1, 2], [2, 1], [99, 2], [2, 99]])("formato SQL %i y documento %i incompatibles son error de uso", async (formatoSql, formato) => {
     const { repositorio, abrir } = await escenario();
     const base = abrir();
     base.run("INSERT INTO proyecto (ruta) VALUES ('/proyecto')");
     base.query(`INSERT INTO resolucion (proyecto_id, instante, resumen_entradas, herramienta, version_herramienta,
-      version_rige, formato_documento, documento) VALUES (1, ?, ?, 'ficticia', '1', ?, 2, ?)`).run(
-      instante, documento().resumenEntradas, versionRige, JSON.stringify(documento()));
-    expect(() => repositorio.leer(1)).toThrow("formato");
+      version_rige, formato_documento, documento) VALUES (1, ?, ?, 'ficticia', '1', ?, ?, ?)`).run(
+      instante, documento().resumenEntradas, versionRige, formatoSql, JSON.stringify({ ...documento(), formato }));
+    const resultado = repositorio.leer(1);
+    expect(resultado.exito).toBe(false);
+    if (resultado.exito) throw new Error("Formato incompatible aceptado");
+    expect(resultado.error.codigo).toBe("almacen-sin-esquema");
+    expect(resultado.error.mensaje).toContain("bun run esquema");
+  }); });
+});
+
+describe("S-2 ADR-061", () => {
+  test("la consulta rechaza user_version 1 sin modificar los bytes", async () => {
+    const { repositorio, ruta, abrir } = await escenario();
+    const base = abrir();
+    base.exec("PRAGMA user_version = 1");
+    base.close();
+    conexiones.pop();
+    const antes = await Bun.file(ruta).bytes();
+    expect(repositorio.leer(1)).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+    expect(await Bun.file(ruta).bytes()).toEqual(antes);
   });
 });

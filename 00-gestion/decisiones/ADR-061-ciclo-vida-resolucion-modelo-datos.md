@@ -155,6 +155,12 @@ Restricciones que salen del repositorio:
 
 Aceptado por el autor el 29/09/2026 (`/aceptar ADR-061`). En la sesión del 29/09/2026 el autor manifestó conformidad con B1 a B6, con N = 20 y con la precisión del directorio del almacén.
 
+**Precisión del 30/10/2026 (iteración 2; conformidad del autor en la sesión del 30/10/2026).** La iteración 2 cambió la forma del documento de la Resolución: orígenes declarado, implícito y nativo, rutas como arreglo y separación entre la respuesta determinista y el sobre del almacén (T2-01 y T2-02, commits `197fc08` y `95e4b1c`). Se aplica C-A sin cambiar la decisión:
+- **Guion nuevo:** `src/esquemas/almacen/002_formato2.sql` deja la base en `PRAGMA user_version = 2`. `bun run esquema` aplica los guiones en orden y es idempotente.
+- **Documento:** `formato_documento` = 2 (`Resolucion.formato: 2`).
+- **Sin migración de datos:** un almacén en `user_version` 1, o un documento con un formato distinto de 2, da el error de uso `almacen-sin-esquema` (código 1), cuyo mensaje nombra `bun run esquema`. Nunca se migra en silencio ni se produce una falla interna. Las resoluciones del v1 no se convierten: son resultados de un análisis anterior que el usuario puede repetir (RF-17).
+- La tabla de modelo de datos de arriba sigue vigente: el formato 2 cambia el contenido del documento JSON, no las tablas.
+
 ### Consecuencias
 
 **Si se acepta:**

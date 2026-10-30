@@ -117,7 +117,8 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
     };
     const tabla = pagina.cuerpo.split("<tbody>")[1]!.split("</tbody>")[0]!;
     const claves = [...tabla.matchAll(/<tr><td>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
-    expect(claves).toEqual(["description", "steps", "temperature"]);
+    expect(claves.filter(clave => Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["description", "steps", "temperature"]);
+    expect(claves.filter(clave => !Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["mode", "name", "native", "options"]);
     for (const [clave, valor] of Object.entries(referencia.valores)) {
       expect(tabla).toContain(`<td>${clave}</td><td>${JSON.stringify(valor).replaceAll('"', "&quot;")}</td>`);
     }
@@ -197,7 +198,7 @@ describe("RF-17", () => {
       expect(ids).toEqual(guardadas.slice(1).reverse());
       const retirada = await recorrido.solicitar(ruta(guardadas[0]!));
       expect(retirada.estado).toBe(404);
-      expect(retirada.cuerpo).toContain(`No existe la resolucion ${guardadas[0]} en el almacen.`);
+      expect(retirada.cuerpo).toContain(`No existe la resolución ${guardadas[0]} en el almacén.`);
       expect((await recorrido.solicitar(ruta(guardadas[1]!))).estado).toBe(200);
     });
   });
@@ -252,7 +253,7 @@ describe("Errores de uso por la web", () => {
       writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": {env:X}'));
       const noSoportado = await recorrido.resolver();
       expect(noSoportado.estado).toBe(422);
-      expect(noSoportado.cuerpo).toContain("El prototipo v1 no incorpora {env:X}");
+      expect(noSoportado.cuerpo).toContain("RIGE no incorpora {env:X}");
       expect(noSoportado.cabeceras.location).toBeUndefined();
       expect((await recorrido.solicitar(paginaPrimera)).estado).toBe(404);
       writeFileSync(entrada, original);
@@ -262,23 +263,23 @@ describe("Errores de uso por la web", () => {
     });
   });
 
-  describe("Clave o agente inexistentes", () => {
+  describe("A2-6 Clave o agente inexistentes", () => {
     const preparar = prepararRecorrido();
-    test("clave o agente inexistentes dan 404 y la siguiente resolucion valida sigue siendo la 1", async () => {
+    test("guarda el proyecto y consulta una clave ausente con exito o un agente ausente con error", async () => {
       const recorrido = preparar();
       const clave = await recorrido.resolver("temperaturre");
-      expect(clave.estado).toBe(404);
-      expect(clave.cuerpo).toContain("La clave temperaturre no existe para el agente build.");
-      expect(clave.cabeceras.location).toBeUndefined();
+      expect(clave.estado).toBe(303);
+      const sinClave = await recorrido.solicitar(ubicacion(clave));
+      expect(sinClave.estado).toBe(200);
+      expect(sinClave.cuerpo).toContain("clave-inexistente");
       const agente = await recorrido.solicitar(`/resolver?proyecto=${encodeURIComponent(recorrido.proyecto)}&agente=ausente`);
       expect(agente.estado).toBe(404);
-      expect(agente.cuerpo).toContain("El agente ausente no tiene declaraciones.");
       expect(agente.cabeceras.location).toBeUndefined();
-      expect((await recorrido.solicitar(paginaPrimera)).estado).toBe(404);
+      expect(agente.cuerpo).toContain("El agente ausente no tiene declaraciones.");
       const valida = await recorrido.resolver();
       expect(valida.estado).toBe(303);
-      expect(valida.cabeceras.location).toBe(paginaPrimera);
-      const pagina = await recorrido.solicitar(paginaPrimera);
+      expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build&clave=temperature");
+      const pagina = await recorrido.solicitar(ubicacion(valida));
       expect(pagina.estado).toBe(200);
       comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     });
@@ -286,30 +287,33 @@ describe("Errores de uso por la web", () => {
 
   describe("Claves no resueltas", () => {
     const preparar = prepararRecorrido();
-    test("no guarda la clave no resuelta y sin clave muestra solo las pendientes del agente consultado", async () => {
+    test("guarda sin consultar claves y presenta el error de la clave no resuelta al recuperar", async () => {
       const recorrido = preparar();
       const entrada = join(recorrido.proyecto, "opencode.jsonc");
       const original = readFileSync(entrada, "utf8");
       // La copia temporal conserva la linea y columna de temperature.
-      writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": 0.3, "permission": {"edit":"deny"}')
+      writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": 0.3, "tools": {}, "permission": {"edit":"deny"}')
         .replace('"build": {', '"otro": {"permission":{"bash":"deny"}}, "build": {'));
-      const rechazo = await recorrido.resolver("permission.edit");
+      const guardada = await recorrido.resolver("permission.edit");
+      expect(guardada.estado).toBe(303);
+      const rechazo = await recorrido.solicitar(ubicacion(guardada));
       expect(rechazo.estado).toBe(422);
       expect(rechazo.cuerpo).toContain("permission.edit");
-      expect(rechazo.cabeceras.location).toBeUndefined();
+      expect(rechazo.cuerpo).toContain("tools");
       const valida = await recorrido.resolver("");
       expect(valida.estado).toBe(303);
-      expect(valida.cabeceras.location).toBe("/resoluciones/1?agente=build");
-      const pagina = await recorrido.solicitar("/resoluciones/1?agente=build");
+      expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build");
+      const pagina = await recorrido.solicitar("/resoluciones/2?agente=build");
       expect(pagina.estado).toBe(200);
       expect(pagina.cuerpo).toContain("<td>temperature</td><td>0.3</td>");
-      expect(pagina.cuerpo).toContain("Claves no resueltas en el prototipo v1");
+      expect(pagina.cuerpo).toContain("Claves no incorporadas por RIGE");
       expect(pagina.cuerpo).toContain("<li>permission:");
-      const pendientes = /<h2>Claves no resueltas en el prototipo v1<\/h2>\s*<ul>(.*?)<\/ul>/s.exec(pagina.cuerpo)?.[1];
+      const pendientes = /<h2>Claves no incorporadas por RIGE<\/h2>\s*<ul>(.*?)<\/ul>/s.exec(pagina.cuerpo)?.[1];
       expect(pendientes).toBeDefined();
-      expect(pendientes?.match(/<li>/g)).toHaveLength(1);
+      expect(pendientes?.match(/<li>/g)).toHaveLength(2);
+      expect(pendientes).toContain("<li>tools:");
       expect(pagina.cuerpo).not.toContain("otro.permission");
-      const recuperada = await recorrido.solicitar("/resoluciones/1?agente=build&clave=permission");
+      const recuperada = await recorrido.solicitar("/resoluciones/2?agente=build&clave=permission");
       expect(recuperada.estado).toBe(422);
       expect(recuperada.cuerpo).toContain("permission");
     });

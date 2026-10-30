@@ -6,11 +6,13 @@ import { paginaInicio } from "./paginas/inicio";
 import { crearManejador, iniciarServidor, type CasosWeb } from "./servidor";
 
 const respuesta: RespuestaEstado = {
-  esquema: 1, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
+  esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
 
 function casosEstado(consultarEstado: ConsultarEstado): CasosWeb {
   return { consultarEstado, resolverProyecto: () => { throw new Error("No resolver en pruebas de estado"); },
+    consultarPermiso: () => { throw new Error("No consultar permisos en pruebas de estado"); },
+    consultarAgentes: () => { throw new Error("No consultar agentes en pruebas de estado"); },
     consultarResolucion: () => { throw new Error("No consultar resoluciones en pruebas de estado"); } };
 }
 const manejarEstado = (puerto: number, consultar: ConsultarEstado) => crearManejador(puerto, casosEstado(consultar));
@@ -18,11 +20,12 @@ const iniciarEstado = (puerto: number, consultar: ConsultarEstado) => iniciarSer
 
 describe("W-11", () => {
   test("valida agente antes de resolver, propaga errores escapados y codifica la Location", async () => {
-    const solicitudes: string[][] = [];
+    const solicitudes: string[] = [];
     const casos = {
+      ...casosEstado(() => ({ exito: true, valor: respuesta })),
       consultarEstado: () => ({ exito: true as const, valor: respuesta }),
-      resolverProyecto: (proyecto: string, agente: string, clave: string) => {
-        solicitudes.push([proyecto, agente, clave]);
+      resolverProyecto: (proyecto: string) => {
+        solicitudes.push(proyecto);
         return proyecto === "malo" ? { exito: false as const,
           error: { codigo: "contenido-no-soportado" as const, mensaje: 'Contenido <script> "privado"' } }
           : { exito: true as const, valor: { id: 7 } };
@@ -45,17 +48,17 @@ describe("W-11", () => {
       expect(redireccion.status).toBe(303);
       expect(redireccion.headers.get("location")).toBe(`/resoluciones/7?agente=a%20%26%20b${clave ? "&clave=c%20%26%20d" : ""}`);
     }
-    expect(solicitudes).toEqual([["malo", "build", ""], ["/proyecto", "a & b", ""], ["/proyecto", "a & b", "c & d"]]);
+    expect(solicitudes).toEqual(["malo", "/proyecto", "/proyecto"]);
   });
 });
 
 describe("W-12", () => {
   test("acepta solo rutas con id decimal y presenta el error del almacen", async () => {
-    const consultas: string[][] = [];
+    const consultas: [string, string, string][] = [];
     const manejar = crearManejador(12345, { ...casosEstado(() => ({ exito: true, valor: respuesta })),
       consultarResolucion: (id, agente, clave) => {
         consultas.push([id, agente, clave]);
-        return { exito: false, error: { codigo: "resolucion-inexistente", mensaje: "No existe la resolucion 7 en el almacen." } };
+        return { exito: false, error: { codigo: "resolucion-inexistente", mensaje: "No existe la resolución 7 en el almacén." } };
       },
     });
     const solicitar = (ruta: string) => manejar(new Request(`http://127.0.0.1${ruta}`, {
@@ -69,7 +72,7 @@ describe("W-12", () => {
     expect(consultas).toEqual([]);
     const inexistente = solicitar("/resoluciones/7?agente=a%20%26%20b&clave=c%20%26%20d");
     expect(inexistente.status).toBe(404);
-    expect(await inexistente.text()).toContain("No existe la resolucion 7 en el almacen.");
+    expect(await inexistente.text()).toContain("No existe la resolución 7 en el almacén.");
     solicitar("/resoluciones/7");
     expect(consultas).toEqual([["7", "a & b", "c & d"], ["7", "", ""]]);
   });
@@ -111,7 +114,7 @@ describe("W-5", () => {
       });
       if (!ocupado.exito) {
         expect(ocupado.error.mensaje).toContain(String(puerto));
-        expect(ocupado.error.mensaje).not.toMatch(/[áéíóúñ]/i);
+        expect(ocupado.error.mensaje).toBe(`El puerto ${puerto} de RIGE_PUERTO no está disponible.`);
       }
     } finally { escucha.stop(true); }
     const iniciado = iniciarEstado(puerto, () => ({ exito: true, valor: respuesta }));

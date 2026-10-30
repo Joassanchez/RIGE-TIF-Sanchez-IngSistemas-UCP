@@ -28,8 +28,8 @@ describe("P-1", () => {
 });
 
 describe("W-6", () => {
-  test("exporta solo html y escapa un script interpolado", async () => {
-    expect(Object.keys(await import("./plantillas"))).toEqual(["html"]);
+  test("exporta html y la serializacion de datos; escapa un script interpolado", async () => {
+    expect(Object.keys(await import("./plantillas"))).toEqual(["datosRespuesta", "html"]);
     expect(html`<p>${"<script>alert(1)</script>"}</p>`.texto)
       .toBe("<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>");
   });

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { ViaUbicada } from "@rige/nucleo/contrato/adaptador";
 import { leerEntrada, posicion } from "./lector";
 import { adaptadorOpenCode } from "./adaptador";
-import { resolver } from "@rige/nucleo/resolucion/resolver";
+import { resolver } from "../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 
 const via: ViaUbicada = { via: "proyecto", referencia: "/p/opencode.jsonc", condicion: "observada" };
@@ -14,9 +14,9 @@ describe("V1-03 L-5 V1-08 F-5", () => {
     ['\n/* {env:} */ {"a": {file:./x}} // CONTENIDO_NO_EMITIR', "{file:./x}", 2, 20],
   ] as const)("rechaza la primera sustitucion de %j antes de parsear", (texto, patron, linea, columna) => {
     const resultado = leerEntrada({ ...via, referencia: "C:\\p\\opencode.jsonc" }, texto);
-    expect(resultado).toEqual({ exito: false, error: {
+    expect(resultado).toEqual({ exito: false, error: { categoria: "uso",
       codigo: "contenido-no-soportado",
-      mensaje: `El prototipo v1 no incorpora ${patron} (C:/p/opencode.jsonc:${linea}:${columna}).`,
+      mensaje: `RIGE no incorpora ${patron} (C:/p/opencode.jsonc:${linea}:${columna}).`,
     } });
     expect(JSON.stringify(resultado)).not.toContain("CONTENIDO_NO_EMITIR");
   });
@@ -52,10 +52,10 @@ describe("V1-03 L-5 V1-08 F-5", () => {
     expect(resultado.exito).toBe(true);
     expect(JSON.stringify(resultado)).not.toContain(secreto);
     if (!resultado.exito) throw new Error(resultado.error.mensaje);
-    expect(resultado.valor.valores.map(v => v.ruta)).toEqual([["agent", "otro", "steps"]]);
+    expect(resultado.valor.valores.filter(v => v.determinante.origen.tipo === "declarado").map(v => v.ruta)).toEqual([["agent", "otro", "steps"]]);
     expect(resultado.valor.noResueltas).toEqual([
-      { ruta: ["agent", "build", "description"], regla: "sustitucion-no-incorporada" },
       { ruta: ["agent", "build", "prompt"], regla: "sustitucion-no-incorporada" },
+      { ruta: ["agent", "build", "description"], regla: "sustitucion-no-incorporada" },
     ]);
   });
 });
@@ -71,7 +71,7 @@ describe("V1-03 L-4", () => {
   ] as const)("rechaza %j con la primera posicion y referencia normalizada", (texto, linea, columna) => {
     expect(leerEntrada({ ...via, referencia: "C:\\p\\opencode.jsonc" }, texto)).toEqual({
       exito: false,
-      error: { codigo: "entrada-ilegible", mensaje: `La entrada C:/p/opencode.jsonc no se puede leer (${linea}:${columna}).` },
+      error: { categoria: "uso", codigo: "entrada-ilegible", mensaje: `La entrada C:/p/opencode.jsonc no se puede leer (${linea}:${columna}).` },
     });
   });
 });

@@ -26,8 +26,8 @@ describe("A-1", () => {
     expect(primera.codigo).toBe(0);
     expect(primera.error).toBe("");
     const respuesta = {
-      esquema: 1, versionRige,
-      almacen: { ruta: join(directorio, "rige.db").replaceAll("\\", "/"), versionEsquema: 1 },
+      esquema: 2, versionRige,
+      almacen: { ruta: join(directorio, "rige.db").replaceAll("\\", "/"), versionEsquema: 2 },
     };
     expect(JSON.parse(primera.salida)).toEqual(respuesta);
     expect(primera.salida).toBe(JSON.stringify(respuesta) + "\n");
@@ -64,7 +64,7 @@ describe("A-6", () => {
     expect(ausente.codigo).toBe(1);
     expect(ausente.salida).toBe("");
     expect(JSON.parse(ausente.error)).toEqual({
-      esquema: 1, error: { codigo: "almacen-sin-esquema", mensaje: expect.stringContaining("bun run esquema") },
+      esquema: 2, error: { codigo: "almacen-sin-esquema", mensaje: expect.stringContaining("bun run esquema") },
     });
     expect(existsSync(directorio)).toBe(false);
     expect(existsSync(join(directorio, "rige.db"))).toBe(false);
@@ -76,7 +76,7 @@ describe("A-6", () => {
     expect(incompatible.codigo).toBe(1);
     expect(incompatible.salida).toBe("");
     expect(JSON.parse(incompatible.error)).toEqual({
-      esquema: 1, error: { codigo: "almacen-sin-esquema", mensaje: expect.stringContaining("bun run esquema") },
+      esquema: 2, error: { codigo: "almacen-sin-esquema", mensaje: expect.stringContaining("bun run esquema") },
     });
     const lectura = new Database(ruta, { readonly: true });
     try { expect(lectura.query("PRAGMA user_version").get()).toEqual({ user_version: 2 }); }
@@ -94,7 +94,7 @@ describe("A-7", () => {
       expect(resultado.codigo).toBe(1);
       expect(resultado.salida).toBe("");
       expect(JSON.parse(resultado.error)).toEqual({
-        esquema: 1, error: { codigo: "puerto-ocupado", mensaje: expect.stringContaining("RIGE_PUERTO") },
+        esquema: 2, error: { codigo: "puerto-ocupado", mensaje: expect.stringContaining("RIGE_PUERTO") },
       });
       expect(JSON.parse(resultado.error).error.mensaje).toContain(String(escucha.port));
     } finally { escucha.stop(true); }
@@ -109,7 +109,7 @@ describe("A-2", () => {
     expect(puertoInvalido.salida).toBe("");
     const errorPuerto = JSON.parse(puertoInvalido.error);
     expect(errorPuerto).toEqual({
-      esquema: 1,
+      esquema: 2,
       error: { codigo: "configuracion-invalida", mensaje: expect.stringContaining("RIGE_PUERTO") },
     });
     expect(puertoInvalido.error).toBe(JSON.stringify(errorPuerto) + "\n");
@@ -122,7 +122,7 @@ describe("A-2", () => {
     expect(incompatible.salida).toBe("");
     const errorAlmacen = JSON.parse(incompatible.error);
     expect(errorAlmacen).toEqual({
-      esquema: 1,
+      esquema: 2,
       error: { codigo: "almacen-sin-esquema", mensaje: expect.stringContaining("bun run esquema") },
     });
     expect(incompatible.error).toBe(JSON.stringify(errorAlmacen) + "\n");
@@ -140,7 +140,7 @@ describe("A-3", () => {
     expect(resultado.salida).toBe("");
     const error = JSON.parse(resultado.error);
     expect(error).toEqual({
-      esquema: 1,
+      esquema: 2,
       error: { codigo: "argumentos-invalidos", mensaje: expect.stringContaining("otro") },
     });
     expect(resultado.error).toBe(JSON.stringify(error) + "\n");
@@ -157,7 +157,7 @@ describe("A-4", () => {
     const normal = lanzar(temporal, ["esquema"], { RIGE_ALMACEN: directorio });
     expect(normal).toEqual({
       codigo: 70, salida: "",
-      error: JSON.stringify({ esquema: 1, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
+      error: JSON.stringify({ esquema: 2, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
     });
     expect(readdirSync(temporal, { recursive: true }).sort()).toEqual(antes);
     const depurado = lanzar(temporal, ["esquema", "--depurar"], { RIGE_ALMACEN: directorio });
@@ -165,7 +165,7 @@ describe("A-4", () => {
     expect(depurado.salida).toBe("");
     const error = JSON.parse(depurado.error);
     expect(error).toEqual({
-      esquema: 1,
+      esquema: 2,
       error: { codigo: "interno", mensaje: "Falla interna de RIGE.", stack: expect.any(String) },
     });
     expect(error.error.stack.length).toBeGreaterThan(0);
@@ -185,7 +185,7 @@ describe("A-5", () => {
     expect(resultado.salida).toBe("");
     const error = JSON.parse(resultado.error);
     expect(error).toEqual({
-      esquema: 1,
+      esquema: 2,
       error: { codigo: "configuracion-invalida", mensaje: expect.stringContaining("RIGE_ALMACEN") },
     });
     expect(resultado.error).toBe(JSON.stringify(error) + "\n");

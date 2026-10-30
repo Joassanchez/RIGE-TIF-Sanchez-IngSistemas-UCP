@@ -10,7 +10,6 @@ const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
   "proyecto-inexistente": 404,
   "resolucion-inexistente": 404,
   "agente-sin-declaraciones": 404,
-  "clave-inexistente": 404,
   "clave-no-resuelta": 422,
   "via-no-soportada": 422,
   "contenido-no-soportado": 422,
@@ -20,7 +19,7 @@ const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
 
 export function paginaErrorUso(error: ErrorUso): Response {
   const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Error de RIGE</title></head><body><p>${error.mensaje}</p></body></html>`;
-  return responderHtml(estadoPorCodigo[error.codigo], pagina);
+  return responderHtml(Object.hasOwn(estadoPorCodigo, error.codigo) ? estadoPorCodigo[error.codigo]! : 422, pagina);
 }
 
 export function conErrores(manejador: (solicitud: Request) => Response): (solicitud: Request) => Response {

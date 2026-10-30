@@ -1,8 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import type { Adaptador, Declaracion, ViaUbicada } from "../contrato/adaptador";
 import type { EntornoLectura } from "../contrato/entorno";
-import type { Resolucion } from "./tipos";
+import type { DeclaracionUbicada, Resolucion } from "./tipos";
 import { crearEntornoMemoria } from "../../../pruebas/utilidades/entorno-memoria";
+import { adaptadorFicticio } from "../../../pruebas/utilidades/adaptador-ficticio";
 
 const hoja = (ruta: readonly string[], valor: Declaracion["valor"], linea = 1): Declaracion => ({
   ruta, valor, posicion: { linea, columna: 3 },
@@ -18,13 +19,19 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
     directorios: ["/proyecto"],
   });
   const adaptador: Adaptador = {
+    contexto: adaptadorFicticio.contexto,
+    prepararConsulta: adaptadorFicticio.prepararConsulta,
+    listarAgentes: adaptadorFicticio.listarAgentes,
+    permisos: adaptadorFicticio.permisos,
     identidad: { herramienta: "ficticia", version: "1" }, prefijoAgente: ["agente"],
     reglas: { orden: "Prevalece la entrada posterior.", sinUso: "No utilizada." }, estrategias: {},
+    cadena: (_, agente) => ({ exito: true, valor: { agente, reglas: [], ejesParciales: [], declaraciones: [], advertencias: [] } }),
     ubicar: () => ({ exito: true, valor: [...vias, ...adicionales] }),
     leer: (_, texto) => ({ exito: true, valor: JSON.parse(texto) as Declaracion[] }),
     secuenciar: (lecturas) => ({ exito: true, valor: {
       aplicaciones: lecturas.flatMap((lectura) => lectura.declaraciones.map((declaracion) => ({
-        orden: lectura.orden, declaracion, estrategia: "reemplazo", regla: "orden",
+        origen: { tipo: "declarado", orden: lectura.orden, posicion: declaracion.posicion },
+        ruta: declaracion.ruta, valor: declaracion.valor, estrategia: "reemplazo", regla: "orden",
       }))), noResueltas: [],
     } }),
   };
@@ -32,7 +39,7 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
 }
 
 async function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura) {
-  return (await import("./resolver")).resolver(adaptador, proyecto, entorno);
+  return (await import("../../../pruebas/utilidades/resolver")).resolver(adaptador, proyecto, entorno);
 }
 
 async function obtener(adaptador: Adaptador, entorno: EntornoLectura): Promise<Resolucion> {
@@ -45,12 +52,12 @@ describe("N-1 RD-01", () => {
   test("reemplaza tres declaraciones y conserva toda su procedencia en orden", async () => {
     const { adaptador, entorno } = escenario([0.1, 0.2, 0.3].map((valor, indice) => [hoja(ruta, valor, indice + 2)]));
     const resolucion = await obtener(adaptador, entorno);
-    const declaraciones = [0.1, 0.2, 0.3].map((valor, orden) => ({
-      orden, via: `capa-${orden}`, referencia: `/proyecto/capa-${orden}.json`,
-      posicion: { linea: orden + 2, columna: 3 }, valor, regla: "orden",
+    const declaraciones = [0.1, 0.2, 0.3].map<DeclaracionUbicada>((valor, orden) => ({
+      origen: { tipo: "declarado", orden, posicion: { linea: orden + 2, columna: 3 } },
+      via: `capa-${orden}`, referencia: `/proyecto/capa-${orden}.json`, valor, regla: "orden",
     }));
     expect(resolucion.valores).toEqual([{
-      ruta, valor: 0.3, determinante: declaraciones[2]!, motivo: "entrada-posterior", desplazadas: declaraciones.slice(0, 2),
+      ruta, indiceFusion: 0, valor: 0.3, determinante: declaraciones[2]!, motivo: "entrada-posterior", desplazadas: declaraciones.slice(0, 2),
     }]);
   });
 });
@@ -61,8 +68,8 @@ describe("N-2", () => {
     const { adaptador, entorno } = escenario([[hoja(ruta, 0.1), hoja(otra, 12)], [hoja(ruta, 0.2)]]);
     const { valores } = await obtener(adaptador, entorno);
     expect(valores.find((valor) => valor.ruta.at(-1) === "pasos")).toEqual({
-      ruta: otra, valor: 12,
-      determinante: { orden: 0, via: "capa-0", referencia: "/proyecto/capa-0.json", posicion: { linea: 1, columna: 3 }, valor: 12, regla: "orden" },
+      ruta: otra, indiceFusion: 1, valor: 12,
+      determinante: { origen: { tipo: "declarado", orden: 0, posicion: { linea: 1, columna: 3 } }, via: "capa-0", referencia: "/proyecto/capa-0.json", valor: 12, regla: "orden" },
       motivo: "entrada-posterior", desplazadas: [],
     });
     expect(valores.find((valor) => valor.ruta.at(-1) === "temperatura")?.valor).toBe(0.2);
@@ -103,7 +110,7 @@ describe("N-4", () => {
     expect(modificada.valores).toEqual(primera.valores);
     expect(modificada.entradas[0]?.resumen).not.toBe(primera.entradas[0]?.resumen);
     expect(modificada.resumenEntradas).not.toBe(primera.resumenEntradas);
-    expect(Object.keys(primera)).toEqual(["formato", "identidad", "proyecto", "prefijoAgente", "reglas", "entradas", "resumenEntradas", "valores", "noResueltas"]);
+    expect(Object.keys(primera)).toEqual(["formato", "identidad", "proyecto", "prefijoAgente", "declaraciones", "contexto", "reglas", "entradas", "resumenEntradas", "valores", "eliminadas", "noResueltas"]);
   });
 
   test("normaliza las rutas mostradas y conserva la letra de unidad", async () => {
@@ -120,7 +127,7 @@ describe("N-4", () => {
 });
 
 describe("N-5", () => {
-  test("ordena por unidades de codigo, deduplica no resueltas e incluye solo reglas usadas", async () => {
+  test("conserva el orden de fusion, deduplica no resueltas e incluye solo reglas usadas", async () => {
     const claves = ["á", "z", "A", "a"];
     const { adaptador, entorno } = escenario([claves.map((nombre) => hoja(["agente", "a", nombre], nombre))]);
     const secuenciar = adaptador.secuenciar;
@@ -129,8 +136,8 @@ describe("N-5", () => {
       if (!resultado.exito) return resultado;
       return { exito: true, valor: { ...resultado.valor, noResueltas: ["á", "z", "A", "z"].map((nombre) => ({ ruta: [nombre], regla: "excluida" })) } };
     } }, entorno);
-    expect(resolucion.valores.map((valor) => valor.ruta.at(-1))).toEqual(["A", "a", "z", "á"]);
-    expect(resolucion.noResueltas).toEqual(["A", "z", "á"].map((nombre) => ({ ruta: [nombre], regla: "excluida" })));
+    expect(resolucion.valores.map((valor) => valor.ruta.at(-1))).toEqual(["á", "z", "A", "a"]);
+    expect(resolucion.noResueltas).toEqual(["á", "z", "A"].map((nombre) => ({ ruta: [nombre], regla: "excluida" })));
     expect(resolucion.reglas).toEqual({ excluida: "No resuelta.", orden: "Prevalece la entrada posterior." });
   });
 });
@@ -138,10 +145,10 @@ describe("N-5", () => {
 describe("N-6", () => {
   test.each(["ubicar", "leer", "secuenciar"] as const)("devuelve el mismo fallo de %s y no avanza", async (etapa) => {
     const { adaptador, entorno } = escenario([[hoja(ruta, 1)]]);
-    const fallo = { exito: false as const, error: { codigo: "fallo-doble", mensaje: "Fallo del adaptador." } };
+    const fallo = { exito: false as const, error: { categoria: "uso" as const, codigo: "fallo-doble", mensaje: "Fallo del adaptador." } };
     const llamadas: string[] = [];
     const doble: Adaptador = { ...adaptador,
-      ubicar(proyecto, entorno) { llamadas.push("ubicar"); return etapa === "ubicar" ? fallo : adaptador.ubicar(proyecto, entorno); },
+      ubicar(proyecto, entorno, contexto) { llamadas.push("ubicar"); return etapa === "ubicar" ? fallo : adaptador.ubicar(proyecto, entorno, contexto); },
       leer(via, texto) { llamadas.push("leer"); return etapa === "leer" ? fallo : adaptador.leer(via, texto); },
       secuenciar(lecturas) { llamadas.push("secuenciar"); return etapa === "secuenciar" ? fallo : adaptador.secuenciar(lecturas); },
     };
@@ -160,14 +167,14 @@ describe("N-7", () => {
   test.each(["inexistente", "constructor", "__proto__"])("una estrategia desconocida %s falla de forma visible", async (estrategia) => {
     const { adaptador, entorno } = escenario([[hoja(ruta, 1)]]);
     await expect(resolver({ ...adaptador, secuenciar: () => ({ exito: true, valor: {
-      aplicaciones: [{ orden: 0, declaracion: hoja(ruta, 1), estrategia, regla: "orden" }], noResueltas: [],
+      aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: hoja(ruta, 1).posicion }, ruta, valor: 1, estrategia, regla: "orden" }], noResueltas: [],
     } }) }, "/proyecto", entorno)).rejects.toThrow("Estrategia desconocida");
   });
 
   test.each(["inexistente", "constructor", "__proto__"])("una regla sin plantilla %s falla de forma visible", async (regla) => {
     const { adaptador, entorno } = escenario([[hoja(ruta, 1)]]);
     await expect(resolver({ ...adaptador, secuenciar: () => ({ exito: true, valor: {
-      aplicaciones: [{ orden: 0, declaracion: hoja(ruta, 1), estrategia: "reemplazo", regla }], noResueltas: [],
+      aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: hoja(ruta, 1).posicion }, ruta, valor: 1, estrategia: "reemplazo", regla }], noResueltas: [],
     } }) }, "/proyecto", entorno)).rejects.toThrow("Regla sin plantilla");
   });
 

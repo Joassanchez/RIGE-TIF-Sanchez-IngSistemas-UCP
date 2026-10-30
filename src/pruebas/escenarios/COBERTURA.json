@@ -1,0 +1,136 @@
+{
+  "items": [
+    {
+      "id": "RF-01 CA-1",
+      "objetivo": "OE-1",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-01 CA-2",
+      "objetivo": "OE-1",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-1",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-2",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-3",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-4",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-5",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-6",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-7",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-8",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-02 CA-9",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-07 referencias-no-resueltas",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-07 reglas-permiso-sin-efecto",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-07 elementos-sin-uso",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-07 sustituciones-sin-valor",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-07 entradas-ilegibles",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-07 entradas-descartadas",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RNF-02",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RNF-03",
+      "objetivo": "arquitectura",
+      "iteracion": 2,
+      "obligatorioV2": true
+    },
+    {
+      "id": "RF-08 CA-1",
+      "objetivo": "frontera de OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-08 CA-2",
+      "objetivo": "frontera de OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-08 CA-3",
+      "objetivo": "frontera de OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false
+    }
+  ]
+}
