@@ -21,7 +21,8 @@ envoltorio de npm en Windows. RIGE solo lee esos archivos, sin ejecutar
 OpenCode. El `PATH` de RIGE puede diferir del de otra terminal.
 
 La comparación con `1.18.25` es exacta. Una versión distinta produce
-`version-no-soportada` con ambas versiones: la CLI termina con código 1,
+`version-no-soportada` con ambas versiones y la ruta absoluta del
+`package.json` leído: la CLI termina con código 1,
 salida estándar vacía y una línea JSON de error; la web responde 422 sin
 resultados y sin guardar una resolución. Si no se puede determinar la
 versión, las consultas conservan sus resultados con la declaración
@@ -34,8 +35,10 @@ En el caso indeterminado, `valores`, `permiso` y `agentes` terminan con código
 0 y emiten dos líneas por el canal de error, según `advertencia.json`:
 `{"esquema":2,"advertencia":{"codigo":"version-no-determinada","mensaje":"…"}}`
 y otra con el motivo. Las respuestas conservan sus contratos de esquema 2,
-con los códigos en `declaraciones` y los textos en `reglas`. La web muestra
-las declaraciones; la página de resolución también incluye el JSON de la
+con los códigos en `declaraciones` y los textos en `reglas`. El código de
+motivo sigue inmediatamente a `version-no-determinada` y explica su causa.
+La web muestra las declaraciones antes de los resultados; la página de
+resolución también incluye el JSON de la
 respuesta para comprobar la paridad con la CLI. Las consultas de resoluciones
 guardadas conservan sus declaraciones y no vuelven a detectar la versión.
 
@@ -51,10 +54,20 @@ $env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-t301-pruebas'
 bun test pruebas/aceptacion/RF-05.test.ts
 bun test paquetes/opencode pruebas/aceptacion/RF-05.test.ts paquetes/rige/interfaces pruebas/arquitectura/entorno.test.ts pruebas/utilidades
 bun test paquetes/rige/adaptadores/sistema/entorno-lectura.test.ts
+bun test pruebas/utilidades/comprobacion-ci.test.ts pruebas/utilidades/entorno-opencode.test.ts pruebas/utilidades/resolucion-guardada.test.ts
 bun herramientas/tipos-salida.ts
 bun test
 bun run verificar
 ```
+
+La comprobación de CI posterior a las referencias consulta `agentes` sobre
+un proyecto temporal vacío con el `PATH` real del runner y un almacén
+temporal. Exige código 0 y ninguna línea JSON de advertencia en el canal de
+error. Su prueba local usa Bash (Git Bash en Windows) con el entorno aislado
+del arnés. El enlace simbólico relativo de npm se prueba en Linux; en Windows,
+la prueba de `real` usa una unión de directorio que exige resolver el enlace.
+El constructor de resoluciones anteriores usa el repositorio de producción,
+sin SQL crudo en RF-05, y el ayudante de contexto en memoria incluye 1.18.25.
 
 T2-13 agrega los valores implícitos de los agentes con origen
 `implicito` y regla `valor-implicito-del-agente` (RF-06 CA-1, RD-04).

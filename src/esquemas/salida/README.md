@@ -21,3 +21,9 @@ declara sus eliminaciones y si es incompleto por vias no observadas.
 `advertencia: { codigo, mensaje }`. Los codigos y sus textos tambien figuran
 en `declaraciones` y `reglas` de la respuesta de valores, permiso o agentes;
 esos contratos conservan su estructura y version.
+
+En `declaraciones`, el codigo de motivo sigue inmediatamente a
+`version-no-determinada` y es su causa: `ejecutable-no-encontrado`,
+`paquete-no-encontrado` o `paquete-ilegible`. Las dos lineas de advertencia
+de la CLI conservan ese orden: primero la version no determinada y despues
+su causa. Los codigos no cambian.

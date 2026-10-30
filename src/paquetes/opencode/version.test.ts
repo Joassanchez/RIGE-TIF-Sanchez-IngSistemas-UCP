@@ -31,7 +31,7 @@ describe("T3-01 R-3", () => {
   test("compara la version por igualdad exacta", () => {
     for (const version of ["1.18.24", "v1.18.25"]) {
       expect(detectar({ "/bin/opencode": "", "/bin/node_modules/opencode-ai/package.json": paquete(version) }))
-        .toEqual({ estado: "distinta", detectada: version });
+        .toEqual({ estado: "distinta", detectada: version, rutaPaquete: "/bin/node_modules/opencode-ai/package.json" });
     }
   });
 });
@@ -59,7 +59,7 @@ describe("T3-01 R-5", () => {
   test("el primer directorio gana aunque otro tenga la version soportada", () => {
     expect(detectar({ "/a/opencode": "", "/a/node_modules/opencode-ai/package.json": paquete("1.18.24"),
       "/b/opencode": "", "/b/node_modules/opencode-ai/package.json": paquete() }, { PATH: "/a:/b" }))
-      .toEqual({ estado: "distinta", detectada: "1.18.24" });
+      .toEqual({ estado: "distinta", detectada: "1.18.24", rutaPaquete: "/a/node_modules/opencode-ai/package.json" });
   });
 });
 describe("T3-01 R-6", () => {
@@ -70,6 +70,16 @@ describe("T3-01 R-6", () => {
     const entorno = crearEntornoMemoria({ plataforma: "win32", rutas: "win32", variables: { PATH: "C:\\npm" },
       archivos: { "C:\\npm\\opencode.cmd": "", "C:\\npm\\package.json": "{",
         "C:\\npm\\node_modules\\opencode-ai\\package.json": paquete("1.18.24") } });
-    expect(detectarVersion(entorno, "C:\\p")).toEqual({ estado: "distinta", detectada: "1.18.24" });
+    expect(detectarVersion(entorno, "C:\\p")).toEqual({ estado: "distinta", detectada: "1.18.24", rutaPaquete: "C:\\npm\\node_modules\\opencode-ai\\package.json" });
+  });
+});
+
+describe("T3-01-c1 P-2 prioridad del paquete", () => {
+  test("el paquete de la subida gana al respaldo aunque difieran sus versiones", () => {
+    const entorno = crearEntornoMemoria({ archivos: { "/bin/opencode": "",
+      "/lib/node_modules/opencode-ai/package.json": paquete("1.18.24"),
+      "/bin/node_modules/opencode-ai/package.json": paquete("1.18.25") },
+      variables: { PATH: "/bin" }, enlaces: { "/bin/opencode": "/lib/node_modules/opencode-ai/bin/opencode.exe" } });
+    expect(detectarVersion(entorno, "/p")).toEqual({ estado: "distinta", detectada: "1.18.24", rutaPaquete: "/lib/node_modules/opencode-ai/package.json" });
   });
 });

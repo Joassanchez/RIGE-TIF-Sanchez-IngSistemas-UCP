@@ -18,6 +18,7 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
 <html lang="es"><head><meta charset="utf-8"><title>Resolución ${sobre.id}</title></head>
 <body><h1>Resolución ${sobre.id}</h1>
 <p>Página armada con la resolución leída del almacén de RIGE.</p>
+<h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
 <nav><a href="${`/agentes?id=${sobre.id}`}">Agentes</a>
 <a href="#consultar-permiso">Consultar permiso</a></nav>
 <form action="/agentes" method="get"><input type="hidden" name="id" value="${sobre.id}"><button>Listar agentes</button></form>
@@ -54,7 +55,6 @@ ${respuesta.noResueltas.length ? html`<h2>Claves no incorporadas por RIGE</h2>
 <tbody>${respuesta.entradas.map((entrada) => html`<tr><td>${entrada.orden}</td><td>${entrada.via}</td><td>${entrada.referencia}</td><td>${entrada.condicion}</td><td>${entrada.resumen ?? "—"}</td></tr>`)}</tbody></table>
 <h2>Resoluciones de este proyecto</h2>
 <ul>${sobre.anteriores.map((anterior) => html`<li><a href="${`/resoluciones/${anterior.id}${consulta}`}">Resolución ${anterior.id}</a> ${anterior.instante}${anterior.id === sobre.id ? " (esta)" : ""}</li>`)}</ul>
-<h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
 ${datosRespuesta(respuesta)}</body></html>`;
   return responderHtml(200, pagina);
 }

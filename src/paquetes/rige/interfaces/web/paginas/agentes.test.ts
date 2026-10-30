@@ -10,6 +10,7 @@ describe("T3-01 R-11 declaraciones en agentes", () => {
       reglas: { "version-no-determinada": "Version <no determinada>.", "ejecutable-no-encontrado": "No hay ejecutable & paquete." } };
     const cuerpo = await paginaAgentes(respuesta).text();
     expect(cuerpo).toContain("<h2>Declaraciones</h2><ul><li>Version &lt;no determinada&gt;.</li><li>No hay ejecutable &amp; paquete.</li></ul>");
+    expect(cuerpo.indexOf("<h2>Declaraciones</h2>")).toBeLessThan(cuerpo.indexOf("<table>"));
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(respuesta);
     expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")).not.toMatch(/<script/i);
   });

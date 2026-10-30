@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import { detectarVersion } from "../../../opencode/version";
+import { EntornoLecturaSistema } from "./entorno-lectura";
 
 const temporales: string[] = [];
 afterEach(() => {
@@ -15,8 +17,29 @@ describe("T3-01 R-1 ruta fisica del sistema", () => {
     temporales.push(temporal);
     const { EntornoLecturaSistema } = await import("./entorno-lectura");
     const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: {} });
-    expect(entorno.real(temporal)).toBe(realpathSync.native(temporal));
+    const destino = join(temporal, "destino");
+    const enlace = join(temporal, "enlace");
+    mkdirSync(destino);
+    symlinkSync(destino, enlace, process.platform === "win32" ? "junction" : "dir");
+    expect(entorno.real(enlace)).toBe(realpathSync.native(destino));
+    expect(entorno.real(enlace)).not.toBe(resolve(enlace));
     expect(() => entorno.real(join(temporal, "inexistente"))).toThrow();
+  });
+});
+
+describe("T3-01-c1 P-2 enlace relativo de npm", () => {
+  test.skipIf(process.platform === "win32")("resuelve bin/opencode -> ../lib/node_modules/opencode-ai/bin/opencode.exe", () => {
+    const temporal = mkdtempSync(join(tmpdir(), "rige-enlace-relativo-"));
+    temporales.push(temporal);
+    const paquete = join(temporal, "lib/node_modules/opencode-ai");
+    const bin = join(temporal, "bin");
+    mkdirSync(join(paquete, "bin"), { recursive: true });
+    mkdirSync(bin);
+    writeFileSync(join(paquete, "bin/opencode.exe"), "No ejecutar");
+    writeFileSync(join(paquete, "package.json"), JSON.stringify({ name: "opencode-ai", version: "1.18.25" }));
+    symlinkSync("../lib/node_modules/opencode-ai/bin/opencode.exe", join(bin, "opencode"));
+    const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: { PATH: bin } });
+    expect(detectarVersion(entorno, temporal)).toEqual({ estado: "soportada" });
   });
 });
 

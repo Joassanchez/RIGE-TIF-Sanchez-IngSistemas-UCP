@@ -4,7 +4,7 @@ import { buscarEjecutable } from "./ejecutables";
 
 export type VersionInstalada =
   | { readonly estado: "soportada" }
-  | { readonly estado: "distinta"; readonly detectada: string }
+  | { readonly estado: "distinta"; readonly detectada: string; readonly rutaPaquete: string }
   | { readonly estado: "no-determinada"; readonly motivo: "ejecutable-no-encontrado" | "paquete-no-encontrado" | "paquete-ilegible" };
 
 /** Solo se captura el error sintactico del contenido; la lectura queda fuera. */
@@ -24,12 +24,12 @@ export function detectarVersion(entorno: EntornoLectura, proyecto: string): Vers
   if (ejecutable === undefined) return { estado: "no-determinada", motivo: "ejecutable-no-encontrado" };
   let actual = entorno.padre(entorno.real(ejecutable));
   let ilegible = false;
-  let paquete: unknown;
+  let paquete: { readonly contenido: unknown; readonly ruta: string } | undefined;
   for (;;) {
     const candidato = entorno.unir(actual, "package.json");
     if (entorno.tipo(candidato) === "archivo") {
       const contenido = parsear(entorno.leer(candidato).texto);
-      if (esPaquete(contenido)) { paquete = contenido; break; }
+      if (esPaquete(contenido)) { paquete = { contenido, ruta: candidato }; break; }
       if (contenido === undefined) ilegible = true;
     }
     const padre = entorno.padre(actual);
@@ -39,10 +39,12 @@ export function detectarVersion(entorno: EntornoLectura, proyecto: string): Vers
   if (paquete === undefined) {
     const respaldo = entorno.unir(entorno.padre(ejecutable), "node_modules", "opencode-ai", "package.json");
     if (entorno.tipo(respaldo) !== "archivo") return { estado: "no-determinada", motivo: ilegible ? "paquete-ilegible" : "paquete-no-encontrado" };
-    paquete = parsear(entorno.leer(respaldo).texto);
+    paquete = { contenido: parsear(entorno.leer(respaldo).texto), ruta: respaldo };
   }
-  if (!esPaquete(paquete) || typeof paquete.version !== "string" || paquete.version.length === 0) {
+  const contenido = paquete.contenido;
+  if (!esPaquete(contenido) || typeof contenido.version !== "string" || contenido.version.length === 0) {
     return { estado: "no-determinada", motivo: "paquete-ilegible" };
   }
-  return paquete.version === versionSoportada ? { estado: "soportada" } : { estado: "distinta", detectada: paquete.version };
+  return contenido.version === versionSoportada ? { estado: "soportada" }
+    : { estado: "distinta", detectada: contenido.version, rutaPaquete: paquete.ruta };
 }

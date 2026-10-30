@@ -8,6 +8,7 @@ import { crearInstalacionOpenCode } from "../utilidades/instalacion-opencode";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal } from "../utilidades/cliente-http-local";
 import { validarEsquema } from "../utilidades/validar-esquema";
+import { crearResolucionGuardadaAnterior } from "../utilidades/resolucion-guardada";
 
 const limpiezas: (() => void)[] = [];
 afterEach(() => { for (const limpiar of limpiezas.splice(0).reverse()) limpiar(); });
@@ -51,6 +52,7 @@ describe("RF-05 CA-1 T3-01 R-9", () => {
       expect(error.codigo).toBe("version-no-soportada");
       expect(error.mensaje).toContain("1.18.25");
       expect(error.mensaje).toContain("1.18.24");
+      expect(error.mensaje).toContain(join(escenario.instalacion, "node_modules/opencode-ai/package.json").replaceAll("\\", "/"));
     }
   });
 });
@@ -97,6 +99,7 @@ describe("T3-01 R-11", () => {
       await validar(comando, respuesta);
       const codigos = respuesta.declaraciones.filter((codigo: string) => ["version-no-determinada", "ejecutable-no-encontrado"].includes(codigo));
       expect(codigos).toEqual(["version-no-determinada", "ejecutable-no-encontrado"]);
+      expect(respuesta.declaraciones[respuesta.declaraciones.indexOf("version-no-determinada") + 1]).toBe("ejecutable-no-encontrado");
       const lineas = recibida.error.trim().split(/\r?\n/).map(linea => JSON.parse(linea));
       expect(lineas).toHaveLength(2);
       for (let i = 0; i < lineas.length; i++) {
@@ -115,6 +118,8 @@ describe("T3-01 R-11", () => {
         const pagina = await solicitar(ruta);
         expect(pagina.estado).toBe(200);
         const respuesta = datos(pagina.cuerpo);
+        const resultados = ruta === "/agentes?id=1" ? "<table>" : "<h2>Valores efectivos</h2>";
+        expect(pagina.cuerpo.indexOf("<h2>Declaraciones</h2>")).toBeLessThan(pagina.cuerpo.indexOf(resultados));
         const declaraciones = pagina.cuerpo.split("<h2>Declaraciones</h2>")[1]!.split("</ul>")[0]!;
         for (const codigo of ["version-no-determinada", "ejecutable-no-encontrado"]) {
           expect(declaraciones).toContain(respuesta.reglas[codigo]);
@@ -147,22 +152,7 @@ describe("T3-01 R-13", () => {
     try {
       expect((await solicitar(`/resolver?proyecto=${encodeURIComponent(escenario.proyecto)}&agente=build`)).estado).toBe(303);
     } finally { await servidor.detener(); }
-    // Fixture anterior a T3-01: mismo formato 2, sin las plantillas nuevas.
-    // Se inserta otra resolucion; las filas existentes siguen inmutables.
-    const base = new Database(JSON.parse(esquema.salida).almacen.ruta);
-    try {
-      const fila = base.query<{ documento: string }, []>("SELECT documento FROM resolucion WHERE id=1").get()!;
-      const documento = JSON.parse(fila.documento);
-      for (const codigo of ["version-no-determinada", "ejecutable-no-encontrado", "paquete-no-encontrado", "paquete-ilegible"]) delete documento.reglas[codigo];
-      base.transaction(() => {
-        base.query(`INSERT INTO resolucion (proyecto_id, instante, resumen_entradas, herramienta,
-          version_herramienta, version_rige, formato_documento, documento)
-          SELECT proyecto_id, instante, resumen_entradas, herramienta, version_herramienta,
-            version_rige, formato_documento, ? FROM resolucion WHERE id=1`).run(JSON.stringify(documento));
-        base.query(`INSERT INTO entrada_leida (resolucion_id, orden, via, referencia, resumen, condicion)
-          SELECT 2, orden, via, referencia, resumen, condicion FROM entrada_leida WHERE resolucion_id=1`).run();
-      })();
-    } finally { base.close(); }
+    expect(crearResolucionGuardadaAnterior(escenario.variables.RIGE_ALMACEN, 1)).toBe(2);
     servidor = await lanzarServidor(escenario.temporal, { ...escenario.variables, PATH: join(escenario.temporal, "sin-ejecutable") });
     try {
       expect((await solicitar(`/resolver?proyecto=${encodeURIComponent(escenario.proyecto)}&agente=build`)).estado).toBe(303);

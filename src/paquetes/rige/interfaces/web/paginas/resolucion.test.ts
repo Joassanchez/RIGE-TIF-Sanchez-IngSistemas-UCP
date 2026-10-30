@@ -85,6 +85,7 @@ describe("T3-01 R-11 declaraciones en resolucion", () => {
       reglas: { ...respuesta().reglas, "version-no-determinada": "Version <no determinada>.", "ejecutable-no-encontrado": "No hay ejecutable & paquete." } };
     const cuerpo = await paginaResolucion(dato, sobre).text();
     expect(cuerpo).toContain("<h2>Declaraciones</h2><ul><li>Version &lt;no determinada&gt;.</li><li>No hay ejecutable &amp; paquete.</li></ul>");
+    expect(cuerpo.indexOf("<h2>Declaraciones</h2>")).toBeLessThan(cuerpo.indexOf("<h2>Valores efectivos</h2>"));
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(dato);
   });
 });

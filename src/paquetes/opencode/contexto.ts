@@ -19,7 +19,7 @@ export interface ContextoOpenCode extends ContextoConsulta {
 export function contextoOpenCode(proyecto: string, entorno: EntornoLectura): Resultado<ContextoOpenCode, ErrorAnalisis> {
   const version = detectarVersion(entorno, proyecto);
   if (version.estado === "distinta") return { exito: false, error: { categoria: "uso", codigo: "version-no-soportada",
-    mensaje: `OpenCode instalado en la versión ${version.detectada}; RIGE analiza la ${versionSoportada}.` } };
+    mensaje: `OpenCode instalado en la versión ${version.detectada}, leída de ${version.rutaPaquete.replaceAll("\\", "/")}; RIGE analiza la ${versionSoportada}.` } };
   const vias = validarVias(entorno);
   if (!vias.exito) return vias;
   const variable = (nombre: string) => entorno.variable(nombre);

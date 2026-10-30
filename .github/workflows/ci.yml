@@ -41,3 +41,33 @@ jobs:
           bun-version: 1.3.14
       - run: bun install --frozen-lockfile
       - run: bun run referencias --raiz "$(npm root -g)"
+      - name: Comprobar version instalada sin advertencias
+        run: |
+          bun -e '
+            import { mkdirSync, mkdtempSync, realpathSync, rmSync } from "node:fs";
+            import { tmpdir } from "node:os";
+            import { basename, dirname, join } from "node:path";
+            const raiz = realpathSync.native(tmpdir());
+            const temporal = mkdtempSync(join(raiz, "rige-ci-version-"));
+            try {
+              const proyecto = join(temporal, "proyecto");
+              mkdirSync(proyecto);
+              const resultado = Bun.spawnSync([process.execPath, "run", "rige", "agentes", "--proyecto", proyecto], {
+                env: { ...process.env, RIGE_ALMACEN: join(temporal, "almacen") }, stdout: "pipe", stderr: "pipe"
+              });
+              process.stdout.write(resultado.stdout);
+              process.stderr.write(resultado.stderr);
+              if (resultado.exitCode !== 0) throw new Error("La consulta de agentes no termino con codigo 0.");
+              for (const linea of resultado.stderr.toString().split(/\r?\n/)) {
+                let dato;
+                try { dato = JSON.parse(linea); }
+                catch (error) { if (error instanceof SyntaxError) continue; throw error; }
+                if (dato !== null && typeof dato === "object" && Object.hasOwn(dato, "advertencia")) {
+                  throw new Error("La instalacion real de OpenCode produjo una advertencia.");
+                }
+              }
+            } finally {
+              if (dirname(temporal) !== raiz || !basename(temporal).startsWith("rige-ci-version-")) throw new Error("Temporal fuera de la ubicacion esperada.");
+              rmSync(temporal, { recursive: true, force: true });
+            }
+          '
