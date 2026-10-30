@@ -22,3 +22,5 @@ type AgentesEntrada = { readonly "orden": number; readonly "via": string; readon
 export type RespuestaAgentes = { readonly "esquema": 2; readonly "proyecto": string; readonly "entradas": readonly (AgentesEntrada)[]; readonly "resumenEntradas": string; readonly "agentes": readonly ({ readonly "nombre": string; readonly "origen": "nativo" | "declarado"; readonly "modo": string; readonly "oculto": boolean; })[]; readonly "eliminados": readonly ({ readonly "nombre": string; readonly "declaracion": AgentesDeclaracion; })[]; readonly "incompleta": boolean; readonly "motivos": readonly (string)[]; readonly "reglas": { readonly [clave: string]: string }; readonly "declaraciones": readonly (string)[]; };
 
 export type RespuestaError = { readonly "esquema": 2; readonly "error": { readonly "codigo": string; readonly "mensaje": string; readonly "stack"?: string; }; };
+
+export type RespuestaAdvertencia = { readonly "esquema": 2; readonly "advertencia": { readonly "codigo": string; readonly "mensaje": string; }; };

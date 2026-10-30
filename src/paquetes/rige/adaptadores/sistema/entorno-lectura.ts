@@ -39,6 +39,8 @@ export class EntornoLecturaSistema implements EntornoLectura {
     return createHash("sha256").update(texto, "utf8").digest("hex");
   }
 
+  real(ruta: string): string { return realpathSync.native(ruta); }
+
   unir(...partes: readonly string[]): string { return join(...partes); }
   rutasPara(plataforma: string) {
     const rutas = plataforma === "win32" ? win32 : posix;

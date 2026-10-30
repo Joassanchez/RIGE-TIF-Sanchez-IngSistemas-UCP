@@ -1,6 +1,7 @@
 import type { ErrorAnalisis } from "@rige/nucleo/contrato/adaptador";
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { Resultado } from "@rige/nucleo/resultado";
+import { buscarEjecutable } from "./ejecutables";
 
 export interface Worktree { readonly worktree: string; readonly declaraciones: readonly string[] }
 
@@ -12,10 +13,7 @@ export function descubrirWorktree(proyecto: string, entorno: EntornoLectura): Re
   }
   const resolver = (base: string, ruta: string) => entorno.esAbsoluta(ruta) ? entorno.unir(ruta) : entorno.unir(base, ruta);
   const ejecutables = entorno.plataforma === "win32" ? ["git", "git.exe", "git.cmd"] : ["git"];
-  const rutaPath = entorno.variable("PATH") ?? entorno.variable("Path");
-  const directorios = rutaPath === undefined ? [] : rutaPath.split(entorno.plataforma === "win32" ? ";" : ":");
-  const hayGit = directorios.some(dir => ejecutables.some(nombre =>
-    entorno.tipo(entorno.unir(resolver(proyecto, dir.replace(/^"(.*)"$/, "$1") || "."), nombre)) === "archivo"));
+  const hayGit = buscarEjecutable(entorno, proyecto, ejecutables) !== undefined;
   if (!hayGit) return { exito: true, valor: { worktree: "/", declaraciones: ["git-no-encontrado"] } };
 
   function estructura(git: string): string | null {

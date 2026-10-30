@@ -6,6 +6,7 @@ import { RelojSistema } from "../adaptadores/sistema/reloj";
 import { AlmacenSqlite } from "../adaptadores/almacen-sqlite/esquema";
 import { RepositorioResolucionesSqlite } from "../adaptadores/almacen-sqlite/resoluciones";
 import { adaptadorOpenCode } from "@rige/opencode/adaptador";
+import { advertidas } from "@rige/opencode/reglas";
 import { prepararAlmacen } from "../aplicacion/casos-uso/preparar-almacen";
 import { consultarEstado } from "../aplicacion/casos-uso/consultar-estado";
 import { resolverProyecto } from "../aplicacion/casos-uso/resolver-proyecto";
@@ -63,4 +64,4 @@ function ensamblar(comando: string): Ensamblado {
 process.exitCode = ejecutarCli(process.argv.slice(2), ensamblar, {
   escribirSalida: (texto) => { process.stdout.write(texto); },
   escribirError: (texto) => { process.stderr.write(texto); },
-});
+}, advertidas);

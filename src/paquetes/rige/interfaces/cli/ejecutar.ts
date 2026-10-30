@@ -5,6 +5,7 @@ import type { ConsultarAgentes } from "../../aplicacion/casos-uso/consultar-agen
 import { versionEsquemaSalida } from "../../aplicacion/respuestas/valores";
 import type { ErrorUso } from "../../aplicacion/errores";
 import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
+import type { RespuestaAdvertencia } from "../../aplicacion/respuestas/contrato-generado";
 import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { parseArgs } from "node:util";
 
@@ -53,7 +54,7 @@ function argumentosInvalidos(canales: CanalesCli, mensaje: string): number {
   return 2;
 }
 
-export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: string) => Ensamblado, canales: CanalesCli): number {
+export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: string) => Ensamblado, canales: CanalesCli, advertidas: readonly string[] = []): number {
   let opciones: ReturnType<typeof parseArgs>;
   try {
     opciones = parseArgs({
@@ -109,7 +110,17 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
       escribirError(canales, resultado.error);
       return 1;
     }
+    const advertencias: RespuestaAdvertencia[] = [];
+    if (["valores", "permiso", "agentes"].includes(comando) && "declaraciones" in resultado.valor && "reglas" in resultado.valor) {
+      for (const codigo of resultado.valor.declaraciones) {
+        if (!advertidas.includes(codigo)) continue;
+        const mensaje = resultado.valor.reglas[codigo];
+        if (mensaje === undefined) throw new Error(`Falta la plantilla de ${codigo}.`);
+        advertencias.push({ esquema: versionEsquemaSalida, advertencia: { codigo, mensaje } });
+      }
+    }
     canales.escribirSalida(JSON.stringify(resultado.valor) + "\n");
+    for (const advertencia of advertencias) canales.escribirError(JSON.stringify(advertencia) + "\n");
     return 0;
   } catch (falla) {
     const error = {

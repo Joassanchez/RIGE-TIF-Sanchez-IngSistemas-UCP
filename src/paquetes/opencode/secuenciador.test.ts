@@ -13,6 +13,10 @@ import { reglas } from "./reglas";
 describe("V1-03 S-4", () => {
   test("publica exactamente las plantillas del diseno y la ficha", () => {
     expect(reglas).toEqual({
+      "version-no-determinada": "No se pudo determinar la versión instalada de OpenCode; los resultados corresponden a OpenCode 1.18.25.",
+      "ejecutable-no-encontrado": "No se encontró un archivo ejecutable opencode en el PATH del proceso de RIGE.",
+      "paquete-no-encontrado": "No se encontró el package.json del paquete opencode-ai del ejecutable encontrado.",
+      "paquete-ilegible": "El contenido del package.json no permite leer una versión del paquete opencode-ai.",
       "valor-implicito-del-agente": "Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).",
       "numeracion-sin-directorios-externos": "Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.",
       "references-no-incorporado": "La configuración declara references o reference; RIGE no incorpora los directorios externos que aportan a los permisos.",

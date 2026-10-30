@@ -12,6 +12,7 @@ const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
   "agente-sin-declaraciones": 404,
   "clave-no-resuelta": 422,
   "via-no-soportada": 422,
+  "version-no-soportada": 422,
   "contenido-no-soportado": 422,
   "entrada-ilegible": 422,
   "entorno-incompleto": 500,

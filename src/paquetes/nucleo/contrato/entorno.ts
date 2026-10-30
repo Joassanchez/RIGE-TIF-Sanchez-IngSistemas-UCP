@@ -13,6 +13,8 @@ export interface EntornoLectura {
   variable(nombre: string): string | undefined;
   tipo(ruta: string): TipoRuta;
   leer(ruta: string): ArchivoLeido;
+  /** Ruta fisica con los enlaces resueltos; la ruta existe. */
+  real(ruta: string): string;
   resumir(texto: string): string;
   unir(...partes: readonly string[]): string;
   relativa(desde: string, hasta: string): string;

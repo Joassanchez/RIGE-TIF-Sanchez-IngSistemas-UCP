@@ -1,8 +1,9 @@
 import { afterAll } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { delimiter, join, resolve } from "node:path";
 import { crearEntornoAislado, variablesAisladas } from "./utilidades/entorno-aislado";
+import { crearInstalacionOpenCode } from "./utilidades/instalacion-opencode";
 
 const hogaresOriginales = [process.env.HOME, process.env.USERPROFILE]
   .filter((valor): valor is string => Boolean(valor)).map((valor) => resolve(valor));
@@ -14,6 +15,10 @@ for (const nombre of Object.keys(process.env)) {
 }
 const entorno = crearEntornoAislado(temporal, process.env);
 for (const nombre of variablesAisladas) process.env[nombre] = entorno[nombre];
+const instalacion = join(temporal, "instalacion-falsa");
+crearInstalacionOpenCode(instalacion, "1.18.25");
+const clavePath = process.platform === "win32" ? Object.keys(process.env).find(nombre => nombre.toUpperCase() === "PATH") ?? "PATH" : "PATH";
+process.env[clavePath] = instalacion + (process.env[clavePath] === undefined ? "" : delimiter + process.env[clavePath]);
 for (const nombre of variablesAisladas) {
   const valor = process.env[nombre];
   if (!valor || resolve(valor) !== resolve(temporal) || hogaresOriginales.includes(resolve(valor))) {

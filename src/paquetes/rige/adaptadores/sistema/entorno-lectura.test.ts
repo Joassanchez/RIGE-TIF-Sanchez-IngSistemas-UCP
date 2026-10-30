@@ -9,6 +9,17 @@ afterEach(() => {
   for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
 });
 
+describe("T3-01 R-1 ruta fisica del sistema", () => {
+  test("real devuelve la ruta nativa y propaga la ausencia", async () => {
+    const temporal = mkdtempSync(join(tmpdir(), "rige-real-"));
+    temporales.push(temporal);
+    const { EntornoLecturaSistema } = await import("./entorno-lectura");
+    const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: {} });
+    expect(entorno.real(temporal)).toBe(realpathSync.native(temporal));
+    expect(() => entorno.real(join(temporal, "inexistente"))).toThrow();
+  });
+});
+
 describe("E-1 V1-08 F-2", () => {
   test("lectura real, rutas, nombres ordenados y resumen de los bytes sin escribir entradas", async () => {
     const temporal = mkdtempSync(join(tmpdir(), "rige-lectura-"));

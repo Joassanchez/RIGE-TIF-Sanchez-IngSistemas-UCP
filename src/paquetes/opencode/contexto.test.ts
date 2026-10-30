@@ -7,6 +7,20 @@ import { adaptadorOpenCode } from "./adaptador";
 import * as worktree from "./worktree";
 import { contextoOpenCode } from "./contexto";
 import { analizarProyecto } from "../rige/aplicacion/casos-uso/analizar-proyecto";
+import { instalacionEnMemoria } from "../../pruebas/utilidades/instalacion-opencode";
+
+describe("T3-01 R-7", () => {
+  test("version distinta precede a vias no soportadas y la indeterminada precede a git", () => {
+    const instalacion = instalacionEnMemoria("/instalacion-falsa", "1.18.24");
+    const distinta = crearEntornoMemoria({ archivos: instalacion.archivos,
+      variables: { ...instalacion.variables, OPENCODE_CONFIG_CONTENT: "{}" } });
+    expect(contextoOpenCode("/p", distinta)).toMatchObject({ exito: false,
+      error: { categoria: "uso", codigo: "version-no-soportada", mensaje: expect.stringContaining("1.18.24") } });
+    const resultado = contextoOpenCode("/p", crearEntornoMemoria({ archivos: {}, variables: { HOME: "/hogar" } }));
+    expect(resultado).toMatchObject({ exito: true,
+      valor: { declaraciones: ["version-no-determinada", "ejecutable-no-encontrado", "git-no-encontrado"] } });
+  });
+});
 
 describe("A5-5", () => {
   test("sin hogar devuelve entorno-incompleto de uso", () => {
@@ -36,8 +50,9 @@ describe("A5-8", () => {
 
 describe("T2-11b contexto", () => {
   test("X-3 guarda solo los datos del contexto y consulta sin descubrir el entorno actual", () => {
-    const entorno = crearEntornoMemoria({ archivos: {}, directorios: ["/p"], plataforma: "linux",
-      variables: { HOME: "/hogar", XDG_DATA_HOME: "/datos", TMPDIR: "/temporal", SECRETO: "no-guardar" } });
+    const instalacion = instalacionEnMemoria("/instalacion-falsa", "1.18.25");
+    const entorno = crearEntornoMemoria({ archivos: instalacion.archivos, directorios: ["/p"], plataforma: "linux",
+      variables: { ...instalacion.variables, HOME: "/hogar", XDG_DATA_HOME: "/datos", TMPDIR: "/temporal", SECRETO: "no-guardar" } });
     const deps = { adaptador: adaptadorOpenCode, entorno, rutas: { canonica: () => "/p" } };
     const analisis = analizarProyecto(deps, "/p");
     if (!analisis.exito) throw new Error(analisis.error.mensaje);
@@ -56,9 +71,10 @@ describe("T2-11b contexto", () => {
   });
   describe("A8-5", () => { test("las declaraciones de descubrimiento llegan a valores y agentes", () => {
     for (const aproximada of [false, true]) {
-      const entorno = crearEntornoMemoria({ archivos: aproximada ? { "/p/.git/HEAD": "ref: refs/heads/main", "/bin/git": "",
-        "/p/.git/config": "[core]\nworktree = ../otro" } : {}, directorios: ["/p", "/p/.git", "/p/.git/objects", "/p/.git/refs"],
-        variables: { HOME: "/hogar", PATH: aproximada ? "/bin" : "/sin-git" } });
+      const instalacion = instalacionEnMemoria("/instalacion-falsa", "1.18.25");
+      const entorno = crearEntornoMemoria({ archivos: { ...instalacion.archivos, ...(aproximada ? { "/p/.git/HEAD": "ref: refs/heads/main", "/bin/git": "",
+        "/p/.git/config": "[core]\nworktree = ../otro" } : {}) }, directorios: ["/p", "/p/.git", "/p/.git/objects", "/p/.git/refs"],
+        variables: { HOME: "/hogar", PATH: instalacion.variables.PATH + (aproximada ? ":/bin" : ":/sin-git") } });
       const deps = { adaptador: adaptadorOpenCode, entorno, rutas: { canonica: () => "/p" } };
       const codigo = aproximada ? "deteccion-git-aproximada" : "git-no-encontrado";
       for (const resultado of [consultarValores(deps, "/p", "build", undefined), consultarAgentes(deps, "/p")]) {

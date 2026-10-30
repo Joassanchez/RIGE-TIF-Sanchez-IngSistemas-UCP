@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Respuesta advertencia de RIGE v2",
+  "type": "object",
+  "properties": {
+    "esquema": { "const": 2 },
+    "advertencia": {
+      "type": "object",
+      "properties": {
+        "codigo": { "type": "string" },
+        "mensaje": { "type": "string" }
+      },
+      "required": ["codigo", "mensaje"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["esquema", "advertencia"],
+  "additionalProperties": false
+}

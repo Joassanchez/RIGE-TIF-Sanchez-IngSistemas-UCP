@@ -10,5 +10,6 @@ export function paginaAgentes(respuesta: RespuestaAgentes): Response {
 <tbody>${respuesta.agentes.map(agente => html`<tr><td>${agente.nombre}</td><td>${agente.origen}</td><td>${agente.modo}</td><td>${agente.oculto}</td></tr>`)}</tbody></table>
 <h2>Agentes eliminados</h2><ul>${respuesta.eliminados.map(agente => html`<li>${agente.nombre}: ${JSON.stringify(agente.declaracion)}</li>`)}</ul>
 ${respuesta.incompleta ? html`<p>Listado incompleto.</p><ul>${respuesta.motivos.map(motivo => html`<li>${respuesta.reglas[motivo]}</li>`)}</ul>` : html``}
+<h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
 ${datosRespuesta(respuesta)}</body></html>`);
 }

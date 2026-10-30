@@ -5,6 +5,16 @@ import { tmpdir } from "node:os";
 import { crearEntornoAislado, variablesAisladas } from "../utilidades/entorno-aislado";
 import { lanzar } from "../utilidades/subproceso";
 import { versionRige } from "../../paquetes/rige/aplicacion/respuestas/estado";
+import { delimiter } from "node:path";
+
+describe("T3-01 R-12 PATH aislado", () => {
+  test("la precarga antepone un paquete falso en 1.18.25", () => {
+    const primero = (process.env.PATH ?? process.env.Path)!.split(delimiter)[0]!;
+    expect(primero).toBe(join(process.env.HOME!, "instalacion-falsa"));
+    expect(JSON.parse(readFileSync(join(primero, "node_modules/opencode-ai/package.json"), "utf8")))
+      .toEqual({ name: "opencode-ai", version: "1.18.25" });
+  });
+});
 
 const variables = variablesAisladas;
 

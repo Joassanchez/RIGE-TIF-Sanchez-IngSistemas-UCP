@@ -8,6 +8,34 @@ import { consultarValores } from "../../aplicacion/casos-uso/consultar-valores";
 import { adaptadorFicticio } from "../../../../pruebas/utilidades/adaptador-ficticio";
 import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memoria";
 
+describe("T3-01 R-11 advertencias CLI", () => {
+  test("solo consultas emiten las declaraciones seleccionadas en su orden, con lista opcional", () => {
+    const deps = { adaptador: adaptadorFicticio,
+      entorno: crearEntornoMemoria({ archivos: { "/p/capa-a.json": '{"dato":1}', "/p/capa-b.json": '{}' } }),
+      rutas: { canonica: () => "/p" } };
+    const consulta = consultarValores(deps, "/p", "a", undefined);
+    if (!consulta.exito) throw new Error(consulta.error.mensaje);
+    const valor = { ...consulta.valor, declaraciones: ["segunda", "otra", "primera"],
+      reglas: { ...consulta.valor.reglas, primera: "Mensaje uno", segunda: "Mensaje dos" } };
+    const casos = { ...noWeb, prepararAlmacen: () => ({ exito: true as const,
+      valor: { ...respuesta, declaraciones: valor.declaraciones, reglas: valor.reglas } }),
+      consultarValores: () => ({ exito: true as const, valor }),
+      consultarAgentes: () => ({ exito: true as const, valor: { esquema: 2 as const, proyecto: "/p", entradas: [], resumenEntradas: "",
+        agentes: [], eliminados: [], incompleta: false, motivos: [], declaraciones: valor.declaraciones, reglas: valor.reglas } }) };
+    for (const argumentos of [["valores", "--proyecto", "/p", "--agente", "a"], ["agentes", "--proyecto", "/p"], ["esquema"]]) {
+      for (const advertidas of [undefined, ["primera", "segunda"]]) {
+        const errores: string[] = [];
+        expect(ejecutarCli(argumentos, () => ({ exito: true, valor: casos }),
+          { escribirSalida() {}, escribirError: texto => errores.push(texto) }, advertidas)).toBe(0);
+        expect(errores).toEqual(argumentos[0] === "esquema" || advertidas === undefined ? [] : [
+          JSON.stringify({ esquema: 2, advertencia: { codigo: "segunda", mensaje: "Mensaje dos" } }) + "\n",
+          JSON.stringify({ esquema: 2, advertencia: { codigo: "primera", mensaje: "Mensaje uno" } }) + "\n",
+        ]);
+      }
+    }
+  });
+});
+
 describe("A2-3 S-4", () => {
   test("propaga un codigo de uso desconocido del adaptador hasta la CLI", () => {
     const error = { categoria: "uso" as const, codigo: "codigo-nuevo", mensaje: "Codigo del adaptador" };

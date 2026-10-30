@@ -1,6 +1,6 @@
 import type { DeclaracionUbicada, RespuestaValores } from "../../../aplicacion/respuestas/valores";
 import type { SobreAlmacen } from "../../../aplicacion/respuestas/sobre";
-import { html } from "../plantillas";
+import { datosRespuesta, html } from "../plantillas";
 import { responderHtml } from "../respuesta";
 
 function presentarDeclaracion(declaracion: DeclaracionUbicada): string {
@@ -54,6 +54,7 @@ ${respuesta.noResueltas.length ? html`<h2>Claves no incorporadas por RIGE</h2>
 <tbody>${respuesta.entradas.map((entrada) => html`<tr><td>${entrada.orden}</td><td>${entrada.via}</td><td>${entrada.referencia}</td><td>${entrada.condicion}</td><td>${entrada.resumen ?? "—"}</td></tr>`)}</tbody></table>
 <h2>Resoluciones de este proyecto</h2>
 <ul>${sobre.anteriores.map((anterior) => html`<li><a href="${`/resoluciones/${anterior.id}${consulta}`}">Resolución ${anterior.id}</a> ${anterior.instante}${anterior.id === sobre.id ? " (esta)" : ""}</li>`)}</ul>
-</body></html>`;
+<h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
+${datosRespuesta(respuesta)}</body></html>`;
   return responderHtml(200, pagina);
 }

@@ -11,6 +11,51 @@
 
 ## 2. Qué hace este prototipo
 
+T3-01 comprueba la versión instalada de OpenCode (RF-05, ADR-102) antes de
+analizar las vías de configuración. Busca el primer `opencode` del `PATH`
+del proceso de RIGE; en Windows usa las extensiones de `PATHEXT` (por defecto
+`.com;.exe;.bat;.cmd`). Resuelve los enlaces del ejecutable y sube hasta el
+`package.json` de `opencode-ai`; si no lo encuentra, prueba
+`node_modules/opencode-ai/package.json` junto al ejecutable, como en el
+envoltorio de npm en Windows. RIGE solo lee esos archivos, sin ejecutar
+OpenCode. El `PATH` de RIGE puede diferir del de otra terminal.
+
+La comparación con `1.18.25` es exacta. Una versión distinta produce
+`version-no-soportada` con ambas versiones: la CLI termina con código 1,
+salida estándar vacía y una línea JSON de error; la web responde 422 sin
+resultados y sin guardar una resolución. Si no se puede determinar la
+versión, las consultas conservan sus resultados con la declaración
+`version-no-determinada` y uno de estos motivos: `ejecutable-no-encontrado`,
+`paquete-no-encontrado` o `paquete-ilegible` (contenido inválido del paquete).
+Las fallas de lectura o de resolución de enlaces son fallas de infraestructura,
+con código 70 en la CLI.
+
+En el caso indeterminado, `valores`, `permiso` y `agentes` terminan con código
+0 y emiten dos líneas por el canal de error, según `advertencia.json`:
+`{"esquema":2,"advertencia":{"codigo":"version-no-determinada","mensaje":"…"}}`
+y otra con el motivo. Las respuestas conservan sus contratos de esquema 2,
+con los códigos en `declaraciones` y los textos en `reglas`. La web muestra
+las declaraciones; la página de resolución también incluye el JSON de la
+respuesta para comprobar la paridad con la CLI. Las consultas de resoluciones
+guardadas conservan sus declaraciones y no vuelven a detectar la versión.
+
+Las instalaciones sin un paquete identificable (por ejemplo, un binario
+instalado por `curl`, brew o scoop) quedan como versión no determinada.
+La precarga de las pruebas antepone una instalación falsa en 1.18.25 al
+`PATH`; las pruebas de RF-05 lo reemplazan para cada caso.
+
+Para comprobar T3-01 desde `src/`, con `RIGE_ALMACEN` temporal:
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-t301-pruebas'
+bun test pruebas/aceptacion/RF-05.test.ts
+bun test paquetes/opencode pruebas/aceptacion/RF-05.test.ts paquetes/rige/interfaces pruebas/arquitectura/entorno.test.ts pruebas/utilidades
+bun test paquetes/rige/adaptadores/sistema/entorno-lectura.test.ts
+bun herramientas/tipos-salida.ts
+bun test
+bun run verificar
+```
+
 T2-13 agrega los valores implícitos de los agentes con origen
 `implicito` y regla `valor-implicito-del-agente` (RF-06 CA-1, RD-04).
 Su rastro tiene `via` y `referencia` en `null`; una declaración posterior

@@ -61,7 +61,10 @@ describe("W-13", () => {
     expect(cuerpo).toMatch(/<ol>.*0\.1.*0\.2.*<\/ol>/s);
     expect(cuerpo).toContain('href="/resoluciones/6?agente=a%20%26%20b"');
     expect(cuerpo).not.toContain("agent.a &amp; b.description");
-    expect(cuerpo).not.toContain("<script");
+    const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
+    expect(bloques).toHaveLength(1);
+    expect(JSON.parse(bloques[0]![1]!)).toEqual(respuesta());
+    expect(cuerpo.replace(bloques[0]![0], "")).not.toMatch(/<script/i);
     expect(cuerpo).not.toContain("<entrada");
   });
 
@@ -72,6 +75,17 @@ describe("W-13", () => {
     expect(cuerpo).toContain('href="/resoluciones/6?agente=a%20%26%20b&amp;clave=c%20%26%20d"');
     expect(cuerpo).toContain("c &amp; d");
     expect(cuerpo).not.toContain("Claves no incorporadas por RIGE");
+  });
+});
+
+describe("T3-01 R-11 declaraciones en resolucion", () => {
+  test("presenta las declaraciones escapadas junto al JSON de paridad", async () => {
+    const { paginaResolucion } = await import("./resolucion");
+    const dato = { ...respuesta(), declaraciones: ["version-no-determinada", "ejecutable-no-encontrado"],
+      reglas: { ...respuesta().reglas, "version-no-determinada": "Version <no determinada>.", "ejecutable-no-encontrado": "No hay ejecutable & paquete." } };
+    const cuerpo = await paginaResolucion(dato, sobre).text();
+    expect(cuerpo).toContain("<h2>Declaraciones</h2><ul><li>Version &lt;no determinada&gt;.</li><li>No hay ejecutable &amp; paquete.</li></ul>");
+    expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(dato);
   });
 });
 
@@ -96,7 +110,7 @@ describe("W-14", () => {
     expect(filas[1]).not.toContain("Conservar la primera");
     expect(cuerpo).toContain("permission: No se resuelve &lt;permiso&gt;.");
     expect(cuerpo).not.toContain("grupo.a &amp; b");
-    expect(cuerpo).not.toContain("orden-de-aplicacion");
+    expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")).not.toContain("orden-de-aplicacion");
   });
 });
 
