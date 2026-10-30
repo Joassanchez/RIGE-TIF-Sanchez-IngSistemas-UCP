@@ -912,3 +912,46 @@ bun run verificar
 del manifiesto al regenerar esa referencia, sin modificar las anteriores.
 En Bash, las invocaciones nativas usan `--raiz "$(npm root -g)"` y un
 directorio temporal para `--cache`.
+
+### Hallazgos en vivo (T3-05)
+
+El caso de uso `consultarHallazgos` detecta entradas ilegibles (sintaxis o
+archivo sustituido inexistente), entradas descartadas sin error visible,
+sustituciones de variables sin valor y referencias a agentes inexistentes
+o deshabilitados en `default_agent` y `command.<nombre>.agent`. Cada hallazgo
+incluye entrada, posición original, clave, causa y explicación determinista.
+Lee cada entrada una sola vez, sin guardar ni consultar resoluciones del
+almacén. La CLI, el esquema JSON y la vista web corresponden a T3-07.
+
+Si una entrada impide cargar la configuración, se informan todas las
+ilegibles y los hallazgos de las entradas legibles; `incompleta: true` y
+`hallazgos-parciales` indican que no se evaluaron referencias. Las variables
+ausentes o vacías se detectan también en declaraciones desplazadas o
+excluidas, pero no en comentarios. `wellknown-no-observada` advierte que
+OpenCode puede obtener de `auth.json` una variable que RIGE informa sin valor.
+
+No se detecta el frontmatter inválido de Markdown. Las referencias con
+sustituciones, vacías o bajo claves no resueltas no se evalúan. Un agente
+Markdown no observado cuenta como existente. Un `default_agent` que nombra
+un subagente o un agente oculto puede fallar en OpenCode, pero queda fuera
+del detector porque el nombre sí existe. Reglas sin efecto y elementos sin
+uso se implementan en T3-06.
+
+El escenario `v3-referencias` fue aceptado por `opencode debug config` y
+conserva sus comandos en `REFERENCIA.json`. Su entorno define el nombre
+nativo `plan`; el arnés busca valores de variables en las capturas de
+agentes cuando se declaran `sustituidas`, y siempre rechaza `MARCA-`. Los
+nombres nativos ya presentes no constituyen contenido incorporado por una
+sustitución. Los errores y las diferencias de escenarios con entorno
+siguen protegidos.
+
+Con `RIGE_ALMACEN` apuntando a un temporal, como arriba:
+
+```powershell
+bun test paquetes/nucleo/hallazgos pruebas/aceptacion/RF-07.test.ts
+bun test paquetes/nucleo/resolucion/resolver.test.ts paquetes/nucleo/resolucion/contrato.test.ts pruebas/arquitectura/referencias-nativas.test.ts pruebas/arquitectura/manifiesto.test.ts
+bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-referencias
+bun run referencias --raiz (npm.cmd root -g)
+bun test
+bun run verificar
+```

@@ -1191,6 +1191,18 @@
           "archivo": "pruebas/aceptacion/RF-04.test.ts",
           "describe": "RF-04 CA-2 T3-03 R-8 T3-03-c1 R-8",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 entradas-ilegibles",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-2 T3-05 R-1",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-2",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-2 T3-05 R-1",
+          "fuente": "referencia-binario"
         }
       ]
     },
@@ -1207,7 +1219,14 @@
       ],
       "claves": [],
       "consultas": [],
-      "comprobaciones": []
+      "comprobaciones": [
+        {
+          "item": "RF-07 entradas-descartadas",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 entradas-descartadas T3-05 R-3",
+          "fuente": "referencia-binario"
+        }
+      ]
     },
     {
       "id": "v3-sustituciones",
@@ -1256,6 +1275,46 @@
           "item": "RNF-02 CA-1",
           "archivo": "pruebas/aceptacion/RNF-02.test.ts",
           "describe": "RNF-02 CA-1 T3-04 R-10",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 sustituciones-sin-valor",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 sustituciones-sin-valor T3-05 R-4",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-2",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-2 T3-05 R-7",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v3-referencias",
+      "entradas": {
+        "entorno/agente.txt": "64879f7d6b960a01909762d911a32d4582c20010c5641ee90278b644a9e3b525",
+        "proyecto/.opencode/agents/revisor.md": "21b8fa2c4e0913be671aa16940cde25b0623c758b3b7fa8a41fa7661222c7307",
+        "proyecto/opencode.json": "30161348ea0699825af946c5a4669d9a8f6a39373d33f916a6de5f9c6a6623cf"
+      },
+      "referencia": "cee941cfab54b6c47a07bd489d46d690cd5a6002a6c7d5c69aeac64c7ab11af7",
+      "agentes": [
+        "build",
+        "plan",
+        "revisor",
+        "inactivo"
+      ],
+      "claves": [
+        "default_agent",
+        "command"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 referencias-no-resueltas",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 referencias-no-resueltas T3-05 R-6",
           "fuente": "referencia-binario"
         }
       ]

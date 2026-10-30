@@ -1,0 +1,12 @@
+{
+  "default_agent": "fantasma",
+  "agent": {
+    "inactivo": { "description": "Agente deshabilitado", "disable": true }
+  },
+  "command": {
+    "saludo": { "template": "Saluda", "agent": "inactivo" },
+    "ok": { "template": "Planea", "agent": "plan" },
+    "vacio": { "template": "Continua", "agent": "" },
+    "x": { "template": "Continua", "agent": "{env:RIGE_PRUEBA_AGENTE}" }
+  }
+}

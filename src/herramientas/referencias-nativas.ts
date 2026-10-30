@@ -38,7 +38,11 @@ function entornoBase(): Record<string, string> {
 
 function comprobarProteccion(valor: unknown, referencia: Referencia, env: Record<string, string>): void {
   const texto = JSON.stringify(valor);
-  if (texto.includes("MARCA-") || Object.keys(referencia.procedencia.entorno ?? {}).some(nombre => env[nombre] && texto.includes(env[nombre]!))) {
+  // Solo sustituidas exporta valores expandidos de agentes (por resumen).
+  // Un entorno usado por command.agent no se captura; "plan" ya aparece como
+  // nombre nativo y no puede tratarse como contenido incorporado por sustitucion.
+  if (texto.includes("MARCA-") || (referencia.procedencia.sustituidas?.length
+    && Object.keys(referencia.procedencia.entorno ?? {}).some(nombre => env[nombre] && texto.includes(env[nombre]!)))) {
     throw new Error("Contenido sustituido detectado; se omite el diagnostico para protegerlo.");
   }
 }

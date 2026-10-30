@@ -96,7 +96,15 @@ export interface ObjetivoPermiso {
   readonly advertencias?: readonly string[];
 }
 
+export interface ReferenciaElemento {
+  readonly ruta: readonly string[];
+  readonly elemento: "agente";
+  readonly causa: string;
+}
+
 export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
+  readonly referencias: readonly ReferenciaElemento[];
+  readonly plantillasHallazgo: Readonly<Record<string, string>>;
   readonly permisos: Permisos;
   readonly identidad: Identidad;
   readonly prefijoAgente: readonly string[];

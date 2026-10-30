@@ -45,6 +45,11 @@ describe("T3-03-c1 R-8", () => {
 });
 
 describe("T3-04 R-10 arnes", () => {
+  test("T3-05 R-6: un nombre nativo en el entorno no es una fuga de contenido capturado", () => {
+    const r = ejecutar({ entornoLiteral: true, regenerar: true });
+    expect(r.codigo).toBe(0);
+    expect(r.llamadas.filter(l => l.copia).every(l => l.env.RIGE_PRUEBA_AGENTE === "plan")).toBe(true);
+  });
   test("captura sustituidas por resumen, incluso prompt de otro agente, y aplica entorno en memoria", () => {
     const r = ejecutar({ sustituciones: true, regenerar: true });
     expect(r.codigo).toBe(0);
@@ -86,7 +91,7 @@ describe("T3-03 referencias de entradas", () => {
 function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
   diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
   agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean; posicion?: boolean;
-  sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean } = {}) {
+  sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean; entornoLiteral?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
   try {
     mkdirSync(join(temporal, "opencode-ai/bin"), { recursive: true });
@@ -110,6 +115,10 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
           ref.procedencia.entorno = { [opciones.nombreEntorno ?? "RIGE_PRUEBA_X"]: "secreto.txt" };
           ref.procedencia.sustituidas = [["build", "description"], ["revisor", "prompt"]];
           writeFileSync(join(fuente, "pruebas/escenarios", nombre, "secreto.txt"), "MARCA-ARNES-7c913");
+        }
+        if (opciones.entornoLiteral) {
+          ref.procedencia.entorno = { RIGE_PRUEBA_AGENTE: "agente.txt" };
+          writeFileSync(join(fuente, "pruebas/escenarios", nombre, "agente.txt"), "plan");
         }
         if (opciones.entradas) {
           ref.comandos = [];

@@ -13,6 +13,8 @@ export const plantillasExplicacion: PlantillasExplicacion = {
 };
 
 export const reglas: Readonly<Record<string, string>> = {
+  "hallazgos-parciales": "Una entrada impide cargar la configuración; no se evalúan los hallazgos que requieren la resolución.",
+  "wellknown-no-observada": "RIGE no lee las credenciales de auth.json; una entrada wellknown puede definir para OpenCode una variable que RIGE informa sin valor.",
   "version-no-determinada": "No se pudo determinar la versión instalada de OpenCode; los resultados corresponden a OpenCode 1.18.25.",
   "ejecutable-no-encontrado": "No se encontró un archivo ejecutable opencode en el PATH del proceso de RIGE.",
   "paquete-no-encontrado": "No se encontró el package.json del paquete opencode-ai del ejecutable encontrado.",
@@ -50,4 +52,13 @@ export const reglas: Readonly<Record<string, string>> = {
   "orden-de-aplicacion": "OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).",
   "fuera-del-v1": "Clave que OpenCode combina o deriva con reglas que RIGE no incorpora; se resuelve en una iteración posterior.",
   "markdown-no-observado": "Agente declarado también en Markdown, que RIGE no incorpora; sus claves no se informan para no presentar un valor incompleto.",
+};
+
+export const plantillasHallazgo: Readonly<Record<string, string>> = {
+  "sintaxis-invalida": "La entrada {entrada} no es JSON(C) válido en {posicion}; OpenCode 1.18.25 termina con error al cargar la configuración.",
+  "archivo-inexistente": "La entrada {entrada} referencia en {posicion}, mediante una sustitución de archivo, el archivo {archivo}, que no existe o no se puede leer; OpenCode 1.18.25 termina con error al cargar la configuración.",
+  "permiso-invalido": "OPENCODE_PERMISSION no es JSON válido; OpenCode 1.18.25 la descarta sin error visible y solo lo registra en su archivo de registro.",
+  "variable-sin-valor": "{clave} referencia la variable {variable}, que no está definida o está vacía en el proceso de RIGE; OpenCode 1.18.25 la reemplaza por un texto vacío sin advertencia.",
+  "agente-predeterminado-inexistente": "{clave} nombra el agente {agente}, que no figura en la resolución (no existe o está deshabilitado); OpenCode 1.18.25 termina con error al elegir el agente predeterminado.",
+  "agente-comando-inexistente": "{clave} nombra el agente {agente}, que no figura en la resolución (no existe o está deshabilitado); OpenCode 1.18.25 termina con error al ejecutar ese comando.",
 };

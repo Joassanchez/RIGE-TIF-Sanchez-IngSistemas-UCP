@@ -19,6 +19,7 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
     directorios: ["/proyecto"],
   });
   const adaptador: Adaptador = {
+    referencias: [], plantillasHallazgo: {},
     contexto: adaptadorFicticio.contexto,
     prepararConsulta: adaptadorFicticio.prepararConsulta,
     listarAgentes: adaptadorFicticio.listarAgentes,

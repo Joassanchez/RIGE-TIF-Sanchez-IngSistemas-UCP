@@ -76,12 +76,13 @@ describe("T2-14 M-2", () => {
 });
 
 describe("T2-14 M-3", () => {
-  test("los seis tipos RF-07 sin comprobaciones y su defecto ADR-088 quedan pendientes", () => {
+  test("T3-05 cubre cuatro tipos y CA-2; los otros dos y ADR-088 quedan pendientes", () => {
     const manifiesto = leer();
     const pendientes = informarCobertura(manifiesto, matriz()).items.filter(i => i.id.startsWith("RF-07 "));
-    expect(pendientes).toHaveLength(6);
-    expect(pendientes.map(i => i.id).sort()).toEqual(["referencias-no-resueltas", "reglas-permiso-sin-efecto", "elementos-sin-uso", "sustituciones-sin-valor", "entradas-ilegibles", "entradas-descartadas"].map(t => `RF-07 ${t}`).sort());
-    expect(pendientes.every(i => i.estado === "pendiente")).toBe(true);
+    expect(pendientes).toHaveLength(7);
+    expect(pendientes.filter(i => i.estado === "pendiente").map(i => i.id).sort())
+      .toEqual(["RF-07 elementos-sin-uso", "RF-07 reglas-permiso-sin-efecto"]);
+    expect(pendientes.filter(i => i.estado === "cubierto")).toHaveLength(5);
     expect(manifiesto.defectosSembrados).toHaveLength(1);
     expect(manifiesto.defectosSembrados[0]).toMatchObject({ escenario: "v2-ruta-bloqueo", tipo: "reglas-permiso-sin-efecto", pendiente: "RF-07, iteración 3" });
     expect(manifiesto.defectosSembrados[0]!.controlCorrecto).toMatchObject({ patron: "src/productos.js" });

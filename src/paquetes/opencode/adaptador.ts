@@ -1,7 +1,7 @@
 import type { Adaptador } from "@rige/nucleo/contrato/adaptador";
 import { versionSoportada } from "./descriptor";
 import { leerEntrada } from "./lector";
-import { reglas } from "./reglas";
+import { reglas, plantillasHallazgo } from "./reglas";
 import { secuenciar } from "./secuenciador";
 import { ubicar } from "./ubicador";
 import { cadena } from "./cadena";
@@ -11,6 +11,11 @@ import { listarAgentes } from "./agentes";
 import { contextoOpenCode, type ContextoOpenCode } from "./contexto";
 
 export const adaptadorOpenCode: Adaptador<ContextoOpenCode> = {
+  referencias: [
+    { ruta: ["default_agent"], elemento: "agente", causa: "agente-predeterminado-inexistente" },
+    { ruta: ["command", "*", "agent"], elemento: "agente", causa: "agente-comando-inexistente" },
+  ],
+  plantillasHallazgo,
   contexto: contextoOpenCode,
   listarAgentes,
   permisos,

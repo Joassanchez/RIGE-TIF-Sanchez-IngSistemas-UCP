@@ -32,6 +32,13 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       lecturas.push({ orden, via, declaraciones: lectura.valor.declaraciones });
     }
   }
+  return resolverDesdeLecturas(adaptador, proyecto, entorno, contexto, entradas, lecturas, huellas);
+}
+
+/** Ejecuta la resolucion sobre una captura ya leida; no vuelve a ubicar ni a leer vias. */
+export function resolverDesdeLecturas(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura,
+  contexto: ContextoConsulta, entradas: readonly EntradaLeida[], lecturas: readonly LecturaEntrada[],
+  huellas: readonly (string | null)[]): Resultado<Resolucion, ErrorAnalisis> {
   const secuencia = adaptador.secuenciar(lecturas);
   if (!secuencia.exito) return secuencia;
   const usados = new Set<string>();
