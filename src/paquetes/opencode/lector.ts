@@ -11,14 +11,14 @@ export function leerEntrada(via: ViaUbicada, texto: string, entorno: EntornoLect
   if (!expansion.exito) return expansion;
   const { original, expandido, sustituciones } = expansion.valor;
   const declaraciones: Declaracion[] = [];
-  const cadenas: Node[] = [];
-  function recogerCadenas(nodo: Node): void {
-    if (nodo.type === "string") cadenas.push(nodo);
-    for (const hijo of nodo.children ?? []) recogerCadenas(hijo);
+  const dentro = (n: Node) => sustituciones.filter(s => n.offset <= s.inicio && s.fin <= n.offset + n.length);
+  const enPermiso = (ruta: readonly string[]) => ruta[0] === "permission" || (ruta[0] === "agent" && ruta[2] === "permission");
+  function accionInvalida(nodo: Node, efectivo: Node): boolean {
+    if (nodo.type === "object") return (nodo.children ?? []).some((p, i) =>
+      accionInvalida(p.children![1]!, efectivo.children![i]!.children![1]!));
+    if (nodo.type === "array") return (nodo.children ?? []).some((n, i) => accionInvalida(n, efectivo.children![i]!));
+    return dentro(nodo).length > 0 && !["allow", "ask", "deny"].includes(getNodeValue(efectivo));
   }
-  recogerCadenas(original);
-  const dentro = (n: Node) => sustituciones.filter(s => n.offset <= s.inicio && s.fin <= n.offset + n.length
-    && cadenas.some(c => c.offset <= s.inicio && s.fin <= c.offset + c.length));
   function error(codigo: string, nodo: Node): ErrorAnalisis {
     const p = posicion(texto, nodo.offset);
     return { categoria: "uso", codigo,
@@ -33,8 +33,7 @@ export function leerEntrada(via: ViaUbicada, texto: string, entorno: EntornoLect
     } else if (nodo.type === "object") {
       for (const propiedad of nodo.children ?? []) {
         const [clave, valor] = propiedad.children!;
-        const enPermiso = ruta[0] === "permission" || (ruta[0] === "agent" && ruta[2] === "permission");
-        if (dentro(clave!).length && !enPermiso) return error("contenido-no-soportado", clave!);
+        if (dentro(clave!).length && !enPermiso(ruta)) return error("contenido-no-soportado", clave!);
         const fallo = validarClaves(valor!, [...ruta, getNodeValue(clave!) as string]);
         if (fallo) return fallo;
       }
@@ -47,8 +46,6 @@ export function leerEntrada(via: ViaUbicada, texto: string, entorno: EntornoLect
       const valorE = efectivo.children![i]!.children![1]!;
       const rutaHoja = [...ruta, getNodeValue(clave!) as string];
       const enClave = dentro(clave!);
-      const enPermiso = ruta[0] === "permission" || (ruta[0] === "agent" && ruta[2] === "permission");
-      if (enClave.length && !enPermiso) return error("contenido-no-soportado", clave!);
       const propias = [...enClave, ...dentro(valor!)].sort((a, b) => a.inicio - b.inicio);
       if (propias.length && rutaHoja[0] === "agent" && rutaHoja.length === 3) {
         const propiedadAgente = rutaHoja[2];
@@ -59,8 +56,12 @@ export function leerEntrada(via: ViaUbicada, texto: string, entorno: EntornoLect
       if (!enClave.length && valor!.type === "object" && valor!.children?.length) {
         const fallo = recorrer(valor!, valorE, rutaHoja);
         if (fallo) return fallo;
-      } else declaraciones.push({ ruta: rutaHoja, valor: getNodeValue(valor!), posicion: posicion(texto, clave!.offset),
-        ...(propias.length ? { sustituciones: propias.map(s => s.valor) } : {}) });
+      } else {
+        if (enPermiso(rutaHoja) && accionInvalida(valor!, valorE))
+          return error("configuracion-invalida", clave!);
+        declaraciones.push({ ruta: rutaHoja, valor: getNodeValue(valor!), posicion: posicion(texto, clave!.offset),
+          ...(propias.length ? { sustituciones: propias.map(s => s.valor) } : {}) });
+      }
     }
     return undefined;
   }

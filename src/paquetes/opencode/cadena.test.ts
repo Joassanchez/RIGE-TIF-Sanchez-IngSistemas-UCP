@@ -103,7 +103,7 @@ describe("T2-05 K-2", () => {
     expect(preparar().cadena("ausente")).toMatchObject({ exito: false, error: { categoria: "uso", codigo: "agente-inexistente" } });
     for (const texto of ['{"tools":{"bash":false}}', '{"agent":{"build":{"tools":{"bash":false}}}}',
       '{"agent":{"build":{"permission":{"bash":"{env:SECRETO}"}}}}']) {
-      expect(preparar([texto]).cadena()).toMatchObject({ exito: false, error: { categoria: "uso", codigo: "cadena-incompleta" } });
+      expect(preparar([texto], "linux", { SECRETO: "deny" }).cadena()).toMatchObject({ exito: false, error: { categoria: "uso", codigo: "cadena-incompleta" } });
     }
     expect(preparar(['{"tools":{"bash":false}}']).cadena()).toMatchObject({ error: { mensaje: expect.stringContaining("tools-legado-no-incorporado") } });
     expect(preparar(['{"agent":{"otro":{"tools":{"bash":false}}}}']).cadena().exito).toBe(true);

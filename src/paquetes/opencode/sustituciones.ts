@@ -12,11 +12,7 @@ export function posicion(texto: string, desplazamiento: number): Posicion {
   let linea = 1;
   let inicio = 0;
   for (let i = 0; i < desplazamiento; i++) {
-    if (texto[i] === "\r") {
-      if (texto[i + 1] === "\n" && i + 1 < desplazamiento) i++;
-      linea++;
-      inicio = i + 1;
-    } else if (texto[i] === "\n") { linea++; inicio = i + 1; }
+    if (texto[i] === "\n") { linea++; inicio = i + 1; }
   }
   return { linea, columna: desplazamiento - inicio + 1 };
 }
@@ -36,7 +32,7 @@ function escanear(texto: string): { tokens: Token[]; invalido: boolean } {
 }
 
 /** Solo dentro del lector y del oraculo; nunca se incorpora a datos del dominio. */
-export interface SustitucionInterna { readonly inicio: number; readonly fin: number; readonly valor: ValorSustituido }
+interface SustitucionInterna { readonly enCadena: boolean; readonly inicio: number; readonly fin: number; readonly valor: ValorSustituido }
 interface Tramo { readonly inicio: number; readonly fin: number; readonly original: number; readonly copiado: boolean }
 
 export function sustituye(via: ViaUbicada): boolean {
@@ -57,12 +53,13 @@ export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura
     return { exito: false, error: { categoria: "uso", codigo: "contenido-no-soportado",
       mensaje: `RIGE no incorpora ${token} (${referencia}:${p.linea}:${p.columna}).` } };
   };
+  const tokenEn = (inicio: number) => ocurrencias.find(o => o.index === inicio)?.[0];
   const ilegible = (inicio: number, archivo?: string): Resultado<never, ErrorAnalisis> => {
     const p = posicion(texto, inicio);
     return { exito: false, error: { categoria: "uso", codigo: "entrada-ilegible",
       ilegible: { posicion: p, consecuencia: permiso ? "descartada" : "falla", ...(archivo === undefined ? {} : { archivo }) },
-      mensaje: archivo === undefined ? `La entrada ${referencia} no se puede leer (${p.linea}:${p.columna}).`
-        : `No se puede leer el archivo ${archivo} referenciado en ${referencia} (${p.linea}:${p.columna}).` } };
+      mensaje: archivo === undefined ? `La entrada ${referencia} no se puede leer${tokenEn(inicio) ? ` por ${tokenEn(inicio)}` : ""} (${p.linea}:${p.columna}).`
+        : `No se puede leer el archivo ${archivo} referenciado por ${tokenEn(inicio)} en ${referencia} (${p.linea}:${p.columna}).` } };
   };
   for (const m of ocurrencias) {
     const t = original.tokens.find(t => t.inicio <= m.index && m.index + m[0].length <= t.fin);
@@ -71,13 +68,19 @@ export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura
   const errores: ParseError[] = [];
   const raiz = parseTree(texto, errores, { allowTrailingComma: !permiso, disallowComments: permiso });
   if (permiso) {
-    try { JSON.parse(texto); } catch { return ilegible(errores[0]?.offset ?? 0); }
+    let valor: unknown;
+    try { valor = JSON.parse(texto); } catch { return ilegible(errores[0]?.offset ?? 0); }
+    if (valor === null || (Array.isArray(valor) && valor.length === 0)) {
+      const vacio = parseTree("{}")!;
+      return { exito: true, valor: { original: vacio, expandido: vacio, sustituciones: [] } };
+    }
     if (!errores.length && raiz?.type !== "object") return { exito: false, error: { categoria: "uso", codigo: "contenido-no-soportado",
       mensaje: `RIGE no incorpora ${via.referencia}: el permiso debe ser un objeto.` } };
   }
   if (errores.length || original.invalido || raiz?.type !== "object") return ilegible(errores[0]?.offset ?? raiz?.offset ?? 0);
   if (literal || !ocurrencias.length) return { exito: true, valor: { original: raiz, expandido: raiz, sustituciones: [] } };
 
+  const enCadena = (inicio: number) => original.tokens.some(t => t.tipo === SyntaxKind.StringLiteral && t.inicio <= inicio && inicio < t.fin);
   const sustituciones: SustitucionInterna[] = [];
   const tramos: Tramo[] = [];
   let cursor = 0;
@@ -91,7 +94,7 @@ export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura
     agregar(texto.slice(cursor, m.index), cursor, true);
     const contenido = entorno.variable(m[1]!) || "";
     agregar(contenido, m.index, false);
-    sustituciones.push({ inicio: m.index, fin: m.index + m[0].length,
+    sustituciones.push({ enCadena: enCadena(m.index), inicio: m.index, fin: m.index + m[0].length,
       valor: { tipo: "variable", origen: m[1]!, definido: contenido !== "", posicion: posicion(texto, m.index) } });
     cursor = m.index + m[0].length;
   }
@@ -102,9 +105,10 @@ export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura
   for (const m of archivos) {
     const tramo = tramos.find(t => t.copiado && t.inicio <= m.index && m.index + m[0].length <= t.fin);
     if (!tramo) {
-      const t = tramos.find(t => t.inicio <= m.index && m.index < t.fin);
-      const inicio = t ? t.original + (t.copiado ? m.index - t.inicio : 0) : 0;
-      const o = ocurrencias.find(o => o.index <= inicio && inicio < o.index + o[0].length) ?? ocurrencias[0]!;
+      const t = tramos.find(t => !t.copiado && t.inicio < m.index + m[0].length
+        && (m.index < t.fin || (t.inicio === t.fin && m.index <= t.inicio)));
+      if (!t) throw new Error("Referencia de archivo sin tramo sustituido");
+      const o = [...texto.matchAll(/\{env:([^}]+)\}/g)].find(o => o.index === t.original)!;
       return noSoportado(o.index, o[0]);
     }
     originales.push(tramo.original + m.index - tramo.inicio);
@@ -128,7 +132,7 @@ export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura
       }
       catch { return ilegible(inicio, archivo); } // InvalidError de variable.ts, sin causa ni texto original del error.
       salida += JSON.stringify(contenido.trim()).slice(1, -1);
-      sustituciones.push({ inicio, fin: inicio + m[0].length,
+      sustituciones.push({ enCadena: enCadena(inicio), inicio, fin: inicio + m[0].length,
         valor: { tipo: "archivo", origen: archivo, definido: true, posicion: posicion(texto, inicio) } });
     }
     cursor = m.index + m[0].length;
@@ -138,12 +142,14 @@ export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura
   const erroresE: ParseError[] = [];
   const raizE = parseTree(salida, erroresE, { allowTrailingComma: true });
   if (tokensE.invalido || erroresE.length || raizE?.type !== "object") return ilegible(ocurrencias[0]!.index);
-  const primera = original.tokens.find(t => ocurrencias.some(o => t.inicio <= o.index && o.index < t.fin))!;
+  let ultima = ocurrencias[0]!;
   for (let i = 0; i < Math.max(original.tokens.length, tokensE.tokens.length); i++) {
     const o = original.tokens[i];
     const e = tokensE.tokens[i];
-    const sustituido = o && ocurrencias.some(m => o.inicio <= m.index && m.index < o.fin);
-    if (!o || !e || o.tipo !== e.tipo || (!sustituido && o.texto !== e.texto)) return noSoportado(primera.inicio, primera.texto);
+    const propias = o ? ocurrencias.filter(m => o.inicio <= m.index && m.index < o.fin) : [];
+    if (propias.length) ultima = propias.at(-1)!;
+    const sustituido = propias.length > 0;
+    if (!o || !e || o.tipo !== e.tipo || (!sustituido && o.texto !== e.texto)) return noSoportado(ultima.index, ultima[0]);
   }
-  return { exito: true, valor: { original: raiz, expandido: raizE, sustituciones: sustituciones.sort((a, b) => a.inicio - b.inicio) } };
+  return { exito: true, valor: { original: raiz, expandido: raizE, sustituciones: sustituciones.filter(s => s.enCadena).sort((a, b) => a.inicio - b.inicio) } };
 }

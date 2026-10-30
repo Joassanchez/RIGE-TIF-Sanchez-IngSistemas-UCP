@@ -1,3 +1,4 @@
+import { acumularSustituciones } from "./sustituciones";
 import type { Adaptador, ContextoConsulta, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada } from "../contrato/adaptador";
 import type { EntornoLectura } from "../contrato/entorno";
 import type { Resultado } from "../resultado";
@@ -63,8 +64,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       pendientes.set(identificador, structuredClone(pendiente));
     } else if (pendiente.sustituciones?.length) {
       const anterior = pendientes.get(identificador)!;
-      pendientes.set(identificador, { ...anterior, sustituciones: [...(anterior.sustituciones ?? []), ...pendiente.sustituciones]
-        .sort((a, b) => a.orden - b.orden || a.posicion.linea - b.posicion.linea || a.posicion.columna - b.posicion.columna) });
+      pendientes.set(identificador, { ...anterior, sustituciones: acumularSustituciones(anterior.sustituciones, pendiente.sustituciones) });
     }
   }
   const declaraciones = [...contexto.declaraciones];

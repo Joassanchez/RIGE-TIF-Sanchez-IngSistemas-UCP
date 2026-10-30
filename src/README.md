@@ -860,19 +860,28 @@ de `//` al comienzo de la línea se omite, pero en un comentario de bloque se
 lee. Markdown y `OPENCODE_PERMISSION` mantienen todos estos textos literales.
 
 Las sustituciones en claves ajenas a `permission` se rechazan. Las reglas de
-permiso con sustituciones quedan excluidas con `sustitucion-no-incorporada`;
+permiso con sustituciones se validan en memoria contra `allow`, `ask` y `deny`:
+una acción inválida produce `configuracion-invalida`, sin su contenido. Las
+válidas quedan excluidas con `sustitucion-no-incorporada`;
 sus orígenes y condiciones se acumulan por entrada y posición. Un `mode`
 sustituido se valida y excluye el agente entero (`no-observado`). `hidden` y
 `disable` sustituidos son inválidos porque el esquema exige booleanos. RIGE
 no lee las credenciales de `auth.json` ni las variables que aporta la vía
-wellknown; `remota-wellknown` continúa como no observada.
+wellknown; `remota-wellknown` continúa como no observada. Una variable definida
+solo por una entrada `wellknown` figura `definido: false` en RIGE.
+
+`OPENCODE_PERMISSION` con `null` o `[]` después de `JSON.parse` se lee como
+legible y sin declaraciones, como en el binario. Los demás valores válidos
+que no son objetos (por ejemplo, `"deny"`) siguen con `contenido-no-soportado`.
 
 El resumen del conjunto agrega las ternas ordenadas y sin repetir
 `[tipo, origen, definido]` de las sustituciones. Cambiar únicamente su
 contenido no cambia esa huella; cambiar su condición sí. Las entradas sin
 sustituciones conservan la fórmula anterior. El oráculo de pruebas obtiene
 SHA-256 de los valores expandidos y compara exclusivamente esos resúmenes
-con el binario; no forma parte del flujo de la aplicación.
+con el binario; no forma parte del flujo de la aplicación. El SHA-256 de la
+referencia se calcula solo sobre datos de prueba con marcadores; el oráculo
+solo lo importan pruebas y `herramientas/`.
 
 El escenario `v3-sustituciones` declara `procedencia.entorno` con archivos
 que se cargan en memoria para variables `RIGE_PRUEBA_*`, y

@@ -179,6 +179,11 @@ export function analizarFuente(archivo: string, codigo: string, opciones: Opcion
   const imports = extraerImports(codigo);
   const hallazgos: HallazgoDependencia[] = [];
   for (const { destino } of imports) {
+    if (destinos(archivo, destino).some(d => /^paquetes\/opencode\/sustituciones(?:\.[cm]?[jt]s)?$/.test(d))
+      && !archivo.startsWith("pruebas/")
+      && !["paquetes/opencode/lector.ts", "paquetes/opencode/sustituciones-oraculo.ts"].includes(archivo)) {
+      hallazgos.push({ archivo, motivo: `Importacion del motor privado no autorizada: ${destino}` });
+    }
     if (/(?:^|\/)sustituciones-oraculo(?:\.[cm]?[jt]s)?$/.test(destino.replaceAll("\\", "/"))
       && !normalizar(archivo).startsWith("pruebas/") && !normalizar(archivo).startsWith("herramientas/")
       && !archivo.endsWith(".test.ts")) {

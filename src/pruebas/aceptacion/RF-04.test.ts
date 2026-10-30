@@ -47,7 +47,12 @@ describe("T3-03-c1 R-4", () => {
 describe("T3-03-c1 R-6", () => {
   test("conserva los rechazos de contenido no soportado y espacio ilegible", () => {
     const escenario = preparar();
-    for (const valor of ["null", "[]", '"deny"']) {
+    for (const valor of ["null", "[]"]) {
+      escenario.env.OPENCODE_PERMISSION = valor;
+      expect(consultarEntradas(dependencias(escenario), escenario.proyecto)).toMatchObject({ exito: true,
+        valor: { entradas: expect.arrayContaining([expect.objectContaining({ via: "variable-permiso", legibilidad: "legible" })]) } });
+    }
+    for (const valor of ['"deny"']) {
       escenario.env.OPENCODE_PERMISSION = valor;
       const r = consultarEntradas(dependencias(escenario), escenario.proyecto);
       expect(r).toMatchObject({ exito: false, error: { codigo: "contenido-no-soportado" } });

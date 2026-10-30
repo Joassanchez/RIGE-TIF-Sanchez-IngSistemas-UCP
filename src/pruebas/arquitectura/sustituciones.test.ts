@@ -7,6 +7,31 @@ import { analizarFuente, extraerImports } from "../utilidades/analisis-arquitect
 // Tambien lo comprueba tsc: no hay ningun campo de contenido ni de resumen.
 type Claves = "tipo" | "origen" | "definido" | "posicion";
 const clavesExactas: [Exclude<keyof ValorSustituido, Claves>, Exclude<Claves, keyof ValorSustituido>] extends [never, never] ? true : never = true;
+describe("T3-04-c1 R-1", () => {
+  test("el motor privado solo admite lector y oraculo, con sonda en memoria", () => {
+    for (const destino of ["./sustituciones", "./sustituciones.js", "./sustituciones.ts", "@rige/opencode/sustituciones"]) {
+      for (const fuente of [`import { expandir } from "${destino}";`, `export * from "${destino}";`, `import("${destino}");`]) {
+        expect(analizarFuente("paquetes/opencode/sonda.ts", fuente).some(h => h.motivo.includes("motor privado"))).toBe(true);
+        for (const archivo of ["lector.ts", "sustituciones-oraculo.ts", "sonda.test.ts"])
+          expect(analizarFuente(`paquetes/opencode/${archivo}`, fuente)).toEqual([]);
+      }
+    }
+    const raiz = resolve(import.meta.dir, "../..");
+    for (const ruta of new Bun.Glob("paquetes/**/*.ts").scanSync({ cwd: raiz })) {
+      expect(analizarFuente(ruta, readFileSync(join(raiz, ruta), "utf8"))
+        .filter(h => h.motivo.includes("motor privado"))).toEqual([]);
+    }
+  });
+});
+describe("T3-04-c1 R-7", () => {
+  test("README explicita wellknown, datos de prueba del resumen y consumidores del oraculo", () => {
+    const texto = readFileSync(resolve(import.meta.dir, "../../README.md"), "utf8");
+    expect(texto).toContain("definido: false");
+    expect(texto).toContain("solo sobre datos de prueba con marcadores");
+    expect(texto).toContain("solo lo importan pruebas y `herramientas/`");
+    expect(texto).toContain("`null` o `[]`");
+  });
+});
 describe("T3-04 R-9", () => {
   test("solo pruebas y herramientas pueden importar el oraculo, tambien con aliases y reexports", () => {
     expect(clavesExactas).toBe(true);

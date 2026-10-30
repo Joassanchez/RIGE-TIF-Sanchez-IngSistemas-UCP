@@ -40,7 +40,8 @@ describe("T3-03 R-3", () => {
       if (resultado.exito) throw new Error("Se esperaba error");
       expect(resultado.error.ilegible?.consecuencia).toBe("descartada");
     }
-    for (const texto of ['null', '[]', '"deny"']) {
+    for (const texto of ['null', '[]']) expect(leerAdaptador(variable, texto)).toEqual({ exito: true, valor: [] });
+    for (const texto of ['"deny"']) {
       const resultado = leerAdaptador(variable, texto);
       expect(resultado.exito).toBe(false);
       if (resultado.exito) throw new Error("Se esperaba error");

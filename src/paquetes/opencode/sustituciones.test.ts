@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { parseTree, type Node } from "jsonc-parser";
 import type { Declaracion, ViaUbicada } from "@rige/nucleo/contrato/adaptador";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 import { resolver } from "../../pruebas/utilidades/resolver";
@@ -18,6 +19,94 @@ function declaraciones(resultado: ReturnType<typeof leer>): readonly Declaracion
   if (!resultado.exito) throw new Error(resultado.error.mensaje);
   return resultado.valor;
 }
+
+describe("T3-04-c1 R-2", () => {
+  test("el resultado comprobado conserva los marcadores definidos fuera del diagnostico", () => {
+    const r = leer('{"agent":{"x":{"mode":"{env:M}"}}}', { M: "MARCA-MODO" });
+    expect(r).toMatchObject({ exito: false, error: { codigo: "configuracion-invalida" } });
+    expect(JSON.stringify(r)).not.toContain("MARCA-MODO");
+  });
+});
+describe("T3-04-c1 R-4", () => {
+  test.each([
+    ['{"a":"prefijo {env:X} sufijo"}', { X: 'a","k":"b' }, "{env:X}", "contenido-no-soportado"],
+    ['{"a":"{env:X}","b":"prefijo {env:Y} sufijo"}', { X: "seguro", Y: 'a","k":"b' }, "{env:Y}", "contenido-no-soportado"],
+    ['{"a":"prefijo {env:X} sufijo"}', { X: '"' }, "{env:X}", "entrada-ilegible"],
+    ['{"a":"prefijo {file:./ausente} sufijo"}', {}, "{file:./ausente}", "entrada-ilegible"],
+  ] as const)("diagnostico con token original aislado: %s", (texto, variables, token, codigo) => {
+    const r = leer(texto, variables);
+    expect(r).toMatchObject({ exito: false, error: { codigo } });
+    if (r.exito) throw new Error("Se esperaba error");
+    expect(r.error.mensaje).toContain(token);
+    expect(r.error.mensaje).not.toContain("prefijo");
+    const p = posicion(texto, texto.indexOf(token));
+    expect(r.error.mensaje).toContain(`${p.linea}:${p.columna}`);
+  });
+});
+describe("T3-04-c1 R-5", () => {
+  test("todas las posiciones de declaraciones de escenarios sin sustituciones mantienen las posiciones anteriores", async () => {
+    let archivos = 0;
+    for (const ruta of new Bun.Glob("**/*.{json,jsonc}").scanSync({ cwd: `${import.meta.dir}/../../pruebas/escenarios` })) {
+      const texto = await Bun.file(`${import.meta.dir}/../../pruebas/escenarios/${ruta}`).text();
+      if (/\{(?:env|file):[^}]+\}/.test(texto)) continue;
+      archivos++;
+      // Cada clave incluye todas las posiciones que el lector puede declarar.
+      const pendientes: Node[] = [];
+      const raiz = parseTree(texto);
+      if (raiz) pendientes.push(raiz);
+      while (pendientes.length) {
+        const nodo = pendientes.pop()!;
+        pendientes.push(...(nodo.children ?? []));
+        if (nodo.type !== "property") continue;
+        const offset = nodo.children![0]!.offset;
+        const anterior = texto.slice(0, offset);
+        // Algoritmo de ac89ccf: LF solamente.
+        expect(posicion(texto, offset)).toEqual({ linea: anterior.split("\n").length, columna: offset - anterior.lastIndexOf("\n") });
+      }
+    }
+    expect(archivos).toBeGreaterThan(0);
+  });
+  test("posiciones compatibles con ac89ccf: solo LF cuenta como salto, incluido CRLF", () => {
+    for (const texto of ['a\rb', 'a\r\nb', '😀\nxx']) {
+      for (let i = 0; i <= texto.length; i++) {
+        const anterior = texto.slice(0, i);
+        expect(posicion(texto, i)).toEqual({ linea: anterior.split("\n").length, columna: i - anterior.lastIndexOf("\n") });
+      }
+    }
+  });
+});
+describe("T3-04-c1 R-6", () => {
+  test("valida cada hoja sustituida de permisos como el binario, sin publicar el valor", () => {
+    for (const A of ["", "MARCA-PERMISO", "allow", "ask", "deny"]) {
+      for (const permission of [{ read: "{env:A}" }, { bash: { "*": "{env:A}" } }]) {
+        for (const config of [{ permission }, { agent: { x: { permission } } }]) {
+          const r = leer(JSON.stringify(config), { A });
+          if (["allow", "ask", "deny"].includes(A)) expect(r.exito).toBe(true);
+          else expect(r).toMatchObject({ exito: false, error: { codigo: "configuracion-invalida" } });
+          expect(JSON.stringify(r)).not.toContain("MARCA-PERMISO");
+        }
+      }
+    }
+  });
+});
+describe("T3-04-c1 R-8", () => {
+  test.each(["MARCA-X", ""])("preflight ubica la primera variable solapada y no intenta leer archivos: %s", X => {
+    const texto = '{"a":"{env:PREVIA}{file:./{env:X}/{env:Y}}"}';
+    const r = leerEntrada(via, texto, { ...entorno({ PREVIA: "anterior", X, Y: "MARCA-Y" }), leer() { throw new Error("No debe leer"); } }, contexto);
+    expect(r).toMatchObject({ exito: false, error: { codigo: "contenido-no-soportado" } });
+    if (r.exito) throw new Error("Se esperaba error");
+    expect(r.error.mensaje).toContain(`{env:X} (${via.referencia}:1:${texto.indexOf("{env:X}") + 1})`);
+    expect(JSON.stringify(r)).not.toContain("MARCA-");
+  });
+});
+describe("T3-04-c1 R-10", () => {
+  test("null y [] en variable permiso son legibles y no declaran; los demas escalares se rechazan", () => {
+    const entrada = { ...via, via: "variable-permiso" };
+    for (const texto of ["null", "[]"]) expect(declaraciones(leer(texto, {}, {}, entrada))).toEqual([]);
+    for (const texto of ['"deny"', '1', 'true'])
+      expect(leer(texto, {}, {}, entrada)).toMatchObject({ exito: false, error: { codigo: "contenido-no-soportado" } });
+  });
+});
 
 describe("T3-04 R-1", () => {
   test.each([{ X: "MARCA-VARIABLE" }, {}, { X: "" }])("conserva plantilla y condicion %j", variables => {
@@ -141,8 +230,9 @@ describe("T3-04 R-6", () => {
     ['{"agent":{"x":{"disable":"{env:H}"}}}', "configuracion-invalida"],
     ['{"agent":{"x":{"mode":"{env:M}"}}}', "configuracion-invalida"],
   ])("rechaza claves y propiedades invalidas %s", (texto, codigo) => {
-    expect(leer(texto!, { A: "MARCA-AGENTE", K: "MARCA-CLAVE", H: "false", M: "MARCA-MODO" })).toMatchObject({ exito: false, error: { codigo } });
-    expect(JSON.stringify(leer(texto!))).not.toContain("MARCA-");
+    const resultado = leer(texto!, { A: "MARCA-AGENTE", K: "MARCA-CLAVE", H: "MARCA-BOOLEANO", M: "MARCA-MODO" });
+    expect(resultado).toMatchObject({ exito: false, error: { codigo } });
+    expect(JSON.stringify(resultado)).not.toContain("MARCA-");
   });
   test("acumula exclusiones de entradas distintas y el listado observa el modo excluido", () => {
     const e = entorno({ M: "subagent", A: "allow", B: "deny" }, {

@@ -68,45 +68,80 @@ describe("RNF-04 CA-1 y CA-2 T3-04 R-8", () => {
     for (const ruta of new Bun.Glob("**/*").scanSync({ cwd: e.env.RIGE_ALMACEN!, onlyFiles: true, dot: true }))
       sinContenido(readFileSync(join(e.env.RIGE_ALMACEN!, ruta)), e.marcas);
   });
-  test("errores de expansion no filtran ni con --depurar, tampoco en paginas ni almacen", async () => {
-    const e = preparar();
-    expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
-    const entrada = join(e.proyecto, "opencode.json");
-    const config = (plantilla: string) => JSON.stringify({ agent: { revisor: { description: plantilla } } });
-    writeFileSync(join(e.proyecto, "MARCA-RUTA-EXISTENTE-22"), "contenido sin publicar");
-    mkdirSync(join(e.proyecto, "MARCA-DIRECTORIO-EXISTENTE-23"));
-    writeFileSync(join(e.proyecto, "MARCA-DIRECTORIO-EXISTENTE-23/a"), "contenido sin publicar");
-    for (const [texto, valor] of [
-      [config("{file:{env:RIGE_PRUEBA_CLAVE}}"), "MARCA-RUTA-EXISTENTE-22"],
-      [config("{file:{env:RIGE_PRUEBA_CLAVE}}"), "MARCA-RUTA-AUSENTE-24"],
-      [config("{file:./{env:RIGE_PRUEBA_CLAVE}/a}"), "MARCA-DIRECTORIO-EXISTENTE-23"],
-      [config("{file:./{env:RIGE_PRUEBA_CLAVE}/a}"), "MARCA-DIRECTORIO-AUSENTE-25"],
-      [config("{env:RIGE_PRUEBA_CLAVE}"), "{file:MARCA-TOKEN-26}"],
-      [config("{env:RIGE_PRUEBA_CLAVE}"), 'a","k":"MARCA-INYECCION-921'],
-      ['// {env:RIGE_PRUEBA_CLAVE}\n{}', "\n} MARCA-LINEA-27"],
-      ['/* {env:RIGE_PRUEBA_CLAVE} */ {}', "*/ } MARCA-BLOQUE-28"],
-      [config("{env:RIGE_PRUEBA_CLAVE}"), '"'],
-    ] as const) {
-      writeFileSync(entrada, texto);
-      e.env.RIGE_PRUEBA_CLAVE = valor;
-      const marcas = [...e.marcas, ...valor.matchAll(/MARCA-[\w-]+/g)].map(m => typeof m === "string" ? m : m[0]);
-      for (const depurar of [[], ["--depurar"]]) for (const [comando, opciones] of consultas) {
-        const r = lanzar(e.raiz, [comando, "--proyecto", e.proyecto, ...opciones, ...depurar], e.env);
-        expect(r.codigo === 0 || r.codigo === 1).toBe(true);
-        sinContenido(r.salida + r.error, marcas);
-      }
-      const servidor = await lanzarServidor(e.raiz, e.env);
-      try {
-        for (const ruta of [`/resolver?proyecto=${encodeURIComponent(e.proyecto)}&agente=revisor`, `/entradas?proyecto=${encodeURIComponent(e.proyecto)}`]) {
-          const r = await solicitarLocal({ host: "127.0.0.1", puerto: servidor.puerto, ruta });
-          expect([200, 422]).toContain(r.estado);
-          sinContenido(r.cuerpo, marcas);
+  describe("T3-04-c1 R-2 R-3 R-9", () => {
+    test("errores de expansion no filtran ni con --depurar, tampoco en paginas ni almacen", async () => {
+      const e = preparar();
+      expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
+      const entrada = join(e.proyecto, "opencode.json");
+      const config = (plantilla: string) => JSON.stringify({ agent: { revisor: { description: plantilla } } });
+      writeFileSync(join(e.proyecto, "MARCA-RUTA-EXISTENTE-22"), "MARCA-CONTENIDO-22");
+      mkdirSync(join(e.proyecto, "MARCA-DIRECTORIO-EXISTENTE-23"));
+      writeFileSync(join(e.proyecto, "MARCA-DIRECTORIO-EXISTENTE-23/a"), "MARCA-CONTENIDO-23");
+      for (const [texto, valor, codigo, errorEsperado, legibilidad] of [
+        [config("{file:{env:RIGE_PRUEBA_CLAVE}}"), "MARCA-RUTA-EXISTENTE-22", 1, "contenido-no-soportado", null],
+        [config("{file:{env:RIGE_PRUEBA_CLAVE}}"), "MARCA-RUTA-AUSENTE-24", 1, "contenido-no-soportado", null],
+        [config("{file:./{env:RIGE_PRUEBA_CLAVE}/a}"), "MARCA-DIRECTORIO-EXISTENTE-23", 1, "contenido-no-soportado", null],
+        [config("{file:./{env:RIGE_PRUEBA_CLAVE}/a}"), "MARCA-DIRECTORIO-AUSENTE-25", 1, "contenido-no-soportado", null],
+        [config("{env:RIGE_PRUEBA_CLAVE}"), "{file:MARCA-TOKEN-26}", 1, "contenido-no-soportado", null],
+        [config("{env:RIGE_PRUEBA_CLAVE}"), 'a","k":"MARCA-INYECCION-921', 1, "contenido-no-soportado", null],
+        ['// {env:RIGE_PRUEBA_CLAVE}\n{}', "\n} MARCA-LINEA-27", 1, "entrada-ilegible", "ilegible"],
+        ['/* {env:RIGE_PRUEBA_CLAVE} */ {}', "*/ } MARCA-BLOQUE-28", 1, "entrada-ilegible", "ilegible"],
+        [config("{env:RIGE_PRUEBA_CLAVE}"), '"', 1, "entrada-ilegible", "ilegible"],
+        [JSON.stringify({ agent: { revisor: { mode: "{env:RIGE_PRUEBA_CLAVE}" } } }), "MARCA-MODO", 1, "configuracion-invalida", null],
+      ] as const) {
+        writeFileSync(entrada, texto);
+        e.env.RIGE_PRUEBA_CLAVE = valor;
+        const marcas = [...e.marcas, "MARCA-CONTENIDO-22", "MARCA-CONTENIDO-23", ...valor.matchAll(/MARCA-[\w-]+/g)].map(m => typeof m === "string" ? m : m[0]);
+        for (const depurar of [[], ["--depurar"]]) for (const [comando, opciones] of consultas) {
+          const r = lanzar(e.raiz, [comando, "--proyecto", e.proyecto, ...opciones, ...depurar], e.env);
+          if (comando === "entradas" && legibilidad !== null) {
+            expect(r.codigo).toBe(0);
+            const respuesta = JSON.parse(r.salida);
+            expect(respuesta.entradas.find((v: any) => v.referencia === entrada.replaceAll("\\", "/"))?.legibilidad).toBe(legibilidad);
+          } else {
+            expect(r.codigo).toBe(codigo);
+            expect(JSON.parse(r.error).error.codigo).toBe(errorEsperado);
+          }
+          sinContenido(r.salida + r.error, marcas);
         }
-      } finally { await servidor.detener(); }
-      for (const ruta of new Bun.Glob("**/*").scanSync({ cwd: e.env.RIGE_ALMACEN!, onlyFiles: true, dot: true }))
-        sinContenido(readFileSync(join(e.env.RIGE_ALMACEN!, ruta)), marcas);
+        const servidor = await lanzarServidor(e.raiz, e.env);
+        try {
+          for (const ruta of [`/resolver?proyecto=${encodeURIComponent(e.proyecto)}&agente=revisor`, `/entradas?proyecto=${encodeURIComponent(e.proyecto)}`]) {
+            const r = await solicitarLocal({ host: "127.0.0.1", puerto: servidor.puerto, ruta });
+            expect(errorEsperado === "configuracion-invalida" ? [500] : [200, 422]).toContain(r.estado);
+            sinContenido(r.cuerpo, marcas);
+          }
+        } finally { await servidor.detener(); }
+        for (const ruta of new Bun.Glob("**/*").scanSync({ cwd: e.env.RIGE_ALMACEN!, onlyFiles: true, dot: true }))
+          sinContenido(readFileSync(join(e.env.RIGE_ALMACEN!, ruta)), marcas);
+      }
+    }, 20000);
+  });
+});
+
+describe("T3-04-c1 R-2 modo y R-10 variable permiso", () => {
+  test("modo sustituido valido e invalido y permisos vacios se leen con entorno aislado", () => {
+    const e = preparar();
+    for (const M of ["subagent", "MARCA-MODO"]) {
+      writeFileSync(join(e.proyecto, "opencode.json"), '{"agent":{"x":{"mode":"{env:M}"}}}');
+      const r = lanzar(e.raiz, ["agentes", "--proyecto", e.proyecto, "--depurar"], { ...e.env, M });
+      expect(r.codigo).toBe(M === "subagent" ? 0 : 1);
+      if (M === "subagent") {
+        expect(JSON.parse(r.salida).agentes.some((a: any) => a.nombre === "x")).toBe(true);
+        expect(JSON.parse(r.salida).motivos).toContain("sustitucion-no-incorporada");
+      }
+      else expect(JSON.parse(r.error).error.codigo).toBe("configuracion-invalida");
+      sinContenido(r.salida + r.error, [...e.marcas, "MARCA-MODO"]);
     }
-  }, 20000);
+    writeFileSync(join(e.proyecto, "opencode.json"), "{}");
+    for (const OPENCODE_PERMISSION of ["null", "[]"]) {
+      const env = { ...e.env, OPENCODE_PERMISSION };
+      expect(lanzar(e.raiz, ["agentes", "--proyecto", e.proyecto], env).codigo).toBe(0);
+      const r = lanzar(e.raiz, ["entradas", "--proyecto", e.proyecto], env);
+      expect(r.codigo).toBe(0);
+      expect(JSON.parse(r.salida).entradas.find((v: any) => v.via === "variable-permiso").legibilidad).toBe("legible");
+    }
+  });
 });
 
 describe("RNF-04 CA-3 T3-04 R-10", () => {
@@ -182,6 +217,8 @@ describe("T3-04 R-12", () => {
 describe("T3-04 R-6 almacen", () => {
   test("conserva las dos sustituciones de una exclusion despues de guardar y consultar", async () => {
     const e = preparar();
+    e.env.RIGE_PRUEBA_GLOBAL = "allow";
+    e.env.RIGE_PRUEBA_CLAVE = "deny";
     const global = join(e.raiz, "hogar/.config/opencode/opencode.json");
     writeFileSync(global, '{"permission":{"read":"{env:RIGE_PRUEBA_GLOBAL}"}}');
     const archivo = join(e.proyecto, "opencode.json");

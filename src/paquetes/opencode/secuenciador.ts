@@ -1,3 +1,4 @@
+import { acumularSustituciones } from "@rige/nucleo/resolucion/sustituciones";
 import type { Aplicacion, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada, Secuencia, ValorJson, ValorSustituidoUbicado } from "@rige/nucleo/contrato/adaptador";
 import type { Resultado } from "@rige/nucleo/resultado";
 import { valoresNativos } from "./valores-implicitos";
@@ -11,16 +12,18 @@ const clavesAgente = new Set(["name", "model", "variant", "prompt", "description
 export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis> {
   const aplicaciones: Aplicacion[] = [];
   const noResueltas: ClaveNoResuelta[] = [];
+  const indicesExcluidos = new Map<string, number>();
   const excluidas = new Map<string, readonly string[]>();
   function excluir(ruta: readonly string[], regla: string, sustituciones?: readonly ValorSustituidoUbicado[]): void {
     const clave = JSON.stringify(ruta);
-    const anterior = noResueltas.find(p => JSON.stringify(p.ruta) === clave);
-    if (anterior) {
-      if (sustituciones?.length) noResueltas[noResueltas.indexOf(anterior)] = { ...anterior,
-        sustituciones: [...(anterior.sustituciones ?? []), ...sustituciones].sort((a, b) => a.orden - b.orden
-          || a.posicion.linea - b.posicion.linea || a.posicion.columna - b.posicion.columna) };
+    const indice = indicesExcluidos.get(clave);
+    if (indice !== undefined) {
+      const anterior = noResueltas[indice]!;
+      if (sustituciones?.length) noResueltas[indice] = { ...anterior,
+        sustituciones: acumularSustituciones(anterior.sustituciones, sustituciones) };
       return;
     }
+    indicesExcluidos.set(clave, noResueltas.length);
     excluidas.set(clave, ruta);
     noResueltas.push({ ruta, regla, ...(sustituciones?.length ? { sustituciones } : {}) });
   }
