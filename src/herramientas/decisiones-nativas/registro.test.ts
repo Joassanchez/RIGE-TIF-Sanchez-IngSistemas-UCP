@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { parse } from "node:path";
 import { extraerEvaluaciones, normalizarEvaluaciones } from "./registro";
 
 test("O-1 normaliza rutas temporales nativas y con barras antes de comparar", () => {
@@ -12,7 +13,8 @@ test("O-1 normaliza rutas temporales nativas y con barras antes de comparar", ()
 
 describe("T2-19 R-7", () => {
   test("normaliza la forma relativa a la unidad de la copia donde corre el binario", () => {
-    const raiz = process.platform === "win32" ? "D:\\temporal\\copia" : "/temporal/copia";
+    const unidad = parse(process.cwd()).root[0]?.toUpperCase() === "Z" ? "Y:" : "Z:";
+    const raiz = process.platform === "win32" ? `${unidad}\\temporal\\copia` : "/temporal/copia";
     for (const patronEvaluado of ["temporal/copia/proyecto/a.js", ...(process.platform === "win32" ? ["temporal\\copia\\proyecto\\a.js"] : [])]) {
       const sinVcs = { sujeto: "read", patronEvaluado, regla: { permission: "read", pattern: "*", action: "allow" } };
       expect(normalizarEvaluaciones([sinVcs], raiz)[0]!.patronEvaluado.replaceAll("\\", "/")).toBe("<RAIZ>/proyecto/a.js");

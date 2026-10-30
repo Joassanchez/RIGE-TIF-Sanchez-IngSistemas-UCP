@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
-import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { copiarEscenario, type OpcionesEscenario } from "../pruebas/utilidades/escenario";
 import type { Manifiesto } from "./cobertura";
 import { crearProveedor } from "./decisiones-nativas/proveedor";
@@ -22,7 +22,10 @@ function entorno(hogar: string): Record<string, string> {
 }
 // Resuelve tambien los antecesores existentes para no admitir un cache enlazado al repositorio.
 function rutaFisica(ruta: string): string {
-  return existsSync(ruta) ? realpathSync.native(ruta) : resolve(ruta) === dirname(resolve(ruta)) ? resolve(ruta) : join(rutaFisica(dirname(resolve(ruta))), ruta.slice(dirname(resolve(ruta)).length + 1));
+  const r = resolve(ruta);
+  if (existsSync(r)) return realpathSync.native(r);
+  const padre = dirname(r);
+  return padre === r ? r : join(rutaFisica(padre), basename(r));
 }
 async function ejecutar(): Promise<number> {
   const argumentos = process.argv.slice(2);

@@ -1,5 +1,17 @@
 import { describe, expect, test } from "bun:test";
-import { comparar, normalizarRutas } from "./comparar";
+import { win32 } from "node:path";
+import { comparar, marcadorRelativoRaiz, normalizarRutas } from "./comparar";
+
+describe("T2-19 R-4", () => {
+  const rutas = { parse: win32.parse,
+    relative: (desde: string, hasta: string) => win32.relative(win32.resolve("Z:\\", desde), hasta) };
+  test("el marcador usa la unidad de la copia aunque el proceso este en Z:", () => {
+    expect(marcadorRelativoRaiz("C:\\t\\copia\\proyecto", "C:\\t\\copia\\hogar", rutas)).toBe("t\\copia\\hogar");
+  });
+  test("falla explicitamente si hogar y copia estan en unidades distintas", () => {
+    expect(() => marcadorRelativoRaiz("D:\\t\\copia\\proyecto", "C:\\t\\copia\\hogar", rutas)).toThrow("misma unidad");
+  });
+});
 
 describe("T2-05 K-4 comparacion profunda y sensibilidad", () => {
   test("conserva orden de reglas y rechaza el intercambio de dos declaraciones", () => {

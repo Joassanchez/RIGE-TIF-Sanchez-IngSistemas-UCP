@@ -1,4 +1,13 @@
+import * as path from "node:path";
+import type { win32 } from "node:path";
+
 export type Diferencia = { readonly clave: string; readonly esperado: unknown; readonly obtenido: unknown };
+
+export function marcadorRelativoRaiz(directorio: string, hogar: string, rutas: Pick<typeof win32, "parse" | "relative"> = path): string {
+  const raiz = rutas.parse(directorio).root;
+  if (raiz !== rutas.parse(hogar).root) throw new Error("El hogar y la copia deben estar en la misma unidad para calcular el marcador relativo a la raiz.");
+  return rutas.relative(raiz, hogar);
+}
 
 export function normalizar(salida: unknown): Record<string, unknown> {
   if (salida === null || typeof salida !== "object" || Array.isArray(salida)) {

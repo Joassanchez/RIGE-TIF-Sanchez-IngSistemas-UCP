@@ -68,8 +68,9 @@ function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: b
 }
 
 describe("T2-19 R-5", () => {
+  const alcance = realpathSync.native(tmpdir()) === tmpdir() ? " (discrimina solo con TEMP 8.3, como en el runner)" : "";
   for (const cacheLargo of [false, true]) {
-    test(`rechaza cache interno con ruta ${cacheLargo ? "expandida" : "del temporal (8.3 si TEMP lo usa)"}`, () => {
+    test(`rechaza cache interno con ruta ${cacheLargo ? "expandida" : "del temporal (8.3 si TEMP lo usa)"}${alcance}`, () => {
       const resultado = ejecutar({ cacheInterno: true, cacheLargo });
       expect(resultado.codigo).toBe(1);
       expect(resultado.error).toContain("El cache debe estar fuera del repositorio");

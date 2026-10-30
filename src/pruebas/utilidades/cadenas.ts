@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
-import { join, parse, relative } from "node:path";
+import { join } from "node:path";
 import type { Cadena } from "../../paquetes/nucleo/resolucion/tipos";
 import { copiarEscenario, type OpcionesEscenario } from "./escenario";
 import { crearEntornoAislado } from "./entorno-aislado";
-import { normalizarRutas } from "../../herramientas/referencias-nativas/comparar";
+import { marcadorRelativoRaiz, normalizarRutas } from "../../herramientas/referencias-nativas/comparar";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
@@ -33,7 +33,7 @@ export function consultarCadenas(nombre: string) {
       return [agente, resultado.valor];
     }));
     return { referencia, cadenas, raiz: copia.raiz, normalizar: (valor: unknown) => normalizarRutas(valor, {
-      hogar, data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), "hogar-relativo-raiz": relative(parse(proyecto).root, hogar),
+      hogar, data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), "hogar-relativo-raiz": marcadorRelativoRaiz(proyecto, hogar),
     }) };
   } finally { copia.borrar(); }
 }
