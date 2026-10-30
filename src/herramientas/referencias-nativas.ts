@@ -17,7 +17,7 @@ type Referencia = {
   readonly valoresAgentes?: Record<string, Record<string, unknown>>;
   readonly agentes?: readonly { readonly nombre: string; readonly modo: string }[];
   readonly comandos?: readonly string[];
-  readonly falla?: { readonly codigo: number; readonly archivo: string };
+  readonly falla?: { readonly codigo: number; readonly archivo: string; readonly linea?: number; readonly columna?: number };
 };
 // Variantes oficiales de opencode-ai@1.18.25 por plataforma: en Windows el postinstall elige la baseline
 // si no detecta AVX2; en Linux las dos variantes son el mismo binario.
@@ -133,7 +133,9 @@ function ejecutar(): number {
         });
         const archivo = /Config file at (.+?) is not valid JSON\(C\)/.exec(proceso.stderr.toString())?.[1];
         if (proceso.exitCode === 0 || !archivo) throw new Error("El binario no confirmo la falla de sintaxis esperada.");
-        const falla = { codigo: proceso.exitCode, archivo: relative(copia.raiz, archivo).replaceAll("\\", "/") };
+        const posicion = /at line (\d+), column (\d+)/.exec(proceso.stderr.toString());
+        const falla = { codigo: proceso.exitCode, archivo: relative(copia.raiz, archivo).replaceAll("\\", "/"),
+          ...(posicion ? { linea: Number(posicion[1]), columna: Number(posicion[2]) } : {}) };
         const capturada = { ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), comando: "opencode debug agent <agente>" }, falla,

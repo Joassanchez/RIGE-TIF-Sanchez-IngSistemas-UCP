@@ -1,5 +1,6 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
@@ -19,13 +20,13 @@ function prepararServidor(carpeta = "almacen") {
       expect(preparada.error).toBe("");
       servidor = await lanzarServidor(temporal, { RIGE_ALMACEN: almacen });
     } catch (falla) {
-      rmSync(temporal, { recursive: true, force: true });
+      borrarTemporal(temporal);
       throw falla;
     }
   });
   afterAll(async () => {
     try { await servidor?.detener(); }
-    finally { rmSync(temporal, { recursive: true, force: true }); }
+    finally { borrarTemporal(temporal); }
   });
   return () => {
     if (!servidor) throw new Error("Servidor no preparado.");

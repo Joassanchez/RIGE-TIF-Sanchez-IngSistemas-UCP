@@ -29,6 +29,16 @@ export function prepararAnalisis(dependencias: DependenciasAnalisis, proyecto: s
       ...actual.rutasPara(plataforma) };
     return { exito: true, valor: { resolucion, contexto: { ...datos, entorno } } };
   }
+  const preparado = prepararProyecto(dependencias, proyecto);
+  if (!preparado.exito) return preparado;
+  const { canonica, contexto } = preparado.valor;
+  const analisis = resolver(dependencias.adaptador, canonica, dependencias.entorno, contexto);
+  return analisis.exito ? { exito: true, valor: { resolucion: analisis.valor, contexto } }
+    : { exito: false, error: errorDesdeAnalisis(analisis.error) };
+}
+
+export function prepararProyecto(dependencias: Omit<DependenciasAnalisis, "resolucion">, proyecto: string):
+  Resultado<{ readonly canonica: string; readonly contexto: ContextoConsulta }, ErrorUso> {
   proyecto = proyecto.trim();
   if (proyecto.length >= 2 && ((proyecto.startsWith('"') && proyecto.endsWith('"'))
     || (proyecto.startsWith("'") && proyecto.endsWith("'")))) proyecto = proyecto.slice(1, -1).trim();
@@ -39,7 +49,5 @@ export function prepararAnalisis(dependencias: DependenciasAnalisis, proyecto: s
   } };
   const contexto = dependencias.adaptador.contexto(canonica, dependencias.entorno);
   if (!contexto.exito) return { exito: false, error: errorDesdeAnalisis(contexto.error) };
-  const analisis = resolver(dependencias.adaptador, canonica, dependencias.entorno, contexto.valor);
-  return analisis.exito ? { exito: true, valor: { resolucion: analisis.valor, contexto: contexto.valor } }
-    : { exito: false, error: errorDesdeAnalisis(analisis.error) };
+  return { exito: true, valor: { canonica, contexto: contexto.valor } };
 }

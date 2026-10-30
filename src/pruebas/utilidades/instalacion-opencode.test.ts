@@ -1,5 +1,6 @@
+import { borrarTemporal } from "./borrar-temporal";
 import { describe, expect, test } from "bun:test";
-import { mkdtempSync, readFileSync, rmSync, existsSync } from "node:fs";
+import { mkdtempSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { crearInstalacionOpenCode, instalacionEnMemoria } from "./instalacion-opencode";
@@ -19,7 +20,7 @@ describe("T3-01 R-12 instalacion falsa", () => {
         expect(existsSync(join(directorio, "opencode.cmd"))).toBe(true);
         expect(existsSync(join(directorio, "node_modules/opencode-ai/package.json"))).toBe(version !== null);
       }
-    } finally { rmSync(temporal, { recursive: true, force: true }); }
+    } finally { borrarTemporal(temporal); }
   });
   test("memoria resuelve enlaces y todas las operaciones de rutas Windows", () => {
     const entorno = crearEntornoMemoria({ rutas: "win32", plataforma: "win32",

@@ -13,6 +13,51 @@ import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/e
 import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
 import { crearResolucionGuardadaAnterior } from "../utilidades/resolucion-guardada";
 import { crearInstalacionOpenCode } from "../utilidades/instalacion-opencode";
+import { consultarEntradas } from "../../paquetes/rige/aplicacion/casos-uso/consultar-entradas";
+import { consultarValores } from "../../paquetes/rige/aplicacion/casos-uso/consultar-valores";
+import { consultarAgentes } from "../../paquetes/rige/aplicacion/casos-uso/consultar-agentes";
+import { consultarPermiso } from "../../paquetes/rige/aplicacion/casos-uso/consultar-permiso";
+
+function dependencias(escenario: ReturnType<typeof preparar>) {
+  return { adaptador: adaptadorOpenCode, entorno: new EntornoLecturaSistema({ plataforma: process.platform, entorno: escenario.env }),
+    rutas: { canonica: (ruta: string) => ruta === escenario.proyecto ? ruta : null } };
+}
+
+describe("T3-03-c1 R-2", () => {
+  test("build coincide completo con la referencia sin t7 de la variable invalida", () => {
+    cadena("v3-permiso-invalido");
+    const { cadenas } = consultarCadenas("v3-permiso-invalido");
+    expect(cadenas.build!.reglas.some(r => r.patron.includes("t7"))).toBe(false);
+  });
+});
+
+describe("T3-03-c1 R-4", () => {
+  test("las cuatro consultas comparten resumen con variables y sustituciones", () => {
+    for (const nombre of ["v3-entradas", "v3-permiso-invalido", "v3-sustituciones"]) {
+      const escenario = preparar(nombre);
+      const d = dependencias(escenario);
+      const resultados = [consultarEntradas(d, escenario.proyecto), consultarValores(d, escenario.proyecto, "build", undefined),
+        consultarAgentes(d, escenario.proyecto), consultarPermiso(d, { proyecto: escenario.proyecto, agente: "build", sujeto: "bash", objetivo: "ls" })];
+      const resumenes = resultados.map(r => { if (!r.exito) throw new Error(r.error.mensaje); return r.valor.resumenEntradas; });
+      expect(new Set(resumenes).size).toBe(1);
+    }
+  });
+});
+
+describe("T3-03-c1 R-6", () => {
+  test("conserva los rechazos de contenido no soportado y espacio ilegible", () => {
+    const escenario = preparar();
+    for (const valor of ["null", "[]", '"deny"']) {
+      escenario.env.OPENCODE_PERMISSION = valor;
+      const r = consultarEntradas(dependencias(escenario), escenario.proyecto);
+      expect(r).toMatchObject({ exito: false, error: { codigo: "contenido-no-soportado" } });
+    }
+    delete escenario.env.OPENCODE_PERMISSION;
+    escenario.env.OPENCODE_CONFIG_CONTENT = " ";
+    expect(consultarEntradas(dependencias(escenario), escenario.proyecto)).toMatchObject({ exito: true,
+      valor: { entradas: expect.arrayContaining([expect.objectContaining({ via: "variable-contenido", legibilidad: "ilegible", error: expect.objectContaining({ consecuencia: "falla" }) })]) } });
+  });
+});
 
 const limpiezas: (() => void)[] = [];
 afterEach(() => { for (const limpiar of limpiezas.splice(0).reverse()) limpiar(); });
@@ -132,7 +177,7 @@ describe("RF-04 CA-1 T3-03 R-7", () => {
   });
 });
 
-describe("RF-04 CA-2 T3-03 R-8", () => {
+describe("RF-04 CA-2 T3-03 R-8 T3-03-c1 R-8", () => {
   test("solo el JSON sembrado es ilegible y el analisis falla en el archivo del binario", () => {
     const escenario = preparar("v3-entradas-ilegible");
     const recibida = cli(escenario);
@@ -142,6 +187,8 @@ describe("RF-04 CA-2 T3-03 R-8", () => {
     expect(ilegibles).toHaveLength(1);
     expect(ilegibles[0].referencia).toBe(join(escenario.raiz, escenario.referencia.falla.archivo).replaceAll("\\", "/"));
     expect(ilegibles[0].error).toEqual({ linea: 7, columna: 3, consecuencia: "falla" });
+    expect(ilegibles[0].error.linea).toBe(escenario.referencia.falla.linea);
+    expect(ilegibles[0].error.columna).toBe(escenario.referencia.falla.columna);
     expect(entradas.filter((e: any) => e.condicion !== "no_observada" && e !== ilegibles[0]).every((e: any) => e.legibilidad === "legible")).toBe(true);
     const analisis = cli(escenario, "agentes");
     expect(analisis.codigo).toBe(1);
@@ -162,7 +209,7 @@ describe("T3-03 R-9", () => {
   });
 });
 
-describe("T3-03 R-10", () => {
+describe("T3-03 R-10 T3-03-c1 R-7", () => {
   test("todas las salidas v2 conservan la formula anterior del resumen y validan los esquemas ampliados", async () => {
     const raiz = join(import.meta.dir, "../escenarios");
     for (const nombre of readdirSync(raiz).filter(n => n.startsWith("v2-") && existsSync(join(raiz, n, "REFERENCIA.json")))) {
@@ -170,11 +217,14 @@ describe("T3-03 R-10", () => {
       const resolucion = analizar(escenario);
       const texto = JSON.stringify(resolucion.entradas.map(e => [e.via, e.referencia, e.condicion, e.resumen]));
       expect(resolucion.resumenEntradas).toBe(createHash("sha256").update(texto).digest("hex"));
-      for (const [comando, opciones] of [["agentes", []], ["valores", ["--agente", "build"]], ["permiso", ["--agente", "build", "--sujeto", "bash", "--objetivo", "ls"]]] as const) {
-        const respuesta = cli(escenario, comando, [...opciones]);
-        expect(respuesta.codigo).toBe(0);
-        await validar(comando, JSON.parse(respuesta.salida));
-        expect(JSON.parse(respuesta.salida).resumenEntradas).toBe(resolucion.resumenEntradas);
+      const d = dependencias(escenario);
+      const respuestas = { agentes: consultarAgentes(d, escenario.proyecto), valores: consultarValores(d, escenario.proyecto, "build", undefined),
+        permiso: consultarPermiso(d, { proyecto: escenario.proyecto, agente: "build", sujeto: "bash", objetivo: "ls" }) };
+      for (const [comando, respuesta] of Object.entries(respuestas)) {
+        expect(respuesta.exito).toBe(true);
+        if (!respuesta.exito) throw new Error(respuesta.error.mensaje);
+        await validar(comando, respuesta.valor);
+        expect(respuesta.valor.resumenEntradas).toBe(resolucion.resumenEntradas);
       }
     }
   }, 30000);

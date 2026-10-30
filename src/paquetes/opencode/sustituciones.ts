@@ -39,13 +39,17 @@ function escanear(texto: string): { tokens: Token[]; invalido: boolean } {
 export interface SustitucionInterna { readonly inicio: number; readonly fin: number; readonly valor: ValorSustituido }
 interface Tramo { readonly inicio: number; readonly fin: number; readonly original: number; readonly copiado: boolean }
 
+export function sustituye(via: ViaUbicada): boolean {
+  return via.via !== "variable-permiso" && via.via !== "markdown";
+}
+
 export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura,
   contexto: Pick<ContextoConsulta, "proyecto" | "parametros">): Resultado<{
     readonly original: Node; readonly expandido: Node; readonly sustituciones: readonly SustitucionInterna[];
   }, ErrorAnalisis> {
   const referencia = via.referencia.replaceAll("\\", "/");
   const permiso = via.via === "variable-permiso";
-  const literal = permiso || via.via === "markdown";
+  const literal = !sustituye(via);
   const ocurrencias = literal ? [] : [...texto.matchAll(/\{(?:env|file):[^}]+\}/g)];
   const original = escanear(texto);
   const noSoportado = (inicio: number, token: string): Resultado<never, ErrorAnalisis> => {

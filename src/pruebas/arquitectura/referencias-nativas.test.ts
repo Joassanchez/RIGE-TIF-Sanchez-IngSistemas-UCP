@@ -1,5 +1,6 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { describe, expect, test } from "bun:test";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
@@ -34,6 +35,14 @@ describe("A8-3", () => {
   });
 });
 type Llamada = { argumentos: string[]; cwd?: string; env: Record<string, string>; timeout: number; copia?: string };
+
+describe("T3-03-c1 R-8", () => {
+  test("captura linea y columna nativas cuando el diagnostico las incluye", () => {
+    const r = ejecutar({ fallaEsperada: true, posicion: true, regenerar: true });
+    expect(r.codigo).toBe(0);
+    expect(r.regenerada.falla).toEqual({ codigo: 1, archivo: "proyecto/.opencode/opencode.json", linea: 7, columna: 3 });
+  });
+});
 
 describe("T3-04 R-10 arnes", () => {
   test("captura sustituidas por resumen, incluso prompt de otro agente, y aplica entorno en memoria", () => {
@@ -76,7 +85,7 @@ describe("T3-03 referencias de entradas", () => {
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.
 function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
   diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
-  agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean;
+  agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean; posicion?: boolean;
   sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
   try {
@@ -117,7 +126,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
       cpSync(join(raiz, "herramientas/referencias-nativas.ts"), entrada);
       cpSync(join(raiz, "herramientas/referencias-nativas"), join(fuente, "herramientas/referencias-nativas"), { recursive: true });
       cpSync(join(raiz, "pruebas/utilidades/escenario.ts"), join(fuente, "pruebas/utilidades/escenario.ts"));
-      for (const nombre of ["entorno-referencia", "entorno-aislado"]) cpSync(join(raiz, `pruebas/utilidades/${nombre}.ts`), join(fuente, `pruebas/utilidades/${nombre}.ts`));
+      for (const nombre of ["entorno-referencia", "entorno-aislado", "borrar-temporal"]) cpSync(join(raiz, `pruebas/utilidades/${nombre}.ts`), join(fuente, `pruebas/utilidades/${nombre}.ts`));
       if (opciones.desconocido) cpSync(join(fuente, "pruebas/escenarios/v1-precedencia/REFERENCIA.json"), join(fuente, "pruebas/escenarios/desconocido/REFERENCIA.json"));
     }
     const referencias = Object.fromEntries(["v1-precedencia", "v1-vias"].map(nombre => [nombre,
@@ -148,7 +157,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         if (existsSync(join(copia, "REFERENCIA.json"))) throw new Error("Referencia copiada");
         if (!${Boolean(opciones.git)} && !readFileSync(join(copia, ".git/HEAD"), "utf8").includes("refs/heads/main")) throw new Error("Sin git");
         writeFileSync(join(copia, ".gitignore"), "generado por el doble nativo");
-        if (${Boolean(opciones.fallaEsperada)}) return { exitCode: 1, stdout: Buffer.from(""), stderr: Buffer.from("Config file at " + join(copia, "proyecto/.opencode/opencode.json") + " is not valid JSON(C):") };
+        if (${Boolean(opciones.fallaEsperada)}) return { exitCode: 1, stdout: Buffer.from(""), stderr: Buffer.from("Config file at " + join(copia, "proyecto/.opencode/opencode.json") + " is not valid JSON(C):" + ${JSON.stringify(opciones.posicion ? "\nCommaExpected at line 7, column 3" : "")}) };
         if (argumentos[2] === "config") return { exitCode: 0, stdout: Buffer.from('{"command":{"sub/x":{},"hola":{}}}'), stderr: Buffer.from("") };
         if (argumentos[1] === "agent") {
           writeFileSync(${JSON.stringify(registro)}, JSON.stringify(llamadas));
@@ -185,7 +194,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
     const regenerada = JSON.parse(readFileSync(join(temporal, "fuente/pruebas/escenarios/v1-precedencia/REFERENCIA.json"), "utf8"));
     return { codigo: resultado.exitCode, salida: resultado.stdout.toString(), error: resultado.stderr.toString(), regenerada,
       llamadas, temporal, restos: readdirSync(temporal), copiasBorradas: llamadas.every(llamada => !llamada.copia || !existsSync(llamada.copia)) };
-  } finally { rmSync(temporal, { recursive: true, force: true }); }
+  } finally { borrarTemporal(temporal); }
 }
 
 describe("RN-4 binario directo, version y SHA-256 verificados", () => {

@@ -1,6 +1,7 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { afterEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
@@ -14,7 +15,7 @@ function escenario() {
   return temporal;
 }
 afterEach(() => {
-  for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
+  for (const temporal of temporales.splice(0)) borrarTemporal(temporal);
 });
 
 describe("A-1", () => {

@@ -3,10 +3,20 @@ import { validarEsquema } from "./validar-esquema";
 
 test("validador falla visiblemente ante keywords desconocidas incluso en ramas no visitadas", () => {
   for (const esquema of [{ type: "string", pattern: "x" },
-    { anyOf: [{ type: "string" }, { type: "number", minimum: 0 }] },
+    { anyOf: [{ type: "string" }, { type: "number", maximum: 0 }] },
     { type: "object", properties: { ausente: { format: "email" } } }]) {
     expect(() => validarEsquema(esquema, "x")).toThrow("no soportada");
   }
+});
+
+test("T3-03-c1 R-5 validador aplica minimum y condicionales de legibilidad", () => {
+  const esquema = { type: "object", properties: { linea: { type: "integer", minimum: 1 } },
+    allOf: [{ if: { properties: { legibilidad: { const: "ilegible" } }, required: ["legibilidad"] }, then: { required: ["error"] } }] };
+  expect(validarEsquema(esquema, {})).toEqual([]);
+  expect(validarEsquema(esquema, { linea: 1, legibilidad: "legible" })).toEqual([]);
+  expect(validarEsquema(esquema, { linea: 0 }).length).toBeGreaterThan(0);
+  expect(validarEsquema(esquema, { legibilidad: "ilegible" }).length).toBeGreaterThan(0);
+  expect(validarEsquema(esquema, { legibilidad: "ilegible", error: {} })).toEqual([]);
 });
 
 test("validador soporta refs locales, arrays, enum, uniones y objetos cerrados", () => {

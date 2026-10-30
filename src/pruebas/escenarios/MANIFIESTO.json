@@ -1179,7 +1179,7 @@
         "variables/contenido.json": "a39718b716f87acec12425b2486eb50c33b0bc77844a2c852f2fd9f5a700a8c3",
         "variables/permiso.json": "c0123c6556f6aa7b5e60a81adf0031a2564b9def17e2c95c28f40c17a18ef131"
       },
-      "referencia": "c370d391141f112f11cbfe94f84b61ac23f0d76448d3c0ec370e6fd4a229ec8c",
+      "referencia": "b90310bf6812fc71f11ecd134d2f01888a1c9f21e4587986178a7c72e6e4e177",
       "agentes": [
         "build"
       ],
@@ -1189,7 +1189,7 @@
         {
           "item": "RF-04 CA-2",
           "archivo": "pruebas/aceptacion/RF-04.test.ts",
-          "describe": "RF-04 CA-2 T3-03 R-8",
+          "describe": "RF-04 CA-2 T3-03 R-8 T3-03-c1 R-8",
           "fuente": "referencia-binario"
         }
       ]

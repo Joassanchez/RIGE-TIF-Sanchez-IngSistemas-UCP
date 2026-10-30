@@ -1,4 +1,5 @@
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { borrarTemporal } from "./borrar-temporal";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 
@@ -32,5 +33,5 @@ export function copiarEscenario(nombre: string, opciones: OpcionesEscenario = {}
     mkdirSync(join(raiz, "proyecto/.git"));
     writeFileSync(join(raiz, "proyecto/.git/HEAD"), "ref: refs/heads/main\n");
   }
-  return { raiz, proyecto: realpathSync.native(join(raiz, "proyecto")), borrar: () => rmSync(raiz, { recursive: true, force: true }) };
+  return { raiz, proyecto: realpathSync.native(join(raiz, "proyecto")), borrar: () => borrarTemporal(raiz) };
 }

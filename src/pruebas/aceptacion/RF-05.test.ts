@@ -1,6 +1,7 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { afterEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
@@ -16,7 +17,7 @@ function preparar(version: string | null) {
   const escenario = copiarEscenario("v1-precedencia", { git: "ninguno" });
   limpiezas.push(escenario.borrar);
   const temporal = mkdtempSync(join(tmpdir(), "rige-version-"));
-  limpiezas.push(() => rmSync(temporal, { recursive: true, force: true }));
+  limpiezas.push(() => borrarTemporal(temporal));
   const instalacion = join(temporal, "instalacion-falsa");
   crearInstalacionOpenCode(instalacion, version);
   const variables = { PATH: version === null ? join(temporal, "sin-ejecutable") : instalacion, RIGE_ALMACEN: join(temporal, "almacen") };

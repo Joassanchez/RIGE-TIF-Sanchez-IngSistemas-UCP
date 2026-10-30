@@ -21,9 +21,8 @@ export function validarVias(entorno: EntornoLectura): Resultado<void, ErrorAnali
   if (config !== undefined && !entorno.esAbsoluta(config)) return noSoportada("OPENCODE_CONFIG");
   const directorio = variable("OPENCODE_CONFIG_DIR");
   if (directorio) {
-    const separadorIncorrecto = entorno.plataforma === "win32" ? directorio.includes("/") : directorio.includes("\\");
-    if (!entorno.esAbsoluta(directorio) || separadorIncorrecto || entorno.unir(directorio) !== directorio || /[\\/]$/.test(directorio)
-      || directorio.split(/[\\/]/).some(segmento => segmento === "." || segmento === "..")
+    if (!entorno.esAbsoluta(directorio) || entorno.unir(directorio) !== directorio || /[\\/]$/.test(directorio)
+      || (entorno.plataforma !== "win32" && directorio.includes("\\"))
       || !["directorio", "inexistente"].includes(entorno.tipo(directorio))) return noSoportada("OPENCODE_CONFIG_DIR");
   }
   return { exito: true, valor: undefined };
@@ -96,12 +95,12 @@ export function ubicar(proyecto: string, entorno: EntornoLectura, contexto: Cont
       vias.push({ via: "markdown", referencia: normalizar(ruta), condicion: "observada", elemento });
     }
   }
-  if (variable("OPENCODE_CONFIG_CONTENT")) vias.push({ via: "variable-contenido", referencia: "OPENCODE_CONFIG_CONTENT", condicion: "definida" });
+  if (variable("OPENCODE_CONFIG_CONTENT")) vias.push({ via: "variable-contenido", referencia: "OPENCODE_CONFIG_CONTENT", condicion: "definida", constituyeEntrada: true });
   noObservada("remota-organizacion");
   const administrada = entorno.plataforma === "win32" ? entorno.unir(variable("ProgramData") || "C:\\ProgramData", "opencode")
     : entorno.plataforma === "darwin" ? "/Library/Application Support/opencode" : "/etc/opencode";
   for (const nombre of ["opencode.json", "opencode.jsonc"]) agregar("administrada", entorno.unir(administrada, nombre));
   noObservada("preferencias-macos");
-  if (variable("OPENCODE_PERMISSION")) vias.push({ via: "variable-permiso", referencia: "OPENCODE_PERMISSION", condicion: "definida" });
+  if (variable("OPENCODE_PERMISSION")) vias.push({ via: "variable-permiso", referencia: "OPENCODE_PERMISSION", condicion: "definida", constituyeEntrada: true });
   return { exito: true, valor: vias };
 }

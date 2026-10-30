@@ -1,6 +1,7 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
@@ -31,7 +32,7 @@ function prepararRecorrido(usarReadme = false) {
   afterEach(() => { escenario?.borrar(); escenario = undefined; });
   afterAll(async () => {
     try { await servidor?.detener(); }
-    finally { rmSync(temporal, { recursive: true, force: true }); }
+    finally { borrarTemporal(temporal); }
   });
   return () => {
     if (!servidor || (!usarReadme && !escenario)) throw new Error("Recorrido no preparado.");

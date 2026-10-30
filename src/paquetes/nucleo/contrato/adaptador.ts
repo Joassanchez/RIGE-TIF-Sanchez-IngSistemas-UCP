@@ -19,6 +19,7 @@ export interface ViaUbicada {
   readonly via: string;
   readonly referencia: string;
   readonly condicion: "observada" | "no_observada" | "definida";
+  readonly constituyeEntrada?: true;
   /** Ruta de clave que la via declara por completo. */
   readonly elemento?: readonly string[];
 }

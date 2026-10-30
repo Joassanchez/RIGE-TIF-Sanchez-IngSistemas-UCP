@@ -1,5 +1,6 @@
+import { borrarTemporal } from "./utilidades/borrar-temporal";
 import { afterAll } from "bun:test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, join, resolve } from "node:path";
 import { crearEntornoAislado, variablesAisladas } from "./utilidades/entorno-aislado";
@@ -8,7 +9,7 @@ import { crearInstalacionOpenCode } from "./utilidades/instalacion-opencode";
 const hogaresOriginales = [process.env.HOME, process.env.USERPROFILE]
   .filter((valor): valor is string => Boolean(valor)).map((valor) => resolve(valor));
 const temporal = mkdtempSync(join(tmpdir(), "rige-pruebas-"));
-afterAll(() => rmSync(temporal, { recursive: true, force: true }));
+afterAll(() => borrarTemporal(temporal));
 
 for (const nombre of Object.keys(process.env)) {
   if (nombre.toUpperCase().startsWith("OPENCODE_")) delete process.env[nombre];

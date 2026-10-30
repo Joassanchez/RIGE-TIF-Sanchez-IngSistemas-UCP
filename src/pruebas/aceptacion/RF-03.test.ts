@@ -1,6 +1,7 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
@@ -164,7 +165,7 @@ function preparar(nombre = "v1-precedencia") {
   const escenario = copiarEscenario(nombre);
   limpiezas.push(escenario.borrar);
   const temporal = mkdtempSync(join(tmpdir(), "rige-rf03-"));
-  limpiezas.push(() => rmSync(temporal, { recursive: true, force: true }));
+  limpiezas.push(() => borrarTemporal(temporal));
   const hogar = nombre === "v1-vias" ? join(escenario.raiz, "hogar") : join(temporal, "hogar");
   const variables = {
     ...crearEntornoAislado(hogar, {}), RIGE_ALMACEN: join(temporal, "almacen"),

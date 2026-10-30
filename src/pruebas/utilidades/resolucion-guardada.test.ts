@@ -1,5 +1,6 @@
+import { borrarTemporal } from "./borrar-temporal";
 import { describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { crearResolucionGuardadaAnterior } from "./resolucion-guardada";
@@ -33,6 +34,6 @@ describe("T3-01-c1 P-7 constructor de resolucion anterior", () => {
       expect(anterior.valor.resolucion.contexto.declaraciones).toEqual(["git-no-encontrado"]);
       expect(anterior.valor.resolucion.reglas).not.toHaveProperty("version-no-determinada");
       expect(anterior.valor.resolucion.reglas).not.toHaveProperty("ejecutable-no-encontrado");
-    } finally { rmSync(temporal, { recursive: true, force: true }); }
+    } finally { borrarTemporal(temporal); }
   });
 });

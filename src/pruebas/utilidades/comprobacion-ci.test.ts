@@ -1,5 +1,6 @@
+import { borrarTemporal } from "./borrar-temporal";
 import { describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { crearEntornoAislado } from "./entorno-aislado";
@@ -40,7 +41,7 @@ describe("T3-01-c1 P-1 comprobacion CI", () => {
             CODIGO_PRUEBA: JSON.stringify(caso.codigo), ERROR_PRUEBA: caso.error }, stdout: "pipe", stderr: "pipe" });
         expect({ caso, pasa: resultado.exitCode === 0 }).toEqual({ caso, pasa: caso.pasa });
       }
-    } finally { rmSync(temporal, { recursive: true, force: true }); }
+    } finally { borrarTemporal(temporal); }
   });
   test("el paso bash corre con la CLI real y el PATH aislado heredado", () => {
     const codigo = codigoComprobacion();
@@ -55,6 +56,6 @@ describe("T3-01-c1 P-1 comprobacion CI", () => {
         env: crearEntornoAislado(temporal, process.env), stdout: "pipe", stderr: "pipe" });
       expect(resultado.exitCode).toBe(0);
       expect(JSON.parse(resultado.stdout.toString())).toMatchObject({ esquema: 2, declaraciones: expect.not.arrayContaining(["version-no-determinada"]) });
-    } finally { rmSync(temporal, { recursive: true, force: true }); }
+    } finally { borrarTemporal(temporal); }
   });
 });

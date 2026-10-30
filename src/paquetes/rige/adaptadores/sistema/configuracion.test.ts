@@ -1,3 +1,4 @@
+import { borrarTemporal } from "../../../../pruebas/utilidades/borrar-temporal";
 import { afterEach, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
@@ -20,7 +21,7 @@ function comprobarError(resultado: ReturnType<ConfiguracionSistema["leer"]>, var
   expect(resultado.error.mensaje).toContain(variable);
 }
 afterEach(() => {
-  for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
+  for (const temporal of temporales.splice(0)) borrarTemporal(temporal);
 });
 
 describe("C4-1", () => {

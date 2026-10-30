@@ -1,5 +1,6 @@
+import { borrarTemporal } from "../../../../pruebas/utilidades/borrar-temporal";
 import { afterEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import type { Database } from "bun:sqlite";
@@ -48,7 +49,7 @@ afterEach(() => {
     if (!resolve(temporal).startsWith(resolve(tmpdir()) + "\\") && !resolve(temporal).startsWith(resolve(tmpdir()) + "/")) {
       throw new Error("Temporal fuera del directorio del sistema");
     }
-    rmSync(temporal, { recursive: true, force: true });
+    borrarTemporal(temporal);
   }
 });
 

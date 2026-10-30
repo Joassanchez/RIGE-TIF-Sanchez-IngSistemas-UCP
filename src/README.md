@@ -785,6 +785,54 @@ ordenadas de `opencode debug config`) o `fallaEsperada` con cadenas vacías:
 se captura el código no nulo y el archivo relativo a la copia. Solo se
 regeneran los tres escenarios nuevos; las referencias anteriores se conservan.
 
+## Correcciones de T3-03 (T3-03-c1)
+
+La lectura de cada vía y la preparación del proyecto se comparten entre los
+análisis y `entradas`. El resumen usa las huellas obtenidas durante esa lectura;
+`constituyeEntrada` es una marca interna que no se emite ni se guarda. Los 22
+escenarios existentes conservaron el resumen de HEAD, comparados sobre las
+mismas copias temporales antes y después de la refactorización.
+
+Limitaciones contrastadas con OpenCode 1.18.25 en entorno aislado:
+
+- Con `OPENCODE_CONFIG_DIR` igual al global, el global se relee después del
+  proyecto y antes de los `.opencode`. En el contraste de `bash`, global con
+  `x *: deny` y `.opencode` con `x *: allow`, el binario termina con código 0
+  y conserva `allow` en la cadena de `build`.
+- `OPENCODE_PERMISSION` con `null` o `[]`: el binario termina con código 0
+  y conserva la cadena de `build`. Con `"deny"` también termina con código 0,
+  pero agrega reglas con sujetos `0`, `1`, `2`, `3`, patrón `*` y acciones
+  `d`, `e`, `n`, `y`, respectivamente; conserva las reglas `bash` anteriores.
+  RIGE mantiene `contenido-no-soportado` para los tres valores.
+- `OPENCODE_CONFIG_CONTENT` con un espacio: el binario termina con código 1,
+  `ValueExpected` en línea 1, columna 2, sin producir cadena de `build`.
+  RIGE mantiene la entrada ilegible con consecuencia `falla`.
+- Para `v3-entradas-ilegible`, el binario termina con código 1 y señala
+  `CommaExpected` en línea 7, columna 3; la referencia captura ambas posiciones
+  y se comparan con `entradas`.
+
+Los esquemas exigen posiciones desde 1 y `error` en las entradas ilegibles;
+las salidas anteriores sin campos de legibilidad siguen siendo válidas.
+Las regresiones v2 consultan los casos de uso en proceso; `v2-decision`
+conserva la cobertura de CLI. La limpieza de temporales reintenta hasta diez
+veces ante `EBUSY`, `EPERM` o `ENOTEMPTY`, con pausas de 50 ms; si falla,
+advierte y permite que termine la prueba.
+
+Comandos desde `src/` (PowerShell):
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-t303c1-almacen'
+bun test paquetes/nucleo paquetes/opencode pruebas/aceptacion/RF-04.test.ts
+bun test pruebas/utilidades/borrar-temporal.test.ts pruebas/utilidades/validar-esquema.test.ts pruebas/arquitectura/entrada-salida.test.ts
+bun test pruebas/arquitectura/referencias-nativas.test.ts pruebas/arquitectura/decisiones-nativas.test.ts pruebas/arquitectura/manifiesto.test.ts
+bun herramientas/tipos-salida.ts
+bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-entradas-ilegible
+bun test
+bun run verificar
+bun run referencias --raiz (npm.cmd root -g)
+bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP 'rige-t303c1-decisiones-cache')
+```
+
 ## Sustituciones protegidas (T3-04)
 
 RIGE reproduce en memoria las sustituciones de OpenCode 1.18.25 y verifica

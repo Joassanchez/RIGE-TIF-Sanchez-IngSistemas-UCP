@@ -1,5 +1,6 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { describe, expect, test } from "bun:test";
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { describes, informarCobertura, validarManifiesto, type Manifiesto, type Matriz } from "../../herramientas/cobertura";
@@ -39,7 +40,7 @@ describe("T2-14 M-1", () => {
       expect(validarManifiesto(leer(), matriz(), temporal, raiz).join("\n")).toContain("inventario");
       writeFileSync(join(temporal, "v1-precedencia/REFERENCIA.json"), "{}");
       expect(validarManifiesto(leer(), matriz(), temporal, raiz).join("\n")).toContain("referencia");
-    } finally { rmSync(temporal, { recursive: true, force: true }); }
+    } finally { borrarTemporal(temporal); }
   });
 });
 

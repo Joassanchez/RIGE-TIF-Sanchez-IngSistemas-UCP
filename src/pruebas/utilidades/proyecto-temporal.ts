@@ -1,4 +1,5 @@
-import { cpSync, mkdirSync, mkdtempSync, rmSync, symlinkSync } from "node:fs";
+import { borrarTemporal } from "./borrar-temporal";
+import { cpSync, mkdirSync, mkdtempSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 
@@ -18,6 +19,6 @@ export function copiarProyectoTemporal(origen: string): { raiz: string; borrar()
   }
   return { raiz, borrar: () => {
     if (!resolve(temporal).startsWith(resolve(tmpdir()) + (process.platform === "win32" ? "\\" : "/"))) throw new Error("Copia fuera del temporal");
-    rmSync(temporal, { recursive: true, force: true });
+    borrarTemporal(temporal);
   } };
 }

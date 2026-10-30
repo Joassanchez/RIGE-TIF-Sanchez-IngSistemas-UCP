@@ -1,5 +1,6 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { describe, expect, spyOn, test } from "bun:test";
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { crearEntornoAislado, variablesAisladas } from "../utilidades/entorno-aislado";
@@ -28,7 +29,7 @@ describe("M-10 timeout de subprocesos", () => {
       expect(sonda.mock.calls[0]?.[1]).toMatchObject({ timeout: 10000 });
     } finally {
       sonda.mockRestore();
-      rmSync(temporal, { recursive: true, force: true });
+      borrarTemporal(temporal);
     }
   });
 });
@@ -55,7 +56,7 @@ describe("M-12 verificar falla ante terminacion por senal", () => {
       expect(resultado.stderr.toString()).toBe("");
       expect(readdirSync(temporal)).toEqual(["precarga.ts"]);
       return { codigo: resultado.exitCode, etapas: resultado.stdout.toString().trim().split(/\r?\n/) };
-    } finally { rmSync(temporal, { recursive: true, force: true }); }
+    } finally { borrarTemporal(temporal); }
   }
   test("propaga null y codigos no cero en cada etapa y admite cero", async () => {
     const proyectos = 1 + (await Bun.file(join(raiz, "tsconfig.json")).json()).references.length;
@@ -109,7 +110,7 @@ describe("M-4 tsconfigs sin aliases", () => {
         resultados.push({ caso, resultado: await comprobar(temporal) });
       }
       expect(resultados).toEqual(casos.map(caso => ({ caso, resultado: [`tsconfig.json: ${Object.keys(caso)[0]}`] })));
-    } finally { rmSync(temporal, { recursive: true, force: true }); }
+    } finally { borrarTemporal(temporal); }
   });
 });
 
@@ -185,7 +186,7 @@ describe("T0-04 aislamiento del arnes", () => {
       expect(dirname(hogar!)).toBe(temporal);
       expect(existsSync(hogar!)).toBe(false);
     } finally {
-      rmSync(temporal, { recursive: true, force: true });
+      borrarTemporal(temporal);
     }
   });
 });
@@ -277,7 +278,7 @@ describe("T0-04 andamiaje", () => {
         expect(existsSync(join(temporal, "prueba.js"))).toBe(false);
         expect(existsSync(join(temporal, "tsconfig.tsbuildinfo"))).toBe(false);
       } finally {
-        rmSync(temporal, { recursive: true, force: true });
+        borrarTemporal(temporal);
       }
       expect(existsSync(temporal)).toBe(false);
     });

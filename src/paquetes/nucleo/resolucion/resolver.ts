@@ -5,6 +5,7 @@ import { biblioteca } from "./estrategias";
 import { ArbolFusion } from "./estado";
 import type { DeclaracionUbicada, EntradaLeida, Resolucion } from "./tipos";
 import { resumirEntradas } from "./resumen-entradas";
+import { leerVia } from "./leer-via";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 // Primitiva de copia pura del runtime, sin E/S.
@@ -15,21 +16,20 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
   if (!ubicacion.exito) return ubicacion;
   const entradas: EntradaLeida[] = [];
   const lecturas: LecturaEntrada[] = [];
+  const huellas: (string | null)[] = [];
   for (const [orden, via] of ubicacion.valor.entries()) {
-    let resumen: string | null = null;
-    let declaraciones: LecturaEntrada["declaraciones"] = [];
-    let diagnostico: Pick<EntradaLeida, "legibilidad" | "error"> = {};
-    if (via.condicion !== "no_observada") {
-      const archivo = via.condicion === "observada" ? entorno.leer(via.referencia) : null;
-      const lectura = adaptador.leer(via, archivo ? archivo.texto : entorno.variable(via.referencia)!, entorno, contexto);
-      resumen = archivo?.resumen ?? null;
-      if (!lectura.exito) {
-        if (lectura.error.ilegible?.consecuencia !== "descartada") return lectura;
-        diagnostico = { legibilidad: "ilegible", error: { ...lectura.error.ilegible.posicion, consecuencia: "descartada" } };
-      } else declaraciones = lectura.valor;
+    const lectura = leerVia(adaptador, entorno, via, orden, contexto);
+    if (!lectura.exito) {
+      if (lectura.error.ilegible?.consecuencia !== "descartada") return lectura;
+      entradas.push({ ...lectura.error.lectura!.entrada, legibilidad: "ilegible",
+        error: { ...lectura.error.ilegible.posicion, consecuencia: "descartada" } });
+      huellas.push(lectura.error.lectura!.huella);
+      lecturas.push({ orden, via, declaraciones: [] });
+    } else {
+      entradas.push(lectura.valor.entrada);
+      huellas.push(lectura.valor.huella);
+      lecturas.push({ orden, via, declaraciones: lectura.valor.declaraciones });
     }
-    entradas.push({ orden, via: via.via, referencia: normalizar(via.referencia), condicion: via.condicion, resumen, ...diagnostico });
-    lecturas.push({ orden, via, declaraciones });
   }
   const secuencia = adaptador.secuenciar(lecturas);
   if (!secuencia.exito) return secuencia;
@@ -79,7 +79,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       parametros: { ...contexto.parametros }, declaraciones: [...contexto.declaraciones] },
     reglas: Object.fromEntries([...usados].sort().map((regla) => [regla, adaptador.reglas[regla]!])),
     entradas,
-    resumenEntradas: resumirEntradas(entradas, entorno, lecturas.flatMap(l => l.declaraciones.flatMap(d => d.sustituciones ?? []))),
+    resumenEntradas: resumirEntradas(entradas, huellas, lecturas.flatMap(l => l.declaraciones.flatMap(d => d.sustituciones ?? [])), texto => entorno.resumir(texto)),
     valores: estado.hojasBajo([]).map((rastro, indiceFusion) => ({ ...rastro, indiceFusion })),
     eliminadas: estado.eliminadas.map((rastro, ordenEliminacion) => ({ ...rastro, ordenEliminacion })),
     noResueltas: [...pendientes.values()],

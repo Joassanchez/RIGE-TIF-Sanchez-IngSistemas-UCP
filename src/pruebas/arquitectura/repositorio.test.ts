@@ -1,5 +1,6 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { describe, expect, test } from "bun:test";
-import { lstatSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { lstatSync, mkdirSync, mkdtempSync, readdirSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
@@ -38,7 +39,7 @@ function conRepositorioTemporal(comprobar: (raiz: string, escenarios: string, te
     mkdirSync(escenarios, { recursive: true });
     comprobar(raiz, escenarios, temporal);
   } finally {
-    rmSync(temporal, { recursive: true, force: true });
+    borrarTemporal(temporal);
   }
 }
 

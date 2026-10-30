@@ -1,12 +1,13 @@
+import { borrarTemporal } from "../../../../pruebas/utilidades/borrar-temporal";
 import { afterEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ExistenciaSistema } from "./existencia";
 
 const temporales: string[] = [];
 afterEach(() => {
-  for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
+  for (const temporal of temporales.splice(0)) borrarTemporal(temporal);
 });
 
 describe("S-1", () => {

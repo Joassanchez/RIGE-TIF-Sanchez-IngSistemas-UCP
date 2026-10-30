@@ -21,6 +21,8 @@
   "cadenas": {},
   "falla": {
     "codigo": 1,
-    "archivo": "proyecto/.opencode/opencode.json"
+    "archivo": "proyecto/.opencode/opencode.json",
+    "linea": 7,
+    "columna": 3
   }
 }

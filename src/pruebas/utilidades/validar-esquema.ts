@@ -1,6 +1,6 @@
 type Esquema = { readonly [clave: string]: unknown };
 const soportadas = new Set(["$schema", "$id", "$defs", "$ref", "title", "description", "type", "properties", "required",
-  "additionalProperties", "items", "enum", "const", "oneOf", "anyOf"]);
+  "additionalProperties", "items", "enum", "const", "oneOf", "anyOf", "allOf", "if", "then", "minimum"]);
 const objeto = (valor: unknown): valor is Esquema => valor !== null && typeof valor === "object" && !Array.isArray(valor);
 
 /** Subconjunto explicito de JSON Schema 2020-12 para los contratos publicados. */
@@ -28,8 +28,8 @@ export function validarEsquema(esquema: unknown, valor: unknown): readonly strin
         comprobar(hijo);
       }
     }
-    for (const clave of ["items", "additionalProperties"]) if (objeto(actual[clave])) comprobar(actual[clave]);
-    for (const clave of ["anyOf", "oneOf"]) if (Array.isArray(actual[clave])) for (const hijo of actual[clave]) {
+    for (const clave of ["items", "additionalProperties", "if", "then"]) if (objeto(actual[clave])) comprobar(actual[clave]);
+    for (const clave of ["anyOf", "oneOf", "allOf"]) if (Array.isArray(actual[clave])) for (const hijo of actual[clave]) {
       if (!objeto(hijo)) throw new Error("Subesquema invalido");
       comprobar(hijo);
     }
@@ -53,6 +53,9 @@ export function validarEsquema(esquema: unknown, valor: unknown): readonly strin
     if (actual.$ref !== undefined) errores.push(...recorrer(referencia(actual.$ref), dato, ruta));
     if (actual.type !== undefined && !(Array.isArray(actual.type) ? actual.type : [actual.type]).some(t => coincideTipo(t, dato))) errores.push(`${ruta}: tipo incorrecto`);
     if (Object.hasOwn(actual, "const") && !iguales(actual.const, dato)) errores.push(`${ruta}: const incorrecta`);
+    if (typeof actual.minimum === "number" && typeof dato === "number" && dato < actual.minimum) errores.push(`${ruta}: menor que minimum`);
+    if (Array.isArray(actual.allOf)) for (const hijo of actual.allOf) errores.push(...recorrer(hijo as Esquema, dato, ruta));
+    if (objeto(actual.if) && objeto(actual.then) && recorrer(actual.if, dato, ruta).length === 0) errores.push(...recorrer(actual.then, dato, ruta));
     if (Array.isArray(actual.enum) && !actual.enum.some(v => iguales(v, dato))) errores.push(`${ruta}: fuera de enum`);
     for (const clave of ["anyOf", "oneOf"]) if (Array.isArray(actual[clave])) {
       const coincidentes = actual[clave].filter(e => recorrer(e as Esquema, dato, ruta).length === 0).length;

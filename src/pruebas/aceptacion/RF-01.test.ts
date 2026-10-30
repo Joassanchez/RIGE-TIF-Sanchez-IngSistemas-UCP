@@ -1,6 +1,7 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { afterEach, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { consultarAgente } from "../../paquetes/nucleo/resolucion/proyectar";
@@ -16,7 +17,7 @@ afterEach(() => { for (const borrar of limpiezas.splice(0).reverse()) borrar(); 
 describe("V1-08 F-1", () => {
   test("copiarEscenario devuelve rutas canonicas con un enlace en el temporal", () => {
     const temporal = mkdtempSync(join(tmpdir(), "rige-canonica-"));
-    limpiezas.push(() => rmSync(temporal, { recursive: true, force: true }));
+    limpiezas.push(() => borrarTemporal(temporal));
     const destino = join(temporal, "destino");
     const enlace = join(temporal, "enlace");
     mkdirSync(destino);
@@ -46,7 +47,7 @@ async function preparar() {
   const escenario = copiarEscenario("v1-precedencia");
   limpiezas.push(() => escenario.borrar());
   const hogar = mkdtempSync(join(tmpdir(), "rige-hogar-"));
-  limpiezas.push(() => rmSync(hogar, { recursive: true, force: true }));
+  limpiezas.push(() => borrarTemporal(hogar));
   const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: {
     HOME: hogar, USERPROFILE: hogar, XDG_CONFIG_HOME: hogar, XDG_DATA_HOME: hogar, XDG_STATE_HOME: hogar,
     XDG_CACHE_HOME: hogar, LOCALAPPDATA: hogar, APPDATA: hogar, ProgramData: hogar, RIGE_ALMACEN: hogar,
@@ -119,7 +120,7 @@ describe("RF-01 CA-1 v1-vias", () => {
     const escenario = copiarEscenario("v1-vias");
     limpiezas.push(() => escenario.borrar());
     const administrada = mkdtempSync(join(tmpdir(), "rige-administrada-"));
-    limpiezas.push(() => rmSync(administrada, { recursive: true, force: true }));
+    limpiezas.push(() => borrarTemporal(administrada));
     const hogar = join(escenario.raiz, "hogar");
     const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: {
       ...crearEntornoAislado(hogar, {}), XDG_CONFIG_HOME: join(hogar, ".config"),

@@ -1,5 +1,6 @@
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { describe, expect, test } from "bun:test";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
@@ -17,7 +18,7 @@ function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: b
     cpSync(join(raiz, "herramientas/decisiones-nativas"), join(fuente, "herramientas/decisiones-nativas"), { recursive: true });
     cpSync(join(raiz, "herramientas/cobertura.ts"), join(fuente, "herramientas/cobertura.ts"));
     cpSync(join(raiz, "pruebas/utilidades/escenario.ts"), join(fuente, "pruebas/utilidades/escenario.ts"));
-    for (const nombre of ["entorno-referencia", "entorno-aislado"]) cpSync(join(raiz, `pruebas/utilidades/${nombre}.ts`), join(fuente, `pruebas/utilidades/${nombre}.ts`));
+    for (const nombre of ["entorno-referencia", "entorno-aislado", "borrar-temporal"]) cpSync(join(raiz, `pruebas/utilidades/${nombre}.ts`), join(fuente, `pruebas/utilidades/${nombre}.ts`));
     const escenario = join(fuente, "pruebas/escenarios/doble");
     mkdirSync(join(escenario, "proyecto"), { recursive: true });
     writeFileSync(join(escenario, "proyecto/opencode.json"), '{"permission":{"read":"ask"}}');
@@ -65,7 +66,7 @@ function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: b
       referencia: JSON.parse(readFileSync(join(escenario, "REFERENCIA.json"), "utf8")),
       conservada: readFileSync(join(escenario, "proyecto/opencode.json"), "utf8"),
       borradas: llamadas.every((l: { copia?: string }) => !l.copia || !existsSync(l.copia)), temporal };
-  } finally { rmSync(temporal, { recursive: true, force: true }); }
+  } finally { borrarTemporal(temporal); }
 }
 
 describe("T2-19 R-5", () => {

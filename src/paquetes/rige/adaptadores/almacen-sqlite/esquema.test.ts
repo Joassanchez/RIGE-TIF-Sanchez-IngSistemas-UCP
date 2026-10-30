@@ -1,6 +1,7 @@
+import { borrarTemporal } from "../../../../pruebas/utilidades/borrar-temporal";
 import { afterEach, describe, expect, spyOn, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { AlmacenSqlite, abrirConexion } from "./esquema";
@@ -57,7 +58,7 @@ function conResolucion() {
 
 afterEach(() => {
   for (const base of conexiones.splice(0)) base.close();
-  for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
+  for (const temporal of temporales.splice(0)) borrarTemporal(temporal);
 });
 
 describe("AL-1", () => {

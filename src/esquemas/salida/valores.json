@@ -338,10 +338,12 @@
           "type": "object",
           "properties": {
             "linea": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 1
             },
             "columna": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 1
             },
             "consecuencia": {
               "enum": [
@@ -365,7 +367,26 @@
         "condicion",
         "resumen"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "legibilidad": {
+                "const": "ilegible"
+              }
+            },
+            "required": [
+              "legibilidad"
+            ]
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        }
+      ]
     },
     "ValorSustituido": {
       "type": "object",

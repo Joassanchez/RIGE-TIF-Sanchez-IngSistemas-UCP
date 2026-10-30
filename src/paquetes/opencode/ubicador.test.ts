@@ -41,6 +41,31 @@ async function error(proyecto: string, lectura: EntornoLectura, codigo: string, 
 const observada = (via: string, referencia: string): ViaUbicada => ({ via, referencia, condicion: "observada" });
 const noObservada = (via: string, referencia = via): ViaUbicada => ({ via, referencia, condicion: "no_observada" });
 
+describe("T3-03-c1 R-1", () => {
+  test("relee el global despues del proyecto y antes del .opencode del proyecto", async () => {
+    const resultado = await vias("/p", entorno({ archivos: {
+      "/h/.config/opencode/opencode.json": "{}", "/p/opencode.json": "{}", "/p/.opencode/opencode.json": "{}",
+    }, variables: { HOME: "/h", OPENCODE_CONFIG_DIR: "/h/.config/opencode" } }));
+    expect(resultado.filter(v => v.condicion === "observada").map(v => [v.via, v.referencia])).toEqual([
+      ["global", "/h/.config/opencode/opencode.json"], ["proyecto", "/p/opencode.json"],
+      ["directorio-opencode", "/h/.config/opencode/opencode.json"], ["directorio-opencode", "/p/.opencode/opencode.json"],
+    ]);
+  });
+});
+
+describe("T3-03-c1 R-3", () => {
+  test("solo acepta el directorio canonico con separadores win32", async () => {
+    const { validarVias } = await import("./ubicador");
+    for (const [directorio, aceptado] of [["C:/x", false], ["C:\\x\\", false], ["C:\\x\\..\\x", false], ["C:\\x", true]] as const) {
+      const lectura = crearEntornoMemoria({ archivos: {}, plataforma: "win32", rutas: "win32",
+        directorios: ["C:\\x"], variables: { OPENCODE_CONFIG_DIR: directorio } });
+      const resultado = validarVias(lectura);
+      expect(resultado.exito).toBe(aceptado);
+      if (!resultado.exito) expect(resultado.error.codigo).toBe("via-no-soportada");
+    }
+  });
+});
+
 describe("T3-03 R-1", () => {
   test("directorio explicito al final, deduplicado por texto y con JSON incluso si es el global", async () => {
     const archivos = { "/h/.config/opencode/opencode.json": "{}", "/p/opencode.json": "{}",
@@ -79,8 +104,8 @@ describe("T3-03 R-2 R-3 ubicacion de variables", () => {
         OPENCODE_CONFIG_CONTENT: valor, OPENCODE_PERMISSION: valor,
       }) } }));
       expect(resultado.filter(v => v.condicion === "definida")).toEqual(valor ? [
-        { via: "variable-contenido", referencia: "OPENCODE_CONFIG_CONTENT", condicion: "definida" },
-        { via: "variable-permiso", referencia: "OPENCODE_PERMISSION", condicion: "definida" },
+        { via: "variable-contenido", referencia: "OPENCODE_CONFIG_CONTENT", condicion: "definida", constituyeEntrada: true },
+        { via: "variable-permiso", referencia: "OPENCODE_PERMISSION", condicion: "definida", constituyeEntrada: true },
       ] : []);
       if (valor) {
         expect(resultado.findIndex(v => v.via === "variable-contenido")).toBeLessThan(resultado.findIndex(v => v.via === "remota-organizacion"));

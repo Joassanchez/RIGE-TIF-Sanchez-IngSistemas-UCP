@@ -1,6 +1,7 @@
+import { borrarTemporal } from "../../../../pruebas/utilidades/borrar-temporal";
 import { afterEach, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, realpathSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { detectarVersion } from "../../../opencode/version";
@@ -8,7 +9,7 @@ import { EntornoLecturaSistema } from "./entorno-lectura";
 
 const temporales: string[] = [];
 afterEach(() => {
-  for (const temporal of temporales.splice(0)) rmSync(temporal, { recursive: true, force: true });
+  for (const temporal of temporales.splice(0)) borrarTemporal(temporal);
 });
 
 describe("T3-01 R-1 ruta fisica del sistema", () => {
