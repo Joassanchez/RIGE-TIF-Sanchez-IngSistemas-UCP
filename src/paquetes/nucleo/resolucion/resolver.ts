@@ -4,6 +4,7 @@ import type { Resultado } from "../resultado";
 import { biblioteca } from "./estrategias";
 import { ArbolFusion } from "./estado";
 import type { DeclaracionUbicada, EntradaLeida, Resolucion } from "./tipos";
+import { resumirEntradas } from "./resumen-entradas";
 
 const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 // Primitiva de copia pura del runtime, sin E/S.
@@ -17,14 +18,17 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
   for (const [orden, via] of ubicacion.valor.entries()) {
     let resumen: string | null = null;
     let declaraciones: LecturaEntrada["declaraciones"] = [];
-    if (via.condicion === "observada") {
-      const archivo = entorno.leer(via.referencia);
-      const lectura = adaptador.leer(via, archivo.texto);
-      if (!lectura.exito) return lectura;
-      resumen = archivo.resumen;
-      declaraciones = lectura.valor;
+    let diagnostico: Pick<EntradaLeida, "legibilidad" | "error"> = {};
+    if (via.condicion !== "no_observada") {
+      const archivo = via.condicion === "observada" ? entorno.leer(via.referencia) : null;
+      const lectura = adaptador.leer(via, archivo ? archivo.texto : entorno.variable(via.referencia)!);
+      resumen = archivo?.resumen ?? null;
+      if (!lectura.exito) {
+        if (lectura.error.ilegible?.consecuencia !== "descartada") return lectura;
+        diagnostico = { legibilidad: "ilegible", error: { ...lectura.error.ilegible.posicion, consecuencia: "descartada" } };
+      } else declaraciones = lectura.valor;
     }
-    entradas.push({ orden, via: via.via, referencia: normalizar(via.referencia), condicion: via.condicion, resumen });
+    entradas.push({ orden, via: via.via, referencia: normalizar(via.referencia), condicion: via.condicion, resumen, ...diagnostico });
     lecturas.push({ orden, via, declaraciones });
   }
   const secuencia = adaptador.secuenciar(lecturas);
@@ -70,7 +74,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       parametros: { ...contexto.parametros }, declaraciones: [...contexto.declaraciones] },
     reglas: Object.fromEntries([...usados].sort().map((regla) => [regla, adaptador.reglas[regla]!])),
     entradas,
-    resumenEntradas: entorno.resumir(JSON.stringify(entradas.map((entrada) => [entrada.via, entrada.referencia, entrada.condicion, entrada.resumen]))),
+    resumenEntradas: resumirEntradas(entradas, entorno),
     valores: estado.hojasBajo([]).map((rastro, indiceFusion) => ({ ...rastro, indiceFusion })),
     eliminadas: estado.eliminadas.map((rastro, ordenEliminacion) => ({ ...rastro, ordenEliminacion })),
     noResueltas: [...pendientes.values()],

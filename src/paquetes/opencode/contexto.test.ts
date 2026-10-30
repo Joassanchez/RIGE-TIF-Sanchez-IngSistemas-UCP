@@ -110,7 +110,7 @@ describe("T2-11b contexto", () => {
     } finally { espia.mockRestore(); }
   }); });
   describe("A11-3", () => { test("via no soportada precede a hogar ausente", () => {
-    const entorno = crearEntornoOpenCode({ archivos: {}, directorios: ["/p"], variables: { OPENCODE_CONFIG_CONTENT: "{}" } });
+    const entorno = crearEntornoOpenCode({ archivos: {}, directorios: ["/p"], variables: { OPENCODE_TEST_HOME: "/no-soportado" } });
     const deps = { adaptador: adaptadorOpenCode, entorno, rutas: { canonica: () => "/p" } };
     expect(consultarValores(deps, "/p", "plan", undefined)).toMatchObject({ exito: false, error: { codigo: "via-no-soportada" } });
   }); });

@@ -1131,6 +1131,83 @@
           "fuente": "referencia-binario"
         }
       ]
+    },
+    {
+      "id": "v3-entradas",
+      "entradas": {
+        "dir-variable/command/hola.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "dir-variable/commands/sub/x.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "dir-variable/opencode.json": "eb9a92bff0a653c85835ecd6e18af5078cea9a3a8872386af2b58eb4158ef9a5",
+        "externa/config.json": "a552f3cc86478f3d295b822f8b8b5f6341f48099d2dc01b2d3d50b4b8f51f2f0",
+        "hogar/.config/opencode/opencode.json": "36e73f259ec4fe47e34017c3cda42fb539b2e1eef717e4105a4b0e0192761625",
+        "proyecto/.opencode/agents/revisor.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "proyecto/.opencode/command/c.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "proyecto/.opencode/modes/m.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "proyecto/.opencode/opencode.json": "fd0902bfae9a3ab034463e32f8209455cea3270ba974ec0f6d7f8831d21fa100",
+        "proyecto/opencode.json": "457b97501d5f9f6e706bc767c57c08af4e643e9ab38823684e3af1815e83c193",
+        "variables/contenido.json": "a39718b716f87acec12425b2486eb50c33b0bc77844a2c852f2fd9f5a700a8c3",
+        "variables/permiso.json": "c0123c6556f6aa7b5e60a81adf0031a2564b9def17e2c95c28f40c17a18ef131"
+      },
+      "referencia": "6a3c11c382352c6b5f1b7a7e1b5bcb7dd77bed0e1f5c78206d843d45688ec50f",
+      "agentes": [
+        "build"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-04 CA-1",
+          "archivo": "pruebas/aceptacion/RF-04.test.ts",
+          "describe": "RF-04 CA-1 T3-03 R-7",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v3-entradas-ilegible",
+      "entradas": {
+        "dir-variable/command/hola.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "dir-variable/commands/sub/x.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "dir-variable/opencode.json": "eb9a92bff0a653c85835ecd6e18af5078cea9a3a8872386af2b58eb4158ef9a5",
+        "externa/config.json": "a552f3cc86478f3d295b822f8b8b5f6341f48099d2dc01b2d3d50b4b8f51f2f0",
+        "hogar/.config/opencode/opencode.json": "36e73f259ec4fe47e34017c3cda42fb539b2e1eef717e4105a4b0e0192761625",
+        "proyecto/.opencode/agents/revisor.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "proyecto/.opencode/command/c.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "proyecto/.opencode/modes/m.md": "3c269d7ecffe8c27cfbe58409da9e1f92b411819e58ccbdf46db29137ded2b13",
+        "proyecto/.opencode/opencode.json": "03971c140fc3657a329721be8b1f2c801cf7702ff19677fbe632da237b879e11",
+        "proyecto/opencode.json": "457b97501d5f9f6e706bc767c57c08af4e643e9ab38823684e3af1815e83c193",
+        "variables/contenido.json": "a39718b716f87acec12425b2486eb50c33b0bc77844a2c852f2fd9f5a700a8c3",
+        "variables/permiso.json": "c0123c6556f6aa7b5e60a81adf0031a2564b9def17e2c95c28f40c17a18ef131"
+      },
+      "referencia": "c370d391141f112f11cbfe94f84b61ac23f0d76448d3c0ec370e6fd4a229ec8c",
+      "agentes": [
+        "build"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-04 CA-2",
+          "archivo": "pruebas/aceptacion/RF-04.test.ts",
+          "describe": "RF-04 CA-2 T3-03 R-8",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v3-permiso-invalido",
+      "entradas": {
+        "hogar/LEEME.txt": "64e72d865f627baadd940861bfc4284a00f76aeca419fca8412d296ecfefb510",
+        "proyecto/opencode.json": "fa43338d6afc7f56ae765512fc36fcf129e00363d8d7d074bb6d6ce51f2a22f0",
+        "variables/permiso.json": "0a519d07b4429ad0e70a31b665123611668a3ca49e9f05b7bbb4cada026e9454"
+      },
+      "referencia": "83e0d02b1d322b9603995790fb2681b9c0d207b0df139ea718bfa55d2dad6f27",
+      "agentes": [
+        "build"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": []
     }
   ],
   "defectosSembrados": [

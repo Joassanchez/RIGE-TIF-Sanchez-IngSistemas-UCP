@@ -3,7 +3,7 @@ import { consultarCadenas } from "../utilidades/cadenas";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
-import { crearEntornoAislado } from "../utilidades/entorno-aislado";
+import { entornoDeReferencia } from "../utilidades/entorno-referencia";
 import { consultarAgente } from "../../paquetes/nucleo/resolucion/proyectar";
 import type { Resolucion } from "../../paquetes/nucleo/resolucion/tipos";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
@@ -14,10 +14,7 @@ function valores(nombre: string) {
   const referencia = JSON.parse(readFileSync(join(import.meta.dir, "../escenarios", nombre, "REFERENCIA.json"), "utf8"));
   const copia = copiarEscenario(nombre, { git: referencia.procedencia.git ?? "raiz" });
   try {
-    const hogar = join(copia.raiz, referencia.procedencia.hogar);
-    const env = crearEntornoAislado(hogar, process.env);
-    env.XDG_CONFIG_HOME = join(hogar, ".config");
-    if (referencia.procedencia.OPENCODE_CONFIG) env.OPENCODE_CONFIG = join(copia.raiz, referencia.procedencia.OPENCODE_CONFIG);
+    const env = entornoDeReferencia(referencia, copia);
     const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: env });
     const proyecto = join(copia.raiz, referencia.procedencia.directorio);
     const contexto = adaptadorOpenCode.contexto(proyecto, entorno);
@@ -53,6 +50,7 @@ describe("RF-06 CA-1", () => {
   test("I-2 coincide con los valores de debug agent de todos los escenarios con cadenas", () => {
     const raiz = join(import.meta.dir, "../escenarios");
     for (const nombre of readdirSync(raiz).filter(nombre => existsSync(join(raiz, nombre, "REFERENCIA.json")))) {
+      if (JSON.parse(readFileSync(join(raiz, nombre, "REFERENCIA.json"), "utf8")).procedencia.fallaEsperada) continue;
       const escenario = valores(nombre);
       expect(escenario.referencia.valoresAgentes).toBeDefined();
       for (const [agente, claves] of Object.entries(escenario.referencia.valoresAgentes ?? {})) {

@@ -143,6 +143,18 @@
       "objetivo": "OE-2",
       "iteracion": 3,
       "obligatorioV2": false
+    },
+    {
+      "id": "RF-04 CA-1",
+      "objetivo": "OE-1",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-04 CA-2",
+      "objetivo": "OE-1",
+      "iteracion": 3,
+      "obligatorioV2": false
     }
   ]
 }

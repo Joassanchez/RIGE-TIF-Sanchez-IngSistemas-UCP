@@ -10,16 +10,22 @@ const noSoportada = (nombre: string): Resultado<never, ErrorAnalisis> => ({ exit
 
 export function validarVias(entorno: EntornoLectura): Resultado<void, ErrorAnalisis> {
   const variable = (nombre: string) => entorno.variable(nombre);
-  for (const nombre of ["OPENCODE_CONFIG_CONTENT", "OPENCODE_PERMISSION", "OPENCODE_CONFIG_DIR",
-    "OPENCODE_DISABLE_PROJECT_CONFIG", "OPENCODE_TEST_HOME", "OPENCODE_TEST_MANAGED_CONFIG_DIR"]) {
+  for (const nombre of ["OPENCODE_DISABLE_PROJECT_CONFIG", "OPENCODE_TEST_HOME", "OPENCODE_TEST_MANAGED_CONFIG_DIR"]) {
     const valor = variable(nombre);
-    const definida = nombre === "OPENCODE_CONFIG_DIR" || nombre === "OPENCODE_TEST_HOME" ? valor !== undefined
+    const definida = nombre === "OPENCODE_TEST_HOME" ? valor !== undefined
       : nombre === "OPENCODE_DISABLE_PROJECT_CONFIG" ? ["true", "1"].includes(valor?.toLowerCase() ?? "")
       : Boolean(valor);
     if (definida) return noSoportada(nombre);
   }
   const config = variable("OPENCODE_CONFIG") || undefined;
   if (config !== undefined && !entorno.esAbsoluta(config)) return noSoportada("OPENCODE_CONFIG");
+  const directorio = variable("OPENCODE_CONFIG_DIR");
+  if (directorio) {
+    const separadorIncorrecto = entorno.plataforma === "win32" ? directorio.includes("/") : directorio.includes("\\");
+    if (!entorno.esAbsoluta(directorio) || separadorIncorrecto || entorno.unir(directorio) !== directorio || /[\\/]$/.test(directorio)
+      || directorio.split(/[\\/]/).some(segmento => segmento === "." || segmento === "..")
+      || !["directorio", "inexistente"].includes(entorno.tipo(directorio))) return noSoportada("OPENCODE_CONFIG_DIR");
+  }
   return { exito: true, valor: undefined };
 }
 
@@ -36,7 +42,9 @@ export function ubicar(proyecto: string, entorno: EntornoLectura, contexto: Cont
     if (entorno.tipo(ruta) === "archivo") vias.push({ via, referencia: normalizar(ruta), condicion: "observada" });
   }
   const heredada = entorno.unir(global, "config");
-  if (entorno.tipo(heredada) !== "inexistente") return noSoportada(heredada);
+  if (entorno.tipo(heredada) !== "inexistente") return { exito: false, error: { categoria: "uso", codigo: "via-no-soportada",
+    mensaje: `RIGE no incorpora ${normalizar(heredada)}: OpenCode lo migra al ejecutarse, escribe config.json y borra config; analizarlo antes daría un estado que OpenCode no usa.`,
+  } };
   noObservada("remota-wellknown");
   for (const nombre of ["config.json", "opencode.json", "opencode.jsonc"]) agregar("global", entorno.unir(global, nombre));
   if (config !== undefined) agregar("variable-config", entorno.unir(config));
@@ -58,10 +66,12 @@ export function ubicar(proyecto: string, entorno: EntornoLectura, contexto: Cont
   }
   // Invertir la lista completa conserva json antes de jsonc dentro de cada nivel.
   for (const ruta of subir(["opencode.jsonc", "opencode.json"], proyecto, worktree).reverse()) agregar("proyecto", ruta);
-  const directorios = [...new Set([global, ...subir([".opencode"], proyecto, worktree), entorno.unir(hogar, ".opencode")])];
+  const directorioVariable = variable("OPENCODE_CONFIG_DIR");
+  const directorios = [...new Set([global, ...subir([".opencode"], proyecto, worktree), entorno.unir(hogar, ".opencode"),
+    ...(directorioVariable ? [directorioVariable] : [])])];
   for (const directorio of directorios) {
     if (entorno.tipo(directorio) !== "directorio") continue;
-    if (normalizar(directorio).endsWith("/.opencode")) {
+    if (normalizar(directorio).endsWith("/.opencode") || directorio === directorioVariable) {
       for (const nombre of ["opencode.json", "opencode.jsonc"]) agregar("directorio-opencode", entorno.unir(directorio, nombre));
     }
     const markdown: string[] = [];
@@ -74,20 +84,24 @@ export function ubicar(proyecto: string, entorno: EntornoLectura, contexto: Cont
         else if (tipo === "directorio" && recursivo) buscar(ruta, true);
       }
     }
-    for (const nombre of ["agent", "agents", "mode", "modes"]) {
-      buscar(entorno.unir(directorio, nombre), nombre === "agent" || nombre === "agents");
+    for (const nombre of ["command", "commands", "agent", "agents", "mode", "modes"]) {
+      buscar(entorno.unir(directorio, nombre), !["mode", "modes"].includes(nombre));
     }
-    markdown.sort((a, b) => normalizar(a) < normalizar(b) ? -1 : normalizar(a) > normalizar(b) ? 1 : 0);
+    const esComando = (ruta: string) => /^commands?\//.test(normalizar(ruta).slice(normalizar(directorio).length + 1));
+    markdown.sort((a, b) => Number(esComando(b)) - Number(esComando(a))
+      || (normalizar(a) < normalizar(b) ? -1 : normalizar(a) > normalizar(b) ? 1 : 0));
     for (const ruta of markdown) {
       const relativa = normalizar(ruta).slice(normalizar(directorio).length + 1);
-      const elemento = relativa.split("/").slice(1).join("/").slice(0, -3);
+      const elemento = [esComando(ruta) ? "command" : "agent", relativa.split("/").slice(1).join("/").slice(0, -3)];
       vias.push({ via: "markdown", referencia: normalizar(ruta), condicion: "observada", elemento });
     }
   }
+  if (variable("OPENCODE_CONFIG_CONTENT")) vias.push({ via: "variable-contenido", referencia: "OPENCODE_CONFIG_CONTENT", condicion: "definida" });
   noObservada("remota-organizacion");
   const administrada = entorno.plataforma === "win32" ? entorno.unir(variable("ProgramData") || "C:\\ProgramData", "opencode")
     : entorno.plataforma === "darwin" ? "/Library/Application Support/opencode" : "/etc/opencode";
   for (const nombre of ["opencode.json", "opencode.jsonc"]) agregar("administrada", entorno.unir(administrada, nombre));
   noObservada("preferencias-macos");
+  if (variable("OPENCODE_PERMISSION")) vias.push({ via: "variable-permiso", referencia: "OPENCODE_PERMISSION", condicion: "definida" });
   return { exito: true, valor: vias };
 }

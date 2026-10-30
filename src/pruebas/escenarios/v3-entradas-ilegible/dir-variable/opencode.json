@@ -1,0 +1,12 @@
+{
+  "permission": {
+    "bash": {
+      "t5-dir-variable *": "deny"
+    }
+  },
+  "agent": {
+    "build": {
+      "description": "d-dir-variable"
+    }
+  }
+}

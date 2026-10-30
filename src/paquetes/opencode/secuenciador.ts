@@ -31,7 +31,7 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
   for (const { via } of lecturas) {
     if (via.via !== "markdown") continue;
     if (via.elemento === undefined) throw new Error("Vía Markdown sin nombre de elemento");
-    excluir(["agent", via.elemento], "markdown-no-observado");
+    excluir(via.elemento, "markdown-no-observado");
   }
   for (const { declaraciones } of lecturas) {
     for (const { ruta } of declaraciones) {
@@ -63,9 +63,9 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
         if (!valido) return { exito: false, error: { categoria: "uso", codigo: "configuracion-invalida",
           mensaje: `Configuración inválida en ${ruta.slice(0, 3).join(".")} (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).` } };
       }
-      const indiceSustitucion = ruta.findIndex(segmento => sustitucion.test(segmento));
+      const indiceSustitucion = via.via === "variable-permiso" ? -1 : ruta.findIndex(segmento => sustitucion.test(segmento));
       if (indiceSustitucion >= 0) excluir(ruta.slice(0, indiceSustitucion + 1), "sustitucion-no-incorporada");
-      else if (contieneSustitucion(valor)) excluir(ruta, "sustitucion-no-incorporada");
+      else if (via.via !== "variable-permiso" && contieneSustitucion(valor)) excluir(ruta, "sustitucion-no-incorporada");
       if (ruta[0] === "agent" && ruta.length >= 3) {
         if (ruta[2] === "maxSteps") {
           excluir([...ruta.slice(0, 2), "steps"], "fuera-del-v1");

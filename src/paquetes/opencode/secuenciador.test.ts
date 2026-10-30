@@ -1,4 +1,21 @@
 import { describe, expect, test } from "bun:test";
+
+describe("T3-03 R-4 exclusion por ruta completa", () => {
+  test("un comando Markdown excluye solo su comando y conserva el agente homonimo", () => {
+    const resultado = secuenciar([
+      { orden: 0, via: { via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" }, declaraciones: [
+        { ruta: ["command", "x", "template"], valor: "Comando JSON", posicion: { linea: 1, columna: 1 } },
+        { ruta: ["agent", "x", "description"], valor: "Agente JSON", posicion: { linea: 1, columna: 20 } },
+      ] },
+      { orden: 1, via: { via: "markdown", referencia: "/p/.opencode/commands/x.md", condicion: "observada", elemento: ["command", "x"] }, declaraciones: [] },
+    ]);
+    expect(resultado.exito).toBe(true);
+    if (!resultado.exito) throw new Error(resultado.error.mensaje);
+    expect(resultado.valor.noResueltas).toEqual([{ ruta: ["command", "x"], regla: "markdown-no-observado" }]);
+    expect(resultado.valor.aplicaciones.some(a => a.ruta.join("/") === "command/x/template")).toBe(false);
+    expect(resultado.valor.aplicaciones.find(a => a.ruta.join("/") === "agent/x/description")?.valor).toBe("Agente JSON");
+  });
+});
 import type { Aplicacion, Declaracion, LecturaEntrada, ValorJson } from "@rige/nucleo/contrato/adaptador";
 import { secuenciar as secuenciarCompleto } from "./secuenciador";
 
@@ -166,7 +183,7 @@ describe("V1-03 S-5 V1-08 F-7", () => {
       declaracion(["agent", "revisor/seguridad", "options", "steps"], 12)];
     const otras = [declaracion(["agent", "build", "steps"], 12),
       declaracion(["agent", "revisor/seguridad-extra", "temperature"], 0.1)];
-    const markdown: LecturaEntrada = { orden: 1, via: { via: "markdown", referencia, condicion: "observada", elemento: "revisor/seguridad" }, declaraciones: [] };
+    const markdown: LecturaEntrada = { orden: 1, via: { via: "markdown", referencia, condicion: "observada", elemento: ["agent", "revisor/seguridad"] }, declaraciones: [] };
     const json = lectura(0, [...bloqueadas, ...otras]);
     const jsonPosterior = lectura(2, bloqueadas);
     const esperado = { exito: true as const, valor: {
@@ -177,12 +194,12 @@ describe("V1-03 S-5 V1-08 F-7", () => {
     expect(secuenciar([markdown, json, jsonPosterior])).toEqual(esperado);
   });
   test("marca tambien los agentes que solo aparecen en Markdown", () => {
-    expect(secuenciar([{ orden: 0, via: { via: "markdown", referencia: "/h/agents/revisor.md", condicion: "observada", elemento: "revisor" }, declaraciones: [] }])).toEqual({
+    expect(secuenciar([{ orden: 0, via: { via: "markdown", referencia: "/h/agents/revisor.md", condicion: "observada", elemento: ["agent", "revisor"] }, declaraciones: [] }])).toEqual({
       exito: true, valor: { aplicaciones: [], noResueltas: [{ ruta: ["agent", "revisor"], regla: "markdown-no-observado" }] },
     });
   });
   test("no deriva el nombre de segmentos internos de la referencia", () => {
-    expect(secuenciar([{ orden: 0, via: { via: "markdown", referencia: "/h/agents/sub/agent/x.md", condicion: "observada", elemento: "sub/agent/x" }, declaraciones: [] }])).toEqual({
+    expect(secuenciar([{ orden: 0, via: { via: "markdown", referencia: "/h/agents/sub/agent/x.md", condicion: "observada", elemento: ["agent", "sub/agent/x"] }, declaraciones: [] }])).toEqual({
       exito: true, valor: { aplicaciones: [], noResueltas: [{ ruta: ["agent", "sub/agent/x"], regla: "markdown-no-observado" }] },
     });
   });

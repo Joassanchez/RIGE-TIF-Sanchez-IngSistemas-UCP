@@ -1,0 +1,13 @@
+// MARCA-T303-COMENTARIO-7f3c19a4
+{
+  "permission": {
+    "bash": {
+      "t6-contenido *": "deny"
+    }
+  },
+  "agent": {
+    "build": {
+      "description": "d-contenido"
+    }
+  }
+}

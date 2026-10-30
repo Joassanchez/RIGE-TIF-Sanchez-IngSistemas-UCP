@@ -1,19 +1,23 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir, userInfo } from "node:os";
-import { join, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
+import { entornoDeReferencia, type ReferenciaEntorno } from "../pruebas/utilidades/entorno-referencia";
 import { copiarEscenario, type OpcionesEscenario } from "../pruebas/utilidades/escenario";
 import { comparar, marcadorRelativoRaiz, normalizar, normalizarRutas } from "./referencias-nativas/comparar";
 import { comprobarAislamiento, esFalloGitfile } from "./referencias-nativas/aislamiento";
 
 type Referencia = {
-  readonly procedencia: { readonly version: string; readonly directorio: string; readonly hogar: string;
+  readonly procedencia: ReferenciaEntorno["procedencia"] & { readonly version: string; readonly directorio: string; readonly hogar: string;
+    readonly fallaEsperada?: boolean;
     readonly OPENCODE_CONFIG?: string; readonly git?: OpcionesEscenario["git"]; readonly skillsExternosExcluidos?: boolean; readonly [clave: string]: unknown };
   readonly agente: string;
   readonly valores: Record<string, unknown>;
   readonly cadenas: Record<string, unknown[]>;
   readonly valoresAgentes?: Record<string, Record<string, unknown>>;
   readonly agentes?: readonly { readonly nombre: string; readonly modo: string }[];
+  readonly comandos?: readonly string[];
+  readonly falla?: { readonly codigo: number; readonly archivo: string };
 };
 // Variantes oficiales de opencode-ai@1.18.25 por plataforma: en Windows el postinstall elige la baseline
 // si no detecta AVX2; en Linux las dos variantes son el mismo binario.
@@ -64,7 +68,8 @@ function ejecutar(): number {
   if (!referencias.length) throw new Error("No se encontraron referencias nativas.");
   if ([...seleccion].some(nombre => !referencias.some(r => r.nombre === nombre))) throw new Error("Escenario sin referencia nativa.");
   for (const { nombre, referencia } of referencias) {
-    if (!referencia.procedencia.hogar || !referencia.procedencia.directorio || !referencia.cadenas || !Object.keys(referencia.cadenas).length) {
+    if (!referencia.procedencia.hogar || !referencia.procedencia.directorio || !referencia.cadenas
+      || (!Object.keys(referencia.cadenas).length && !referencia.procedencia.fallaEsperada)) {
       throw new Error(`Referencia sin hogar, directorio o agentes de cadenas: ${nombre}.`);
     }
   }
@@ -95,8 +100,7 @@ function ejecutar(): number {
     const copia = copiarEscenario(nombre, { git: referencia.procedencia.git ?? "raiz" });
     try {
       const hogar = join(copia.raiz, referencia.procedencia.hogar);
-      const env = entornoAislado(hogar);
-      if (referencia.procedencia.skillsExternosExcluidos) env.OPENCODE_DISABLE_EXTERNAL_SKILLS = "true";
+      const env = entornoDeReferencia(referencia, copia);
       // Un HEAD sintetico no es un repositorio: el binario requiere git rev-parse.
       if (referencia.procedencia.git !== "sintetico" && referencia.procedencia.git !== "ninguno") {
         const raizRepositorio = referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz;
@@ -114,7 +118,22 @@ function ejecutar(): number {
           throw new Error("El directorio consultado no pertenece al worktree aislado.");
         }
       }
-      if (referencia.procedencia.OPENCODE_CONFIG) env.OPENCODE_CONFIG = join(copia.raiz, referencia.procedencia.OPENCODE_CONFIG);
+      if (referencia.procedencia.fallaEsperada) {
+        const proceso = Bun.spawnSync([binario, "debug", "agent", referencia.agente], {
+          cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
+        });
+        const archivo = /Config file at (.+?) is not valid JSON\(C\)/.exec(proceso.stderr.toString())?.[1];
+        if (proceso.exitCode === 0 || !archivo) throw new Error("El binario no confirmo la falla de sintaxis esperada.");
+        const falla = { codigo: proceso.exitCode, archivo: relative(copia.raiz, archivo).replaceAll("\\", "/") };
+        if (regenerar) writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify({ ...referencia,
+          procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
+            fecha: new Date().toISOString().slice(0, 10), comando: "opencode debug agent <agente>" }, falla,
+        }, null, 2) + "\n");
+        const diferencias = regenerar ? [] : comparar({ falla: referencia.falla }, { falla });
+        console.log(`${nombre}: ${diferencias.length ? JSON.stringify(diferencias) : regenerar ? "regenerada" : "ok"}`);
+        if (diferencias.length) codigo = 1;
+        continue;
+      }
       const cadenas: Record<string, unknown[]> = {};
       const valoresAgentes: Record<string, Record<string, unknown>> = {};
       let valores: Record<string, unknown> | undefined;
@@ -143,6 +162,14 @@ function ejecutar(): number {
       }
       if (!valores) throw new Error("No se obtuvo el agente de valores.");
       let agentes: Referencia["agentes"];
+      let comandos: Referencia["comandos"];
+      if (referencia.comandos !== undefined) {
+        const proceso = Bun.spawnSync([binario, "debug", "config"], {
+          cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
+        });
+        if (proceso.exitCode !== 0) throw new Error(`debug config fallo (codigo ${proceso.exitCode}).`);
+        comandos = Object.keys(JSON.parse(proceso.stdout.toString()).command ?? {}).sort();
+      }
       if (referencia.agentes !== undefined) {
         const proceso = Bun.spawnSync([binario, "agent", "list"], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
@@ -163,12 +190,13 @@ function ejecutar(): number {
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
             comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
-          valores: seleccionados, valoresAgentes, cadenas, ...(agentes === undefined ? {} : { agentes }),
+          valores: seleccionados, valoresAgentes, cadenas, ...(agentes === undefined ? {} : { agentes }), ...(comandos === undefined ? {} : { comandos }),
         }, null, 2) + "\n");
       }
       const diferencias = regenerar ? [] : [...comparar(referencia.valores, valores), ...comparar(referencia.cadenas, cadenas),
         ...comparar(referencia.valoresAgentes ?? {}, valoresAgentes),
-        ...(agentes === undefined ? [] : comparar({ agentes: referencia.agentes }, { agentes }))];
+        ...(agentes === undefined ? [] : comparar({ agentes: referencia.agentes }, { agentes })),
+        ...(comandos === undefined ? [] : comparar({ comandos: referencia.comandos }, { comandos }))];
       console.log(`${nombre}: ${diferencias.length ? JSON.stringify(diferencias) : regenerar ? "regenerada" : "ok"}`);
       if (diferencias.length) codigo = 1;
     } catch (error) {

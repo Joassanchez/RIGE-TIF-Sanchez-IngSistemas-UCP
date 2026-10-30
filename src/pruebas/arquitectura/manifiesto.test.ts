@@ -9,6 +9,14 @@ const escenarios = join(raiz, "pruebas/escenarios");
 const leer = () => JSON.parse(readFileSync(join(escenarios, "MANIFIESTO.json"), "utf8")) as Manifiesto;
 const matriz = () => JSON.parse(readFileSync(join(escenarios, "COBERTURA.json"), "utf8")) as Matriz;
 
+describe("T3-03 cobertura RF-04", () => {
+  test("ambos criterios quedan cubiertos con escenarios de la iteracion 3", () => {
+    const items = informarCobertura(leer(), matriz()).items;
+    expect(items.find(i => i.id === "RF-04 CA-1")).toMatchObject({ iteracion: 3, estado: "cubierto", escenarios: ["v3-entradas"] });
+    expect(items.find(i => i.id === "RF-04 CA-2")).toMatchObject({ iteracion: 3, estado: "cubierto", escenarios: ["v3-entradas-ilegible"] });
+  });
+});
+
 describe("T2-14 M-1", () => {
   test("inventario completo, entradas y referencias conservan su SHA-256; detecta un byte y entradas nuevas", () => {
     expect(validarManifiesto(leer(), matriz(), escenarios, raiz)).toEqual([]);

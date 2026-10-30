@@ -1,0 +1,7 @@
+{
+  "permission": {
+    "bash": {
+      "t2-config *": "deny"
+    }
+  }
+}

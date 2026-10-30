@@ -21,9 +21,10 @@ export function posicion(texto: string, desplazamiento: number): { linea: number
 }
 
 export function leerEntrada(via: ViaUbicada, texto: string): Resultado<readonly Declaracion[], ErrorAnalisis> {
+  const permiso = via.via === "variable-permiso";
   const scanner = createScanner(texto, false);
   let token = scanner.scan();
-  for (const sustitucion of texto.matchAll(/\{(env|file):[^}]*\}/g)) {
+  for (const sustitucion of permiso ? [] : texto.matchAll(/\{(env|file):[^}]*\}/g)) {
     while (token !== SyntaxKind.EOF && scanner.getTokenOffset() + scanner.getTokenLength() <= sustitucion.index) {
       token = scanner.scan();
     }
@@ -37,11 +38,20 @@ export function leerEntrada(via: ViaUbicada, texto: string): Resultado<readonly 
     } };
   }
   const errores: ParseError[] = [];
-  const raiz = parseTree(texto, errores, { allowTrailingComma: true });
-  if (errores.length || raiz?.type !== "object") {
-    const { linea, columna } = posicion(texto, errores[0]?.offset ?? raiz?.offset ?? 0);
+  const raiz = parseTree(texto, errores, { allowTrailingComma: !permiso, disallowComments: permiso });
+  let invalido = errores.length > 0;
+  if (permiso) {
+    try { JSON.parse(texto); }
+    catch { invalido = true; }
+    if (!invalido && raiz?.type !== "object") return { exito: false, error: { categoria: "uso", codigo: "contenido-no-soportado",
+      mensaje: `RIGE no incorpora ${via.referencia}: el permiso debe ser un objeto.`,
+    } };
+  }
+  if (invalido || raiz?.type !== "object") {
+    const { linea, columna } = posicion(texto, errores[0]?.offset ?? (permiso ? 0 : raiz?.offset ?? 0));
     return { exito: false, error: { categoria: "uso",
       codigo: "entrada-ilegible",
+      ilegible: { posicion: { linea, columna }, consecuencia: permiso ? "descartada" : "falla" },
       mensaje: `La entrada ${via.referencia.replaceAll("\\", "/")} no se puede leer (${linea}:${columna}).`,
     } };
   }
@@ -56,6 +66,6 @@ export function leerEntrada(via: ViaUbicada, texto: string): Resultado<readonly 
       });
     }
   }
-  recorrer(raiz, []);
+  recorrer(raiz, permiso ? ["permission"] : []);
   return { exito: true, valor: declaraciones };
 }

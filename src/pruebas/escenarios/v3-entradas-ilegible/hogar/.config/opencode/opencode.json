@@ -1,0 +1,12 @@
+{
+  "permission": {
+    "bash": {
+      "t1-global *": "deny"
+    }
+  },
+  "agent": {
+    "build": {
+      "description": "d-global"
+    }
+  }
+}

@@ -719,3 +719,68 @@ bun test
 bun run verificar
 bun run referencias --raiz (npm.cmd root -g)
 ```
+
+### Descubrimiento de entradas (T3-03, RF-04)
+
+```powershell
+bun run rige -- entradas --proyecto <ruta>
+```
+
+`entradas` admite `--proyecto` y la opción general `--depurar`. Lista las vías
+en orden de precedencia, incluidas las no observadas, con tipo, referencia,
+condición, resumen y legibilidad. Resuelve en memoria y no crea ni modifica
+el almacén. Termina con código 0 aunque haya errores de sintaxis; para cada
+ilegible informa línea, columna y consecuencia en OpenCode (`falla` o
+`descartada`). Los análisis siguen fallando con `entrada-ilegible`, salvo el
+JSON inválido de `OPENCODE_PERMISSION`, que se descarta y queda registrado.
+Los errores de contexto o contenido no soportado conservan código 1.
+
+La web ofrece `GET /entradas?proyecto=<ruta-codificada>` con el mismo objeto,
+incluido como dato JSON en la página, y las mismas restricciones de origen y
+método de las demás rutas. Esta consulta tampoco guarda una resolución.
+
+Se incorporan los siete tipos: `global`, `variable-config`, `proyecto`,
+`directorio-opencode`, `markdown`, `variable-contenido` y `variable-permiso`.
+`OPENCODE_CONFIG_DIR` agrega un directorio al final de la lista, deduplicado
+por su texto; no reemplaza al global. Debe ser una ruta absoluta canónica,
+sin barra final, separadores ajenos a la plataforma ni segmentos `.` o `..`.
+Los JSON de ese directorio y los comandos Markdown recursivos se descubren
+junto con agentes y modos. RIGE registra los comandos como no resueltos,
+sin analizar su contenido. Un `name:` en el frontmatter de agentes o comandos
+produce `via-no-soportada`. La legibilidad de un Markdown no acredita que
+OpenCode lo acepte: esta tarea no valida su esquema ni su frontmatter.
+
+`OPENCODE_CONFIG_CONTENT` se lee como JSONC después de los directorios;
+`OPENCODE_PERMISSION`, como JSON estricto al final, con `{env:…}` y `{file:…}`
+literales. Las variables vacías no se listan. Las definidas se identifican
+por nombre, con `condicion: "definida"` y `resumen: null`; el resumen del
+conjunto incluye una huella de su texto (ADR-104). Sus declaraciones sí se
+resuelven y se guardan; el texto crudo y sus comentarios nunca se emiten ni
+se guardan. Las sustituciones de las demás vías mantienen las limitaciones
+vigentes hasta T3-04.
+
+El TOML heredado `config` sigue con `via-no-soportada`: OpenCode lo migra al
+ejecutarse, escribe `config.json` y borra `config`; analizarlo antes daría un
+estado que OpenCode no usa. También siguen sin soporte
+`OPENCODE_DISABLE_PROJECT_CONFIG`, `OPENCODE_TEST_HOME` y
+`OPENCODE_TEST_MANAGED_CONFIG_DIR`.
+
+Para comprobar T3-03, con `RIGE_ALMACEN` temporal como arriba:
+
+```powershell
+bun test paquetes/opencode paquetes/nucleo pruebas/aceptacion/RF-04.test.ts
+bun test pruebas/utilidades/entorno-referencia.test.ts paquetes/rige/interfaces/web/paginas/entradas.test.ts
+bun test pruebas/arquitectura/referencias-nativas.test.ts pruebas/arquitectura/decisiones-nativas.test.ts pruebas/arquitectura/manifiesto.test.ts pruebas/aceptacion/RF-06.test.ts
+bun herramientas/tipos-salida.ts
+bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-entradas --escenario v3-entradas-ilegible --escenario v3-permiso-invalido
+bun run referencias --raiz (npm.cmd root -g)
+bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP "rige-t303-decisiones-cache")
+bun test
+bun run verificar
+```
+
+El arnés aplica `procedencia.variables` tanto a OpenCode como a RIGE mediante
+`entornoDeReferencia`. Las referencias pueden incluir `comandos` (claves
+ordenadas de `opencode debug config`) o `fallaEsperada` con cadenas vacías:
+se captura el código no nulo y el archivo relativo a la copia. Solo se
+regeneran los tres escenarios nuevos; las referencias anteriores se conservan.

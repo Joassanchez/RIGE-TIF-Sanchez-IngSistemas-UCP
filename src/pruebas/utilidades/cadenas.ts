@@ -2,14 +2,14 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Cadena } from "../../paquetes/nucleo/resolucion/tipos";
 import { copiarEscenario, type OpcionesEscenario } from "./escenario";
-import { crearEntornoAislado } from "./entorno-aislado";
+import { entornoDeReferencia, type ReferenciaEntorno } from "./entorno-referencia";
 import { marcadorRelativoRaiz, normalizarRutas } from "../../herramientas/referencias-nativas/comparar";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 
-export interface ReferenciaCadenas {
-  procedencia: { directorio: string; hogar: string; OPENCODE_CONFIG?: string; git?: OpcionesEscenario["git"] };
+export interface ReferenciaCadenas extends ReferenciaEntorno {
+  procedencia: ReferenciaEntorno["procedencia"] & { directorio: string; git?: OpcionesEscenario["git"] };
   cadenas: Record<string, { permission: string; pattern: string; action: string }[]>;
 }
 
@@ -18,9 +18,7 @@ export function consultarCadenas(nombre: string) {
   const copia = copiarEscenario(nombre, { git: referencia.procedencia.git ?? "raiz" });
   try {
     const hogar = join(copia.raiz, referencia.procedencia.hogar);
-    const env = { ...crearEntornoAislado(hogar, process.env), XDG_CONFIG_HOME: join(hogar, ".config"),
-      TEMP: join(hogar, "tmp"), TMP: join(hogar, "tmp"), TMPDIR: join(hogar, "tmp"), ProgramData: hogar };
-    if (referencia.procedencia.OPENCODE_CONFIG) Object.assign(env, { OPENCODE_CONFIG: join(copia.raiz, referencia.procedencia.OPENCODE_CONFIG) });
+    const env = entornoDeReferencia(referencia, copia);
     const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: env });
     const proyecto = join(copia.raiz, referencia.procedencia.directorio);
     const contexto = adaptadorOpenCode.contexto(proyecto, entorno);

@@ -7,6 +7,71 @@ import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 
 const via: ViaUbicada = { via: "proyecto", referencia: "/p/opencode.jsonc", condicion: "observada" };
 
+describe("T3-03 R-2", () => {
+  test("contenido JSONC definido con posiciones sobre la variable y error de sintaxis fatal", () => {
+    const variable: ViaUbicada = { via: "variable-contenido", referencia: "OPENCODE_CONFIG_CONTENT", condicion: "definida" };
+    expect(adaptadorOpenCode.leer(variable, '// comentario\n{"agent":{"build":{"description":"contenido"}}}')).toEqual({ exito: true,
+      valor: [{ ruta: ["agent", "build", "description"], valor: "contenido", posicion: { linea: 2, columna: 20 } }] });
+    const error = adaptadorOpenCode.leer(variable, '{\n "agent": ,\n}');
+    expect(error.exito).toBe(false);
+    if (error.exito) throw new Error("Se esperaba error");
+    expect(error.error.ilegible).toEqual({ posicion: { linea: 2, columna: 11 }, consecuencia: "falla" });
+    expect(error.error.mensaje).toContain("OPENCODE_CONFIG_CONTENT");
+  });
+});
+
+describe("T3-03 R-3", () => {
+  test("permiso estricto con prefijo, posiciones y sustituciones literales", () => {
+    const variable: ViaUbicada = { via: "variable-permiso", referencia: "OPENCODE_PERMISSION", condicion: "definida" };
+    expect(adaptadorOpenCode.leer(variable, '{"bash":{"{env:X}":"deny"}}')).toEqual({ exito: true,
+      valor: [{ ruta: ["permission", "bash", "{env:X}"], valor: "deny", posicion: { linea: 1, columna: 10 } }] });
+    for (const texto of ['{"bash":"deny",}', '/* x */ {}', '{"bash":}']) {
+      const resultado = adaptadorOpenCode.leer(variable, texto);
+      expect(resultado.exito).toBe(false);
+      if (resultado.exito) throw new Error("Se esperaba error");
+      expect(resultado.error.ilegible?.consecuencia).toBe("descartada");
+    }
+    for (const texto of ['null', '[]', '"deny"']) {
+      const resultado = adaptadorOpenCode.leer(variable, texto);
+      expect(resultado.exito).toBe(false);
+      if (resultado.exito) throw new Error("Se esperaba error");
+      expect(resultado.error.codigo).toBe("contenido-no-soportado");
+    }
+    const entorno = crearEntornoMemoria({ archivos: {}, directorios: ["/p", "/h"], variables: { HOME: "/h", OPENCODE_PERMISSION: '{"bash":{"{env:X}":"deny"}}' } });
+    const resultado = resolver(adaptadorOpenCode, "/p", entorno);
+    expect(resultado.exito).toBe(true);
+    if (!resultado.exito) throw new Error(resultado.error.mensaje);
+    expect(resultado.valor.noResueltas).not.toContainEqual({ ruta: ["permission", "bash", "{env:X}"], regla: "sustitucion-no-incorporada" });
+    expect(resultado.valor.valores.find(v => v.ruta.join("/") === "permission/bash/{env:X}")?.valor).toBe("deny");
+  });
+});
+
+describe("T3-03 R-9", () => {
+  test("continua tras descartar permiso invalido y conserva el diagnostico sin el texto", () => {
+    const lectura = crearEntornoMemoria({ archivos: {}, directorios: ["/p", "/h"], variables: { HOME: "/h", OPENCODE_PERMISSION: '{"MARCA_PRIVADA":,}' } });
+    const resultado = resolver(adaptadorOpenCode, "/p", lectura);
+    expect(resultado.exito).toBe(true);
+    if (!resultado.exito) throw new Error(resultado.error.mensaje);
+    expect(resultado.valor.entradas.at(-1)).toMatchObject({ via: "variable-permiso", condicion: "definida", resumen: null,
+      legibilidad: "ilegible", error: { linea: 1, columna: 18, consecuencia: "descartada" } });
+    expect(JSON.stringify(resultado)).not.toContain("MARCA_PRIVADA");
+  });
+});
+
+describe("T3-03 R-10", () => {
+  test("el resumen del conjunto incluye el texto de la variable sin emitir comentarios", () => {
+    const analizar = (texto: string) => resolver(adaptadorOpenCode, "/p", crearEntornoMemoria({ archivos: {}, directorios: ["/p", "/h"],
+      variables: { HOME: "/h", OPENCODE_CONFIG_CONTENT: texto } }));
+    const primera = analizar('// MARCA_PRIVADA\n{}');
+    const segunda = analizar('// OTRO_COMENTARIO\n{}');
+    expect(primera.exito && segunda.exito).toBe(true);
+    if (!primera.exito || !segunda.exito) throw new Error("Se esperaba resolucion");
+    expect(primera.valor.resumenEntradas).not.toBe(segunda.valor.resumenEntradas);
+    expect(JSON.stringify(primera)).not.toContain("MARCA_PRIVADA");
+    expect(primera.valor.entradas.find(e => e.condicion === "definida")?.resumen).toBeNull();
+  });
+});
+
 describe("V1-03 L-5 V1-08 F-5", () => {
   test.each([
     ['{"clave":{env:CLAVE},"secreto":"CONTENIDO_NO_EMITIR"}', "{env:CLAVE}", 1, 10],
@@ -71,7 +136,7 @@ describe("V1-03 L-4", () => {
   ] as const)("rechaza %j con la primera posicion y referencia normalizada", (texto, linea, columna) => {
     expect(leerEntrada({ ...via, referencia: "C:\\p\\opencode.jsonc" }, texto)).toEqual({
       exito: false,
-      error: { categoria: "uso", codigo: "entrada-ilegible", mensaje: `La entrada C:/p/opencode.jsonc no se puede leer (${linea}:${columna}).` },
+      error: { categoria: "uso", codigo: "entrada-ilegible", ilegible: { posicion: { linea, columna }, consecuencia: "falla" }, mensaje: `La entrada C:/p/opencode.jsonc no se puede leer (${linea}:${columna}).` },
     });
   });
 });

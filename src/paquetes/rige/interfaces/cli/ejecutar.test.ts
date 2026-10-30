@@ -20,6 +20,7 @@ describe("T3-01 R-11 advertencias CLI", () => {
     const casos = { ...noWeb, prepararAlmacen: () => ({ exito: true as const,
       valor: { ...respuesta, declaraciones: valor.declaraciones, reglas: valor.reglas } }),
       consultarValores: () => ({ exito: true as const, valor }),
+      consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },
       consultarAgentes: () => ({ exito: true as const, valor: { esquema: 2 as const, proyecto: "/p", entradas: [], resumenEntradas: "",
         agentes: [], eliminados: [], incompleta: false, motivos: [], declaraciones: valor.declaraciones, reglas: valor.reglas } }) };
     for (const argumentos of [["valores", "--proyecto", "/p", "--agente", "a"], ["agentes", "--proyecto", "/p"], ["esquema"]]) {
@@ -88,6 +89,7 @@ const respuesta: RespuestaEstado = {
 };
 const noWeb = {
   consultarPermiso: () => { throw new Error("No consultar permiso"); },
+  consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },
   consultarAgentes: () => { throw new Error("No consultar agentes"); },
   consultarValores: () => { throw new Error("No consultar valores"); },
   consultarEstado: () => { throw new Error("No debe consultar estado"); },

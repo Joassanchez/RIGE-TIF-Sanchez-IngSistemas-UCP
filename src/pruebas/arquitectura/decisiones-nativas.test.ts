@@ -17,6 +17,7 @@ function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: b
     cpSync(join(raiz, "herramientas/decisiones-nativas"), join(fuente, "herramientas/decisiones-nativas"), { recursive: true });
     cpSync(join(raiz, "herramientas/cobertura.ts"), join(fuente, "herramientas/cobertura.ts"));
     cpSync(join(raiz, "pruebas/utilidades/escenario.ts"), join(fuente, "pruebas/utilidades/escenario.ts"));
+    for (const nombre of ["entorno-referencia", "entorno-aislado"]) cpSync(join(raiz, `pruebas/utilidades/${nombre}.ts`), join(fuente, `pruebas/utilidades/${nombre}.ts`));
     const escenario = join(fuente, "pruebas/escenarios/doble");
     mkdirSync(join(escenario, "proyecto"), { recursive: true });
     writeFileSync(join(escenario, "proyecto/opencode.json"), '{"permission":{"read":"ask"}}');

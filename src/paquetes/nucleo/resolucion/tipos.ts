@@ -47,8 +47,10 @@ export interface EntradaLeida {
   readonly orden: number;
   readonly via: string;
   readonly referencia: string;
-  readonly condicion: "observada" | "no_observada";
+  readonly condicion: "observada" | "no_observada" | "definida";
   readonly resumen: string | null;
+  readonly legibilidad?: "legible" | "ilegible" | null;
+  readonly error?: { readonly linea: number; readonly columna: number; readonly consecuencia: "falla" | "descartada" };
 }
 
 export interface Resolucion {

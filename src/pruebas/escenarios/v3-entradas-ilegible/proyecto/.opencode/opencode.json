@@ -1,0 +1,12 @@
+{
+  "permission": {
+    "bash": {
+      "t4-directorio *": "deny"
+    }
+  }
+  "agent": {
+    "build": {
+      "description": "d-directorio"
+    }
+  }
+}

@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { copiarEscenario, type OpcionesEscenario } from "../pruebas/utilidades/escenario";
+import { entornoDeReferencia, type ReferenciaEntorno } from "../pruebas/utilidades/entorno-referencia";
 import type { Manifiesto } from "./cobertura";
 import { crearProveedor } from "./decisiones-nativas/proveedor";
 import { extraerEvaluaciones, normalizarEvaluaciones, type DecisionNativa } from "./decisiones-nativas/registro";
@@ -61,7 +62,7 @@ async function ejecutar(): Promise<number> {
     const consultas = escenario.consultas.filter(c => c.nativa);
     if (!consultas.length) continue;
     const archivo = join(directorio, escenario.id, "REFERENCIA.json");
-    const referencia = JSON.parse(readFileSync(archivo, "utf8")) as Record<string, unknown> & {
+    const referencia = JSON.parse(readFileSync(archivo, "utf8")) as Record<string, unknown> & ReferenciaEntorno & {
       procedencia: { version: string; hogar: string; directorio: string; git?: OpcionesEscenario["git"]; OPENCODE_CONFIG?: string; skillsExternosExcluidos?: boolean };
       decisionesNativas?: DecisionNativa[];
     };
@@ -73,9 +74,8 @@ async function ejecutar(): Promise<number> {
       let proveedor: ReturnType<typeof crearProveedor> | undefined;
       try {
         const hogar = join(copia.raiz, referencia.procedencia.hogar);
-        const env = entorno(hogar);
+        const env = entornoDeReferencia(referencia, copia);
         if (cache) env.XDG_CACHE_HOME = cache;
-        if (referencia.procedencia.skillsExternosExcluidos) env.OPENCODE_DISABLE_EXTERNAL_SKILLS = "true";
         const cwd = join(copia.raiz, referencia.procedencia.directorio);
         if (!["sintetico", "ninguno"].includes(referencia.procedencia.git ?? "raiz")) {
           const git = Bun.spawnSync(["git", "init", "--quiet", "--initial-branch=main"], {

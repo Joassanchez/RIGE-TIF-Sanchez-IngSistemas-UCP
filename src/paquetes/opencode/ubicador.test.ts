@@ -41,6 +41,65 @@ async function error(proyecto: string, lectura: EntornoLectura, codigo: string, 
 const observada = (via: string, referencia: string): ViaUbicada => ({ via, referencia, condicion: "observada" });
 const noObservada = (via: string, referencia = via): ViaUbicada => ({ via, referencia, condicion: "no_observada" });
 
+describe("T3-03 R-1", () => {
+  test("directorio explicito al final, deduplicado por texto y con JSON incluso si es el global", async () => {
+    const archivos = { "/h/.config/opencode/opencode.json": "{}", "/p/opencode.json": "{}",
+      "/p/.opencode/opencode.json": "{}", "/extra/opencode.json": "{}" };
+    for (const directorio of ["/extra", "/h/.config/opencode", "/p/.opencode"]) {
+      const resultado = await vias("/p", entorno({ archivos, variables: { HOME: "/h", OPENCODE_CONFIG_DIR: directorio } }));
+      const json = resultado.filter(v => v.via === "directorio-opencode");
+      expect(json.filter(v => v.referencia === `${directorio}/opencode.json`)).toHaveLength(1);
+      if (directorio === "/extra") expect(json.at(-1)?.referencia).toBe("/extra/opencode.json");
+      if (directorio === "/h/.config/opencode") expect(resultado.findIndex(v => v.via === "proyecto"))
+        .toBeLessThan(resultado.findIndex(v => v.via === "directorio-opencode"));
+    }
+    for (const valor of ["relativo", "/extra/", "/extra/.", "/extra/../extra", "/extra\\sub", "/extra//sub", "/p/opencode.json"]) {
+      await error("/p", entorno({ archivos, variables: { HOME: "/h", OPENCODE_CONFIG_DIR: valor } }), "via-no-soportada", "OPENCODE_CONFIG_DIR");
+    }
+    for (const valor of ["", "/ausente"]) expect(await vias("/p", entorno({ variables: { HOME: "/h", OPENCODE_CONFIG_DIR: valor } }))).toHaveLength(3);
+  });
+});
+
+describe("T3-03 R-4", () => {
+  test("comandos recursivos antes de agentes y modos con rutas de clave completas", async () => {
+    const resultado = await vias("/p", entorno({ archivos: {
+      "/p/.opencode/opencode.json": "{}", "/p/.opencode/commands/sub/x.md": "x",
+      "/p/.opencode/command/c.md": "c", "/p/.opencode/agents/a.md": "a", "/p/.opencode/modes/m.md": "m",
+    } }));
+    expect(resultado.filter(v => v.via === "markdown").map(v => v.elemento)).toEqual([
+      ["command", "c"], ["command", "sub/x"], ["agent", "a"], ["agent", "m"],
+    ]);
+  });
+});
+
+describe("T3-03 R-2 R-3 ubicacion de variables", () => {
+  test("solo las no vacias, contenido antes de organizacion y permiso al final", async () => {
+    for (const valor of [undefined, "", " ", "{}"]) {
+      const resultado = await vias("/p", entorno({ variables: { HOME: "/h", ...(valor === undefined ? {} : {
+        OPENCODE_CONFIG_CONTENT: valor, OPENCODE_PERMISSION: valor,
+      }) } }));
+      expect(resultado.filter(v => v.condicion === "definida")).toEqual(valor ? [
+        { via: "variable-contenido", referencia: "OPENCODE_CONFIG_CONTENT", condicion: "definida" },
+        { via: "variable-permiso", referencia: "OPENCODE_PERMISSION", condicion: "definida" },
+      ] : []);
+      if (valor) {
+        expect(resultado.findIndex(v => v.via === "variable-contenido")).toBeLessThan(resultado.findIndex(v => v.via === "remota-organizacion"));
+        expect(resultado.at(-1)?.via).toBe("variable-permiso");
+      }
+    }
+  });
+});
+
+describe("T3-03 R-11", () => {
+  test("explica que OpenCode migra el TOML y cambia las entradas", async () => {
+    const resultado = await ubicar("/p", entorno({ archivos: { "/h/.config/opencode/config": "model='x'" } }));
+    expect(resultado.exito).toBe(false);
+    if (resultado.exito) throw new Error("Se esperaba via no soportada");
+    expect(resultado.error.mensaje).toContain("config.json");
+    expect(resultado.error.mensaje).toContain("borra");
+  });
+});
+
 describe("U-1", () => {
   test("rechaza proyecto relativo, inexistente o archivo", async () => {
     for (const proyecto of ["p", "/inexistente", "/archivo"]) {
@@ -50,8 +109,7 @@ describe("U-1", () => {
 });
 describe("U-2 V1-08 F-2", () => {
   test("variables no soportadas en orden y config absoluta", async () => {
-    const nombres = ["OPENCODE_CONFIG_CONTENT", "OPENCODE_PERMISSION", "OPENCODE_CONFIG_DIR",
-      "OPENCODE_DISABLE_PROJECT_CONFIG", "OPENCODE_TEST_HOME", "OPENCODE_TEST_MANAGED_CONFIG_DIR"];
+    const nombres = ["OPENCODE_DISABLE_PROJECT_CONFIG", "OPENCODE_TEST_HOME", "OPENCODE_TEST_MANAGED_CONFIG_DIR"];
     for (const [indice, nombre] of nombres.entries()) {
       await error("/p", entorno({ variables: { HOME: "/h", ...Object.fromEntries(nombres.slice(indice).map(n => [n, n === "OPENCODE_DISABLE_PROJECT_CONFIG" ? "true" : "valor"])) } }),
         "via-no-soportada", nombre);
@@ -59,13 +117,13 @@ describe("U-2 V1-08 F-2", () => {
     await error("/p", entorno({ variables: { HOME: "/h", OPENCODE_CONFIG: "relativa.json" } }), "via-no-soportada", "OPENCODE_CONFIG");
   });
   test("distingue variables presentes de variables no vacias sin recortarlas", async () => {
-    for (const nombre of ["OPENCODE_CONFIG_CONTENT", "OPENCODE_PERMISSION", "OPENCODE_CONFIG",
+    for (const nombre of ["OPENCODE_CONFIG",
       "OPENCODE_TEST_MANAGED_CONFIG_DIR", "OPENCODE_CONFIG_DIR", "OPENCODE_TEST_HOME"]) {
       for (const valor of [undefined, "", "  "]) {
         const variables = { HOME: "/h", ...(valor === undefined ? {} : { [nombre]: valor }) };
         const lectura = entorno({ variables });
         expect(lectura.variable(nombre)).toBe(valor);
-        if (valor !== undefined && (valor !== "" || ["OPENCODE_CONFIG_DIR", "OPENCODE_TEST_HOME"].includes(nombre))) {
+        if (valor !== undefined && (valor !== "" || ["OPENCODE_TEST_HOME"].includes(nombre))) {
           await error("/p", lectura, "via-no-soportada", nombre);
         } else expect(await vias("/p", lectura)).toHaveLength(3);
       }
@@ -165,14 +223,14 @@ describe("U-7 V1-08 F-7", () => {
     expect(entorno({ archivos }).listar("/inexistente")).toEqual([]);
     const sinLeer = { ...entorno({ archivos }), leer: () => { throw new Error("El ubicador no debe leer Markdown"); } };
     expect((await vias("/p", sinLeer)).filter(v => v.via === "markdown")).toEqual([
-      { ...observada("markdown", "/h/.config/opencode/agent/sub/a.md"), elemento: "sub/a" },
-      { ...observada("markdown", "/h/.config/opencode/agents/b.md"), elemento: "b" },
-      { ...observada("markdown", "/h/.config/opencode/agents/sub/agent/x.md"), elemento: "sub/agent/x" },
-      { ...observada("markdown", "/p/.opencode/mode/c.md"), elemento: "c" },
+      { ...observada("markdown", "/h/.config/opencode/agent/sub/a.md"), elemento: ["agent", "sub/a"] },
+      { ...observada("markdown", "/h/.config/opencode/agents/b.md"), elemento: ["agent", "b"] },
+      { ...observada("markdown", "/h/.config/opencode/agents/sub/agent/x.md"), elemento: ["agent", "sub/agent/x"] },
+      { ...observada("markdown", "/p/.opencode/mode/c.md"), elemento: ["agent", "c"] },
     ]);
     const ruta = "/h/.config/opencode/agent/a.md";
     const { adaptadorOpenCode } = await import("./adaptador");
-    const markdown = { ...observada("markdown", ruta), elemento: "a" };
+    const markdown = { ...observada("markdown", ruta), elemento: ["agent", "a"] };
     expect(adaptadorOpenCode.leer(markdown, "---\nname: otro\n---\ncuerpo")).toEqual({ exito: false, error: { categoria: "uso",
       codigo: "via-no-soportada", mensaje: `RIGE no incorpora ${ruta}.`,
     } });

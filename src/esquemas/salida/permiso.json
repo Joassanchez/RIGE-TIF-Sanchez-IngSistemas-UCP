@@ -356,7 +356,8 @@
         "condicion": {
           "enum": [
             "observada",
-            "no_observada"
+            "no_observada",
+            "definida"
           ]
         },
         "resumen": {
@@ -368,6 +369,36 @@
               "type": "null"
             }
           ]
+        },
+        "legibilidad": {
+          "enum": [
+            "legible",
+            "ilegible",
+            null
+          ]
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer"
+            },
+            "columna": {
+              "type": "integer"
+            },
+            "consecuencia": {
+              "enum": [
+                "falla",
+                "descartada"
+              ]
+            }
+          },
+          "required": [
+            "linea",
+            "columna",
+            "consecuencia"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [

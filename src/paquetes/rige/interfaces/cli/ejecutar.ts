@@ -2,6 +2,7 @@ import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estad
 import type { ConsultarValores } from "../../aplicacion/casos-uso/consultar-valores";
 import type { consultarPermiso } from "../../aplicacion/casos-uso/consultar-permiso";
 import type { ConsultarAgentes } from "../../aplicacion/casos-uso/consultar-agentes";
+import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-entradas";
 import { versionEsquemaSalida } from "../../aplicacion/respuestas/valores";
 import type { ErrorUso } from "../../aplicacion/errores";
 import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
@@ -13,6 +14,7 @@ export interface CasosUsoCli {
   readonly consultarValores: ConsultarValores;
   readonly consultarPermiso: (...args: Parameters<typeof consultarPermiso> extends [unknown, ...infer R] ? R : never) => ReturnType<typeof consultarPermiso>;
   readonly consultarAgentes: ConsultarAgentes;
+  readonly consultarEntradas: ConsultarEntradas;
   readonly prepararAlmacen: () => Resultado<RespuestaEstado, ErrorUso>;
   readonly consultarEstado: ConsultarEstado;
   readonly iniciarServidor: () => Resultado<{ readonly direccion: string }, ErrorUso>;
@@ -28,6 +30,7 @@ const subcomandos = {
   esquema: (casos) => casos.prepararAlmacen(),
   valores: (casos, opciones) => casos.consultarValores(opciones.proyecto, opciones.agente, opciones.clave),
   agentes: (casos, opciones) => casos.consultarAgentes(opciones.proyecto),
+  entradas: (casos, opciones) => casos.consultarEntradas(opciones.proyecto),
   permiso: (casos, opciones) => casos.consultarPermiso({ proyecto: opciones.proyecto, agente: opciones.agente,
     ...(opciones.herramienta === undefined ? { sujeto: opciones.sujeto! } : { herramienta: opciones.herramienta }),
     objetivo: opciones.objetivo, lanzadoPor: opciones.lanzadoPor, explicar: opciones.explicar }),
@@ -76,7 +79,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
   const { proyecto, agente, clave, herramienta, sujeto, objetivo, explicar, "lanzado-por": lanzadoPor } = opciones.values;
   const comando = posicionales[0]!;
   const admitidas: Record<string, readonly string[]> = {
-    valores: ["proyecto", "agente", "clave"], agentes: ["proyecto", "explicar"],
+    valores: ["proyecto", "agente", "clave"], agentes: ["proyecto", "explicar"], entradas: ["proyecto"],
     permiso: ["proyecto", "agente", "herramienta", "sujeto", "objetivo", "lanzado-por", "explicar"], esquema: [], servir: [],
   };
   for (const nombre of Object.keys(opciones.values)) {
@@ -88,8 +91,8 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
       || (clave !== undefined && (typeof clave !== "string" || !clave.trim()))) {
       return argumentosInvalidos(canales, "valores requiere --proyecto y --agente no vacíos; --clave es opcional y no puede estar vacía.");
     }
-  } else if (comando === "agentes" && !noVacio(proyecto)) {
-    return argumentosInvalidos(canales, "agentes requiere --proyecto no vacío.");
+  } else if (["agentes", "entradas"].includes(comando) && !noVacio(proyecto)) {
+    return argumentosInvalidos(canales, `${comando} requiere --proyecto no vacío.`);
   } else if (comando === "permiso" && (!noVacio(proyecto) || !noVacio(agente) || !noVacio(objetivo)
     || (herramienta !== undefined) === (sujeto !== undefined) || !noVacio(herramienta ?? sujeto)
     || (lanzadoPor !== undefined && !noVacio(lanzadoPor)))) {
@@ -111,7 +114,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
       return 1;
     }
     const advertencias: RespuestaAdvertencia[] = [];
-    if (["valores", "permiso", "agentes"].includes(comando) && "declaraciones" in resultado.valor && "reglas" in resultado.valor) {
+    if (["valores", "permiso", "agentes", "entradas"].includes(comando) && "declaraciones" in resultado.valor && "reglas" in resultado.valor) {
       for (const codigo of resultado.valor.declaraciones) {
         if (!advertidas.includes(codigo)) continue;
         const mensaje = resultado.valor.reglas[codigo];

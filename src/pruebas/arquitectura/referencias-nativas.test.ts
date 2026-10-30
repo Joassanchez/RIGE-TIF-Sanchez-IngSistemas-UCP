@@ -35,10 +35,27 @@ describe("A8-3", () => {
 });
 type Llamada = { argumentos: string[]; cwd?: string; env: Record<string, string>; timeout: number; copia?: string };
 
+describe("T3-03 referencias de entradas", () => {
+  test("captura comandos ordenados y aplica variables", () => {
+    const resultado = ejecutar({ entradas: true, regenerar: true });
+    expect(resultado.codigo).toBe(0);
+    expect(resultado.regenerada.comandos).toEqual(["hola", "sub/x"]);
+    expect(resultado.llamadas.filter(l => l.copia).every(l => l.env.OPENCODE_PERMISSION === '{"bash":"deny"}')).toBe(true);
+  });
+  test("acepta cadenas vacias con falla esperada y normaliza el archivo entre copias", () => {
+    const primera = ejecutar({ fallaEsperada: true, regenerar: true });
+    const segunda = ejecutar({ fallaEsperada: true, regenerar: true });
+    expect(primera.codigo).toBe(0);
+    expect(segunda.codigo).toBe(0);
+    expect(primera.regenerada.falla).toEqual({ codigo: 1, archivo: "proyecto/.opencode/opencode.json" });
+    expect(primera.regenerada.falla).toEqual(segunda.regenerada.falla);
+  });
+});
+
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.
 function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
   diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
-  agentes?: boolean; agentesInvalidos?: boolean } = {}) {
+  agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
   try {
     mkdirSync(join(temporal, "opencode-ai/bin"), { recursive: true });
@@ -58,6 +75,12 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
           .map(nombre => [nombre, { name: nombre, mode: "primary", native: true,
             ...Object.fromEntries(Object.entries(ref.valores).filter(([clave]) => ["description", "temperature"].includes(clave))) }]));
         if (opciones.agentes) ref.agentes = [];
+        if (opciones.entradas) {
+          ref.comandos = [];
+          ref.procedencia.variables = { OPENCODE_PERMISSION: "permiso.json" };
+          writeFileSync(join(fuente, "pruebas/escenarios", nombre, "permiso.json"), '{"bash":"deny"}');
+        }
+        if (opciones.fallaEsperada) { ref.procedencia.fallaEsperada = true; ref.cadenas = {}; }
         if (opciones.git) { ref.procedencia.git = opciones.git; ref.procedencia.skillsExternosExcluidos = true; }
         if (opciones.referenciaFiltrada) ref.cadenas.build.push({ permission: "external_directory", pattern: join(temporal, ".agents/skills/filtrada/*"), action: "allow" });
         writeFileSync(join(fuente, "pruebas/escenarios", nombre, "REFERENCIA.json"), JSON.stringify(ref));
@@ -67,6 +90,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
       cpSync(join(raiz, "herramientas/referencias-nativas.ts"), entrada);
       cpSync(join(raiz, "herramientas/referencias-nativas"), join(fuente, "herramientas/referencias-nativas"), { recursive: true });
       cpSync(join(raiz, "pruebas/utilidades/escenario.ts"), join(fuente, "pruebas/utilidades/escenario.ts"));
+      for (const nombre of ["entorno-referencia", "entorno-aislado"]) cpSync(join(raiz, `pruebas/utilidades/${nombre}.ts`), join(fuente, `pruebas/utilidades/${nombre}.ts`));
       if (opciones.desconocido) cpSync(join(fuente, "pruebas/escenarios/v1-precedencia/REFERENCIA.json"), join(fuente, "pruebas/escenarios/desconocido/REFERENCIA.json"));
     }
     const referencias = Object.fromEntries(["v1-precedencia", "v1-vias"].map(nombre => [nombre,
@@ -96,6 +120,8 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         if (existsSync(join(copia, "REFERENCIA.json"))) throw new Error("Referencia copiada");
         if (!${Boolean(opciones.git)} && !readFileSync(join(copia, ".git/HEAD"), "utf8").includes("refs/heads/main")) throw new Error("Sin git");
         writeFileSync(join(copia, ".gitignore"), "generado por el doble nativo");
+        if (${Boolean(opciones.fallaEsperada)}) return { exitCode: 1, stdout: Buffer.from(""), stderr: Buffer.from("Config file at " + join(copia, "proyecto/.opencode/opencode.json") + " is not valid JSON(C):") };
+        if (argumentos[2] === "config") return { exitCode: 0, stdout: Buffer.from('{"command":{"sub/x":{},"hola":{}}}'), stderr: Buffer.from("") };
         if (argumentos[1] === "agent") {
           writeFileSync(${JSON.stringify(registro)}, JSON.stringify(llamadas));
           return { exitCode: 0, stdout: Buffer.from(${JSON.stringify(opciones.agentesInvalidos ? "salida inesperada" : "build (primary)\n  []\nrevisor (all)\n  []\n")}), stderr: Buffer.from("") };

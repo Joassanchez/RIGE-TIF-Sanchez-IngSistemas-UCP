@@ -14,6 +14,7 @@ import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucio
 import { consultarValores } from "../aplicacion/casos-uso/consultar-valores";
 import { consultarPermiso } from "../aplicacion/casos-uso/consultar-permiso";
 import { consultarAgentes } from "../aplicacion/casos-uso/consultar-agentes";
+import { consultarEntradas } from "../aplicacion/casos-uso/consultar-entradas";
 import { consultarPermisoGuardado, consultarAgentesGuardados } from "../aplicacion/casos-uso/consultar-guardada";
 import { versionRige } from "../aplicacion/respuestas/estado";
 import { iniciarServidor } from "../interfaces/web/servidor";
@@ -32,8 +33,9 @@ function ensamblar(comando: string): Ensamblado {
     consultarValores: (proyecto: string, agente: string, clave: string | undefined) => consultarValores(consultas, proyecto, agente, clave),
     consultarPermiso: (solicitud: Parameters<typeof consultarPermiso>[1]) => consultarPermiso(consultas, solicitud),
     consultarAgentes: (proyecto: string) => consultarAgentes(consultas, proyecto),
+    consultarEntradas: (proyecto: string) => consultarEntradas(consultas, proyecto),
   };
-  if (["valores", "permiso", "agentes"].includes(comando)) {
+  if (["valores", "permiso", "agentes", "entradas"].includes(comando)) {
     const noEnsamblado = (): never => { throw new Error("Caso ajeno a una consulta en memoria"); };
     return { exito: true, valor: { ...casosConsulta, prepararAlmacen: noEnsamblado,
       consultarEstado: noEnsamblado, iniciarServidor: noEnsamblado } };
@@ -48,6 +50,7 @@ function ensamblar(comando: string): Ensamblado {
       consultarValores: (proyecto, agente, clave) => consultarValores(dependencias, proyecto, agente, clave),
       consultarPermiso: solicitud => consultarPermiso(dependencias, solicitud),
       consultarAgentes: (proyecto) => consultarAgentes(dependencias, proyecto),
+      consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
       prepararAlmacen: () => prepararAlmacen(almacen),
       consultarEstado: () => consultarEstado(almacen),
       iniciarServidor: () => iniciarServidor(resultado.valor.puerto, {
@@ -56,6 +59,7 @@ function ensamblar(comando: string): Ensamblado {
         consultarResolucion: (id, agente, clave) => consultarResolucion(resoluciones, id, agente, clave),
         consultarPermiso: (id, solicitud) => consultarPermisoGuardado(dependencias, id, solicitud),
         consultarAgentes: id => consultarAgentesGuardados(dependencias, id),
+        consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
       }),
     },
   };

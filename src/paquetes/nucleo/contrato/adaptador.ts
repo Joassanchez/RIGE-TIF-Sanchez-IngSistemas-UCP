@@ -11,9 +11,9 @@ export interface Identidad { readonly herramienta: string; readonly version: str
 export interface ViaUbicada {
   readonly via: string;
   readonly referencia: string;
-  readonly condicion: "observada" | "no_observada";
-  /** Nombre del elemento que la via declara por completo. */
-  readonly elemento?: string;
+  readonly condicion: "observada" | "no_observada" | "definida";
+  /** Ruta de clave que la via declara por completo. */
+  readonly elemento?: readonly string[];
 }
 
 export interface Declaracion {
@@ -75,7 +75,8 @@ export interface Secuencia {
   readonly noResueltas: readonly ClaveNoResuelta[];
 }
 
-export interface ErrorAnalisis { readonly categoria: "uso"; readonly codigo: string; readonly mensaje: string }
+export interface ErrorAnalisis { readonly categoria: "uso"; readonly codigo: string; readonly mensaje: string;
+  readonly ilegible?: { readonly posicion: Posicion; readonly consecuencia: "falla" | "descartada" } }
 
 export interface ObjetivoPermiso {
   readonly sujeto: string;
