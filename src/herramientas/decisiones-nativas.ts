@@ -22,7 +22,7 @@ function entorno(hogar: string): Record<string, string> {
 }
 // Resuelve tambien los antecesores existentes para no admitir un cache enlazado al repositorio.
 function rutaFisica(ruta: string): string {
-  return existsSync(ruta) ? realpathSync(ruta) : resolve(ruta) === dirname(resolve(ruta)) ? resolve(ruta) : join(rutaFisica(dirname(resolve(ruta))), ruta.slice(dirname(resolve(ruta)).length + 1));
+  return existsSync(ruta) ? realpathSync.native(ruta) : resolve(ruta) === dirname(resolve(ruta)) ? resolve(ruta) : join(rutaFisica(dirname(resolve(ruta))), ruta.slice(dirname(resolve(ruta)).length + 1));
 }
 async function ejecutar(): Promise<number> {
   const argumentos = process.argv.slice(2);

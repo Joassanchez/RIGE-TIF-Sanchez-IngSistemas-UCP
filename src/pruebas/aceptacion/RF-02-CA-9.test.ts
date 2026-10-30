@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { join, parse, relative, resolve } from "node:path";
 import { consultarPermisos } from "../utilidades/permisos";
 import { consultarCadenas } from "../utilidades/cadenas";
 import { decisionNativa, oraculoDecision } from "../utilidades/decision-nativa";
@@ -72,7 +72,7 @@ describe("RF-02 CA-9", () => {
         const nativa = decisionNativa(referencia(escenario), { agente: "build", herramienta: "read", objetivo: "src/a.js" }, respuesta.consulta.objetivoEvaluado!, raiz);
         expect(respuesta.decision).toBe(nativa?.decision ?? caso.decision);
         expect(respuesta.cadena.find(r => r.indice === respuesta.determinante)).toMatchObject(nativa?.regla ?? caso.regla!);
-        expect(respuesta.consulta.objetivoEvaluado).toBe(relative(git === "proyecto" ? join(raiz, "proyecto") : "/", join(raiz, "proyecto/src/a.js")));
+        expect(respuesta.consulta.objetivoEvaluado).toBe(relative(git === "proyecto" ? join(raiz, "proyecto") : parse(join(raiz, "proyecto")).root, join(raiz, "proyecto/src/a.js")));
       }
       const { referencia: ref, cadenas, normalizar } = consultarCadenas(escenario);
       expect(Object.keys(ref.cadenas)).toEqual(["build", "plan"]);

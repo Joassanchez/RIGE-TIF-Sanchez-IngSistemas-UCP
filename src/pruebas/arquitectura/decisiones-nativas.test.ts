@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
@@ -7,7 +7,7 @@ import { crearProveedor } from "../../herramientas/decisiones-nativas/proveedor"
 
 const raiz = resolve(import.meta.dir, "../..");
 const hash = "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff";
-function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: boolean; evaluacionAjena?: boolean; regenerar?: boolean; distinta?: boolean; falla?: boolean; fallaGit?: boolean; cacheInterno?: boolean } = {}) {
+function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: boolean; evaluacionAjena?: boolean; regenerar?: boolean; distinta?: boolean; falla?: boolean; fallaGit?: boolean; cacheInterno?: boolean; cacheLargo?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-decisiones-test-"));
   try {
     const fuente = join(temporal, "repositorio/src");
@@ -55,7 +55,7 @@ function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: b
       };
     `);
     const resultado = Bun.spawnSync([process.execPath, "--preload", precarga, join(fuente, "herramientas/decisiones-nativas.ts"),
-      "--raiz", temporal, "--cache", opciones.cacheInterno ? fuente : join(temporal, "cache"), ...(opciones.regenerar ? ["--regenerar"] : [])], {
+      "--raiz", temporal, "--cache", opciones.cacheInterno ? opciones.cacheLargo ? realpathSync.native(fuente) : fuente : join(temporal, "cache"), ...(opciones.regenerar ? ["--regenerar"] : [])], {
       cwd: raiz, env: { ...crearEntornoAislado(temporal, process.env), CONSERVAR: "no", OPENCODE_OTRA: "no", XDG_OTRA: "no" },
       stdout: "pipe", stderr: "pipe", timeout: 15000,
     });
@@ -66,6 +66,17 @@ function ejecutar(opciones: { version?: string; hash?: string; sinEvaluacion?: b
       borradas: llamadas.every((l: { copia?: string }) => !l.copia || !existsSync(l.copia)), temporal };
   } finally { rmSync(temporal, { recursive: true, force: true }); }
 }
+
+describe("T2-19 R-5", () => {
+  for (const cacheLargo of [false, true]) {
+    test(`rechaza cache interno con ruta ${cacheLargo ? "expandida" : "del temporal (8.3 si TEMP lo usa)"}`, () => {
+      const resultado = ejecutar({ cacheInterno: true, cacheLargo });
+      expect(resultado.codigo).toBe(1);
+      expect(resultado.error).toContain("El cache debe estar fuera del repositorio");
+      expect(resultado.llamadas).toEqual([]);
+    });
+  }
+});
 
 describe("T2-14 O-1", () => {
   test("T2-14b informa escenario, estado y diagnostico de git sin escribir referencias", () => {

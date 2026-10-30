@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir, userInfo } from "node:os";
-import { join, relative, resolve } from "node:path";
+import { join, parse, relative, resolve } from "node:path";
 import { copiarEscenario, type OpcionesEscenario } from "../pruebas/utilidades/escenario";
 import { comparar, normalizar, normalizarRutas } from "./referencias-nativas/comparar";
 import { comprobarAislamiento, esFalloGitfile } from "./referencias-nativas/aislamiento";
@@ -136,7 +136,8 @@ function ejecutar(): number {
         }
         if (!Array.isArray(salida.permission)) throw new Error(`El agente ${agente} no tiene una cadena permission.`);
         if (Object.hasOwn(referencia.cadenas, agente)) cadenas[agente] = normalizarRutas(salida.permission, {
-          data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), hogar, "hogar-relativo-raiz": relative("/", hogar),
+          data: join(hogar, "opencode"), tmp: join(hogar, "tmp/opencode"), hogar,
+          "hogar-relativo-raiz": relative(parse(join(copia.raiz, referencia.procedencia.directorio)).root, hogar),
         });
         if (agente === referencia.agente) valores = normalizar(salida);
       }

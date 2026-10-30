@@ -2,6 +2,7 @@ import type { ErrorAnalisis, ObjetivoPermiso, SolicitudPermiso } from "@rige/nuc
 import type { Resultado } from "@rige/nucleo/resultado";
 import type { ContextoOpenCode } from "./contexto";
 import { prepararSujeto } from "./comando";
+import { baseRelativa } from "./base-relativa";
 
 const herramientas = ["read", "edit", "write", "apply_patch", "bash", "glob", "grep", "webfetch", "task", "todowrite", "skill"];
 
@@ -14,7 +15,7 @@ export function prepararConsulta(contexto: ContextoOpenCode, solicitud: Solicitu
   if (!["read", "edit", "write", "apply_patch"].includes(herramienta)) return { exito: true,
     valor: prepararSujeto(herramienta, objetivo) };
   const absoluto = entorno.esAbsoluta(objetivo) ? entorno.unir(objetivo) : entorno.unir(proyecto, objetivo);
-  const relativa = entorno.relativa(worktree, absoluto);
+  const relativa = entorno.relativa(baseRelativa(contexto), absoluto);
   const contiene = (base: string) => {
     const ruta = entorno.relativa(base, absoluto);
     return ruta !== ".." && !ruta.startsWith("../") && !ruta.startsWith("..\\") && !entorno.esAbsoluta(ruta);

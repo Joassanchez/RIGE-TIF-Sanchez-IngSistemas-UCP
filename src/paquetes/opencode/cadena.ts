@@ -5,6 +5,7 @@ import { agentesNativos } from "./vendor/agentes-nativos";
 import { expand, fromConfig } from "./vendor/permiso";
 import type { ContextoOpenCode } from "./contexto";
 import { agentesEfectivos } from "./agentes";
+import { baseRelativa } from "./base-relativa";
 
 export function cadena(resolucion: Resolucion, agente: string, contexto: ContextoOpenCode, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis> {
   const { entorno, parametros: { hogar, data, tmp, worktree } } = contexto;
@@ -17,7 +18,7 @@ export function cadena(resolucion: Resolucion, agente: string, contexto: Context
       mensaje: `El agente ${nombre} ${efectivo ? "está deshabilitado" : "no existe"}.` } };
   }
   const path = { join: (...partes: string[]) => entorno.unir(...partes),
-    relative: (desde: string, hasta: string) => entorno.relativa(desde, hasta),
+    relative: (desde: string, hasta: string) => entorno.relativa(desde === "/" ? baseRelativa(contexto) : desde, hasta),
     dirname: (ruta: string) => entorno.padre(ruta) };
   const nativos = agentesNativos({ data, tmp, worktree, skillDirs: [], referenceDirs: [] }, path);
   const ambito = ["agent", agente];

@@ -11,6 +11,21 @@ function prepararObjetivo(proyecto: string, herramienta: string, objetivo: strin
   return prepararConsulta(contexto.valor, { herramienta, objetivo });
 }
 
+describe("T2-19 R-2", () => {
+  for (const unidad of ["C:", "D:"]) {
+    for (const herramienta of ["edit", "read", "write", "apply_patch"]) {
+      test(`${unidad} ${herramienta} sin VCS, con unidad de proceso Z:`, () => {
+        const entorno = { ...crearEntornoMemoria({ archivos: {}, plataforma: "win32", variables: { USERPROFILE: "C:\\hogar" } }),
+          unir: win32.join, padre: win32.dirname, esAbsoluta: win32.isAbsolute,
+          relativa: (d: string, h: string) => win32.relative(win32.resolve("Z:\\", d), h) };
+        expect(prepararObjetivo(`${unidad}\\proyecto`, herramienta, `${unidad}\\proyecto\\a.txt`, entorno)).toMatchObject({
+          exito: true, valor: { objetivoEvaluado: herramienta === "apply_patch" ? "proyecto/a.txt" : "proyecto\\a.txt", motivoSinDecision: null },
+        });
+      });
+    }
+  }
+});
+
 describe("A8-1", () => {
   test("sin VCS solo contiene el directorio del proyecto; permite tambien el worktree", () => {
     const entorno = crearEntornoMemoria({ archivos: {}, variables: { HOME: "/hogar" } });

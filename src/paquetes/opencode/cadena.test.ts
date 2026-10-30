@@ -4,20 +4,23 @@ import { resolver } from "../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 import { adaptadorFicticio } from "../../pruebas/utilidades/adaptador-ficticio";
 import { adaptadorOpenCode } from "./adaptador";
+import { prepararConsulta } from "./objetivo";
+import type { ContextoOpenCode } from "./contexto";
 
-function preparar(textos: readonly string[] = [], plataforma = "linux", variables = {}) {
+function preparar(textos: readonly string[] = [], plataforma = "linux", variables = {}, proyecto = plataforma === "win32" ? "C:\\proyecto" : "/proyecto") {
   const rutas = plataforma === "win32" ? win32 : posix;
   const entorno = { ...crearEntornoMemoria({ archivos: Object.fromEntries(textos.map((t, i) => [`/capa-${i}`, t])),
     plataforma, variables: { HOME: "/hogar", USERPROFILE: "C:\\hogar", XDG_DATA_HOME: plataforma === "win32" ? "C:\\datos" : "/datos",
-      TEMP: "C:\\temporal", TMPDIR: "/temporal", ...variables } }), unir: rutas.join, padre: rutas.dirname, relativa: rutas.relative };
+      TEMP: "C:\\temporal", TMPDIR: "/temporal", ...variables } }), unir: rutas.join, padre: rutas.dirname, esAbsoluta: rutas.isAbsolute,
+    relativa: (desde: string, hasta: string) => rutas.relative(plataforma === "win32" ? win32.resolve("Z:\\", desde) : desde, hasta) };
   const resultado = resolver({ ...adaptadorOpenCode, ubicar: () => ({ exito: true, valor: textos.map((_, i) => ({
     via: i ? "proyecto" : "global", referencia: `/capa-${i}`, condicion: "observada" as const,
-  })) }) }, plataforma === "win32" ? "C:\\proyecto" : "/proyecto", entorno);
+  })) }) }, proyecto, entorno);
   if (!resultado.exito) throw new Error(resultado.error.mensaje);
   const contexto = adaptadorOpenCode.contexto(resultado.valor.proyecto, entorno);
   if (!contexto.exito) throw new Error(contexto.error.mensaje);
   const cadena = (agente = "build") => adaptadorOpenCode.cadena(resultado.valor, agente, contexto.valor);
-  return { cadena, resolucion: resultado.valor, entorno };
+  return { cadena, resolucion: resultado.valor, entorno, contexto: contexto.valor };
 }
 function obtener(textos: readonly string[] = [], agente = "build") {
   const resultado = preparar(textos).cadena(agente);
@@ -62,6 +65,36 @@ describe("T2-05 K-1 RD-07", () => {
     }
     const fallback = preparar([], "linux", { XDG_DATA_HOME: "", TMPDIR: "" }).cadena();
     expect(fallback.exito && fallback.valor.reglas.at(-1)!.patron).toBe("/hogar/.local/share/opencode/tool-output/*");
+  });
+});
+
+describe("T2-19 R-1", () => {
+  for (const [proyecto, patron] of [["D:\\proyecto", "C:\\hogar\\.local\\share\\opencode\\plans\\*.md"],
+    ["C:\\proyecto", "hogar\\.local\\share\\opencode\\plans\\*.md"]]) {
+    test(`plan sin VCS desde ${proyecto}, con unidad de proceso Z:`, () => {
+      const resultado = preparar([], "win32", { XDG_DATA_HOME: "" }, proyecto).cadena("plan");
+      expect(resultado.exito && resultado.valor.reglas.filter(r => r.sujeto === "edit" && r.efecto === "allow").at(-1)?.patron).toBe(patron!);
+    });
+  }
+});
+
+describe("T2-19 R-6", () => {
+  test("la resolucion guardada reconstruye objetivos y cadena sin leer el entorno actual", () => {
+    const directo = preparar([], "win32", { XDG_DATA_HOME: "" });
+    const { plataforma, ...datos } = structuredClone(directo.resolucion.contexto);
+    const noLeer = (): never => { throw new Error("Una resolucion guardada no consulta el entorno actual."); };
+    const guardado: ContextoOpenCode = { ...datos, parametros: datos.parametros as ContextoOpenCode["parametros"],
+      entorno: { plataforma, variable: noLeer, tipo: noLeer, leer: noLeer, listar: noLeer,
+        resumir: directo.entorno.resumir, rutasPara: directo.entorno.rutasPara,
+        ...directo.entorno.rutasPara(plataforma), relativa: (d, h) => win32.relative(win32.resolve("Z:\\", d), h) } };
+    const solicitud = { herramienta: "edit", objetivo: "C:\\proyecto\\a.txt" };
+    const objetivo = prepararConsulta(guardado, solicitud);
+    expect(objetivo).toMatchObject({ exito: true, valor: { objetivoEvaluado: "proyecto\\a.txt" } });
+    expect(objetivo).toEqual(prepararConsulta(directo.contexto, solicitud));
+    const cadena = adaptadorOpenCode.cadena(directo.resolucion, "plan", guardado);
+    expect(cadena.exito && cadena.valor.reglas).toContainEqual(expect.objectContaining({
+      sujeto: "edit", patron: "hogar\\.local\\share\\opencode\\plans\\*.md", efecto: "allow" }));
+    expect(cadena).toEqual(directo.cadena("plan"));
   });
 });
 

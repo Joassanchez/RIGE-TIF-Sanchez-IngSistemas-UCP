@@ -1,4 +1,4 @@
-import { relative } from "node:path";
+import { parse, relative } from "node:path";
 
 export interface EvaluacionNativa { sujeto: string; patronEvaluado: string; regla: { permission: string; pattern: string; action: string } }
 export interface DecisionNativa {
@@ -13,7 +13,8 @@ export function normalizarEvaluaciones(evaluaciones: EvaluacionNativa[], raiz: s
 }
 
 export function normalizarRutaTemporal(valor: string, raiz: string): string {
-  const variantes = [...new Set([raiz, raiz.replaceAll("\\", "/"), relative("/", raiz), relative("/", raiz).replaceAll("\\", "/")])]
+  const relativa = relative(parse(raiz).root, raiz);
+  const variantes = [...new Set([raiz, raiz.replaceAll("\\", "/"), relativa, relativa.replaceAll("\\", "/")])]
     .filter(Boolean).sort((a, b) => b.length - a.length);
   return variantes.reduce((texto, ruta) => texto.replaceAll(ruta, "<RAIZ>"), valor);
 }
