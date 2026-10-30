@@ -35,6 +35,8 @@
 - **`.git` archivo inválido** (gitfile mal formado o que apunta a un repositorio inexistente): el binario da `worktree = "/"` aunque haya un repositorio válido más arriba; `git rev-parse` aborta con «gitfile does not point to a valid repository». RIGE corta la búsqueda con `"/"` (escenario `v2-worktree-gitfile-roto`).
 - **`.git` directorio que no cumple `is_git_directory`, anidado en un repositorio válido:** se conserva el comportamiento contrastado con el binario (escenario `v2-worktree-dir-invalido-anidado`, commit `ba45345`).
 
+**Precisión del 30/10/2026 (T2-19, CI de Windows contrastado con el binario):** con `worktree = "/"`, OpenCode calcula `path.relative("/", …)` (regla `edit` del agente `plan`; patrón evaluado de `read`, `edit`, `write` y `apply_patch`). En Windows, `"/"` se resuelve contra la unidad del directorio actual del proceso, y OpenCode hace `process.chdir` al proyecto (`cli/cmd/tui.ts:203`, `cli/cmd/run.ts:339`). Por eso RIGE toma como `"/"` la raíz de la unidad del proyecto y no la de su propio proceso (`paquetes/opencode/base-relativa.ts`, commits `8862069` y `5007e4c`). El valor público de `worktree` sigue siendo `"/"`. **Supuesto declarado:** RIGE modela OpenCode lanzado desde el proyecto (TUI, `run`, `debug agent`). Con `serve`, la web o `attach`, el directorio actual es el del servidor y queda fuera del alcance. Aprobada por el autor en la sesión del 30/10/2026.
+
 ### Decisión del autor
 
 Aceptado por el autor el 25/10/2026, tal como está redactado (incluida la precisión del 25/10 sobre el `.git` anidado), al cierre de la iteración 2.
