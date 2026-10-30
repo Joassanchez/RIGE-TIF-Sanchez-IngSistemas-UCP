@@ -32,21 +32,31 @@ describe("T2-06 rastro generico", () => {
       decision: null, motivoSinDecision: "eje-parcialmente-observado", consulta: { objetivoEvaluado: null }, declaraciones: ["limite"],
     });
   });
-  test("D-4 orden opaco: conserva indices y una ultima nativa intermedia no advierte", () => {
+  test("D-4 orden opaco: conserva indices y considera la ultima nativa desplazada", () => {
     const reglas = [regla(0, "impedir"), regla(1, "conceder"), regla(2, "consultar"), regla(3, "conceder", true)];
     const rastro = decidir(cadena(reglas), consulta, { ...politica, determinante: 3, coincidentes: [0, 2, 3] });
     expect(rastro).toMatchObject({ decision: "conceder", determinante: 3, desplazadas: [0, 2],
-      nativaAnulada: null, advertencias: [] });
+      nativaAnulada: { regla: 2, por: 3 }, advertencias: ["proteccion-nativa-anulada"] });
     expect(rastro.coincidentes).toEqual([reglas[0]!, reglas[2]!, reglas[3]!]);
     expect(reglas[3]!.indice).toBe(3);
   });
+});
+
+describe("T3-02 R-1", () => {
   test.each([
     ["impedir", "consultar", true, true], ["impedir", "conceder", true, true],
-    ["consultar", "conceder", true, false], ["conceder", "impedir", true, false],
+    ["consultar", "conceder", true, true], ["conceder", "impedir", true, false],
     ["consultar", "consultar", true, false], ["impedir", "conceder", false, false],
+    ["conceder", "conceder", true, false], ["consultar", "impedir", true, false],
   ] as const)("anulacion %s -> %s, declarada=%s", (antes, despues, declarada, advertir) => {
     const rastro = decidir(cadena([regla(0, antes), regla(1, despues, declarada)]), consulta,
       { ...politica, determinante: 1, coincidentes: [0, 1] });
     expect(rastro.nativaAnulada).toEqual(advertir ? { regla: 0, por: 1 } : null);
+    expect(rastro.advertencias).toEqual(advertir ? ["proteccion-nativa-anulada"] : []);
+  });
+  test("una determinante implicita no advierte aunque sea mas permisiva", () => {
+    const implicita = { ...regla(1, "conceder"), origen: { tipo: "implicito" as const, regla: "derivacion" } };
+    expect(decidir(cadena([regla(0, "consultar"), implicita]), consulta,
+      { ...politica, determinante: 1, coincidentes: [0, 1] })).toMatchObject({ nativaAnulada: null, advertencias: [] });
   });
 });

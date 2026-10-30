@@ -650,8 +650,33 @@ título indica el oráculo. RF-02 CA-3 permanece cubierto con oráculo derivado,
 sin ejecución nativa de `task`. Las resoluciones de formato 2 conservan los
 datos del contexto original, sin guardar variables de entorno ni puertos de E/S;
 las consultas guardadas no vuelven a descubrir `.git`. No hay migración.
-RF-09 advierte cuando una declaración supera una denegación nativa; superar
-una nativa `ask` no produce esa advertencia. La web numera las reglas desde 1.
+Desde T3-02 (ADR-103), RF-09 advierte cuando una declaración vuelve más
+permisiva la última nativa coincidente desplazada, de denegación o de
+confirmación (`deny` < `ask` < `allow`). `.env` con `read: allow` global
+advierte; `.env.example` conserva su nativa `allow` sin advertencia.
+La web numera las reglas desde 1.
+
+El manifiesto declara `iteracion: 2`, la base vigente de cobertura. Un ítem
+de una iteración posterior queda pendiente solo mientras no tiene
+comprobaciones; con ellas se calcula su cobertura como cualquier otro ítem.
+Los seis tipos de RF-07 siguen pendientes; RF-09 CA-3 queda cubierto.
+
+Para comprobar T3-02, con `RIGE_ALMACEN` temporal como en §6:
+
+```powershell
+bun test paquetes/nucleo/permisos pruebas/aceptacion/RF-09.test.ts pruebas/arquitectura/manifiesto.test.ts
+bun test paquetes/opencode/secuenciador.test.ts pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-02-explicacion.test.ts pruebas/utilidades/decision-nativa.test.ts pruebas/arquitectura/vendor.test.ts
+bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-proteccion-env
+bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP "rige-decisiones-cache") --regenerar
+bun run referencias --raiz (npm.cmd root -g)
+bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP "rige-decisiones-cache")
+bun test
+bun run verificar
+```
+
+La regeneración de decisiones recorre todas las consultas nativas. En T3-02
+se conserva solo la nueva referencia y se restauran las demás; luego se
+actualizan los SHA-256 del manifiesto, como se indica en §6.
 
 Para comprobar T2-16, con `RIGE_ALMACEN` temporal como en §6:
 

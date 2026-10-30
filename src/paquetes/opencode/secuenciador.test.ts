@@ -39,7 +39,7 @@ describe("V1-03 S-4", () => {
       "reglas-sesion-lanzadora-excluidas": "Las reglas de la sesión que lanza el subagente no integran el análisis estático.",
       "agente-no-invocable-como-subagente": "El agente tiene mode primary y no es invocable como subagente; se evalúa igualmente su cadena propia.",
       "primary-tools-no-incorporado": "Las denegaciones de sesión de experimental.primary_tools no integran el análisis.",
-      "proteccion-nativa-anulada": "La declaración determinante desactiva una protección nativa coincidente anterior (RD-07). El rastro identifica la regla nativa y la declaración con su archivo y línea.",
+      "proteccion-nativa-anulada": "La declaración determinante desactiva o debilita una protección nativa coincidente anterior, de denegación o de confirmación (RD-07, ADR-103). El rastro identifica la regla nativa y la declaración con su archivo y línea.",
       "aprobaciones-permanentes-excluidas": 'Las aprobaciones permanentes ("permitir siempre") no integran el análisis.',
       "sesion-no-interactiva-excluida": "En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.",
       "nativa-general": "Regla de permiso incorporada en los defaults de OpenCode 1.18.25.",

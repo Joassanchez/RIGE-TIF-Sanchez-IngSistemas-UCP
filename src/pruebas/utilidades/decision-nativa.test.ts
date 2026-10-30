@@ -32,6 +32,9 @@ describe("X-1 derivadas validadas contra nativa win32-x64", () => {
   const directorio = join(import.meta.dir, "../escenarios");
   for (const archivo of new Bun.Glob("*/REFERENCIA.json").scanSync({ cwd: directorio })) {
     const referencia = JSON.parse(readFileSync(join(directorio, archivo), "utf8"));
+    // Las referencias solo nativas se comparan con RIGE en su aceptacion;
+    // este control cruza dos oraculos registrados cuando existe una derivada.
+    if (!Object.hasOwn(referencia, "decisiones")) continue;
     for (const registro of (referencia.decisionesNativas ?? []) as DecisionNativa[]) {
       if (registro.herramientaNoOfrecida) continue;
       test(`${archivo}: ${registro.consulta}, decision y determinante`, () => {

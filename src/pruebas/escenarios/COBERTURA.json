@@ -131,6 +131,18 @@
       "objetivo": "frontera de OE-2",
       "iteracion": 2,
       "obligatorioV2": false
+    },
+    {
+      "id": "RF-09 CA-2",
+      "objetivo": "OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-09 CA-3",
+      "objetivo": "OE-2",
+      "iteracion": 3,
+      "obligatorioV2": false
     }
   ]
 }

@@ -13,6 +13,7 @@ export interface Escenario {
   agentes: string[]; claves: string[]; consultas: ConsultaNativa[]; comprobaciones: Comprobacion[];
 }
 export interface Manifiesto {
+  iteracion: number;
   corte: null | string; retiros: unknown[]; escenarios: Escenario[];
   defectosSembrados: { id: string; escenario: string; tipo: string; localizacion: { archivo: string; linea: number };
     hallazgoEsperado: string; controlCorrecto: { agente: string; patron: string; evidencia: string }; pendiente: string }[];
@@ -39,7 +40,7 @@ export function informarCobertura(manifiesto: Manifiesto, matriz: Matriz) {
       const comprobaciones = manifiesto.escenarios.flatMap(e => e.comprobaciones).filter(c => c.item === item.id);
       const derivadaSubagente = item.id === "RF-02 CA-3" && comprobaciones.length > 0
         && comprobaciones.every(c => c.fuente === "derivada");
-      return { ...item, estado: item.iteracion === 3 ? "pendiente" : derivadaSubagente
+      return { ...item, estado: item.iteracion > manifiesto.iteracion && comprobaciones.length === 0 ? "pendiente" : derivadaSubagente
         ? "cubierto con oráculo derivado; sin ejecución nativa de task" : escenarios.length ? "cubierto" : "sin cobertura", escenarios };
     }),
     escenarios: manifiesto.escenarios.map(e => ({ id: e.id, comprobaciones: e.comprobaciones.length, resultado: "no ejecutado por este informe" })),

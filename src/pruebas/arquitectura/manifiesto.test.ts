@@ -58,17 +58,25 @@ describe("T2-14 M-2", () => {
 });
 
 describe("T2-14 M-3", () => {
-  test("los seis tipos RF-07 y su defecto ADR-088 quedan pendientes, nunca cubiertos", () => {
+  test("los seis tipos RF-07 sin comprobaciones y su defecto ADR-088 quedan pendientes", () => {
     const manifiesto = leer();
-    const pendientes = informarCobertura(manifiesto, matriz()).items.filter(i => i.iteracion === 3);
+    const pendientes = informarCobertura(manifiesto, matriz()).items.filter(i => i.id.startsWith("RF-07 "));
     expect(pendientes).toHaveLength(6);
     expect(pendientes.map(i => i.id).sort()).toEqual(["referencias-no-resueltas", "reglas-permiso-sin-efecto", "elementos-sin-uso", "sustituciones-sin-valor", "entradas-ilegibles", "entradas-descartadas"].map(t => `RF-07 ${t}`).sort());
     expect(pendientes.every(i => i.estado === "pendiente")).toBe(true);
     expect(manifiesto.defectosSembrados).toHaveLength(1);
     expect(manifiesto.defectosSembrados[0]).toMatchObject({ escenario: "v2-ruta-bloqueo", tipo: "reglas-permiso-sin-efecto", pendiente: "RF-07, iteración 3" });
     expect(manifiesto.defectosSembrados[0]!.controlCorrecto).toMatchObject({ patron: "src/productos.js" });
-    const falsa = leer();
-    falsa.escenarios[0]!.comprobaciones.push({ item: pendientes[0]!.id, archivo: "pruebas/aceptacion/RF-01.test.ts", describe: "RF-01 CA-1", fuente: "derivada" });
-    expect(informarCobertura(falsa, matriz()).items.filter(i => i.iteracion === 3).every(i => i.estado === "pendiente")).toBe(true);
+  });
+  test("RF-09 CA-3 queda cubierto por su escenario y aceptacion", () => {
+    expect(informarCobertura(leer(), matriz()).items.find(i => i.id === "RF-09 CA-3"))
+      .toMatchObject({ iteracion: 3, estado: "cubierto", escenarios: ["v3-proteccion-env"] });
+  });
+  test("solo los items futuros sin comprobaciones quedan pendientes", () => {
+    const manifiesto = { ...leer(), iteracion: 4 };
+    const items = [3, 4, 5, 6].map(iteracion => ({ id: `caso-${iteracion}`, iteracion, objetivo: "prueba", obligatorioV2: false }));
+    manifiesto.escenarios[0]!.comprobaciones.push({ item: "caso-6", archivo: "pruebas/aceptacion/RF-09.test.ts", describe: "RF-09 CA-3", fuente: "referencia-binario" });
+    expect(informarCobertura(manifiesto, { items }).items.map(i => i.estado))
+      .toEqual(["sin cobertura", "sin cobertura", "pendiente", "cubierto"]);
   });
 });

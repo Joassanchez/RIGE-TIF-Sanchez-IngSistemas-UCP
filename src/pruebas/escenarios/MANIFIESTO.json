@@ -1075,6 +1075,62 @@
           "fuente": "referencia-binario"
         }
       ]
+    },
+    {
+      "id": "v3-proteccion-env",
+      "entradas": {
+        "hogar/.config/opencode/opencode.json": "14d254c1158e2a6d37ca670c70b234e694d0bb45774c92e3bf786d4b88e9e4e6",
+        "proyecto/marcador.txt": "c7f028f02c543e5b2e1b3dc96bc8ca0fbea4b3a00ed614864068eefc010e1415"
+      },
+      "referencia": "b3a0a5179ea271d557df1ee1c1ce7bdebe717b94ac573c5b8637fdf1767e1b6a",
+      "agentes": [
+        "build"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-.env",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": ".env",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/.env"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q1-read-.env.example",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": ".env.example",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/.env.example"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-09 CA-2",
+          "archivo": "pruebas/aceptacion/RF-09.test.ts",
+          "describe": "RF-09 CA-2",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-09 CA-3",
+          "archivo": "pruebas/aceptacion/RF-09.test.ts",
+          "describe": "RF-09 CA-3",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-09.test.ts",
+          "describe": "T3-02 R-4",
+          "fuente": "referencia-binario"
+        }
+      ]
     }
   ],
   "defectosSembrados": [
@@ -1094,5 +1150,6 @@
       },
       "pendiente": "RF-07, iteración 3"
     }
-  ]
+  ],
+  "iteracion": 2
 }

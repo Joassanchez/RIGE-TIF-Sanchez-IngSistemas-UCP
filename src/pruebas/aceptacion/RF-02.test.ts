@@ -68,7 +68,8 @@ describe("K-10 RF-02 CA-3", () => {
 });
 
 function comprobarLectura(r: ReturnType<typeof consultarPermisos>["respuestas"][number]) {
-  expect(r).toMatchObject({ decision: "allow", motivoSinDecision: null, desplazadas: [0, 8, 9], nativaAnulada: null });
+  expect(r).toMatchObject({ decision: "allow", motivoSinDecision: null, desplazadas: [0, 8, 9],
+    nativaAnulada: { regla: 9, por: 14 }, advertencias: ["proteccion-nativa-anulada"] });
   expect(r.cadena.map(({ sujeto, patron, efecto, origen }) => [sujeto, patron, efecto, origen.tipo])).toEqual([
     ["*", "*", "allow", "nativo"], ["read", "*", "allow", "nativo"],
     ["read", "*.env", "ask", "nativo"], ["read", "*.env", "allow", "declarado"],
