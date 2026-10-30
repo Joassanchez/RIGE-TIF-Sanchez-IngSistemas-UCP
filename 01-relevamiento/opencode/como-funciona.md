@@ -27,6 +27,8 @@ La primera versión de esta guía describía el mecanismo de "permitir siempre" 
 
 El repositorio contiene **dos motores de permisos**. El v1, en `packages/opencode/src/permission/`, y el v2, en `packages/core/src/permission.ts`. En la 1.18.25 el que decide es el **v2**: es el que emite los eventos `permission.v2.asked` que se capturaron en el laboratorio. Las conclusiones que dependían del v1 eran falsas para esta versión y se corrigieron en las secciones 9 y 10.
 
+> **Corrección del 30/10/2026 (iteración 2 de RIGE; análisis completo en `pila-permisos.md`).** El párrafo anterior generaliza un resultado medido solo por la API nueva (`/api/session`, laboratorio E-17). En la 1.18.25 corren las dos pilas en el mismo binario y la que decide depende de la ruta por la que entra el pedido: `opencode run`, la TUI y la app de escritorio usan la pila **v1** (`packages/opencode/src/permission/index.ts`, con `Permission.merge(agent.permission, session.permission)` en `session/tools.ts:81-87`); solo el cliente de la API `/api` usa la v2 (`packages/core/src/permission.ts`). La línea de base y RIGE modelan la v1. Las secciones 8 y 10, que citan el motor v2, valen solo para esa API.
+
 La lección vale más que la corrección: **leer el código del tag correcto no alcanza para saber qué hace la herramienta.** Hay que ejecutarla. Es el motivo por el que el diseño de la línea base exige verificar cada caso en ejecución.
 
 ---
@@ -482,6 +484,8 @@ El caso del subdirectorio es el importante: las instrucciones que rigen sobre el
 | Skill | `.opencode/skill/<nombre>/SKILL.md` | Automático; aparece en `opencode debug skill` |
 | Comando | `.opencode/command/<nombre>.md` | Automático |
 | Plugin | `.opencode/plugin/*.js` | Automático; el plugin se cargó y su hook `tool.execute.before` se disparó |
+
+> **Corrección del 30/10/2026 (iteración 2 de RIGE, T2-05).** Además de los de `.opencode/skill/`, OpenCode 1.18.25 descubre los skills de `~/.claude/skills` y `~/.agents/skills` (y los de esos directorios subiendo desde el proyecto hasta el árbol de trabajo). Por cada uno agrega a la cadena de permisos una regla `external_directory <directorio del skill>/* → allow`: el descubrimiento está en `packages/opencode/src/skill/index.ts:185-203` y la regla en `agent/agent.ts:108-124` (`whitelistedDirs`). La cadena real de un usuario depende entonces de directorios ajenos a la configuración de OpenCode. `OPENCODE_DISABLE_EXTERNAL_SKILLS=true` los excluye.
 
 Un plugin cargado **no alteró un `deny`** en la prueba realizada. Pero la documentación embebida indica que el hook `config` recibe la configuración fusionada en vivo y permite modificarla: un plugin **puede** reescribir permisos. `[POR VERIFICAR]`
 

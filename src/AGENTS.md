@@ -97,13 +97,15 @@ Workspaces de Bun 1.3.14 con instalación aislada: `paquetes/nucleo`, `paquetes/
   | Situación | Salida | Error | Código |
   |---|---|---|---|
   | Respuesta válida, con o sin hallazgos | JSON | — | 0 |
+  | Agente existente sin la clave consultada (RF-03 CA-5) | JSON con `valores: []` y `motivo: "clave-inexistente"` | — | 0 |
   | Comando compuesto (RF-08) | JSON con `decision: null` | — | 0 |
-  | Proyecto, agente o clave inexistente | vacío | JSON de error | 1 |
+  | Versión de OpenCode no determinable (ADR-102) | JSON con la declaración `version-no-determinada` | advertencia | 0 |
+  | Proyecto o agente inexistente, agente sin declaraciones | vacío | JSON de error | 1 |
+  | Versión distinta de 1.18.25 (RF-05 CA-2, ADR-102) | vacío | JSON de error `version-no-soportada` con la versión esperada y la detectada | 1 |
   | Argumentos inválidos | vacío | JSON de error | 2 |
-  | Versión distinta de 1.18.25 (RF-05) | vacío | advertencia | 3 |
   | Falla interna | vacío | JSON `interno` (stack solo con `--depurar`) | 70 |
 
-  Códigos estables de error de uso (código 1) agregados por ADR-061 y ADR-062: `almacen-sin-esquema` (el mensaje nombra `bun run esquema`) y `via-no-soportada` (`OPENCODE_CONFIG_CONTENT` u `OPENCODE_PERMISSION` definidas; el mensaje nombra la variable).
+  Códigos estables de error de uso (código 1): `almacen-sin-esquema` (ADR-061; el mensaje nombra `bun run esquema`), `via-no-soportada` (ADR-062 y ADR-101; el mensaje nombra la variable) y `version-no-soportada` (ADR-102). Toda respuesta y todo error declaran `esquema: 2` (`versionEsquemaSalida`); el esquema publicado está en `esquemas/salida/` y un campo opcional nuevo no cambia el entero (ADR-062, precisión de C5). Las filas de ADR-102 rigen desde la iteración 3 (T3-01).
 
 - **Paridad:** la CLI y la web presentan el mismo objeto de respuesta del caso de uso; la web nunca calcula nada propio.
 - **Web:**
@@ -111,17 +113,21 @@ Workspaces de Bun 1.3.14 con instalación aislada: `paquetes/nucleo`, `paquetes/
   - se rechazan las solicitudes con `Sec-Fetch-Site: cross-site` o `same-site`, en todas las rutas (ADR-062);
   - HTML generado en el servidor, sin JavaScript en el cliente;
   - **todo valor se escapa por defecto**, porque los valores de la configuración analizada pueden contener HTML. Insertar HTML sin escapar exige una función explícita, que solo usan las plantillas fijas.
+  - para la paridad, cada página incluye la respuesta del caso de uso como JSON en `<script type="application/json" id="respuesta">`. Es un dato que el navegador no ejecuta, con `<` escapado, así que no contradice la regla de «sin JavaScript en el cliente».
 - **Almacén (ADR-061):**
   - la Resolución es inmutable;
   - se conservan las últimas 20 por Proyecto;
   - el esquema se crea con `bun run esquema` desde `esquemas/almacen/`;
-  - RIGE nunca migra en silencio: si `user_version` no coincide, falla con `almacen-sin-esquema`.
-- **Vías del adaptador del v1 (ADR-062, C8):**
-  - se observan todas las vías locales de archivo, y el worktree se detecta subiendo hasta un `.git`;
-  - si `OPENCODE_CONFIG_CONTENT` u `OPENCODE_PERMISSION` están definidas, se falla con `via-no-soportada`;
-  - las vías remotas figuran como no observadas.
+  - RIGE nunca migra en silencio: el esquema vigente es `user_version = 2` (`002_formato2.sql`) y el documento usa `formato: 2`; con otro valor falla con `almacen-sin-esquema`.
+- **Vías del adaptador (ADR-062 C8, ADR-101 y ADR-102):**
+  - se observan todas las vías locales de archivo;
+  - el worktree sigue el criterio de descubrimiento de git leyendo `.git`, sin ejecutar procesos (ADR-101): `"/"` sin repositorio, con un `.git` archivo inválido o sin `git` en `PATH` (declaración `git-no-encontrado`);
+  - `GIT_DIR`, `GIT_WORK_TREE`, `GIT_CEILING_DIRECTORIES` y `GIT_COMMON_DIR` definidas → `via-no-soportada`;
+  - `OPENCODE_CONFIG_CONTENT` y `OPENCODE_PERMISSION` definidas → `via-no-soportada` hasta que la iteración 3 implemente su lectura (RF-04, RF-07);
+  - la versión de OpenCode se lee del `package.json` del paquete `opencode-ai` del primer `opencode` del `PATH`, sin ejecutarlo (ADR-102, desde la iteración 3);
+  - las vías remotas y administradas figuran como no observadas.
 - **Idioma:** los identificadores del dominio, las carpetas y los casos de uso van en español, sin tildes ni ñ.
-- **Copia del evaluador de OpenCode:** extracción literal en `paquetes/opencode/vendor/`, con `LICENSE` MIT y `PROCEDENCIA.md` (hash del original y de la versión propia; cambios limitados a imports y envoltorio).
+- **Copia del evaluador de OpenCode:** extracción en `paquetes/opencode/vendor/` con el **cuerpo literal y la firma adaptada**: `plataforma` reemplaza a `process.platform` y `hogar` a `os.homedir()`, para mantener la determinación. Lleva `LICENSE` MIT y `PROCEDENCIA.md` con el hash del original, la lista exacta de cambios y el hash de la versión propia.
 
 ## 6. Pruebas
 
@@ -129,10 +135,10 @@ Workspaces de Bun 1.3.14 con instalación aislada: `paquetes/nucleo`, `paquetes/
 - **Las pruebas unitarias** van junto al código (`*.test.ts`).
 - **Aislamiento obligatorio (ADR-062, C6):**
   - las pruebas unitarias reciben el entorno por el puerto, como objeto de prueba, y nunca modifican `process.env`;
-  - las pruebas de aceptación lanzan la CLI o el servidor como **subproceso**, con un entorno construido desde cero:
+  - las pruebas de aceptación de la CLI y de la web lanzan la CLI o el servidor como **subproceso**; las demás llaman al caso de uso en proceso, con el entorno construido como objeto. En ambos casos el entorno se arma desde cero:
     - `HOME`, `USERPROFILE`, `XDG_*`, `LOCALAPPDATA`, `APPDATA` y `RIGE_ALMACEN` apuntan a un directorio temporal;
-    - las variables `OPENCODE_*` quedan vacías;
-    - del entorno real se heredan solo `PATH` y `SystemRoot`;
+    - las variables `OPENCODE_*` y `GIT_*` quedan vacías;
+    - del entorno real se heredan solo `PATH` y `SystemRoot`. Desde la iteración 3 (T3-01, ADR-102), al `PATH` se le antepone un directorio de prueba con un paquete `opencode-ai` falso en la versión 1.18.25, para que el resultado no dependa del OpenCode de la máquina ni del CI. Las pruebas de RF-05 reemplazan ese directorio por uno con otra versión o sin paquete;
   - la precarga de `bun test` (`pruebas/preparar-entorno.ts`) redirige esas variables y falla si alguna apunta al HOME real;
   - nunca se lee la configuración real del usuario (`~/.config/opencode`);
   - los escenarios viven en `pruebas/escenarios/` y se copian a un temporal antes de analizarse;
