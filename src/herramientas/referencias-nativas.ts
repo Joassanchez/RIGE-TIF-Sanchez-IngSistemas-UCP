@@ -36,6 +36,13 @@ function entornoBase(): Record<string, string> {
     && /^(PATH|SystemRoot)$/i.test(nombre))) as Record<string, string>;
 }
 
+function comprobarProteccion(valor: unknown, referencia: Referencia, env: Record<string, string>): void {
+  const texto = JSON.stringify(valor);
+  if (texto.includes("MARCA-") || Object.keys(referencia.procedencia.entorno ?? {}).some(nombre => env[nombre] && texto.includes(env[nombre]!))) {
+    throw new Error("Contenido sustituido detectado; se omite el diagnostico para protegerlo.");
+  }
+}
+
 function entornoAislado(hogar: string): Record<string, string> {
   const env = entornoBase();
   for (const nombre of ["HOME", "USERPROFILE", "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME", "APPDATA", "LOCALAPPDATA", "ProgramData"]) env[nombre] = hogar;
@@ -98,9 +105,11 @@ function ejecutar(): number {
   let codigo = 0;
   for (const { nombre, referencia } of referencias) {
     const copia = copiarEscenario(nombre, { git: referencia.procedencia.git ?? "raiz" });
+    const protegido = referencia.procedencia.entorno !== undefined;
     try {
       const hogar = join(copia.raiz, referencia.procedencia.hogar);
       const env = entornoDeReferencia(referencia, copia);
+      comprobarProteccion(referencia, referencia, env);
       // Un HEAD sintetico no es un repositorio: el binario requiere git rev-parse.
       if (referencia.procedencia.git !== "sintetico" && referencia.procedencia.git !== "ninguno") {
         const raizRepositorio = referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz;
@@ -125,11 +134,14 @@ function ejecutar(): number {
         const archivo = /Config file at (.+?) is not valid JSON\(C\)/.exec(proceso.stderr.toString())?.[1];
         if (proceso.exitCode === 0 || !archivo) throw new Error("El binario no confirmo la falla de sintaxis esperada.");
         const falla = { codigo: proceso.exitCode, archivo: relative(copia.raiz, archivo).replaceAll("\\", "/") };
-        if (regenerar) writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify({ ...referencia,
+        const capturada = { ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), comando: "opencode debug agent <agente>" }, falla,
-        }, null, 2) + "\n");
+        };
+        comprobarProteccion(capturada, referencia, env);
+        if (regenerar) writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify(capturada, null, 2) + "\n");
         const diferencias = regenerar ? [] : comparar({ falla: referencia.falla }, { falla });
+        comprobarProteccion(diferencias, referencia, env);
         console.log(`${nombre}: ${diferencias.length ? JSON.stringify(diferencias) : regenerar ? "regenerada" : "ok"}`);
         if (diferencias.length) codigo = 1;
         continue;
@@ -137,7 +149,8 @@ function ejecutar(): number {
       const cadenas: Record<string, unknown[]> = {};
       const valoresAgentes: Record<string, Record<string, unknown>> = {};
       let valores: Record<string, unknown> | undefined;
-      for (const agente of new Set([referencia.agente, ...Object.keys(referencia.cadenas), "build", "plan", "general", "explore", "compaction", "title", "summary"])) {
+      for (const agente of new Set([referencia.agente, ...Object.keys(referencia.cadenas), "build", "plan", "general", "explore", "compaction", "title", "summary",
+        ...(referencia.procedencia.sustituidas ?? []).map(([agente]) => agente)])) {
         const proceso = Bun.spawnSync([binario, "debug", "agent", agente], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env,
           stdout: "pipe", stderr: "pipe", timeout: 120000,
@@ -145,12 +158,18 @@ function ejecutar(): number {
         if (proceso.exitCode !== 0) {
           if (!Object.hasOwn(referencia.cadenas, agente) && agente !== referencia.agente
             && proceso.stderr.toString().includes(`Agent ${agente} not found`)) continue;
-          throw new Error(`Comando nativo fallido (codigo ${proceso.exitCode}): ${proceso.stderr.toString().trim()}`);
+          throw new Error(`Comando nativo fallido (codigo ${proceso.exitCode})${protegido ? "." : `: ${proceso.stderr.toString().trim()}`}`);
         }
         const salida = JSON.parse(proceso.stdout.toString());
+        const sustituidas = (referencia.procedencia.sustituidas ?? []).filter(([nombre]) => nombre === agente).map(([, clave]) => clave);
+        for (const clave of sustituidas) {
+          if (!Object.hasOwn(salida, clave)) throw new Error("Clave sustituida ausente en la captura nativa.");
+          salida[clave] = { tipo: "sustituido", sha256: createHash("sha256").update(JSON.stringify(salida[clave])).digest("hex") };
+        }
         valoresAgentes[agente] = Object.fromEntries(["name", "description", "mode", "native", "hidden", "temperature"]
+          .concat(sustituidas.filter(clave => !["name", "description", "mode", "native", "hidden", "temperature"].includes(clave)))
           .filter(clave => Object.hasOwn(salida, clave)).map(clave => [clave, salida[clave]]));
-        if (typeof salida.prompt === "string" && ["explore", "compaction", "title", "summary"].includes(agente)) {
+        if (!sustituidas.includes("prompt") && typeof salida.prompt === "string" && ["explore", "compaction", "title", "summary"].includes(agente)) {
           valoresAgentes[agente]!.prompt = { tipo: "texto-nativo", sha256: createHash("sha256").update(salida.prompt).digest("hex") };
         }
         if (!Array.isArray(salida.permission)) throw new Error(`El agente ${agente} no tiene una cadena permission.`);
@@ -174,7 +193,7 @@ function ejecutar(): number {
         const proceso = Bun.spawnSync([binario, "agent", "list"], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
         });
-        if (proceso.exitCode !== 0) throw new Error(`agent list fallo (codigo ${proceso.exitCode}): ${proceso.stderr.toString().trim()}`);
+        if (proceso.exitCode !== 0) throw new Error(`agent list fallo (codigo ${proceso.exitCode})${protegido ? "." : `: ${proceso.stderr.toString().trim()}`}`);
         agentes = [...proceso.stdout.toString().matchAll(/^([^\r\n]+) \((primary|subagent|all)\)\r?$/gm)]
           .map(([, nombre, modo]) => ({ nombre: nombre!, modo: modo! }));
         if (!agentes.length) throw new Error("agent list no produjo lineas nombre (modo).");
@@ -186,21 +205,24 @@ function ejecutar(): number {
           if (!Object.hasOwn(valores!, k)) throw new Error(`Clave nativa ausente: ${k}.`);
           return [k, valores![k]];
         }));
-        writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify({ ...referencia,
+        const capturada = { ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
             comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
           valores: seleccionados, valoresAgentes, cadenas, ...(agentes === undefined ? {} : { agentes }), ...(comandos === undefined ? {} : { comandos }),
-        }, null, 2) + "\n");
+        };
+        comprobarProteccion(capturada, referencia, env);
+        writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify(capturada, null, 2) + "\n");
       }
       const diferencias = regenerar ? [] : [...comparar(referencia.valores, valores), ...comparar(referencia.cadenas, cadenas),
         ...comparar(referencia.valoresAgentes ?? {}, valoresAgentes),
         ...(agentes === undefined ? [] : comparar({ agentes: referencia.agentes }, { agentes })),
         ...(comandos === undefined ? [] : comparar({ comandos: referencia.comandos }, { comandos }))];
-      console.log(`${nombre}: ${diferencias.length ? JSON.stringify(diferencias) : regenerar ? "regenerada" : "ok"}`);
+      comprobarProteccion(diferencias, referencia, env);
+      console.log(`${nombre}: ${diferencias.length ? JSON.stringify(protegido ? diferencias.map(d => d.clave) : diferencias) : regenerar ? "regenerada" : "ok"}`);
       if (diferencias.length) codigo = 1;
     } catch (error) {
-      console.log(`${nombre}: error: ${error instanceof Error ? error.message : String(error)}`);
+      console.log(`${nombre}: error: ${protegido ? "Captura protegida fallida; detalle omitido para no revelar contenido sustituido." : error instanceof Error ? error.message : String(error)}`);
       codigo = 1;
     } finally {
       copia.borrar();

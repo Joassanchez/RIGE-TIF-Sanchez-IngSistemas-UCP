@@ -66,7 +66,7 @@ describe("V1-03 S-4", () => {
       "fuera-del-v1": "Clave que OpenCode combina o deriva con reglas que RIGE no incorpora; se resuelve en una iteración posterior.",
       "markdown-no-observado": "Agente declarado también en Markdown, que RIGE no incorpora; sus claves no se informan para no presentar un valor incompleto.",
       "tools-legado-no-incorporado": "El alias legado tools aporta reglas a permission; RIGE no incorpora esa derivación y no informa los permisos de ese ámbito para evitar un resultado incompleto.",
-      "sustitucion-no-incorporada": "Clave cuyo valor contiene una sustitución {env:…} o {file:…}; RIGE no incorpora sustituciones y no informa su valor (RNF-04).",
+      "sustitucion-no-incorporada": "RIGE no evalúa una regla de permiso ni un modo cuyo texto efectivo proviene de una sustitución; informa su origen y su condición",
     });
   });
 });
@@ -141,30 +141,13 @@ describe("V1-08 F-4", () => {
   });
 });
 
-describe("V1-08 F-5", () => {
-  test.each(([
-    "{env:CLAVE}", "antes {file:./x} despues", [1, "{env:CLAVE}"],
-    [false, { anidada: [[{ cadena: "{file:./x}" }]] }],
-  ] as const).map(valor => [valor] as const))("sustitucion en %j bloquea la ruta en todas las lecturas", (valor) => {
-    const ruta = ["agent", "build", "prompt"];
-    const otra = declaracion(["agent", "build", "steps"], 12);
-    const resultado = secuenciar([lectura(0, [declaracion(ruta, "anterior"), otra]), lectura(1, [declaracion(ruta, valor)])]);
-    expect(resultado).toEqual({ exito: true, valor: {
-      aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: otra.posicion }, ruta: otra.ruta, valor: otra.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
-      noResueltas: [{ ruta, regla: "sustitucion-no-incorporada" }],
-    } });
-  });
-  test("bloquea desde el primer segmento con sustitucion, incluidas otras hojas y objetos vacios", () => {
-    for (const ruta of [["agent", "{env:AGENTE}", "prompt"], ["{env:RAIZ}", "{file:./x}"], ["agent", "build", "options", "{env:CLAVE}"]]) {
-      const indice = ruta.findIndex(s => /\{(env|file):[^}]*\}/.test(s));
-      const prefijo = ruta.slice(0, indice + 1);
-      const otra = declaracion(["agent", "otro", "steps"], 12);
-      const resultado = secuenciar([lectura(0, [declaracion([...prefijo, "description"]), otra]),
-        lectura(1, [declaracion(ruta, {})])]);
-      expect(resultado).toEqual({ exito: true, valor: {
-        aplicaciones: [{ origen: { tipo: "declarado", orden: 0, posicion: otra.posicion }, ruta: otra.ruta, valor: otra.valor, estrategia: "reemplazo", regla: "orden-de-aplicacion" }],
-        noResueltas: [{ ruta: prefijo, regla: "sustitucion-no-incorporada" }],
-      } });
+describe("V1-08 F-5 actualizado por T3-04", () => {
+  test("no redetecta sustituciones sin metadatos del lector, tampoco tokens vacios", () => {
+    const valores = ["{env:CLAVE}", "{env:} {file:}", ["{file:./x}"]];
+    for (const valor of valores) {
+      const d = declaracion(["agent", "build", "prompt"], valor);
+      const r = secuenciar([lectura(0, [d])]);
+      expect(r).toMatchObject({ exito: true, valor: { noResueltas: [], aplicaciones: [{ valor }] } });
     }
   });
 });

@@ -297,7 +297,7 @@ Con el servidor en marcha:
 
    Abrir la misma dirección de la resolución: la página muestra los mismos datos, leídos del almacén, y el texto «Página armada con la resolución leída del almacén de RIGE.» «Resoluciones de este proyecto» lista la resolución 1.
 5. **Variante:** volver a la página inicial, completar el mismo proyecto y agente, dejar **Clave** vacía y pulsar «Resolver y guardar»: la tabla «Valores efectivos» muestra `description`, `steps` y `temperature` en una nueva resolución.
-6. Los valores coinciden con los de OpenCode 1.18.25 registrados en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`; si el equipo tiene configuración global de OpenCode, RIGE la incorpora y la muestra con su procedencia, de modo que pueden aparecer entradas adicionales. Si esa configuración tiene sustituciones, agentes en Markdown, `mode` legado o claves derivadas, las claves afectadas figuran como «no resueltas en el prototipo v1». `agent.<nombre>.disable: true` elimina el agente desde T2-11. Si lo afectado es la clave o el agente consultado, la página de error lo informa (`clave-no-resuelta`, HTTP 422) y no se crea la resolución. Una sustitución fuera de una cadena o un `mode` que no es objeto detienen el análisis con `contenido-no-soportado`.
+6. Los valores coinciden con los de OpenCode 1.18.25 registrados en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`; si el equipo tiene configuración global de OpenCode, RIGE la incorpora y la muestra con su procedencia, de modo que pueden aparecer entradas adicionales. Los agentes en Markdown, `mode` legado y claves derivadas figuran como «no resueltas en el prototipo v1». Desde T3-04 las sustituciones se representan con su plantilla, origen y condición, con las limitaciones de permisos y modo detalladas más abajo. `agent.<nombre>.disable: true` elimina el agente desde T2-11. Si lo afectado es la clave o el agente consultado, la página de error lo informa (`clave-no-resuelta`, HTTP 422) y no se crea la resolución. Una sustitución fuera de cadenas y comentarios o un `mode` que no es objeto detienen el análisis con `contenido-no-soportado`.
 
 Se detiene el servidor con Ctrl+C antes de continuar.
 
@@ -756,8 +756,8 @@ literales. Las variables vacías no se listan. Las definidas se identifican
 por nombre, con `condicion: "definida"` y `resumen: null`; el resumen del
 conjunto incluye una huella de su texto (ADR-104). Sus declaraciones sí se
 resuelven y se guardan; el texto crudo y sus comentarios nunca se emiten ni
-se guardan. Las sustituciones de las demás vías mantienen las limitaciones
-vigentes hasta T3-04.
+se guardan. Las sustituciones de las demás vías siguen el comportamiento
+de T3-04 descrito a continuación.
 
 El TOML heredado `config` sigue con `via-no-soportada`: OpenCode lo migra al
 ejecutarse, escribe `config.json` y borra `config`; analizarlo antes daría un
@@ -784,3 +784,74 @@ El arnés aplica `procedencia.variables` tanto a OpenCode como a RIGE mediante
 ordenadas de `opencode debug config`) o `fallaEsperada` con cadenas vacías:
 se captura el código no nulo y el archivo relativo a la copia. Solo se
 regeneran los tres escenarios nuevos; las referencias anteriores se conservan.
+
+## Sustituciones protegidas (T3-04)
+
+RIGE reproduce en memoria las sustituciones de OpenCode 1.18.25 y verifica
+que conservan la secuencia de tokens y la estructura del JSONC. La salida
+y el almacén conservan el valor del archivo original, por ejemplo
+`"Clave {env:API_KEY}"`, junto con `sustituciones`. Cada aparición informa
+`tipo`, `origen`, `definido` y `posicion`; nunca contiene el texto incorporado
+ni su resumen. La plantilla, el tipo y la posición proceden del archivo:
+precisan la representación simbólica de ADR-058 («sustitución de API_KEY,
+definida»). Las posiciones se calculan sobre el original, en UTF-16 y desde 1.
+Los campos son opcionales; salida y documento del almacén siguen en versión 2.
+
+Una variable ausente o vacía tiene `definido: false`. Los archivos se buscan
+respecto del directorio de la entrada, o del proyecto para
+`OPENCODE_CONFIG_CONTENT`; `~/` usa el hogar del contexto. Su origen es una
+ruta absoluta con `/`. Un archivo inexistente, directorio o ilegible produce
+`entrada-ilegible`, con la ruta original y consecuencia de falla. Las rutas
+interpoladas y las referencias a archivos creadas por una variable se rechazan
+antes de leer archivos. Una expansión inválida o que cambia la estructura
+falla sin mostrar su contenido, incluso con `--depurar`.
+
+`{env:}` y `{file:}` vacíos son literales. Las variables también se expanden
+en comentarios; no generan declaraciones. Una referencia de archivo después
+de `//` al comienzo de la línea se omite, pero en un comentario de bloque se
+lee. Markdown y `OPENCODE_PERMISSION` mantienen todos estos textos literales.
+
+Las sustituciones en claves ajenas a `permission` se rechazan. Las reglas de
+permiso con sustituciones quedan excluidas con `sustitucion-no-incorporada`;
+sus orígenes y condiciones se acumulan por entrada y posición. Un `mode`
+sustituido se valida y excluye el agente entero (`no-observado`). `hidden` y
+`disable` sustituidos son inválidos porque el esquema exige booleanos. RIGE
+no lee las credenciales de `auth.json` ni las variables que aporta la vía
+wellknown; `remota-wellknown` continúa como no observada.
+
+El resumen del conjunto agrega las ternas ordenadas y sin repetir
+`[tipo, origen, definido]` de las sustituciones. Cambiar únicamente su
+contenido no cambia esa huella; cambiar su condición sí. Las entradas sin
+sustituciones conservan la fórmula anterior. El oráculo de pruebas obtiene
+SHA-256 de los valores expandidos y compara exclusivamente esos resúmenes
+con el binario; no forma parte del flujo de la aplicación.
+
+El escenario `v3-sustituciones` declara `procedencia.entorno` con archivos
+que se cargan en memoria para variables `RIGE_PRUEBA_*`, y
+`procedencia.sustituidas` con pares agente/clave capturados como
+`{ tipo: "sustituido", sha256 }`. El arnés comprueba que la referencia y
+las diferencias no contienen valores de esas variables ni `MARCA-`; las
+escenas protegidas omiten el stderr del binario y solo muestran las rutas
+con diferencias. El documento de regresión `pruebas/datos/resolucion-t3-03.json`
+se obtuvo ejecutando los módulos de HEAD `03e02cd` en un temporal con un
+entorno de memoria, sin sustituciones ni acceso a la configuración real.
+
+Comprobación, con `RIGE_ALMACEN` temporal como en las secciones anteriores:
+
+```powershell
+bun test paquetes/opencode paquetes/nucleo pruebas/aceptacion/RNF-04.test.ts pruebas/aceptacion/RNF-02.test.ts
+bun test pruebas/arquitectura/sustituciones.test.ts pruebas/arquitectura/referencias-nativas.test.ts pruebas/arquitectura/manifiesto.test.ts pruebas/aceptacion/RF-06.test.ts
+bun herramientas/tipos-salida.ts
+bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-sustituciones
+bun run referencias --raiz (npm.cmd root -g)
+bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP "rige-t304-decisiones-cache")
+rg 'MARCA-' pruebas/escenarios/v3-sustituciones/REFERENCIA.json
+bun run cobertura
+bun test
+bun run verificar
+```
+
+`rg` debe terminar sin coincidencias (código 1). Se actualizan los SHA-256
+del manifiesto al regenerar esa referencia, sin modificar las anteriores.
+En Bash, las invocaciones nativas usan `--raiz "$(npm root -g)"` y un
+directorio temporal para `--cache`.

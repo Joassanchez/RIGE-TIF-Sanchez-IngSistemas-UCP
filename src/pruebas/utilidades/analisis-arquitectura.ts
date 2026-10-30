@@ -177,12 +177,19 @@ export function analizarFuente(archivo: string, codigo: string, opciones: Opcion
   if (/\.test\.[cm]?[jt]sx?$/.test(archivo)) return [];
   const scanner = new Bun.Transpiler({ loader: /\.[jt]sx$/.test(archivo) ? "tsx" : "ts" }).scanImports(codigo);
   const imports = extraerImports(codigo);
+  const hallazgos: HallazgoDependencia[] = [];
+  for (const { destino } of imports) {
+    if (/(?:^|\/)sustituciones-oraculo(?:\.[cm]?[jt]s)?$/.test(destino.replaceAll("\\", "/"))
+      && !normalizar(archivo).startsWith("pruebas/") && !normalizar(archivo).startsWith("herramientas/")
+      && !archivo.endsWith(".test.ts")) {
+      hallazgos.push({ archivo, motivo: `Importacion del oraculo no autorizada: ${destino}` });
+    }
+  }
   for (const entrada of scanner) {
     if (!imports.some((encontrado) => encontrado.destino === entrada.path)) {
       imports.push({ destino: entrada.path, clausula: [] });
     }
   }
-  const hallazgos: HallazgoDependencia[] = [];
   for (const referencia of codigo.matchAll(/^\s*\/\/\/\s*<reference\s+path\s*=\s*["']([^"']+)["'][^>]*>/gm)) {
     const ruta = normalizar(referencia[1]!);
     const destino = posix.join(posix.dirname(archivo), ruta);

@@ -1,0 +1,18 @@
+// {env:RIGE_PRUEBA_COMENTARIO}
+// {file:./no-existe.txt}
+{
+  "agent": {
+    "revisor": {
+      "description": "Clave {env:RIGE_PRUEBA_CLAVE}",
+      "prompt": "{file:./prompts/revisor.txt}"
+    },
+    "general": {
+      "description": "x{env:RIGE_PRUEBA_SIN_DEFINIR}y"
+    }
+  },
+  "permission": {
+    "bash": {
+      "t1 *": "deny"
+    }
+  }
+}

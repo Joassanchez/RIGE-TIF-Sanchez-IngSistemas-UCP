@@ -155,6 +155,30 @@
       "objetivo": "OE-1",
       "iteracion": 3,
       "obligatorioV2": false
+    },
+    {
+      "id": "RNF-04 CA-1",
+      "objetivo": "seguridad y fidelidad de sustituciones",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RNF-04 CA-2",
+      "objetivo": "seguridad y fidelidad de sustituciones",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RNF-04 CA-3",
+      "objetivo": "seguridad y fidelidad de sustituciones",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RNF-02 CA-1",
+      "objetivo": "seguridad y fidelidad de sustituciones",
+      "iteracion": 3,
+      "obligatorioV2": false
     }
   ]
 }

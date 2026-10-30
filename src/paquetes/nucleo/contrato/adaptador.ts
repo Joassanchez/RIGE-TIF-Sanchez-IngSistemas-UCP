@@ -6,6 +6,13 @@ import type { Permisos } from "../permisos/tipos";
 
 export type ValorJson = null | boolean | number | string | readonly ValorJson[] | { readonly [clave: string]: ValorJson };
 export interface Posicion { readonly linea: number; readonly columna: number }
+export interface ValorSustituido {
+  readonly tipo: "variable" | "archivo";
+  readonly origen: string;
+  readonly definido: boolean;
+  readonly posicion: Posicion;
+}
+export interface ValorSustituidoUbicado extends ValorSustituido { readonly orden: number; readonly referencia: string }
 export interface Identidad { readonly herramienta: string; readonly version: string }
 
 export interface ViaUbicada {
@@ -20,6 +27,7 @@ export interface Declaracion {
   readonly ruta: readonly string[];
   readonly valor: ValorJson;
   readonly posicion: Posicion;
+  readonly sustituciones?: readonly ValorSustituido[];
 }
 
 export interface LecturaEntrada {
@@ -39,9 +47,11 @@ export interface Aplicacion {
   readonly valor: ValorJson;
   readonly estrategia: string;
   readonly regla: string;
+  readonly sustituciones?: readonly ValorSustituido[];
 }
 
-export interface ClaveNoResuelta { readonly ruta: readonly string[]; readonly regla: string }
+export interface ClaveNoResuelta { readonly ruta: readonly string[]; readonly regla: string;
+  readonly sustituciones?: readonly ValorSustituidoUbicado[] }
 
 export interface AgenteListado {
   readonly nombre: string;
@@ -76,7 +86,7 @@ export interface Secuencia {
 }
 
 export interface ErrorAnalisis { readonly categoria: "uso"; readonly codigo: string; readonly mensaje: string;
-  readonly ilegible?: { readonly posicion: Posicion; readonly consecuencia: "falla" | "descartada" } }
+  readonly ilegible?: { readonly posicion: Posicion; readonly consecuencia: "falla" | "descartada"; readonly archivo?: string } }
 
 export interface ObjetivoPermiso {
   readonly sujeto: string;
@@ -93,7 +103,7 @@ export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   readonly estrategias: Readonly<Record<string, Estrategia>>;
   contexto(proyecto: string, entorno: EntornoLectura): Resultado<C, ErrorAnalisis>;
   ubicar(proyecto: string, entorno: EntornoLectura, contexto: C): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
-  leer(via: ViaUbicada, texto: string): Resultado<readonly Declaracion[], ErrorAnalisis>;
+  leer(via: ViaUbicada, texto: string, entorno: EntornoLectura, contexto: C): Resultado<readonly Declaracion[], ErrorAnalisis>;
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
   cadena(resolucion: Resolucion, agente: string, contexto: C, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
   prepararConsulta(contexto: C, solicitud: SolicitudPermiso): Resultado<ObjetivoPermiso, ErrorAnalisis>;

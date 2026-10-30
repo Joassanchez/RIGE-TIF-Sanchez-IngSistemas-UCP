@@ -1,18 +1,27 @@
 import { describe, expect, test } from "bun:test";
 import type { ViaUbicada } from "@rige/nucleo/contrato/adaptador";
-import { leerEntrada, posicion } from "./lector";
+import { leerEntrada as leerConEntorno, posicion } from "./lector";
 import { adaptadorOpenCode } from "./adaptador";
 import { resolver } from "../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 
 const via: ViaUbicada = { via: "proyecto", referencia: "/p/opencode.jsonc", condicion: "observada" };
 
+const lecturaDePrueba = crearEntornoMemoria({ archivos: { "/p/x": "archivo-x", "/p/y": "archivo-y" }, variables: { HOME: "/h" } });
+const contextoDePrueba = { proyecto: "/p", parametros: { hogar: "/h" } };
+const leerEntrada = (via: ViaUbicada, texto: string) => leerConEntorno(via, texto, lecturaDePrueba, contextoDePrueba);
+const leerAdaptador = (via: ViaUbicada, texto: string) => {
+  const c = adaptadorOpenCode.contexto("/p", lecturaDePrueba);
+  if (!c.exito) throw new Error(c.error.mensaje);
+  return adaptadorOpenCode.leer(via, texto, lecturaDePrueba, c.valor);
+};
+
 describe("T3-03 R-2", () => {
   test("contenido JSONC definido con posiciones sobre la variable y error de sintaxis fatal", () => {
     const variable: ViaUbicada = { via: "variable-contenido", referencia: "OPENCODE_CONFIG_CONTENT", condicion: "definida" };
-    expect(adaptadorOpenCode.leer(variable, '// comentario\n{"agent":{"build":{"description":"contenido"}}}')).toEqual({ exito: true,
+    expect(leerAdaptador(variable, '// comentario\n{"agent":{"build":{"description":"contenido"}}}')).toEqual({ exito: true,
       valor: [{ ruta: ["agent", "build", "description"], valor: "contenido", posicion: { linea: 2, columna: 20 } }] });
-    const error = adaptadorOpenCode.leer(variable, '{\n "agent": ,\n}');
+    const error = leerAdaptador(variable, '{\n "agent": ,\n}');
     expect(error.exito).toBe(false);
     if (error.exito) throw new Error("Se esperaba error");
     expect(error.error.ilegible).toEqual({ posicion: { linea: 2, columna: 11 }, consecuencia: "falla" });
@@ -23,16 +32,16 @@ describe("T3-03 R-2", () => {
 describe("T3-03 R-3", () => {
   test("permiso estricto con prefijo, posiciones y sustituciones literales", () => {
     const variable: ViaUbicada = { via: "variable-permiso", referencia: "OPENCODE_PERMISSION", condicion: "definida" };
-    expect(adaptadorOpenCode.leer(variable, '{"bash":{"{env:X}":"deny"}}')).toEqual({ exito: true,
+    expect(leerAdaptador(variable, '{"bash":{"{env:X}":"deny"}}')).toEqual({ exito: true,
       valor: [{ ruta: ["permission", "bash", "{env:X}"], valor: "deny", posicion: { linea: 1, columna: 10 } }] });
     for (const texto of ['{"bash":"deny",}', '/* x */ {}', '{"bash":}']) {
-      const resultado = adaptadorOpenCode.leer(variable, texto);
+      const resultado = leerAdaptador(variable, texto);
       expect(resultado.exito).toBe(false);
       if (resultado.exito) throw new Error("Se esperaba error");
       expect(resultado.error.ilegible?.consecuencia).toBe("descartada");
     }
     for (const texto of ['null', '[]', '"deny"']) {
-      const resultado = adaptadorOpenCode.leer(variable, texto);
+      const resultado = leerAdaptador(variable, texto);
       expect(resultado.exito).toBe(false);
       if (resultado.exito) throw new Error("Se esperaba error");
       expect(resultado.error.codigo).toBe("contenido-no-soportado");
@@ -85,12 +94,12 @@ describe("V1-03 L-5 V1-08 F-5", () => {
     } });
     expect(JSON.stringify(resultado)).not.toContain("CONTENIDO_NO_EMITIR");
   });
-  test("lee patrones literales en cadenas, claves y arreglos sin expandir", () => {
-    const resultado = leerEntrada(via, '{"{env:CLAVE}":{"x":"{file:./x}"},"lista":["{env:OTRA}",{"x":["{file:./y}"]}]}');
+  test("conserva las plantillas en cadenas y arreglos tras verificar la expansion", () => {
+    const resultado = leerEntrada(via, '{"fija":{"x":"{file:./x}"},"lista":["{env:OTRA}",{"x":["{file:./y}"]}]}');
     expect(resultado.exito).toBe(true);
     if (!resultado.exito) throw new Error(resultado.error.mensaje);
     expect(resultado.valor.map(({ ruta, valor }) => ({ ruta, valor }))).toEqual([
-      { ruta: ["{env:CLAVE}", "x"], valor: "{file:./x}" },
+      { ruta: ["fija", "x"], valor: "{file:./x}" },
       { ruta: ["lista"], valor: ["{env:OTRA}", { x: ["{file:./y}"] }] },
     ]);
   });
@@ -104,24 +113,21 @@ describe("V1-03 L-5 V1-08 F-5", () => {
     if (invalida.exito) throw new Error("Se esperaba entrada ilegible");
     expect(invalida.error.codigo).toBe("entrada-ilegible");
   });
-  test("la resolucion excluye sustituciones sin leer ni emitir su contenido (RNF-04)", () => {
+  test("la resolucion incorpora plantillas y lee sin emitir el contenido (RNF-04)", () => {
     const secreto = "SECRETO_EXPANDIDO_NO_EMITIR";
     const lectura = crearEntornoMemoria({ directorios: ["/p", "/h"], variables: { HOME: "/h", CLAVE: secreto }, archivos: {
       "/p/opencode.jsonc": '{"agent":{"build":{"prompt":"{env:CLAVE}","description":"{file:/secreto}"},"otro":{"steps":12}}}',
       "/secreto": secreto,
     } });
     const resultado = resolver(adaptadorOpenCode, "/p", { ...lectura, leer(ruta) {
-      expect(ruta).not.toBe("/secreto");
+      // El lector necesita el contenido para verificar la estructura.
       return lectura.leer(ruta);
     } });
     expect(resultado.exito).toBe(true);
     expect(JSON.stringify(resultado)).not.toContain(secreto);
     if (!resultado.exito) throw new Error(resultado.error.mensaje);
-    expect(resultado.valor.valores.filter(v => v.determinante.origen.tipo === "declarado").map(v => v.ruta)).toEqual([["agent", "otro", "steps"]]);
-    expect(resultado.valor.noResueltas).toEqual([
-      { ruta: ["agent", "build", "prompt"], regla: "sustitucion-no-incorporada" },
-      { ruta: ["agent", "build", "description"], regla: "sustitucion-no-incorporada" },
-    ]);
+    expect(resultado.valor.valores.filter(v => v.determinante.origen.tipo === "declarado").map(v => v.ruta)).toEqual([["agent", "build", "description"], ["agent", "build", "prompt"], ["agent", "otro", "steps"]]);
+    expect(resultado.valor.noResueltas).toEqual([]);
   });
 });
 

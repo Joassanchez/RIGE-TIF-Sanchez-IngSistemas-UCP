@@ -1208,6 +1208,57 @@
       "claves": [],
       "consultas": [],
       "comprobaciones": []
+    },
+    {
+      "id": "v3-sustituciones",
+      "entradas": {
+        "entorno/clave.txt": "c168803dce87682b14c433858de7131ccbc2b21060fd1ba4ad9a097d7286251f",
+        "entorno/comentario.txt": "a46da56615efc471546cd97a5f5cd4bad2546c6c58dd0845c8d9d2b0aaa63043",
+        "entorno/contenido.txt": "6f8b367c8bcccceec08feeb4dda2efb5382cc6941e84e37342b075b801afe0ed",
+        "entorno/global.txt": "ceb9c06beaf5a94004955f7f3766467f5dd71baaca65b711744f4cff1a165015",
+        "hogar/.config/opencode/opencode.json": "33c3e90309c4971535ac2bd1bdc54674fee8b5c518ff4b3d4b50f382ce42e213",
+        "proyecto/opencode.json": "996fb5b4ed338b114ce0a80b2afe776f40ca5cfe475688a5b426005c05c9aec7",
+        "proyecto/prompts/revisor.txt": "bbd8bbbd51d472f6f9b92692992416abd257ff17f3c472b4f348b864e1ddd128",
+        "variables/contenido.json": "f856753fc62ed85f7119979dba81235f0b1164c702bf40aef08c29253adfbc54"
+      },
+      "referencia": "1a8c5749fab470cdedfb8921947aaa0fd010558fc520d826639c8b5b96f8e9f6",
+      "agentes": [
+        "build",
+        "revisor",
+        "plan",
+        "general"
+      ],
+      "claves": [
+        "description",
+        "prompt"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RNF-04 CA-1",
+          "archivo": "pruebas/aceptacion/RNF-04.test.ts",
+          "describe": "RNF-04 CA-1 y CA-2 T3-04 R-8",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-04 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-04.test.ts",
+          "describe": "RNF-04 CA-1 y CA-2 T3-04 R-8",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-04 CA-3",
+          "archivo": "pruebas/aceptacion/RNF-04.test.ts",
+          "describe": "RNF-04 CA-3 T3-04 R-10",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02 CA-1",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-1 T3-04 R-10",
+          "fuente": "referencia-binario"
+        }
+      ]
     }
   ],
   "defectosSembrados": [

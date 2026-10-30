@@ -1,0 +1,7 @@
+{
+  "agent": {
+    "revisor": {
+      "description": "Global {env:RIGE_PRUEBA_GLOBAL}"
+    }
+  }
+}

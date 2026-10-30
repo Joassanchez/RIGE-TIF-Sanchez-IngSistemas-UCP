@@ -45,7 +45,7 @@ export const reglas: Readonly<Record<string, string>> = {
   "nativa-general": "Regla de permiso incorporada en los defaults de OpenCode 1.18.25.",
   "nativa-agente": "Regla de permiso incorporada para el agente nativo de OpenCode 1.18.25.",
   "nativa-final": "OpenCode agrega al final el acceso al directorio de salidas, salvo deny explícito para ese patrón exacto.",
-  "sustitucion-no-incorporada": "Clave cuyo valor contiene una sustitución {env:…} o {file:…}; RIGE no incorpora sustituciones y no informa su valor (RNF-04).",
+  "sustitucion-no-incorporada": "RIGE no evalúa una regla de permiso ni un modo cuyo texto efectivo proviene de una sustitución; informa su origen y su condición",
   "tools-legado-no-incorporado": "El alias legado tools aporta reglas a permission; RIGE no incorpora esa derivación y no informa los permisos de ese ámbito para evitar un resultado incompleto.",
   "orden-de-aplicacion": "OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).",
   "fuera-del-v1": "Clave que OpenCode combina o deriva con reglas que RIGE no incorpora; se resuelve en una iteración posterior.",

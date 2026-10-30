@@ -9,6 +9,7 @@ import type { Resolucion } from "../../paquetes/nucleo/resolucion/tipos";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
+import { resumenesExpandidos } from "../../paquetes/opencode/sustituciones-oraculo";
 
 function valores(nombre: string) {
   const referencia = JSON.parse(readFileSync(join(import.meta.dir, "../escenarios", nombre, "REFERENCIA.json"), "utf8"));
@@ -22,10 +23,22 @@ function valores(nombre: string) {
     const resultado = resolver(adaptadorOpenCode, proyecto, entorno, contexto.valor);
     if (!resultado.exito) throw new Error(resultado.error.mensaje);
     const resolucion: Resolucion = resultado.valor;
+    const resumenes = new Map<string, string>();
+    for (const rastro of resolucion.valores.filter(v => v.determinante.sustituciones?.length)) {
+      const entrada = resolucion.entradas.find(e => e.referencia === rastro.determinante.referencia)!;
+      const texto = entrada.condicion === "definida" ? entorno.variable(entrada.referencia)! : entorno.leer(entrada.referencia).texto;
+      const r = resumenesExpandidos(entrada, texto, entorno, contexto.valor);
+      if (!r.exito) throw new Error(r.error.mensaje);
+      resumenes.set(JSON.stringify(rastro.ruta), r.valor[JSON.stringify(rastro.ruta)]!);
+    }
     return { referencia, resolucion, consultar(agente: string, clave: string) {
       const resultado = consultarAgente(resolucion, agente, [clave]);
       if (!resultado.exito) throw new Error(resultado.error.mensaje);
       return resultado.valor.valores[0]?.rastro;
+    }, resumenDeterminante(agente: string, clave: string) {
+      const sha256 = resumenes.get(JSON.stringify(["agent", agente, clave]));
+      if (!sha256) throw new Error("Determinante sin sustituciones");
+      return { tipo: "sustituido", sha256 };
     } };
   } finally { copia.borrar(); }
 }
@@ -57,7 +70,9 @@ describe("RF-06 CA-1", () => {
         for (const [clave, valor] of Object.entries(claves as object)) {
           // El nombre implicito de agentes declarados queda fuera de T2-13.
           if (clave === "name" && !(claves as { native: boolean }).native) continue;
-          expect(escenario.consultar(agente, clave)?.valor).toEqual(valor);
+          if (valor !== null && typeof valor === "object" && "tipo" in valor && valor.tipo === "sustituido") {
+            expect(escenario.resumenDeterminante(agente, clave)).toEqual(valor);
+          } else expect(escenario.consultar(agente, clave)?.valor).toEqual(valor);
         }
       }
     }

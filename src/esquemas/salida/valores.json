@@ -116,6 +116,12 @@
           },
           "regla": {
             "type": "string"
+          },
+          "sustituciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ValorSustituidoUbicado"
+            }
           }
         },
         "required": [
@@ -275,6 +281,12 @@
         },
         "regla": {
           "type": "string"
+        },
+        "sustituciones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValorSustituido"
+          }
         }
       },
       "required": [
@@ -352,6 +364,94 @@
         "referencia",
         "condicion",
         "resumen"
+      ],
+      "additionalProperties": false
+    },
+    "ValorSustituido": {
+      "type": "object",
+      "properties": {
+        "tipo": {
+          "enum": [
+            "variable",
+            "archivo"
+          ]
+        },
+        "origen": {
+          "type": "string"
+        },
+        "definido": {
+          "type": "boolean"
+        },
+        "posicion": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer"
+            },
+            "columna": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "linea",
+            "columna"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "tipo",
+        "origen",
+        "definido",
+        "posicion"
+      ],
+      "additionalProperties": false
+    },
+    "ValorSustituidoUbicado": {
+      "type": "object",
+      "properties": {
+        "tipo": {
+          "enum": [
+            "variable",
+            "archivo"
+          ]
+        },
+        "origen": {
+          "type": "string"
+        },
+        "definido": {
+          "type": "boolean"
+        },
+        "posicion": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer"
+            },
+            "columna": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "linea",
+            "columna"
+          ],
+          "additionalProperties": false
+        },
+        "orden": {
+          "type": "integer"
+        },
+        "referencia": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "origen",
+        "definido",
+        "posicion",
+        "orden",
+        "referencia"
       ],
       "additionalProperties": false
     }

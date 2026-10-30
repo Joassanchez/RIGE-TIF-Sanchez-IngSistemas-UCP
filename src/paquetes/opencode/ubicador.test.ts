@@ -231,7 +231,9 @@ describe("U-7 V1-08 F-7", () => {
     const ruta = "/h/.config/opencode/agent/a.md";
     const { adaptadorOpenCode } = await import("./adaptador");
     const markdown = { ...observada("markdown", ruta), elemento: ["agent", "a"] };
-    expect(adaptadorOpenCode.leer(markdown, "---\nname: otro\n---\ncuerpo")).toEqual({ exito: false, error: { categoria: "uso",
+    const ctx = adaptadorOpenCode.contexto("/p", entorno({ archivos }));
+    if (!ctx.exito) throw new Error(ctx.error.mensaje);
+    expect(adaptadorOpenCode.leer(markdown, "---\nname: otro\n---\ncuerpo", entorno({ archivos }), ctx.valor)).toEqual({ exito: false, error: { categoria: "uso",
       codigo: "via-no-soportada", mensaje: `RIGE no incorpora ${ruta}.`,
     } });
     expect((await vias("/p", entorno({ archivos: { [ruta]: "---\ndescription: ejemplo\n---\nname: otro" } })))

@@ -127,6 +127,16 @@ describe("N-4", () => {
 });
 
 describe("N-5", () => {
+  test("T3-04 R-6 deduplica rutas acumulando sustituciones por orden y posicion", async () => {
+    const { adaptador, entorno } = escenario([[hoja(ruta, 1)]]);
+    const s = (orden: number, columna: number) => ({ tipo: "variable" as const, origen: `X${orden}${columna}`, definido: true,
+      posicion: { linea: 2, columna }, orden, referencia: `/entrada-${orden}` });
+    const r = await obtener({ ...adaptador, reglas: { ...adaptador.reglas, excluida: "No resuelta." }, secuenciar: () => ({ exito: true, valor: {
+      aplicaciones: [], noResueltas: [{ ruta, regla: "excluida", sustituciones: [s(2, 9)] },
+        { ruta, regla: "excluida", sustituciones: [s(1, 7), s(1, 3)] }],
+    } }) }, entorno);
+    expect(r.noResueltas).toEqual([{ ruta, regla: "excluida", sustituciones: [s(1, 3), s(1, 7), s(2, 9)] }]);
+  });
   test("conserva el orden de fusion, deduplica no resueltas e incluye solo reglas usadas", async () => {
     const claves = ["á", "z", "A", "a"];
     const { adaptador, entorno } = escenario([claves.map((nombre) => hoja(["agente", "a", nombre], nombre))]);
@@ -149,7 +159,7 @@ describe("N-6", () => {
     const llamadas: string[] = [];
     const doble: Adaptador = { ...adaptador,
       ubicar(proyecto, entorno, contexto) { llamadas.push("ubicar"); return etapa === "ubicar" ? fallo : adaptador.ubicar(proyecto, entorno, contexto); },
-      leer(via, texto) { llamadas.push("leer"); return etapa === "leer" ? fallo : adaptador.leer(via, texto); },
+      leer(via, texto, entorno, contexto) { llamadas.push("leer"); return etapa === "leer" ? fallo : adaptador.leer(via, texto, entorno, contexto); },
       secuenciar(lecturas) { llamadas.push("secuenciar"); return etapa === "secuenciar" ? fallo : adaptador.secuenciar(lecturas); },
     };
     expect(await resolver(doble, "/proyecto", entorno)).toBe(fallo);

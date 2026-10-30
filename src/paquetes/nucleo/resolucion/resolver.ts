@@ -21,7 +21,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     let diagnostico: Pick<EntradaLeida, "legibilidad" | "error"> = {};
     if (via.condicion !== "no_observada") {
       const archivo = via.condicion === "observada" ? entorno.leer(via.referencia) : null;
-      const lectura = adaptador.leer(via, archivo ? archivo.texto : entorno.variable(via.referencia)!);
+      const lectura = adaptador.leer(via, archivo ? archivo.texto : entorno.variable(via.referencia)!, entorno, contexto);
       resumen = archivo?.resumen ?? null;
       if (!lectura.exito) {
         if (lectura.error.ilegible?.consecuencia !== "descartada") return lectura;
@@ -51,6 +51,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       origen: origen.tipo === "declarado" ? { ...origen, posicion: { ...origen.posicion } } : { ...origen },
       via: entrada?.via ?? null, referencia: entrada?.referencia ?? null,
       valor: structuredClone(aplicacion.valor), regla: aplicacion.regla,
+      ...(aplicacion.sustituciones?.length ? { sustituciones: structuredClone(aplicacion.sustituciones) } : {}),
     };
     estrategia(estado, nueva, ruta);
   }
@@ -59,7 +60,11 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
     const identificador = JSON.stringify(pendiente.ruta);
     if (!pendientes.has(identificador)) {
       usarRegla(pendiente.regla);
-      pendientes.set(identificador, { ruta: pendiente.ruta, regla: pendiente.regla });
+      pendientes.set(identificador, structuredClone(pendiente));
+    } else if (pendiente.sustituciones?.length) {
+      const anterior = pendientes.get(identificador)!;
+      pendientes.set(identificador, { ...anterior, sustituciones: [...(anterior.sustituciones ?? []), ...pendiente.sustituciones]
+        .sort((a, b) => a.orden - b.orden || a.posicion.linea - b.posicion.linea || a.posicion.columna - b.posicion.columna) });
     }
   }
   const declaraciones = [...contexto.declaraciones];
@@ -74,7 +79,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       parametros: { ...contexto.parametros }, declaraciones: [...contexto.declaraciones] },
     reglas: Object.fromEntries([...usados].sort().map((regla) => [regla, adaptador.reglas[regla]!])),
     entradas,
-    resumenEntradas: resumirEntradas(entradas, entorno),
+    resumenEntradas: resumirEntradas(entradas, entorno, lecturas.flatMap(l => l.declaraciones.flatMap(d => d.sustituciones ?? []))),
     valores: estado.hojasBajo([]).map((rastro, indiceFusion) => ({ ...rastro, indiceFusion })),
     eliminadas: estado.eliminadas.map((rastro, ordenEliminacion) => ({ ...rastro, ordenEliminacion })),
     noResueltas: [...pendientes.values()],

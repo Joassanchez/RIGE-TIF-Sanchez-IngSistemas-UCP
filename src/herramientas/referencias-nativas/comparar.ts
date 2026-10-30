@@ -18,7 +18,8 @@ export function normalizar(salida: unknown): Record<string, unknown> {
     for (const [clave, valor] of Object.entries(objeto)) {
       const segmento = prefijo.length ? clave : clave === "topP" ? "top_p" : clave === "maxSteps" ? "steps" : clave;
       const ruta = [...prefijo, segmento];
-      if (valor !== null && typeof valor === "object" && !Array.isArray(valor)) aplanar(valor, ruta);
+      if (valor !== null && typeof valor === "object" && !Array.isArray(valor)
+        && !("tipo" in valor && valor.tipo === "sustituido")) aplanar(valor, ruta);
       else {
         // Las referencias del v1 usan puntos; los segmentos ambiguos se muestran como puntero JSON.
         const nombre = ruta.some((parte) => !parte || /[./~]/.test(parte))

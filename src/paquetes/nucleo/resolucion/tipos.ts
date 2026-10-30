@@ -1,4 +1,4 @@
-import type { ClaveNoResuelta, ContextoResolucion, Identidad, Origen, ValorJson } from "../contrato/adaptador";
+import type { ClaveNoResuelta, ContextoResolucion, Identidad, Origen, ValorJson, ValorSustituido } from "../contrato/adaptador";
 
 export interface ReglaCadena {
   readonly indice: number;
@@ -24,6 +24,7 @@ export interface DeclaracionUbicada {
   readonly referencia: string | null;
   readonly valor: ValorJson;
   readonly regla: string;
+  readonly sustituciones?: readonly ValorSustituido[];
 }
 
 export interface RastroValor {

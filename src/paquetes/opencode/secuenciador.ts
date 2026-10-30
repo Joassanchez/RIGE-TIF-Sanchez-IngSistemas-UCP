@@ -1,4 +1,4 @@
-import type { Aplicacion, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada, Secuencia, ValorJson } from "@rige/nucleo/contrato/adaptador";
+import type { Aplicacion, ClaveNoResuelta, ErrorAnalisis, LecturaEntrada, Secuencia, ValorJson, ValorSustituidoUbicado } from "@rige/nucleo/contrato/adaptador";
 import type { Resultado } from "@rige/nucleo/resultado";
 import { valoresNativos } from "./valores-implicitos";
 
@@ -7,25 +7,22 @@ const bajo = (ruta: readonly string[], prefijo: readonly string[]) =>
   prefijo.length <= ruta.length && prefijo.every((segmento, indice) => segmento === ruta[indice]);
 const clavesAgente = new Set(["name", "model", "variant", "prompt", "description", "temperature", "top_p",
   "mode", "hidden", "color", "steps", "maxSteps", "options", "permission", "disable", "tools"]);
-const sustitucion = /\{(env|file):[^}]*\}/;
-function contieneSustitucion(valor: ValorJson): boolean {
-  if (typeof valor === "string") return sustitucion.test(valor);
-  if (Array.isArray(valor)) return valor.some(contieneSustitucion);
-  if (valor !== null && typeof valor === "object") {
-    return Object.entries(valor).some(([clave, contenido]) => sustitucion.test(clave) || contieneSustitucion(contenido));
-  }
-  return false;
-}
 
 export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis> {
   const aplicaciones: Aplicacion[] = [];
   const noResueltas: ClaveNoResuelta[] = [];
   const excluidas = new Map<string, readonly string[]>();
-  function excluir(ruta: readonly string[], regla: string): void {
+  function excluir(ruta: readonly string[], regla: string, sustituciones?: readonly ValorSustituidoUbicado[]): void {
     const clave = JSON.stringify(ruta);
-    if (excluidas.has(clave)) return;
+    const anterior = noResueltas.find(p => JSON.stringify(p.ruta) === clave);
+    if (anterior) {
+      if (sustituciones?.length) noResueltas[noResueltas.indexOf(anterior)] = { ...anterior,
+        sustituciones: [...(anterior.sustituciones ?? []), ...sustituciones].sort((a, b) => a.orden - b.orden
+          || a.posicion.linea - b.posicion.linea || a.posicion.columna - b.posicion.columna) };
+      return;
+    }
     excluidas.set(clave, ruta);
-    noResueltas.push({ ruta, regla });
+    noResueltas.push({ ruta, regla, ...(sustituciones?.length ? { sustituciones } : {}) });
   }
   // Se conocen todos los agentes afectados antes de aplicar cualquier hoja JSON.
   for (const { via } of lecturas) {
@@ -44,8 +41,8 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
     }
   }
   // Las exclusiones de cualquier archivo afectan todas las lecturas, incluso las anteriores.
-  for (const { via, declaraciones } of lecturas) {
-    for (const { ruta, valor, posicion } of declaraciones) {
+  for (const { via, declaraciones, orden } of lecturas) {
+    for (const { ruta, valor, posicion, sustituciones } of declaraciones) {
       if (ruta[0] === "mode") {
         if (ruta.length === 1 && !esObjeto(valor)) return { exito: false, error: { categoria: "uso",
           codigo: "contenido-no-soportado",
@@ -57,15 +54,18 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
         }
       }
       if (ruta[0] === "agent" && ["mode", "hidden", "disable"].includes(ruta[2] ?? "")
-        && !contieneSustitucion(valor) && !ruta.some(segmento => sustitucion.test(segmento))) {
+        && !sustituciones?.length) {
         const valido = ruta.length === 3 && (ruta[2] === "mode"
           ? typeof valor === "string" && ["primary", "subagent", "all"].includes(valor) : typeof valor === "boolean");
         if (!valido) return { exito: false, error: { categoria: "uso", codigo: "configuracion-invalida",
           mensaje: `Configuración inválida en ${ruta.slice(0, 3).join(".")} (${via.referencia.replaceAll("\\", "/")}:${posicion.linea}:${posicion.columna}).` } };
       }
-      const indiceSustitucion = via.via === "variable-permiso" ? -1 : ruta.findIndex(segmento => sustitucion.test(segmento));
-      if (indiceSustitucion >= 0) excluir(ruta.slice(0, indiceSustitucion + 1), "sustitucion-no-incorporada");
-      else if (via.via !== "variable-permiso" && contieneSustitucion(valor)) excluir(ruta, "sustitucion-no-incorporada");
+      if (sustituciones?.length) {
+        const permiso = ruta[0] === "permission" || (ruta[0] === "agent" && ruta[2] === "permission");
+        const modo = ruta[0] === "agent" && ruta[2] === "mode";
+        if (permiso || modo) excluir(modo ? ruta.slice(0, 2) : ruta, "sustitucion-no-incorporada",
+          sustituciones.map(s => ({ ...s, orden, referencia: via.referencia.replaceAll("\\", "/") })));
+      }
       if (ruta[0] === "agent" && ruta.length >= 3) {
         if (ruta[2] === "maxSteps") {
           excluir([...ruta.slice(0, 2), "steps"], "fuera-del-v1");
@@ -112,7 +112,8 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
       }
       hojas.set(JSON.stringify(ruta), { ruta, valor: declaracion.valor });
       aplicaciones.push({ origen: { tipo: "declarado", orden: lectura.orden, posicion: declaracion.posicion },
-        ruta, valor: declaracion.valor, estrategia: cambiaForma ? "reemplazoSubarbol" : "reemplazo", regla: "orden-de-aplicacion" });
+        ruta, valor: declaracion.valor, estrategia: cambiaForma ? "reemplazoSubarbol" : "reemplazo", regla: "orden-de-aplicacion",
+        ...(declaracion.sustituciones?.length ? { sustituciones: declaracion.sustituciones } : {}) });
     }
   }
   // disable se evalua tras fusionar las entradas, como en Agent.list del tag.

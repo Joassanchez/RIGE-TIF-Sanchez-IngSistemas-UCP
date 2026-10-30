@@ -20,8 +20,8 @@ export const adaptadorOpenCode: Adaptador<ContextoOpenCode> = {
   reglas,
   estrategias: {},
   ubicar,
-  leer(via, texto) {
-    if (via.via !== "markdown") return leerEntrada(via, texto);
+  leer(via, texto, entorno, contexto) {
+    if (via.via !== "markdown") return leerEntrada(via, texto, entorno, contexto);
     if (texto.startsWith("---")) {
       const lineas = texto.split(/\r?\n/);
       const cierre = lineas.findIndex((linea, indice) => indice > 0 && linea.trim() === "---");

@@ -35,6 +35,27 @@ describe("A8-3", () => {
 });
 type Llamada = { argumentos: string[]; cwd?: string; env: Record<string, string>; timeout: number; copia?: string };
 
+describe("T3-04 R-10 arnes", () => {
+  test("captura sustituidas por resumen, incluso prompt de otro agente, y aplica entorno en memoria", () => {
+    const r = ejecutar({ sustituciones: true, regenerar: true });
+    expect(r.codigo).toBe(0);
+    expect(r.regenerada.valoresAgentes.build.description).toEqual({ tipo: "sustituido", sha256: hashWindows });
+    expect(r.regenerada.valoresAgentes.revisor.prompt).toEqual({ tipo: "sustituido", sha256: hashWindows });
+    expect(r.llamadas.some(l => l.argumentos[3] === "revisor")).toBe(true);
+    expect(JSON.stringify(r.regenerada) + r.salida + r.error).not.toContain("MARCA-");
+    expect(r.llamadas.filter(l => l.copia).every(l => l.env.RIGE_PRUEBA_X === "MARCA-ARNES-7c913")).toBe(true);
+  });
+  test("rechaza nombres de entorno no autorizados y no imprime stderr expandido", () => {
+    expect(ejecutar({ sustituciones: true, nombreEntorno: "OTRA" }).codigo).toBe(1);
+    const r = ejecutar({ sustituciones: true, falla: true });
+    expect(r.codigo).toBe(1);
+    expect(r.salida + r.error).not.toContain("MARCA-");
+    const invalida = ejecutar({ sustituciones: true, salidaInvalida: true });
+    expect(invalida.codigo).toBe(1);
+    expect(invalida.salida + invalida.error).not.toContain("MARCA-");
+  });
+});
+
 describe("T3-03 referencias de entradas", () => {
   test("captura comandos ordenados y aplica variables", () => {
     const resultado = ejecutar({ entradas: true, regenerar: true });
@@ -55,7 +76,8 @@ describe("T3-03 referencias de entradas", () => {
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.
 function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
   diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
-  agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean } = {}) {
+  agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean;
+  sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
   try {
     mkdirSync(join(temporal, "opencode-ai/bin"), { recursive: true });
@@ -75,6 +97,11 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
           .map(nombre => [nombre, { name: nombre, mode: "primary", native: true,
             ...Object.fromEntries(Object.entries(ref.valores).filter(([clave]) => ["description", "temperature"].includes(clave))) }]));
         if (opciones.agentes) ref.agentes = [];
+        if (opciones.sustituciones) {
+          ref.procedencia.entorno = { [opciones.nombreEntorno ?? "RIGE_PRUEBA_X"]: "secreto.txt" };
+          ref.procedencia.sustituidas = [["build", "description"], ["revisor", "prompt"]];
+          writeFileSync(join(fuente, "pruebas/escenarios", nombre, "secreto.txt"), "MARCA-ARNES-7c913");
+        }
         if (opciones.entradas) {
           ref.comandos = [];
           ref.procedencia.variables = { OPENCODE_PERMISSION: "permiso.json" };
@@ -117,6 +144,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         }
         const copia = dirname(opciones.cwd);
         llamada.copia = copia;
+        if (${Boolean(opciones.salidaInvalida)}) return { exitCode: 0, stdout: Buffer.from('{"MARCA-JSON-PRIVADO":INVALIDO}'), stderr: Buffer.from("") };
         if (existsSync(join(copia, "REFERENCIA.json"))) throw new Error("Referencia copiada");
         if (!${Boolean(opciones.git)} && !readFileSync(join(copia, ".git/HEAD"), "utf8").includes("refs/heads/main")) throw new Error("Sin git");
         writeFileSync(join(copia, ".gitignore"), "generado por el doble nativo");
@@ -137,10 +165,14 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
           else salida[clave] = valor;
         }
         salida.permission = [{ permission: "bash", pattern: "*", action: "ask" }];
+        if (${Boolean(opciones.sustituciones)}) {
+          if (argumentos[3] === "build") salida.description = opciones.env.RIGE_PRUEBA_X;
+          if (argumentos[3] === "revisor") salida.prompt = opciones.env.RIGE_PRUEBA_X;
+        }
         if (${Boolean(opciones.fuga)}) salida.permission.push({ permission: "external_directory", pattern: join(userInfo().homedir, ".claude/skills/filtrada/*"), action: "allow" });
         if (${Boolean(opciones.diferente)} && nombre === "v1-precedencia") salida.temperature = 0.2;
         writeFileSync(${JSON.stringify(registro)}, JSON.stringify(llamadas));
-        return { exitCode: ${opciones.falla ? "1" : "0"}, stdout: Buffer.from(JSON.stringify(salida)), stderr: Buffer.from("fallo sintetico") };
+        return { exitCode: ${opciones.falla ? "1" : "0"}, stdout: Buffer.from(JSON.stringify(salida)), stderr: Buffer.from(${JSON.stringify(opciones.sustituciones ? "MARCA-ARNES-7c913" : "fallo sintetico")}) };
       };
     `);
     const resultado = Bun.spawnSync([process.execPath, "--preload", precarga,

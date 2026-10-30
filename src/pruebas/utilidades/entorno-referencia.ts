@@ -4,6 +4,8 @@ import { crearEntornoAislado } from "./entorno-aislado";
 
 export interface ReferenciaEntorno {
   readonly procedencia: { readonly hogar: string; readonly OPENCODE_CONFIG?: string;
+    readonly entorno?: Readonly<Record<string, string>>;
+    readonly sustituidas?: readonly (readonly [string, string])[];
     readonly skillsExternosExcluidos?: boolean;
     readonly variables?: { readonly OPENCODE_CONFIG_DIR?: string; readonly OPENCODE_CONFIG_CONTENT?: string; readonly OPENCODE_PERMISSION?: string } };
 }
@@ -17,6 +19,10 @@ export function entornoDeReferencia(referencia: ReferenciaEntorno, copia: { read
   if (referencia.procedencia.skillsExternosExcluidos) Object.assign(env, { OPENCODE_DISABLE_EXTERNAL_SKILLS: "true" });
   for (const [nombre, ruta] of Object.entries(referencia.procedencia.variables ?? {})) {
     Object.assign(env, { [nombre]: nombre === "OPENCODE_CONFIG_DIR" ? join(copia.raiz, ruta) : readFileSync(join(copia.raiz, ruta), "utf8") });
+  }
+  for (const [nombre, ruta] of Object.entries(referencia.procedencia.entorno ?? {})) {
+    if (!nombre.startsWith("RIGE_PRUEBA_")) throw new Error("Nombre de variable de prueba no autorizado.");
+    Object.assign(env, { [nombre]: readFileSync(join(copia.raiz, ruta), "utf8") });
   }
   return env;
 }
