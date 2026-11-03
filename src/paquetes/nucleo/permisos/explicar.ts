@@ -1,6 +1,10 @@
-import type { Origen } from "../contrato/adaptador";
+import type { Origen, Posicion } from "../contrato/adaptador";
 import type { ReglaCadena } from "../resolucion/tipos";
 import type { RastroDecision } from "./tipos";
+
+export function localizacion(referencia: string, posicion: Posicion): string {
+  return `${referencia}:${posicion.linea}:${posicion.columna}`;
+}
 
 /** Textos y vocabulario aportados por el adaptador, sin politica en el motor. */
 export interface PlantillasExplicacion {
@@ -14,8 +18,8 @@ export interface PlantillasExplicacion {
   readonly cierre: readonly string[];
 }
 
-type Parametros = Partial<Record<"indice" | "sujeto" | "patron" | "efecto" | "archivo" | "linea" | "origen" | "total" | "desplazadas", string | number>>;
-const marcadores = ["indice", "sujeto", "patron", "efecto", "archivo", "linea", "origen", "total", "desplazadas"];
+type Parametros = Partial<Record<"indice" | "sujeto" | "patron" | "efecto" | "archivo" | "localizacion" | "linea" | "origen" | "total" | "desplazadas", string | number>>;
+const marcadores = ["indice", "sujeto", "patron", "efecto", "archivo", "localizacion", "linea", "origen", "total", "desplazadas"];
 
 export function validarPlantilla(texto: string): void {
   if (/[{}]/.test(texto.replace(/\{[^{}]*\}/g, ""))) throw new Error("Marcador mal formado en plantilla.");
@@ -51,6 +55,7 @@ export function explicar(rastro: RastroDecision, plantillas: PlantillasExplicaci
       efecto: obtener(plantillas.efectos, regla.efecto) };
     if (regla.origen.tipo === "declarado") {
       if (regla.declaracion?.referencia !== null && regla.declaracion?.referencia !== undefined) parametros.archivo = regla.declaracion.referencia;
+      if (parametros.archivo !== undefined) parametros.localizacion = localizacion(String(parametros.archivo), regla.origen.posicion);
       parametros.linea = regla.origen.posicion.linea;
     }
     parametros.origen = aplicar(obtener(plantillas.origenes, regla.origen.tipo), parametros);

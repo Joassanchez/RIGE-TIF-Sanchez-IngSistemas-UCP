@@ -22,6 +22,7 @@ export interface DeclaracionUbicada {
   /** Presentes solo si origen.tipo === "declarado". */
   readonly via: string | null;
   readonly referencia: string | null;
+  readonly localizacion?: string;
   readonly valor: ValorJson;
   readonly regla: string;
   readonly sustituciones?: readonly ValorSustituido[];

@@ -431,6 +431,18 @@
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
           "describe": "RF-02 CA-2 (cadena)",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-12 CA-1",
+          "archivo": "pruebas/aceptacion/RF-12.test.ts",
+          "describe": "RF-12 CA-1 T3-07 R-5",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-12 CA-2",
+          "archivo": "pruebas/aceptacion/RF-12.test.ts",
+          "describe": "RF-12 CA-2 T3-07 R-6",
+          "fuente": "caso-de-uso"
         }
       ]
     },
@@ -1269,6 +1281,18 @@
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 CA-2 T3-05 R-1",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-3",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-3 T3-07 R-2",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-4 T3-07 R-3",
+          "fuente": "referencia-binario"
         }
       ]
     },
@@ -1290,6 +1314,18 @@
           "item": "RF-07 entradas-descartadas",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 entradas-descartadas T3-05 R-3",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-3",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-3 T3-07 R-2",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-4 T3-07 R-3",
           "fuente": "referencia-binario"
         }
       ]
@@ -1354,6 +1390,18 @@
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 CA-2 T3-05 R-7",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-3",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-3 T3-07 R-2",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-4 T3-07 R-3",
+          "fuente": "referencia-binario"
         }
       ]
     },
@@ -1381,6 +1429,18 @@
           "item": "RF-07 referencias-no-resueltas",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 referencias-no-resueltas T3-05 R-6",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-3",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-3 T3-07 R-2",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-4 T3-07 R-3",
           "fuente": "referencia-binario"
         }
       ]
@@ -1424,6 +1484,30 @@
           "item": "RE-03",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "T3-06 R-7",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-07 CA-3",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-3 T3-07 R-2",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-4 T3-07 R-3",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-12 CA-1",
+          "archivo": "pruebas/aceptacion/RF-12.test.ts",
+          "describe": "RF-12 CA-1 T3-07 R-5",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-12 CA-2",
+          "archivo": "pruebas/aceptacion/RF-12.test.ts",
+          "describe": "RF-12 CA-2 T3-07 R-6",
           "fuente": "caso-de-uso"
         }
       ]

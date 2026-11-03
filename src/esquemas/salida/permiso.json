@@ -336,6 +336,9 @@
           "items": {
             "$ref": "#/$defs/ValorSustituido"
           }
+        },
+        "localizacion": {
+          "type": "string"
         }
       },
       "required": [

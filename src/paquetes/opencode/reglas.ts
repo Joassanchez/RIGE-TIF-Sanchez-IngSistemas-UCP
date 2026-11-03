@@ -7,7 +7,7 @@ export const plantillasExplicacion: PlantillasExplicacion = {
   defecto: "No hay reglas coincidentes; la decisión es {efecto} por defecto.",
   desplazadas: "Hay {desplazadas} reglas coincidentes desplazadas.",
   anulada: "La protección nativa de la regla {indice}, {sujeto} {patron} → {efecto}, queda anulada o debilitada por la declaración determinante.",
-  origenes: { declarado: "declarada en {archivo}:{linea}", implicito: "implícita", nativo: "nativa" },
+  origenes: { declarado: "declarada en {localizacion}", implicito: "implícita", nativo: "nativa" },
   efectos: { allow: "permitida", deny: "denegada", ask: "sujeta a confirmación" },
   cierre: ["aprobaciones-permanentes-excluidas"],
 };

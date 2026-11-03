@@ -1,3 +1,4 @@
+import { localizarDeclaracion } from "../respuestas/localizacion";
 import type { Resultado } from "@rige/nucleo/resultado";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
 import { consultarAgente, rutaDesdeTexto } from "@rige/nucleo/resolucion/proyectar";
@@ -17,7 +18,8 @@ export function respuestaValores(resolucion: Resolucion, agente: string, clave: 
     proyecto: resolucion.proyecto, herramienta: resolucion.identidad.herramienta,
     versionHerramienta: resolucion.identidad.version,
     resumenEntradas: resolucion.resumenEntradas, entradas: resolucion.entradas,
-    agente, ruta: segmentos ?? null, valores: consulta.valor.valores, reglas: resolucion.reglas,
+    agente, ruta: segmentos ?? null, valores: consulta.valor.valores.map(valor => ({ ...valor, rastro: { ...valor.rastro,
+      determinante: localizarDeclaracion(valor.rastro.determinante), desplazadas: valor.rastro.desplazadas.map(localizarDeclaracion) } })), reglas: resolucion.reglas,
     declaraciones: resolucion.declaraciones,
     noResueltas: consulta.valor.noResueltas.map(pendiente => ({ ...pendiente,
       ruta: pendiente.ruta.slice(resolucion.prefijoAgente.length + 1),

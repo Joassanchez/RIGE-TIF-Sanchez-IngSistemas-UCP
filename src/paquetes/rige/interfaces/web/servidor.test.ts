@@ -10,7 +10,8 @@ const respuesta: RespuestaEstado = {
 };
 
 function casosEstado(consultarEstado: ConsultarEstado): CasosWeb {
-  return { consultarEstado, resolverProyecto: () => { throw new Error("No resolver en pruebas de estado"); },
+  return { consultarEstado, consultarHallazgos: () => { throw new Error("No consultar hallazgos en pruebas de estado"); },
+    resolverProyecto: () => { throw new Error("No resolver en pruebas de estado"); },
     consultarPermiso: () => { throw new Error("No consultar permisos en pruebas de estado"); },
     consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },
     consultarAgentes: () => { throw new Error("No consultar agentes en pruebas de estado"); },

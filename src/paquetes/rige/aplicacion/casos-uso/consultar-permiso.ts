@@ -1,3 +1,4 @@
+import { localizarDeclaracion } from "../respuestas/localizacion";
 import type { SolicitudPermiso } from "@rige/nucleo/contrato/adaptador";
 import type { Resultado } from "@rige/nucleo/resultado";
 import { decidir } from "@rige/nucleo/permisos/decidir";
@@ -49,7 +50,7 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, solicitud: 
   return { exito: true, valor: {
     esquema: versionEsquemaSalida, proyecto: resolucion.proyecto,
     entradas: resolucion.entradas, resumenEntradas: resolucion.resumenEntradas,
-    ...rastro, cadena: coincidentes, reglas,
+    ...rastro, cadena: coincidentes.map(regla => ({ ...regla, declaracion: regla.declaracion === null ? null : localizarDeclaracion(regla.declaracion) })), reglas,
     explicacion: solicitud.explicar ? explicar({ ...rastro, coincidentes }, {
       ...adaptador.permisos.plantillas, reglas: adaptador.reglas,
     }, cadena.valor.reglas.length) : null,

@@ -1,3 +1,4 @@
+import { localizacion } from "../respuestas/localizacion";
 import type { Resultado } from "../respuestas/resultado";
 import { errorDesdeAnalisis, type ErrorUso } from "../errores";
 import type { RespuestaHallazgos } from "../respuestas/hallazgos";
@@ -9,9 +10,9 @@ import { resumirEntradas } from "@rige/nucleo/resolucion/resumen-entradas";
 import { detectarEntradas, detectarReferencias, detectarReglasSinEfecto, ordenarHallazgos, type EntradaAnalizada } from "@rige/nucleo/hallazgos/detectar";
 import { explicarHallazgo } from "@rige/nucleo/hallazgos/explicar";
 
-export type ConsultarHallazgos = (proyecto: string) => Resultado<RespuestaHallazgos, ErrorUso>;
+export type ConsultarHallazgos = (proyecto: string, opciones?: { readonly explicar?: boolean }) => Resultado<RespuestaHallazgos, ErrorUso>;
 
-export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "resolucion">, proyecto: string): Resultado<RespuestaHallazgos, ErrorUso> {
+export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "resolucion">, proyecto: string, opciones?: { readonly explicar?: boolean }): Resultado<RespuestaHallazgos, ErrorUso> {
   const preparado = prepararProyecto(dependencias, proyecto);
   if (!preparado.exito) return preparado;
   const { canonica, contexto } = preparado.valor;
@@ -64,5 +65,6 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
   return { exito: true, valor: { esquema: 2, proyecto: canonica.replaceAll("\\", "/"), entradas,
     resumenEntradas: resumirEntradas(entradas, huellas, lecturas.flatMap(l => l.declaraciones.flatMap(d => d.sustituciones ?? [])), texto => entorno.resumir(texto)),
     incompleta, motivos, declaraciones, reglas,
-    hallazgos: ordenarHallazgos(hallazgos).map(h => ({ ...h, explicacion: explicarHallazgo(h, adaptador.plantillasHallazgo) })) } };
+    hallazgos: ordenarHallazgos(hallazgos).map(h => ({ ...h, localizacion: localizacion(h.entrada.referencia, h.posicion),
+      ...((opciones?.explicar ?? true) ? { explicacion: explicarHallazgo(h, adaptador.plantillasHallazgo) } : {}) })) } };
 }

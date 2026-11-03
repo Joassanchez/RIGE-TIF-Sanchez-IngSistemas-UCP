@@ -1,9 +1,12 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, posix, win32 } from "node:path";
 import { copiarEscenario, type OpcionesEscenario } from "../utilidades/escenario";
 import { entornoDeReferencia } from "../utilidades/entorno-referencia";
 import { crearEntornoMemoria } from "../utilidades/entorno-memoria";
+import { lanzar, lanzarServidor } from "../utilidades/subproceso";
+import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { validarEsquema } from "../utilidades/validar-esquema";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { abarca } from "../../paquetes/opencode/hallazgos";
@@ -231,6 +234,7 @@ describe("T3-06 R-2", () => {
     const tapadas = r.hallazgos.filter(h => h.tipo === "regla-sin-efecto");
     const refArchivo = `${e.proyecto.replaceAll("\\", "/")}/opencode.json`;
     expect(tapadas).toEqual([{
+      localizacion: `${refArchivo}:4:7`,
       tipo: "regla-sin-efecto",
       causa: "tapada-por-posterior",
       entrada: { orden: expect.any(Number), via: "proyecto", referencia: refArchivo, condicion: "observada" },
@@ -271,6 +275,7 @@ describe("T3-06 R-2", () => {
       "/p/opencode.json": '{\n  "agent": {\n    "build": {\n      "permission": {\n        "read": {\n          "src/a.js": "allow",\n          "*": "deny"\n        }\n      }\n    }\n  }\n}',
     }), "/p");
     expect(enAgente.hallazgos).toEqual([{
+      localizacion: "/p/opencode.json:6:11",
       tipo: "regla-sin-efecto",
       causa: "tapada-por-posterior",
       entrada: { orden: expect.any(Number), via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" },
@@ -295,6 +300,7 @@ describe("T3-06 R-3", () => {
       "/p/opencode.json": '{\n  "permission": {\n    "read": {\n      "src/a.js": "allow",\n      "src/b.js": "{env:RIGE_ACCION}",\n      "*": "deny"\n    }\n  }\n}',
     }, { RIGE_ACCION: "deny" }), "/p");
     expect(conIntermediaExcluida.hallazgos.filter(h => h.tipo === "regla-sin-efecto")).toEqual([{
+      localizacion: "/p/opencode.json:4:7",
       tipo: "regla-sin-efecto",
       causa: "tapada-por-posterior",
       entrada: { orden: expect.any(Number), via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" },
@@ -353,6 +359,7 @@ describe("T3-06 R-4", () => {
       const decisionControlF = envEscenario.referencia.decisiones.find((d: { agente: string }) => d.agente === "control_f");
       expect(decisionControlF.decision).toBe("allow");
       expect(rEnv.hallazgos).toEqual([{
+        localizacion: `${envEscenario.proyecto.replaceAll("\\", "/")}/opencode.jsonc:6:11`,
         tipo: "regla-sin-efecto",
         causa: "ruta-absoluta-con-forma",
         entrada: { orden: expect.any(Number), via: "proyecto", referencia: `${envEscenario.proyecto.replaceAll("\\", "/")}/opencode.jsonc`, condicion: "observada" },
@@ -410,6 +417,7 @@ describe("T3-06 R-4", () => {
     });
     const rBarra = obtener({ adaptador: adaptadorOpenCode, entorno: entornoGit, rutas: { canonica: () => "/p" } }, "/p");
     expect(rBarra.hallazgos).toEqual([{
+      localizacion: "/p/opencode.json:1:24",
       tipo: "regla-sin-efecto",
       causa: "ruta-absoluta-con-forma",
       entrada: { orden: expect.any(Number), via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" },
@@ -430,6 +438,7 @@ describe("T3-06 R-4", () => {
     });
     const rTapada = obtener({ adaptador: adaptadorOpenCode, entorno: entornoTapada, rutas: { canonica: () => "/p" } }, "/p");
     expect(rTapada.hallazgos).toEqual([{
+      localizacion: "/p/opencode.json:1:24",
       tipo: "regla-sin-efecto",
       causa: "ruta-absoluta",
       entrada: { orden: expect.any(Number), via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" },
@@ -713,4 +722,183 @@ describe("T3-06 R-9", () => {
       expect(obtenidos).toEqual([...(esperadosPorEscenario[nombre] ?? [])]);
     });
   }
+});
+
+function cliHallazgos(e: { raiz: string; proyecto: string; env: Record<string, string> }, opciones: readonly string[] = []) {
+  return lanzar(e.raiz, ["hallazgos", "--proyecto", e.proyecto, ...opciones], e.env);
+}
+function datosWeb(cuerpo: string) {
+  const bloque = /<script type="application\/json" id="respuesta">([^]*?)<\/script>/.exec(cuerpo);
+  expect(bloque).not.toBeNull();
+  return JSON.parse(bloque![1]!);
+}
+const escaparHtml = (texto: string) => texto.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+
+describe("T3-07 R-1", () => {
+  test("CLI hallazgos: esquema, codigo 0 con y sin hallazgos, --explicar, errores de opciones y proyecto, determinismo y sin crear almacen", async () => {
+    const rutaEsquema = join(import.meta.dir, "../../esquemas/salida/hallazgos.json");
+    expect(existsSync(rutaEsquema)).toBe(true);
+    const esquema = await Bun.file(rutaEsquema).json();
+
+    const conHallazgos = preparar("v3-sustituciones");
+    const sinExplicar1 = cliHallazgos(conHallazgos);
+    expect(sinExplicar1.codigo).toBe(0);
+    expect(sinExplicar1.error).toBe("");
+    const sinExplicar2 = cliHallazgos(conHallazgos);
+    expect(sinExplicar2).toEqual(sinExplicar1);
+    expect(existsSync(conHallazgos.env.RIGE_ALMACEN!)).toBe(false);
+
+    const jsonSinExplicar = JSON.parse(sinExplicar1.salida);
+    expect(validarEsquema(esquema, jsonSinExplicar)).toEqual([]);
+    expect(jsonSinExplicar.hallazgos.length).toBeGreaterThan(0);
+    for (const h of jsonSinExplicar.hallazgos) {
+      expect("explicacion" in h).toBe(false);
+      expect(typeof h.localizacion).toBe("string");
+    }
+
+    const conExplicar1 = cliHallazgos(conHallazgos, ["--explicar"]);
+    expect(conExplicar1.codigo).toBe(0);
+    expect(conExplicar1.error).toBe("");
+    expect(cliHallazgos(conHallazgos, ["--explicar"])).toEqual(conExplicar1);
+    const jsonConExplicar = JSON.parse(conExplicar1.salida);
+    expect(validarEsquema(esquema, jsonConExplicar)).toEqual([]);
+    expect(jsonConExplicar.hallazgos.length).toBe(jsonSinExplicar.hallazgos.length);
+    for (const h of jsonConExplicar.hallazgos) {
+      expect(typeof h.explicacion).toBe("string");
+      expect(h.explicacion.length).toBeGreaterThan(0);
+    }
+
+    const sinHallazgos = preparar("v2-decision");
+    const rVacio = cliHallazgos(sinHallazgos);
+    expect(rVacio.codigo).toBe(0);
+    expect(rVacio.error).toBe("");
+    const jsonVacio = JSON.parse(rVacio.salida);
+    expect(validarEsquema(esquema, jsonVacio)).toEqual([]);
+    expect(jsonVacio.hallazgos).toEqual([]);
+
+    for (const invalidas of [["--agente", "build"], ["--clave", "x"], ["--desconocida"]]) {
+      const inv = cliHallazgos(conHallazgos, invalidas);
+      expect(inv.codigo).toBe(2);
+      expect(inv.salida).toBe("");
+      expect(JSON.parse(inv.error).error.codigo).toBe("argumentos-invalidos");
+    }
+    const sinProyectoArg = lanzar(conHallazgos.raiz, ["hallazgos"], conHallazgos.env);
+    expect(sinProyectoArg.codigo).toBe(2);
+    expect(JSON.parse(sinProyectoArg.error).error.codigo).toBe("argumentos-invalidos");
+
+    const inexistente = lanzar(conHallazgos.raiz, ["hallazgos", "--proyecto", join(conHallazgos.raiz, "no-existe")], conHallazgos.env);
+    expect(inexistente.codigo).toBe(1);
+    expect(inexistente.salida).toBe("");
+    expect(JSON.parse(inexistente.error).error.codigo).toBe("proyecto-inexistente");
+  });
+});
+
+describe("RF-07 CA-3 T3-07 R-2", () => {
+  test("el conjunto de hallazgos de la CLI sin explicacion es igual al de la web quitando explicacion en los cinco escenarios", async () => {
+    const nombres = ["v3-entradas-ilegible", "v3-permiso-invalido", "v3-sustituciones", "v3-referencias", "v3-sin-efecto"] as const;
+    for (const nombre of nombres) {
+      const e = nombre === "v3-sin-efecto" ? prepararSinReferencia(nombre) : preparar(nombre);
+      expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
+      const cli = cliHallazgos(e);
+      expect(cli.codigo).toBe(0);
+      const rCli = JSON.parse(cli.salida);
+      expect(rCli.hallazgos.length).toBeGreaterThan(0);
+      for (const h of rCli.hallazgos) expect("explicacion" in h).toBe(false);
+
+      const servidor = await lanzarServidor(e.raiz, e.env);
+      try {
+        const pagina = await solicitarLocal({
+          host: "127.0.0.1",
+          puerto: servidor.puerto,
+          ruta: `/hallazgos?proyecto=${encodeURIComponent(e.proyecto)}`,
+        });
+        expect(pagina.estado).toBe(200);
+        const rWeb = datosWeb(pagina.cuerpo);
+        const webSinExplicacion = {
+          ...rWeb,
+          hallazgos: rWeb.hallazgos.map(({ explicacion: _explicacion, ...resto }: Record<string, unknown>) => resto),
+        };
+        expect(rCli).toEqual(webSinExplicacion);
+      } finally {
+        await servidor.detener();
+      }
+    }
+  }, 30000);
+});
+
+describe("RF-07 CA-4 T3-07 R-3", () => {
+  test("con --explicar la explicacion de cada hallazgo de la CLI es identica a la de la web y al texto visible escapado en la tabla", async () => {
+    const nombres = ["v3-entradas-ilegible", "v3-permiso-invalido", "v3-sustituciones", "v3-referencias", "v3-sin-efecto"] as const;
+    for (const nombre of nombres) {
+      const e = nombre === "v3-sin-efecto" ? prepararSinReferencia(nombre) : preparar(nombre);
+      expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
+      const cli = cliHallazgos(e, ["--explicar"]);
+      expect(cli.codigo).toBe(0);
+      const rCli = JSON.parse(cli.salida);
+      expect(rCli.hallazgos.length).toBeGreaterThan(0);
+
+      const servidor = await lanzarServidor(e.raiz, e.env);
+      try {
+        const pagina = await solicitarLocal({
+          host: "127.0.0.1",
+          puerto: servidor.puerto,
+          ruta: `/hallazgos?proyecto=${encodeURIComponent(e.proyecto)}`,
+        });
+        expect(pagina.estado).toBe(200);
+        const rWeb = datosWeb(pagina.cuerpo);
+        expect(rCli).toEqual(rWeb);
+        for (const h of rCli.hallazgos) {
+          expect(typeof h.explicacion).toBe("string");
+          expect(h.explicacion.length).toBeGreaterThan(0);
+          expect(pagina.cuerpo).toContain(`<td>${escaparHtml(h.tipo)}</td><td>${escaparHtml(h.localizacion)}</td><td>${escaparHtml(h.explicacion)}</td>`);
+        }
+      } finally {
+        await servidor.detener();
+      }
+    }
+  }, 30000);
+});
+
+describe("T3-07 R-4", () => {
+  test("web /hallazgos aplica verificacion de metodo, Host y Sec-Fetch-Site igual que /entradas y escapa <script>", async () => {
+    const e = prepararSinReferencia("v3-sin-efecto");
+    const rutaConfig = join(e.proyecto, "opencode.json");
+    const config = JSON.parse(readFileSync(rutaConfig, "utf8"));
+    config.permission.read = {
+      "<script>alert(1)</script>": "allow",
+      "*": "deny",
+    };
+    writeFileSync(rutaConfig, JSON.stringify(config, null, 2));
+    expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
+
+    const servidor = await lanzarServidor(e.raiz, e.env);
+    try {
+      const q = `?proyecto=${encodeURIComponent(e.proyecto)}`;
+      const solicitarH = (opciones: object = {}) => solicitarLocal({ host: "127.0.0.1", puerto: servidor.puerto, ruta: `/hallazgos${q}`, ...opciones });
+      const solicitarE = (opciones: object = {}) => solicitarLocal({ host: "127.0.0.1", puerto: servidor.puerto, ruta: `/entradas${q}`, ...opciones });
+
+      const ok = await solicitarH();
+      expect(ok.estado).toBe(200);
+      expect(ok.cuerpo).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
+      const bloques = [...ok.cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
+      expect(bloques).toHaveLength(1);
+      expect(ok.cuerpo.replace(bloques[0]![0], "")).not.toMatch(/<script/i);
+
+      for (const opciones of [
+        { metodo: "POST" },
+        { metodo: "PUT" },
+        { cabeceras: { Host: "ajeno.example" } },
+        { cabeceras: { "Sec-Fetch-Site": "cross-site" } },
+        { cabeceras: { "Sec-Fetch-Site": "same-site" } },
+      ]) {
+        const rh = await solicitarH(opciones);
+        const re = await solicitarE(opciones);
+        expect(rh.estado).toBe(re.estado);
+        expect(rh.cuerpo).toBe(re.cuerpo);
+      }
+    } finally {
+      await servidor.detener();
+    }
+  });
 });

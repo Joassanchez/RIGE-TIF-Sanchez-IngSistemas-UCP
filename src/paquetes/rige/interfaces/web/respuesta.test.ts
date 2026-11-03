@@ -22,6 +22,7 @@ describe("W-11 redireccion", () => {
 });
 
 const manejarEstado = (puerto: number, consultarEstado: ConsultarEstado) => crearManejador(puerto, {
+  consultarHallazgos: () => { throw new Error("No consultar hallazgos en este doble"); },
   consultarEstado, resolverProyecto: () => { throw new Error("No resolver"); },
   consultarPermiso: () => { throw new Error("No consultar permisos"); },
   consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },

@@ -60,11 +60,17 @@ describe("C-2", () => {
     const { puerto, resolucion, anteriores, llamadas } = dobles();
     const proyeccion = consultarAgente(resolucion, "a", clave ? clave.split(".") : undefined);
     if (!proyeccion.exito) throw new Error(proyeccion.error.mensaje);
+    const valores = proyeccion.valor.valores.map(({ clave, rastro }) => ({ clave, rastro: {
+      ...rastro,
+      determinante: { ...rastro.determinante,
+        localizacion: clave === "modelo" ? "/proyecto/capa-b.json:1:2" : "/proyecto/capa-b.json:1:21" },
+      desplazadas: rastro.desplazadas.map(declaracion => ({ ...declaracion, localizacion: "/proyecto/capa-a.json:1:2" })),
+    } }));
     expect(consultarResolucion(puerto, "7", "a", clave)).toEqual({ exito: true, valor: {
       respuesta: { esquema: 2, declaraciones: [], versionRige,
         proyecto: "/proyecto", herramienta: "ficticia", versionHerramienta: "1",
         resumenEntradas: resolucion.resumenEntradas, entradas: resolucion.entradas,
-        agente: "a", ruta: clave ? [clave] : null, valores: proyeccion.valor.valores, reglas: resolucion.reglas,
+        agente: "a", ruta: clave ? [clave] : null, valores, reglas: resolucion.reglas,
         noResueltas: [{ ruta: ["permiso"], regla: "excluida" }], motivo: null },
       sobre: { id: 7, instante, anteriores },
     } });

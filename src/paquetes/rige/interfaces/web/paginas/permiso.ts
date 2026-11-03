@@ -13,7 +13,7 @@ export function paginaPermiso(respuesta: RespuestaPermiso): Response {
 <table><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalencia</th></tr></thead>
 <tbody>${respuesta.cadena.map(regla => html`<tr><td>${regla.indice + 1}</td><td>${regla.sujeto}</td><td>${regla.patron}</td><td>${regla.efecto}</td>
 <td>${regla.origen.tipo === "declarado"
-    ? `${regla.declaracion?.referencia}:${regla.origen.posicion.linea}:${regla.origen.posicion.columna} (${regla.declaracion?.via})`
+    ? `${regla.declaracion?.localizacion ?? regla.declaracion?.referencia} (${regla.declaracion?.via})`
     : `${regla.origen.tipo}: ${regla.origen.regla}`}</td>
 <td>${regla.indice === respuesta.determinante ? html`<strong>Determinante</strong>` : "Desplazada"}</td></tr>`)}</tbody></table>
 ${respuesta.nativaAnulada ? html`<p>Advertencia RF-09: protección nativa anulada (regla ${respuesta.nativaAnulada.regla + 1}, por ${respuesta.nativaAnulada.por + 1}).</p>` : html``}

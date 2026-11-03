@@ -14,6 +14,7 @@ import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucio
 import { consultarValores } from "../aplicacion/casos-uso/consultar-valores";
 import { consultarPermiso } from "../aplicacion/casos-uso/consultar-permiso";
 import { consultarAgentes } from "../aplicacion/casos-uso/consultar-agentes";
+import { consultarHallazgos } from "../aplicacion/casos-uso/consultar-hallazgos";
 import { consultarEntradas } from "../aplicacion/casos-uso/consultar-entradas";
 import { consultarPermisoGuardado, consultarAgentesGuardados } from "../aplicacion/casos-uso/consultar-guardada";
 import { versionRige } from "../aplicacion/respuestas/estado";
@@ -34,8 +35,9 @@ function ensamblar(comando: string): Ensamblado {
     consultarPermiso: (solicitud: Parameters<typeof consultarPermiso>[1]) => consultarPermiso(consultas, solicitud),
     consultarAgentes: (proyecto: string) => consultarAgentes(consultas, proyecto),
     consultarEntradas: (proyecto: string) => consultarEntradas(consultas, proyecto),
+    consultarHallazgos: (proyecto: string, opciones?: { readonly explicar?: boolean }) => consultarHallazgos(consultas, proyecto, opciones),
   };
-  if (["valores", "permiso", "agentes", "entradas"].includes(comando)) {
+  if (["valores", "permiso", "agentes", "entradas", "hallazgos"].includes(comando)) {
     const noEnsamblado = (): never => { throw new Error("Caso ajeno a una consulta en memoria"); };
     return { exito: true, valor: { ...casosConsulta, prepararAlmacen: noEnsamblado,
       consultarEstado: noEnsamblado, iniciarServidor: noEnsamblado } };
@@ -50,6 +52,7 @@ function ensamblar(comando: string): Ensamblado {
       consultarValores: (proyecto, agente, clave) => consultarValores(dependencias, proyecto, agente, clave),
       consultarPermiso: solicitud => consultarPermiso(dependencias, solicitud),
       consultarAgentes: (proyecto) => consultarAgentes(dependencias, proyecto),
+      consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
       consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
       prepararAlmacen: () => prepararAlmacen(almacen),
       consultarEstado: () => consultarEstado(almacen),
@@ -59,7 +62,8 @@ function ensamblar(comando: string): Ensamblado {
         consultarResolucion: (id, agente, clave) => consultarResolucion(resoluciones, id, agente, clave),
         consultarPermiso: (id, solicitud) => consultarPermisoGuardado(dependencias, id, solicitud),
         consultarAgentes: id => consultarAgentesGuardados(dependencias, id),
-        consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
+        consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
+      consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
       }),
     },
   };

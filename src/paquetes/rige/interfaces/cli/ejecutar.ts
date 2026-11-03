@@ -2,6 +2,7 @@ import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estad
 import type { ConsultarValores } from "../../aplicacion/casos-uso/consultar-valores";
 import type { consultarPermiso } from "../../aplicacion/casos-uso/consultar-permiso";
 import type { ConsultarAgentes } from "../../aplicacion/casos-uso/consultar-agentes";
+import type { ConsultarHallazgos } from "../../aplicacion/casos-uso/consultar-hallazgos";
 import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-entradas";
 import { versionEsquemaSalida } from "../../aplicacion/respuestas/valores";
 import type { ErrorUso } from "../../aplicacion/errores";
@@ -15,6 +16,7 @@ export interface CasosUsoCli {
   readonly consultarPermiso: (...args: Parameters<typeof consultarPermiso> extends [unknown, ...infer R] ? R : never) => ReturnType<typeof consultarPermiso>;
   readonly consultarAgentes: ConsultarAgentes;
   readonly consultarEntradas: ConsultarEntradas;
+  readonly consultarHallazgos: ConsultarHallazgos;
   readonly prepararAlmacen: () => Resultado<RespuestaEstado, ErrorUso>;
   readonly consultarEstado: ConsultarEstado;
   readonly iniciarServidor: () => Resultado<{ readonly direccion: string }, ErrorUso>;
@@ -31,6 +33,7 @@ const subcomandos = {
   valores: (casos, opciones) => casos.consultarValores(opciones.proyecto, opciones.agente, opciones.clave),
   agentes: (casos, opciones) => casos.consultarAgentes(opciones.proyecto),
   entradas: (casos, opciones) => casos.consultarEntradas(opciones.proyecto),
+  hallazgos: (casos, opciones) => casos.consultarHallazgos(opciones.proyecto, { explicar: Boolean(opciones.explicar) }),
   permiso: (casos, opciones) => casos.consultarPermiso({ proyecto: opciones.proyecto, agente: opciones.agente,
     ...(opciones.herramienta === undefined ? { sujeto: opciones.sujeto! } : { herramienta: opciones.herramienta }),
     objetivo: opciones.objetivo, lanzadoPor: opciones.lanzadoPor, explicar: opciones.explicar }),
@@ -79,7 +82,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
   const { proyecto, agente, clave, herramienta, sujeto, objetivo, explicar, "lanzado-por": lanzadoPor } = opciones.values;
   const comando = posicionales[0]!;
   const admitidas: Record<string, readonly string[]> = {
-    valores: ["proyecto", "agente", "clave"], agentes: ["proyecto", "explicar"], entradas: ["proyecto"],
+    valores: ["proyecto", "agente", "clave"], agentes: ["proyecto", "explicar"], entradas: ["proyecto"], hallazgos: ["proyecto", "explicar"],
     permiso: ["proyecto", "agente", "herramienta", "sujeto", "objetivo", "lanzado-por", "explicar"], esquema: [], servir: [],
   };
   for (const nombre of Object.keys(opciones.values)) {
@@ -91,7 +94,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
       || (clave !== undefined && (typeof clave !== "string" || !clave.trim()))) {
       return argumentosInvalidos(canales, "valores requiere --proyecto y --agente no vacíos; --clave es opcional y no puede estar vacía.");
     }
-  } else if (["agentes", "entradas"].includes(comando) && !noVacio(proyecto)) {
+  } else if (["agentes", "entradas", "hallazgos"].includes(comando) && !noVacio(proyecto)) {
     return argumentosInvalidos(canales, `${comando} requiere --proyecto no vacío.`);
   } else if (comando === "permiso" && (!noVacio(proyecto) || !noVacio(agente) || !noVacio(objetivo)
     || (herramienta !== undefined) === (sujeto !== undefined) || !noVacio(herramienta ?? sujeto)
@@ -114,7 +117,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
       return 1;
     }
     const advertencias: RespuestaAdvertencia[] = [];
-    if (["valores", "permiso", "agentes", "entradas"].includes(comando) && "declaraciones" in resultado.valor && "reglas" in resultado.valor) {
+    if (["valores", "permiso", "agentes", "entradas", "hallazgos"].includes(comando) && "declaraciones" in resultado.valor && "reglas" in resultado.valor) {
       for (const codigo of resultado.valor.declaraciones) {
         if (!advertidas.includes(codigo)) continue;
         const mensaje = resultado.valor.reglas[codigo];

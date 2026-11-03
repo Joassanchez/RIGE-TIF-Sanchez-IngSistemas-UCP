@@ -6,7 +6,7 @@ import { responderHtml } from "../respuesta";
 function presentarDeclaracion(declaracion: DeclaracionUbicada): string {
   const { origen } = declaracion;
   if (origen.tipo !== "declarado") return `${JSON.stringify(declaracion.valor)} (${origen.tipo}: ${origen.regla})`;
-  return `${JSON.stringify(declaracion.valor)} en ${declaracion.referencia}:${origen.posicion.linea}:${origen.posicion.columna} (${declaracion.via})`;
+  return `${JSON.stringify(declaracion.valor)} en ${declaracion.localizacion ?? declaracion.referencia} (${declaracion.via})`;
 }
 
 export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmacen): Response {

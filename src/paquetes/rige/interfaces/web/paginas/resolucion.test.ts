@@ -6,6 +6,7 @@ function respuesta(): RespuestaValores {
   const declaracion = (valor: string | number, orden: number): DeclaracionUbicada => ({
     valor, origen: { tipo: "declarado", orden, posicion: { linea: 6, columna: 7 } },
     via: "proyecto", referencia: `/proyecto/<entrada${orden}>.jsonc`, regla: "orden-de-aplicacion",
+    localizacion: `/proyecto/<entrada${orden}>.jsonc:6:7`,
   });
   return {
     esquema: 2, declaraciones: [], versionRige,

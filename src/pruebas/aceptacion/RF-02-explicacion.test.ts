@@ -16,7 +16,9 @@ describe("RF-02 CA-4 explicacion", () => {
     expect(texto).toContain("read");
     expect(texto).toContain("*.env");
     expect(texto).toContain("permitida");
-    expect(texto).toContain(`declarada en ${determinante.declaracion!.referencia}:${determinante.origen.tipo === "declarado" ? determinante.origen.posicion.linea : 0}`);
+    expect(determinante.origen.tipo).toBe("declarado");
+    if (determinante.origen.tipo !== "declarado") throw new Error("Se esperaba una regla declarada.");
+    expect(texto).toContain(`declarada en ${determinante.declaracion!.referencia}:${determinante.origen.posicion.linea}:${determinante.origen.posicion.columna}`);
     expect(texto).toContain("es la última regla coincidente; OpenCode 1.18.25 aplica la última coincidencia");
     expect(texto).toContain("3 reglas coincidentes desplazadas");
     expect(segunda!.explicacion).toEqual(primera!.explicacion);

@@ -15,7 +15,10 @@ export function paginaInicio(respuesta: RespuestaEstado): Response {
 <label>Clave <input type="text" name="clave" value="" aria-describedby="ayuda-clave"></label>
 <p id="ayuda-clave">vacía: todas las claves del agente</p>
 <button type="submit">Resolver y guardar</button>
-</form></body>
+</form>
+<form method="get" action="/hallazgos">
+<label>Proyecto <input type="text" name="proyecto" required></label>
+<button type="submit">Hallazgos</button></form></body>
 </html>`;
   return responderHtml(200, pagina);
 }

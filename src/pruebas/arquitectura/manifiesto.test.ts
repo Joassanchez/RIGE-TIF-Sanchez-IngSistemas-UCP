@@ -76,13 +76,13 @@ describe("T2-14 M-2", () => {
 });
 
 describe("T2-14 M-3", () => {
-  test("T3-05 y T3-06 cubren los seis tipos de RF-07, CA-2, CA-5, RE-02 y RE-03; el defecto ADR-088 queda pendiente hasta T3-08", () => {
+  test("T3-05, T3-06 y T3-07 cubren los seis tipos de RF-07, CA-2..CA-5, RE-02, RE-03 y RF-12 CA-1..CA-2; el defecto ADR-088 queda pendiente hasta T3-08", () => {
     const manifiesto = leer();
     const informe = informarCobertura(manifiesto, matriz()).items;
     const rf07 = informe.filter(i => i.id.startsWith("RF-07 "));
-    expect(rf07).toHaveLength(8);
+    expect(rf07).toHaveLength(10);
     expect(rf07.every(i => i.estado === "cubierto")).toBe(true);
-    for (const id of ["RF-07 CA-5", "RE-02", "RE-03"]) {
+    for (const id of ["RF-07 CA-3", "RF-07 CA-4", "RF-07 CA-5", "RE-02", "RE-03", "RF-12 CA-1", "RF-12 CA-2"]) {
       expect(informe.find(i => i.id === id)).toMatchObject({ iteracion: 3, estado: "cubierto" });
     }
     expect(manifiesto.defectosSembrados).toHaveLength(1);

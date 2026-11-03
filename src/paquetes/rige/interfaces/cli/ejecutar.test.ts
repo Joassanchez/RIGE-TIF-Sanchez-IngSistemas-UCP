@@ -88,6 +88,7 @@ const respuesta: RespuestaEstado = {
   esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
 const noWeb = {
+  consultarHallazgos: () => { throw new Error("No consultar hallazgos en este doble"); },
   consultarPermiso: () => { throw new Error("No consultar permiso"); },
   consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },
   consultarAgentes: () => { throw new Error("No consultar agentes"); },

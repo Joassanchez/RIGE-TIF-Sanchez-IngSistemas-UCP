@@ -73,6 +73,18 @@
       "obligatorioV2": false
     },
     {
+      "id": "RF-07 CA-3",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-07 CA-4",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
       "id": "RF-07 CA-5",
       "objetivo": "OE-3",
       "iteracion": 3,
@@ -201,6 +213,18 @@
     {
       "id": "RNF-02 CA-1",
       "objetivo": "seguridad y fidelidad de sustituciones",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-12 CA-1",
+      "objetivo": "OE-1, OE-2 y OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-12 CA-2",
+      "objetivo": "OE-1, OE-2 y OE-3",
       "iteracion": 3,
       "obligatorioV2": false
     }

@@ -1016,3 +1016,55 @@ En Bash, el último comando es `bun run referencias --raiz "$(npm root -g)"`.
 Se comparan las referencias existentes, sin regenerarlas. El escenario
 `v3-sin-efecto` aporta la regla tapada y el subagente `auditor` sin uso; las
 variantes de ruta y sus controles usan las referencias de `v2-ruta-*`.
+
+### Hallazgos por CLI y web (T3-07)
+
+Desde `src/`, con `RIGE_ALMACEN` apuntando a un temporal:
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
+bun run rige -- hallazgos --proyecto <ruta>
+bun run rige -- hallazgos --proyecto <ruta> --explicar
+```
+
+La CLI devuelve JSON con código 0 tanto con hallazgos como sin ellos.
+`--explicar` agrega a cada hallazgo la misma explicación que presenta la web.
+Sin esa opción, el campo `explicacion` se omite. Los errores de uso conservan
+los códigos de los demás subcomandos. Esta consulta analiza las entradas
+actuales en memoria y no requiere crear el almacén ni guarda hallazgos.
+
+Con el servidor iniciado mediante `bun run servir`, la página de inicio
+permite consultar `GET /hallazgos?proyecto=<ruta-codificada>`. La página
+presenta tipo, localización y explicación en una tabla y contiene la respuesta
+completa en el bloque JSON de paridad `id="respuesta"`. Los valores se escapan
+como en las demás páginas. Los hallazgos se consultan solo en vivo, sin variante
+sobre una resolución guardada (ADR-105).
+
+Las declaraciones ubicadas de `valores`, `permiso` y las eliminaciones de
+`agentes` incluyen `localizacion` en formato `ruta:línea:columna`, con ruta
+absoluta normalizada a `/`. Cada hallazgo también incluye ese campo. La única
+excepción a la ruta absoluta son las entradas de variables: usan el nombre,
+por ejemplo `OPENCODE_PERMISSION:1:1`. Línea y columna parten de 1; la columna
+cuenta unidades UTF-16 sobre el texto original. Las explicaciones de permisos
+declarados también incluyen la columna.
+
+La CLI y la web presentan la localización calculada por el caso de uso.
+También se calcula al consultar una resolución guardada, sin modificar su
+documento. El campo de las declaraciones es opcional en los esquemas, para
+preservar salidas anteriores y declaraciones implícitas; en los hallazgos es
+obligatorio. La versión del esquema de salida sigue siendo 2.
+
+Comprobación y regeneración del contrato de salida:
+
+```powershell
+bun ./herramientas/tipos-salida.ts
+bun test paquetes/rige pruebas/aceptacion/RF-07.test.ts pruebas/aceptacion/RF-12.test.ts
+bun test pruebas/aceptacion/RF-02-explicacion.test.ts
+bun test
+bun test --timeout 30000
+bun run verificar
+```
+
+La variante con `--timeout 30000` permite completar la prueba exhaustiva de
+patrones en equipos donde supera el límite predeterminado de cinco segundos;
+mantiene todas sus comprobaciones.

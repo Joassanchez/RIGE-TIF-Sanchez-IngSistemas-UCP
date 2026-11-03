@@ -1,3 +1,4 @@
+import { localizarDeclaracion } from "../respuestas/localizacion";
 import type { Resultado } from "../respuestas/resultado";
 import type { ErrorUso } from "../errores";
 import type { RespuestaAgentes } from "../respuestas/agentes";
@@ -14,7 +15,7 @@ export function consultarAgentes(dependencias: DependenciasAnalisis, proyecto: s
   const agentes = listado.agentes.filter(a => a.estado !== "deshabilitado").map(({ nombre, origen, modo, oculto }) => ({ nombre, origen, modo, oculto }));
   const eliminados = listado.agentes.filter(a => a.estado === "deshabilitado").map(a => {
     if (!a.eliminacion) throw new Error("Agente deshabilitado sin declaración de eliminación.");
-    return { nombre: a.nombre, declaracion: a.eliminacion };
+    return { nombre: a.nombre, declaracion: localizarDeclaracion(a.eliminacion) };
   });
   return { exito: true, valor: { esquema: versionEsquemaSalida, proyecto: resolucion.proyecto,
     entradas: resolucion.entradas, resumenEntradas: resolucion.resumenEntradas, agentes,

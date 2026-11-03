@@ -10,6 +10,8 @@ import { paginaResolucion } from "./paginas/resolucion";
 import type { consultarPermisoGuardado, consultarAgentesGuardados } from "../../aplicacion/casos-uso/consultar-guardada";
 import { paginaPermiso } from "./paginas/permiso";
 import { paginaAgentes } from "./paginas/agentes";
+import type { ConsultarHallazgos } from "../../aplicacion/casos-uso/consultar-hallazgos";
+import { paginaHallazgos } from "./paginas/hallazgos";
 import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-entradas";
 import { paginaEntradas } from "./paginas/entradas";
 import { html } from "./plantillas";
@@ -17,6 +19,7 @@ import { redirigir, responderHtml } from "./respuesta";
 
 export interface CasosWeb {
   readonly consultarEntradas: ConsultarEntradas;
+  readonly consultarHallazgos: ConsultarHallazgos;
   readonly consultarEstado: ConsultarEstado;
   readonly resolverProyecto: ResolverProyecto;
   readonly consultarResolucion: ConsultarResolucion;
@@ -27,6 +30,10 @@ export interface CasosWeb {
 export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Request) => Response {
   const enrutar = (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
+    if (url.pathname === "/hallazgos") {
+      const resultado = casos.consultarHallazgos(url.searchParams.get("proyecto") ?? "", { explicar: true });
+      return resultado.exito ? paginaHallazgos(resultado.valor) : paginaErrorUso(resultado.error);
+    }
     if (url.pathname === "/entradas") {
       const resultado = casos.consultarEntradas(url.searchParams.get("proyecto") ?? "");
       return resultado.exito ? paginaEntradas(resultado.valor) : paginaErrorUso(resultado.error);
