@@ -237,7 +237,9 @@ La salida esperada es `3.53.0`.
 
 ## 4. Instalación
 
-Se clona el repositorio, se entra en `src/` y se instalan las dependencias versionadas. Los comandos son iguales en Bash y PowerShell:
+Con una cuenta sin privilegios administrativos, se clona el repositorio en una
+carpeta del usuario, se entra en `src/` y se instalan las dependencias localmente.
+Los comandos son iguales en Bash y PowerShell:
 
 ```bash
 git clone https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP.git
@@ -1218,3 +1220,55 @@ bun run cobertura
 bun run referencias --raiz (npm.cmd root -g)
 bun run decisiones --raiz (npm.cmd root -g)
 ```
+
+## Verificación de RNF-06 (T4-02)
+
+La instalación local en Ubuntu y Windows 11 usa `bun install --frozen-lockfile`
+con una cuenta sin privilegios administrativos. Bun debe estar instalado en el
+espacio del usuario y el repositorio en una carpeta donde esa cuenta pueda
+escribir. Los scripts no requieren elevación ni directorios del sistema.
+
+`pruebas/aceptacion/RNF-06.test.ts` comprueba los tres criterios:
+
+- **CA-1:** copia `v1-precedencia`, `v1-vias` y `openchamber-doble` a temporales
+  y los carga en memoria con rutas Linux y Windows independientes del anfitrión.
+  Compara todas las entradas descubiertas (3, 6 y 32 archivos, respectivamente)
+  y todas las hojas efectivas, con rutas relativas a la raíz y separadores `/`.
+  Las decisiones de permiso quedan excluidas; también se compara la lista de
+  claves no resueltas para hacer visibles las limitaciones del adaptador.
+- **CA-2:** contrasta los valores resueltos capturados en los `REFERENCIA.json`
+  de `v1-vias` y `v1-precedencia`, cuya procedencia registra OpenCode 1.18.25
+  para Windows. Repite con rutas de entrada absolutas de barras invertidas,
+  directas y combinadas; el descubrimiento combina esas bases con nombres
+  relativos. En `v1-vias`, `maxSteps` mantiene `steps` como no resuelto
+  (`fuera-del-v1`): la prueba verifica esa exclusión expresamente, sin contarlo
+  como un valor efectivo comparado.
+- **CA-3:** revisa los scripts de los paquetes, los directorios de almacén por
+  defecto y los errores controlados por ausencia de variables del usuario.
+  Windows usa `%LOCALAPPDATA%\rige`; Linux, `$XDG_DATA_HOME/rige` o
+  `~/.local/share/rige`. Las bases de prueba son temporales y la lectura de
+  configuración no crea archivos ni directorios.
+
+Desde `src/`, en PowerShell:
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) ('rige-rnf06-' + [Guid]::NewGuid())
+bun test pruebas/aceptacion/RNF-06.test.ts
+bun test
+bun run verificar
+```
+
+En Bash:
+
+```bash
+export RIGE_ALMACEN="$(mktemp -d)/almacen"
+bun test pruebas/aceptacion/RNF-06.test.ts
+bun test
+bun run verificar
+```
+
+Si la prueba exhaustiva de patrones supera el límite predeterminado de cinco
+segundos, se usa `bun test --timeout 30000`, como en la verificación de T3-07.
+La simulación y la inspección de scripts no sustituyen la corrida manual de
+instalación con una cuenta sin privilegios en ambas plataformas exigida por
+ADR-054; tampoco ejecutan nuevamente el binario nativo ni regeneran referencias.
