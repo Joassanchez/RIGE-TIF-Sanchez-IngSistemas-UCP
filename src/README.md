@@ -11,188 +11,35 @@
 
 ## 2. Qué hace este prototipo
 
-T4-01 incorpora `--tiempos` en las consultas `valores`, `permiso`, `agentes`,
-`entradas` y `hallazgos`. En una consulta exitosa, agrega al final de `stderr`
-una línea JSON conforme a `esquemas/salida/tiempos.json`, con `esquema: 2`.
-Las advertencias preceden esa línea, cada una en su propio JSON. `stdout`
-conserva exactamente los mismos bytes que sin la opción. `esquema` y `servir`
-rechazan `--tiempos` con código 2 (`argumentos-invalidos`).
+Este prototipo implementa el caso de uso vertical de consulta del valor efectivo de una clave de configuración de un agente de OpenCode 1.18.25 y su procedencia detallada, atravesando desde la interfaz web hasta la persistencia y recuperación en base de datos local SQLite. Este recorrido prueba la decisión de arquitectura hexagonal (ADR-058, ADR-060, RNF-03) que desacopla estrictamente el núcleo genérico de resolución respecto del adaptador de la herramienta.
 
-Las etapas, en milisegundos de reloj monotónico, son:
+RIGE (Resolución e Inspección de Gobernanza Efectiva) es una plataforma local de solo lectura que analiza, resuelve y explica la configuración efectiva y la procedencia de políticas en herramientas de desarrollo basadas en agentes, circunscrita en esta versión congelada a **OpenCode 1.18.25** (ADR-054, ADR-102).
 
-- `arranqueMs`: desde el inicio de `ejecutarCli` hasta llamar al caso de uso,
-  incluido el ensamblado.
-- `lecturaMs`: contexto, descubrimiento, lectura sintáctica y validación de vías,
-  hasta el límite señalado por el núcleo o el caso de uso.
-- `resolucionMs`: desde ese límite hasta terminar el caso de uso, incluida la
-  secuenciación, la fusión, la evaluación y la proyección que correspondan.
-- `salidaMs`: serialización JSON y llamada al canal de escritura de `stdout`.
-- `totalMs`: desde el inicio de `ejecutarCli` hasta antes de emitir los tiempos;
-  incluye la escritura de advertencias. No incluye cargar Bun ni los módulos.
+El prototipo implementa de manera completa los 14 requisitos funcionales comprometidos (11 Must y 3 Should) y los 10 requisitos no funcionales arquitectónicos (7 Must y 3 Should), satisfaciendo el 100 % de los 18 requisitos Must del producto mínimo viable (V.5):
 
-El arnés `medir:rnf07` copia `openchamber-doble` a un temporal, construye el
-entorno desde cero (solo hereda `PATH` y `SystemRoot`) y aísla allí
-`RIGE_ALMACEN`, el hogar y las rutas XDG/AppData. Conserva el `PATH` para
-detectar la instalación de OpenCode sin ejecutarla. El escenario tiene 14 LSP,
-12 agentes (el primero en JSON, los otros 11 en Markdown) y 20 comandos:
-32 archivos válidos, sin contenido redistribuido del proyecto público.
-Cada consulta de valores y permiso de `agent-1` se ejecuta diez veces
-consecutivas en subprocesos nuevos. El permiso consulta `bash` sobre
-`git status` y debe resolver `allow` con decisión completa. El arnés valida
-los JSON de resultados, advertencias y tiempos, e imprime mínimo, mediana y
-peor caso de cada etapa. `invocacionMs` mide además la pared del subproceso
-completo, incluido `bun run rige`; es la cifra usada para el umbral.
+1. **Resolución determinista de valores y procedencia (RF-01, RF-03, RD-01):** resuelve el valor efectivo de cualquier clave de configuración aplicando la regla de precedencia validada RD-01 (prevalece la declaración de la última entrada que define la clave). Cada valor resuelto informa su rastro exhaustivo: archivo de origen, línea, columna, tipo de entrada y lista cronológica de declaraciones desplazadas.
+2. **Descubrimiento exhaustivo de vías de configuración (RF-04):** explora las siete vías reconocidas por OpenCode 1.18.25 (`global`, `variable-config`, `proyecto`, `directorio-opencode`, `markdown`, `variable-contenido` y `variable-permiso`), reportando resumen criptográfico SHA-256, condición de observación y diagnóstico sintáctico (identificando entradas legibles, ilegibles o descartadas).
+3. **Control estricto de versión del entorno (RF-05, ADR-102):** detecta la instalación activa de OpenCode en el sistema sin ejecutar su binario. Si la versión difiere de 1.18.25, rechaza la operación con código 1 (CLI) o HTTP 422 (Web). Si no puede determinarse de forma unívoca, emite advertencias estructuradas en JSON conservando los resultados analizados.
+4. **Evaluación de permisos y reglas nativas (RF-02, RF-08, RF-09):** evalúa la cadena completa de permisos v1 mediante las funciones puras del evaluador nativo y Wildcard incorporadas bajo licencia MIT (RNF-10). Identifica la regla determinante, la posición en la cadena, los motivos ante consultas sin decisión (comandos compuestos de `bash`, rutas fuera del árbol) y advierte cuando una regla del usuario anula o flexibiliza una protección nativa incorporada.
+5. **Modelado y listado de agentes (RF-06, RF-16, ADR-105):** cataloga todos los agentes del ecosistema (nativos y declarados en JSON), modelando sus modos de operación (`all`, `primary`, `subagent`), condiciones de visibilidad (`hidden`, `disable`) y valores implícitos de configuración. Conforme a ADR-105, los agentes definidos en Markdown se identifican con la limitación de contenido no observado (`cadena-incompleta`), evitando suposiciones sobre declaraciones inexistentes.
+6. **Detección de 6 causas de hallazgos en vivo sin falsos positivos (RF-07, RE-01 a RE-04):** analiza en memoria configuraciones vigentes para identificar entradas ilegibles, entradas descartadas sin error visible, variables no definidas o vacías, referencias a agentes inexistentes o deshabilitados, reglas de permiso tapadas o sin efecto práctico (mediante inclusión formal con el algoritmo `abarca`), y subagentes sin uso.
+7. **Diagnóstico de latencia por etapa (RNF-07, RF-12):** provee la opción `--tiempos` en la interfaz CLI estructurada v2, desglosando la latencia en milisegundos de reloj monotónico (`arranqueMs`, `lecturaMs`, `resolucionMs`, `salidaMs` y `totalMs`) conforme al contrato `esquemas/salida/tiempos.json`, verificado bajo arnés de latencia estricta (< 2000 ms en máquina de referencia).
+8. **Aislamiento, portabilidad y persistencia local (RNF-01, RNF-04, RNF-05, RNF-06, RNF-09):** opera íntegramente fuera de línea, sin telemetría ni consumo de red. Sustituye variables y secretos de forma simbólica sin persistir ni exponer credenciales. Persiste las consultas en una base de datos SQLite propia con esquema v2 auditable, operando sin privilegios de administrador en Ubuntu 26.04 y Windows 11.
+9. **Arquitectura hexagonal desacoplada (RNF-03, ADR-058, ADR-060):** desacopla estrictamente el núcleo genérico de resolución respecto de los adaptadores de herramientas específicas, permitiendo resolver adaptadores sintéticos sin alterar el motor de combinación.
 
-Por defecto el informe es diagnóstico y no falla por rendimiento en CI.
-`--estricto` o `RNF07_ESTRICTO=1` hacen que termine con código 1 si el peor caso
-de cualquiera de las dos invocaciones es mayor o igual a 2000 ms. Las fallas
-de ejecución o de validación siempre producen código 1. El umbral solo se
-acredita en el contenedor Ubuntu 26.04 de referencia (ADR-054/055), con el
-escenario en su sistema de archivos, sin montarlo desde Windows. En Windows
-11 el desglose es diagnóstico; una corrida local no acredita Ubuntu.
+La oferta de herramientas según la decisión (RF-10), el resumen del ecosistema (RF-11), la localización `ruta:línea:columna` (RF-12) y la conservación de las últimas 20 resoluciones inmutables por proyecto (RF-17) completan las consultas. La fidelidad se contrasta con referencias nativas (RNF-02); los contratos publicados en `esquemas/salida/` conservan `esquema: 2` (RNF-08).
 
-Desde `src/`, para comprobar T4-01 y ejecutar la medición:
+**Alcance y límites:** las vías remotas y administradas se declaran no observadas. RIGE no ejecuta OpenCode ni Git: descubre el worktree leyendo `.git`; sin repositorio válido usa `/`. `GIT_DIR`, `GIT_WORK_TREE`, `GIT_CEILING_DIRECTORIES` y `GIT_COMMON_DIR` definidas producen `via-no-soportada`. En Windows, las instalaciones por pnpm o bun pueden dar `version-no-determinada` con motivo `paquete-no-encontrado`; los directorios inaccesibles del `PATH` se omiten con advertencia `path-inaccesible` (ADR-106).
 
-```powershell
-$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-t4-pruebas'
-bun ./herramientas/tipos-salida.ts
-bun test pruebas/aceptacion/RNF-07.test.ts --test-name-pattern 'CA-1.1'
-bun test pruebas/aceptacion/RNF-07.test.ts
-bun test paquetes/rige/interfaces/cli/ejecutar.test.ts paquetes/nucleo/resolucion/resolver.test.ts --test-name-pattern 'T4-01'
-bun test pruebas/aceptacion/RNF-07.test.ts paquetes/rige/interfaces/cli/ejecutar.test.ts paquetes/nucleo/resolucion/resolver.test.ts
-bun test herramientas/medir-rnf07.test.ts
-bun run rige -- valores --proyecto <ruta-del-proyecto> --agente agent-1 --tiempos
-bun run rige -- permiso --proyecto <ruta-del-proyecto> --agente agent-1 --herramienta bash --objetivo "git status" --tiempos
-bun run medir:rnf07
-bun run medir:rnf07 --estricto
-bun test
-bun run verificar
-```
+`OPENCODE_CONFIG_CONTENT` se analiza como JSONC y `OPENCODE_PERMISSION` como JSON estricto; su texto crudo no se emite ni se guarda. El resumen del conjunto incorpora su huella cuando constituyen entradas (ADR-104). `OPENCODE_CONFIG_DIR` agrega un directorio y exige una ruta absoluta canónica. El TOML legado `config`, las variables `OPENCODE_DISABLE_PROJECT_CONFIG`, `OPENCODE_TEST_HOME` y `OPENCODE_TEST_MANAGED_CONFIG_DIR`, y un `name:` en frontmatter Markdown producen `via-no-soportada`.
 
-En Bash se puede usar `RIGE_ALMACEN="$(mktemp -d)" bun run medir:rnf07 --estricto`;
-el arnés crea y limpia su propia copia temporal en ambas plataformas.
+No se valida el frontmatter de Markdown ni se analiza su contenido como declaraciones de agentes o comandos. Las referencias por nombre se limitan a `default_agent` y `command.<nombre>.agent`; un agente existente pero oculto o subagente como `default_agent` queda fuera del detector. Si hay Markdown, referencias excluidas o sustituidas, no se evalúan elementos sin uso y se declara `elementos-sin-uso-no-evaluados`. Si una entrada impide cargar la configuración, los hallazgos se declaran parciales. Los hallazgos se calculan en vivo y no se guardan.
 
-Si la prueba exhaustiva preexistente de T3-06 supera el límite de 5 s de Bun
-por la carga del equipo, la suite completa puede ejecutarse con
-`bun test --timeout 15000`. Esto amplía el plazo del ejecutor de pruebas;
-el umbral estricto de RNF-07 sigue siendo menor que 2000 ms.
+La inclusión de patrones `abarca` es conservadora: no detecta que `a?*` está incluido en `*?`. Solo compara reglas posteriores del mismo bloque y sujeto literal; las rutas absolutas sin efecto se diagnostican para `read` y `edit` dentro de la base efectiva. Una forma relativa se propone únicamente si confirma el efecto declarado en las cadenas completas afectadas (ADR-105).
 
-T3-01 comprueba la versión instalada de OpenCode (RF-05, ADR-102) antes de
-analizar las vías de configuración. Busca el primer `opencode` del `PATH`
-del proceso de RIGE; en Windows usa las extensiones de `PATHEXT` (por defecto
-`.com;.exe;.bat;.cmd`). Resuelve los enlaces del ejecutable y sube hasta el
-`package.json` de `opencode-ai`; si no lo encuentra, prueba
-`node_modules/opencode-ai/package.json` junto al ejecutable, como en el
-envoltorio de npm en Windows. RIGE solo lee esos archivos, sin ejecutar
-OpenCode. El `PATH` de RIGE puede diferir del de otra terminal.
+Las sustituciones conservan plantilla, origen, condición y posición sobre el texto original; excluyen el contenido incorporado y su huella. Las reglas de permiso con sustituciones válidas quedan excluidas (`sustitucion-no-incorporada`); un `mode` sustituido excluye al agente. RIGE no lee `auth.json` ni las variables aportadas por `wellknown`. No analiza el eje `external_directory` completo, aprobaciones permanentes ni reglas adicionales de la sesión; lo declara en las respuestas.
 
-La comparación con `1.18.25` es exacta. Una versión distinta produce
-`version-no-soportada` con ambas versiones y la ruta absoluta del
-`package.json` leído: la CLI termina con código 1,
-salida estándar vacía y una línea JSON de error; la web responde 422 sin
-resultados y sin guardar una resolución. Si no se puede determinar la
-versión, las consultas conservan sus resultados con la declaración
-`version-no-determinada` y uno de estos motivos: `ejecutable-no-encontrado`,
-`paquete-no-encontrado` o `paquete-ilegible` (contenido inválido del paquete).
-Las fallas de lectura o de resolución de enlaces son fallas de infraestructura,
-con código 70 en la CLI.
-
-En el caso indeterminado, `valores`, `permiso` y `agentes` terminan con código
-0 y emiten dos líneas por el canal de error, según `advertencia.json`:
-`{"esquema":2,"advertencia":{"codigo":"version-no-determinada","mensaje":"…"}}`
-y otra con el motivo. Las respuestas conservan sus contratos de esquema 2,
-con los códigos en `declaraciones` y los textos en `reglas`. El código de
-motivo sigue inmediatamente a `version-no-determinada` y explica su causa.
-La web muestra las declaraciones antes de los resultados; la página de
-resolución también incluye el JSON de la
-respuesta para comprobar la paridad con la CLI. Las consultas de resoluciones
-guardadas conservan sus declaraciones y no vuelven a detectar la versión.
-
-Las instalaciones sin un paquete identificable (por ejemplo, un binario
-instalado por `curl`, brew o scoop) quedan como versión no determinada.
-La precarga de las pruebas antepone una instalación falsa en 1.18.25 al
-`PATH`; las pruebas de RF-05 lo reemplazan para cada caso.
-
-Para comprobar T3-01 desde `src/`, con `RIGE_ALMACEN` temporal:
-
-```powershell
-$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-t301-pruebas'
-bun test pruebas/aceptacion/RF-05.test.ts
-bun test paquetes/opencode pruebas/aceptacion/RF-05.test.ts paquetes/rige/interfaces pruebas/arquitectura/entorno.test.ts pruebas/utilidades
-bun test paquetes/rige/adaptadores/sistema/entorno-lectura.test.ts
-bun test pruebas/utilidades/comprobacion-ci.test.ts pruebas/utilidades/entorno-opencode.test.ts pruebas/utilidades/resolucion-guardada.test.ts
-bun herramientas/tipos-salida.ts
-bun test
-bun run verificar
-```
-
-La comprobación de CI posterior a las referencias consulta `agentes` sobre
-un proyecto temporal vacío con el `PATH` real del runner y un almacén
-temporal. Exige código 0 y ninguna línea JSON de advertencia en el canal de
-error. Su prueba local usa Bash (Git Bash en Windows) con el entorno aislado
-del arnés. El enlace simbólico relativo de npm se prueba en Linux; en Windows,
-la prueba de `real` usa una unión de directorio que exige resolver el enlace.
-El constructor de resoluciones anteriores usa el repositorio de producción,
-sin SQL crudo en RF-05, y el ayudante de contexto en memoria incluye 1.18.25.
-
-T2-13 agrega los valores implícitos de los agentes con origen
-`implicito` y regla `valor-implicito-del-agente` (RF-06 CA-1, RD-04).
-Su rastro tiene `via` y `referencia` en `null`; una declaración posterior
-conserva el valor implícito en `desplazadas`. Los prompts nativos de explore,
-compaction, title y summary se presentan como `{ tipo: "texto-nativo", sha256 }`.
-Los resúmenes del tag figuran en `paquetes/opencode/vendor/PROCEDENCIA.md`.
-Solo se informan las propiedades presentes en el tag; por ejemplo, build
-no tiene `hidden` implícito. Los agentes declarados nuevos reciben
-`mode: "all"` y `native: false`.
-
-Para comprobar T2-13, con `RIGE_ALMACEN` temporal (sección 6):
-
-```powershell
-bun test pruebas/aceptacion/RF-06.test.ts paquetes/opencode
-bun test pruebas/arquitectura/referencias-nativas.test.ts
-bun test pruebas/aceptacion/fusion-permisos.test.ts pruebas/aceptacion/recorrido-v1.test.ts
-bun test pruebas/aceptacion/RF-01.test.ts pruebas/aceptacion/RF-06.test.ts paquetes/opencode
-bun run referencias --raiz (npm.cmd root -g) --regenerar
-bun run referencias --raiz (npm.cmd root -g)
-bun test
-bun run verificar
-```
-
-La regeneración amplía `REFERENCIA.json` con `valoresAgentes`: escalares
-de todos los agentes consultados y resúmenes SHA-256 de los prompts nativos.
-La comparación posterior vuelve a capturar esos valores con el binario oficial.
-En Bash se sustituye `(npm.cmd root -g)` por `"$(npm root -g)"`.
-
-T2-11b consolida la consulta de permisos: `consultarPermiso(dependencias,
-{ proyecto, agente, sujeto, objetivo, lanzadoPor?, explicar? })`, o el mismo
-objeto con `herramienta` en lugar de `sujeto`. El adaptador prepara un contexto
-por consulta y aporta `prepararConsulta` y `listarAgentes` obligatorios. El
-nucleo es el unico responsable de resolver los casos sin decision.
-Los metadatos `mode`, `hidden` y `disable` invalidos producen
-`configuracion-invalida` con clave, archivo y linea en las tres consultas.
-Toda respuesta de permiso declara `numeracion-sin-directorios-externos`;
-`references` o `reference` declarados agregan `references-no-incorporado`.
-
-Para comprobar T2-11b, con `RIGE_ALMACEN` temporal (seccion 6):
-
-```powershell
-bun test pruebas/aceptacion/T2-11b.test.ts paquetes/opencode/contexto.test.ts paquetes/opencode/agentes.test.ts paquetes/nucleo/permisos/decidir.test.ts paquetes/nucleo/resolucion/contrato.test.ts paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts
-bun test paquetes/opencode/cadena.test.ts paquetes/opencode/objetivo.test.ts paquetes/opencode/worktree.test.ts paquetes/opencode/secuenciador.test.ts paquetes/nucleo/resolucion/resolver.test.ts pruebas/utilidades/escenario.test.ts pruebas/aceptacion/RF-02.test.ts
-bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v2-worktree-gitfile-roto --escenario v2-worktree-dir-invalido-anidado
-bun run referencias --raiz (npm.cmd root -g)
-bun test
-bun run verificar
-```
-
-Los dos escenarios nuevos crean en el temporal un repositorio exterior y un
-`.git` anidado invalido. El gitfile roto detiene la busqueda y deja worktree
-`/`; el directorio incompleto permite encontrar el repositorio exterior.
-Las referencias capturan las cadenas completas de `plan` del binario oficial
-verificado. El arnes exige que `git rev-parse` falle ante el gitfile roto, y
-que devuelva la raiz exterior ante el directorio invalido. Ambos declaran
-`OPENCODE_DISABLE_EXTERNAL_SKILLS=true` para aislar la busqueda fuera de VCS.
-
-El prototipo implementa el caso de uso vertical «consultar el valor efectivo de una clave de un agente de OpenCode 1.18.25, con su procedencia»: la interfaz web recibe un proyecto, un agente y una clave; la lógica aplica la regla de negocio validada RD-01 (prevalece la declaración de la última entrada que declara la clave), la resolución se guarda en el almacén SQLite propio y la página se arma con lo que se lee del almacén, con el valor, la declaración que lo determina y las declaraciones desplazadas. El recorrido prueba la decisión arquitectónica de separar un núcleo genérico, que ejecuta la combinación, de un adaptador por herramienta que declara el orden de las entradas y su estrategia (RNF-03; ADR-058 y ADR-060): el núcleo no depende del adaptador y un adaptador ficticio se resuelve sin modificarlo.
+Una variable ausente, vacía o definida solo por `wellknown` figura con `definido: false`. El SHA-256 de las referencias de sustituciones se calcula solo sobre datos de prueba con marcadores; el oráculo de sustituciones solo lo importan pruebas y `herramientas/`, fuera del flujo del producto. `OPENCODE_PERMISSION` con `null` o `[]` es legible y no aporta declaraciones.
 
 ## 3. Requisitos previos
 
@@ -244,6 +91,7 @@ Los comandos son iguales en Bash y PowerShell:
 ```bash
 git clone https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP.git
 cd RIGE-TIF-Sanchez-IngSistemas-UCP/src
+git checkout v1
 bun install --frozen-lockfile
 ```
 
@@ -276,219 +124,167 @@ La prelación es: variable de entorno → `rige.env` → valor por defecto. El a
 
 ## 6. Ejecución y verificación
 
-**1. Crear o verificar el esquema:**
+Todos los comandos se ejecutan desde `src/`. Para las verificaciones se aísla el almacén en un directorio temporal nuevo y se conserva esa variable en la misma terminal durante el recorrido y el reinicio del servidor.
+
+**PowerShell:**
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([System.IO.Path]::GetTempPath()) ('rige-verificacion-' + [Guid]::NewGuid())
+```
+
+**Bash:**
+
+```bash
+export RIGE_ALMACEN="$(mktemp -d)/almacen"
+```
+
+**Inicialización:**
 
 ```bash
 bun run esquema
 ```
 
-La salida contiene una línea JSON con `esquema: 2`, `versionRige: "0.1.0"`, `almacen.ruta` (ruta del archivo de la base) y `almacen.versionEsquema: 2`. El código de salida es 0. Repetir el comando no cambia el esquema ni los datos. El comando aplica `001_inicial.sql` y `002_formato2.sql` sobre un almacén vacío. Un almacén de versión 1 se rechaza sin modificarlo: se debe mover o borrar explícitamente su directorio antes de ejecutar `bun run esquema`. Las resoluciones nuevas declaran `formato: 2`; un documento de otro formato produce `almacen-sin-esquema`.
+Termina con código 0 y JSON con `esquema: 2`, `versionRige: "0.1.0"`, `almacen.ruta` y `almacen.versionEsquema: 2`. Aplica `001_inicial.sql` y `002_formato2.sql` sobre una base vacía; repetirlo no cambia los datos. Otro esquema se rechaza con `almacen-sin-esquema`: no hay migración silenciosa. Las resoluciones nuevas usan `formato: 2`.
 
-**Consultar valores por CLI (RF-03), sin preparar el almacén:**
+**CLI v2:**
+
+```bash
+bun run rige -- valores --proyecto <ruta> --agente <nombre> [--clave <ruta>] [--tiempos]
+bun run rige -- permiso --proyecto <ruta> --agente <nombre> --herramienta <h> --objetivo <obj> [--explicar] [--tiempos]
+bun run rige -- agentes --proyecto <ruta> [--tiempos]
+bun run rige -- entradas --proyecto <ruta> [--tiempos]
+bun run rige -- hallazgos --proyecto <ruta> [--explicar] [--tiempos]
+```
+
+Los marcadores entre `<…>` se reemplazan por valores propios; los corchetes indican opciones. Estas cinco consultas resuelven en memoria y no crean ni modifican el almacén. `valores` sin `--clave` consulta todas las claves; admite segmentos con puntos o puntero JSON (`/options/a.b`). Una clave ausente devuelve `valores: []`, `motivo: "clave-inexistente"` y código 0. `permiso` admite `--sujeto` en lugar de `--herramienta`, y `--lanzado-por <agente>` para contexto de subagente. Un comando compuesto devuelve `decision: null` con su motivo y código 0. `--explicar` presenta las mismas plantillas que la web para permisos y hallazgos; `valores --explicar` es inválido.
+
+`agentes` incluye los ocultos, ordena nativos primero y luego por nombre; informa los eliminados por `disable` y la condición de listado incompleto por Markdown. `entradas` identifica vías, orden, legibilidad y consecuencias de errores, aun cuando una entrada impida resolver. `hallazgos` incluye resumen del ecosistema y seis tipos de hallazgo, con localización sobre el texto original (línea y columna desde 1, columna UTF-16).
+
+Ejemplo ejecutable de la consulta de valores:
 
 ```bash
 bun --silent run rige -- valores --proyecto pruebas/escenarios/v1-precedencia/proyecto --agente build --clave temperature
 ```
 
-La forma general es `bun run rige -- valores --proyecto <ruta> --agente <nombre> [--clave <ruta>]`. Omitir `--clave` consulta todas las claves del agente. La clave admite segmentos separados por puntos o un puntero JSON (por ejemplo, `/options/a.b` conserva el punto dentro del segmento). La salida es una `RespuestaValores` con `esquema: 2`, proyecto, herramienta y versión, resumen y entradas leídas, agente, `ruta` como arreglo o `null`, valores con sus rastros, reglas, claves no resueltas y `motivo`. No incluye id, instante ni historia: dos consultas sobre las mismas entradas producen el mismo JSON byte a byte. Este subcomando resuelve en memoria y no crea ni modifica el almacén.
+`--silent` evita la línea de comando que agrega Bun a stderr. La respuesta no contiene fecha, id ni historia y es idéntica ante entradas idénticas. Una versión distinta de OpenCode 1.18.25 produce `version-no-soportada`, salida vacía y código 1 (HTTP 422 en la web). Una versión indeterminada conserva el resultado y emite la advertencia estructurada `version-no-determinada`.
 
-Una clave ausente en un agente con declaraciones devuelve código 0, `valores: []` y `motivo: "clave-inexistente"`. Un proyecto o agente inexistente produce código 1 por el canal de error; omitir `--agente` o `--proyecto` produce código 2. La web presenta la misma `RespuestaValores`, acompañada de un `SobreAlmacen` con id, instante e historia.
+Con `--tiempos`, stdout conserva sus bytes y stderr agrega como última línea el JSON de `esquemas/salida/tiempos.json`: `arranqueMs` (ensamblado), `lecturaMs` (contexto, descubrimiento y lectura), `resolucionMs` (combinación y consulta), `salidaMs` (serialización y escritura) y `totalMs` (desde `ejecutarCli` hasta antes de emitir tiempos, incluidas advertencias). No incluye cargar Bun ni módulos. `esquema` y `servir` rechazan esa opción con código 2.
 
-**Consultar permisos y listar agentes por CLI (T2-11), sin preparar el almacén:**
-
-```bash
-bun run rige -- permiso --proyecto pruebas/escenarios/v2-cadena/proyecto --agente build --herramienta bash --objetivo "ls" --explicar
-bun run rige -- permiso --proyecto pruebas/escenarios/v2-cadena/proyecto --agente revisor --sujeto bash --objetivo "ls" --lanzado-por build
-bun run rige -- permiso --proyecto pruebas/escenarios/v2-cadena/proyecto --agente build --herramienta bash --objetivo "ls && rm x"
-bun run rige -- agentes --proyecto pruebas/escenarios/v2-agentes/proyecto
-```
-
-`permiso` requiere proyecto, agente, objetivo y exactamente una de las opciones
-`--herramienta` o `--sujeto`. `--lanzado-por` es opcional. `--explicar` incluye
-la explicación por plantillas de la decisión; sin ella `explicacion` es `null`.
-Un comando compuesto conserva el código 0, con `decision: null` y su motivo.
-Los errores se escriben solo por stderr: uso o configuración, código 1;
-argumentos inválidos, 2; falla interna, 70 (`--depurar` agrega el stack).
-`valores --explicar` es un argumento inválido: la explicación corresponde a
-decisiones y hallazgos (ADR-051).
-
-`agentes` lista también los ocultos y admite `--explicar`, sin agregar prosa
-porque no toma decisiones. Informa nombre, origen, modo y condición de oculto.
-Ordena primero los nativos y luego cada grupo por nombre con colación inglesa
-explícita (`Intl.Collator("en")`) y desempate por unidades UTF-16. Para ASCII
-es equivalente al `localeCompare` del tag, independientemente del locale del
-proceso. `disable: true` elimina incluso un agente nativo y deja su declaración
-en `eliminados`. La lista vacía es código 0. Si hay agentes Markdown que RIGE
-no observa, `incompleta: true` y `motivos` explicitan la limitación.
-
-Los contratos de las tres respuestas y de los errores están en
-`esquemas/salida/` (JSON Schema 2020-12, `esquema: 2`). Son la fuente de verdad
-de los tipos de respuesta; se regeneran con `bun herramientas/tipos-salida.ts`.
-Para comprobar T2-11 se ejecuta
-`bun test pruebas/aceptacion/RF-03.test.ts pruebas/aceptacion/RF-16.test.ts pruebas/aceptacion/RF-08.test.ts`.
-Las pruebas de sensibilidad del validador y la generación se comprueban con
-`bun test pruebas/utilidades/validar-esquema.test.ts herramientas/tipos-salida.test.ts`.
-
-Para regenerar solo las referencias de agentes, con el binario oficial instalado:
-
-```powershell
-$raizNpm = npm.cmd root -g
-bun run referencias --raiz $raizNpm --regenerar --escenario v2-cadena --escenario v2-agentes
-```
-
-En Bash, el equivalente es
-`bun run referencias --raiz "$(npm root -g)" --regenerar --escenario v2-cadena --escenario v2-agentes`.
-Sin `--regenerar`, el mismo comando compara sin escribir; sin `--escenario`,
-comprueba todas las referencias. En `v2-cadena` y `v2-agentes` también captura
-`opencode agent list`, conserva nombres y modos y verifica su coincidencia.
-
-**2. Arrancar el servidor:**
+**Servidor web y recorrido del Instrumento 35:**
 
 ```bash
 bun run servir
 ```
 
-Con el puerto por defecto, se escribe `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y el proceso queda escuchando. En el navegador, `http://127.0.0.1:4747` muestra «RIGE 0.1.0», la ruta del almacén y la versión de su esquema. Si se cambia `RIGE_PUERTO`, se usa el puerto configurado en la dirección.
+El proceso informa `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y queda escuchando. Se usa el puerto de `RIGE_PUERTO` si está configurado. La interfaz solo acepta GET local, verifica Host y rechaza `Sec-Fetch-Site: cross-site` y `same-site`, sin CORS ni JavaScript ejecutable en el cliente.
 
-**3. Recorrido vertical (caso de uso del Instrumento 35):**
+1. Abrir `http://127.0.0.1:4747/`. Debe mostrar «RIGE 0.1.0», la ruta del almacén y su esquema 2.
+2. Completar **Proyecto** con `pruebas/escenarios/v1-precedencia/proyecto`, **Agente** con `build` y **Clave** con `temperature`. Pulsar «Resolver y guardar».
+3. En un almacén nuevo, se llega a `/resoluciones/1?agente=build&clave=temperature`. El valor es `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`. Las desplazadas son `0.1` en `…/v1-precedencia/opencode.json:5:7` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7`, en ese orden. Se presenta RD-01 y cada archivo leído con su SHA-256; vías remotas y preferencias de macOS aparecen no observadas. Las rutas completas usan `/`.
+4. Detener con Ctrl+C, ejecutar otra vez `bun run servir` en la misma terminal y abrir la misma dirección. Debe recuperar los mismos datos con «Página armada con la resolución leída del almacén de RIGE.» y el enlace de historia de la resolución 1.
+5. Volver al inicio y dejar **Clave** vacía: aparece una nueva resolución con `description`, `steps` y `temperature`. Los valores de referencia están en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`.
+6. Detener el servidor con Ctrl+C antes de continuar. Si ya había resoluciones, usar el id obtenido en el paso 3. La configuración global propia puede agregar entradas y modificar resultados: para la comprobación controlada se usa el arnés aislado siguiente.
 
-Con el servidor en marcha:
+La web recupera valores, agentes y permisos desde la resolución guardada con su contexto original; no relee entradas para esas consultas. Para observar cambios se crea otra resolución. `/entradas?proyecto=<ruta-codificada>` y `/hallazgos?proyecto=<ruta-codificada>` consultan las entradas actuales sin guardar. Cada página de consulta incluye el mismo objeto del caso de uso que la CLI como JSON no ejecutable, con `<` escapado.
 
-1. Abrir `http://127.0.0.1:4747` en el navegador (o la dirección con el puerto configurado).
-2. Completar el formulario: **Proyecto** `pruebas/escenarios/v1-precedencia/proyecto` (ruta relativa a `src/`, el directorio desde el que se ejecutó `bun run servir`), **Agente** `build`, **Clave** `temperature`, y pulsar «Resolver y guardar».
-3. **Resultado esperado, en un almacén recién creado:** la dirección pasa a `http://127.0.0.1:4747/resoluciones/1?agente=build&clave=temperature`; la tabla «Valores efectivos» muestra `temperature` con valor `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`, y dos declaraciones desplazadas, en orden: `0.1` en `…/v1-precedencia/opencode.json:5:7 (proyecto)` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7 (proyecto)`. «Regla aplicada» indica: «OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).» «Entradas leídas» lista los tres archivos con su resumen SHA-256 y las vías remotas con condición `no_observada`; `preferencias-macos` también figura como `no_observada` en Ubuntu y Windows. Las rutas se muestran completas, con `/` como separador. Si ya hay resoluciones guardadas, se usa el número que aparece en la dirección después de resolver.
-4. **Persistencia:** detener el servidor con Ctrl+C y volver a ejecutar:
-
-   ```bash
-   bun run servir
-   ```
-
-   Abrir la misma dirección de la resolución: la página muestra los mismos datos, leídos del almacén, y el texto «Página armada con la resolución leída del almacén de RIGE.» «Resoluciones de este proyecto» lista la resolución 1.
-5. **Variante:** volver a la página inicial, completar el mismo proyecto y agente, dejar **Clave** vacía y pulsar «Resolver y guardar»: la tabla «Valores efectivos» muestra `description`, `steps` y `temperature` en una nueva resolución.
-6. Los valores coinciden con los de OpenCode 1.18.25 registrados en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`; si el equipo tiene configuración global de OpenCode, RIGE la incorpora y la muestra con su procedencia, de modo que pueden aparecer entradas adicionales. Los agentes en Markdown, `mode` legado y claves derivadas figuran como «no resueltas en el prototipo v1». Desde T3-04 las sustituciones se representan con su plantilla, origen y condición, con las limitaciones de permisos y modo detalladas más abajo. `agent.<nombre>.disable: true` elimina el agente desde T2-11. Si lo afectado es la clave o el agente consultado, la página de error lo informa (`clave-no-resuelta`, HTTP 422) y no se crea la resolución. Una sustitución fuera de cadenas y comentarios o un `mode` que no es objeto detienen el análisis con `contenido-no-soportado`.
-
-Se detiene el servidor con Ctrl+C antes de continuar.
-
-**4. Verificar tipos, construcción y pruebas:**
+**Verificación técnica:**
 
 ```bash
 bun run verificar
 bun test
 bun run prueba:lenta
-bun run medir:rnf07
-```
-
-`verificar` comprueba los tipos y la construcción y termina con código 0. Todas las pruebas pasan; `bun test` termina con código 0. Durante el desarrollo se ejecutan solo los archivos afectados con `bun test <archivos>`; las reglas de esta tarea se comprueban con `bun test pruebas/aceptacion/RF-03.test.ts paquetes/rige/aplicacion/errores.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts`.
-
-Para las ejecuciones del agente, `RIGE_ALMACEN` siempre apunta a un directorio temporal. En Bash se configura con `export RIGE_ALMACEN="$(mktemp -d)"`; en PowerShell, con `$env:RIGE_ALMACEN = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())`. El arnés crea además un entorno aislado para cada subproceso de aceptación.
-
-**5. Comprobar las referencias nativas (opcional, separado de `bun test`):**
-
-Con Node 22 disponible, `npm i -g opencode-ai@1.18.25` instala el binario y `npm root -g` informa la raíz global; se pasa esa ruta como `<dir>`:
-
-```bash
-bun run referencias --raiz <dir>
-```
-
-El guion verifica la versión y el SHA-256 del binario, ejecuta cada escenario en una copia temporal aislada y solo compara. En Windows, el instalador de `opencode-ai` elige entre dos binarios oficiales según el procesador (`opencode-windows-x64` u `opencode-windows-x64-baseline`); el guion acepta los dos y lo informa en una primera línea `binario: <variante> 1.18.25`. Después imprime una línea por escenario y termina con código 0 si todos coinciden, o 1 ante diferencias o errores; no regenera las referencias.
-
-Si no se ejecuta previamente `bun run esquema`, `servir` termina con `almacen-sin-esquema` y código 1. Si el puerto está ocupado, termina con `puerto-ocupado` y código 1; se cambia `RIGE_PUERTO` por un puerto disponible.
-
-La forma general es `bun run rige -- <subcomando>`. Para invocar directamente la CLI con el subcomando `esquema`:
-
-```bash
-bun --silent run rige -- esquema
-```
-
-Produce el mismo JSON de estado que `bun run esquema`. Sin `--silent`, `bun run` agrega su propia línea `$ bun …` al canal de error (comprobado el 30/09/2026).
-
-| Código de salida | Situación | Canal de salida | Canal de error |
-|---|---|---|---|
-| 0 | Respuesta válida | JSON de respuesta | Vacío |
-| 1 | Error de uso de la CLI | Vacío | JSON de error con su código: por ejemplo, `almacen-sin-esquema`, `proyecto-inexistente` o `agente-sin-declaraciones` |
-| 2 | Argumentos inválidos | Vacío | JSON de error: `argumentos-invalidos` |
-| 70 | Falla interna | Vacío | JSON de error: `interno`; `--depurar` agrega el stack, sin logs a disco |
-
-La forma del error es `{"esquema":2,"error":{"codigo":"…","mensaje":"…"}}`. La tabla describe los canales de la CLI; la línea propia de `bun run` se evita con `--silent`.
-
-La web presenta los errores de uso con estado HTTP 400 (`solicitud-invalida`), 404 (`proyecto-inexistente`, `resolucion-inexistente`, `agente-sin-declaraciones`) o 422 (`via-no-soportada`, `contenido-no-soportado`, `entrada-ilegible`, `clave-no-resuelta` y códigos nuevos del adaptador). La ruta `/resolver` guarda el proyecto completo y redirige a la consulta; la existencia del agente y de la clave se evalúa al recuperar esa resolución. Una clave ausente se presenta con éxito y con su motivo.
-
-La etiqueta `v1` corresponde a la versión `0.1.0` de RIGE.
-
-Herramientas de desarrollo de T2-14 (con `RIGE_ALMACEN` temporal):
-
-```bash
+bun run medir:rnf07 --estricto
 bun run cobertura
-bun run decisiones --raiz <directorio-global-npm> --cache <directorio-externo>
-bun run decisiones --raiz <directorio-global-npm> --cache <directorio-externo> --regenerar
 ```
 
-`cobertura` valida SHA-256, inventario y citas a pruebas de
-`pruebas/escenarios/MANIFIESTO.json` frente a `COBERTURA.json`, e imprime JSON
-con cobertura por ítem, escenarios y retiros. «Cubierto» indica vinculación a
-comprobaciones existentes; los resultados de ejecución los entrega `bun test`.
-RF-07 permanece pendiente de la iteración 3. El corte es `null` hasta que el
-ingeniero fije la revisión de `main` del 07/11/2026; resultados de base y
-adiciones quedan pendientes, sin conteos inventados.
+Todos deben terminar con código 0. La prueba unitaria optimizada de combinatoria `abarca`, ejecutada con `bun test paquetes/opencode/hallazgos.test.ts`, corre en menos de 500 ms; la suite completa no requiere prórrogas de timeout. Durante el desarrollo se usa `bun test <archivo>` para las pruebas afectadas.
 
-`decisiones` verifica el SHA-256 y la versión del binario oficial, copia cada
-escenario y consulta un proveedor SSE fijo en `127.0.0.1`, en puerto libre.
-Solo ejecuta consultas con `nativa: true`. `--cache` es opcional, apunta fuera
-del repositorio y conserva el paquete del proveedor entre corridas; sin él
-se usa un caché temporal. OpenCode puede instalar ese paquete desde npm: la
-corrida real corresponde al ingeniero fuera del sandbox. RIGE no incorpora
-esta herramienta al runtime. La configuración auxiliar agrega proveedor y
-modelo y conserva las reglas de permiso del escenario.
-La inicialización Git aislada admite hasta 30 segundos; si falla, informa
-escenario, consulta, estado y el diagnóstico de Git sin guardar referencias.
+El arnés RNF-07 copia `openchamber-doble` a un temporal (32 archivos, 12 agentes, 14 LSP y 20 comandos), aísla el entorno y ejecuta diez consultas de valores y diez de permiso en procesos nuevos. Informa mínimo, mediana y peor caso por etapa. `invocacionMs` mide el subproceso completo, incluido Bun; `--estricto` o `RNF07_ESTRICTO=1` exige un peor caso menor que 2000 ms. Sin la opción, `bun run medir:rnf07` es diagnóstico. La acreditación corresponde al contenedor Ubuntu 26.04 de referencia (ADR-054/055), con el escenario dentro de su sistema de archivos; Windows aporta diagnóstico.
 
-Sin `--regenerar`, compara sin escribir; con él, guarda `decisionesNativas`
-en cada referencia, incluidas todas las evaluaciones, regla ganadora y
-procedencia (comando, hash, versión, fecha y plataforma). Después de regenerar
-se actualiza el SHA-256 de `REFERENCIA.json` en el manifiesto y se revisa el
-diff; las entradas del escenario conservan sus resúmenes. Una referencia de
-otra plataforma no se acepta como comparación equivalente. La ausencia de
-líneas `evaluated` queda como `herramientaNoOfrecida: true`, sin decisión.
-Las aceptaciones RF-02 CA-1/2/3/9 prefieren la evaluación nativa de su consulta;
-si aún no hay una evaluación usan las decisiones derivadas conservadas. Las
-consultas contextuales de subagentes quedan declaradas con `nativa: false`:
-ejecutar `run --agent` sobre el subagente no reproduce el contexto de `task`.
-El selector admite esas referencias cuando se obtengan con ese contexto.
+### Verificación de RNF-06 (T4-02)
 
-Las reglas de modificación y retiro son las de ADR-080: todo cambio posterior
-al corte conserva su obligación de prueba y requiere evidencia y autorización
-del autor; una falla de RIGE no autoriza un retiro. `retiros` registra todos
-los retiros desde la incorporación, incluidos los anteriores al corte.
+La instalación local usa `bun install --frozen-lockfile` sin privilegios administrativos, con Bun y el repositorio en el espacio del usuario. `bun test pruebas/aceptacion/RNF-06.test.ts` compara entradas y valores con rutas Linux/Windows, contrasta las referencias Windows y verifica scripts y almacenes propios. La simulación de rutas y Windows Server de CI no sustituyen la comprobación manual en Windows 11 exigida por ADR-054.
 
-Verificación RNF-05 sin red (T3-09), desde `src/`:
+**Auditoría local de clonado limpio (PowerShell):**
 
 ```powershell
-$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-sin-red-almacen'
-$referencia = Join-Path ([IO.Path]::GetTempPath()) 'rige-sin-red.json'
-bun test
-bun run sin-red --salida $referencia
-bun run sin-red --comparar $referencia
+powershell -NoProfile -ExecutionPolicy Bypass -File herramientas/auditoria-clonado.ps1
 ```
 
-Se pueden repetir opciones `--escenario <id>`. En Linux, agregar `--strace`
-cuenta conexiones AF_INET, AF_INET6 y AF_UNIX. La preparación de Ubuntu 26.04
-y la comparación real con `docker run --network none`, con el repositorio
-montado en solo lectura, están en [herramientas/sin-red.md](herramientas/sin-red.md).
-Esa corrida la realiza el ingeniero. En Windows, la suite verifica la igualdad
-de las salidas con fetch, WebSocket, net y tls interceptados, y omite strace.
+Clona la revisión confirmada de la rama local actual en un temporal, exige Bun 1.3.14, instala desde el lock, verifica tipos y construcción, copia `rige.env.example`, crea el esquema y ejecuta la prueba optimizada con límite de 500 ms. Aísla hogar, variables y almacén; antepone un paquete OpenCode 1.18.25 falso de prueba, sin ejecutarlo. Consulta `temperature` por CLI y comprueba HTTP 200 en un puerto libre. Detiene el servidor y borra sus temporales, normalizando antes los atributos de solo lectura. No incluye cambios sin commit; la autocomprobación por un tercero en otra máquina y la consulta de la etiqueta publicada y de GitHub Actions corresponden a la matriz del Instrumento 35.
+
+**Referencias nativas:**
+
+Con Node 22 y npm disponibles, se instala el paquete oficial y se compara sin regenerar capturas:
+
+```bash
+npm i -g opencode-ai@1.18.25
+bun run referencias --raiz <dir-global-npm>
+```
+
+En Bash, la última línea es `bun run referencias --raiz "$(npm root -g)"`. En PowerShell:
+
+```powershell
+$raizNpm = npm.cmd root -g
+bun run referencias --raiz $raizNpm
+```
+
+El arnés verifica versión y SHA-256 del binario, usa copias temporales aisladas y termina con código 0 si coinciden las referencias. En Windows acepta los binarios oficiales x64 y x64-baseline. Ejecuta OpenCode solo como oráculo de pruebas; RIGE no lo ejecuta durante el análisis. Para decisiones nativas, cobertura y reglas de regeneración/retiro (ADR-080), consultar [pruebas/README.md](pruebas/README.md).
+
+Otras herramientas de comprobación:
+
+```bash
+bun run decisiones --raiz <dir-global-npm> --cache <directorio-temporal-externo>
+bun run sin-red --salida <archivo-temporal>
+bun run sin-red --comparar <archivo-temporal>
+```
+
+Los esquemas publicados generan los tipos de respuesta con `bun herramientas/tipos-salida.ts`. `decisiones` compara contra el binario oficial y puede instalar el proveedor auxiliar; es una herramienta de desarrollo. La comprobación Linux sin red y `--strace` se documentan en [herramientas/sin-red.md](herramientas/sin-red.md). Las pruebas automatizadas construyen su entorno desde cero, heredan solo PATH y SystemRoot y no leen la configuración real del usuario.
+
+| Código CLI | Situación | stdout | stderr |
+|---|---|---|---|
+| 0 | Respuesta válida, con o sin hallazgos o decisión | JSON | Advertencias si corresponden; tiempos si se solicitan |
+| 1 | Error de uso o configuración | Vacío | JSON de error |
+| 2 | Argumentos inválidos | Vacío | JSON `argumentos-invalidos` |
+| 70 | Falla interna | Vacío | JSON `interno`; stack solo con `--depurar` |
+
+Todos los errores declaran `esquema: 2`. Sin esquema, el servidor informa `almacen-sin-esquema` y pide `bun run esquema`; si el puerto está ocupado informa `puerto-ocupado`. La web usa HTTP 400 para solicitudes inválidas, 404 para proyecto, resolución o agente inexistente y 422 para configuración no soportada o ilegible. La versión de RIGE es `0.1.0`.
 
 ## 7. Estado del canal de construcción
 
-El archivo `.github/workflows/ci.yml` ejecuta en cada push, en `ubuntu-26.04` y `windows-latest` con Bun 1.3.14, `bun install --frozen-lockfile`, `bun run verificar` y `bun test`. Las pruebas de aceptación ligadas a criterios del catálogo son:
+El archivo `.github/workflows/ci.yml` ejecuta en cada push, sobre entornos limpios `ubuntu-26.04` y `windows-latest` con Bun 1.3.14, los pasos `bun install --frozen-lockfile`, `bun run verificar` y `bun test`.
 
-- `pruebas/aceptacion/RF-01.test.ts` (CA-1, CA-2; incluye el escenario `v1-vias`).
-- `pruebas/aceptacion/recorrido-v1.test.ts` (RF-01 CA-1 y CA-2 por la web; RF-17 CA-1 a CA-3; RNF-01; RNF-09; V-0 reproduce la ruta relativa del README sin copiar el escenario y se omite si el repositorio no tiene `.git`).
-- `pruebas/aceptacion/RNF-03.test.ts` (CA-1 a CA-3).
-- `pruebas/aceptacion/RNF-09.test.ts` (CA-1 a CA-3).
+Corrida local de referencia del 03/11/2026: `bun run verificar` terminó con código 0; `bun test` registró **1014 aprobadas, 2 omitidas y 0 fallidas**. Las omisiones corresponden a strace exclusivo de Linux y al enlace npm exclusivo de POSIX.
 
-El trabajo adicional `referencia-nativa` compara en ambas plataformas las capturas con OpenCode 1.18.25 real para RNF-02 CA-1; las reglas del guion se prueban sin ese binario con `bun test pruebas/arquitectura/referencias-nativas.test.ts`.
+La batería de aceptación verifica el cumplimiento estricto de los criterios del catálogo:
 
-El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/workflows/ci.yml) permite consultar los resultados. La primera corrida exitosa en las dos plataformas, comprobada por el ingeniero en la API de GitHub, es del **30/09/2026, 22:26 (UTC−3)**, commit `11c852e`: [corrida 36801042650](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/runs/36801042650).
+- `pruebas/aceptacion/RF-01.test.ts`: Precedencia y resolución de entradas (CA-1, CA-2).
+- `pruebas/aceptacion/recorrido-v1.test.ts`: Recorrido vertical completo de punta a punta (RF-01, RF-17, RNF-01 y RNF-09).
+- `pruebas/aceptacion/RF-02.test.ts`, `RF-02-explicacion.test.ts`, `RF-02-CA-9.test.ts`: Evaluación determinista de permisos, explicaciones y resolución contextual de worktrees.
+- `pruebas/aceptacion/RF-03.test.ts`: Consulta de valores efectivos y contratos JSON.
+- `pruebas/aceptacion/RF-04.test.ts`: Descubrimiento de las 7 vías y diagnóstico de legibilidad.
+- `pruebas/aceptacion/RF-05.test.ts`: Detección estricta de versión 1.18.25 y motivos indeterminados.
+- `pruebas/aceptacion/RF-06.test.ts`: Modelado de agentes y valores implícitos.
+- `pruebas/aceptacion/RF-07.test.ts`: Detección de las 6 causas de hallazgos sin falsos positivos.
+- `pruebas/aceptacion/RF-08.test.ts`: Delimitación y lexer de comandos en herramientas de acción.
+- `pruebas/aceptacion/RF-09.test.ts`: Detección de reglas nativas y protecciones anuladas.
+- `pruebas/aceptacion/RF-10.test.ts`: Efecto de la decisión sobre la oferta de herramientas de acción.
+- `pruebas/aceptacion/RF-11.test.ts`: Resumen del ecosistema y conteos de hallazgos.
+- `pruebas/aceptacion/RF-12.test.ts`: Localización precisa (archivo, línea, columna) de declaraciones y hallazgos.
+- `pruebas/aceptacion/RF-16.test.ts`: Listado de agentes del proyecto.
+- `pruebas/aceptacion/RNF-02.test.ts`: Paridad con resultados oficiales de referencia.
+- `pruebas/aceptacion/RNF-03.test.ts`: Independencia arquitectónica del núcleo respecto a adaptadores.
+- `pruebas/aceptacion/RNF-04.test.ts`: Protección de secretos en sustituciones.
+- `pruebas/aceptacion/RNF-05.test.ts`: Aislamiento sin red ni conexiones externas.
+- `pruebas/aceptacion/RNF-06.test.ts`: Portabilidad Linux/Windows y ejecución sin privilegios de administración.
+- `pruebas/aceptacion/RNF-07.test.ts`: Latencia y tiempos de respuesta por etapa.
+- `pruebas/aceptacion/RNF-08.test.ts`: Compatibilidad y versionado de los esquemas de salida.
+- `pruebas/aceptacion/RNF-09.test.ts`: Aislamiento de interfaz web local.
+- `pruebas/aceptacion/RNF-10.test.ts`: Licencia MIT y atribución de evaluador incorporado.
+
+También existen `arranque.test.ts`, `fusion-permisos.test.ts`, `T2-11b.test.ts` y `T2-12.test.ts` en `pruebas/aceptacion/`, que verifican arranque, composición de permisos y consultas guardadas con paridad CLI/web. El canal ejecuta además `bun run prueba:lenta`; su trabajo `referencia-nativa` compara las capturas con OpenCode 1.18.25 real en ambas plataformas.
+
+El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/workflows/ci.yml) permite consultar la ejecución en ambas plataformas. La primera corrida exitosa documentada es del **30/09/2026, 22:26 (UTC−3)**, commit `11c852e`: [corrida 36801042650](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/runs/36801042650).
 
 ## 8. Declaración de herramientas auxiliares
 
@@ -498,6 +294,7 @@ El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSis
 | Desde el 30/09/2026 (T0-10 en adelante) | Codex (`gpt-6.1-sol`, plan ChatGPT Plus) como escritor, orquestado por Claude Code (`claude-opus-5-5`) | Escritura del código y de las pruebas sobre fichas del ingeniero; revisión por los subagentes `revisor-codigo` (Sonnet 5.5) y `critico-codigo` (Opus 5.5) | `src/` desde el commit `5ca3431`; este README |
 | 05/10/2026 (prototipo v1, V1-01 a V1-09) | Codex (`gpt-6.1-sol`) como escritor, orquestado por Claude Code (`claude-opus-5-5`); revisión de conformidad por Codex (`gpt-6-luna`) y crítica por el subagente `critico-codigo` (Opus 5.5); OpenCode 1.18.25 (binario `opencode-windows-x64@1.18.25`) ejecutado una vez por el ingeniero para generar los resultados de referencia | Escritura, revisión y generación de referencias | `src/` desde el commit `1b684d5`; `pruebas/escenarios/*/REFERENCIA.json` |
 | 13/10/2026 (V1-13) | Claude Code (`claude-opus-5-5`), por autorización expresa del autor como excepción a ADR-067 | Escritura del cambio y de sus pruebas sobre la ficha V1-13: aceptación de la variante baseline oficial del binario de OpenCode en Windows | `herramientas/referencias-nativas.ts`, `pruebas/arquitectura/referencias-nativas.test.ts`, este README |
+| 03/11/2026 (Iteración 4: T4-01 a T4-04) | Codex (`gpt-6.1-sol`, plan ChatGPT Plus) como escritor de código y pruebas, orquestado y auditado por Antigravity (Gemini 2.5 Flash / Pro) y Claude Code (`claude-opus-5-5`); revisión cruzada por subagentes `revisor-codigo` (Sonnet 5.5) y `critico-codigo` (Opus 5.5) | Implementación de `--tiempos` y arnés estricto de latencia RNF-07; suite formal de aceptación de portabilidad RNF-06; optimización de prueba combinatoria `abarca` en `hallazgos.test.ts`; consolidación de `src/README.md` y auditoría de clonado limpio | `src/`, `esquemas/salida/tiempos.json`, `pruebas/aceptacion/RNF-06.test.ts`, `pruebas/aceptacion/RNF-07.test.ts`, `instrumentos/` |
 
 El diseño, los requisitos y las decisiones (ADR) son del autor; las herramientas escriben y revisan código bajo esas decisiones.
 
@@ -509,766 +306,6 @@ RIGE incorpora las funciones puras del evaluador de permisos v1 y Wildcard de
 OpenCode 1.18.25, Copyright (c) 2025 opencode, bajo licencia MIT. Se distribuyen
 el texto completo en [LICENSE](paquetes/opencode/vendor/LICENSE) y el archivo de
 [avisos](paquetes/opencode/vendor/AVISOS.md). La
-[procedencia](paquetes/opencode/vendor/PROCEDENCIA.md) registra los origenes,
-los cambios de envoltorio y los SHA-256. Esta copia no es el oraculo de las
-pruebas de aceptacion.
-
-Para comprobar esta tarea, con `RIGE_ALMACEN` temporal como se indica en §6:
-`bun test paquetes/opencode/vendor pruebas/aceptacion/RNF-10.test.ts pruebas/arquitectura/vendor.test.ts`.
-
-T2-05 construye la cadena de permisos del agente con las reglas nativas y
-declaradas, sus indices y su procedencia. El eje `external_directory` queda
-parcialmente observado: no se buscan directorios de skills ni references.
-T2-06 agrega la consulta de decisiones como funcion de aplicacion
-`consultarPermiso(dependencias, proyecto, agente, sujeto, objetivo)`, sin CLI ni
-web de permisos todavia. Evalua al consultar, sin guardar la decision. La
-respuesta presenta las coincidentes con sus indices originales, la
-determinante, las desplazadas y la proteccion nativa anulada, si corresponde.
-`external_directory` devuelve `decision: null` y motivo
-`eje-parcialmente-observado`. Todas las respuestas declaran las aprobaciones
-permanentes excluidas y las reglas adicionales de la sesion no interactiva.
-
-T2-07 admite `consultarPermiso(dependencias, proyecto, agente, sujeto, objetivo, lanzadoPor?)`.
-Con lanzador, usa la cadena propia del subagente y agrega al final las
-denegaciones de `todowrite` y `task` si falta el sujeto exacto. Declara que
-las reglas del agente lanzador no se aplican y que las de su sesion quedan
-fuera del analisis. Un agente `primary` se evalua igualmente y se declara.
-`experimental.primary_tools` declarado produce la advertencia
-`primary-tools-no-incorporado`; sus denegaciones no se incorporan.
-
-T2-08 admite como cuarto argumento `{ herramienta: "read" }` (tambien
-`edit`, `write`, `apply_patch`, `bash`, `glob`, `grep`, `webfetch`, `task`,
-`todowrite` y `skill`). El sujeto en string, o `{ sujeto: "read" }`, conserva
-la forma literal anterior. `consulta.forma` distingue ambas formas;
-`consulta.objetivoEvaluado` presenta el recurso evaluado. Las herramientas
-de archivo resuelven el objetivo contra el proyecto y lo hacen relativo al
-worktree; `write`/`apply_patch` evalúan `edit`. Fuera del arbol se responde
-sin decision, con `fuera-del-arbol`.
-
-Por autorizacion del ingeniero del 25/10 (ADR-101 propuesto), el adaptador
-descubre Git solo mediante lectura: sube hasta un `.git` con HEAD valido,
-objects/refs, o resuelve gitdir/commondir. Sin repositorio usa `/`. Sin un
-archivo git en PATH agrega `git-no-encontrado`. `GIT_DIR` o `GIT_WORK_TREE`
-definidas producen `via-no-soportada`; core.worktree, bare=true o
-safe.directory detectados se declaran como `deteccion-git-aproximada`.
-RIGE no ejecuta Git. El arnes de pruebas y referencias si lo ejecuta para
-preparar y contrastar repositorios aislados.
-
-T2-09 aplica la frontera de RF-08 tanto a `{ herramienta: "bash" }` como
-al sujeto `bash`. Un lexer propio respeta comillas y escapes; los comandos
-compuestos devuelven `decision: null`, `motivoSinDecision: "comando-compuesto"`
-y advertencias con motivos en orden de aparicion, sin repetir. Una comilla
-sin cerrar o un escape final produce `no-analizable`. Los simples se evaluan
-sin espacios iniciales ni finales y conservan el objetivo original en la consulta.
-La CLI de producto se agrega en T2-11; las pruebas usan el arnes aislado.
-El adaptador puede preparar consultas por sujeto mediante el puerto opcional
-`prepararSujeto`; `ObjetivoPermiso.advertencias` lleva codigos de sus plantillas.
-
-Para comprobar T2-09, con `RIGE_ALMACEN` temporal:
-
-```bash
-bun test paquetes/opencode/comando.test.ts pruebas/aceptacion/RF-08.test.ts
-```
-
-Para comprobar T2-08, con `RIGE_ALMACEN` temporal:
-
-```bash
-bun test pruebas/aceptacion/RF-02-CA-9.test.ts paquetes/opencode
-bun test pruebas/utilidades/escenario.test.ts paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts herramientas/referencias-nativas/comparar.test.ts pruebas/arquitectura/referencias-nativas.test.ts
-```
-
-Las referencias de los tres escenarios `v2-worktree-*` incluyen la cadena
-de plan y el resultado real de `opencode debug agent build --tool read
---params '{"filePath":"src/a.js"}'`. El worktree procede de
-`SELECT data FROM message` en el SQLite **temporal** de OpenCode, campo
-`path.root`. Para repetir la comparacion de cadenas se usa el comando
-`bun run referencias --raiz <directorio-global-npm>` documentado abajo.
-El arnes respeta el modo Git de cada referencia. En los escenarios sin worktree valido, `OPENCODE_DISABLE_EXTERNAL_SKILLS=true`
-evita que la busqueda ascendente de skills salga del temporal. No se usa en
-`v2-worktree-valido`; cada exclusion figura en la procedencia.
-La regeneracion de cadenas conserva las decisiones y la captura de lectura;
-la verificacion de las demas decisiones CA-9 corresponde a T2-14.
-
-Para comprobar T2-07, con `RIGE_ALMACEN` temporal:
-
-```bash
-bun test pruebas/aceptacion/RF-02.test.ts paquetes/opencode
-```
-
-Para comprobar T2-06, con `RIGE_ALMACEN` temporal:
-
-```bash
-bun test paquetes pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-09.test.ts
-```
-
-Durante TDD se pueden seleccionar solo los archivos nuevos:
-
-```bash
-bun test paquetes/nucleo/permisos/decidir.test.ts paquetes/opencode/permisos.test.ts paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-09.test.ts
-```
-
-El escenario `v2-decision` usa una entrada global aislada. Sus decisiones se
-derivan a mano de la cadena capturada por el binario, como documenta
-`pruebas/escenarios/v2-decision/DERIVACION.md`; regenerar las referencias no
-recalcula ese campo. El arnes consulta el caso de uso en el mismo proceso, con un entorno inyectado
-y aislado. La guarda G-1 comprueba la procedencia de los esperados.
-
-Con `RIGE_ALMACEN` en un temporal, las pruebas y el oraculo se ejecutan desde `src/`:
-
-```powershell
-$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-pruebas'
-bun test paquetes/opencode pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-06.test.ts
-bun test herramientas/referencias-nativas pruebas/arquitectura/referencias-nativas.test.ts
-bun run referencias --raiz (npm.cmd root -g) --regenerar
-bun run referencias --raiz (npm.cmd root -g)
-bun test
-bun run verificar
-```
-
-En Bash: `bun run referencias --raiz "$(npm root -g)" --regenerar` genera las
-capturas; sin `--regenerar` solo compara y nunca escribe referencias. Se exige
-el binario oficial 1.18.25 con SHA-256 admitido. Cada `REFERENCIA.json` declara
-su directorio, hogar relativo a la copia y `OPENCODE_CONFIG` si corresponde.
-Las cadenas conservan el orden del binario; data, tmp y hogar se normalizan a
-`<data>`, `<tmp>` y `<hogar>`, con separadores `/`.
-
-La herramienta requiere Git: ejecuta `git init --quiet --initial-branch=main`
-en cada copia temporal y `git rev-parse --show-toplevel` desde el directorio
-consultado. Un `.git/HEAD` sintetico no basta para el binario y permitia que la
-busqueda ascendente de skills alcanzara el hogar real. HOME, USERPROFILE,
-APPDATA y LOCALAPPDATA se aislan en todos los escenarios. No se deshabilitan
-skills mediante flags en los escenarios con Git validado. Los escenarios
-de descubrimiento de T2-08 declaran la excepcion de skills externos indicada
-arriba. Una regla normalizada que contenga el HOME real hace
-fallar la herramienta antes de guardar la referencia. El diagnostico se
-conserva en `procedencia.aislamiento`.
-
-Para comprobar la fusion de subarboles y los permisos con procedencia (T2-04),
-con `RIGE_ALMACEN` temporal como se indica en §6:
-
-```bash
-bun test paquetes/nucleo paquetes/opencode
-bun test paquetes/nucleo/resolucion/fusion.test.ts paquetes/nucleo/resolucion/resolver.test.ts paquetes/nucleo/resolucion/contrato.test.ts paquetes/opencode/fusion.test.ts paquetes/opencode/secuenciador.test.ts pruebas/aceptacion/fusion-permisos.test.ts pruebas/aceptacion/RF-01.test.ts
-bun test pruebas/aceptacion/RF-03.test.ts pruebas/aceptacion/recorrido-v1.test.ts
-```
-
-`pruebas/escenarios/v2-fusion-permisos/global.json` contiene la entrada global;
-la aceptacion la copia al hogar temporal y consulta el caso de uso en memoria,
-con ese entorno inyectado.
-La resolucion conserva el formato 2 y siempre incluye `eliminadas`, con el rastro
-original y la declaracion `eliminacion` que lo retiro. Los indices de fusion se asignan por
-preorden final; `eliminadas` usa su propio `ordenEliminacion`. `tools`
-marca su ambito de permisos como no resuelto con `tools-legado-no-incorporado`.
-
-T2-10 agrega explicaciones deterministas de decisiones de permiso en el nucleo.
-El adaptador aporta las plantillas y el vocabulario; los marcadores desconocidos,
-sin valor y las reglas sin plantilla producen una falla visible. El caso de uso
-admite `consultarPermiso(dependencias, proyecto, agente, accion, objetivo,
-lanzadoPor, { explicar: true })`; sin esa opcion, `explicacion` es `null`.
-La explicacion identifica la determinante, su posicion en la cadena completa,
-el origen y las desplazadas; tambien explica el efecto por defecto, las
-protecciones nativas anuladas y los motivos sin decision. Cierra con las
-aprobaciones permanentes excluidas. `RespuestaValores` no incorpora explicacion.
-La CLI y la web integran estas explicaciones (T2-11 y T2-12).
-
-Para comprobar T2-10, con `RIGE_ALMACEN` temporal como se indica en §6:
-
-```bash
-bun test paquetes/nucleo/permisos/explicar.test.ts pruebas/aceptacion/RF-02-explicacion.test.ts
-bun test paquetes
-bun test
-bun run verificar
-```
-
-T2-12 agrega las paginas GET `/permiso?id=…&agente=…&herramienta=…&objetivo=…`
-(o `sujeto` en lugar de `herramienta`, y opcionalmente `lanzadoPor`) y
-`/agentes?id=…`. La pagina de una resolucion guardada ofrece los enlaces y
-formularios. Las consultas usan los mismos casos de uso que la CLI sobre el
-documento guardado y su contexto original (worktree, hogar, data, tmp,
-plataforma y declaraciones); cambiar una entrada o el entorno no modifica esa
-resolucion. Para observar el cambio hay que resolver nuevamente desde el inicio.
-El permiso siempre muestra la explicacion. Ambas paginas incluyen la respuesta
-como JSON no ejecutable, con `<` serializado como `\u003c` para impedir el cierre
-de la etiqueta de datos.
-
-Para comprobar T2-14, con `RIGE_ALMACEN` temporal como se indica en §6:
-
-```bash
-bun test pruebas/arquitectura herramientas
-bun test pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-02-CA-9.test.ts pruebas/aceptacion/T2-11b.test.ts pruebas/utilidades/decision-nativa.test.ts
-bun run cobertura
-bun test
-bun run verificar
-```
-
-Para comprobar T2-12, con `RIGE_ALMACEN` temporal como se indica en §6:
-
-```bash
-bun test pruebas/aceptacion/T2-12.test.ts
-bun test paquetes/rige/interfaces pruebas/aceptacion
-bun test
-bun run verificar
-```
-
-Para comprobar T2-15 (incluida la sonda M-3 sobre una copia temporal):
-
-```bash
-bun test paquetes pruebas herramientas
-bun run prueba:lenta
-bun run verificar
-```
-
-Las aceptaciones de repositorios validos requieren Git disponible en PATH, como
-se indica en los requisitos previos. RIGE solo comprueba su archivo ejecutable;
-el oraculo nativo ejecuta Git. Las capturas manuales que no reproduce el arnes
-se identifican expresamente como manuales en su procedencia.
-
-T2-15 agrega `porDefecto` a permisos: si es true, la decision es el efecto
-por defecto y `motivoSinDecision` es null. `eliminadas`, y las declaraciones
-y advertencias de cada cadena, son arreglos siempre presentes. Los valores y
-el listado de agentes incluyen las declaraciones del descubrimiento del arbol.
-Los agentes solo en Markdown figuran en el listado incompleto; consultarlos
-o usarlos como lanzador produce `cadena-incompleta` con `markdown-no-observado`.
-
-T2-16 valida las decisiones derivadas contra las capturas nativas disponibles.
-En Linux se usa el oráculo derivado si la captura pertenece a Windows; cada
-título indica el oráculo. RF-02 CA-3 permanece cubierto con oráculo derivado,
-sin ejecución nativa de `task`. Las resoluciones de formato 2 conservan los
-datos del contexto original, sin guardar variables de entorno ni puertos de E/S;
-las consultas guardadas no vuelven a descubrir `.git`. No hay migración.
-Desde T3-02 (ADR-103), RF-09 advierte cuando una declaración vuelve más
-permisiva la última nativa coincidente desplazada, de denegación o de
-confirmación (`deny` < `ask` < `allow`). `.env` con `read: allow` global
-advierte; `.env.example` conserva su nativa `allow` sin advertencia.
-La web numera las reglas desde 1.
-
-El manifiesto declara `iteracion: 2`, la base vigente de cobertura. Un ítem
-de una iteración posterior queda pendiente solo mientras no tiene
-comprobaciones; con ellas se calcula su cobertura como cualquier otro ítem.
-Los seis tipos de RF-07 siguen pendientes; RF-09 CA-3 queda cubierto.
-
-Para comprobar T3-02, con `RIGE_ALMACEN` temporal como en §6:
-
-```powershell
-bun test paquetes/nucleo/permisos pruebas/aceptacion/RF-09.test.ts pruebas/arquitectura/manifiesto.test.ts
-bun test paquetes/opencode/secuenciador.test.ts pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-02-explicacion.test.ts pruebas/utilidades/decision-nativa.test.ts pruebas/arquitectura/vendor.test.ts
-bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-proteccion-env
-bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP "rige-decisiones-cache") --regenerar
-bun run referencias --raiz (npm.cmd root -g)
-bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP "rige-decisiones-cache")
-bun test
-bun run verificar
-```
-
-La regeneración de decisiones recorre todas las consultas nativas. En T3-02
-se conserva solo la nueva referencia y se restauran las demás; luego se
-actualizan los SHA-256 del manifiesto, como se indica en §6.
-
-Para comprobar T2-16, con `RIGE_ALMACEN` temporal como en §6:
-
-```powershell
-bun test pruebas/utilidades/decision-nativa.test.ts pruebas/aceptacion/RF-02.test.ts pruebas/aceptacion/RF-02-CA-9.test.ts
-bun test paquetes/opencode/contexto.test.ts pruebas/aceptacion/T2-12.test.ts
-bun test pruebas/arquitectura/vendor.test.ts pruebas/arquitectura/manifiesto.test.ts
-bun test paquetes/nucleo/permisos/decidir.test.ts pruebas/aceptacion/RF-09.test.ts pruebas/aceptacion/RF-02-explicacion.test.ts
-bun test paquetes/rige/aplicacion/casos-uso/consultar-permiso.test.ts paquetes/opencode/secuenciador.test.ts paquetes/rige/interfaces/web/paginas/resolucion.test.ts pruebas/aceptacion/recorrido-v1.test.ts
-bun test paquetes/opencode/lector.test.ts paquetes/opencode/ubicador.test.ts paquetes/opencode/cadena.test.ts paquetes/nucleo/resolucion/proyectar.test.ts pruebas/aceptacion/RF-03.test.ts
-bun test paquetes/opencode/objetivo.test.ts paquetes/rige/aplicacion/casos-uso/resolver-proyecto.test.ts paquetes/nucleo/resolucion/resolver.test.ts pruebas/aceptacion/RF-08.test.ts
-bun test pruebas/aceptacion/RNF-10.test.ts pruebas/aceptacion/RF-06.test.ts
-bun run cobertura
-bun test
-bun run prueba:lenta
-bun run referencias --raiz (npm.cmd root -g)
-bun run verificar
-```
-
-En Bash, la referencia se comprueba con
-`bun run referencias --raiz "$(npm root -g)"`.
-
-T2-18 comprueba el fallo del gitfile con el estado de salida y los diagnosticos
-conocidos de Git en Windows y Linux. El diagnostico `not a git repository`
-debe citar el destino del `gitdir:` del escenario. Para probar esa comprobacion,
-con `RIGE_ALMACEN` temporal como en §6:
-
-```powershell
-bun test herramientas/referencias-nativas/aislamiento.test.ts
-```
-
-Para comprobar T2-17, con `RIGE_ALMACEN` temporal como en §6:
-
-```powershell
-bun test pruebas/arquitectura/ortografia.test.ts
-bun test paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts paquetes/rige/aplicacion/casos-uso/analizar-proyecto.test.ts
-bun test pruebas/arquitectura/vendor.test.ts
-bun test paquetes/nucleo paquetes/opencode paquetes/rige pruebas/aceptacion/recorrido-v1.test.ts
-bun test
-bun run verificar
-bun run referencias --raiz (npm.cmd root -g)
-```
-
-### Descubrimiento de entradas (T3-03, RF-04)
-
-```powershell
-bun run rige -- entradas --proyecto <ruta>
-```
-
-`entradas` admite `--proyecto` y la opción general `--depurar`. Lista las vías
-en orden de precedencia, incluidas las no observadas, con tipo, referencia,
-condición, resumen y legibilidad. Resuelve en memoria y no crea ni modifica
-el almacén. Termina con código 0 aunque haya errores de sintaxis; para cada
-ilegible informa línea, columna y consecuencia en OpenCode (`falla` o
-`descartada`). Los análisis siguen fallando con `entrada-ilegible`, salvo el
-JSON inválido de `OPENCODE_PERMISSION`, que se descarta y queda registrado.
-Los errores de contexto o contenido no soportado conservan código 1.
-
-La web ofrece `GET /entradas?proyecto=<ruta-codificada>` con el mismo objeto,
-incluido como dato JSON en la página, y las mismas restricciones de origen y
-método de las demás rutas. Esta consulta tampoco guarda una resolución.
-
-Se incorporan los siete tipos: `global`, `variable-config`, `proyecto`,
-`directorio-opencode`, `markdown`, `variable-contenido` y `variable-permiso`.
-`OPENCODE_CONFIG_DIR` agrega un directorio al final de la lista, deduplicado
-por su texto; no reemplaza al global. Debe ser una ruta absoluta canónica,
-sin barra final, separadores ajenos a la plataforma ni segmentos `.` o `..`.
-Los JSON de ese directorio y los comandos Markdown recursivos se descubren
-junto con agentes y modos. RIGE registra los comandos como no resueltos,
-sin analizar su contenido. Un `name:` en el frontmatter de agentes o comandos
-produce `via-no-soportada`. La legibilidad de un Markdown no acredita que
-OpenCode lo acepte: esta tarea no valida su esquema ni su frontmatter.
-
-`OPENCODE_CONFIG_CONTENT` se lee como JSONC después de los directorios;
-`OPENCODE_PERMISSION`, como JSON estricto al final, con `{env:…}` y `{file:…}`
-literales. Las variables vacías no se listan. Las definidas se identifican
-por nombre, con `condicion: "definida"` y `resumen: null`; el resumen del
-conjunto incluye una huella de su texto (ADR-104). Sus declaraciones sí se
-resuelven y se guardan; el texto crudo y sus comentarios nunca se emiten ni
-se guardan. Las sustituciones de las demás vías siguen el comportamiento
-de T3-04 descrito a continuación.
-
-El TOML heredado `config` sigue con `via-no-soportada`: OpenCode lo migra al
-ejecutarse, escribe `config.json` y borra `config`; analizarlo antes daría un
-estado que OpenCode no usa. También siguen sin soporte
-`OPENCODE_DISABLE_PROJECT_CONFIG`, `OPENCODE_TEST_HOME` y
-`OPENCODE_TEST_MANAGED_CONFIG_DIR`.
-
-Para comprobar T3-03, con `RIGE_ALMACEN` temporal como arriba:
-
-```powershell
-bun test paquetes/opencode paquetes/nucleo pruebas/aceptacion/RF-04.test.ts
-bun test pruebas/utilidades/entorno-referencia.test.ts paquetes/rige/interfaces/web/paginas/entradas.test.ts
-bun test pruebas/arquitectura/referencias-nativas.test.ts pruebas/arquitectura/decisiones-nativas.test.ts pruebas/arquitectura/manifiesto.test.ts pruebas/aceptacion/RF-06.test.ts
-bun herramientas/tipos-salida.ts
-bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-entradas --escenario v3-entradas-ilegible --escenario v3-permiso-invalido
-bun run referencias --raiz (npm.cmd root -g)
-bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP "rige-t303-decisiones-cache")
-bun test
-bun run verificar
-```
-
-El arnés aplica `procedencia.variables` tanto a OpenCode como a RIGE mediante
-`entornoDeReferencia`. Las referencias pueden incluir `comandos` (claves
-ordenadas de `opencode debug config`) o `fallaEsperada` con cadenas vacías:
-se captura el código no nulo y el archivo relativo a la copia. Solo se
-regeneran los tres escenarios nuevos; las referencias anteriores se conservan.
-
-## Correcciones de T3-03 (T3-03-c1)
-
-La lectura de cada vía y la preparación del proyecto se comparten entre los
-análisis y `entradas`. El resumen usa las huellas obtenidas durante esa lectura;
-`constituyeEntrada` es una marca interna que no se emite ni se guarda. Los 22
-escenarios existentes conservaron el resumen de HEAD, comparados sobre las
-mismas copias temporales antes y después de la refactorización.
-
-Limitaciones contrastadas con OpenCode 1.18.25 en entorno aislado:
-
-- Con `OPENCODE_CONFIG_DIR` igual al global, el global se relee después del
-  proyecto y antes de los `.opencode`. En el contraste de `bash`, global con
-  `x *: deny` y `.opencode` con `x *: allow`, el binario termina con código 0
-  y conserva `allow` en la cadena de `build`.
-- `OPENCODE_PERMISSION` con `null` o `[]`: el binario termina con código 0
-  y conserva la cadena de `build`. Con `"deny"` también termina con código 0,
-  pero agrega reglas con sujetos `0`, `1`, `2`, `3`, patrón `*` y acciones
-  `d`, `e`, `n`, `y`, respectivamente; conserva las reglas `bash` anteriores.
-  RIGE mantiene `contenido-no-soportado` para los tres valores.
-- `OPENCODE_CONFIG_CONTENT` con un espacio: el binario termina con código 1,
-  `ValueExpected` en línea 1, columna 2, sin producir cadena de `build`.
-  RIGE mantiene la entrada ilegible con consecuencia `falla`.
-- Para `v3-entradas-ilegible`, el binario termina con código 1 y señala
-  `CommaExpected` en línea 7, columna 3; la referencia captura ambas posiciones
-  y se comparan con `entradas`.
-
-Los esquemas exigen posiciones desde 1 y `error` en las entradas ilegibles;
-las salidas anteriores sin campos de legibilidad siguen siendo válidas.
-Las regresiones v2 consultan los casos de uso en proceso; `v2-decision`
-conserva la cobertura de CLI. La limpieza de temporales reintenta hasta diez
-veces ante `EBUSY`, `EPERM` o `ENOTEMPTY`, con pausas de 50 ms; si falla,
-advierte y permite que termine la prueba.
-
-Comandos desde `src/` (PowerShell):
-
-```powershell
-$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-t303c1-almacen'
-bun test paquetes/nucleo paquetes/opencode pruebas/aceptacion/RF-04.test.ts
-bun test pruebas/utilidades/borrar-temporal.test.ts pruebas/utilidades/validar-esquema.test.ts pruebas/arquitectura/entrada-salida.test.ts
-bun test pruebas/arquitectura/referencias-nativas.test.ts pruebas/arquitectura/decisiones-nativas.test.ts pruebas/arquitectura/manifiesto.test.ts
-bun herramientas/tipos-salida.ts
-bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-entradas-ilegible
-bun test
-bun run verificar
-bun run referencias --raiz (npm.cmd root -g)
-bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP 'rige-t303c1-decisiones-cache')
-```
-
-## Sustituciones protegidas (T3-04)
-
-RIGE reproduce en memoria las sustituciones de OpenCode 1.18.25 y verifica
-que conservan la secuencia de tokens y la estructura del JSONC. La salida
-y el almacén conservan el valor del archivo original, por ejemplo
-`"Clave {env:API_KEY}"`, junto con `sustituciones`. Cada aparición informa
-`tipo`, `origen`, `definido` y `posicion`; nunca contiene el texto incorporado
-ni su resumen. La plantilla, el tipo y la posición proceden del archivo:
-precisan la representación simbólica de ADR-058 («sustitución de API_KEY,
-definida»). Las posiciones se calculan sobre el original, en UTF-16 y desde 1.
-Los campos son opcionales; salida y documento del almacén siguen en versión 2.
-
-Una variable ausente o vacía tiene `definido: false`. Los archivos se buscan
-respecto del directorio de la entrada, o del proyecto para
-`OPENCODE_CONFIG_CONTENT`; `~/` usa el hogar del contexto. Su origen es una
-ruta absoluta con `/`. Un archivo inexistente, directorio o ilegible produce
-`entrada-ilegible`, con la ruta original y consecuencia de falla. Las rutas
-interpoladas y las referencias a archivos creadas por una variable se rechazan
-antes de leer archivos. Una expansión inválida o que cambia la estructura
-falla sin mostrar su contenido, incluso con `--depurar`.
-
-`{env:}` y `{file:}` vacíos son literales. Las variables también se expanden
-en comentarios; no generan declaraciones. Una referencia de archivo después
-de `//` al comienzo de la línea se omite, pero en un comentario de bloque se
-lee. Markdown y `OPENCODE_PERMISSION` mantienen todos estos textos literales.
-
-Las sustituciones en claves ajenas a `permission` se rechazan. Las reglas de
-permiso con sustituciones se validan en memoria contra `allow`, `ask` y `deny`:
-una acción inválida produce `configuracion-invalida`, sin su contenido. Las
-válidas quedan excluidas con `sustitucion-no-incorporada`;
-sus orígenes y condiciones se acumulan por entrada y posición. Un `mode`
-sustituido se valida y excluye el agente entero (`no-observado`). `hidden` y
-`disable` sustituidos son inválidos porque el esquema exige booleanos. RIGE
-no lee las credenciales de `auth.json` ni las variables que aporta la vía
-wellknown; `remota-wellknown` continúa como no observada. Una variable definida
-solo por una entrada `wellknown` figura `definido: false` en RIGE.
-
-`OPENCODE_PERMISSION` con `null` o `[]` después de `JSON.parse` se lee como
-legible y sin declaraciones, como en el binario. Los demás valores válidos
-que no son objetos (por ejemplo, `"deny"`) siguen con `contenido-no-soportado`.
-
-El resumen del conjunto agrega las ternas ordenadas y sin repetir
-`[tipo, origen, definido]` de las sustituciones. Cambiar únicamente su
-contenido no cambia esa huella; cambiar su condición sí. Las entradas sin
-sustituciones conservan la fórmula anterior. El oráculo de pruebas obtiene
-SHA-256 de los valores expandidos y compara exclusivamente esos resúmenes
-con el binario; no forma parte del flujo de la aplicación. El SHA-256 de la
-referencia se calcula solo sobre datos de prueba con marcadores; el oráculo
-solo lo importan pruebas y `herramientas/`.
-
-El escenario `v3-sustituciones` declara `procedencia.entorno` con archivos
-que se cargan en memoria para variables `RIGE_PRUEBA_*`, y
-`procedencia.sustituidas` con pares agente/clave capturados como
-`{ tipo: "sustituido", sha256 }`. El arnés comprueba que la referencia y
-las diferencias no contienen valores de esas variables ni `MARCA-`; las
-escenas protegidas omiten el stderr del binario y solo muestran las rutas
-con diferencias. El documento de regresión `pruebas/datos/resolucion-t3-03.json`
-se obtuvo ejecutando los módulos de HEAD `03e02cd` en un temporal con un
-entorno de memoria, sin sustituciones ni acceso a la configuración real.
-
-Comprobación, con `RIGE_ALMACEN` temporal como en las secciones anteriores:
-
-```powershell
-bun test paquetes/opencode paquetes/nucleo pruebas/aceptacion/RNF-04.test.ts pruebas/aceptacion/RNF-02.test.ts
-bun test pruebas/arquitectura/sustituciones.test.ts pruebas/arquitectura/referencias-nativas.test.ts pruebas/arquitectura/manifiesto.test.ts pruebas/aceptacion/RF-06.test.ts
-bun herramientas/tipos-salida.ts
-bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-sustituciones
-bun run referencias --raiz (npm.cmd root -g)
-bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP "rige-t304-decisiones-cache")
-rg 'MARCA-' pruebas/escenarios/v3-sustituciones/REFERENCIA.json
-bun run cobertura
-bun test
-bun run verificar
-```
-
-`rg` debe terminar sin coincidencias (código 1). Se actualizan los SHA-256
-del manifiesto al regenerar esa referencia, sin modificar las anteriores.
-En Bash, las invocaciones nativas usan `--raiz "$(npm root -g)"` y un
-directorio temporal para `--cache`.
-
-### Hallazgos en vivo (T3-05 y T3-06)
-
-El caso de uso `consultarHallazgos` detecta entradas ilegibles (sintaxis o
-archivo sustituido inexistente), entradas descartadas sin error visible,
-sustituciones de variables sin valor y referencias a agentes inexistentes
-o deshabilitados en `default_agent` y `command.<nombre>.agent`. Cada hallazgo
-incluye entrada, posición original, clave, causa y explicación determinista.
-Lee cada entrada una sola vez, sin guardar ni consultar resoluciones del
-almacén. La CLI, el esquema JSON y la vista web corresponden a T3-07.
-
-Si una entrada impide cargar la configuración, se informan todas las
-ilegibles y los hallazgos de las entradas legibles; `incompleta: true` y
-`hallazgos-parciales` indican que no se evaluaron referencias, reglas sin
-efecto ni elementos sin uso. Las variables
-ausentes o vacías se detectan también en declaraciones desplazadas o
-excluidas, pero no en comentarios. `wellknown-no-observada` advierte que
-OpenCode puede obtener de `auth.json` una variable que RIGE informa sin valor.
-
-No se detecta el frontmatter inválido de Markdown. Las referencias con
-sustituciones, vacías o bajo claves no resueltas no se evalúan. Un agente
-Markdown no observado cuenta como existente. Un `default_agent` que nombra
-un subagente o un agente oculto puede fallar en OpenCode, pero queda fuera
-del detector porque el nombre sí existe.
-
-Las **reglas de permiso sin efecto** (RE-02) se detectan sobre las reglas
-declaradas e incorporadas, sin sustituciones ni exclusiones. Una regla queda
-tapada si una posterior de su mismo bloque (raíz con raíz, agente con el mismo
-agente) tiene el mismo sujeto literal y abarca todos sus patrones. Los sujetos
-con comodines no se comparan. El hallazgo identifica la regla posterior y su
-archivo y línea; las reglas nativas y las de otros bloques no justifican esta
-causa.
-
-La función `abarca(posterior, anterior)` usa programación dinámica conservadora:
-puede omitir inclusiones ciertas. Por ejemplo, no detecta que A=`a?*` está
-incluida en B=`*?`. Normaliza `\\` a `/`, distingue mayúsculas en los literales
-y permite que `*` y `?` atraviesen separadores. El sufijo ` *` es opcional en
-cualquier patrón, como en OpenCode: `git *` también coincide con `git`, por
-lo que `git?*` no lo abarca. La prueba exhaustiva acotada contrasta toda
-inclusión afirmada con el evaluador del tag en POSIX y Windows.
-
-La otra causa es una **ruta absoluta** dentro de la base efectiva del árbol
-de trabajo, con sujeto exactamente `read` o `edit`. OpenCode evalúa estas
-acciones sobre la ruta relativa al árbol. Se omiten rutas fuera de esa base
-y patrones cuyos comodines en los directorios impiden decidir la contención.
-Sin Git, la base es `/`; en Windows se toma la raíz de la unidad del proyecto,
-y una ruta absoluta de otra unidad no se informa. Una raíz sin letra de unidad
-también se resuelve contra la unidad del proyecto.
-
-Para una ruta sin comodines, el hallazgo incluye la forma relativa normalizada
-y su decisión solo si, al sustituir el patrón en su misma posición, `decidir`
-confirma el efecto declarado en todas las cadenas activas afectadas y completas
-para ese sujeto (RF-07 CA-5). Quita separadores finales, `.` y `..`. Si alguna
-cadena no confirma el efecto, se conserva únicamente el diagnóstico. Esta
-causa tiene prioridad sobre la de regla tapada. No se reescribe configuración.
-
-Los **elementos sin uso** (RE-03) son subagentes declarados, activos y con
-`mode: subagent` que ninguna declaración de agente ni de comando nombra.
-Cuentan como usos `default_agent`, `command.<nombre>.agent`, un token
-`@<agente>` en `command.<nombre>.template` o `agent.<nombre>.prompt`, y una
-clave exacta de `permission.task` o `agent.<nombre>.permission.task`, con
-cualquier efecto, incluso `deny`. Los agentes nativos y los modos `primary`
-y `all` quedan fuera de este detector. «Sin uso» no afirma inaccesibilidad:
-OpenCode ofrece el subagente a la herramienta `task` según sus permisos y el
-usuario puede mencionarlo directamente con `@`, incluso si `task` lo deniega.
-
-Si hay agentes o comandos en Markdown, o alguna clave que puede nombrar un
-agente está excluida o tiene sustituciones, no se informan elementos sin uso.
-La respuesta agrega `elementos-sin-uso-no-evaluados` en `motivos` y su
-explicación en `reglas`; nunca se examina el contenido sustituido.
-
-El escenario `v3-referencias` fue aceptado por `opencode debug config` y
-conserva sus comandos en `REFERENCIA.json`. Su entorno define el nombre
-nativo `plan`; el arnés busca valores de variables en las capturas de
-agentes cuando se declaran `sustituidas`, y siempre rechaza `MARCA-`. Los
-nombres nativos ya presentes no constituyen contenido incorporado por una
-sustitución. Los errores y las diferencias de escenarios con entorno
-siguen protegidos.
-
-Con `RIGE_ALMACEN` apuntando a un temporal, como arriba:
-
-```powershell
-bun test paquetes/nucleo/hallazgos pruebas/aceptacion/RF-07.test.ts
-bun test paquetes/nucleo/resolucion/resolver.test.ts paquetes/nucleo/resolucion/contrato.test.ts pruebas/arquitectura/referencias-nativas.test.ts pruebas/arquitectura/manifiesto.test.ts
-bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-referencias
-bun run referencias --raiz (npm.cmd root -g)
-bun test
-bun run verificar
-```
-
-Comprobación de T3-06 desde `src/`, con el almacén en un temporal:
-
-```powershell
-$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
-bun test paquetes/nucleo/hallazgos paquetes/opencode pruebas/aceptacion/RF-07.test.ts
-bun test
-bun run verificar
-bun run referencias --raiz (npm.cmd root -g)
-```
-
-En Bash, el último comando es `bun run referencias --raiz "$(npm root -g)"`.
-Se comparan las referencias existentes, sin regenerarlas. El escenario
-`v3-sin-efecto` aporta la regla tapada y el subagente `auditor` sin uso; las
-variantes de ruta y sus controles usan las referencias de `v2-ruta-*`.
-
-### Hallazgos por CLI y web (T3-07)
-
-Desde `src/`, con `RIGE_ALMACEN` apuntando a un temporal:
-
-```powershell
-$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
-bun run rige -- hallazgos --proyecto <ruta>
-bun run rige -- hallazgos --proyecto <ruta> --explicar
-```
-
-La CLI devuelve JSON con código 0 tanto con hallazgos como sin ellos.
-`--explicar` agrega a cada hallazgo la misma explicación que presenta la web.
-Sin esa opción, el campo `explicacion` se omite. Los errores de uso conservan
-los códigos de los demás subcomandos. Esta consulta analiza las entradas
-actuales en memoria y no requiere crear el almacén ni guarda hallazgos.
-
-Con el servidor iniciado mediante `bun run servir`, la página de inicio
-permite consultar `GET /hallazgos?proyecto=<ruta-codificada>`. La página
-presenta tipo, localización y explicación en una tabla y contiene la respuesta
-completa en el bloque JSON de paridad `id="respuesta"`. Los valores se escapan
-como en las demás páginas. Los hallazgos se consultan solo en vivo, sin variante
-sobre una resolución guardada (ADR-105).
-
-Las declaraciones ubicadas de `valores`, `permiso` y las eliminaciones de
-`agentes` incluyen `localizacion` en formato `ruta:línea:columna`, con ruta
-absoluta normalizada a `/`. Cada hallazgo también incluye ese campo. La única
-excepción a la ruta absoluta son las entradas de variables: usan el nombre,
-por ejemplo `OPENCODE_PERMISSION:1:1`. Línea y columna parten de 1; la columna
-cuenta unidades UTF-16 sobre el texto original. Las explicaciones de permisos
-declarados también incluyen la columna.
-
-La CLI y la web presentan la localización calculada por el caso de uso.
-También se calcula al consultar una resolución guardada, sin modificar su
-documento. El campo de las declaraciones es opcional en los esquemas, para
-preservar salidas anteriores y declaraciones implícitas; en los hallazgos es
-obligatorio. La versión del esquema de salida sigue siendo 2.
-
-Comprobación y regeneración del contrato de salida:
-
-```powershell
-bun ./herramientas/tipos-salida.ts
-bun test paquetes/rige pruebas/aceptacion/RF-07.test.ts pruebas/aceptacion/RF-12.test.ts
-bun test pruebas/aceptacion/RF-02-explicacion.test.ts
-bun test
-bun test --timeout 30000
-bun run verificar
-```
-
-La variante con `--timeout 30000` permite completar la prueba exhaustiva de
-patrones en equipos donde supera el límite predeterminado de cinco segundos;
-mantiene todas sus comprobaciones.
-
-T3-08 registra los seis tipos de RF-07 y sus controles nativos en el
-manifiesto de la iteración 3. El inventario, la cobertura exigible y los
-aplazados están documentados en `pruebas/README.md`. Para reproducir:
-
-En `v3-sin-efecto` y su control, la regla relativa adicional
-`read src/b.js → allow` mantiene ofrecida `read` en OpenCode 1.18.25.
-La consulta nativa sobre `src/a.js` registra `deny` en el defecto y `allow`
-en el control; solo cambia el orden de la regla de `src/a.js` respecto de `*`.
-
-```powershell
-$env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-t308-almacen'
-bun test pruebas/aceptacion/RF-07.test.ts pruebas/arquitectura/manifiesto.test.ts
-bun test pruebas/arquitectura/referencias-nativas.test.ts pruebas/utilidades/decision-nativa.test.ts
-bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-sin-efecto --escenario v3-sin-uso --escenario v3-control-permiso --escenario v3-control-sustituciones --escenario v3-control-referencias --escenario v3-control-sin-efecto --escenario v3-control-sin-uso --escenario v3-permiso-invalido --escenario v3-referencias --escenario v2-ruta-exposicion
-bun ./herramientas/decisiones-nativas.ts --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP 'rige-t308-decisiones-cache') --regenerar
-bun run referencias --raiz (npm.cmd root -g)
-bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP 'rige-t308-decisiones-cache')
-bun run cobertura
-bun test
-bun run verificar
-```
-
-La regeneración de decisiones recorre todas las consultas; antes de actualizar
-los SHA-256 se comprueba que las referencias heredadas solo cambien en
-`v2-ruta-exposicion`, `v3-permiso-invalido` y `v3-referencias`. Las otras
-capturas de T3-08 corresponden a escenarios nuevos. La captura opcional
-`registro` lee los archivos de `hogar/opencode/log` tras invocar el binario sin
-`--print-logs`; no expone su contenido. La guarda de sustituciones rechaza
-cualquier valor de `procedencia.entorno` en la captura, salvo nombres nativos.
-
-### Descarga del registro nativo en Linux (T3-12)
-
-La captura de `registro` en plataformas distintas de Windows ejecuta
-`bash` con `sleep 1.2` mediante `debug agent --tool`, para permitir la
-descarga del lote de 1000 ms del logger antes de que OpenCode termine.
-En Windows se conserva la invocación sin herramienta.
-
-```powershell
-$env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-t312-almacen'
-bun test pruebas/arquitectura/referencias-nativas.test.ts
-bun test
-bun run verificar
-bun ./herramientas/referencias-nativas.ts --raiz "C:\Users\Joa\AppData\Roaming\npm\node_modules" --escenario v3-permiso-invalido
-```
-
-### Herramientas ofrecidas y resumen del ecosistema (T3-10)
-
-La respuesta de permiso incluye `herramienta: { nombre, ofrecida }` para las
-once herramientas de acción. La respuesta de hallazgos incluye `resumen`
-con conteos de agentes, comandos, entradas y los seis tipos de hallazgo.
-Con resolución incompleta, `resumen.elementos` es `null`. La CLI emite estos
-datos en JSON y la web los presenta junto con la misma respuesta.
-
-En Windows, las instalaciones de OpenCode por pnpm y bun pueden producir `version-no-determinada` con motivo `paquete-no-encontrado`: sus almacenes globales no se ubican junto al ejecutable (ADR-106). RIGE conserva los resultados y emite la advertencia.
-
-Verificación de T3-10, con `RIGE_ALMACEN` temporal:
-
-```powershell
-bun ./herramientas/tipos-salida.ts
-bun test --timeout 30000
-bun run verificar
-bun run cobertura
-bun run referencias --raiz (npm.cmd root -g)
-bun run decisiones --raiz (npm.cmd root -g)
-```
-
-## Verificación de RNF-06 (T4-02)
-
-La instalación local en Ubuntu y Windows 11 usa `bun install --frozen-lockfile`
-con una cuenta sin privilegios administrativos. Bun debe estar instalado en el
-espacio del usuario y el repositorio en una carpeta donde esa cuenta pueda
-escribir. Los scripts no requieren elevación ni directorios del sistema.
-
-`pruebas/aceptacion/RNF-06.test.ts` comprueba los tres criterios:
-
-- **CA-1:** copia `v1-precedencia`, `v1-vias` y `openchamber-doble` a temporales
-  y los carga en memoria con rutas Linux y Windows independientes del anfitrión.
-  Compara todas las entradas descubiertas (3, 6 y 32 archivos, respectivamente)
-  y todas las hojas efectivas, con rutas relativas a la raíz y separadores `/`.
-  Las decisiones de permiso quedan excluidas; también se compara la lista de
-  claves no resueltas para hacer visibles las limitaciones del adaptador.
-- **CA-2:** contrasta los valores resueltos capturados en los `REFERENCIA.json`
-  de `v1-vias` y `v1-precedencia`, cuya procedencia registra OpenCode 1.18.25
-  para Windows. Repite con rutas de entrada absolutas de barras invertidas,
-  directas y combinadas; el descubrimiento combina esas bases con nombres
-  relativos. En `v1-vias`, `maxSteps` mantiene `steps` como no resuelto
-  (`fuera-del-v1`): la prueba verifica esa exclusión expresamente, sin contarlo
-  como un valor efectivo comparado.
-- **CA-3:** revisa los scripts de los paquetes, los directorios de almacén por
-  defecto y los errores controlados por ausencia de variables del usuario.
-  Windows usa `%LOCALAPPDATA%\rige`; Linux, `$XDG_DATA_HOME/rige` o
-  `~/.local/share/rige`. Las bases de prueba son temporales y la lectura de
-  configuración no crea archivos ni directorios.
-
-Desde `src/`, en PowerShell:
-
-```powershell
-$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) ('rige-rnf06-' + [Guid]::NewGuid())
-bun test pruebas/aceptacion/RNF-06.test.ts
-bun test
-bun run verificar
-```
-
-En Bash:
-
-```bash
-export RIGE_ALMACEN="$(mktemp -d)/almacen"
-bun test pruebas/aceptacion/RNF-06.test.ts
-bun test
-bun run verificar
-```
-
-Si la prueba exhaustiva de patrones supera el límite predeterminado de cinco
-segundos, se usa `bun test --timeout 30000`, como en la verificación de T3-07.
-La simulación y la inspección de scripts no sustituyen la corrida manual de
-instalación con una cuenta sin privilegios en ambas plataformas exigida por
-ADR-054; tampoco ejecutan nuevamente el binario nativo ni regeneran referencias.
+[procedencia](paquetes/opencode/vendor/PROCEDENCIA.md) registra los orígenes,
+los cambios de envoltorio y los SHA-256. Esta copia no es el oráculo de las
+pruebas de aceptación.
