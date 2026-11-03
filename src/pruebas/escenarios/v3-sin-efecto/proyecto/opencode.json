@@ -2,11 +2,8 @@
   "permission": {
     "read": {
       "src/a.js": "allow",
-      "*": "deny"
+      "*": "deny",
+      "src/b.js": "allow"
     }
-  },
-  "agent": {
-    "auditor": { "mode": "subagent", "description": "Subagente auditor sin invocadores." },
-    "principal": { "mode": "primary", "description": "Agente primario sin invocadores." }
   }
 }

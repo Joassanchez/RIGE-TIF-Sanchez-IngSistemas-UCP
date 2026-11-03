@@ -17,6 +17,7 @@ type Referencia = {
   readonly valoresAgentes?: Record<string, Record<string, unknown>>;
   readonly agentes?: readonly { readonly nombre: string; readonly modo: string }[];
   readonly comandos?: readonly string[];
+  readonly registro?: { readonly codigo: number; readonly diagnosticoVisible: boolean; readonly avisoEnRegistro: boolean };
   readonly falla?: { readonly codigo: number; readonly archivo: string; readonly linea?: number; readonly columna?: number };
 };
 // Variantes oficiales de opencode-ai@1.18.25 por plataforma: en Windows el postinstall elige la baseline
@@ -36,13 +37,13 @@ function entornoBase(): Record<string, string> {
     && /^(PATH|SystemRoot)$/i.test(nombre))) as Record<string, string>;
 }
 
+const agentesNativos = ["build", "plan", "general", "explore", "compaction", "title", "summary"];
+
 function comprobarProteccion(valor: unknown, referencia: Referencia, env: Record<string, string>): void {
   const texto = JSON.stringify(valor);
-  // Solo sustituidas exporta valores expandidos de agentes (por resumen).
-  // Un entorno usado por command.agent no se captura; "plan" ya aparece como
-  // nombre nativo y no puede tratarse como contenido incorporado por sustitucion.
-  if (texto.includes("MARCA-") || (referencia.procedencia.sustituidas?.length
-    && Object.keys(referencia.procedencia.entorno ?? {}).some(nombre => env[nombre] && texto.includes(env[nombre]!)))) {
+  // Solo los nombres nativos pueden coincidir con metadatos publicos del binario.
+  if (texto.includes("MARCA-") || Object.keys(referencia.procedencia.entorno ?? {})
+    .some(nombre => env[nombre] && !agentesNativos.includes(env[nombre]!) && texto.includes(env[nombre]!))) {
     throw new Error("Contenido sustituido detectado; se omite el diagnostico para protegerlo.");
   }
 }
@@ -155,7 +156,7 @@ function ejecutar(): number {
       const cadenas: Record<string, unknown[]> = {};
       const valoresAgentes: Record<string, Record<string, unknown>> = {};
       let valores: Record<string, unknown> | undefined;
-      for (const agente of new Set([referencia.agente, ...Object.keys(referencia.cadenas), "build", "plan", "general", "explore", "compaction", "title", "summary",
+      for (const agente of new Set([referencia.agente, ...Object.keys(referencia.cadenas), ...agentesNativos,
         ...(referencia.procedencia.sustituidas ?? []).map(([agente]) => agente)])) {
         const proceso = Bun.spawnSync([binario, "debug", "agent", agente], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env,
@@ -188,6 +189,18 @@ function ejecutar(): number {
       if (!valores) throw new Error("No se obtuvo el agente de valores.");
       let agentes: Referencia["agentes"];
       let comandos: Referencia["comandos"];
+      let registro: Referencia["registro"];
+      if (referencia.registro !== undefined) {
+        const proceso = Bun.spawnSync([binario, "debug", "agent", referencia.agente], {
+          cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
+        });
+        const directorioRegistro = join(hogar, "opencode", "log");
+        const textoRegistro = readdirSync(directorioRegistro, { withFileTypes: true })
+          .filter(e => e.isFile()).map(e => readFileSync(join(directorioRegistro, e.name), "utf8")).join("\n");
+        registro = { codigo: proceso.exitCode,
+          diagnosticoVisible: /OPENCODE_PERMISSION/i.test(proceso.stdout.toString() + proceso.stderr.toString()),
+          avisoEnRegistro: /OPENCODE_PERMISSION/i.test(textoRegistro) };
+      }
       if (referencia.comandos !== undefined) {
         const proceso = Bun.spawnSync([binario, "debug", "config"], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
@@ -216,6 +229,7 @@ function ejecutar(): number {
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
             comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
           valores: seleccionados, valoresAgentes, cadenas, ...(agentes === undefined ? {} : { agentes }), ...(comandos === undefined ? {} : { comandos }),
+          ...(registro === undefined ? {} : { registro }),
         };
         comprobarProteccion(capturada, referencia, env);
         writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify(capturada, null, 2) + "\n");
@@ -223,7 +237,8 @@ function ejecutar(): number {
       const diferencias = regenerar ? [] : [...comparar(referencia.valores, valores), ...comparar(referencia.cadenas, cadenas),
         ...comparar(referencia.valoresAgentes ?? {}, valoresAgentes),
         ...(agentes === undefined ? [] : comparar({ agentes: referencia.agentes }, { agentes })),
-        ...(comandos === undefined ? [] : comparar({ comandos: referencia.comandos }, { comandos }))];
+        ...(comandos === undefined ? [] : comparar({ comandos: referencia.comandos }, { comandos })),
+        ...(registro === undefined ? [] : comparar({ registro: referencia.registro }, { registro }))];
       comprobarProteccion(diferencias, referencia, env);
       console.log(`${nombre}: ${diferencias.length ? JSON.stringify(protegido ? diferencias.map(d => d.clave) : diferencias) : regenerar ? "regenerada" : "ok"}`);
       if (diferencias.length) codigo = 1;

@@ -103,37 +103,37 @@
       "obligatorioV2": false
     },
     {
-      "id": "RF-07 referencias-no-resueltas",
+      "id": "RF-07 referencia-no-resuelta",
       "objetivo": "OE-3",
       "iteracion": 3,
       "obligatorioV2": false
     },
     {
-      "id": "RF-07 reglas-permiso-sin-efecto",
+      "id": "RF-07 regla-sin-efecto",
       "objetivo": "OE-3",
       "iteracion": 3,
       "obligatorioV2": false
     },
     {
-      "id": "RF-07 elementos-sin-uso",
+      "id": "RF-07 elemento-sin-uso",
       "objetivo": "OE-3",
       "iteracion": 3,
       "obligatorioV2": false
     },
     {
-      "id": "RF-07 sustituciones-sin-valor",
+      "id": "RF-07 sustitucion-sin-valor",
       "objetivo": "OE-3",
       "iteracion": 3,
       "obligatorioV2": false
     },
     {
-      "id": "RF-07 entradas-ilegibles",
+      "id": "RF-07 entrada-ilegible",
       "objetivo": "OE-3",
       "iteracion": 3,
       "obligatorioV2": false
     },
     {
-      "id": "RF-07 entradas-descartadas",
+      "id": "RF-07 entrada-descartada",
       "objetivo": "OE-3",
       "iteracion": 3,
       "obligatorioV2": false
@@ -225,6 +225,66 @@
     {
       "id": "RF-12 CA-2",
       "objetivo": "OE-1, OE-2 y OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RNF-05 CA-1",
+      "objetivo": "calidad",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RNF-05 CA-2",
+      "objetivo": "calidad",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-10 CA-1",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-10 CA-2",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-10 CA-3",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-11 CA-1",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RNF-08 CA-1",
+      "objetivo": "calidad",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RNF-08 CA-2",
+      "objetivo": "calidad",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-05 CA-1",
+      "objetivo": "OE-1",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RF-05 CA-2",
+      "objetivo": "OE-1",
       "iteracion": 3,
       "obligatorioV2": false
     }

@@ -3,12 +3,30 @@
 T2-14 agrega `escenarios/MANIFIESTO.json` y `COBERTURA.json` (ADR-080).
 Cada directorio figura con SHA-256 de todos sus archivos y de la referencia,
 agentes, claves, consultas y comprobaciones con archivo/`describe`/fuente.
-`arquitectura/manifiesto.test.ts` cubre M-1/M-2/M-3: mutación de un byte,
-inventario agregado, referencia alterada, eliminación de la comprobación de
-CA-7, cita inexistente y los seis tipos RF-07 pendientes. El defecto ADR-088
-queda declarado en `v2-ruta-bloqueo`, con control relativo y sin atribuirle
-detección RF-07 antes de la iteración 3. `corte: null` y `retiros: []` no
+`arquitectura/manifiesto.test.ts` cubre M-1/M-2 y T3-08 R-3/R-4: mutación
+de un byte, inventario agregado, referencia alterada, eliminación de una
+comprobación exigida, cita inexistente y forma del inventario de defectos.
+El manifiesto está en la iteración 3: todo ítem de esa iteración o anterior
+exige una comprobación, salvo `aplazados` explícitos. RNF-05 CA-1/CA-2
+se aplazan a T3-09; RF-10 CA-1..CA-3, RF-11 CA-1 y RNF-08 CA-1/CA-2,
+a T3-10. Solo los ítems de iteraciones futuras se informan como pendientes.
+`corte: null` y `retiros: []` no
 declaran resultados del corte ni del conjunto congelado.
+
+`defectosSembrados` es la única fuente de esperados de RF-07 CA-1
+(T3-08 R-1): se recorre todo escenario con referencia, incluidos los
+ilegibles inventariados, y se exige exactamente su conjunto de hallazgos.
+Cada defecto registra tipo, causa, localización, clave (nula para entradas
+ilegibles y descartadas), parámetros comprobables y control con evidencia
+del binario. Solo los tres colaterales heredados (`zeta`, `vacio` y la regla
+`h/read/privado/`) admiten control nulo. R-2 compara los SHA-256 de las
+entradas no declaradas en `control.cambios` y los controles relativos del v2.
+`v3-sin-efecto` y `v3-sin-uso` separan reglas tapadas y subagentes sin uso.
+Los controles `v3-control-*` conservan las entradas salvo el cambio declarado.
+Las capturas verifican cadenas, resúmenes de sustituciones, agentes con modo,
+comandos y decisiones nativas. R-5 comprueba el descarte de
+`OPENCODE_PERMISSION`: código 0, diagnóstico invisible y aviso en el registro
+de `hogar/opencode/log`, capturado sin `--print-logs`.
 
 `arquitectura/decisiones-nativas.test.ts` cubre O-1 a O-4 con un doble del
 binario solo en un subproceso: múltiples logs `evaluated`, comparación y

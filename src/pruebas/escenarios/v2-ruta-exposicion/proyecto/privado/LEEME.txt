@@ -1,1 +1,1 @@
-Escenario de directorio.
+Archivo privado de prueba.

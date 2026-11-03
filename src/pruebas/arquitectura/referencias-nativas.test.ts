@@ -45,6 +45,11 @@ describe("T3-03-c1 R-8", () => {
 });
 
 describe("T3-04 R-10 arnes", () => {
+  test("T3-08 guarda estricta: rechaza entorno capturado sin sustituidas y omite su contenido", () => {
+    const r = ejecutar({ entornoFiltrado: true, regenerar: true });
+    expect(r.codigo).toBe(1);
+    expect(r.salida + r.error).not.toContain("primary");
+  });
   test("T3-05 R-6: un nombre nativo en el entorno no es una fuga de contenido capturado", () => {
     const r = ejecutar({ entornoLiteral: true, regenerar: true });
     expect(r.codigo).toBe(0);
@@ -91,7 +96,7 @@ describe("T3-03 referencias de entradas", () => {
 function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
   diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
   agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean; posicion?: boolean;
-  sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean; entornoLiteral?: boolean } = {}) {
+  sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean; entornoLiteral?: boolean; entornoFiltrado?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
   try {
     mkdirSync(join(temporal, "opencode-ai/bin"), { recursive: true });
@@ -116,9 +121,9 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
           ref.procedencia.sustituidas = [["build", "description"], ["revisor", "prompt"]];
           writeFileSync(join(fuente, "pruebas/escenarios", nombre, "secreto.txt"), "MARCA-ARNES-7c913");
         }
-        if (opciones.entornoLiteral) {
+        if (opciones.entornoLiteral || opciones.entornoFiltrado) {
           ref.procedencia.entorno = { RIGE_PRUEBA_AGENTE: "agente.txt" };
-          writeFileSync(join(fuente, "pruebas/escenarios", nombre, "agente.txt"), "plan");
+          writeFileSync(join(fuente, "pruebas/escenarios", nombre, "agente.txt"), opciones.entornoFiltrado ? "primary" : "plan");
         }
         if (opciones.entradas) {
           ref.comandos = [];

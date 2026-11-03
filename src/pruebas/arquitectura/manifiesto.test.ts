@@ -75,29 +75,112 @@ describe("T2-14 M-2", () => {
   });
 });
 
-describe("T2-14 M-3", () => {
-  test("T3-05, T3-06 y T3-07 cubren los seis tipos de RF-07, CA-2..CA-5, RE-02, RE-03 y RF-12 CA-1..CA-2; el defecto ADR-088 queda pendiente hasta T3-08", () => {
+describe("T3-08 R-3", () => {
+  const tiposValidos = new Set([
+    "entrada-ilegible",
+    "entrada-descartada",
+    "sustitucion-sin-valor",
+    "referencia-no-resuelta",
+    "regla-sin-efecto",
+    "elemento-sin-uso",
+  ]);
+
+  test("forma del inventario defectosSembrados, tipo valido, control.escenario existente y sin campos obsoletos", () => {
     const manifiesto = leer();
-    const informe = informarCobertura(manifiesto, matriz()).items;
-    const rf07 = informe.filter(i => i.id.startsWith("RF-07 "));
-    expect(rf07).toHaveLength(10);
-    expect(rf07.every(i => i.estado === "cubierto")).toBe(true);
-    for (const id of ["RF-07 CA-3", "RF-07 CA-4", "RF-07 CA-5", "RE-02", "RE-03", "RF-12 CA-1", "RF-12 CA-2"]) {
-      expect(informe.find(i => i.id === id)).toMatchObject({ iteracion: 3, estado: "cubierto" });
+    expect(Array.isArray(manifiesto.defectosSembrados)).toBe(true);
+    expect(manifiesto.defectosSembrados.length).toBeGreaterThan(0);
+
+    const idsEscenarios = new Set(manifiesto.escenarios.map(e => e.id));
+
+    for (const d of manifiesto.defectosSembrados) {
+      expect(typeof d.id).toBe("string");
+      expect(d.id.length).toBeGreaterThan(0);
+      expect(idsEscenarios.has(d.escenario)).toBe(true);
+
+      // tipo valido en TipoHallazgo
+      expect(tiposValidos.has(d.tipo)).toBe(true);
+      expect(typeof d.causa).toBe("string");
+      expect(d.causa!.length).toBeGreaterThan(0);
+
+      // localizacion: { archivo, linea } o { variable }
+      expect(d.localizacion).toBeDefined();
+      if ("archivo" in d.localizacion) {
+        expect(typeof d.localizacion.archivo).toBe("string");
+        expect(typeof d.localizacion.linea).toBe("number");
+      } else if ("variable" in d.localizacion) {
+        expect(typeof d.localizacion.variable).toBe("string");
+      } else {
+        expect("localizacion invalida").toBe("archivo o variable");
+      }
+
+      // clave array o null para entradas sin clave interna
+      expect(d.clave === null || Array.isArray(d.clave)).toBe(true);
+
+      // control: null solo en los 3 colaterales heredados del v2
+      if (d.control === null) {
+        expect(["v2-agentes", "v2-subagente", "v2-ruta-exposicion"]).toContain(d.escenario);
+      } else {
+        expect(d.control).toBeDefined();
+        expect(idsEscenarios.has(d.control!.escenario)).toBe(true);
+        expect(Array.isArray(d.control!.cambios)).toBe(true);
+        expect(d.control!.cambios).not.toContain("REFERENCIA.json");
+        expect(typeof d.control!.evidencia).toBe("string");
+        expect(d.control!.evidencia.length).toBeGreaterThan(0);
+      }
+
+      // sin campos obsoletos (pendiente, hallazgoEsperado, controlCorrecto)
+      expect((d as unknown as Record<string, unknown>).pendiente).toBeUndefined();
+      expect((d as unknown as Record<string, unknown>).hallazgoEsperado).toBeUndefined();
+      expect((d as unknown as Record<string, unknown>).controlCorrecto).toBeUndefined();
     }
-    expect(manifiesto.defectosSembrados).toHaveLength(1);
-    expect(manifiesto.defectosSembrados[0]).toMatchObject({ escenario: "v2-ruta-bloqueo", tipo: "reglas-permiso-sin-efecto", pendiente: "RF-07, iteración 3" });
-    expect(manifiesto.defectosSembrados[0]!.controlCorrecto).toMatchObject({ patron: "src/productos.js" });
   });
-  test("RF-09 CA-3 queda cubierto por su escenario y aceptacion", () => {
-    expect(informarCobertura(leer(), matriz()).items.find(i => i.id === "RF-09 CA-3"))
-      .toMatchObject({ iteracion: 3, estado: "cubierto", escenarios: ["v3-proteccion-env"] });
+
+  test("coherencia de SHA-256 en todo el manifiesto", () => {
+    const errores = validarManifiesto(leer(), matriz(), escenarios, raiz);
+    const erroresSha = errores.filter(e => e.includes("SHA-256"));
+    expect(erroresSha).toEqual([]);
   });
-  test("solo los items futuros sin comprobaciones quedan pendientes", () => {
-    const manifiesto = { ...leer(), iteracion: 4 };
-    const items = [3, 4, 5, 6].map(iteracion => ({ id: `caso-${iteracion}`, iteracion, objetivo: "prueba", obligatorioV2: false }));
-    manifiesto.escenarios[0]!.comprobaciones.push({ item: "caso-6", archivo: "pruebas/aceptacion/RF-09.test.ts", describe: "RF-09 CA-3", fuente: "referencia-binario" });
-    expect(informarCobertura(manifiesto, { items }).items.map(i => i.estado))
-      .toEqual(["sin cobertura", "sin cobertura", "pendiente", "cubierto"]);
+});
+
+describe("T3-08 R-4", () => {
+  test("cobertura exigible en iteracion 3: iteracion en manifiesto, pendientes e informe", () => {
+    const manifiesto = leer();
+    expect(manifiesto.iteracion).toBe(3);
+
+    const matrizActual = matriz();
+    const informe = informarCobertura(manifiesto, matrizActual);
+
+    // Los criterios de iteracion 3 exigibles no aplazados deben estar cubiertos
+    const aplazados = manifiesto.aplazados ?? {};
+    expect(aplazados["RNF-05 CA-1"]).toBe("T3-09");
+    expect(aplazados["RNF-05 CA-2"]).toBe("T3-09");
+    expect(aplazados["RF-10 CA-1"]).toBe("T3-10");
+    expect(aplazados["RF-10 CA-2"]).toBe("T3-10");
+    expect(aplazados["RF-10 CA-3"]).toBe("T3-10");
+    expect(aplazados["RF-11 CA-1"]).toBe("T3-10");
+    expect(aplazados["RNF-08 CA-1"]).toBe("T3-10");
+    expect(aplazados["RNF-08 CA-2"]).toBe("T3-10");
+
+    // informarCobertura marca "pendiente" solo cuando item.iteracion > manifiesto.iteracion
+    for (const item of informe.items) {
+      if (item.iteracion > manifiesto.iteracion) {
+        expect(item.estado).toBe("pendiente");
+      }
+    }
+
+    // validarManifiesto no debe dar errores hoy con los aplazados
+    const errores = validarManifiesto(manifiesto, matrizActual, escenarios, raiz);
+    const erroresCobertura = errores.filter(e => e.includes("sin comprobacion") || e.includes("sin cobertura"));
+    expect(erroresCobertura).toEqual([]);
+  });
+
+  test("quitar una comprobacion exigida no aplazada de la iteracion 3 produce error en validarManifiesto", () => {
+    const manifiestoModificado = JSON.parse(JSON.stringify(leer())) as Manifiesto;
+    // Quitar la comprobacion de RF-04 CA-1
+    for (const esc of manifiestoModificado.escenarios) {
+      esc.comprobaciones = esc.comprobaciones.filter(c => c.item !== "RF-04 CA-1");
+    }
+    const errores = validarManifiesto(manifiestoModificado, matriz(), escenarios, raiz);
+    expect(errores.some(e => e.includes("RF-04 CA-1"))).toBe(true);
   });
 });

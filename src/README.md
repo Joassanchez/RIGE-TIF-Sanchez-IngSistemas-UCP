@@ -1068,3 +1068,33 @@ bun run verificar
 La variante con `--timeout 30000` permite completar la prueba exhaustiva de
 patrones en equipos donde supera el límite predeterminado de cinco segundos;
 mantiene todas sus comprobaciones.
+
+T3-08 registra los seis tipos de RF-07 y sus controles nativos en el
+manifiesto de la iteración 3. El inventario, la cobertura exigible y los
+aplazados están documentados en `pruebas/README.md`. Para reproducir:
+
+En `v3-sin-efecto` y su control, la regla relativa adicional
+`read src/b.js → allow` mantiene ofrecida `read` en OpenCode 1.18.25.
+La consulta nativa sobre `src/a.js` registra `deny` en el defecto y `allow`
+en el control; solo cambia el orden de la regla de `src/a.js` respecto de `*`.
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-t308-almacen'
+bun test pruebas/aceptacion/RF-07.test.ts pruebas/arquitectura/manifiesto.test.ts
+bun test pruebas/arquitectura/referencias-nativas.test.ts pruebas/utilidades/decision-nativa.test.ts
+bun run referencias --raiz (npm.cmd root -g) --regenerar --escenario v3-sin-efecto --escenario v3-sin-uso --escenario v3-control-permiso --escenario v3-control-sustituciones --escenario v3-control-referencias --escenario v3-control-sin-efecto --escenario v3-control-sin-uso --escenario v3-permiso-invalido --escenario v3-referencias --escenario v2-ruta-exposicion
+bun ./herramientas/decisiones-nativas.ts --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP 'rige-t308-decisiones-cache') --regenerar
+bun run referencias --raiz (npm.cmd root -g)
+bun run decisiones --raiz (npm.cmd root -g) --cache (Join-Path $env:TEMP 'rige-t308-decisiones-cache')
+bun run cobertura
+bun test
+bun run verificar
+```
+
+La regeneración de decisiones recorre todas las consultas; antes de actualizar
+los SHA-256 se comprueba que las referencias heredadas solo cambien en
+`v2-ruta-exposicion`, `v3-permiso-invalido` y `v3-referencias`. Las otras
+capturas de T3-08 corresponden a escenarios nuevos. La captura opcional
+`registro` lee los archivos de `hogar/opencode/log` tras invocar el binario sin
+`--print-logs`; no expone su contenido. La guarda de sustituciones rechaza
+cualquier valor de `procedencia.entorno` en la captura, salvo nombres nativos.

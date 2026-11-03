@@ -11,7 +11,7 @@
     },
     "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
     "binario": "opencode-windows-x64@1.18.25",
-    "fecha": "2026-10-25",
+    "fecha": "2026-11-03",
     "comando": "opencode debug agent <agente>",
     "criterio": "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
     "aislamiento": "Modo Git: proyecto; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. Sin flags que deshabiliten skills. Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE."
@@ -106,7 +106,8 @@
       ],
       "objetivos": [
         "config/credenciales.json",
-        "privado"
+        "privado",
+        "privado/LEEME.txt"
       ],
       "decision": "allow",
       "regla": {
@@ -150,6 +151,128 @@
         "efecto": "deny"
       },
       "procedencia": "RF-02 CA-9 y ADR-088; verificación del binario en captura-binario-20261014.txt"
+    },
+    {
+      "id": "h",
+      "agente": "h",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "privado/LEEME.txt"
+      ],
+      "decision": "deny",
+      "regla": {
+        "sujeto": "read",
+        "patron": "privado/*",
+        "efecto": "deny"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; T3-08: contraste decisionesNativas con OpenCode 1.18.25"
+    },
+    {
+      "id": "control_g",
+      "agente": "control_g",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "config/credenciales.json"
+      ],
+      "decision": "deny",
+      "regla": {
+        "sujeto": "read",
+        "patron": "config/credenciales.json",
+        "efecto": "deny"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; T3-08: contraste decisionesNativas con OpenCode 1.18.25"
+    },
+    {
+      "id": "control_g",
+      "agente": "control_g",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "privado"
+      ],
+      "decision": "deny",
+      "regla": {
+        "sujeto": "read",
+        "patron": "privado",
+        "efecto": "deny"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; T3-08: contraste decisionesNativas con OpenCode 1.18.25"
+    },
+    {
+      "id": "control_g",
+      "agente": "control_g",
+      "herramientas": [
+        "read"
+      ],
+      "objetivos": [
+        "privado/LEEME.txt"
+      ],
+      "decision": "deny",
+      "regla": {
+        "sujeto": "read",
+        "patron": "privado/*",
+        "efecto": "deny"
+      },
+      "procedencia": "RF-02 CA-9 y ADR-088; T3-08: contraste decisionesNativas con OpenCode 1.18.25"
+    },
+    {
+      "id": "g-leeme",
+      "agente": "g",
+      "herramientas": [
+        "edit"
+      ],
+      "objetivos": [
+        "privado/LEEME.txt"
+      ],
+      "decision": "allow",
+      "regla": {
+        "sujeto": "*",
+        "patron": "*",
+        "efecto": "allow"
+      },
+      "origen": "nativo",
+      "procedencia": "T3-08: contraste decisionesNativas con OpenCode 1.18.25; consulta g-leeme"
+    },
+    {
+      "id": "h-leeme",
+      "agente": "h",
+      "herramientas": [
+        "edit"
+      ],
+      "objetivos": [
+        "privado/LEEME.txt"
+      ],
+      "decision": "allow",
+      "regla": {
+        "sujeto": "*",
+        "patron": "*",
+        "efecto": "allow"
+      },
+      "origen": "nativo",
+      "procedencia": "T3-08: contraste decisionesNativas con OpenCode 1.18.25; consulta h-leeme"
+    },
+    {
+      "id": "control_g-leeme",
+      "agente": "control_g",
+      "herramientas": [
+        "edit"
+      ],
+      "objetivos": [
+        "privado/LEEME.txt"
+      ],
+      "decision": "allow",
+      "regla": {
+        "sujeto": "*",
+        "patron": "*",
+        "efecto": "allow"
+      },
+      "origen": "nativo",
+      "procedencia": "T3-08: contraste decisionesNativas con OpenCode 1.18.25; consulta control_g-leeme"
     }
   ],
   "valoresAgentes": {
@@ -242,7 +365,7 @@
         ],
         "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
         "version": "1.18.25",
-        "fecha": "2026-10-25T12:39:31.133Z",
+        "fecha": "2026-11-03T17:00:14.244Z",
         "plataforma": "win32-x64"
       }
     },
@@ -274,7 +397,7 @@
         ],
         "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
         "version": "1.18.25",
-        "fecha": "2026-10-25T12:39:35.932Z",
+        "fecha": "2026-11-03T17:00:24.133Z",
         "plataforma": "win32-x64"
       }
     },
@@ -306,7 +429,7 @@
         ],
         "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
         "version": "1.18.25",
-        "fecha": "2026-10-25T12:39:40.798Z",
+        "fecha": "2026-11-03T17:00:33.343Z",
         "plataforma": "win32-x64"
       }
     },
@@ -338,7 +461,327 @@
         ],
         "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
         "version": "1.18.25",
-        "fecha": "2026-10-25T12:39:45.674Z",
+        "fecha": "2026-11-03T17:00:42.736Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "g-leeme",
+      "agente": "g",
+      "sujeto": "edit",
+      "objetivo": "privado/LEEME.txt",
+      "herramienta": "edit",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "privado\\LEEME.txt",
+          "regla": {
+            "permission": "*",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:00:53.189Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "h-leeme",
+      "agente": "h",
+      "sujeto": "edit",
+      "objetivo": "privado/LEEME.txt",
+      "herramienta": "edit",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "privado\\LEEME.txt",
+          "regla": {
+            "permission": "*",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "h",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:01:03.322Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "control_g-leeme",
+      "agente": "control_g",
+      "sujeto": "edit",
+      "objetivo": "privado/LEEME.txt",
+      "herramienta": "edit",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "privado\\LEEME.txt",
+          "regla": {
+            "permission": "*",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "control_g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:01:12.719Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "control_g-config/credenciales.json",
+      "agente": "control_g",
+      "sujeto": "read",
+      "objetivo": "config/credenciales.json",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "config\\credenciales.json",
+          "regla": {
+            "permission": "read",
+            "pattern": "config/credenciales.json",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "control_g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:01:21.947Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "control_g-privado",
+      "agente": "control_g",
+      "sujeto": "read",
+      "objetivo": "privado",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "privado",
+          "regla": {
+            "permission": "read",
+            "pattern": "privado",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "control_g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:01:31.341Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "g-read-privado/LEEME.txt",
+      "agente": "g",
+      "sujeto": "read",
+      "objetivo": "privado/LEEME.txt",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "privado\\LEEME.txt",
+          "regla": {
+            "permission": "read",
+            "pattern": "*",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:01:40.558Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "h-read-privado/LEEME.txt",
+      "agente": "h",
+      "sujeto": "read",
+      "objetivo": "privado/LEEME.txt",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "privado\\LEEME.txt",
+          "regla": {
+            "permission": "read",
+            "pattern": "privado/*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "h",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:01:49.603Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "control_g-read-config/credenciales.json",
+      "agente": "control_g",
+      "sujeto": "read",
+      "objetivo": "config/credenciales.json",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "config\\credenciales.json",
+          "regla": {
+            "permission": "read",
+            "pattern": "config/credenciales.json",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "control_g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:01:59.141Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "control_g-read-privado",
+      "agente": "control_g",
+      "sujeto": "read",
+      "objetivo": "privado",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "privado",
+          "regla": {
+            "permission": "read",
+            "pattern": "privado",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "control_g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:02:08.417Z",
+        "plataforma": "win32-x64"
+      }
+    },
+    {
+      "consulta": "control_g-read-privado/LEEME.txt",
+      "agente": "control_g",
+      "sujeto": "read",
+      "objetivo": "privado/LEEME.txt",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "privado\\LEEME.txt",
+          "regla": {
+            "permission": "read",
+            "pattern": "privado/*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "control_g",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-03T17:02:17.791Z",
         "plataforma": "win32-x64"
       }
     }

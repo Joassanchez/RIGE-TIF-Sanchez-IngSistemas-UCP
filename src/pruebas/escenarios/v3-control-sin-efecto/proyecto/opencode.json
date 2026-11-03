@@ -1,0 +1,9 @@
+{
+  "permission": {
+    "read": {
+      "*": "deny",
+      "src/a.js": "allow",
+      "src/b.js": "allow"
+    }
+  }
+}

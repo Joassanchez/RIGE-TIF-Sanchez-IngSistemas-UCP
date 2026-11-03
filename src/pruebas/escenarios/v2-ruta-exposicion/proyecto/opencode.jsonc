@@ -20,6 +20,16 @@
         },
         "list": "deny"
       }
+    },
+    "control_g": {
+      "permission": {
+        "read": {
+          "config/credenciales.json": "deny",
+          "privado": "deny",
+          "privado/*": "deny"
+        },
+        "list": "deny"
+      }
     }
   }
 }

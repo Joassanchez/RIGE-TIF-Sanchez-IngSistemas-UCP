@@ -1,0 +1,7 @@
+{
+  "agent": {
+    "plan": {
+      "description": "{env:RIGE_PRUEBA_CONTENIDO}"
+    }
+  }
+}

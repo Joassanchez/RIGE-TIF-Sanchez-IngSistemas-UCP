@@ -1,0 +1,27 @@
+{
+  "default_agent": "revisor",
+  "agent": {
+    "inactivo": {
+      "description": "Agente deshabilitado",
+      "disable": true
+    }
+  },
+  "command": {
+    "saludo": {
+      "template": "Saluda",
+      "agent": "plan"
+    },
+    "ok": {
+      "template": "Planea",
+      "agent": "plan"
+    },
+    "vacio": {
+      "template": "Continua",
+      "agent": ""
+    },
+    "x": {
+      "template": "Continua",
+      "agent": "{env:RIGE_PRUEBA_AGENTE}"
+    }
+  }
+}

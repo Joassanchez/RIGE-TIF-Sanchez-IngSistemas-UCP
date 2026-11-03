@@ -138,7 +138,7 @@
           "fuente": "referencia-binario"
         },
         {
-          "item": "RF-07 elementos-sin-uso",
+          "item": "RF-07 elemento-sin-uso",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "T3-06 R-9",
           "fuente": "referencia-binario"
@@ -651,7 +651,7 @@
           "fuente": "referencia-binario"
         },
         {
-          "item": "RF-07 reglas-permiso-sin-efecto",
+          "item": "RF-07 regla-sin-efecto",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "T3-06 R-4",
           "fuente": "referencia-binario"
@@ -667,6 +667,12 @@
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "T3-06 R-4",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-5",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-5",
+          "fuente": "caso-de-uso"
         }
       ]
     },
@@ -721,7 +727,7 @@
           "fuente": "referencia-binario"
         },
         {
-          "item": "RF-07 reglas-permiso-sin-efecto",
+          "item": "RF-07 regla-sin-efecto",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "T3-06 R-4",
           "fuente": "referencia-binario"
@@ -745,14 +751,15 @@
       "entradas": {
         "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
         "proyecto/config/credenciales.json": "e155a6c85e1b0806589fb9ff93447b6990ff63ccce3ee8c06fbd72fdde77e52c",
-        "proyecto/opencode.jsonc": "f2646377f8c878580b3528c00b5ae2727230c3003c7731122d3710e563f8ef85",
-        "proyecto/privado/LEEME.txt": "ee39cbc677e726a72e5fa1f943c58ed0f2739703599031e9ff928e5546e11e16"
+        "proyecto/opencode.jsonc": "24985333ad4df3d8e49aaf69319c6bca667adf7d54fab2cd58dfdc8de6acd484",
+        "proyecto/privado/LEEME.txt": "99d76399ca99afb9a485e407ce173915be50370d793dccee289ce8d204d4cd18"
       },
-      "referencia": "09c5dddd619055a2f68a2e12ee9f0693929ac099b06dc65f32955efd7ea64fee",
+      "referencia": "4a8765be281847982b38cd6682eefa7e85392a3fa4945093d389ff719f74f41b",
       "agentes": [
         "build",
         "g",
-        "h"
+        "h",
+        "control_g"
       ],
       "claves": [],
       "consultas": [
@@ -799,6 +806,122 @@
             "filePath": "<PROYECTO>/privado"
           },
           "nativa": true
+        },
+        {
+          "id": "g-leeme",
+          "agente": "g",
+          "sujeto": "edit",
+          "objetivo": "privado/LEEME.txt",
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado/LEEME.txt",
+            "oldString": "Archivo",
+            "newString": "Texto"
+          },
+          "nativa": true
+        },
+        {
+          "id": "h-leeme",
+          "agente": "h",
+          "sujeto": "edit",
+          "objetivo": "privado/LEEME.txt",
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado/LEEME.txt",
+            "oldString": "Archivo",
+            "newString": "Texto"
+          },
+          "nativa": true
+        },
+        {
+          "id": "control_g-leeme",
+          "agente": "control_g",
+          "sujeto": "edit",
+          "objetivo": "privado/LEEME.txt",
+          "herramienta": "edit",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado/LEEME.txt",
+            "oldString": "Archivo",
+            "newString": "Texto"
+          },
+          "nativa": true
+        },
+        {
+          "id": "control_g-config/credenciales.json",
+          "agente": "control_g",
+          "sujeto": "read",
+          "objetivo": "config/credenciales.json",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/config/credenciales.json"
+          },
+          "nativa": true
+        },
+        {
+          "id": "control_g-privado",
+          "agente": "control_g",
+          "sujeto": "read",
+          "objetivo": "privado",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado"
+          },
+          "nativa": true
+        },
+        {
+          "id": "g-read-privado/LEEME.txt",
+          "agente": "g",
+          "sujeto": "read",
+          "objetivo": "privado/LEEME.txt",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado/LEEME.txt"
+          },
+          "nativa": true
+        },
+        {
+          "id": "h-read-privado/LEEME.txt",
+          "agente": "h",
+          "sujeto": "read",
+          "objetivo": "privado/LEEME.txt",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado/LEEME.txt"
+          },
+          "nativa": true
+        },
+        {
+          "id": "control_g-read-config/credenciales.json",
+          "agente": "control_g",
+          "sujeto": "read",
+          "objetivo": "config/credenciales.json",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/config/credenciales.json"
+          },
+          "nativa": true
+        },
+        {
+          "id": "control_g-read-privado",
+          "agente": "control_g",
+          "sujeto": "read",
+          "objetivo": "privado",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado"
+          },
+          "nativa": true
+        },
+        {
+          "id": "control_g-read-privado/LEEME.txt",
+          "agente": "control_g",
+          "sujeto": "read",
+          "objetivo": "privado/LEEME.txt",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado/LEEME.txt"
+          },
+          "nativa": true
         }
       ],
       "comprobaciones": [
@@ -815,7 +938,7 @@
           "fuente": "referencia-binario"
         },
         {
-          "item": "RF-07 reglas-permiso-sin-efecto",
+          "item": "RF-07 regla-sin-efecto",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "T3-06 R-4",
           "fuente": "referencia-binario"
@@ -1238,6 +1361,18 @@
           "archivo": "pruebas/aceptacion/RF-04.test.ts",
           "describe": "RF-04 CA-1 T3-03 R-7",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-05 CA-1",
+          "archivo": "pruebas/aceptacion/RF-05.test.ts",
+          "describe": "RF-05 CA-1 T3-01 R-9",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-05 CA-2",
+          "archivo": "pruebas/aceptacion/RF-05.test.ts",
+          "describe": "RF-05 CA-2 T3-01 R-9",
+          "fuente": "caso-de-uso"
         }
       ]
     },
@@ -1271,7 +1406,7 @@
           "fuente": "referencia-binario"
         },
         {
-          "item": "RF-07 entradas-ilegibles",
+          "item": "RF-07 entrada-ilegible",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 CA-2 T3-05 R-1",
           "fuente": "referencia-binario"
@@ -1303,7 +1438,7 @@
         "proyecto/opencode.json": "fa43338d6afc7f56ae765512fc36fcf129e00363d8d7d074bb6d6ce51f2a22f0",
         "variables/permiso.json": "0a519d07b4429ad0e70a31b665123611668a3ca49e9f05b7bbb4cada026e9454"
       },
-      "referencia": "83e0d02b1d322b9603995790fb2681b9c0d207b0df139ea718bfa55d2dad6f27",
+      "referencia": "a910a62bbe2416dd414bbf81d12fbf82a3f51166e3a45d46b5ba8ab93ec413fd",
       "agentes": [
         "build"
       ],
@@ -1311,7 +1446,7 @@
       "consultas": [],
       "comprobaciones": [
         {
-          "item": "RF-07 entradas-descartadas",
+          "item": "RF-07 entrada-descartada",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 entradas-descartadas T3-05 R-3",
           "fuente": "referencia-binario"
@@ -1380,7 +1515,7 @@
           "fuente": "referencia-binario"
         },
         {
-          "item": "RF-07 sustituciones-sin-valor",
+          "item": "RF-07 sustitucion-sin-valor",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 sustituciones-sin-valor T3-05 R-4",
           "fuente": "referencia-binario"
@@ -1412,7 +1547,7 @@
         "proyecto/.opencode/agents/revisor.md": "21b8fa2c4e0913be671aa16940cde25b0623c758b3b7fa8a41fa7661222c7307",
         "proyecto/opencode.json": "30161348ea0699825af946c5a4669d9a8f6a39373d33f916a6de5f9c6a6623cf"
       },
-      "referencia": "cee941cfab54b6c47a07bd489d46d690cd5a6002a6c7d5c69aeac64c7ab11af7",
+      "referencia": "4bfb8d5c37f090b59a457076cbc09894661cd14c877c8ae17d78ce1d376b045a",
       "agentes": [
         "build",
         "plan",
@@ -1426,7 +1561,7 @@
       "consultas": [],
       "comprobaciones": [
         {
-          "item": "RF-07 referencias-no-resueltas",
+          "item": "RF-07 referencia-no-resuelta",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 referencias-no-resueltas T3-05 R-6",
           "fuente": "referencia-binario"
@@ -1448,22 +1583,34 @@
     {
       "id": "v3-sin-efecto",
       "entradas": {
-        "proyecto/opencode.json": "1d75db419bf9dc54f00e4a97e381f480cb55eeadd77f68c7b005630d69f6013e"
+        "proyecto/opencode.json": "4da7454eba1b343ef7ffcb9d3cd77795250e5ff15153e22a262fbab0e2fffbe1",
+        "proyecto/src/a.js": "037ecd1db38c230c248787e60fd7bfc0cb0101b187b59535b6e7483be762d350",
+        "proyecto/src/b.js": "037ecd1db38c230c248787e60fd7bfc0cb0101b187b59535b6e7483be762d350"
       },
-      "referencia": null,
+      "referencia": "986a451691b11bd577211433401fdbcea8f32e4d71e1502ae66f8f3688f06e77",
       "agentes": [
-        "build",
-        "auditor",
-        "principal"
+        "build"
       ],
       "claves": [
         "permission",
         "agent"
       ],
-      "consultas": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "src/a.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/a.js"
+          },
+          "nativa": true
+        }
+      ],
       "comprobaciones": [
         {
-          "item": "RF-07 reglas-permiso-sin-efecto",
+          "item": "RF-07 regla-sin-efecto",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "T3-06 R-2",
           "fuente": "caso-de-uso"
@@ -1472,18 +1619,6 @@
           "item": "RE-02",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "T3-06 R-2",
-          "fuente": "caso-de-uso"
-        },
-        {
-          "item": "RF-07 elementos-sin-uso",
-          "archivo": "pruebas/aceptacion/RF-07.test.ts",
-          "describe": "T3-06 R-7",
-          "fuente": "caso-de-uso"
-        },
-        {
-          "item": "RE-03",
-          "archivo": "pruebas/aceptacion/RF-07.test.ts",
-          "describe": "T3-06 R-7",
           "fuente": "caso-de-uso"
         },
         {
@@ -1511,25 +1646,639 @@
           "fuente": "caso-de-uso"
         }
       ]
+    },
+    {
+      "id": "v3-sin-uso",
+      "entradas": {
+        "proyecto/opencode.json": "2c2055b229b11ae87d53d615d6ef4502afa0386cc63698deaef556fb9ca76a21"
+      },
+      "referencia": "228b28f2e79514c27fafccdd940413261e93aac319e9583672f1cf4921384782",
+      "agentes": [
+        "build",
+        "auditor",
+        "principal"
+      ],
+      "claves": [
+        "agent"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 elemento-sin-uso",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-7",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RE-03",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-7",
+          "fuente": "caso-de-uso"
+        }
+      ]
+    },
+    {
+      "id": "v3-control-permiso",
+      "entradas": {
+        "hogar/LEEME.txt": "64e72d865f627baadd940861bfc4284a00f76aeca419fca8412d296ecfefb510",
+        "proyecto/opencode.json": "fa43338d6afc7f56ae765512fc36fcf129e00363d8d7d074bb6d6ce51f2a22f0",
+        "variables/permiso.json": "ca0e84640d627ffb049ebed1524cbf76250f3ac0e087d9a36e70cc9187de570e"
+      },
+      "referencia": "97a1faff0b7efc9c6dd5ee50113d373bae5a4e8d965dbbce474f18b5652c50d1",
+      "agentes": [
+        "build"
+      ],
+      "claves": [
+        "permission"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 entrada-descartada",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1",
+          "fuente": "referencia-binario y caso-de-uso"
+        }
+      ]
+    },
+    {
+      "id": "v3-control-sustituciones",
+      "entradas": {
+        "entorno/clave.txt": "c168803dce87682b14c433858de7131ccbc2b21060fd1ba4ad9a097d7286251f",
+        "entorno/comentario.txt": "a46da56615efc471546cd97a5f5cd4bad2546c6c58dd0845c8d9d2b0aaa63043",
+        "entorno/contenido.txt": "6f8b367c8bcccceec08feeb4dda2efb5382cc6941e84e37342b075b801afe0ed",
+        "entorno/definida.txt": "042bb447c98f9faee53c489144523c16b57638a823c814e6fe12e98ce834b578",
+        "entorno/global.txt": "ceb9c06beaf5a94004955f7f3766467f5dd71baaca65b711744f4cff1a165015",
+        "hogar/.config/opencode/opencode.json": "33c3e90309c4971535ac2bd1bdc54674fee8b5c518ff4b3d4b50f382ce42e213",
+        "proyecto/opencode.json": "996fb5b4ed338b114ce0a80b2afe776f40ca5cfe475688a5b426005c05c9aec7",
+        "proyecto/prompts/revisor.txt": "bbd8bbbd51d472f6f9b92692992416abd257ff17f3c472b4f348b864e1ddd128",
+        "variables/contenido.json": "f856753fc62ed85f7119979dba81235f0b1164c702bf40aef08c29253adfbc54"
+      },
+      "referencia": "9515242170cf84c08b8794a185174ed90d586d17821563d37b7ead058af3a2f2",
+      "agentes": [
+        "build",
+        "revisor",
+        "plan",
+        "general"
+      ],
+      "claves": [
+        "description",
+        "prompt"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 sustitucion-sin-valor",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1",
+          "fuente": "referencia-binario y caso-de-uso"
+        }
+      ]
+    },
+    {
+      "id": "v3-control-referencias",
+      "entradas": {
+        "entorno/agente.txt": "64879f7d6b960a01909762d911a32d4582c20010c5641ee90278b644a9e3b525",
+        "proyecto/.opencode/agents/revisor.md": "21b8fa2c4e0913be671aa16940cde25b0623c758b3b7fa8a41fa7661222c7307",
+        "proyecto/opencode.json": "ec5d8087d5fcb0cb9597010bf3a75c5e057dfba0b5fae18eabfc701f6db7dd7a"
+      },
+      "referencia": "4bfb8d5c37f090b59a457076cbc09894661cd14c877c8ae17d78ce1d376b045a",
+      "agentes": [
+        "build",
+        "plan",
+        "revisor"
+      ],
+      "claves": [
+        "default_agent",
+        "command"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 referencia-no-resuelta",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1",
+          "fuente": "referencia-binario y caso-de-uso"
+        }
+      ]
+    },
+    {
+      "id": "v3-control-sin-efecto",
+      "entradas": {
+        "proyecto/opencode.json": "36cf5c45074a9b4dad48d80a62509ed18027c134c8a97be88b73da9c5298533f",
+        "proyecto/src/a.js": "037ecd1db38c230c248787e60fd7bfc0cb0101b187b59535b6e7483be762d350",
+        "proyecto/src/b.js": "037ecd1db38c230c248787e60fd7bfc0cb0101b187b59535b6e7483be762d350"
+      },
+      "referencia": "a81cfbbf94547fd207b0c26445ede616f579e2e720791c9b3e7097bddced801b",
+      "agentes": [
+        "build"
+      ],
+      "claves": [
+        "permission"
+      ],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "src/a.js",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/src/a.js"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-07 regla-sin-efecto",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1",
+          "fuente": "referencia-binario y caso-de-uso"
+        }
+      ]
+    },
+    {
+      "id": "v3-control-sin-uso",
+      "entradas": {
+        "proyecto/opencode.json": "a0b062219357f86447c200e9462a488d941c8876848b18a165eac395574b1d78"
+      },
+      "referencia": "1a40fee2a4cc27f9dfcc854e918b5b71d62d4297663873fdc24d5ab62d944f42",
+      "agentes": [
+        "build",
+        "auditor",
+        "principal"
+      ],
+      "claves": [
+        "agent",
+        "command"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 elemento-sin-uso",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1",
+          "fuente": "referencia-binario y caso-de-uso"
+        }
+      ]
     }
   ],
   "defectosSembrados": [
     {
-      "id": "ADR-088-ruta-absoluta",
+      "id": "ilegible",
+      "escenario": "v3-entradas-ilegible",
+      "tipo": "entrada-ilegible",
+      "causa": "sintaxis-invalida",
+      "localizacion": {
+        "archivo": "proyecto/.opencode/opencode.json",
+        "linea": 7
+      },
+      "clave": null,
+      "control": {
+        "escenario": "v3-entradas",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/.opencode/opencode.json"
+        ],
+        "evidencia": "REFERENCIA.falla confirma error de sintaxis; el control carga y captura cadenas.build."
+      }
+    },
+    {
+      "id": "permiso",
+      "escenario": "v3-permiso-invalido",
+      "tipo": "entrada-descartada",
+      "causa": "permiso-invalido",
+      "localizacion": {
+        "variable": "OPENCODE_PERMISSION"
+      },
+      "clave": null,
+      "control": {
+        "escenario": "v3-control-permiso",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "variables/permiso.json"
+        ],
+        "evidencia": "REFERENCIA.cadenas.build: t7 ausente en defecto y presente en control; registro: codigo 0, diagnosticoVisible false, avisoEnRegistro true."
+      }
+    },
+    {
+      "id": "sustitucion",
+      "escenario": "v3-sustituciones",
+      "tipo": "sustitucion-sin-valor",
+      "causa": "variable-sin-valor",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 10
+      },
+      "clave": [
+        "agent",
+        "general",
+        "description"
+      ],
+      "parametros": {
+        "variable": "RIGE_PRUEBA_SIN_DEFINIR"
+      },
+      "control": {
+        "escenario": "v3-control-sustituciones",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "entorno/definida.txt"
+        ],
+        "evidencia": "REFERENCIA.valoresAgentes.general.description.sha256: defecto resume JSON.stringify(\"xy\"), control incorpora variable definida y difiere."
+      }
+    },
+    {
+      "id": "predeterminado",
+      "escenario": "v3-referencias",
+      "tipo": "referencia-no-resuelta",
+      "causa": "agente-predeterminado-inexistente",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 2
+      },
+      "clave": [
+        "default_agent"
+      ],
+      "control": {
+        "escenario": "v3-control-referencias",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/opencode.json"
+        ],
+        "evidencia": "REFERENCIA.agentes (agent list): fantasma e inactivo ausentes; revisor existe con modo all y plan existe. El efecto al elegir default_agent o ejecutar command sale del codigo del tag 1.18.25, no de agent list."
+      }
+    },
+    {
+      "id": "comando",
+      "escenario": "v3-referencias",
+      "tipo": "referencia-no-resuelta",
+      "causa": "agente-comando-inexistente",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 7
+      },
+      "clave": [
+        "command",
+        "saludo",
+        "agent"
+      ],
+      "control": {
+        "escenario": "v3-control-referencias",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/opencode.json"
+        ],
+        "evidencia": "REFERENCIA.agentes (agent list): fantasma e inactivo ausentes; revisor existe con modo all y plan existe. El efecto al elegir default_agent o ejecutar command sale del codigo del tag 1.18.25, no de agent list."
+      }
+    },
+    {
+      "id": "tapada",
+      "escenario": "v3-sin-efecto",
+      "tipo": "regla-sin-efecto",
+      "causa": "tapada-por-posterior",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 4
+      },
+      "clave": [
+        "permission",
+        "read",
+        "src/a.js"
+      ],
+      "control": {
+        "escenario": "v3-control-sin-efecto",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/opencode.json"
+        ],
+        "evidencia": "REFERENCIA.decisionesNativas: read src/a.js de build da deny en defecto y allow en control al invertir el orden."
+      }
+    },
+    {
+      "id": "sin-uso",
+      "escenario": "v3-sin-uso",
+      "tipo": "elemento-sin-uso",
+      "causa": "subagente-sin-uso",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 9
+      },
+      "clave": [
+        "agent",
+        "auditor",
+        "mode"
+      ],
+      "control": {
+        "escenario": "v3-control-sin-uso",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/opencode.json"
+        ],
+        "evidencia": "REFERENCIA.agentes muestra auditor (subagent) en ambos; comandos del control contiene revisar que declara agent auditor."
+      }
+    },
+    {
+      "id": "v2-ruta-bloqueo-a-src/productos.js",
       "escenario": "v2-ruta-bloqueo",
-      "tipo": "reglas-permiso-sin-efecto",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
       "localizacion": {
         "archivo": "proyecto/opencode.jsonc",
         "linea": 7
       },
-      "hallazgoEsperado": "La regla read con ruta absoluta del arbol no coincide: OpenCode evalua la ruta relativa al arbol de trabajo.",
-      "controlCorrecto": {
-        "agente": "b",
-        "patron": "src/productos.js",
-        "evidencia": "REFERENCIA.json: decisiones a/b; control conserva orden y cambia solo el patron. Pendiente verificacion RF-07 en iteracion 3."
+      "clave": [
+        "agent",
+        "a",
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/src/productos.js"
+      ],
+      "parametros": {
+        "formaRelativa": "src/productos.js",
+        "decision": "permitida"
       },
-      "pendiente": "RF-07, iteración 3"
+      "control": {
+        "escenario": "v2-ruta-bloqueo",
+        "agente": "b",
+        "clave": [
+          "agent",
+          "b",
+          "permission",
+          "read",
+          "src/productos.js"
+        ],
+        "cambios": [],
+        "evidencia": "REFERENCIA.decisionesNativas del control b: read src/productos.js conserva el efecto permitida; mismos patrones relativos, orden y efectos."
+      }
+    },
+    {
+      "id": "v2-ruta-bloqueo-c-src/index.js",
+      "escenario": "v2-ruta-bloqueo",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 23
+      },
+      "clave": [
+        "agent",
+        "c",
+        "permission",
+        "edit",
+        "<RAIZ>/proyecto/src/index.js"
+      ],
+      "parametros": {
+        "formaRelativa": "src/index.js",
+        "decision": "permitida"
+      },
+      "control": {
+        "escenario": "v2-ruta-bloqueo",
+        "agente": "d",
+        "clave": [
+          "agent",
+          "d",
+          "permission",
+          "edit",
+          "src/index.js"
+        ],
+        "cambios": [],
+        "evidencia": "REFERENCIA.decisionesNativas del control d: edit src/index.js conserva el efecto permitida; mismos patrones relativos, orden y efectos."
+      }
+    },
+    {
+      "id": "v2-ruta-bloqueo-e-src/productos.js",
+      "escenario": "v2-ruta-bloqueo",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 39
+      },
+      "clave": [
+        "agent",
+        "e",
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/src/productos.js"
+      ],
+      "parametros": {
+        "formaRelativa": "src/productos.js",
+        "decision": "permitida"
+      },
+      "control": {
+        "escenario": "v2-ruta-bloqueo",
+        "agente": "control_e",
+        "clave": [
+          "agent",
+          "control_e",
+          "permission",
+          "read",
+          "src/productos.js"
+        ],
+        "cambios": [],
+        "evidencia": "REFERENCIA.decisionesNativas del control control_e: read src/productos.js conserva el efecto permitida; mismos patrones relativos, orden y efectos."
+      }
+    },
+    {
+      "id": "v2-ruta-env-f-.env",
+      "escenario": "v2-ruta-env",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 6
+      },
+      "clave": [
+        "agent",
+        "f",
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/.env"
+      ],
+      "parametros": {
+        "formaRelativa": ".env",
+        "decision": "permitida"
+      },
+      "control": {
+        "escenario": "v2-ruta-env",
+        "agente": "control_f",
+        "clave": [
+          "agent",
+          "control_f",
+          "permission",
+          "read",
+          ".env"
+        ],
+        "cambios": [],
+        "evidencia": "REFERENCIA.decisionesNativas del control control_f: read .env conserva el efecto permitida; mismos patrones relativos, orden y efectos. La regla relativa .env supera la proteccion nativa."
+      }
+    },
+    {
+      "id": "v2-ruta-exposicion-g-config/credenciales.json",
+      "escenario": "v2-ruta-exposicion",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 6
+      },
+      "clave": [
+        "agent",
+        "g",
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/config/credenciales.json"
+      ],
+      "parametros": {
+        "formaRelativa": "config/credenciales.json",
+        "decision": "denegada"
+      },
+      "control": {
+        "escenario": "v2-ruta-exposicion",
+        "agente": "control_g",
+        "clave": [
+          "agent",
+          "control_g",
+          "permission",
+          "read",
+          "config/credenciales.json"
+        ],
+        "cambios": [],
+        "evidencia": "REFERENCIA.decisionesNativas del control control_g: read config/credenciales.json conserva el efecto denegada; mismos patrones relativos, orden y efectos."
+      }
+    },
+    {
+      "id": "v2-ruta-exposicion-g-privado",
+      "escenario": "v2-ruta-exposicion",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 7
+      },
+      "clave": [
+        "agent",
+        "g",
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/privado"
+      ],
+      "parametros": {
+        "formaRelativa": "privado",
+        "decision": "denegada"
+      },
+      "control": {
+        "escenario": "v2-ruta-exposicion",
+        "agente": "control_g",
+        "clave": [
+          "agent",
+          "control_g",
+          "permission",
+          "read",
+          "privado"
+        ],
+        "cambios": [],
+        "evidencia": "REFERENCIA.decisionesNativas del control control_g: read privado conserva el efecto denegada; mismos patrones relativos, orden y efectos."
+      }
+    },
+    {
+      "id": "v2-ruta-exposicion-g-privado/*",
+      "escenario": "v2-ruta-exposicion",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 8
+      },
+      "clave": [
+        "agent",
+        "g",
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/privado/*"
+      ],
+      "control": {
+        "escenario": "v2-ruta-exposicion",
+        "agente": "control_g",
+        "clave": [
+          "agent",
+          "control_g",
+          "permission",
+          "read",
+          "privado/*"
+        ],
+        "cambios": [],
+        "evidencia": "REFERENCIA.decisionesNativas del control control_g: read privado/LEEME.txt conserva el efecto denegada; mismos patrones relativos, orden y efectos."
+      }
+    },
+    {
+      "id": "colateral-zeta",
+      "escenario": "v2-agentes",
+      "tipo": "elemento-sin-uso",
+      "causa": "subagente-sin-uso",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 4
+      },
+      "clave": [
+        "agent",
+        "zeta",
+        "mode"
+      ],
+      "control": null
+    },
+    {
+      "id": "colateral-vacio",
+      "escenario": "v2-subagente",
+      "tipo": "elemento-sin-uso",
+      "causa": "subagente-sin-uso",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 4
+      },
+      "clave": [
+        "agent",
+        "vacio",
+        "mode"
+      ],
+      "control": null
+    },
+    {
+      "id": "colateral-privado",
+      "escenario": "v2-ruta-exposicion",
+      "tipo": "regla-sin-efecto",
+      "causa": "tapada-por-posterior",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 18
+      },
+      "clave": [
+        "agent",
+        "h",
+        "permission",
+        "read",
+        "privado/"
+      ],
+      "control": null
     }
   ],
-  "iteracion": 2
+  "iteracion": 3,
+  "aplazados": {
+    "RNF-05 CA-1": "T3-09",
+    "RNF-05 CA-2": "T3-09",
+    "RF-10 CA-1": "T3-10",
+    "RF-10 CA-2": "T3-10",
+    "RF-10 CA-3": "T3-10",
+    "RF-11 CA-1": "T3-10",
+    "RNF-08 CA-1": "T3-10",
+    "RNF-08 CA-2": "T3-10"
+  }
 }

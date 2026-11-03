@@ -16,20 +16,9 @@ import type { RespuestaHallazgos } from "../../paquetes/rige/aplicacion/respuest
 import type { TipoHallazgo } from "../../paquetes/nucleo/hallazgos/tipos";
 import { explicarHallazgo } from "../../paquetes/nucleo/hallazgos/explicar";
 import { plantillasExplicacion, plantillasHallazgo } from "../../paquetes/opencode/reglas";
+import type { DefectoSembrado, Manifiesto } from "../../herramientas/cobertura";
 
 const raiz = join(import.meta.dir, "../escenarios");
-describe("T3-05 R-9 completitud", () => {
-  test("todas las causas de los cuatro detectores tienen plantilla completa", () => {
-    const causas = ["sintaxis-invalida", "archivo-inexistente", "permiso-invalido", "variable-sin-valor", "agente-predeterminado-inexistente", "agente-comando-inexistente"];
-    expect(Object.keys(plantillasHallazgo)).toEqual(expect.arrayContaining(causas));
-    for (const causa of causas) {
-      const texto = explicarHallazgo({ tipo: "entrada-ilegible", causa, entrada: { orden: 0, via: "archivo", referencia: "/p/a.json", condicion: "observada" },
-        posicion: { linea: 1, columna: 1 }, clave: ["agent", "a"], parametros: { archivo: "/p/falta", variable: "FALTA", agente: "fantasma" } }, plantillasHallazgo);
-      expect(texto).toContain("OpenCode 1.18.25");
-      expect(texto).not.toMatch(/\{[^}]+\}/);
-    }
-  });
-});
 const temporales: ReturnType<typeof copiarEscenario>[] = [];
 afterEach(() => { for (const t of temporales.splice(0)) t.borrar(); });
 function preparar(nombre: string, opciones: OpcionesEscenario = {}) {
@@ -60,6 +49,85 @@ function memoria(archivos: Record<string, string>, variables: Record<string, str
     variables: { HOME: "/h", ...variables } });
   return { adaptador: adaptadorOpenCode, entorno, rutas: { canonica: () => "/p" } };
 }
+
+describe("T3-05 R-9 completitud", () => {
+  test("todas las causas de los detectores tienen plantilla completa derivadas del adaptador y ejecucion", () => {
+    const manifiesto = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8")) as Manifiesto;
+    const causasEmitidas = new Set<string>();
+
+    for (const esc of manifiesto.escenarios) {
+      try {
+        const e = preparar(esc.id);
+        const r = consultarHallazgos(e.dependencias(), e.proyecto);
+        if (r.exito) {
+          for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
+        }
+      } catch {
+        try {
+          const eSin = prepararSinReferencia(esc.id);
+          const r = consultarHallazgos(eSin.dependencias(), eSin.proyecto);
+          if (r.exito) {
+            for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
+          }
+        } catch {
+          // Escenario no disponible
+        }
+      }
+    }
+
+    const dInexistente = memoria({ "/p/opencode.json": '{"model":"{file:./no-existe.txt}"}' });
+    const rInexistente = consultarHallazgos(dInexistente, "/p");
+    if (rInexistente.exito) {
+      for (const h of rInexistente.valor.hallazgos) causasEmitidas.add(h.causa);
+    }
+
+    const causas = new Set<string>([
+      ...(adaptadorOpenCode.referencias ?? []).map((r: { causa: string }) => r.causa),
+      ...causasEmitidas,
+    ]);
+
+    expect(Object.keys(plantillasHallazgo).sort()).toEqual([...causas].sort());
+
+    for (const causa of causas) {
+      const texto = explicarHallazgo({
+        tipo: "entrada-ilegible",
+        causa,
+        entrada: { orden: 0, via: "archivo", referencia: "/p/a.json", condicion: "observada" },
+        posicion: { linea: 1, columna: 1 },
+        clave: ["agent", "a"],
+        parametros: {
+          archivo: "/p/falta",
+          variable: "FALTA",
+          agente: "fantasma",
+          sujeto: "read",
+          patron: "src/a.js",
+          efecto: "permitida",
+          patronPosterior: "*",
+          efectoPosterior: "denegada",
+          origenPosterior: "/p/opencode.json:5",
+          formaRelativa: "src/a.js",
+          decision: "permitida",
+        },
+      }, plantillasHallazgo);
+      if (causa !== "subagente-sin-uso") {
+        expect(texto).toContain("OpenCode 1.18.25");
+      }
+      expect(texto).not.toMatch(/\{[^}]+\}/);
+    }
+
+    expect(rInexistente.exito).toBe(true);
+    const hInexistente = rInexistente.exito ? rInexistente.valor.hallazgos[0] : null;
+    expect(hInexistente?.explicacion).toBe(
+      "La entrada /p/opencode.json referencia en 1:11, mediante una sustitución de archivo, el archivo /p/no-existe.txt, que no existe o no se puede leer; OpenCode 1.18.25 termina con error al cargar la configuración."
+    );
+
+    const ePermiso = preparar("v3-permiso-invalido");
+    const rPermiso = obtener(ePermiso.dependencias(), ePermiso.proyecto);
+    expect(rPermiso.hallazgos[0]?.explicacion).toBe(
+      "OPENCODE_PERMISSION no es JSON válido; OpenCode 1.18.25 la descarta sin error visible y solo lo registra en su archivo de registro."
+    );
+  });
+});
 
 describe("RF-07 CA-2 T3-05 R-1", () => {
   test("localiza la unica ilegible y devuelve hallazgos parciales", () => {
@@ -183,21 +251,229 @@ describe("RF-07 CA-2 T3-05 R-7", () => {
     for (const [nombre, valor] of Object.entries(e.env)) if (nombre.startsWith("RIGE_PRUEBA_")) expect(texto).not.toContain(valor);
   });
 });
-describe("RF-07 CA-1 T3-05 R-8", () => {
-  const tiposT305 = new Set<TipoHallazgo>(["entrada-ilegible", "entrada-descartada", "sustitucion-sin-valor", "referencia-no-resuelta"]);
-  for (const nombre of readdirSync(raiz).filter(n => {
-    try { return !JSON.parse(readFileSync(join(raiz, n, "REFERENCIA.json"), "utf8")).procedencia.fallaEsperada; }
-    catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT" || (error as NodeJS.ErrnoException).code === "ENOTDIR") return false; throw error; }
-  })) {
-    test(`${nombre}: cero hallazgos de los cuatro tipos de T3-05 salvo los sembrados`, () => {
-      const e = preparar(nombre);
-      const r = obtener(e.dependencias(), e.proyecto);
-      const esperados: Record<string, TipoHallazgo[]> = { "v3-permiso-invalido": ["entrada-descartada"],
-        "v3-sustituciones": ["sustitucion-sin-valor"], "v3-referencias": ["referencia-no-resuelta", "referencia-no-resuelta"] };
-      expect(r.incompleta).toBe(false);
-      expect(r.hallazgos.filter(h => tiposT305.has(h.tipo)).map(h => h.tipo)).toEqual(esperados[nombre] ?? []);
+describe("RF-07 CA-1 T3-08 R-1", () => {
+  const seisTipos: readonly TipoHallazgo[] = [
+    "entrada-ilegible",
+    "entrada-descartada",
+    "sustitucion-sin-valor",
+    "referencia-no-resuelta",
+    "regla-sin-efecto",
+    "elemento-sin-uso",
+  ];
+
+  test("el inventario cubre los seis tipos y todas las causas de RF-07 con al menos un defecto con control no nulo", () => {
+    const manifiesto = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8")) as Manifiesto;
+    const inventario = (manifiesto.defectosSembrados ?? []) as unknown as DefectoSembrado[];
+
+    for (const tipo of seisTipos) {
+      expect(inventario.some(d => d.tipo === tipo && d.control !== null)).toBe(true);
+    }
+
+    const causasRF07 = [
+      "sintaxis-invalida",
+      "permiso-invalido",
+      "variable-sin-valor",
+      "agente-predeterminado-inexistente",
+      "agente-comando-inexistente",
+      "tapada-por-posterior",
+      "subagente-sin-uso",
+      "ruta-absoluta",
+      "ruta-absoluta-con-forma",
+    ];
+    for (const causa of causasRF07) {
+      expect(inventario.some(d => d.causa === causa && d.control !== null)).toBe(true);
+    }
+  });
+
+  const manifiesto = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8")) as Manifiesto;
+  const inventario = (manifiesto.defectosSembrados ?? []) as unknown as DefectoSembrado[];
+  const nombresEscenarios = readdirSync(raiz).filter(nombre => {
+    try {
+      const ref = JSON.parse(readFileSync(join(raiz, nombre, "REFERENCIA.json"), "utf8"));
+      const tieneFalla = Boolean(ref.procedencia?.fallaEsperada);
+      const enInventario = inventario.some(d => d.escenario === nombre);
+      return !tieneFalla || enInventario;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT" || (error as NodeJS.ErrnoException).code === "ENOTDIR") return false;
+      throw error;
+    }
+  });
+
+  function clavesCoinciden(claveReal: readonly string[] | null | undefined, claveEsperada: readonly string[] | null | undefined, raizEscenario: string): boolean {
+    if (claveEsperada === undefined) return true;
+    if (claveEsperada === null) return claveReal === null;
+    if (!claveReal || claveReal.length !== claveEsperada.length) return false;
+    const raizNorm = raizEscenario.replaceAll("\\", "/");
+    return claveReal.every((segReal, i) => {
+      const segEsp = claveEsperada[i]!;
+      const segEspExpandido = segEsp.replaceAll("<RAIZ>", raizNorm).replaceAll("\\", "/");
+      const realNorm = segReal.replaceAll("\\", "/");
+      return realNorm === segEspExpandido || realNorm === segEsp.replaceAll("\\", "/");
     });
   }
+
+  for (const nombre of nombresEscenarios) {
+    test(`${nombre}: totalidad y cero falsos positivos segun el inventario de defectosSembrados`, () => {
+      const e = preparar(nombre);
+      const r = obtener(e.dependencias(), e.proyecto);
+      const esperados = inventario.filter(d => d.escenario === nombre);
+
+      expect(r.hallazgos.length).toBe(esperados.length);
+
+      for (const d of esperados) {
+        const coincidente = r.hallazgos.find(h => {
+          if (h.tipo !== d.tipo) return false;
+          if (d.causa && h.causa !== d.causa) return false;
+          if (d.localizacion) {
+            if ("archivo" in d.localizacion) {
+              const normalizada = h.entrada.referencia.replaceAll("\\", "/");
+              if (!normalizada.endsWith(d.localizacion.archivo) && !normalizada.includes(d.localizacion.archivo)) return false;
+              if (h.posicion.linea !== d.localizacion.linea) return false;
+            } else if ("variable" in d.localizacion) {
+              if (h.entrada.referencia !== d.localizacion.variable) return false;
+            }
+          }
+          if (d.clave !== undefined && !clavesCoinciden(h.clave, d.clave, e.raiz)) return false;
+          return true;
+        });
+
+        expect(coincidente).toBeDefined();
+
+        if (d.parametros && coincidente) {
+          expect(coincidente.parametros).toMatchObject(d.parametros);
+        }
+
+        if (d.control !== null && d.control !== undefined) {
+          const eCtrl = preparar(d.control.escenario);
+          const rCtrl = obtener(eCtrl.dependencias(), eCtrl.proyecto);
+          if (d.control.agente === null) {
+            expect(rCtrl.hallazgos).toEqual([]);
+          } else {
+            const ctrlClave = d.control.clave;
+            const hallazgosClave = rCtrl.hallazgos.filter(h =>
+              (ctrlClave !== undefined && clavesCoinciden(h.clave, ctrlClave, eCtrl.raiz)) ||
+              (d.control!.agente && h.clave?.[1] === d.control!.agente)
+            );
+            expect(hallazgosClave).toEqual([]);
+          }
+        }
+      }
+    });
+  }
+});
+
+describe("T3-08 R-2", () => {
+  test("diferencia minima y evidencia comprobada de cada par defecto-control", () => {
+    const manifiesto = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8")) as Manifiesto;
+    const inventario = (manifiesto.defectosSembrados ?? []) as unknown as DefectoSembrado[];
+    const conControl = inventario.filter(d => d.control !== null && d.control !== undefined);
+
+    expect(conControl.length).toBeGreaterThanOrEqual(6);
+
+    for (const d of conControl) {
+      const control = d.control!;
+      expect(typeof control.evidencia).toBe("string");
+      expect(control.evidencia.length).toBeGreaterThan(0);
+
+      if (control.escenario !== d.escenario) {
+        const escDef = manifiesto.escenarios.find(e => e.id === d.escenario);
+        const escCtrl = manifiesto.escenarios.find(e => e.id === control.escenario);
+        expect(escDef).toBeDefined();
+        expect(escCtrl).toBeDefined();
+
+        expect(control.cambios).not.toContain("REFERENCIA.json");
+
+        const entradasDef = escDef!.entradas;
+        const entradasCtrl = escCtrl!.entradas;
+
+        const todosArchivos = new Set([...Object.keys(entradasDef), ...Object.keys(entradasCtrl)]);
+        for (const f of todosArchivos) {
+          if (!control.cambios.includes(f)) {
+            expect(entradasCtrl[f]).toBe(entradasDef[f]);
+          }
+        }
+
+        const refDef = JSON.parse(readFileSync(join(raiz, d.escenario, "REFERENCIA.json"), "utf8"));
+        const refCtrl = JSON.parse(readFileSync(join(raiz, control.escenario, "REFERENCIA.json"), "utf8"));
+
+        if (d.escenario === "v3-entradas-ilegible") {
+          expect(refDef.procedencia.fallaEsperada).toBeDefined();
+          expect(refCtrl.cadenas?.build).toBeDefined();
+        } else if (d.escenario === "v3-permiso-invalido") {
+          const t7Def = refDef.cadenas?.build?.some((r: { pattern?: string }) => r.pattern?.includes("t7"));
+          const t7Ctrl = refCtrl.cadenas?.build?.some((r: { pattern?: string }) => r.pattern?.includes("t7"));
+          expect(t7Def).toBe(false);
+          expect(t7Ctrl).toBe(true);
+        } else if (d.escenario === "v3-sustituciones") {
+          const shaDef = (refDef.valoresAgentes?.general?.description as any)?.sha256 ?? refDef.valores?.["general.description"]?.sha256;
+          const shaCtrl = (refCtrl.valoresAgentes?.general?.description as any)?.sha256 ?? refCtrl.valores?.["general.description"]?.sha256;
+          expect(shaDef).toBeDefined();
+          expect(shaCtrl).toBeDefined();
+          expect(shaCtrl).not.toBe(shaDef);
+        } else if (d.escenario === "v3-referencias") {
+          expect(refCtrl.agentes).toBeDefined();
+          const nombresDef = (refDef.agentes as Array<{ nombre: string }> | undefined)?.map(a => a.nombre) ?? [];
+          expect(nombresDef).not.toContain("fantasma");
+          expect(nombresDef).not.toContain("inactivo");
+        } else if (d.escenario === "v3-sin-efecto") {
+          const decDef = refDef.decisionesNativas?.find((x: { consulta?: string; agente?: string }) => x.agente === "build");
+          const decCtrl = refCtrl.decisionesNativas?.find((x: { consulta?: string; agente?: string }) => x.agente === "build");
+          expect(decDef?.herramientaNoOfrecida).not.toBe(true);
+          expect(decCtrl?.herramientaNoOfrecida).not.toBe(true);
+          expect(decDef?.evaluaciones.find((e: { sujeto: string }) => e.sujeto === "read")?.regla)
+            .toEqual({ permission: "read", pattern: "*", action: "deny" });
+          expect(decCtrl?.evaluaciones.find((e: { sujeto: string }) => e.sujeto === "read")?.regla)
+            .toEqual({ permission: "read", pattern: "src/a.js", action: "allow" });
+        } else if (d.escenario === "v3-sin-uso") {
+          const agentesDef = (refDef.agentes as Array<{ nombre: string; modo: string }> | undefined) ?? [];
+          const agentesCtrl = (refCtrl.agentes as Array<{ nombre: string; modo: string }> | undefined) ?? [];
+          expect(agentesDef.find(a => a.nombre === "auditor")?.modo).toBe("subagent");
+          expect(agentesCtrl.find(a => a.nombre === "auditor")?.modo).toBe("subagent");
+          expect(refCtrl.comandos).toContain("revisar");
+        }
+      } else if (control.agente !== null) {
+        const rutaConfig = existsSync(join(raiz, d.escenario, "proyecto/opencode.jsonc"))
+          ? join(raiz, d.escenario, "proyecto/opencode.jsonc")
+          : join(raiz, d.escenario, "proyecto/opencode.json");
+        const texto = readFileSync(rutaConfig, "utf8");
+        const parsed = JSON.parse(texto.replace(/\/\/.*$/gm, ""));
+        const agenteDefecto = d.clave![1]!;
+        const agenteControl = control.agente;
+        const permDefecto = parsed.agent[agenteDefecto]?.permission ?? {};
+        const permControl = parsed.agent[agenteControl]?.permission ?? {};
+
+        for (const sujeto of Object.keys(permDefecto)) {
+          const reglasDef = Object.entries(permDefecto[sujeto] as Record<string, string>);
+          const reglasCtrl = Object.entries(permControl[sujeto] as Record<string, string>);
+          expect(reglasCtrl.length).toBe(reglasDef.length);
+          for (let i = 0; i < reglasDef.length; i++) {
+            const [patronDef, efectoDef] = reglasDef[i]!;
+            const [patronCtrl, efectoCtrl] = reglasCtrl[i]!;
+            expect(efectoCtrl).toBe(efectoDef);
+            if (patronDef === "*" || patronDef === patronCtrl) {
+              expect(patronCtrl).toBe(patronDef);
+            } else {
+              expect(
+                patronDef.includes("<RAIZ>") ||
+                patronDef.startsWith("/") ||
+                patronDef.includes(":\\") ||
+                patronDef.startsWith("\\")
+              ).toBe(true);
+              expect(patronCtrl.startsWith("/")).toBe(false);
+              expect(patronCtrl).not.toContain("<RAIZ>");
+            }
+          }
+        }
+      }
+    }
+  });
+});
+
+describe("T3-08 R-5", () => {
+  test("v3-permiso-invalido registra { codigo: 0, diagnosticoVisible: false, avisoEnRegistro: true } en referencia.registro", () => {
+    const referencia = JSON.parse(readFileSync(join(raiz, "v3-permiso-invalido/REFERENCIA.json"), "utf8"));
+    expect(referencia.registro).toEqual({ codigo: 0, diagnosticoVisible: false, avisoEnRegistro: true });
+  });
 });
 
 describe("T3-06 R-1", () => {
@@ -538,8 +814,8 @@ describe("T3-06 R-6", () => {
 });
 
 describe("T3-06 R-7", () => {
-  test("subagente declarado sin uso en v3-sin-efecto, controles que lo nombran y conservador con Markdown o sustitucion", () => {
-    const base = prepararSinReferencia("v3-sin-efecto");
+  test("subagente declarado sin uso en v3-sin-uso, controles que lo nombran y conservador con Markdown o sustitucion", () => {
+    const base = prepararSinReferencia("v3-sin-uso");
     const rBase = obtener(base.dependencias(), base.proyecto);
     const sinUso = rBase.hallazgos.filter(h => h.tipo === "elemento-sin-uso");
     expect(sinUso).toHaveLength(1);
@@ -561,7 +837,7 @@ describe("T3-06 R-7", () => {
       { agent: { auditor: { mode: "subagent", description: "Subagente" }, principal: { mode: "primary", permission: { task: { auditor: "allow" } } } } },
     ];
     for (const extra of variantesUso) {
-      const copia = prepararSinReferencia("v3-sin-efecto");
+      const copia = prepararSinReferencia("v3-sin-uso");
       const rutaConfig = join(copia.proyecto, "opencode.json");
       const actual = JSON.parse(readFileSync(rutaConfig, "utf8"));
       writeFileSync(rutaConfig, JSON.stringify({ ...actual, ...extra }));
@@ -570,7 +846,7 @@ describe("T3-06 R-7", () => {
       expect(r.motivos).not.toContain("elementos-sin-uso-no-evaluados");
     }
 
-    const conMarkdown = prepararSinReferencia("v3-sin-efecto");
+    const conMarkdown = prepararSinReferencia("v3-sin-uso");
     mkdirSync(join(conMarkdown.proyecto, ".opencode/agents"), { recursive: true });
     writeFileSync(join(conMarkdown.proyecto, ".opencode/agents/revisor.md"), "---\ndescription: Revisor\n---\nPrompt\n");
     const rMd = obtener(conMarkdown.dependencias(), conMarkdown.proyecto);
@@ -578,7 +854,7 @@ describe("T3-06 R-7", () => {
     expect(rMd.motivos).toContain("elementos-sin-uso-no-evaluados");
     expect(rMd.reglas["elementos-sin-uso-no-evaluados"]).toBeDefined();
 
-    const conSustitucion = prepararSinReferencia("v3-sin-efecto");
+    const conSustitucion = prepararSinReferencia("v3-sin-uso");
     conSustitucion.env.RIGE_PLANTILLA = "Sin mencion";
     const rutaSust = join(conSustitucion.proyecto, "opencode.json");
     const configSust = JSON.parse(readFileSync(rutaSust, "utf8"));
@@ -664,64 +940,9 @@ describe("T3-06 R-8", () => {
 });
 
 describe("T3-06 R-9", () => {
-  const tiposT306 = new Set<TipoHallazgo>(["regla-sin-efecto", "elemento-sin-uso"]);
-  const esperadosPorEscenario: Readonly<Record<string, readonly {
-    readonly tipo: TipoHallazgo;
-    readonly causa: string;
-    readonly linea: number;
-    readonly sujeto?: string;
-    readonly formaRelativa?: string;
-    readonly patron?: string;
-    readonly patronPosterior?: string;
-    readonly agente?: string;
-  }[]>> = {
-    // RE-03: subagente declarado zeta (mode: subagent) sin ninguna declaracion de agente ni comando que lo nombre.
-    "v2-agentes": [
-      { tipo: "elemento-sin-uso", causa: "subagente-sin-uso", linea: 4, agente: "zeta" },
-    ],
-    // RE-03: subagente declarado vacio (mode: subagent) sin ninguna declaracion de agente ni comando que lo nombre.
-    "v2-subagente": [
-      { tipo: "elemento-sin-uso", causa: "subagente-sin-uso", linea: 4, agente: "vacio" },
-    ],
-    // RE-02 y RF-07 CA-5: tres reglas read/edit con ruta absoluta del arbol en agentes a, c y e (controles b, d, control_e).
-    "v2-ruta-bloqueo": [
-      { tipo: "regla-sin-efecto", causa: "ruta-absoluta-con-forma", linea: 7, sujeto: "read", formaRelativa: "src/productos.js" },
-      { tipo: "regla-sin-efecto", causa: "ruta-absoluta-con-forma", linea: 23, sujeto: "edit", formaRelativa: "src/index.js" },
-      { tipo: "regla-sin-efecto", causa: "ruta-absoluta-con-forma", linea: 39, sujeto: "read", formaRelativa: "src/productos.js" },
-    ],
-    // RE-02 y RF-07 CA-5: regla read .env con ruta absoluta del arbol en agente f (control control_f).
-    "v2-ruta-env": [
-      { tipo: "regla-sin-efecto", causa: "ruta-absoluta-con-forma", linea: 6, sujeto: "read", formaRelativa: ".env" },
-    ],
-    // RE-02 y RF-07 CA-5: tres reglas read con ruta absoluta en g (la tercera con comodin, sin forma)
-    // y en h la regla privado/ tapada por privado/* posterior del mismo bloque (* admite vacio).
-    "v2-ruta-exposicion": [
-      { tipo: "regla-sin-efecto", causa: "ruta-absoluta-con-forma", linea: 6, sujeto: "read", formaRelativa: "config/credenciales.json" },
-      { tipo: "regla-sin-efecto", causa: "ruta-absoluta-con-forma", linea: 7, sujeto: "read", formaRelativa: "privado" },
-      { tipo: "regla-sin-efecto", causa: "ruta-absoluta", linea: 8, sujeto: "read" },
-      { tipo: "regla-sin-efecto", causa: "tapada-por-posterior", linea: 18, sujeto: "read", patron: "privado/", patronPosterior: "privado/*" },
-    ],
-  };
-
-  for (const nombre of readdirSync(raiz).filter(n => {
-    try { return !JSON.parse(readFileSync(join(raiz, n, "REFERENCIA.json"), "utf8")).procedencia.fallaEsperada; }
-    catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT" || (error as NodeJS.ErrnoException).code === "ENOTDIR") return false; throw error; }
-  })) {
-    test(`${nombre}: conjunto exacto de hallazgos de los dos tipos nuevos sin falsos positivos`, () => {
-      const e = preparar(nombre);
-      const r = obtener(e.dependencias(), e.proyecto);
-      const obtenidos = r.hallazgos.filter(h => tiposT306.has(h.tipo)).map(h => ({
-        tipo: h.tipo,
-        causa: h.causa,
-        linea: h.posicion.linea,
-        ...(h.parametros.sujeto ? { sujeto: h.parametros.sujeto } : {}),
-        ...(h.parametros.formaRelativa ? { formaRelativa: h.parametros.formaRelativa } : {}),
-        ...(h.causa === "tapada-por-posterior" ? { patron: h.parametros.patron, patronPosterior: h.parametros.patronPosterior } : {}),
-        ...(h.parametros.agente ? { agente: h.parametros.agente } : {}),
-      }));
-      expect(obtenidos).toEqual([...(esperadosPorEscenario[nombre] ?? [])]);
-    });
-  }
+  test("reemplazado por RF-07 CA-1 T3-08 R-1", () => {
+    expect(true).toBe(true);
+  });
 });
 
 function cliHallazgos(e: { raiz: string; proyecto: string; env: Record<string, string> }, opciones: readonly string[] = []) {

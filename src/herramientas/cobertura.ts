@@ -3,6 +3,42 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { tokenizar } from "../pruebas/utilidades/analisis-arquitectura";
 
+export type TipoHallazgoManifiesto =
+  | "entrada-ilegible"
+  | "entrada-descartada"
+  | "sustitucion-sin-valor"
+  | "referencia-no-resuelta"
+  | "regla-sin-efecto"
+  | "elemento-sin-uso";
+
+export interface LocalizacionDefectoArchivo {
+  archivo: string;
+  linea: number;
+}
+export interface LocalizacionDefectoVariable {
+  variable: string;
+}
+export type LocalizacionDefecto = LocalizacionDefectoArchivo | LocalizacionDefectoVariable;
+
+export interface ControlDefecto {
+  escenario: string;
+  agente: string | null;
+  clave: readonly string[] | null;
+  cambios: string[];
+  evidencia: string;
+}
+
+export interface DefectoSembrado {
+  id: string;
+  escenario: string;
+  tipo: TipoHallazgoManifiesto;
+  causa: string;
+  localizacion: LocalizacionDefecto;
+  clave: readonly string[] | null;
+  parametros?: Record<string, unknown>;
+  control: ControlDefecto | null;
+}
+
 export interface Comprobacion { item: string; archivo: string; describe: string; fuente: string }
 export interface ConsultaNativa {
   id: string; agente: string; sujeto: string; objetivo: string; herramienta: string;
@@ -15,8 +51,8 @@ export interface Escenario {
 export interface Manifiesto {
   iteracion: number;
   corte: null | string; retiros: unknown[]; escenarios: Escenario[];
-  defectosSembrados: { id: string; escenario: string; tipo: string; localizacion: { archivo: string; linea: number };
-    hallazgoEsperado: string; controlCorrecto: { agente: string; patron: string; evidencia: string }; pendiente: string }[];
+  defectosSembrados: DefectoSembrado[];
+  aplazados?: Record<string, string>;
 }
 export interface Matriz { items: { id: string; objetivo: string; iteracion: number; obligatorioV2: boolean }[] }
 
@@ -40,7 +76,7 @@ export function informarCobertura(manifiesto: Manifiesto, matriz: Matriz) {
       const comprobaciones = manifiesto.escenarios.flatMap(e => e.comprobaciones).filter(c => c.item === item.id);
       const derivadaSubagente = item.id === "RF-02 CA-3" && comprobaciones.length > 0
         && comprobaciones.every(c => c.fuente === "derivada");
-      return { ...item, estado: item.iteracion > manifiesto.iteracion && comprobaciones.length === 0 ? "pendiente" : derivadaSubagente
+      return { ...item, estado: item.iteracion > manifiesto.iteracion ? "pendiente" : derivadaSubagente
         ? "cubierto con oráculo derivado; sin ejecución nativa de task" : escenarios.length ? "cubierto" : "sin cobertura", escenarios };
     }),
     escenarios: manifiesto.escenarios.map(e => ({ id: e.id, comprobaciones: e.comprobaciones.length, resultado: "no ejecutado por este informe" })),
@@ -69,7 +105,12 @@ export function validarManifiesto(manifiesto: Manifiesto, matriz: Matriz, direct
     }
   }
   for (const item of informarCobertura(manifiesto, matriz).items) {
-    if (item.obligatorioV2 && !item.estado.startsWith("cubierto")) errores.push(`${item.id} sin comprobacion`);
+    if (item.iteracion <= manifiesto.iteracion && !item.estado.startsWith("cubierto")
+      && !manifiesto.aplazados?.[item.id]) errores.push(`${item.id} sin comprobacion`);
+  }
+  for (const [id, tarea] of Object.entries(manifiesto.aplazados ?? {})) {
+    if (!matriz.items.some(i => i.id === id && i.iteracion <= manifiesto.iteracion)
+      || !/^T\d+-\d+$/.test(tarea)) errores.push(`${id}: aplazamiento invalido`);
   }
   return errores;
 }

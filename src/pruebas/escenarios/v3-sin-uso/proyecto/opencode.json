@@ -1,0 +1,12 @@
+{
+
+
+
+
+
+
+  "agent": {
+    "auditor": { "mode": "subagent", "description": "Subagente auditor sin invocadores." },
+    "principal": { "mode": "primary", "description": "Agente primario sin invocadores." }
+  }
+}
