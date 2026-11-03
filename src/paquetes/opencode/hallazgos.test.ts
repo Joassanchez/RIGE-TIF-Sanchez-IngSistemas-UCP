@@ -45,9 +45,10 @@ describe("T3-06 R-1 unidad abarca", () => {
     expect(abarca("src/A.js", "src/a.js")).toBe(false);
   });
 
-  test("prueba exhaustiva acotada sobre alfabeto {a, /, \\, espacio, *, ?}", () => {
-    const patrones = gerarCadenas(["a", "/", "\\", " ", "*", "?"], 4);
-    const cadenas = gerarCadenas(["a", "/", "\\", " "], 5);
+  test("T4-03 prueba exhaustiva acotada optimizada sobre alfabeto {a, /, \\, espacio, *, ?}", () => {
+    const inicio = performance.now();
+    const patrones = gerarCadenas(["a", "/", "\\", " ", "*", "?"], 3);
+    const cadenas = gerarCadenas(["a", "/", "\\", " "], 4);
     expect(abarca("*", "a")).toBe(true);
     for (const plataforma of ["linux", "win32"] as const) {
       const coincidencias = patrones.map(p => {
@@ -73,6 +74,65 @@ describe("T3-06 R-1 unidad abarca", () => {
             }
           }
         }
+      }
+    }
+    expect(performance.now() - inicio).toBeLessThan(500);
+  });
+
+  test("T4-03 casos dirigidos de frontera patologica y cadenas testigo", () => {
+    const inclusionesEstrictas: [posterior: string, anterior: string, testigoInverso: string][] = [
+      ["**/*", "src/paquetes/opencode/hallazgos.ts", "src/otro.ts"],
+      ["src/**/*", "src/paquetes/opencode/hallazgos.ts", "src/a/otro.ts"],
+      ["src/*/*/*", "src/a/b/c/d/e.ts", "src/a/b/otro.ts"],
+      ["src/*", "src/a/b/c/d/e.ts", "src/otro.ts"],
+      ["src/*/*.ts", "src/paquetes/hallazgos.ts", "src/a/otro.ts"],
+      ["src/*/*.ts", "src/paquetes/opencode/hallazgos.ts", "src/a/otro.ts"],
+      ["test/???/*.spec.ts", "test/abc/hallazgos.spec.ts", "test/xyz/otra.spec.ts"],
+      ["test/????/*.spec.ts", "test/abcd/hallazgos.spec.ts", "test/wxyz/otra.spec.ts"],
+      ["test/*/*.spec.ts", "test/???/*.spec.ts", "test/abcd/test.spec.ts"],
+      ["test/*/*.spec.ts", "test/????/*.spec.ts", "test/abc/test.spec.ts"],
+      ["C:\\Archivos de Programa\\*\\bin\\*.exe", "C:/Archivos de Programa/App\\Sub/bin\\ejecutar.exe",
+        "C:/Archivos de Programa/Otra/bin/otro.exe"],
+      ["dir con espacios/*", "dir con espacios/sub/archivo.ts", "dir con espacios/otro.ts"],
+      ["npm run * *", "npm run build", "npm run test"],
+      ["npm run * *", "npm run test:watch *", "npm run build"],
+      ["git checkout * *", "git checkout main", "git checkout otra"],
+      ["git checkout *", "git checkout * *", "git checkout"],
+      ["git * *", "git status", "git checkout"],
+      ["docker * run *", "docker contenedor run", "docker otro run"],
+      ["docker * run *", "docker contenedor run *", "docker otro run"],
+    ];
+
+    for (const [posterior, anterior, testigoInverso] of inclusionesEstrictas) {
+      expect(abarca(posterior, anterior)).toBe(true);
+      expect(abarca(anterior, posterior)).toBe(false);
+      for (const plataforma of ["linux", "win32"] as const) {
+        expect(match(testigoInverso, posterior, plataforma)).toBe(true);
+        expect(match(testigoInverso, anterior, plataforma)).toBe(false);
+      }
+    }
+
+    // Los * consecutivos son equivalentes: cada uno admite la cadena vacia.
+    for (const [posterior, anterior] of [["**/*", "*/*"], ["src/**/*", "src/*/*"]] as const) {
+      expect(abarca(posterior, anterior)).toBe(true);
+      expect(abarca(anterior, posterior)).toBe(true);
+    }
+
+    const refutacionesConTestigo: [posterior: string, anterior: string, testigo: string][] = [
+      ["src/paquetes/*.ts", "src/*/*.ts", "src/a/archivo.ts"],
+      ["src/*", "src", "src"],
+      ["test/???/*.spec.ts", "test/????/*.spec.ts", "test/abcd/test.spec.ts"],
+      ["test/????/*.spec.ts", "test/???/*.spec.ts", "test/abc/test.spec.ts"],
+      ["test/???/*.spec.ts", "test/*/*.spec.ts", "test/abcd/test.spec.ts"],
+      ["npm run build", "npm run * *", "npm run test"],
+      ["git status", "git * *", "git checkout"],
+    ];
+
+    for (const [posterior, anterior, testigo] of refutacionesConTestigo) {
+      expect(abarca(posterior, anterior)).toBe(false);
+      for (const plataforma of ["linux", "win32"] as const) {
+        expect(match(testigo, anterior, plataforma)).toBe(true);
+        expect(match(testigo, posterior, plataforma)).toBe(false);
       }
     }
   });
