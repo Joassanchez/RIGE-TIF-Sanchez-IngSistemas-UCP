@@ -36,6 +36,22 @@ describe("A8-3", () => {
 });
 type Llamada = { argumentos: string[]; cwd?: string; env: Record<string, string>; timeout: number; copia?: string };
 
+describe("T3-12 descarga del registro nativo", () => {
+  test("espera la descarga en Linux y conserva la captura en Windows", () => {
+    for (const [plataforma, hash] of [["linux", hashLinux], ["win32", hashWindows]] as const) {
+      const r = ejecutar({ plataforma, hash, registroNativo: true });
+      expect(r.salida).toContain("v1-precedencia: ok");
+      expect(r.codigo).toBe(0);
+      const capturas = r.llamadas.filter(l => l.argumentos.includes("--tool"));
+      expect(capturas).toHaveLength(plataforma === "linux" ? 2 : 0);
+      for (const llamada of capturas) {
+        expect(llamada.argumentos.slice(4)).toEqual(["--tool", "bash", "--params", JSON.stringify({ command: "sleep 1.2" })]);
+        expect(llamada.argumentos.slice(1, 4)).toEqual(["debug", "agent", "build"]);
+      }
+    }
+  });
+});
+
 describe("T3-03-c1 R-8", () => {
   test("captura linea y columna nativas cuando el diagnostico las incluye", () => {
     const r = ejecutar({ fallaEsperada: true, posicion: true, regenerar: true });
@@ -95,7 +111,7 @@ describe("T3-03 referencias de entradas", () => {
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.
 function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
   diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
-  agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean; posicion?: boolean;
+  agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean; posicion?: boolean; registroNativo?: boolean;
   sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean; entornoLiteral?: boolean; entornoFiltrado?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
   try {
@@ -116,6 +132,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
           .map(nombre => [nombre, { name: nombre, mode: "primary", native: true,
             ...Object.fromEntries(Object.entries(ref.valores).filter(([clave]) => ["description", "temperature"].includes(clave))) }]));
         if (opciones.agentes) ref.agentes = [];
+        if (opciones.registroNativo) ref.registro = { codigo: 0, diagnosticoVisible: false, avisoEnRegistro: true };
         if (opciones.sustituciones) {
           ref.procedencia.entorno = { [opciones.nombreEntorno ?? "RIGE_PRUEBA_X"]: "secreto.txt" };
           ref.procedencia.sustituidas = [["build", "description"], ["revisor", "prompt"]];
@@ -147,7 +164,7 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
       JSON.parse(readFileSync(join(raiz, "pruebas/escenarios", nombre, "REFERENCIA.json"), "utf8")).valores]));
     writeFileSync(precarga, `
       import { Hash } from "node:crypto";
-      import { existsSync, readFileSync, writeFileSync } from "node:fs";
+      import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
       import { dirname, join } from "node:path";
       import { userInfo } from "node:os";
       Object.defineProperty(process, "platform", { value: ${JSON.stringify(opciones.plataforma ?? "win32")} });
@@ -167,6 +184,15 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         }
         const copia = dirname(opciones.cwd);
         llamada.copia = copia;
+        if (${Boolean(opciones.registroNativo)}) {
+          const directorio = join(opciones.env.HOME, "opencode/log");
+          mkdirSync(directorio, { recursive: true });
+          // En Linux el lote solo se descarga si el comando mantiene vivo el proceso.
+          if (process.platform === "win32" || (argumentos.includes("--tool")
+            && JSON.parse(argumentos[argumentos.indexOf("--params") + 1]).command === "sleep 1.2")) {
+            writeFileSync(join(directorio, "opencode.log"), "Aviso OPENCODE_PERMISSION");
+          }
+        }
         if (${Boolean(opciones.salidaInvalida)}) return { exitCode: 0, stdout: Buffer.from('{"MARCA-JSON-PRIVADO":INVALIDO}'), stderr: Buffer.from("") };
         if (existsSync(join(copia, "REFERENCIA.json"))) throw new Error("Referencia copiada");
         if (!${Boolean(opciones.git)} && !readFileSync(join(copia, ".git/HEAD"), "utf8").includes("refs/heads/main")) throw new Error("Sin git");

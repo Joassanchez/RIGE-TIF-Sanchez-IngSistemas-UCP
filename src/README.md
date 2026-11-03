@@ -1116,6 +1116,21 @@ capturas de T3-08 corresponden a escenarios nuevos. La captura opcional
 `--print-logs`; no expone su contenido. La guarda de sustituciones rechaza
 cualquier valor de `procedencia.entorno` en la captura, salvo nombres nativos.
 
+### Descarga del registro nativo en Linux (T3-12)
+
+La captura de `registro` en plataformas distintas de Windows ejecuta
+`bash` con `sleep 1.2` mediante `debug agent --tool`, para permitir la
+descarga del lote de 1000 ms del logger antes de que OpenCode termine.
+En Windows se conserva la invocación sin herramienta.
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-t312-almacen'
+bun test pruebas/arquitectura/referencias-nativas.test.ts
+bun test
+bun run verificar
+bun ./herramientas/referencias-nativas.ts --raiz "C:\Users\Joa\AppData\Roaming\npm\node_modules" --escenario v3-permiso-invalido
+```
+
 ### Herramientas ofrecidas y resumen del ecosistema (T3-10)
 
 La respuesta de permiso incluye `herramienta: { nombre, ofrecida }` para las

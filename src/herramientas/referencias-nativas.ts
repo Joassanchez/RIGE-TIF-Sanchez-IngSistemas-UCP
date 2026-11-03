@@ -198,7 +198,11 @@ function ejecutar(): number {
       let comandos: Referencia["comandos"];
       let registro: Referencia["registro"];
       if (referencia.registro !== undefined) {
-        const proceso = Bun.spawnSync([binario, "debug", "agent", referencia.agente], {
+        const argumentosRegistro = [binario, "debug", "agent", referencia.agente];
+        if (process.platform !== "win32") {
+          argumentosRegistro.push("--tool", "bash", "--params", JSON.stringify({ command: "sleep 1.2" }));
+        }
+        const proceso = Bun.spawnSync(argumentosRegistro, {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
         });
         const directorioRegistro = join(hogar, "opencode", "log");
