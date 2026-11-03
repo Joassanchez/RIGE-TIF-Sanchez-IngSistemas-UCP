@@ -46,7 +46,7 @@ describe("T2-08 objetivos por herramienta", () => {
   for (const plataforma of ["linux", "win32"]) {
     const path = plataforma === "win32" ? win32 : posix;
     const raiz = plataforma === "win32" ? "C:/w" : "/w";
-    const memoria = crearEntornoMemoria({ archivos: { [`${raiz}/.git/HEAD`]: "ref: refs/heads/main", [`${raiz}/bin/git`]: "" },
+    const memoria = crearEntornoMemoria({ archivos: { [`${raiz}/.git/HEAD`]: "ref: refs/heads/main", [`${raiz}/bin/${plataforma === "win32" ? "git.exe" : "git"}`]: "" },
       directorios: [`${raiz}/.git`, `${raiz}/.git/objects`, `${raiz}/.git/refs`], variables: { PATH: `${raiz}/bin`, HOME: "/hogar", USERPROFILE: "C:/hogar" }, plataforma });
     const entorno = { ...memoria, unir: path.join, padre: path.dirname, relativa: path.relative, esAbsoluta: path.isAbsolute,
       tipo: (ruta: string) => memoria.tipo(ruta.replaceAll("\\", "/")), leer: (ruta: string) => memoria.leer(ruta.replaceAll("\\", "/")) };

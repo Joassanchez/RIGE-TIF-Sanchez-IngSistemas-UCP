@@ -9,6 +9,7 @@ export function paginaPermiso(respuesta: RespuestaPermiso): Response {
 <p>Proyecto: ${respuesta.proyecto}</p>
 <p>${respuesta.consulta.sujeto}: ${respuesta.consulta.objetivo}</p>
 <h2>Decisión</h2><p>${respuesta.decision ?? respuesta.motivoSinDecision}</p>
+${respuesta.herramienta ? html`<p>Herramienta: ${respuesta.herramienta.nombre}, ${respuesta.herramienta.ofrecida ? "ofrecida" : "retirada"}.</p>` : html``}
 <h2>Reglas coincidentes</h2>
 <table><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalencia</th></tr></thead>
 <tbody>${respuesta.cadena.map(regla => html`<tr><td>${regla.indice + 1}</td><td>${regla.sujeto}</td><td>${regla.patron}</td><td>${regla.efecto}</td>

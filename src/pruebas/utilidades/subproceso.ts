@@ -1,4 +1,5 @@
-import { resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { crearEntornoAislado } from "./entorno-aislado";
 
 const raiz = resolve(import.meta.dir, "../..");
@@ -38,6 +39,12 @@ async function primeraLinea(salida: ReadableStream<Uint8Array>): Promise<string>
 
 export async function lanzarServidor(temporal: string, variables: Record<string, string>):
   Promise<{ direccion: string; puerto: number; detener(): Promise<void> }> {
+  // Precondición del servidor en las pruebas: almacén temporal con esquema explícito.
+  const almacen = variables.RIGE_ALMACEN ?? temporal;
+  if (!existsSync(join(almacen, "rige.db"))) {
+    const esquema = lanzar(temporal, ["esquema"], variables);
+    if (esquema.codigo !== 0) throw new Error(`No se pudo preparar el almacén de prueba: ${esquema.error}`);
+  }
   const puerto = Number(variables.RIGE_PUERTO ?? puertoLibre());
   const proceso = Bun.spawn([process.execPath, "paquetes/rige/arranque/rige.ts", "servir"], {
     cwd: raiz,

@@ -1,6 +1,6 @@
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import { versionSoportada } from "./descriptor";
-import { buscarEjecutable } from "./ejecutables";
+import { buscarEjecutable, nombresEjecutable } from "./ejecutables";
 
 export type VersionInstalada =
   | { readonly estado: "soportada" }
@@ -16,11 +16,8 @@ function esPaquete(valor: unknown): valor is { name: string; version?: unknown }
   return typeof valor === "object" && valor !== null && "name" in valor && valor.name === "opencode-ai";
 }
 
-export function detectarVersion(entorno: EntornoLectura, proyecto: string): VersionInstalada {
-  const nombres = entorno.plataforma === "win32"
-    ? (entorno.variable("PATHEXT") ?? ".com;.exe;.bat;.cmd").split(";").filter(Boolean).map(extension => `opencode${extension.toLowerCase()}`)
-    : ["opencode"];
-  const ejecutable = buscarEjecutable(entorno, proyecto, nombres);
+export function detectarVersion(entorno: EntornoLectura, proyecto: string, declaraciones: Set<string> = new Set()): VersionInstalada {
+  const ejecutable = buscarEjecutable(entorno, proyecto, nombresEjecutable(entorno, "opencode"), declaraciones);
   if (ejecutable === undefined) return { estado: "no-determinada", motivo: "ejecutable-no-encontrado" };
   let actual = entorno.padre(entorno.real(ejecutable));
   let ilegible = false;

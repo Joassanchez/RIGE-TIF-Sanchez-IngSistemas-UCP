@@ -12,6 +12,7 @@ export interface EntornoLectura {
   /** Valor literal, incluso vacio o con espacios; undefined solo si no existe. */
   variable(nombre: string): string | undefined;
   tipo(ruta: string): TipoRuta;
+  examinar(ruta: string): TipoRuta | "inaccesible";
   leer(ruta: string): ArchivoLeido;
   /** Ruta fisica con los enlaces resueltos; la ruta existe. */
   real(ruta: string): string;

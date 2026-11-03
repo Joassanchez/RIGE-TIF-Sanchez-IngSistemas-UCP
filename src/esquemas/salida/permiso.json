@@ -192,6 +192,22 @@
     },
     "porDefecto": {
       "type": "boolean"
+    },
+    "herramienta": {
+      "type": "object",
+      "properties": {
+        "nombre": {
+          "type": "string"
+        },
+        "ofrecida": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "nombre",
+        "ofrecida"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [

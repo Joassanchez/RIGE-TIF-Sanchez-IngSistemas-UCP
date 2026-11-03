@@ -84,7 +84,7 @@ describe("T2-19 R-6", () => {
     const { plataforma, ...datos } = structuredClone(directo.resolucion.contexto);
     const noLeer = (): never => { throw new Error("Una resolucion guardada no consulta el entorno actual."); };
     const guardado: ContextoOpenCode = { ...datos, parametros: datos.parametros as ContextoOpenCode["parametros"],
-      entorno: { plataforma, variable: noLeer, tipo: noLeer, leer: noLeer, listar: noLeer, real: noLeer,
+      entorno: { plataforma, variable: noLeer, tipo: noLeer, examinar: noLeer, leer: noLeer, listar: noLeer, real: noLeer,
         resumir: directo.entorno.resumir, rutasPara: directo.entorno.rutasPara,
         ...directo.entorno.rutasPara(plataforma), relativa: (d, h) => win32.relative(win32.resolve("Z:\\", d), h) } };
     const solicitud = { herramienta: "edit", objetivo: "C:\\proyecto\\a.txt" };

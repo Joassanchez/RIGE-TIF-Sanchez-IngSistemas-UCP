@@ -1115,3 +1115,24 @@ capturas de T3-08 corresponden a escenarios nuevos. La captura opcional
 `registro` lee los archivos de `hogar/opencode/log` tras invocar el binario sin
 `--print-logs`; no expone su contenido. La guarda de sustituciones rechaza
 cualquier valor de `procedencia.entorno` en la captura, salvo nombres nativos.
+
+### Herramientas ofrecidas y resumen del ecosistema (T3-10)
+
+La respuesta de permiso incluye `herramienta: { nombre, ofrecida }` para las
+once herramientas de acción. La respuesta de hallazgos incluye `resumen`
+con conteos de agentes, comandos, entradas y los seis tipos de hallazgo.
+Con resolución incompleta, `resumen.elementos` es `null`. La CLI emite estos
+datos en JSON y la web los presenta junto con la misma respuesta.
+
+En Windows, las instalaciones de OpenCode por pnpm y bun pueden producir `version-no-determinada` con motivo `paquete-no-encontrado`: sus almacenes globales no se ubican junto al ejecutable (ADR-106). RIGE conserva los resultados y emite la advertencia.
+
+Verificación de T3-10, con `RIGE_ALMACEN` temporal:
+
+```powershell
+bun ./herramientas/tipos-salida.ts
+bun test --timeout 30000
+bun run verificar
+bun run cobertura
+bun run referencias --raiz (npm.cmd root -g)
+bun run decisiones --raiz (npm.cmd root -g)
+```

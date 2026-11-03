@@ -13,6 +13,7 @@ export interface PoliticaDecision {
 }
 export interface Permisos extends PoliticaDecision {
   readonly plantillas: PlantillasExplicacion;
+  herramienta?(nombre: string, reglas: readonly ReglaCadena[], plataforma: string): { readonly nombre: string; readonly ofrecida: boolean } | undefined;
   evaluar(reglas: readonly ReglaCadena[], sujeto: string, objetivo: string, plataforma: string): EvaluacionPermiso;
 }
 export interface RastroDecision {

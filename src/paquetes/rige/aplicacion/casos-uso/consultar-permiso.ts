@@ -31,7 +31,9 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, solicitud: 
   const evaluacion = motivoSinDecision !== null ? { determinante: null, coincidentes: [] }
     : adaptador.permisos.evaluar(cadena.valor.reglas, sujeto, objetivoEvaluado, contexto.entorno.plataforma);
   const { coincidentes, ...decision } = decidir(cadena.valor, { sujeto, objetivo: objetivoEvaluado }, { ...adaptador.permisos, ...evaluacion }, motivoSinDecision);
-  const rastro = { ...decision,
+  const estadoHerramienta = adaptador.permisos.herramienta?.(herramienta ?? solicitud.sujeto!, cadena.valor.reglas, contexto.entorno.plataforma);
+  const rastro = {
+    ...(estadoHerramienta === undefined ? {} : { herramienta: estadoHerramienta }), ...decision,
     consulta: { ...decision.consulta, objetivo,
       forma: herramienta === undefined ? "sujeto" as const : "herramienta" as const, ...(herramienta === undefined ? {} : { herramienta }) },
     declaraciones: [...decision.declaraciones, ...cadena.valor.declaraciones],

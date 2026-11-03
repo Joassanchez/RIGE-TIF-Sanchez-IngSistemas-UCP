@@ -9,6 +9,7 @@ export function crearEntornoMemoria(opciones: {
   readonly plataforma?: string;
   readonly rutas?: "win32";
   readonly enlaces?: Readonly<Record<string, string>>;
+  readonly inaccesibles?: readonly string[];
 }): EntornoLectura {
   const rutas = opciones.rutas === "win32" ? win32 : posix;
   const archivos = new Map(Object.entries(opciones.archivos).map(([ruta, texto]) => [rutas.normalize(ruta), texto]));
@@ -25,6 +26,10 @@ export function crearEntornoMemoria(opciones: {
     tipo(ruta) {
       const normalizada = rutas.normalize(ruta);
       return archivos.has(normalizada) ? "archivo" : directorios.has(normalizada) ? "directorio" : "inexistente";
+    },
+    examinar(ruta) {
+      const normalizada = rutas.normalize(ruta);
+      return opciones.inaccesibles?.some(r => rutas.normalize(r) === normalizada) ? "inaccesible" : this.tipo(ruta);
     },
     leer(ruta) {
       const texto = archivos.get(rutas.normalize(ruta));

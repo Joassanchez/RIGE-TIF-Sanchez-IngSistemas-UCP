@@ -1,0 +1,27 @@
+{
+  "model": "anthropic/claude-sonnet-4-20250514",
+  "agent": {
+    "a": {
+      "permission": {
+        "edit": {
+          "*": "deny"
+        }
+      }
+    },
+    "b": {
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "src/*": "allow"
+        }
+      }
+    },
+    "c": {
+      "permission": {
+        "bash": {
+          "*": "deny"
+        }
+      }
+    }
+  }
+}

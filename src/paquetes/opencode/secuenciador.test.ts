@@ -32,6 +32,7 @@ describe("V1-03 S-4", () => {
     expect(reglas).toEqual({
       "hallazgos-parciales": "Una entrada impide cargar la configuración; no se evalúan los hallazgos que requieren la resolución.",
       "wellknown-no-observada": "RIGE no lee las credenciales de auth.json; una entrada wellknown puede definir para OpenCode una variable que RIGE informa sin valor.",
+      "path-inaccesible": "Se omitieron candidatos inaccesibles en PATH (EACCES o EPERM).",
       "version-no-determinada": "No se pudo determinar la versión instalada de OpenCode; los resultados corresponden a OpenCode 1.18.25.",
       "ejecutable-no-encontrado": "No se encontró un archivo ejecutable opencode en el PATH del proceso de RIGE.",
       "paquete-no-encontrado": "No se encontró el package.json del paquete opencode-ai del ejecutable encontrado.",

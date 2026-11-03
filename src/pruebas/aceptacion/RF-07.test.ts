@@ -244,6 +244,8 @@ describe("RF-07 referencias-no-resueltas T3-05 R-6", () => {
 describe("RF-07 CA-2 T3-05 R-7", () => {
   test("respuesta determinista sin valores sustituidos", () => {
     const e = preparar("v3-sustituciones");
+    // Evita que el centinela coincida con la clave pública regla-sin-efecto del resumen.
+    e.env.RIGE_PRUEBA_COMENTARIO = "MARCA-COMENTARIO-T3-10";
     const a = obtener(e.dependencias(), e.proyecto);
     expect(obtener(e.dependencias(), e.proyecto)).toEqual(a);
     const texto = JSON.stringify(a);

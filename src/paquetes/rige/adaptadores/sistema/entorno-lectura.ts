@@ -30,6 +30,17 @@ export class EntornoLecturaSistema implements EntornoLectura {
     }
   }
 
+  examinar(ruta: string): TipoRuta | "inaccesible" {
+    try {
+      const estado = statSync(ruta);
+      return estado.isFile() ? "archivo" : estado.isDirectory() ? "directorio" : "otro";
+    } catch (error) {
+      if (error instanceof Error && "code" in error && (error.code === "EACCES" || error.code === "EPERM")) return "inaccesible";
+      if (ausente(error)) return "inexistente";
+      throw error;
+    }
+  }
+
   leer(ruta: string): ArchivoLeido {
     const bytes = readFileSync(ruta);
     return { texto: bytes.toString("utf8"), resumen: createHash("sha256").update(bytes).digest("hex") };

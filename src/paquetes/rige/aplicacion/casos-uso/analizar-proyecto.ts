@@ -24,7 +24,7 @@ export function prepararAnalisis(dependencias: DependenciasAnalisis, proyecto: s
     const { plataforma, ...datos } = resolucion.contexto;
     const actual = dependencias.entorno;
     const noLeer = (): never => { throw new Error("Una resolución guardada no consulta el entorno actual."); };
-    const entorno: EntornoLectura = { plataforma, variable: noLeer, tipo: noLeer, leer: noLeer, listar: noLeer, real: noLeer,
+    const entorno: EntornoLectura = { plataforma, variable: noLeer, tipo: noLeer, examinar: noLeer, leer: noLeer, listar: noLeer, real: noLeer,
       resumir: texto => actual.resumir(texto), rutasPara: plataforma => actual.rutasPara(plataforma),
       ...actual.rutasPara(plataforma) };
     return { exito: true, valor: { resolucion, contexto: { ...datos, entorno } } };

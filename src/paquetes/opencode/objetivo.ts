@@ -4,7 +4,7 @@ import type { ContextoOpenCode } from "./contexto";
 import { prepararSujeto } from "./comando";
 import { baseRelativa } from "./base-relativa";
 
-const herramientas = ["read", "edit", "write", "apply_patch", "bash", "glob", "grep", "webfetch", "task", "todowrite", "skill"];
+export const herramientas = ["read", "edit", "write", "apply_patch", "bash", "glob", "grep", "webfetch", "task", "todowrite", "skill"];
 
 export function prepararConsulta(contexto: ContextoOpenCode, solicitud: SolicitudPermiso): Resultado<ObjetivoPermiso, ErrorAnalisis> {
   const { proyecto, entorno, parametros: { worktree } } = contexto;

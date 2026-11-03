@@ -1,7 +1,7 @@
 import type { ErrorAnalisis } from "@rige/nucleo/contrato/adaptador";
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { Resultado } from "@rige/nucleo/resultado";
-import { buscarEjecutable } from "./ejecutables";
+import { buscarEjecutable, nombresEjecutable } from "./ejecutables";
 
 export interface Worktree { readonly worktree: string; readonly declaraciones: readonly string[] }
 
@@ -12,9 +12,9 @@ export function descubrirWorktree(proyecto: string, entorno: EntornoLectura): Re
       codigo: "via-no-soportada", mensaje: `La detección del árbol no incorpora ${nombre}.` } };
   }
   const resolver = (base: string, ruta: string) => entorno.esAbsoluta(ruta) ? entorno.unir(ruta) : entorno.unir(base, ruta);
-  const ejecutables = entorno.plataforma === "win32" ? ["git", "git.exe", "git.cmd"] : ["git"];
-  const hayGit = buscarEjecutable(entorno, proyecto, ejecutables) !== undefined;
-  if (!hayGit) return { exito: true, valor: { worktree: "/", declaraciones: ["git-no-encontrado"] } };
+  const declaraciones = new Set<string>();
+  const hayGit = buscarEjecutable(entorno, proyecto, nombresEjecutable(entorno, "git"), declaraciones) !== undefined;
+  if (!hayGit) return { exito: true, valor: { worktree: "/", declaraciones: [...declaraciones, "git-no-encontrado"] } };
 
   function estructura(git: string): string | null {
     if (entorno.tipo(git) !== "directorio" || entorno.tipo(entorno.unir(git, "HEAD")) !== "archivo") return null;
@@ -38,7 +38,6 @@ export function descubrirWorktree(proyecto: string, entorno: EntornoLectura): Re
     }
     return false;
   }
-  const declaraciones = new Set<string>();
   let actual = entorno.unir(proyecto);
   for (;;) {
     // Un repositorio desnudo no representa el arbol de trabajo consultado.

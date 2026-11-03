@@ -158,12 +158,10 @@ describe("T3-08 R-4", () => {
         estado: "cubierto", escenarios: ["v2-decision", "v3-sustituciones", "v3-sin-efecto"],
       });
     }
-    expect(aplazados["RF-10 CA-1"]).toBe("T3-10");
-    expect(aplazados["RF-10 CA-2"]).toBe("T3-10");
-    expect(aplazados["RF-10 CA-3"]).toBe("T3-10");
-    expect(aplazados["RF-11 CA-1"]).toBe("T3-10");
-    expect(aplazados["RNF-08 CA-1"]).toBe("T3-10");
-    expect(aplazados["RNF-08 CA-2"]).toBe("T3-10");
+    expect(aplazados).toEqual({});
+    for (const id of ["RF-10 CA-1", "RF-10 CA-2", "RF-10 CA-3", "RF-11 CA-1", "RNF-08 CA-1", "RNF-08 CA-2"]) {
+      expect(informe.items.find(item => item.id === id)).toMatchObject({ estado: "cubierto" });
+    }
 
     // informarCobertura marca "pendiente" solo cuando item.iteracion > manifiesto.iteracion
     for (const item of informe.items) {
@@ -172,7 +170,7 @@ describe("T3-08 R-4", () => {
       }
     }
 
-    // validarManifiesto no debe dar errores hoy con los aplazados
+    // validarManifiesto no debe dar errores con toda la iteracion cubierta
     const errores = validarManifiesto(manifiesto, matrizActual, escenarios, raiz);
     const erroresCobertura = errores.filter(e => e.includes("sin comprobacion") || e.includes("sin cobertura"));
     expect(erroresCobertura).toEqual([]);

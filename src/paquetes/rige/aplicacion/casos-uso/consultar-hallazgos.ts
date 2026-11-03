@@ -43,6 +43,7 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
   const incompleta = analizadas.some(a => a.ilegible?.consecuencia === "falla");
   const motivos: string[] = incompleta ? ["hallazgos-parciales"] : [];
   if (hallazgos.some(h => h.tipo === "sustitucion-sin-valor")) motivos.push("wellknown-no-observada");
+  let elementosResumen: RespuestaHallazgos["resumen"]["elementos"] = null;
   let reglasResolucion: Readonly<Record<string, string>> = {};
   if (!incompleta) {
     const resuelta = resolverDesdeLecturas(adaptador, canonica, entorno, contexto, entradas, lecturas, huellas);
@@ -54,7 +55,13 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
       hallazgos.push(...elementos.hallazgos);
       motivos.push(...elementos.motivos);
     }
-    reglasResolucion = resuelta.valor.reglas;
+    const resolucion = resuelta.valor;
+    elementosResumen = {
+      agentes: adaptador.listarAgentes(resolucion, contexto).agentes.filter(a => a.estado === "activo" || a.estado === "no-observado").length,
+      comandos: new Set([...resolucion.valores, ...resolucion.noResueltas].filter(v => v.ruta[0] === "command" && v.ruta.length >= 2).map(v => v.ruta[1]!)).size,
+      entradas: entradas.filter(e => e.condicion === "observada" || e.condicion === "definida").length,
+    };
+    reglasResolucion = resolucion.reglas;
   }
   const declaraciones = [...contexto.declaraciones];
   const codigos = [...new Set([...Object.keys(reglasResolucion), ...declaraciones, ...motivos])].sort();
@@ -65,6 +72,14 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
   return { exito: true, valor: { esquema: 2, proyecto: canonica.replaceAll("\\", "/"), entradas,
     resumenEntradas: resumirEntradas(entradas, huellas, lecturas.flatMap(l => l.declaraciones.flatMap(d => d.sustituciones ?? [])), texto => entorno.resumir(texto)),
     incompleta, motivos, declaraciones, reglas,
+    resumen: { elementos: elementosResumen, hallazgos: {
+      "entrada-ilegible": hallazgos.filter(h => h.tipo === "entrada-ilegible").length,
+      "entrada-descartada": hallazgos.filter(h => h.tipo === "entrada-descartada").length,
+      "sustitucion-sin-valor": hallazgos.filter(h => h.tipo === "sustitucion-sin-valor").length,
+      "referencia-no-resuelta": hallazgos.filter(h => h.tipo === "referencia-no-resuelta").length,
+      "regla-sin-efecto": hallazgos.filter(h => h.tipo === "regla-sin-efecto").length,
+      "elemento-sin-uso": hallazgos.filter(h => h.tipo === "elemento-sin-uso").length,
+    } },
     hallazgos: ordenarHallazgos(hallazgos).map(h => ({ ...h, localizacion: localizacion(h.entrada.referencia, h.posicion),
       ...((opciones?.explicar ?? true) ? { explicacion: explicarHallazgo(h, adaptador.plantillasHallazgo) } : {}) })) } };
 }

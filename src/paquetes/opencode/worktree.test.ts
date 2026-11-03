@@ -50,9 +50,9 @@ describe("T2-08 descubrimiento autorizado ADR-101", () => {
     const e = { ...entorno(head, [...estructura, "/win/git.exe"]), plataforma: "win32" };
     expect(descubrirWorktree("/w", { ...e, variable: clave => clave === "PATH" ? "/win" : undefined }))
       .toMatchObject({ valor: { worktree: "/", declaraciones: ["git-no-encontrado"] } });
-    for (const nombre of ["git", "git.exe", "git.cmd"]) {
+    for (const nombre of ["git.exe", "git.cmd"]) {
       expect(descubrirWorktree("/w", { ...e, variable: clave => clave === "PATH" ? "/sin;\"/bin\"" : undefined,
-        tipo: ruta => ruta.startsWith("/bin/") ? ruta === `/bin/${nombre}` ? "archivo" : "inexistente" : e.tipo(ruta) }))
+        examinar: ruta => ruta.startsWith("/bin/") ? ruta === `/bin/${nombre}` ? "archivo" : "inexistente" : e.tipo(ruta) }))
         .toMatchObject({ valor: { worktree: "/w" } });
     }
     expect(descubrirWorktree("/w", { ...entorno({ ...head, "/w/git": "" }, estructura), variable: () => undefined }))

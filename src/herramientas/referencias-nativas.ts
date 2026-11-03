@@ -16,6 +16,7 @@ type Referencia = {
   readonly cadenas: Record<string, unknown[]>;
   readonly valoresAgentes?: Record<string, Record<string, unknown>>;
   readonly agentes?: readonly { readonly nombre: string; readonly modo: string }[];
+  readonly herramientas?: Record<string, Record<string, boolean>>;
   readonly comandos?: readonly string[];
   readonly registro?: { readonly codigo: number; readonly diagnosticoVisible: boolean; readonly avisoEnRegistro: boolean };
   readonly falla?: { readonly codigo: number; readonly archivo: string; readonly linea?: number; readonly columna?: number };
@@ -37,6 +38,7 @@ function entornoBase(): Record<string, string> {
     && /^(PATH|SystemRoot)$/i.test(nombre))) as Record<string, string>;
 }
 
+const herramientasAccion = ["read", "edit", "write", "apply_patch", "bash", "glob", "grep", "webfetch", "task", "todowrite", "skill"];
 const agentesNativos = ["build", "plan", "general", "explore", "compaction", "title", "summary"];
 
 function comprobarProteccion(valor: unknown, referencia: Referencia, env: Record<string, string>): void {
@@ -153,6 +155,7 @@ function ejecutar(): number {
         if (diferencias.length) codigo = 1;
         continue;
       }
+      const herramientas: Referencia["herramientas"] = referencia.herramientas === undefined ? undefined : {};
       const cadenas: Record<string, unknown[]> = {};
       const valoresAgentes: Record<string, Record<string, unknown>> = {};
       let valores: Record<string, unknown> | undefined;
@@ -168,6 +171,10 @@ function ejecutar(): number {
           throw new Error(`Comando nativo fallido (codigo ${proceso.exitCode})${protegido ? "." : `: ${proceso.stderr.toString().trim()}`}`);
         }
         const salida = JSON.parse(proceso.stdout.toString());
+        if (herramientas !== undefined && Object.hasOwn(referencia.herramientas!, agente)) {
+          if (typeof salida.tools !== "object" || salida.tools === null || Object.values(salida.tools).some(v => typeof v !== "boolean")) throw new Error("tools nativas inválidas.");
+          herramientas[agente] = Object.fromEntries(Object.entries(salida.tools).filter(([nombre]) => herramientasAccion.includes(nombre))) as Record<string, boolean>;
+        }
         const sustituidas = (referencia.procedencia.sustituidas ?? []).filter(([nombre]) => nombre === agente).map(([, clave]) => clave);
         for (const clave of sustituidas) {
           if (!Object.hasOwn(salida, clave)) throw new Error("Clave sustituida ausente en la captura nativa.");
@@ -228,6 +235,7 @@ function ejecutar(): number {
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
             comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
+          ...(herramientas === undefined ? {} : { herramientas }),
           valores: seleccionados, valoresAgentes, cadenas, ...(agentes === undefined ? {} : { agentes }), ...(comandos === undefined ? {} : { comandos }),
           ...(registro === undefined ? {} : { registro }),
         };
@@ -237,6 +245,7 @@ function ejecutar(): number {
       const diferencias = regenerar ? [] : [...comparar(referencia.valores, valores), ...comparar(referencia.cadenas, cadenas),
         ...comparar(referencia.valoresAgentes ?? {}, valoresAgentes),
         ...(agentes === undefined ? [] : comparar({ agentes: referencia.agentes }, { agentes })),
+        ...(herramientas === undefined ? [] : comparar({ herramientas: referencia.herramientas }, { herramientas })),
         ...(comandos === undefined ? [] : comparar({ comandos: referencia.comandos }, { comandos })),
         ...(registro === undefined ? [] : comparar({ registro: referencia.registro }, { registro }))];
       comprobarProteccion(diferencias, referencia, env);

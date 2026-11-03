@@ -44,6 +44,84 @@
       "items": {
         "$ref": "#/$defs/Hallazgo"
       }
+    },
+    "resumen": {
+      "type": "object",
+      "properties": {
+        "elementos": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "agentes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "comandos": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "entradas": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "agentes",
+                "comandos",
+                "entradas"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hallazgos": {
+          "type": "object",
+          "properties": {
+            "entrada-ilegible": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "entrada-descartada": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sustitucion-sin-valor": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "referencia-no-resuelta": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "regla-sin-efecto": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "elemento-sin-uso": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "entrada-ilegible",
+            "entrada-descartada",
+            "sustitucion-sin-valor",
+            "referencia-no-resuelta",
+            "regla-sin-efecto",
+            "elemento-sin-uso"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "elementos",
+        "hallazgos"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -55,7 +133,8 @@
     "entradas",
     "incompleta",
     "motivos",
-    "hallazgos"
+    "hallazgos",
+    "resumen"
   ],
   "additionalProperties": false,
   "$defs": {
