@@ -10,7 +10,7 @@ export function paginaHallazgos(respuesta: RespuestaHallazgos): Response {
 <h2>Resumen</h2>
 ${respuesta.resumen.elementos === null ? html`<p>Conteos de elementos no disponibles: resolución incompleta.</p>` : html`<p>Agentes: ${respuesta.resumen.elementos.agentes}. Comandos: ${respuesta.resumen.elementos.comandos}. Entradas: ${respuesta.resumen.elementos.entradas}.</p>`}
 <ul>${Object.entries(respuesta.resumen.hallazgos).map(([tipo, cantidad]) => html`<li>${tipo}: ${cantidad}</li>`)}</ul>
-<table><thead><tr><th>Tipo</th><th>Localizaci?n</th><th>Explicaci?n</th></tr></thead>
+<table><thead><tr><th>Tipo</th><th>Localización</th><th>Explicación</th></tr></thead>
 <tbody>${respuesta.hallazgos.map(hallazgo => html`<tr><td>${hallazgo.tipo}</td><td>${hallazgo.localizacion}</td><td>${hallazgo.explicacion}</td></tr>`)}</tbody></table>
 ${respuesta.incompleta ? html`<p>Hallazgos parciales.</p>` : html``}
 <ul>${respuesta.motivos.map(motivo => html`<li>${respuesta.reglas[motivo]}</li>`)}</ul>
