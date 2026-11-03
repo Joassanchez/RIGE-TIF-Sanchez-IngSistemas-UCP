@@ -13,7 +13,8 @@
     "prueba:lenta": "bun ./herramientas/prueba-lenta.ts",
     "referencias": "bun ./herramientas/referencias-nativas.ts",
     "decisiones": "bun ./herramientas/decisiones-nativas.ts",
-    "cobertura": "bun ./herramientas/cobertura.ts"
+    "cobertura": "bun ./herramientas/cobertura.ts",
+    "sin-red": "bun ./herramientas/sin-red.ts"
   },
   "devDependencies": {
     "typescript": "7.0.2",

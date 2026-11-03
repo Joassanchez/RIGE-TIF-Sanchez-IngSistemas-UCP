@@ -8,7 +8,8 @@ de un byte, inventario agregado, referencia alterada, eliminación de una
 comprobación exigida, cita inexistente y forma del inventario de defectos.
 El manifiesto está en la iteración 3: todo ítem de esa iteración o anterior
 exige una comprobación, salvo `aplazados` explícitos. RNF-05 CA-1/CA-2
-se aplazan a T3-09; RF-10 CA-1..CA-3, RF-11 CA-1 y RNF-08 CA-1/CA-2,
+se vinculan a T3-09 R-3/R-1 en los tres escenarios representativos; R-3 requiere
+Linux con strace y se omite en Windows. RF-10 CA-1..CA-3, RF-11 CA-1 y RNF-08 CA-1/CA-2,
 a T3-10. Solo los ítems de iteraciones futuras se informan como pendientes.
 `corte: null` y `retiros: []` no
 declaran resultados del corte ni del conjunto congelado.

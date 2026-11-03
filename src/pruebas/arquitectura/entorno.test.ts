@@ -198,7 +198,8 @@ describe("T0-04 andamiaje", () => {
     expect(manifiesto).toMatchObject({ name: "rige", version: versionRige, private: true,
       packageManager: "bun@1.3.14", workspaces: ["paquetes/*"],
       devDependencies: { typescript: "7.0.2", "@types/bun": "1.3.14" } });
-    expect(Object.keys(manifiesto.scripts).sort()).toEqual(["cobertura", "decisiones", "esquema", "prueba:lenta", "referencias", "rige", "servir", "verificar"]);
+    expect(Object.keys(manifiesto.scripts).sort()).toEqual(["cobertura", "decisiones", "esquema", "prueba:lenta", "referencias", "rige", "servir", "sin-red", "verificar"]);
+    expect(manifiesto.scripts["sin-red"]).toBe("bun ./herramientas/sin-red.ts");
     for (const nombre of ["nucleo", "opencode", "rige"]) {
       const paquete = await Bun.file(join(raiz, "paquetes", nombre, "package.json")).json();
       expect(paquete.name).toBe(`@rige/${nombre}`);

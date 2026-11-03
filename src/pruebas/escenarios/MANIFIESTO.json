@@ -443,6 +443,18 @@
           "archivo": "pruebas/aceptacion/RF-12.test.ts",
           "describe": "RF-12 CA-2 T3-07 R-6",
           "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RNF-05 CA-1",
+          "archivo": "pruebas/aceptacion/RNF-05.test.ts",
+          "describe": "T3-09 R-3",
+          "fuente": "derivada"
+        },
+        {
+          "item": "RNF-05 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-05.test.ts",
+          "describe": "T3-09 R-1",
+          "fuente": "derivada"
         }
       ]
     },
@@ -1537,6 +1549,18 @@
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 CA-4 T3-07 R-3",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-05 CA-1",
+          "archivo": "pruebas/aceptacion/RNF-05.test.ts",
+          "describe": "T3-09 R-3",
+          "fuente": "derivada"
+        },
+        {
+          "item": "RNF-05 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-05.test.ts",
+          "describe": "T3-09 R-1",
+          "fuente": "derivada"
         }
       ]
     },
@@ -1644,6 +1668,18 @@
           "archivo": "pruebas/aceptacion/RF-12.test.ts",
           "describe": "RF-12 CA-2 T3-07 R-6",
           "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RNF-05 CA-1",
+          "archivo": "pruebas/aceptacion/RNF-05.test.ts",
+          "describe": "T3-09 R-3",
+          "fuente": "derivada"
+        },
+        {
+          "item": "RNF-05 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-05.test.ts",
+          "describe": "T3-09 R-1",
+          "fuente": "derivada"
         }
       ]
     },
@@ -2272,8 +2308,6 @@
   ],
   "iteracion": 3,
   "aplazados": {
-    "RNF-05 CA-1": "T3-09",
-    "RNF-05 CA-2": "T3-09",
     "RF-10 CA-1": "T3-10",
     "RF-10 CA-2": "T3-10",
     "RF-10 CA-3": "T3-10",

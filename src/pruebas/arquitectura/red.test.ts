@@ -4,6 +4,7 @@ import { analizarFuente, tokenizar, type HallazgoDependencia } from "../utilidad
 
 const raiz = resolve(import.meta.dir, "../..");
 const clienteReservado = "pruebas/utilidades/cliente-http-local.ts";
+const preloadReservado = "pruebas/utilidades/sin-red-preload.ts";
 const moduloCliente = /^(?:node:)?(?:http|https|http2|net|tls|dgram)(?:\/|$)|^undici(?:\/|$)/;
 
 describe("M-5 tokenizador compartido", () => {
@@ -20,7 +21,8 @@ function analizarRed(archivo: string, codigo: string): HallazgoDependencia[] {
   const hallazgos = analizarFuente(archivo.replace(/\.test(?=\.)/, ""), codigo).filter((hallazgo) => {
     const destino = hallazgo.motivo.split(" -> ").at(-1)!;
     return moduloCliente.test(destino)
-      && !(archivo === clienteReservado && destino === "node:http");
+      && !(archivo === clienteReservado && destino === "node:http")
+      && !(archivo === preloadReservado && (destino === "node:net" || destino === "node:tls"));
   }).map((hallazgo) => ({ ...hallazgo, archivo }));
   if (!archivo.startsWith("paquetes/") && archivo !== clienteReservado) return hallazgos;
 
@@ -83,6 +85,17 @@ describe("T0-07 sin clientes de red", () => {
     }
     expect(analizarRed(clienteReservado, 'import "node:https";').length).toBeGreaterThan(0);
     expect(analizarRed(clienteReservado, 'fetch("url");').length).toBeGreaterThan(0);
+  });
+  test("solo la ruta exacta de preload sin red puede importar node:net y node:tls", () => {
+    expect(analizarRed(preloadReservado, 'import { connect } from "node:net";')).toEqual([]);
+    expect(analizarRed(preloadReservado, 'import { connect } from "node:tls";')).toEqual([]);
+    for (const archivo of ["pruebas/utilidades/otro.ts", "pruebas/utilidades/cliente-http-local.ts",
+      "paquetes/rige/sin-red.ts", "pruebas/arquitectura/sonda.test.ts"]) {
+      expect(analizarRed(archivo, 'import { connect } from "node:net";').length).toBeGreaterThan(0);
+      expect(analizarRed(archivo, 'import { connect } from "node:tls";').length).toBeGreaterThan(0);
+    }
+    expect(analizarRed(preloadReservado, 'import "node:http";').length).toBeGreaterThan(0);
+    expect(analizarRed(preloadReservado, 'import "node:https";').length).toBeGreaterThan(0);
   });
   test("no deja pasar imports calculados ni módulos sin prefijo node", () => {
     expect(() => analizarRed("paquetes/nucleo/sonda.ts", 'import(destino);')).toThrow("no analizable");

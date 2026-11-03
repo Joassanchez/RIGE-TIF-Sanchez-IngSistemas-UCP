@@ -3,11 +3,14 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 
-export interface OpcionesEscenario { readonly git?: "raiz" | "proyecto" | "sintetico" | "ninguno" | "gitfile-roto" | "dir-invalido-anidado"; readonly rutasNativas?: boolean }
+export interface OpcionesEscenario { readonly git?: "raiz" | "proyecto" | "sintetico" | "ninguno" | "gitfile-roto" | "dir-invalido-anidado"; readonly rutasNativas?: boolean; readonly raizTemporal?: string }
 
 export function copiarEscenario(nombre: string, opciones: OpcionesEscenario = {}): { readonly raiz: string; readonly proyecto: string; borrar(): void } {
   const origen = join(import.meta.dir, "../escenarios", nombre);
-  const raiz = realpathSync.native(mkdtempSync(join(tmpdir(), "rige-escenario-")));
+  // Una ruta explicita se reserva de forma exclusiva: nunca se reutiliza una copia ajena.
+  const raiz = realpathSync.native(opciones.raizTemporal === undefined
+    ? mkdtempSync(join(tmpdir(), "rige-escenario-"))
+    : (mkdirSync(opciones.raizTemporal), opciones.raizTemporal));
   cpSync(origen, raiz, { recursive: true, filter: ruta => basename(ruta) !== "REFERENCIA.json" });
   function sustituir(directorio: string): void {
     for (const entrada of readdirSync(directorio, { withFileTypes: true })) {

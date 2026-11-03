@@ -152,8 +152,12 @@ describe("T3-08 R-4", () => {
 
     // Los criterios de iteracion 3 exigibles no aplazados deben estar cubiertos
     const aplazados = manifiesto.aplazados ?? {};
-    expect(aplazados["RNF-05 CA-1"]).toBe("T3-09");
-    expect(aplazados["RNF-05 CA-2"]).toBe("T3-09");
+    for (const id of ["RNF-05 CA-1", "RNF-05 CA-2"]) {
+      expect(aplazados[id]).toBeUndefined();
+      expect(informe.items.find(item => item.id === id)).toMatchObject({
+        estado: "cubierto", escenarios: ["v2-decision", "v3-sustituciones", "v3-sin-efecto"],
+      });
+    }
     expect(aplazados["RF-10 CA-1"]).toBe("T3-10");
     expect(aplazados["RF-10 CA-2"]).toBe("T3-10");
     expect(aplazados["RF-10 CA-3"]).toBe("T3-10");

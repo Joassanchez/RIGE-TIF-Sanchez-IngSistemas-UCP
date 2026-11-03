@@ -391,6 +391,23 @@ al corte conserva su obligación de prueba y requiere evidencia y autorización
 del autor; una falla de RIGE no autoriza un retiro. `retiros` registra todos
 los retiros desde la incorporación, incluidos los anteriores al corte.
 
+Verificación RNF-05 sin red (T3-09), desde `src/`:
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-sin-red-almacen'
+$referencia = Join-Path ([IO.Path]::GetTempPath()) 'rige-sin-red.json'
+bun test
+bun run sin-red --salida $referencia
+bun run sin-red --comparar $referencia
+```
+
+Se pueden repetir opciones `--escenario <id>`. En Linux, agregar `--strace`
+cuenta conexiones AF_INET, AF_INET6 y AF_UNIX. La preparación de Ubuntu 26.04
+y la comparación real con `docker run --network none`, con el repositorio
+montado en solo lectura, están en [herramientas/sin-red.md](herramientas/sin-red.md).
+Esa corrida la realiza el ingeniero. En Windows, la suite verifica la igualdad
+de las salidas con fetch, WebSocket, net y tls interceptados, y omite strace.
+
 ## 7. Estado del canal de construcción
 
 El archivo `.github/workflows/ci.yml` ejecuta en cada push, en `ubuntu-26.04` y `windows-latest` con Bun 1.3.14, `bun install --frozen-lockfile`, `bun run verificar` y `bun test`. Las pruebas de aceptación ligadas a criterios del catálogo son:
