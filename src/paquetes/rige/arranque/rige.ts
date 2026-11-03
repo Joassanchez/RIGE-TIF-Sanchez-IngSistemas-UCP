@@ -20,6 +20,7 @@ import { consultarPermisoGuardado, consultarAgentesGuardados } from "../aplicaci
 import { versionRige } from "../aplicacion/respuestas/estado";
 import { iniciarServidor } from "../interfaces/web/servidor";
 import { ejecutarCli, type Ensamblado } from "../interfaces/cli/ejecutar";
+import type { MedicionAnalisis } from "../aplicacion/casos-uso/analizar-proyecto";
 
 const configuracion = new ConfiguracionSistema({
   entorno: process.env,
@@ -27,9 +28,9 @@ const configuracion = new ConfiguracionSistema({
   rutaArchivo: resolve(import.meta.dir, "../../../rige.env"),
 });
 
-function ensamblar(comando: string): Ensamblado {
+function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
   const entorno = new EntornoLecturaSistema({ entorno: process.env, plataforma: process.platform });
-  const consultas = { adaptador: adaptadorOpenCode, entorno, rutas: entorno };
+  const consultas = { adaptador: adaptadorOpenCode, entorno, rutas: entorno, medicion };
   const casosConsulta = {
     consultarValores: (proyecto: string, agente: string, clave: string | undefined) => consultarValores(consultas, proyecto, agente, clave),
     consultarPermiso: (solicitud: Parameters<typeof consultarPermiso>[1]) => consultarPermiso(consultas, solicitud),

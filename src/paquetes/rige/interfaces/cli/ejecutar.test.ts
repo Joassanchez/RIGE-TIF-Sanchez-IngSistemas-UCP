@@ -8,6 +8,43 @@ import { consultarValores } from "../../aplicacion/casos-uso/consultar-valores";
 import { adaptadorFicticio } from "../../../../pruebas/utilidades/adaptador-ficticio";
 import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memoria";
 
+describe("T4-01 tiempos CLI", () => {
+  test("rechaza --tiempos fuera de consultas sin ensamblar", () => {
+    for (const comando of ["esquema", "servir"]) {
+      const resultado = ejecutar([comando, "--tiempos"], () => { throw new Error("No ensamblar"); });
+      expect(resultado.codigo).toBe(2);
+      expect(JSON.parse(resultado.error).error.mensaje).toBe(`${comando} no admite --tiempos.`);
+    }
+  });
+  test("instrumenta el caso de uso solo a pedido y emite tiempos despues de las advertencias", () => {
+    const argumentos = ["valores", "--proyecto", "/p", "--agente", "a"];
+    const deps = { adaptador: adaptadorFicticio,
+      entorno: crearEntornoMemoria({ archivos: { "/p/capa-a.json": '{"dato":1}', "/p/capa-b.json": '{}' } }),
+      rutas: { canonica: () => "/p" } };
+    let salidaNormal = "";
+    for (const medir of [false, true]) {
+      const errores: string[] = [];
+      let salida = "";
+      const codigo = ejecutarCli([...argumentos, ...(medir ? ["--tiempos"] : [])], (_, medicion) => {
+        expect(medicion !== undefined).toBe(medir);
+        return { exito: true, valor: { ...noWeb, prepararAlmacen: noWeb.consultarEstado,
+          consultarValores: (proyecto, agente, clave) => {
+            const resultado = consultarValores({ ...deps, medicion }, proyecto, agente, clave);
+            if (!resultado.exito) return resultado;
+            return { exito: true, valor: { ...resultado.valor, declaraciones: ["aviso"], reglas: { aviso: "Mensaje" } } };
+          } } };
+      }, { escribirSalida: texto => { salida += texto; }, escribirError: texto => errores.push(texto) }, ["aviso"]);
+      expect(codigo).toBe(0);
+      expect(errores[0]).toBe(JSON.stringify({ esquema: 2, advertencia: { codigo: "aviso", mensaje: "Mensaje" } }) + "\n");
+      expect(errores).toHaveLength(medir ? 2 : 1);
+      if (medir) {
+        expect(salida).toBe(salidaNormal);
+        expect(JSON.parse(errores[1]!).tiempos.lecturaMs).toBeGreaterThan(0);
+      } else salidaNormal = salida;
+    }
+  });
+});
+
 describe("T3-01 R-11 advertencias CLI", () => {
   test("solo consultas emiten las declaraciones seleccionadas en su orden, con lista opcional", () => {
     const deps = { adaptador: adaptadorFicticio,

@@ -11,6 +11,72 @@
 
 ## 2. Qué hace este prototipo
 
+T4-01 incorpora `--tiempos` en las consultas `valores`, `permiso`, `agentes`,
+`entradas` y `hallazgos`. En una consulta exitosa, agrega al final de `stderr`
+una línea JSON conforme a `esquemas/salida/tiempos.json`, con `esquema: 2`.
+Las advertencias preceden esa línea, cada una en su propio JSON. `stdout`
+conserva exactamente los mismos bytes que sin la opción. `esquema` y `servir`
+rechazan `--tiempos` con código 2 (`argumentos-invalidos`).
+
+Las etapas, en milisegundos de reloj monotónico, son:
+
+- `arranqueMs`: desde el inicio de `ejecutarCli` hasta llamar al caso de uso,
+  incluido el ensamblado.
+- `lecturaMs`: contexto, descubrimiento, lectura sintáctica y validación de vías,
+  hasta el límite señalado por el núcleo o el caso de uso.
+- `resolucionMs`: desde ese límite hasta terminar el caso de uso, incluida la
+  secuenciación, la fusión, la evaluación y la proyección que correspondan.
+- `salidaMs`: serialización JSON y llamada al canal de escritura de `stdout`.
+- `totalMs`: desde el inicio de `ejecutarCli` hasta antes de emitir los tiempos;
+  incluye la escritura de advertencias. No incluye cargar Bun ni los módulos.
+
+El arnés `medir:rnf07` copia `openchamber-doble` a un temporal, construye el
+entorno desde cero (solo hereda `PATH` y `SystemRoot`) y aísla allí
+`RIGE_ALMACEN`, el hogar y las rutas XDG/AppData. Conserva el `PATH` para
+detectar la instalación de OpenCode sin ejecutarla. El escenario tiene 14 LSP,
+12 agentes (el primero en JSON, los otros 11 en Markdown) y 20 comandos:
+32 archivos válidos, sin contenido redistribuido del proyecto público.
+Cada consulta de valores y permiso de `agent-1` se ejecuta diez veces
+consecutivas en subprocesos nuevos. El permiso consulta `bash` sobre
+`git status` y debe resolver `allow` con decisión completa. El arnés valida
+los JSON de resultados, advertencias y tiempos, e imprime mínimo, mediana y
+peor caso de cada etapa. `invocacionMs` mide además la pared del subproceso
+completo, incluido `bun run rige`; es la cifra usada para el umbral.
+
+Por defecto el informe es diagnóstico y no falla por rendimiento en CI.
+`--estricto` o `RNF07_ESTRICTO=1` hacen que termine con código 1 si el peor caso
+de cualquiera de las dos invocaciones es mayor o igual a 2000 ms. Las fallas
+de ejecución o de validación siempre producen código 1. El umbral solo se
+acredita en el contenedor Ubuntu 26.04 de referencia (ADR-054/055), con el
+escenario en su sistema de archivos, sin montarlo desde Windows. En Windows
+11 el desglose es diagnóstico; una corrida local no acredita Ubuntu.
+
+Desde `src/`, para comprobar T4-01 y ejecutar la medición:
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-t4-pruebas'
+bun ./herramientas/tipos-salida.ts
+bun test pruebas/aceptacion/RNF-07.test.ts --test-name-pattern 'CA-1.1'
+bun test pruebas/aceptacion/RNF-07.test.ts
+bun test paquetes/rige/interfaces/cli/ejecutar.test.ts paquetes/nucleo/resolucion/resolver.test.ts --test-name-pattern 'T4-01'
+bun test pruebas/aceptacion/RNF-07.test.ts paquetes/rige/interfaces/cli/ejecutar.test.ts paquetes/nucleo/resolucion/resolver.test.ts
+bun test herramientas/medir-rnf07.test.ts
+bun run rige -- valores --proyecto <ruta-del-proyecto> --agente agent-1 --tiempos
+bun run rige -- permiso --proyecto <ruta-del-proyecto> --agente agent-1 --herramienta bash --objetivo "git status" --tiempos
+bun run medir:rnf07
+bun run medir:rnf07 --estricto
+bun test
+bun run verificar
+```
+
+En Bash se puede usar `RIGE_ALMACEN="$(mktemp -d)" bun run medir:rnf07 --estricto`;
+el arnés crea y limpia su propia copia temporal en ambas plataformas.
+
+Si la prueba exhaustiva preexistente de T3-06 supera el límite de 5 s de Bun
+por la carga del equipo, la suite completa puede ejecutarse con
+`bun test --timeout 15000`. Esto amplía el plazo del ejecutor de pruebas;
+el umbral estricto de RNF-07 sigue siendo menor que 2000 ms.
+
 T3-01 comprueba la versión instalada de OpenCode (RF-05, ADR-102) antes de
 analizar las vías de configuración. Busca el primer `opencode` del `PATH`
 del proceso de RIGE; en Windows usa las extensiones de `PATHEXT` (por defecto
@@ -307,6 +373,7 @@ Se detiene el servidor con Ctrl+C antes de continuar.
 bun run verificar
 bun test
 bun run prueba:lenta
+bun run medir:rnf07
 ```
 
 `verificar` comprueba los tipos y la construcción y termina con código 0. Todas las pruebas pasan; `bun test` termina con código 0. Durante el desarrollo se ejecutan solo los archivos afectados con `bun test <archivos>`; las reglas de esta tarea se comprueban con `bun test pruebas/aceptacion/RF-03.test.ts paquetes/rige/aplicacion/errores.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts`.

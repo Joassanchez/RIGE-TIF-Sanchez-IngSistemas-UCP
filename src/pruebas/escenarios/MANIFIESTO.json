@@ -2133,6 +2133,61 @@
           "fuente": "referencia-binario"
         }
       ]
+    },
+    {
+      "id": "openchamber-doble",
+      "entradas": {
+        "proyecto/.opencode/agent/agent-10.md": "c35d4aeba794ba308f7caf300351be7a36aea530b81fa74d9add16e570c50dbe",
+        "proyecto/.opencode/agent/agent-11.md": "949c17ced33c66d08d6e10b1c55b67c44c3dca8a337c13dc4bfc985560a7db71",
+        "proyecto/.opencode/agent/agent-12.md": "202ea635960f6c1413d45b422e56bc9fa1dfd98133504b632b5044331e1a96fc",
+        "proyecto/.opencode/agent/agent-2.md": "982efd21de8e395b49750ff105e5107816e61fecfeb81bbce32fba5d73c636cb",
+        "proyecto/.opencode/agent/agent-3.md": "614fd3272dd2982e4155bd2b7581bb15491eca568a133090ccfa8ab4c3ddee27",
+        "proyecto/.opencode/agent/agent-4.md": "70a084398a102d2281cb0e59aa304212982c37115dc148a8b21d3d6d8c51da69",
+        "proyecto/.opencode/agent/agent-5.md": "92887ea11a5171f63d6bfde4d14bf3f9419604a2a75db49cb5db8d42ce6744f0",
+        "proyecto/.opencode/agent/agent-6.md": "a717bed7a25e359b98390bcb3416307934d305f4f032d0ee7cd966359a3f25b3",
+        "proyecto/.opencode/agent/agent-7.md": "27c9129dbc9a2bd2e280b37a715502846597b79e224c646ca0c5f1bd878f23dd",
+        "proyecto/.opencode/agent/agent-8.md": "f8f58be922cee65e2ec9570a42fc6951b73d665938ad9d28c774e0cbcf59763e",
+        "proyecto/.opencode/agent/agent-9.md": "4db6e4ef8cd2c993dca72379b9f28b0334354cd767132c761d5cff4b951de873",
+        "proyecto/.opencode/commands/comando-1.md": "832d993f005779129152dfe82ef8e6d386d6dd4dd01b7a4db8a8b70210b596a3",
+        "proyecto/.opencode/commands/comando-10.md": "8fcdde2d7b0a18ff0ac60226ff3b11025b727ea0c85ec6a0b94b364acd58cfc6",
+        "proyecto/.opencode/commands/comando-11.md": "2b41ca0fdd009142d285065cc3cba5cc55796bd8fa5d4aa0431c9d87d53fadf9",
+        "proyecto/.opencode/commands/comando-12.md": "496a4b842a4d8a9e738f8eb06e6a3db49afc2927d6a9593188e173b39cc94450",
+        "proyecto/.opencode/commands/comando-13.md": "dc0d145b4bbf115df25aaaa48ae4ee29bd87f0c284059ca2cb807582dbe66dba",
+        "proyecto/.opencode/commands/comando-14.md": "7fa38af95ed29f92d57d385404a031b2e03deb2b86a83906978300a658774473",
+        "proyecto/.opencode/commands/comando-15.md": "21a364df3e71afa4e5c416e0a222e92ff32869eb4d73598da8f3904bc613f794",
+        "proyecto/.opencode/commands/comando-16.md": "498effe944582b9082c4a56f8759adb9241cb828b7440a09db49fd0d956c8494",
+        "proyecto/.opencode/commands/comando-17.md": "c8599ef5adaa971bd3ad1eed454b66ca32405f5f3bd14196c0533cb40e32e1c5",
+        "proyecto/.opencode/commands/comando-18.md": "7c0ed3a7ec66b4ddabf0ea70e1bb4f910860559dcbd9647bf4a969fa4fa822f7",
+        "proyecto/.opencode/commands/comando-19.md": "b6890b1233ac8513d38d7c9b51e0a908572ce49e14e573311882958611fd1242",
+        "proyecto/.opencode/commands/comando-2.md": "7bc51ab7558742b7bf9650d84e89305ab6d0a3a867816e6497de14fafd47f667",
+        "proyecto/.opencode/commands/comando-20.md": "56ba6411d9ea939188296c099f4286c4296863460d752c6f0764b5157b3ae5dd",
+        "proyecto/.opencode/commands/comando-3.md": "29f38bfd225dcf1eb27c09300520c22cd5bc67ba08869eee2aba1ed456094848",
+        "proyecto/.opencode/commands/comando-4.md": "784f26caa5bfe222f420051d1482cb9fd90d8a2baf772e28a3e8930f98183830",
+        "proyecto/.opencode/commands/comando-5.md": "5a5e6eb704b07a8a5160ca68265240c2c4726c17c3e3ede37e58dfb80c5a1485",
+        "proyecto/.opencode/commands/comando-6.md": "4b83dad5ea610d6dfa632651fd1860ecad4a418b77c1aa7c3872257602d0a247",
+        "proyecto/.opencode/commands/comando-7.md": "d1026899d89e509b4d4dafbbce3f4c7efa1bccf33a99c5b0e579d337736700a1",
+        "proyecto/.opencode/commands/comando-8.md": "ef4f6c4fef7adfda5c279d17ed774dba6d8e78097b6905b51008e5faee447227",
+        "proyecto/.opencode/commands/comando-9.md": "b1fcaa51da4e5f4efb8d5313655efbcb8cc3c2e8b3c12c79f96d1afcfb736635",
+        "proyecto/.opencode/opencode.json": "42134d874211e05de3350fbfcac25f46f23ae12e852e5c696d88a93d9e5d6a1c"
+      },
+      "referencia": null,
+      "agentes": [
+        "agent-1",
+        "agent-2",
+        "agent-3",
+        "agent-4",
+        "agent-5",
+        "agent-6",
+        "agent-7",
+        "agent-8",
+        "agent-9",
+        "agent-10",
+        "agent-11",
+        "agent-12"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": []
     }
   ],
   "defectosSembrados": [

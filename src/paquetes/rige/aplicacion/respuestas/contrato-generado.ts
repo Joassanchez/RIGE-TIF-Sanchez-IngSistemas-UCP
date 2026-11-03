@@ -35,3 +35,5 @@ export type RespuestaHallazgos = { readonly "esquema": 2; readonly "proyecto": s
 export type RespuestaError = { readonly "esquema": 2; readonly "error": { readonly "codigo": string; readonly "mensaje": string; readonly "stack"?: string; }; };
 
 export type RespuestaAdvertencia = { readonly "esquema": 2; readonly "advertencia": { readonly "codigo": string; readonly "mensaje": string; }; };
+
+export type RespuestaTiempos = { readonly "esquema": 2; readonly "tiempos": { readonly "arranqueMs": number; readonly "lecturaMs": number; readonly "resolucionMs": number; readonly "salidaMs": number; readonly "totalMs": number; }; };

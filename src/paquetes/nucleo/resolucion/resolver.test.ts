@@ -10,6 +10,22 @@ const hoja = (ruta: readonly string[], valor: Declaracion["valor"], linea = 1): 
 });
 const ruta = ["agente", "a", "temperatura"];
 
+describe("T4-01 limite de fases", () => {
+  test("notifica una vez despues de todas las lecturas y antes de secuenciar, sin alterar la resolucion", async () => {
+    const { resolver: ejecutar } = await import("./resolver");
+    const { adaptador, entorno } = escenario([[hoja(ruta, 1)], [hoja(ruta, 2)]]);
+    const orden: string[] = [];
+    const instrumentado = { ...adaptador,
+      leer: (...args: Parameters<Adaptador["leer"]>) => { orden.push("leer"); return adaptador.leer(...args); },
+      secuenciar: (...args: Parameters<Adaptador["secuenciar"]>) => { orden.push("secuenciar"); return adaptador.secuenciar(...args); } };
+    const contexto = adaptador.contexto("/proyecto", entorno);
+    if (!contexto.exito) throw new Error(contexto.error.mensaje);
+    const resultado = ejecutar(instrumentado, "/proyecto", entorno, contexto.valor, () => orden.push("limite"));
+    expect(orden).toEqual(["leer", "leer", "limite", "secuenciar"]);
+    expect(resultado).toEqual(ejecutar(adaptador, "/proyecto", entorno, contexto.valor));
+  });
+});
+
 function escenario(capas: readonly (readonly Declaracion[])[], adicionales: readonly ViaUbicada[] = []) {
   const vias: ViaUbicada[] = capas.map((_, orden) => ({
     via: `capa-${orden}`, referencia: `/proyecto/capa-${orden}.json`, condicion: "observada",

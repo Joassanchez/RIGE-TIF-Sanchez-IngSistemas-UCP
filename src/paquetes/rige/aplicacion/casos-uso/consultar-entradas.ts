@@ -33,6 +33,7 @@ export function consultarEntradas(dependencias: Omit<DependenciasAnalisis, "reso
       huellas.push(lectura.error.lectura!.huella);
     }
   }
+  dependencias.medicion?.finalizarLectura();
   const declaraciones = [...contexto.declaraciones];
   const reglas = Object.fromEntries([...new Set(declaraciones)].sort().map(codigo => {
     const plantilla = adaptador.reglas[codigo];

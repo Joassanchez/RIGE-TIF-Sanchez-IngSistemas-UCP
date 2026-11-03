@@ -12,7 +12,8 @@ const normalizar = (ruta: string) => ruta.replaceAll("\\", "/");
 // Primitiva de copia pura del runtime, sin E/S.
 declare function structuredClone<T>(valor: T): T;
 
-export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura, contexto: ContextoConsulta): Resultado<Resolucion, ErrorAnalisis> {
+export function resolver(adaptador: Adaptador, proyecto: string, entorno: EntornoLectura, contexto: ContextoConsulta,
+  alFinalizarLectura?: () => void): Resultado<Resolucion, ErrorAnalisis> {
   const ubicacion = adaptador.ubicar(proyecto, entorno, contexto);
   if (!ubicacion.exito) return ubicacion;
   const entradas: EntradaLeida[] = [];
@@ -32,6 +33,7 @@ export function resolver(adaptador: Adaptador, proyecto: string, entorno: Entorn
       lecturas.push({ orden, via, declaraciones: lectura.valor.declaraciones });
     }
   }
+  alFinalizarLectura?.();
   return resolverDesdeLecturas(adaptador, proyecto, entorno, contexto, entradas, lecturas, huellas);
 }
 

@@ -6,11 +6,15 @@ import { resolver } from "@rige/nucleo/resolucion/resolver";
 import { errorDesdeAnalisis, errorSolicitudInvalida, type ErrorUso } from "../errores";
 import type { PuertoRutas } from "../puertos/resoluciones";
 
+/** Marca el limite real entre lectura y resolucion; no forma parte de los datos del dominio. */
+export interface MedicionAnalisis { finalizarLectura(): void }
+
 export interface DependenciasAnalisis {
   readonly adaptador: Adaptador;
   readonly entorno: EntornoLectura;
   readonly rutas: PuertoRutas;
   readonly resolucion?: Resolucion;
+  readonly medicion?: MedicionAnalisis | undefined;
 }
 
 export function analizarProyecto(dependencias: DependenciasAnalisis, proyecto: string): Resultado<Resolucion, ErrorUso> {
@@ -32,7 +36,8 @@ export function prepararAnalisis(dependencias: DependenciasAnalisis, proyecto: s
   const preparado = prepararProyecto(dependencias, proyecto);
   if (!preparado.exito) return preparado;
   const { canonica, contexto } = preparado.valor;
-  const analisis = resolver(dependencias.adaptador, canonica, dependencias.entorno, contexto);
+  const analisis = resolver(dependencias.adaptador, canonica, dependencias.entorno, contexto,
+    dependencias.medicion === undefined ? undefined : () => dependencias.medicion!.finalizarLectura());
   return analisis.exito ? { exito: true, valor: { resolucion: analisis.valor, contexto } }
     : { exito: false, error: errorDesdeAnalisis(analisis.error) };
 }

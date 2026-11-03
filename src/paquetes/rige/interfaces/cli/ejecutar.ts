@@ -7,7 +7,8 @@ import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-ent
 import { versionEsquemaSalida } from "../../aplicacion/respuestas/valores";
 import type { ErrorUso } from "../../aplicacion/errores";
 import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
-import type { RespuestaAdvertencia } from "../../aplicacion/respuestas/contrato-generado";
+import type { RespuestaAdvertencia, RespuestaTiempos } from "../../aplicacion/respuestas/contrato-generado";
+import type { MedicionAnalisis } from "../../aplicacion/casos-uso/analizar-proyecto";
 import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { parseArgs } from "node:util";
 
@@ -60,14 +61,15 @@ function argumentosInvalidos(canales: CanalesCli, mensaje: string): number {
   return 2;
 }
 
-export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: string) => Ensamblado, canales: CanalesCli, advertidas: readonly string[] = []): number {
+export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: string, medicion?: MedicionAnalisis) => Ensamblado, canales: CanalesCli, advertidas: readonly string[] = []): number {
+  const inicio = performance.now();
   let opciones: ReturnType<typeof parseArgs>;
   try {
     opciones = parseArgs({
       args: [...argumentos], options: {
         depurar: { type: "boolean" }, proyecto: { type: "string" }, agente: { type: "string" }, clave: { type: "string" },
         herramienta: { type: "string" }, sujeto: { type: "string" }, objetivo: { type: "string" },
-        "lanzado-por": { type: "string" }, explicar: { type: "boolean" },
+        "lanzado-por": { type: "string" }, explicar: { type: "boolean" }, tiempos: { type: "boolean" },
       }, strict: true, allowPositionals: true,
     });
   } catch {
@@ -86,7 +88,8 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
     permiso: ["proyecto", "agente", "herramienta", "sujeto", "objetivo", "lanzado-por", "explicar"], esquema: [], servir: [],
   };
   for (const nombre of Object.keys(opciones.values)) {
-    if (nombre !== "depurar" && !admitidas[comando]!.includes(nombre)) return argumentosInvalidos(canales, `${comando} no admite --${nombre}.`);
+    if (nombre !== "depurar" && !(nombre === "tiempos" && !["esquema", "servir"].includes(comando))
+      && !admitidas[comando]!.includes(nombre)) return argumentosInvalidos(canales, `${comando} no admite --${nombre}.`);
   }
   const noVacio = (valor: unknown): valor is string => typeof valor === "string" && Boolean(valor.trim());
   if (posicionales[0] === "valores") {
@@ -102,16 +105,24 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
     return argumentosInvalidos(canales, "permiso requiere --proyecto, --agente, --objetivo y --herramienta o --sujeto excluyentes; --lanzado-por no puede estar vacío.");
   }
   try {
-    const casos = ensamblar(comando);
+    const medir = opciones.values.tiempos === true;
+    let finLectura: number | undefined;
+    const medicion: MedicionAnalisis | undefined = medir ? { finalizarLectura() {
+      if (finLectura !== undefined) throw new Error("La lectura ya fue medida.");
+      finLectura = performance.now();
+    } } : undefined;
+    const casos = ensamblar(comando, medicion);
     if (!casos.exito) {
       escribirError(canales, casos.error);
       return 1;
     }
+    const inicioConsulta = performance.now();
     const resultado = subcomandos[posicionales[0] as keyof typeof subcomandos](casos.valor, {
       proyecto: proyecto as string, agente: agente as string, clave: clave as string | undefined,
       herramienta: herramienta as string | undefined, sujeto: sujeto as string | undefined, objetivo: objetivo as string,
       lanzadoPor: lanzadoPor as string | undefined, explicar: explicar === true,
     });
+    const finConsulta = performance.now();
     if (!resultado.exito) {
       escribirError(canales, resultado.error);
       return 1;
@@ -125,8 +136,19 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
         advertencias.push({ esquema: versionEsquemaSalida, advertencia: { codigo, mensaje } });
       }
     }
+    if (medir && finLectura === undefined) throw new Error("El caso de uso no informo el limite de lectura.");
+    const inicioSalida = performance.now();
     canales.escribirSalida(JSON.stringify(resultado.valor) + "\n");
+    const finSalida = performance.now();
     for (const advertencia of advertencias) canales.escribirError(JSON.stringify(advertencia) + "\n");
+    if (medir) {
+      const respuesta: RespuestaTiempos = { esquema: versionEsquemaSalida, tiempos: {
+        arranqueMs: inicioConsulta - inicio, lecturaMs: finLectura! - inicioConsulta,
+        resolucionMs: finConsulta - finLectura!, salidaMs: finSalida - inicioSalida,
+        totalMs: performance.now() - inicio,
+      } };
+      canales.escribirError(JSON.stringify(respuesta) + "\n");
+    }
     return 0;
   } catch (falla) {
     const error = {

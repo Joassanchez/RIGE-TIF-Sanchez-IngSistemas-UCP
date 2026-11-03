@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Respuesta tiempos de RIGE v2",
+  "type": "object",
+  "properties": {
+    "esquema": { "const": 2 },
+    "tiempos": {
+      "type": "object",
+      "properties": {
+        "arranqueMs": { "type": "number", "minimum": 0 },
+        "lecturaMs": { "type": "number", "minimum": 0 },
+        "resolucionMs": { "type": "number", "minimum": 0 },
+        "salidaMs": { "type": "number", "minimum": 0 },
+        "totalMs": { "type": "number", "minimum": 0 }
+      },
+      "required": ["arranqueMs", "lecturaMs", "resolucionMs", "salidaMs", "totalMs"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["esquema", "tiempos"],
+  "additionalProperties": false
+}

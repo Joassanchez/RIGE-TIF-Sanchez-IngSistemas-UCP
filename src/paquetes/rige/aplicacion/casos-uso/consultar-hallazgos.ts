@@ -38,6 +38,7 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
       lecturas.push({ orden, via, declaraciones: [] });
     }
   }
+  dependencias.medicion?.finalizarLectura();
   const entradas = analizadas.map(a => a.entrada);
   const hallazgos = detectarEntradas(analizadas);
   const incompleta = analizadas.some(a => a.ilegible?.consecuencia === "falla");
