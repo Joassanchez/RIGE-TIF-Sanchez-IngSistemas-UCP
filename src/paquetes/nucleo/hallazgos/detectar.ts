@@ -1,4 +1,4 @@
-import type { Adaptador, ContextoConsulta, Declaracion, ErrorAnalisis } from "../contrato/adaptador";
+import type { Adaptador, ContextoConsulta, Declaracion, ErrorAnalisis, ReglaDeclarada } from "../contrato/adaptador";
 import type { EntradaLeida, Resolucion } from "../resolucion/tipos";
 import type { EntradaHallazgo, Hallazgo } from "./tipos";
 
@@ -48,6 +48,52 @@ export function detectarReferencias(adaptador: Adaptador, resolucion: Resolucion
     if (!entrada) throw new Error("Entrada determinante inexistente.");
     hallazgos.push({ tipo: "referencia-no-resuelta", causa: referencia.causa, entrada: ubicar(entrada),
       posicion: origen.posicion, clave: ruta, parametros: { agente: valor } });
+  }
+  return hallazgos;
+}
+
+export function detectarReglasSinEfecto<C extends ContextoConsulta>(
+  adaptador: Adaptador<C>,
+  resolucion: Resolucion,
+  contexto: C,
+): Hallazgo[] {
+  const bajo = (ruta: readonly string[], prefijo: readonly string[]) => prefijo.every((s, i) => ruta[i] === s);
+  const reglas = resolucion.valores.toSorted((a, b) => a.indiceFusion - b.indiceFusion).flatMap(rastro => {
+    const { ruta, determinante } = rastro;
+    const origen = determinante.origen;
+    if (origen.tipo !== "declarado" || determinante.sustituciones?.length
+      || resolucion.noResueltas.some(n => bajo(ruta, n.ruta))) return [];
+    const enAgente = bajo(ruta, adaptador.prefijoAgente);
+    const inicio = enAgente ? adaptador.prefijoAgente.length + 1 : 0;
+    if (ruta[inicio] !== "permission") return [];
+    const segmentos = ruta.slice(inicio + 1);
+    if (segmentos.length > 2 || typeof rastro.valor !== "string"
+      || !Object.hasOwn(adaptador.permisos.plantillas.efectos, rastro.valor)) return [];
+    const entrada = resolucion.entradas.find(e => e.orden === origen.orden);
+    if (!entrada) throw new Error("Entrada de regla inexistente.");
+    const regla: ReglaDeclarada = { agente: enAgente ? ruta[inicio - 1]! : null, clave: ruta,
+      sujeto: segmentos[0] ?? "*", patron: segmentos[1] ?? "*", efecto: rastro.valor };
+    return [{ regla, entrada: ubicar(entrada), posicion: origen.posicion }];
+  });
+  const hallazgos: Hallazgo[] = [];
+  for (const [indice, actual] of reglas.entries()) {
+    const { regla, entrada, posicion } = actual;
+    const parametros = { sujeto: regla.sujeto, patron: regla.patron,
+      efecto: adaptador.permisos.plantillas.efectos[regla.efecto]! };
+    const ruta = adaptador.causaRutaRegla?.(resolucion, contexto, regla);
+    if (ruta) {
+      hallazgos.push({ tipo: "regla-sin-efecto", causa: ruta.causa, entrada, posicion, clave: regla.clave,
+        parametros: { ...parametros, ...ruta.parametros } });
+      continue;
+    }
+    if (/[*?]/.test(regla.sujeto)) continue;
+    const posterior = reglas.slice(indice + 1).find(b => b.regla.agente === regla.agente
+      && b.regla.sujeto === regla.sujeto && adaptador.abarca?.(b.regla.patron, regla.patron));
+    if (!posterior) continue;
+    hallazgos.push({ tipo: "regla-sin-efecto", causa: "tapada-por-posterior", entrada, posicion, clave: regla.clave,
+      parametros: { ...parametros, patronPosterior: posterior.regla.patron,
+        efectoPosterior: adaptador.permisos.plantillas.efectos[posterior.regla.efecto]!,
+        origenPosterior: `${posterior.entrada.referencia}:${posterior.posicion.linea}` } });
   }
   return hallazgos;
 }

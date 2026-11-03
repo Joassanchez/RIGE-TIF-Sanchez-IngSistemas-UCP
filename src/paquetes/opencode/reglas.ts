@@ -54,7 +54,15 @@ export const reglas: Readonly<Record<string, string>> = {
   "markdown-no-observado": "Agente declarado también en Markdown, que RIGE no incorpora; sus claves no se informan para no presentar un valor incompleto.",
 };
 
+export const reglasHallazgos: Readonly<Record<string, string>> = {
+  "elementos-sin-uso-no-evaluados": "Hay agentes o comandos con contenido no observado, o declaraciones de uso excluidas o con sustituciones; no se evalúan los elementos sin uso.",
+};
+
 export const plantillasHallazgo: Readonly<Record<string, string>> = {
+  "tapada-por-posterior": "La regla {sujeto} {patron} → {efecto} ({clave}) queda sin efecto: la regla posterior {sujeto} {patronPosterior} → {efectoPosterior}, declarada en {origenPosterior}, abarca todos sus casos y OpenCode 1.18.25 aplica la última coincidencia.",
+  "ruta-absoluta": "La regla {sujeto} {patron} → {efecto} declara una ruta absoluta del árbol de trabajo y no coincide con ninguna acción: OpenCode 1.18.25 evalúa la ruta relativa al árbol de trabajo.",
+  "ruta-absoluta-con-forma": "La regla {sujeto} {patron} → {efecto} declara una ruta absoluta del árbol de trabajo y no coincide con ninguna acción: OpenCode 1.18.25 evalúa la ruta relativa al árbol de trabajo. Con la forma relativa {formaRelativa}, en la misma posición, la decisión es " + "{decision}.",
+  "subagente-sin-uso": "Ningún agente ni comando nombra al subagente {agente}; solo queda disponible para la herramienta task, a criterio del modelo, o por mención directa del usuario.",
   "sintaxis-invalida": "La entrada {entrada} no es JSON(C) válido en {posicion}; OpenCode 1.18.25 termina con error al cargar la configuración.",
   "archivo-inexistente": "La entrada {entrada} referencia en {posicion}, mediante una sustitución de archivo, el archivo {archivo}, que no existe o no se puede leer; OpenCode 1.18.25 termina con error al cargar la configuración.",
   "permiso-invalido": "OPENCODE_PERMISSION no es JSON válido; OpenCode 1.18.25 la descarta sin error visible y solo lo registra en su archivo de registro.",

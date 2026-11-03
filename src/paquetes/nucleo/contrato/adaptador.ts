@@ -3,6 +3,7 @@ import type { Estrategia } from "../resolucion/estrategias";
 import type { EntornoLectura } from "./entorno";
 import type { Cadena, DeclaracionUbicada, Resolucion } from "../resolucion/tipos";
 import type { Permisos } from "../permisos/tipos";
+import type { Hallazgo } from "../hallazgos/tipos";
 
 export type ValorJson = null | boolean | number | string | readonly ValorJson[] | { readonly [clave: string]: ValorJson };
 export interface Posicion { readonly linea: number; readonly columna: number }
@@ -102,6 +103,24 @@ export interface ReferenciaElemento {
   readonly causa: string;
 }
 
+export interface ReglaDeclarada {
+  readonly agente: string | null;
+  readonly clave: readonly string[];
+  readonly sujeto: string;
+  readonly patron: string;
+  readonly efecto: string;
+}
+
+export interface CausaRutaRegla {
+  readonly causa: string;
+  readonly parametros?: Readonly<Record<string, string>>;
+}
+
+export interface ResultadoElementosSinUso {
+  readonly hallazgos: readonly Hallazgo[];
+  readonly motivos: readonly string[];
+}
+
 export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   readonly referencias: readonly ReferenciaElemento[];
   readonly plantillasHallazgo: Readonly<Record<string, string>>;
@@ -117,4 +136,7 @@ export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   cadena(resolucion: Resolucion, agente: string, contexto: C, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
   prepararConsulta(contexto: C, solicitud: SolicitudPermiso): Resultado<ObjetivoPermiso, ErrorAnalisis>;
   listarAgentes(resolucion: Resolucion, contexto: C): ListadoAgentes;
+  abarca?(posterior: string, anterior: string): boolean;
+  causaRutaRegla?(resolucion: Resolucion, contexto: C, regla: ReglaDeclarada): CausaRutaRegla | null;
+  elementosSinUso?(resolucion: Resolucion, contexto: C): ResultadoElementosSinUso;
 }

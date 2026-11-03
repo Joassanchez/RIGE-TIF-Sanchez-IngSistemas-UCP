@@ -1,7 +1,7 @@
 import type { Adaptador } from "@rige/nucleo/contrato/adaptador";
 import { versionSoportada } from "./descriptor";
 import { leerEntrada } from "./lector";
-import { reglas, plantillasHallazgo } from "./reglas";
+import { reglas, reglasHallazgos, plantillasHallazgo } from "./reglas";
 import { secuenciar } from "./secuenciador";
 import { ubicar } from "./ubicador";
 import { cadena } from "./cadena";
@@ -9,6 +9,7 @@ import { permisos } from "./permisos";
 import { prepararConsulta } from "./objetivo";
 import { listarAgentes } from "./agentes";
 import { contextoOpenCode, type ContextoOpenCode } from "./contexto";
+import { abarca, causaRutaRegla, elementosSinUso } from "./hallazgos";
 
 export const adaptadorOpenCode: Adaptador<ContextoOpenCode> = {
   referencias: [
@@ -16,13 +17,16 @@ export const adaptadorOpenCode: Adaptador<ContextoOpenCode> = {
     { ruta: ["command", "*", "agent"], elemento: "agente", causa: "agente-comando-inexistente" },
   ],
   plantillasHallazgo,
+  abarca,
+  causaRutaRegla,
+  elementosSinUso,
   contexto: contextoOpenCode,
   listarAgentes,
   permisos,
   prepararConsulta,
   identidad: { herramienta: "opencode", version: versionSoportada },
   prefijoAgente: ["agent"],
-  reglas,
+  reglas: { ...reglas, ...reglasHallazgos },
   estrategias: {},
   ubicar,
   leer(via, texto, entorno, contexto) {

@@ -6,7 +6,7 @@ import type { LecturaEntrada } from "@rige/nucleo/contrato/adaptador";
 import { leerVia } from "@rige/nucleo/resolucion/leer-via";
 import { resolverDesdeLecturas } from "@rige/nucleo/resolucion/resolver";
 import { resumirEntradas } from "@rige/nucleo/resolucion/resumen-entradas";
-import { detectarEntradas, detectarReferencias, ordenarHallazgos, type EntradaAnalizada } from "@rige/nucleo/hallazgos/detectar";
+import { detectarEntradas, detectarReferencias, detectarReglasSinEfecto, ordenarHallazgos, type EntradaAnalizada } from "@rige/nucleo/hallazgos/detectar";
 import { explicarHallazgo } from "@rige/nucleo/hallazgos/explicar";
 
 export type ConsultarHallazgos = (proyecto: string) => Resultado<RespuestaHallazgos, ErrorUso>;
@@ -47,6 +47,12 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
     const resuelta = resolverDesdeLecturas(adaptador, canonica, entorno, contexto, entradas, lecturas, huellas);
     if (!resuelta.exito) return { exito: false, error: errorDesdeAnalisis(resuelta.error) };
     hallazgos.push(...detectarReferencias(adaptador, resuelta.valor, contexto));
+    hallazgos.push(...detectarReglasSinEfecto(adaptador, resuelta.valor, contexto));
+    const elementos = adaptador.elementosSinUso?.(resuelta.valor, contexto);
+    if (elementos) {
+      hallazgos.push(...elementos.hallazgos);
+      motivos.push(...elementos.motivos);
+    }
     reglasResolucion = resuelta.valor.reglas;
   }
   const declaraciones = [...contexto.declaraciones];

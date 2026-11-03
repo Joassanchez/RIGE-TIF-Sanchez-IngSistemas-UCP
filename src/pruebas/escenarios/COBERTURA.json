@@ -73,6 +73,24 @@
       "obligatorioV2": false
     },
     {
+      "id": "RF-07 CA-5",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RE-02",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
+      "id": "RE-03",
+      "objetivo": "OE-3",
+      "iteracion": 3,
+      "obligatorioV2": false
+    },
+    {
       "id": "RF-07 referencias-no-resueltas",
       "objetivo": "OE-3",
       "iteracion": 3,

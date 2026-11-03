@@ -913,7 +913,7 @@ del manifiesto al regenerar esa referencia, sin modificar las anteriores.
 En Bash, las invocaciones nativas usan `--raiz "$(npm root -g)"` y un
 directorio temporal para `--cache`.
 
-### Hallazgos en vivo (T3-05)
+### Hallazgos en vivo (T3-05 y T3-06)
 
 El caso de uso `consultarHallazgos` detecta entradas ilegibles (sintaxis o
 archivo sustituido inexistente), entradas descartadas sin error visible,
@@ -925,7 +925,8 @@ almacén. La CLI, el esquema JSON y la vista web corresponden a T3-07.
 
 Si una entrada impide cargar la configuración, se informan todas las
 ilegibles y los hallazgos de las entradas legibles; `incompleta: true` y
-`hallazgos-parciales` indican que no se evaluaron referencias. Las variables
+`hallazgos-parciales` indican que no se evaluaron referencias, reglas sin
+efecto ni elementos sin uso. Las variables
 ausentes o vacías se detectan también en declaraciones desplazadas o
 excluidas, pero no en comentarios. `wellknown-no-observada` advierte que
 OpenCode puede obtener de `auth.json` una variable que RIGE informa sin valor.
@@ -934,8 +935,53 @@ No se detecta el frontmatter inválido de Markdown. Las referencias con
 sustituciones, vacías o bajo claves no resueltas no se evalúan. Un agente
 Markdown no observado cuenta como existente. Un `default_agent` que nombra
 un subagente o un agente oculto puede fallar en OpenCode, pero queda fuera
-del detector porque el nombre sí existe. Reglas sin efecto y elementos sin
-uso se implementan en T3-06.
+del detector porque el nombre sí existe.
+
+Las **reglas de permiso sin efecto** (RE-02) se detectan sobre las reglas
+declaradas e incorporadas, sin sustituciones ni exclusiones. Una regla queda
+tapada si una posterior de su mismo bloque (raíz con raíz, agente con el mismo
+agente) tiene el mismo sujeto literal y abarca todos sus patrones. Los sujetos
+con comodines no se comparan. El hallazgo identifica la regla posterior y su
+archivo y línea; las reglas nativas y las de otros bloques no justifican esta
+causa.
+
+La función `abarca(posterior, anterior)` usa programación dinámica conservadora:
+puede omitir inclusiones ciertas. Por ejemplo, no detecta que A=`a?*` está
+incluida en B=`*?`. Normaliza `\\` a `/`, distingue mayúsculas en los literales
+y permite que `*` y `?` atraviesen separadores. El sufijo ` *` es opcional en
+cualquier patrón, como en OpenCode: `git *` también coincide con `git`, por
+lo que `git?*` no lo abarca. La prueba exhaustiva acotada contrasta toda
+inclusión afirmada con el evaluador del tag en POSIX y Windows.
+
+La otra causa es una **ruta absoluta** dentro de la base efectiva del árbol
+de trabajo, con sujeto exactamente `read` o `edit`. OpenCode evalúa estas
+acciones sobre la ruta relativa al árbol. Se omiten rutas fuera de esa base
+y patrones cuyos comodines en los directorios impiden decidir la contención.
+Sin Git, la base es `/`; en Windows se toma la raíz de la unidad del proyecto,
+y una ruta absoluta de otra unidad no se informa. Una raíz sin letra de unidad
+también se resuelve contra la unidad del proyecto.
+
+Para una ruta sin comodines, el hallazgo incluye la forma relativa normalizada
+y su decisión solo si, al sustituir el patrón en su misma posición, `decidir`
+confirma el efecto declarado en todas las cadenas activas afectadas y completas
+para ese sujeto (RF-07 CA-5). Quita separadores finales, `.` y `..`. Si alguna
+cadena no confirma el efecto, se conserva únicamente el diagnóstico. Esta
+causa tiene prioridad sobre la de regla tapada. No se reescribe configuración.
+
+Los **elementos sin uso** (RE-03) son subagentes declarados, activos y con
+`mode: subagent` que ninguna declaración de agente ni de comando nombra.
+Cuentan como usos `default_agent`, `command.<nombre>.agent`, un token
+`@<agente>` en `command.<nombre>.template` o `agent.<nombre>.prompt`, y una
+clave exacta de `permission.task` o `agent.<nombre>.permission.task`, con
+cualquier efecto, incluso `deny`. Los agentes nativos y los modos `primary`
+y `all` quedan fuera de este detector. «Sin uso» no afirma inaccesibilidad:
+OpenCode ofrece el subagente a la herramienta `task` según sus permisos y el
+usuario puede mencionarlo directamente con `@`, incluso si `task` lo deniega.
+
+Si hay agentes o comandos en Markdown, o alguna clave que puede nombrar un
+agente está excluida o tiene sustituciones, no se informan elementos sin uso.
+La respuesta agrega `elementos-sin-uso-no-evaluados` en `motivos` y su
+explicación en `reglas`; nunca se examina el contenido sustituido.
 
 El escenario `v3-referencias` fue aceptado por `opencode debug config` y
 conserva sus comandos en `REFERENCIA.json`. Su entorno define el nombre
@@ -955,3 +1001,18 @@ bun run referencias --raiz (npm.cmd root -g)
 bun test
 bun run verificar
 ```
+
+Comprobación de T3-06 desde `src/`, con el almacén en un temporal:
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
+bun test paquetes/nucleo/hallazgos paquetes/opencode pruebas/aceptacion/RF-07.test.ts
+bun test
+bun run verificar
+bun run referencias --raiz (npm.cmd root -g)
+```
+
+En Bash, el último comando es `bun run referencias --raiz "$(npm root -g)"`.
+Se comparan las referencias existentes, sin regenerarlas. El escenario
+`v3-sin-efecto` aporta la regla tapada y el subagente `auditor` sin uso; las
+variantes de ruta y sus controles usan las referencias de `v2-ruta-*`.

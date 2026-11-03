@@ -136,6 +136,18 @@
           "archivo": "pruebas/aceptacion/RF-16.test.ts",
           "describe": "RF-16 CA-1",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 elementos-sin-uso",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-9",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RE-03",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-9",
+          "fuente": "referencia-binario"
         }
       ]
     },
@@ -625,6 +637,24 @@
           "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
           "describe": "RF-02 CA-9",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 reglas-permiso-sin-efecto",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-5",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RE-02",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
+          "fuente": "referencia-binario"
         }
       ]
     },
@@ -676,6 +706,24 @@
           "item": "RNF-02",
           "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
           "describe": "RF-02 CA-9",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 reglas-permiso-sin-efecto",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-5",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RE-02",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
           "fuente": "referencia-binario"
         }
       ]
@@ -752,6 +800,24 @@
           "item": "RNF-02",
           "archivo": "pruebas/aceptacion/RF-02-CA-9.test.ts",
           "describe": "RF-02 CA-9",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 reglas-permiso-sin-efecto",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-5",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RE-02",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-4",
           "fuente": "referencia-binario"
         }
       ]
@@ -1316,6 +1382,49 @@
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 referencias-no-resueltas T3-05 R-6",
           "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v3-sin-efecto",
+      "entradas": {
+        "proyecto/opencode.json": "1d75db419bf9dc54f00e4a97e381f480cb55eeadd77f68c7b005630d69f6013e"
+      },
+      "referencia": null,
+      "agentes": [
+        "build",
+        "auditor",
+        "principal"
+      ],
+      "claves": [
+        "permission",
+        "agent"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 reglas-permiso-sin-efecto",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-2",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RE-02",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-2",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RF-07 elementos-sin-uso",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-7",
+          "fuente": "caso-de-uso"
+        },
+        {
+          "item": "RE-03",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-06 R-7",
+          "fuente": "caso-de-uso"
         }
       ]
     }
