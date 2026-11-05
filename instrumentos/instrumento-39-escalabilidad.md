@@ -1,0 +1,93 @@
+# Instrumento 39 · Planilla de supuestos y experimentos del plan de escalabilidad
+
+*Momento de aplicación: Clase 28, viernes 13 de noviembre. Destino: Capítulo XI, plan de escalabilidad técnica y de negocio y experimentos de validación. Portafolio AE4, punto (a).*
+
+**Proyecto:** RIGE. **Revisión medida:** etiqueta `congelada`, commit `0df6cb7`. Las mediciones valen para esa revisión; se repiten sobre la versión entregada (`00-gestion/pendientes.md`, VER-02 y VER-04). **Base de cada afirmación:** [D] dato del repositorio, con su ruta; [G] conocimiento general de ingeniería; [S] suposición.
+
+## 39.1 · Supuestos
+
+| ID | Supuesto | Tipo | Valor asumido | Origen | Qué pasa si es falso | Experimento |
+|---|---|---|---|---|---|---|
+| S-01 | El tiempo de la invocación completa crece, como máximo, en proporción a la cantidad de archivos | Técnico | Cociente de hasta 10 al pasar de 32 a 311 archivos | Medido el 05/11/2026. [D] `01-relevamiento/evidencia/e01-escala-contenedor_20261105.md`: cociente de 1,49 a 2,15. Vale entre esos dos tamaños, sin ley general | Con crecimiento mayor, el umbral podría ceder antes | E-01, ejecutado |
+| S-02 | La ventana de 2000 ms sigue siendo el límite aplicable a la consulta por línea de comandos | Técnico | 2000 ms, peor de diez corridas | Relevado. [D] `03-requisitos/libro/catalogo/RNF-07.md`; acta del 26/09/2026, 3.2 | El comando nativo llega a 2071 ms en 1 de 80 corridas (`01-relevamiento/evidencia/rnf07-comando-nativo-referencia_20261104.md`), lo que cumple la condición de ADR-055 (absorbe ADR-096) para reabrir el valor. Una ventana distinta obliga a recalcular todos los márgenes | Revisión con la referente, R-15 (`pendientes.md`, VER-03) |
+| S-03 | El proyecto de 32 archivos representa el tamaño relevante de un proyecto real | Técnico y negocio | Doble de openchamber `fc012ae`: 16 archivos de configuración, 6 agentes, 9 comandos y 7 servidores LSP | Relevado. [D] ADR-055, absorbido ADR-071. Límite: la referente carece del dato y la búsqueda del 01/10/2026 cubre 100 de 117 repositorios | Un proyecto real mayor desplaza la carga de partida y reduce el margen. Por RNF-07, rige el doble del mayor | Repetir la búsqueda de ADR-055 con la misma consulta (0 a 3 meses). E-01 mide capacidad y deja sin contrastar este supuesto |
+| S-04 | Un proyecto real declara menos de 1000 reglas de permiso por agente | Técnico | 3 valores de permiso en el escenario; 1000 como cota | Estimado. [D] El escenario tiene 3 (`src/pruebas/escenarios/openchamber-doble/`); falta relevar proyectos reales. Sobre esa cota, `hallazgos` crece de forma superlineal y cruza 2000 ms entre 2500 y 3000 reglas (`e01-escala-contenedor_20261105.md`) | `hallazgos` deja de responder a tiempo en esos proyectos, y luego `valores` y `permiso` | Contar reglas por agente en la repetición de la búsqueda de S-03 |
+| S-05 | El almacén y el flujo web conservan tiempos aceptables con 20 resoluciones retenidas y varias solicitudes | Técnico | Retención de 20 por proyecto; espera máxima ante bloqueo de 5000 ms | Estimado. [D] Valores en ADR-061, `src/paquetes/rige/adaptadores/almacen-sqlite/resoluciones.ts:44-46` y `esquema.ts:17`. Carga sin medir | El flujo web degrada su respuesta o entrega un error de almacén; la línea de comandos queda fuera del efecto porque resuelve en memoria (`src/paquetes/rige/arranque/rige.ts:41-44`) | E-02 |
+| S-06 | Multiplicar usuarios multiplica instalaciones locales y deja igual la carga de cada proceso | Técnico y negocio | Un proceso por invocación, en el equipo del usuario, con 0 conexiones `connect` hacia AF_INET y AF_INET6 | Medido para la red ([D] `rnf05-sin-red_20261104.md`). Relevado para la ejecución local ([D] L-04) | Un uso compartido en servidor contradice L-04 y RNF-05, y exige otro diseño y otro costo | Sin experimento: la frontera está validada y la red, medida |
+| S-07 | Cada readaptación a una versión posterior de OpenCode insume hasta 22 h | Técnico y negocio | 4 a 22 h por intervención; 88 h por año con intervenciones trimestrales | Estimado. [D] `informe/cap-10/X.5-otros-recursos.md`; `00-gestion/anexo-III.md`, A.III.3 | Con más horas, el punto de equilibrio de USD 530,88 a 531,06 por año queda corto y la continuidad depende de otra política | E-04, que mide un caso; el supuesto se mantiene hasta contar con intervenciones comparables |
+| S-08 | La agrupación trimestral alcanza para la cadencia de OpenCode | Técnico y negocio | 227 versiones estables, 43 con cambios declarados y 23 posibles, del 01/01 al 30/09/2026; 3 confirmados y 4 posibles de julio a septiembre | Relevado. [D] Conteo propio, `anexo-III.md`, A.III.3. La cantidad de readaptaciones necesarias queda sin determinar | Con más cambios por trimestre, la intervención supera la cota y RF-05 deja fuera a más usuarios entre intervenciones | E-04, con la misma salvedad; se actualiza el conteo trimestral |
+| S-09 | Un desarrollador ajeno al proyecto adopta RIGE sin una instrucción externa | Negocio | Al menos 3 de 5, como señal exploratoria | Estimado. [D] IV.1 declara que falta identificar un usuario fuera del autor y que el mecanismo de adopción requiere definición | El valor queda limitado al brazo con instrucción de la medición final y el modelo de canales cambia | E-03 |
+| S-10 | El patrocinio voluntario cubre el sostenimiento | Negocio | USD 44,25 por mes, antes de costos de cobro y sin suscripciones; 45, 9 o 5 patrocinadores según el nivel. Redondeo de X.3: USD 44,25 × 12 = USD 531,00, 6 centavos debajo de la cota alta. Con una suscripción, USD 240 más por año | Estimado. [D] `informe/cap-10/X.3-recursos-financieros.md`, Tabla 24, con niveles supuestos por el autor | RIGE conserva la resolución de 1.18.25 y advierte la diferencia de versión (RF-05), sin nuevas intervenciones | E-05 |
+
+*Nota sobre S-03.* ADR-055 calcula 18 comandos para el doble de openchamber. El escenario contiene 20 archivos de comandos (`src/pruebas/escenarios/openchamber-doble/`), y `01-relevamiento/evidencia/rnf07-medicion_20261103.md` informa 20. La carga de esta planilla se expresa en archivos de configuración, 32, en lo que ambas fuentes coinciden.
+
+## 39.2 · La prueba de los diez
+
+La carga por diez se **midió**, sin extrapolar (E-01, 05/11/2026): de 32 a 311 archivos de configuración, y de 3 valores de permiso a la serie de reglas. Fuente: `01-relevamiento/evidencia/e01-escala-contenedor_20261105.md`, peor de diez corridas, en el contenedor de referencia y sin red. Fuente de la ventana: RNF-07, CA-1, que obliga solo a `valores` y `permiso`; se adopta para las demás consultas.
+
+| Componente | Carga actual (medida, con unidad) | Carga × 10 (medida) | Capacidad o ventana | Margen | ¿Cede? | Medida que lo previene |
+|---|---|---|---|---|---|---|
+| `permiso` | 50,247 ms con 32 archivos | 107,980 ms con 311 | 2000 ms | **18,52** | No | Ninguna necesaria |
+| `valores` | 54,167 ms | 107,557 ms | 2000 ms | 18,60 | No | Ninguna necesaria |
+| `hallazgos` | 65,895 ms | 101,711 ms | 2000 ms | 19,66 | No | Ninguna necesaria |
+| `permiso --explicar` | 61,181 ms | 91,415 ms | 2000 ms | 21,88 | No | Ninguna necesaria |
+| `hallazgos`, por reglas de permiso | 3 valores declarados; 44,454 ms con 10 reglas | Hasta 68,698 ms con 100 reglas, más que 30 | 2000 ms | 29,11 o más | No | Ninguna necesaria |
+
+**Cuentas.** 2000 ÷ 107,980 = 18,52; 2000 ÷ 107,557 = 18,60; 2000 ÷ 101,711 = 19,66; 2000 ÷ 91,415 = 21,88; 2000 ÷ 68,698 = 29,11.
+
+**Qué cede primero.** Con carga por diez, ningún componente tiene margen menor que 1: por la regla del instrumento, ninguno cede. El orden entre consultas no es significativo: `permiso` y `valores` difieren en 0,08 de margen, dentro del ruido. El primero en ceder si la carga sigue creciendo no sale de esta tabla, sino de la cantidad de reglas: **`hallazgos`, entre 2500 y 3000 reglas en un agente**, alrededor de 830 veces lo declarado en el escenario.
+
+| Reglas | `valores`, peor (ms) | `permiso`, peor (ms) | `hallazgos`, peor (ms) |
+|---:|---:|---:|---:|
+| 1000 | 141,5 | 186,2 | 394,2 |
+| 2500 | 483,7 | 482,5 | 1851,4 |
+| 3000 | 659,3 | 685,9 | **2683,3** |
+| 5000 | 1794,5 | 1795,5 | 7547,6 |
+| 10000 | Sin medir | Sin medir | 30721,2 |
+
+**Por qué cede.** Entre 1000 y 10000 reglas, el tiempo de `hallazgos` se multiplica por 85: crecimiento superlineal, cercano al cuadrático. Casi todo se va en lectura y resolución, y la salida tarda 1 ms. `hallazgos` agrega la detección, que busca en cada regla entre las posteriores (`src/paquetes/nucleo/hallazgos/detectar.ts:90`). [S] Es la causa probable de la diferencia: no se perfiló.
+
+**Medida que lo previene.** Perfilar y reemplazar las búsquedas lineales por un índice por agente y sujeto, sin cambiar el resultado. Se difiere con condición de activación: S-04 resulta falso, es decir, aparece un proyecto real con más de 1000 reglas en un agente. La caché por resumen de entradas (ADR-023) no lo previene: la primera lectura de cada configuración pagaría el mismo costo.
+
+**Alcance de la respuesta.** Una sesión, sin control de la carga del anfitrión. El peor caso de `valores` fue de 147,82 ms el 04/11 y de 53,376 ms el 05/11, con el mismo producto: varía casi al triple entre sesiones, sin cambiar la conclusión. Multiplicar agentes y comandos conserva la profundidad de los directorios y el tamaño de cada archivo. Las reglas de la serie son un peor caso elegido, no un proyecto real. El flujo web sigue sin medir (S-05, E-02).
+
+**Por qué el factor diez es exigente.** 311 archivos equivalen a unas 19 veces los 16 archivos de openchamber, el mayor proyecto en uso de la búsqueda de ADR-055. Esa carga supera la observada en el relevamiento.
+
+**Fuera del ranking, sin multiplicar.**
+
+| Componente | Situación | Tratamiento |
+|---|---|---|
+| Windows 11 | Diagnóstico de 182,090 ms sobre 32 archivos (`rnf07-medicion_20261103.md`), sin salida cruda ni commit. ADR-055 fija umbral solo en el contenedor. Sin medición de escala | Se informa como advertencia: la referente declara que su equipo programa en Windows (L-11). Falta repetir `--escala` en esa plataforma |
+| Comando nativo de OpenCode | 2071 ms de peor caso sobre 32 archivos. Fundamenta la ventana y es ajeno a RIGE | S-02 |
+| Red | 179 subcomandos en 33 escenarios, sin diferencias con y sin red, y 0 `connect` hacia AF_INET y AF_INET6 (`rnf05-sin-red_20261104.md`). Multiplicar cero da cero | S-06; la red queda fuera de los componentes críticos |
+| Almacén y flujo web | Sin carga medida. El límite de 20 resoluciones acota el crecimiento por proyecto y deja sin acotar la cantidad de proyectos | S-05, E-02 |
+| Frecuencia y concurrencia de invocaciones por agente | Sin carga medida | E-02 para la web. Para la línea de comandos, [S] la concurrencia queda limitada por el equipo, porque cada consulta resuelve en memoria |
+| Usuarios | Sin carga medida: IV.1 declara que falta identificar un usuario fuera del autor | S-06, S-09, E-03 |
+
+### Escalabilidad técnica y de negocio
+
+**Técnica.** Capacidad de una instalación para responder dentro de la ventana con un proyecto mayor. Se mide en milisegundos por consulta y responde la tabla anterior.
+
+**De negocio.** Capacidad del proyecto para sumar usuarios y versiones de OpenCode sin que el costo de sostenerlo crezca más que sus ingresos. Lo que cede primero es la readaptación: de ella depende que un usuario obtenga resultados, y su costo crece con la cadencia del proveedor, con independencia de la cantidad de usuarios. Con 22 h por intervención trimestral, el punto de equilibrio es de USD 530,88 a 531,06 por año, y seguir cada versión con cambio declarado cuesta de 1,07 a 9,02 veces el proyecto del período (X.3; A.III.3). Carece de carga medida, por lo que se declara como S-07 y S-08 y se somete a E-04.
+
+**Cómo se condicionan.**
+
+- **De la técnica al negocio.** La ejecución local, sin servidor (L-04, RNF-05), hace que un usuario más agregue costo de infraestructura nulo para el proyecto. Esa misma decisión descarta el servicio alojado como fuente de ingresos (IV.1).
+- **Del negocio a la técnica.** RF-05 rechaza los resultados ante una versión distinta de 1.18.25. Si el patrocinio no financia las intervenciones (E-05), la base utilizable se reduce a quien fija esa versión, aunque el rendimiento sobre, y ampliar el margen técnico carece de efecto sobre la adopción.
+- **Punto de unión.** La independencia del núcleo (RNF-03) es la propiedad técnica que abarata la readaptación y habilita otro adaptador; E-04 la pone a prueba en términos de horas.
+
+## 39.3 · Experimentos de validación
+
+Ninguno repite la medición final. Esta contrasta el procedimiento delegado con RIGE indicado, según I.3.4 y V.5; su veredicto entra como dependencia de la hoja de ruta (Instrumento 36). E-03 mide lo que I.3.4 separa expresamente: la adopción real sin la instrucción del brazo medido. La decisión y los umbrales quedan escritos antes de medir; los de E-02 y E-03 son una propuesta aceptada por el autor el 05/11/2026 y constituyen juicio, sin dato de partida.
+
+| ID | Hipótesis | Métrica accionable | Umbral de decisión | Plazo y método | Si se cumple | Si no se cumple | Métrica vanidosa descartada |
+|---|---|---|---|---|---|---|---|
+| E-01 (técnico) | RIGE responde dentro de la ventana con un proyecto diez veces mayor, también en `hallazgos` y `--explicar`, y el tiempo crece como máximo en proporción al tamaño | (a) Peor de diez corridas de la invocación completa, por consulta. (b) Cociente entre el peor caso con 320 y con 32 archivos, medidos en la misma sesión | (a) Menos de 2000 ms en todas las consultas. (b) Cociente de hasta 10 | **Ejecutado el 05/11/2026.** Arnés `medir-rnf07 --escala`, commit `c9b6746`, en el contenedor de referencia y sin red. Escenario: diez veces cada clase de `openchamber-doble`, 311 archivos, con el mismo contenido por elemento. Falta el diagnóstico en Windows 11. **Resultado: (a) peor caso de 107,980 ms; (b) cociente de hasta 2,149. Se persevera sin caché** | (a) Se persevera sin caché. (b) S-01 queda medido entre esos dos tamaños, sin afirmar una ley general de crecimiento | (a) Se pivota: caché por resumen de entradas si dominan la lectura o la resolución; limitación declarada si domina el arranque (ADR-055, regla sobre el resultado). (b) con (a) cumplido: se persevera y se recalcula el margen con el cociente observado | Promedio de los tiempos: oculta el peor caso, que es lo que paga el agente |
+| E-02 (técnico) | El flujo web sostiene su respuesta con el almacén en su límite y solicitudes simultáneas. Es una prueba de estrés elegida: falta un escenario de uso relevado | Peor tiempo de `GET /resolver`, medido desde el cliente; respuestas con error; resoluciones por proyecto después de la depuración; coincidencia de la resolución recuperada | Cero errores, menos de 2000 ms, hasta 20 resoluciones por proyecto y coincidencia completa. RNF-07 alcanza solo a la línea de comandos: el umbral de tiempo se adopta para el experimento | 0 a 3 meses. Guion local en el contenedor de referencia, sobre `openchamber-doble` con 20 resoluciones precargadas: 10 solicitudes simultáneas que generan altas nuevas, 10 repeticiones, carga del anfitrión registrada | Se persevera con la retención de ADR-061 | Se pivota: escritura fuera de la solicitud o reducción de la retención, con un ADR | Resoluciones guardadas o tamaño del archivo: crecen solos y carecen de efecto sobre la decisión |
+| E-03 (negocio) | Un desarrollador ajeno al proyecto incorpora RIGE sin una instrucción externa | Participantes elegibles que vuelven a consultar RIGE dentro de los 14 días en su propio proyecto. Se registran por separado instalación, primera consulta, corrección de una declaración y retorno, para distinguir falta de adopción de falta de defectos | Al menos 3 de 5. Señal exploratoria: un participante cambia la decisión. Con 2 o 3, se repite con otros 5 antes de pivotar | 3 a 9 meses, después de la publicación. Elegibles: desarrolladores con un proyecto propio en OpenCode 1.18.25 y agentes configurados. Piloto de autoservicio con el manual; registro por cuestionario con constancia, sin datos personales | Se persevera con difusión en comunidades (Tabla 7, Canales) | Se pivota: integración con el agente (Instrumento 36). El aporte a OpenCode queda como salida solo si incorpora la función (IV.1, D-31) | Estrellas, descargas y clones del repositorio: ninguno prueba uso |
+| E-04 (técnico y negocio) | La readaptación a una versión posterior cabe en la cota estimada | Horas registradas de la intervención, desde el análisis hasta el trabajo `referencia-nativa` en verde sobre la versión nueva, con la documentación; por separado, las de lectura y clasificación de notas | Hasta 22 h por intervención (X.5) | 3 a 9 meses. Regla de selección: la última versión estable al cierre del trimestre, cubriendo los cambios declarados acumulados desde 1.18.25. Tiempo por tarea en el tablero | Se persevera con la intervención siguiente. El resultado se informa como costo de ese caso; S-07 y S-08 siguen como supuestos hasta contar con intervenciones comparables y se actualiza X.3 | Se pivota según dónde se fueron las horas (orden abajo) | Cantidad de versiones declaradas compatibles: se declara sin costo y sin verificar fidelidad |
+| E-05 (negocio) | El patrocinio voluntario cubre la readaptación trimestral | Ingreso mensual recurrente neto de costos de cobro, conversión y retiro | Sin H2: al menos USD 44,25 por mes durante 3 meses consecutivos (X.3). Con H2 y una suscripción: USD 64,25 (44,25 + 240 ÷ 12) | Dentro de los 6 meses de la publicación. Panel de GitHub Sponsors y extractos de cobro | Se persevera con la política trimestral | Se pivota: patrocinio por hito de un desarrollo acotado, o versión fija sin mantenimiento (X.3) | Cantidad de patrocinadores sin importe y seguidores: desvinculados de la cobertura del costo |
+
+**Orden y dependencias.** E-01 está hecho. Lo propio se ejecuta primero: la búsqueda de S-03 y S-04, y E-02, en ese orden, y E-04 cuando exista la versión elegida. Dependen de terceros y de la publicación: E-03 (cinco participantes) y E-05 (patrocinadores). Sin participantes o sin patrocinio dentro del plazo, el experimento se informa como no ejecutado, la decisión queda abierta y RIGE permanece en 1.18.25. Capacidad y esfuerzo: `[AUTOR: horas disponibles después de la defensa]`; ningún plazo de esta planilla implica capacidad acreditada.
+
+**Si E-04 supera las 22 h.** Primero se analiza dónde se fueron las horas. Si dominan la lectura y la clasificación de notas, se evalúa H2 (Instrumento 37). Si dominan la programación o las pruebas, RIGE queda fijo en 1.18.25 (L-05) y se recalcula X.3. El aporte a OpenCode conserva su condición de IV.1.

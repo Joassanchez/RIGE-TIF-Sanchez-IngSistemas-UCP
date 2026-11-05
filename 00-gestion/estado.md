@@ -36,6 +36,22 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | X.4 | `informe/cap-10/X.4-recursos-tecnologicos.md` | revisada | AE2 | 24/10/2026 |
 | X.5 | `informe/cap-10/X.5-otros-recursos.md` | revisada | AE2 | 24/10/2026 |
 
+## Producto Final AE4 (al 05/11/2026)
+
+| Elemento | Estado |
+|---|---|
+| AE2 | **Entrega Completa, definitiva** (DEV-AE2 14/2026, segunda revisión del 16/10/2026) |
+| AE3 | Parcial teórico: no aporta insumos al informe (autor, 05/11/2026) |
+| Plan | `00-gestion/plan-cierre-ae4.md`, propuesto el 05/11/2026 |
+| Caps. VI, VII, VIII, IX, XI, XII, XIII y Conclusiones | Sin redactar |
+| Instrumentos 36, 37 y 39 | Borrador del 05/11/2026 con revisión de Codex (consigna, consistencia, crítico y fuentes) y hallazgos aplicados. Con marcadores para el autor (`pendientes.md`, AE4-18) |
+| Instrumentos 38 y 40, manual de despliegue, plan de implantación, actas | Sin elaborar |
+| Anexos | ADR-107 **propuesto**: I, II y III con tabla de equivalencias. Archivos y remisiones sin cambiar hasta su aceptación |
+| Bitácora | Borrador en `00-gestion/bitacora.md`, del 05/11/2026, pendiente de corrección del autor. Fuera de git por decisión del autor |
+| Anexos | Tres anexos desde el 05/11/2026 (ADR-107, aceptado por delegación del autor). Migración aplicada sin commit; paginación pendiente (AE4-12) |
+| Escala (E-01) | Medida el 05/11/2026 en el contenedor sobre `c9b6746`, rama `cierre-ae4` sin unir: margen de 18,52 con el tamaño por diez; `hallazgos` cruza 2000 ms entre 2500 y 3000 reglas (`01-relevamiento/evidencia/e01-escala-contenedor_20261105.md`) |
+| Plan | `pendientes.md`, sección 00 |
+
 ## Correcciones pendientes del AE1
 
 Las secciones del AE1 afectadas por ADR-053, por los cambios aprobados sobre la entrevista (P-03 a P-10) y por los demás hallazgos del grupo C se corrigen en la Ventana. La lista de trabajo está en `00-gestion/ventana-ae1.md`. Cada sección corregida vuelve a `borrador`.
@@ -113,3 +129,6 @@ Estados: `plantilla` → `completado` (por el autor) → `revisado` (`/revisar i
 | 33 · Rivalidad | `instrumentos/instrumento-33-rivalidad.md` | plantilla | 24/09/2026 | 25/09/2026 |
 | 34 · Recursos | `instrumentos/instrumento-34-recursos.md` | plantilla | 01/10/2026 | 25/09/2026 |
 | 35 · Ficha del v1 | `instrumentos/instrumento-35-ficha-v1.md` | plantilla | con la etiqueta `v1` | 25/09/2026 |
+| 36 · Hoja de ruta | `instrumentos/instrumento-36-hoja-ruta.md` | por asignar (autor) · borrador del ingeniero, revisión de Codex aplicada | 17/11/2026 | 05/11/2026 |
+| 37 · Factibilidad | `instrumentos/instrumento-37-factibilidad.md` | por asignar (autor) · borrador del ingeniero, revisión de Codex aplicada | 17/11/2026 | 05/11/2026 |
+| 39 · Escalabilidad | `instrumentos/instrumento-39-escalabilidad.md` | por asignar (autor) · borrador del ingeniero, revisión de Codex aplicada | 17/11/2026 | 05/11/2026 |

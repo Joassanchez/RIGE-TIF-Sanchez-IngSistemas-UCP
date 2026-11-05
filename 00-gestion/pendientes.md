@@ -4,6 +4,36 @@ Solo tareas abiertas, con lo que falta. Los ítems cerrados se eliminan (el hist
 
 Severidad: **B** bloqueante · **I** importante · **M** menor.
 
+## 00. AE4 · Producto Final (carga hasta el 17/11/2026, 23:59 h; coloquio 19 o 20/11/2026)
+
+**Secuencia y forma de trabajo: `00-gestion/plan-cierre-ae4.md`.** Materiales: `catedra/AE4/`, incluido `04_Libro_de_Trabajo_AE4.xlsx`. La AE3 fue un parcial teórico y no aporta insumos. La segunda revisión del dictamen de la AE2 (`catedra/AE2/`) deja la **AE2 en Entrega Completa** y la declara definitiva. El criterio de la cátedra del 08/10 y la consigna v02 admiten la IA declarada: **DV2-04 y la reescritura de DV2-03 quedan sin efecto**; sigue exigida la declaración completa.
+
+**Decisiones del autor del 05/11/2026:** medición final después de los capítulos que no dependen de ella; anexos I, II y III con tabla de equivalencias (requiere ADR que reemplace a ADR-033); declaración de IA por uso, sin consulta al foro; Cap. XII del autor; bitácora redactada por Claude Code y corregida por el autor; constancia del AE1 desde el ap. 10 del dictamen de la AE2.
+
+| # | Pendiente | Quién | Sev. |
+|---|---|---|---|
+| AE4-01 | **Cap. VII, VIII y XI**, con Instrumentos 36, 37, 38 y 39. Los Instrumentos 36, 37 y 39 tienen borrador del 05/11/2026, revisado por Codex y sin conformidad del autor; falta el 38 | Redactor, ingeniero; búsqueda INPI, autor | B |
+| AE4-02 | **Búsqueda en INPI** con fecha, criterio, resultado y captura; disponibilidad en NIC Argentina. La captura va al Anexo III | Autor | B |
+| AE4-03 | **Manual de despliegue** con las 11 secciones de la guía 07, §3 (incluido «sin usuario de demostración: RIGE no tiene acceso con credenciales», datos de prueba y prueba de humo), dentro de la etiqueta; `src/README.md` sigue como v1 | Escritor | B |
+| AE4-04 | **Cerrar `src/`:** PIL-B, VER-02 a VER-07; **etiqueta nueva** (la `congelada` no contiene el manual), después de su corrida verde. Criterio de versionado semántico: Instrumento 36.4 (propuesta v1.0.0; `src/package.json` dice `0.1.0` y debe alinearse con ficha del escritor) | Escritor; etiqueta, autor | B |
+| AE4-05 | **Prueba del manual en máquina limpia** por otra persona, con constancia (postergada por el autor). El dictamen del 16/10 observó que no la hizo un tercero | Autor | B |
+| AE4-06 | **Cap. VI y IX**, con actas, matriz ponderada (declarada como formalización posterior si lo es) y tabla de terceros; **XIII** | Redactor, ingeniero | B |
+| AE4-07 | **Actas de revisión y retrospectiva de los tres sprints**, plan de implantación y acta de cierre. Si no se hicieron en su fecha, se rotulan como reconstrucción. **En espera:** el autor consulta a la cátedra si «los tres sprints» son las iteraciones 1 a 3 de RIGE o los Sprints 1 a 3 de la cátedra | Ingeniero, autor | B |
+| AE4-08 | **Horas reales por iteración** frente a la Tabla 15 (35, 60, 30, 11) y fase de cierre; conciliar V y X | Autor; propuesta desde los commits, ingeniero | B |
+| AE4-09 | **Medición final:** VER-08, criterio y regla de ejecutores fijados y fechados antes, **muestra de adjudicación a mano con concordancia** (dictamen, ap. 7); reporte de batería antes del 17/11 (U-02, punto 4) | Ingeniero, autor | B |
+| AE4-10 | **Abiertas del dictamen del 16/10:** V.2 (ap. 8; sigue diciendo «compañero»); introducción de anexos (sigue mencionando el Anexo VII); IV.3 con las dos lecturas de la Tabla 10; Anexo IV con las corridas de la Ventana y la #25; A.III.4; Tabla 20 de X.1; D-16 frente a la planilla; AE1 contado como fue (Cap. I, D-41). Verificar cada una al consolidar | Redactor | B |
+| AE4-11 | **Cap. XII firmado, Conclusiones y Resumen** (estos dos, al final) | Autor; ingeniero y redactor | B |
+| AE4-12 | **Armado:** `tools/armar.py` para la AE4, numeración «página X de Y» (M-11), carátulas, tablas sin reinicio (VER-14), índices de tablas y figuras, PDF con los nombres `AE4_Sanchez_*.pdf`; 30 puntos de la lista 09 | Ingeniero | B |
+| AE4-13 | **Portafolio AE4**, puntos (a) a (g), con Instrumento 40 y grabación de contingencia; versiones sucesivas del informe; devoluciones con constancia | Autor | B |
+| AE4-14 | **Bitácora:** corregir `00-gestion/bitacora.md`, completar `[AUTOR: …]` y pasar el PDF entregado en la AE2. Fuera de git por decisión del autor (`.gitignore`): el ingeniero recomendó versionarla; se carga como PDF y las citas la nombran como Bitácora Individual, no como dato del repositorio | Autor | B |
+| AE4-15 | **Repositorio:** el autor lo pasa a privado antes de cargar (decisión del 05/11; plan, B7). Tablero accesible desde sesión ajena y con alcance comprometido y entregado | Autor | B |
+| AE4-16 | **Coloquio:** elegir commits propios y recorrer los seis ejes de la grilla 08 sin leer. Señal de no validación: no poder explicar lo que figura a su nombre o se declara en la bitácora | Autor | B |
+| AE4-17 | **ADR-107 (anexos):** aceptado y migrado el 05/11/2026 por delegación del autor. **Falta:** autor, leer el diff y hacer el commit; regenerar `.docx` y `.xlsx` (VER-14); figura de incidencias si cambia su tabla. La paginación «página X de Y» sigue en AE4-12 | Autor; ingeniero | B |
+| AE4-21 | **Rama `cierre-ae4`** (`c9b6746`, modo `--escala`, E-01 medido): unirla con `main` antes de la etiqueta. La evidencia es `e01-escala-contenedor_20261105.md`; darla de alta en `fuentes.md` junto con PIL-A (4). Repetir `--escala` en Windows 11 y sobre la versión entregada | Autor; ingeniero | I |
+| AE4-18 | **Instrumentos 36, 37 y 39, marcadores:** etiqueta y fecha; horas disponibles por horizonte; ahorro, cambios omitidos y concordancia de H2; umbral de la comparación entre resoluciones; resultado de la medición final. Regenerar sus `.docx` para el Portafolio | Autor | B |
+| AE4-19 | **RNF-07 CA-1 y almacén:** el criterio y la evidencia dicen que el almacén empieza vacío en cada serie, pero `valores` y `permiso` resuelven en memoria y no lo usan (`src/paquetes/rige/arranque/rige.ts:41-44`). Corregir el texto y comprobar con la misma revisión si RF-17 y CU-01 («registrar la resolución», V.5) describen bien que por línea de comandos no se guarda | Ingeniero, redactor | I |
+| AE4-20 | **Correcciones de registros:** `01-relevamiento/linea-base/relevamiento-delegacion.md:74` atribuye mal los porcentajes de Ghorab et al. (dos modelos distintos, y las 2662 incidencias son el corpus de la taxonomía); ADR-055 calcula 18 comandos y `openchamber-doble` tiene 20. Decidir si se corrigen o se declaran | Ingeniero, autor | M |
+
 ## 0. Dictamen DEV-AE2 N.º 14/2026 (08/10/2026) · Ventana del 09 al 16/10/2026
 
 Origen: dictamen de devolución de la AE2, firmado por Darío Ezequiel Díaz. Estado: **Entrega incompleta, requiere reelaboración**. D4 y D6 están en nivel 1, D3 en 4 y D1, D2 y D5 en 3. Procesado el 13/10/2026 desde el PDF que adjuntó el autor. **Falta (autor):** guardar el PDF en `catedra/originales/` y su versión en Markdown en `catedra/devolucion-AE2.md`, porque el ingeniero no escribe en `catedra/`. «Ap.» remite al apartado del dictamen. Las filas marcadas **[F]** son observaciones formales: si se repiten, se ponderan negativamente en D6.
