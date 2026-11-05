@@ -1,0 +1,195 @@
+{
+  "commit": "c9b6746",
+  "corridas": 5,
+  "filas": [
+    {
+      "reglas": 1000,
+      "nombre": "valores",
+      "minimo": 128.52146800000003,
+      "mediana": 132.88158800000002,
+      "peor": 141.523059,
+      "lectura": 38.767213999999996,
+      "resolucion": 56.510188
+    },
+    {
+      "reglas": 1000,
+      "nombre": "permiso",
+      "minimo": 152.234866,
+      "mediana": 164.514585,
+      "peor": 186.235091,
+      "lectura": 45.288144,
+      "resolucion": 73.57484199999999
+    },
+    {
+      "reglas": 1000,
+      "nombre": "hallazgos",
+      "minimo": 341.21800200000007,
+      "mediana": 349.7135659999999,
+      "peor": 394.20512499999995,
+      "lectura": 40.508205000000004,
+      "resolucion": 273.955241
+    },
+    {
+      "reglas": 1500,
+      "nombre": "valores",
+      "minimo": 207.7104720000002,
+      "mediana": 211.86363999999958,
+      "peor": 226.62142300000005,
+      "lectura": 75.410184,
+      "resolucion": 97.76800200000001
+    },
+    {
+      "reglas": 1500,
+      "nombre": "permiso",
+      "minimo": 219.5856819999999,
+      "mediana": 225.6503499999999,
+      "peor": 263.9738440000001,
+      "lectura": 77.495206,
+      "resolucion": 107.50037199999998
+    },
+    {
+      "reglas": 1500,
+      "nombre": "hallazgos",
+      "minimo": 669.8943509999999,
+      "mediana": 681.7405079999999,
+      "peor": 696.9768249999997,
+      "lectura": 78.980208,
+      "resolucion": 559.371793
+    },
+    {
+      "reglas": 2000,
+      "nombre": "valores",
+      "minimo": 315.29196799999954,
+      "mediana": 329.5235530000009,
+      "peor": 346.9877809999998,
+      "lectura": 126.89233499999999,
+      "resolucion": 160.91297300000002
+    },
+    {
+      "reglas": 2000,
+      "nombre": "permiso",
+      "minimo": 335.6292450000001,
+      "mediana": 341.83776800000123,
+      "peor": 350.21079800000007,
+      "lectura": 126.460497,
+      "resolucion": 177.90833800000001
+    },
+    {
+      "reglas": 2000,
+      "nombre": "hallazgos",
+      "minimo": 1151.431394000001,
+      "mediana": 1161.0364740000005,
+      "peor": 1187.792929000001,
+      "lectura": 126.065443,
+      "resolucion": 995.610729
+    },
+    {
+      "reglas": 2500,
+      "nombre": "valores",
+      "minimo": 461.2313189999986,
+      "mediana": 463.094642,
+      "peor": 483.7056960000009,
+      "lectura": 193.679712,
+      "resolucion": 230.722962
+    },
+    {
+      "reglas": 2500,
+      "nombre": "permiso",
+      "minimo": 476.53831999999966,
+      "mediana": 480.7763809999997,
+      "peor": 482.51552999999694,
+      "lectura": 193.543366,
+      "resolucion": 244.607699
+    },
+    {
+      "reglas": 2500,
+      "nombre": "hallazgos",
+      "minimo": 1779.6938759999975,
+      "mediana": 1819.1384769999968,
+      "peor": 1851.388429999999,
+      "lectura": 198.37472,
+      "resolucion": 1588.08091
+    },
+    {
+      "reglas": 3000,
+      "nombre": "valores",
+      "minimo": 642.6518480000013,
+      "mediana": 644.6491769999993,
+      "peor": 659.2700560000012,
+      "lectura": 276.476496,
+      "resolucion": 328.893167
+    },
+    {
+      "reglas": 3000,
+      "nombre": "permiso",
+      "minimo": 656.0581289999973,
+      "mediana": 664.9721930000014,
+      "peor": 685.9407730000021,
+      "lectura": 279.74668299999996,
+      "resolucion": 346.17146
+    },
+    {
+      "reglas": 3000,
+      "nombre": "hallazgos",
+      "minimo": 2545.9229510000005,
+      "mediana": 2570.131244999997,
+      "peor": 2683.2562060000055,
+      "lectura": 275.09400700000003,
+      "resolucion": 2250.473786
+    },
+    {
+      "reglas": 4000,
+      "nombre": "valores",
+      "minimo": 1079.7990009999994,
+      "mediana": 1112.7597410000017,
+      "peor": 1323.1923810000008,
+      "lectura": 481.835623,
+      "resolucion": 587.1582980000001
+    },
+    {
+      "reglas": 4000,
+      "nombre": "permiso",
+      "minimo": 1102.3271520000053,
+      "mediana": 1124.7009429999962,
+      "peor": 1159.889151999996,
+      "lectura": 480.66978300000005,
+      "resolucion": 603.7898779999998
+    },
+    {
+      "reglas": 4000,
+      "nombre": "hallazgos",
+      "minimo": 4510.979137999995,
+      "mediana": 4622.48999799999,
+      "peor": 4663.062764000002,
+      "lectura": 481.230351,
+      "resolucion": 4099.903413
+    },
+    {
+      "reglas": 5000,
+      "nombre": "valores",
+      "minimo": 1693.9524710000114,
+      "mediana": 1701.4462389999971,
+      "peor": 1794.5475600000063,
+      "lectura": 743.680139,
+      "resolucion": 920.190759
+    },
+    {
+      "reglas": 5000,
+      "nombre": "permiso",
+      "minimo": 1733.1163559999986,
+      "mediana": 1769.27549,
+      "peor": 1795.531655999992,
+      "lectura": 759.4186550000001,
+      "resolucion": 962.706693
+    },
+    {
+      "reglas": 5000,
+      "nombre": "hallazgos",
+      "minimo": 7436.648031999997,
+      "mediana": 7473.578636999999,
+      "peor": 7547.565922999987,
+      "lectura": 782.29517,
+      "resolucion": 6654.517729
+    }
+  ]
+}

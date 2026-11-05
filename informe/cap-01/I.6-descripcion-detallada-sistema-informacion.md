@@ -2,7 +2,7 @@
 
 ### I.6.1 · Elementos del ecosistema y criterio de inclusión
 
-RIGE abarca los elementos de configuración que determinan el comportamiento de los agentes o su capacidad de acción en un proyecto de OpenCode 1.18.25, con las exclusiones del apartado I.6.5. El criterio comprende los elementos declarados por el usuario y los nativos documentados, como los agentes `build` y `plan`. La verificación de los agentes internos y el límite de su relación con el segundo episodio de I.1.3 constan en el Anexo VI, A.VI.3, resultado 18.
+RIGE abarca los elementos de configuración que determinan el comportamiento de los agentes o su capacidad de acción en un proyecto de OpenCode 1.18.25, con las exclusiones del apartado I.6.5. El criterio comprende los elementos declarados por el usuario y los nativos documentados, como los agentes `build` y `plan`. La verificación de los agentes internos y el límite de su relación con el segundo episodio de I.1.3 constan en el Anexo I, A.I.3, resultado 18.
 
 El agente es el eje de la representación porque sobre él se manifiesta el efecto de la configuración. Se descarta organizarla por archivo porque este representa una entrada y presupone que quien se incorpora a un proyecto ajeno conoce qué archivos existen (Anexo III, D-08).
 
@@ -20,7 +20,7 @@ La Tabla 6 delimita los elementos considerados y distingue sus vínculos diferid
 | Servidores LSP        | Servidor efectivo por lenguaje, procedencia de la declaración y estado de habilitación | Lenguajes cubiertos y agentes que reciben diagnósticos y navegación de símbolos de cada servidor |
 | Plugins               | Declaración, origen y estado de carga declarado | — |
 
-*Tabla 6. Elementos del ecosistema considerados por RIGE y relaciones diferidas. Fuente: elaboración propia sobre el esquema de configuración de OpenCode 1.18.25, verificado en el Anexo VI, A.VI.3.*
+*Tabla 6. Elementos del ecosistema considerados por RIGE y relaciones diferidas. Fuente: elaboración propia sobre el esquema de configuración de OpenCode 1.18.25, verificado en el Anexo I, A.I.3.*
 
 ### I.6.2 · Componentes funcionales
 
@@ -28,7 +28,7 @@ RIGE se organiza en seis funciones que descubren las entradas de configuración,
 
 Las funciones se exponen por dos interfaces sobre las mismas resoluciones. La interfaz de línea de comandos es la interfaz completa: ofrece las consultas comprometidas con salida estructurada para agentes, otras herramientas y desarrolladores que trabajan en la terminal. La interfaz web local se limita a formularios y vistas de consulta para la inspección humana; sus funciones también están disponibles por línea de comandos.
 
-Esta distribución responde a la práctica relevada: el equipo consultado ya interroga la configuración mediante un agente con permisos elevados (Anexo VI, A.VI.5). Se descarta conservar solo la interfaz gráfica porque dejaría sin atender a ese consumidor programático (Anexo III, D-17). RIGE ofrece una explicación determinista, idéntica ante entradas idénticas y sin conexión saliente; el costo del procedimiento delegado completo se evalúa mediante la salvaguarda del apartado I.3.4.
+Esta distribución responde a la práctica relevada: el equipo consultado ya interroga la configuración mediante un agente con permisos elevados (Anexo I, A.I.5). Se descarta conservar solo la interfaz gráfica porque dejaría sin atender a ese consumidor programático (Anexo III, D-17). RIGE ofrece una explicación determinista, idéntica ante entradas idénticas y sin conexión saliente; el costo del procedimiento delegado completo se evalúa mediante la salvaguarda del apartado I.3.4.
 
 | **Cód.** | **Función**                                      | **Descripción**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | **Objetivo** |
 |----------|--------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
@@ -47,7 +47,7 @@ La explicación se presenta junto a cada decisión y hallazgo en la interfaz web
 
 ### I.6.3 · Estados y definiciones
 
-La Tabla 8 reúne las distinciones necesarias para interpretar las salidas. Las definiciones completas de valor efectivo, procedencia, valor implícito, regla nativa y elemento nativo se consultan en el glosario del Anexo V.
+La Tabla 8 reúne las distinciones necesarias para interpretar las salidas. Las definiciones completas de valor efectivo, procedencia, valor implícito, regla nativa y elemento nativo se consultan en el glosario del Anexo II.
 
 | **Término**            | **Definición operativa**                                                                                                                                                                                                                            |
 |------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -92,7 +92,7 @@ La Tabla 9 sintetiza las entradas y salidas de la frontera y sitúa el almacén 
 
 Las variables de entorno leídas corresponden al proceso de RIGE, que puede diferir del entorno de la terminal desde la que se ejecuta OpenCode. Se advierte cuando falta una variable relevante; la limitación se recoge en el apartado I.6.5.
 
-OpenCode tiene dos motores de permisos; RIGE modela el que usan la terminal y la interfaz. El análisis es estático; el detalle técnico, la verificación parcial y los límites de las aprobaciones constan en el Anexo VI, A.VI.3, resultados 10 y 11. RIGE excluye las aprobaciones y declara esa condición junto a cada decisión de permiso, por ambas interfaces.
+OpenCode tiene dos motores de permisos; RIGE modela el que usan la terminal y la interfaz. El análisis es estático; el detalle técnico, la verificación parcial y los límites de las aprobaciones constan en el Anexo I, A.I.3, resultados 10 y 11. RIGE excluye las aprobaciones y declara esa condición junto a cada decisión de permiso, por ambas interfaces.
 
 ### I.6.5 · Alcance y exclusiones declaradas
 
@@ -124,9 +124,9 @@ La Tabla 10 resume las inclusiones y exclusiones necesarias para interpretar las
 
 ### I.6.6 · Prototipo v0
 
-La maqueta validada el 26/09/2026 reformula la presentada el 29/08/2026 a partir del pedido de la referente en la entrevista del 24/09/2026 (Anexo VI, A.VI.5). Simplifica la interfaz gráfica a cinco pantallas y representa la consulta por línea de comandos para un agente (Anexo II, A.II.2). Las herramientas generativas se utilizan como apoyo para construir en HTML la maqueta navegable, de baja fidelidad y no funcional. Sus datos son ilustrativos; el cálculo, la persistencia y la lectura de archivos quedan fuera de la maqueta.
+La maqueta validada el 26/09/2026 reformula la presentada el 29/08/2026 a partir del pedido de la referente en la entrevista del 24/09/2026 (Anexo I, A.I.5). Simplifica la interfaz gráfica a cinco pantallas y representa la consulta por línea de comandos para un agente (Anexo II, A.II.2). Las herramientas generativas se utilizan como apoyo para construir en HTML la maqueta navegable, de baja fidelidad y no funcional. Sus datos son ilustrativos; el cálculo, la persistencia y la lectura de archivos quedan fuera de la maqueta.
 
-Se adopta la baja fidelidad para detectar errores de flujo. Se descarta la alta fidelidad por el criterio general de que una maqueta terminada tiende a recibir una crítica más moderada (Anexo III, D-09). Los casos de atribución se conservan como antecedente del flujo (Anexo VI, A.VI.1, Tabla A.VI.2).
+Se adopta la baja fidelidad para detectar errores de flujo. Se descarta la alta fidelidad por el criterio general de que una maqueta terminada tiende a recibir una crítica más moderada (Anexo III, D-09). Los casos de atribución se conservan como antecedente del flujo (Anexo I, A.I.1, Tabla A.I.2).
 
 El recorrido gráfico comprende cinco pantallas:
 

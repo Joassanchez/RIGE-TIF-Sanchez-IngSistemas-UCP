@@ -6,7 +6,7 @@ El código incorporado conserva la atribución MIT de OpenCode, «Copyright (c) 
 
 ### Capacitación
 
-El autor declara experiencia previa en TypeScript y el estudio del código de OpenCode forma parte del relevamiento (Anexo VI, A.VI.3). La curva de aprendizaje de Bun, los contenedores, WSL y las herramientas de medición se absorbe en las tareas que los emplean, con las horas asignadas en la Tabla 16 del apartado V.4, sin horas propias de capacitación.
+El autor declara experiencia previa en TypeScript y el estudio del código de OpenCode forma parte del relevamiento (Anexo I, A.I.3). La curva de aprendizaje de Bun, los contenedores, WSL y las herramientas de medición se absorbe en las tareas que los emplean, con las horas asignadas en la Tabla 16 del apartado V.4, sin horas propias de capacitación.
 
 ### Migración de datos
 

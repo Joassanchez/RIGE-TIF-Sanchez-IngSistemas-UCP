@@ -2,13 +2,13 @@
 
 El relevamiento combina la medición con agentes, el análisis documental de incidencias y la entrevista a la referente técnica. Se suman el relevamiento técnico de OpenCode y el contraste de soluciones existentes. Cada instrumento responde a una pregunta distinta.
 
-El relevamiento técnico analiza el código del tag 1.18.25 y ejecuta escenarios controlados sobre la configuración, los permisos y los comandos de introspección. La guía se actualiza el 21/09/2026 y la comprobación de subagentes se corrige el 13/10/2026. Quedan pendientes las verificaciones identificadas como tales, incluidas las configuraciones remota y administrada y las modificaciones por plugins, fuera del alcance del proyecto (Anexo VI, A.VI.3).
+El relevamiento técnico analiza el código del tag 1.18.25 y ejecuta escenarios controlados sobre la configuración, los permisos y los comandos de introspección. La guía se actualiza el 21/09/2026 y la comprobación de subagentes se corrige el 13/10/2026. Quedan pendientes las verificaciones identificadas como tales, incluidas las configuraciones remota y administrada y las modificaciones por plugins, fuera del alcance del proyecto (Anexo I, A.I.3).
 
-El contraste de soluciones combina pruebas directas del 17/09/2026 con una revisión documental actualizada al 01/10/2026. Cubre productos publicados y utilizables que operan sobre la configuración de herramientas de programación basadas en agentes y cuentan con documentación verificable. Las propuestas y los precedentes de otros dominios se registran por separado; el conjunto carece de pretensión de exhaustividad universal (Anexo VI, A.VI.4).
+El contraste de soluciones combina pruebas directas del 17/09/2026 con una revisión documental actualizada al 01/10/2026. Cubre productos publicados y utilizables que operan sobre la configuración de herramientas de programación basadas en agentes y cuentan con documentación verificable. Las propuestas y los precedentes de otros dominios se registran por separado; el conjunto carece de pretensión de exhaustividad universal (Anexo I, A.I.4).
 
 ### II.2.1 · Instrumento 1 · Medición con agentes de la línea de base
 
-El autor ejecuta la medición los días 20 y 21/10/2026 mediante el arnés de la línea de base. El instrumento mide el procedimiento delegado: el agente modifica la configuración de OpenCode 1.18.25 dentro del proyecto a pedido del desarrollador y declara si da por terminado el cambio (ADR-098, punto 1). Incluye la detección de defectos y un contraste descriptivo con el ejecutor fuera del árbol del proyecto (Anexo VI, A.VI.8). Se emplean agentes porque la entrevista acredita que la configuración se delega en la práctica. Se descarta el diseño con personas para esta línea de base porque mide el procedimiento manual y deja fuera esa delegación (Anexo III, D-41).
+El autor ejecuta la medición los días 20 y 21/10/2026 mediante el arnés de la línea de base. El instrumento mide el procedimiento delegado: el agente modifica la configuración de OpenCode 1.18.25 dentro del proyecto a pedido del desarrollador y declara si da por terminado el cambio (ADR-098, punto 1). Incluye la detección de defectos y un contraste descriptivo con el ejecutor fuera del árbol del proyecto (Anexo I, A.I.8). Se emplean agentes porque la entrevista acredita que la configuración se delega en la práctica. Se descarta el diseño con personas para esta línea de base porque mide el procedimiento manual y deja fuera esa delegación (Anexo III, D-41).
 
 La unidad es el problema, compuesto por un escenario, un pedido, un objetivo comprobable, guardas que deben preservarse y una forma correcta de referencia. Una forma ingenua comprueba el contraste. Los criterios de inclusión exigen:
 
@@ -24,7 +24,7 @@ La unidad es el problema, compuesto por un escenario, un pedido, un objetivo com
 
 La admisión se realiza exclusivamente por reproducción nativa con OpenCode, sin agente, antes de ejecutar la medición.
 
-La familia de ruta absoluta se incorpora conociendo la falla del agente; las fechas y el alcance de sus antecedentes se desarrollan en I.1.3 a). El resultado se desglosa por familia y por ejecuciones que escriben reglas por ruta (Anexo VI, A.VI.8).
+La familia de ruta absoluta se incorpora conociendo la falla del agente; las fechas y el alcance de sus antecedentes se desarrollan en I.1.3 a). El resultado se desglosa por familia y por ejecuciones que escriben reglas por ruta (Anexo I, A.I.8).
 
 Los estratos del banco, sus cantidades y sus funciones constan en la Tabla 2 del apartado I.3.2.
 
@@ -34,11 +34,11 @@ El brazo base, condición de ejecución sin RIGE, dispone de la documentación l
 
 La cuenta del desarrollador recibe la credencial del modelo para que el agente pueda probar el efecto ejecutando OpenCode como el desarrollador. La instrucción omite esa posibilidad (ADR-098, punto 3).
 
-Cada ejecución se corrige mediante un oráculo que ejecuta OpenCode sobre el estado final que deja el agente. La definición de colateral distingue las alteraciones de guardas declaradas de los cambios adicionales que detecta la batería de sondas respecto de la forma correcta de referencia. Las primeras cuentan como éxito declarado falso si el agente declara terminado el cambio; los segundos se informan como exceso de alcance (Anexo VI, A.VI.7). La composición del banco consta en A.VI.1 y el registro de su ejecución, en A.VI.2.
+Cada ejecución se corrige mediante un oráculo que ejecuta OpenCode sobre el estado final que deja el agente. La definición de colateral distingue las alteraciones de guardas declaradas de los cambios adicionales que detecta la batería de sondas respecto de la forma correcta de referencia. Las primeras cuentan como éxito declarado falso si el agente declara terminado el cambio; los segundos se informan como exceso de alcance (Anexo I, A.I.7). La composición del banco consta en A.I.1 y el registro de su ejecución, en A.I.2.
 
 ### II.2.2 · Instrumento 2 · Relevamiento documental de incidencias del repositorio
 
-La medición se complementa con un relevamiento documental de las incidencias públicas del repositorio de OpenCode. Aporta evidencia de comportamientos de la configuración distintos de lo esperado, con un alcance que excede el banco construido. El criterio de búsqueda se registra antes de efectuar el conteo (Anexo VI, A.VI.6). Sobre la totalidad del historial del repositorio, se buscan títulos que combinen `config` con `permission`, `override`, `merge` o `precedence`.
+La medición se complementa con un relevamiento documental de las incidencias públicas del repositorio de OpenCode. Aporta evidencia de comportamientos de la configuración distintos de lo esperado, con un alcance que excede el banco construido. El criterio de búsqueda se registra antes de efectuar el conteo (Anexo I, A.I.6). Sobre la totalidad del historial del repositorio, se buscan títulos que combinen `config` con `permission`, `override`, `merge` o `precedence`.
 
 Se restringe la búsqueda al título por la escala del repositorio y se declara ese criterio junto con el resultado para que se reproduzca o discuta. Se descarta relevar el cuerpo completo mediante la interfaz de programación del repositorio por el volumen de resultados que exige clasificar manualmente (Anexo III, D-13).
 
@@ -48,13 +48,13 @@ La entrevista individual se aplica a la referente técnica de una organización 
 
 #### Aplicación y alcance efectivo
 
-La persona consultada es Valeria Areco, desarrolladora del equipo de Sistemas de EMSA. El canal, las fechas y la duración de los contactos constan en el apartado I.1.2. El consentimiento para las entrevistas está otorgado, según la declaración del autor del 24/10/2026. La autorización explícita para publicar nombre y rol se solicita según II.6.2; la constancia vigente figura en el Anexo VI, A.VI.5.
+La persona consultada es Valeria Areco, desarrolladora del equipo de Sistemas de EMSA. El canal, las fechas y la duración de los contactos constan en el apartado I.1.2. El consentimiento para las entrevistas está otorgado, según la declaración del autor del 24/10/2026. La autorización explícita para publicar nombre y rol se solicita según II.6.2; la constancia vigente figura en el Anexo I, A.I.5.
 
-La decisión sobre el relevamiento del equipo completo consta en el apartado I.1.2. Sus consecuencias se declaran en el apartado II.2.4. La guía y las condiciones de aplicación se documentan en el Anexo VI, A.VI.5.
+La decisión sobre el relevamiento del equipo completo consta en el apartado I.1.2. Sus consecuencias se declaran en el apartado II.2.4. La guía y las condiciones de aplicación se documentan en el Anexo I, A.I.5.
 
 #### Estructura del guion y registro
 
-Las dos entrevistas se registran como semiestructuradas. El 29/08/2026 se aplica un guion de siete preguntas, según la constancia; el seguimiento del 24/09/2026 desarrolla los temas de la primera entrevista sin un cuestionario fijo. La reconstrucción utiliza los informes y la memoria del autor, sin grabación (Anexo VI, A.VI.5).
+Las dos entrevistas se registran como semiestructuradas. El 29/08/2026 se aplica un guion de siete preguntas, según la constancia; el seguimiento del 24/09/2026 desarrolla los temas de la primera entrevista sin un cuestionario fijo. La reconstrucción utiliza los informes y la memoria del autor, sin grabación (Anexo I, A.I.5).
 
 La referente firma la constancia el 15/10/2026, un día después de la reorientación del 14/10/2026. El cambio sin efecto figura como tema desde el 24/09/2026, según ADR-098, «Antecedentes absorbidos». La pregunta 4 es cerrada y consulta directamente por ese episodio; ese formato limita la espontaneidad de la respuesta.
 
@@ -78,7 +78,7 @@ Toda cifra obtenida se consigna con su método de obtención, su universo y su p
 
 #### Valor probatorio y su límite
 
-La entrevista produce demanda declarada, sujeta a los sesgos descriptos en el apartado II.6.2. Los relatos sobre artefactos del equipo y consumo de tokens conservan esa condición; la pizarra se consigna como relato sin registro firmado. La definición de Charles entregada por la referente constituye el artefacto observado que acredita demanda revelada (apartado II.1.1). La acreditación del mecanismo se apoya en el relevamiento técnico (Anexo VI, A.VI.3). Las incidencias documentan comportamientos reportados por terceros con el alcance del Anexo VI, A.VI.6.
+La entrevista produce demanda declarada, sujeta a los sesgos descriptos en el apartado II.6.2. Los relatos sobre artefactos del equipo y consumo de tokens conservan esa condición; la pizarra se consigna como relato sin registro firmado. La definición de Charles entregada por la referente constituye el artefacto observado que acredita demanda revelada (apartado II.1.1). La acreditación del mecanismo se apoya en el relevamiento técnico (Anexo I, A.I.3). Las incidencias documentan comportamientos reportados por terceros con el alcance del Anexo I, A.I.6.
 
 ### II.2.4 · Alcance y límites del relevamiento
 
@@ -86,9 +86,9 @@ El relevamiento declara cuatro límites del instrumento: la ausencia de una inst
 
 #### Ausencia de una instancia ciega
 
-El autor diseña el banco, construye las formas de referencia y desarrolla RIGE. El 19/10/2026 se fijan los pedidos, objetivos, guardas y umbral de dos de tres repeticiones, antes de ejecutar agentes sobre ese banco. El 20/10 se modifica la batería de comprobación y se readmiten las referencias. El 22/10 el exceso de alcance se separa del éxito declarado falso y el mecanismo se cuenta por los archivos finales (Anexo VI, A.VI.8).
+El autor diseña el banco, construye las formas de referencia y desarrolla RIGE. El 19/10/2026 se fijan los pedidos, objetivos, guardas y umbral de dos de tres repeticiones, antes de ejecutar agentes sobre ese banco. El 20/10 se modifica la batería de comprobación y se readmiten las referencias. El 22/10 el exceso de alcance se separa del éxito declarado falso y el mecanismo se cuenta por los archivos finales (Anexo I, A.I.8).
 
-La corrección ejecuta OpenCode contra esas referencias. La clasificación de las incidencias y el conteo de mecanismos observados dependen de un único codificador. Las decisiones posteriores al dato quedan registradas en el Anexo VI, A.VI.8.
+La corrección ejecuta OpenCode contra esas referencias. La clasificación de las incidencias y el conteo de mecanismos observados dependen de un único codificador. Las decisiones posteriores al dato quedan registradas en el Anexo I, A.I.8.
 
 #### Alcance acotado a una herramienta y a un banco construido
 
@@ -98,7 +98,7 @@ La medición se circunscribe a OpenCode 1.18.25, un modelo y problemas construid
 
 Tres conjuntos de informantes quedan fuera del relevamiento. El equipo de Sistemas de EMSA se releva a través de una sola de sus cinco integrantes. Los parámetros disponibles para una eventual valoración económica proceden de esa informante, conforme al apartado I.3.1.
 
-El relevamiento documental propio identifica 31 incidencias sobre comportamientos de la configuración distintos de lo esperado, mediante búsqueda y clasificación por título, con un codificador. Abarca del 28/11/2025 al 16/09/2026, con consulta el 17/09/2026 y revisión el 09/10/2026 (Anexo VI, A.VI.6). Se distribuyen en diez de precedencia y fusión, una de valor implícito y diez de permisos. Otras dos quedan fuera del compromiso del período y ocho fuera de alcance. El corpus carece de incidencias sobre ruta absoluta. El contacto con sus autores queda pendiente y aportaría declaraciones de primera mano independientes de la referente.
+El relevamiento documental propio identifica 31 incidencias sobre comportamientos de la configuración distintos de lo esperado, mediante búsqueda y clasificación por título, con un codificador. Abarca del 28/11/2025 al 16/09/2026, con consulta el 17/09/2026 y revisión el 09/10/2026 (Anexo I, A.I.6). Se distribuyen en diez de precedencia y fusión, una de valor implícito y diez de permisos. Otras dos quedan fuera del compromiso del período y ocho fuera de alcance. El corpus carece de incidencias sobre ruta absoluta. El contacto con sus autores queda pendiente y aportaría declaraciones de primera mano independientes de la referente.
 
 El relevamiento de quienes desarrollan OpenCode queda pendiente; constituyen una fuente directa sobre el comportamiento de la herramienta y sus decisiones de diseño. Los tres relevamientos son factibles y su ausencia limita el sustento declarado del problema a una única informante.
 

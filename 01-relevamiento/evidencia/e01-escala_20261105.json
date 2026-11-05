@@ -1,0 +1,521 @@
+{
+  "plataforma": "linux",
+  "commit": "c9b6746",
+  "corridasPorConsulta": 10,
+  "resultados": [
+    {
+      "serie": "tamano",
+      "cantidad": 1,
+      "archivos": 32,
+      "consulta": "valores",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 42.74551299999999,
+        "mediana": 44.440921,
+        "peor": 54.16694699999999
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.12708599999999848,
+          "mediana": 0.1392009999999999,
+          "peor": 0.19288099999999986
+        },
+        "lecturaMs": {
+          "minimo": 5.927004,
+          "mediana": 6.639159500000002,
+          "peor": 7.962970999999996
+        },
+        "resolucionMs": {
+          "minimo": 3.651654999999998,
+          "mediana": 4.251140500000002,
+          "peor": 5.866268000000005
+        },
+        "salidaMs": {
+          "minimo": 0.882589000000003,
+          "mediana": 0.9569669999999988,
+          "peor": 1.0541300000000007
+        },
+        "totalMs": {
+          "minimo": 10.596048,
+          "mediana": 11.936098500000002,
+          "peor": 15.044711
+        }
+      },
+      "cociente": null
+    },
+    {
+      "serie": "tamano",
+      "cantidad": 1,
+      "archivos": 32,
+      "consulta": "permiso",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 45.70562300000006,
+        "mediana": 46.526565000000005,
+        "peor": 50.24671099999989
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.14048399999999717,
+          "mediana": 0.14846000000000004,
+          "peor": 0.18090899999999976
+        },
+        "lecturaMs": {
+          "minimo": 6.301366000000005,
+          "mediana": 6.665891,
+          "peor": 7.057121000000002
+        },
+        "resolucionMs": {
+          "minimo": 5.5604510000000005,
+          "mediana": 6.1868345,
+          "peor": 6.770317000000006
+        },
+        "salidaMs": {
+          "minimo": 0.8660050000000012,
+          "mediana": 0.9159635000000002,
+          "peor": 1.1382410000000007
+        },
+        "totalMs": {
+          "minimo": 13.286801,
+          "mediana": 13.757415999999997,
+          "peor": 14.424430999999998
+        }
+      },
+      "cociente": null
+    },
+    {
+      "serie": "tamano",
+      "cantidad": 1,
+      "archivos": 32,
+      "consulta": "hallazgos",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 46.71236099999999,
+        "mediana": 53.82946449999997,
+        "peor": 65.89520700000003
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.13668799999999948,
+          "mediana": 0.14694700000000083,
+          "peor": 0.19717699999999994
+        },
+        "lecturaMs": {
+          "minimo": 6.3744199999999935,
+          "mediana": 6.689261999999999,
+          "peor": 10.132573
+        },
+        "resolucionMs": {
+          "minimo": 6.173673999999998,
+          "mediana": 6.802076500000002,
+          "peor": 13.177863000000002
+        },
+        "salidaMs": {
+          "minimo": 0.8956319999999991,
+          "mediana": 1.0638104999999989,
+          "peor": 1.6690090000000026
+        },
+        "totalMs": {
+          "minimo": 13.847868000000002,
+          "mediana": 14.857570499999998,
+          "peor": 24.762575000000002
+        }
+      },
+      "cociente": null
+    },
+    {
+      "serie": "tamano",
+      "cantidad": 1,
+      "archivos": 32,
+      "consulta": "permiso --explicar",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 49.006357999999864,
+        "mediana": 50.789250500000094,
+        "peor": 61.180724000000055
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.14070099999999996,
+          "mediana": 0.15269400000000033,
+          "peor": 0.19571499999999986
+        },
+        "lecturaMs": {
+          "minimo": 6.427276000000003,
+          "mediana": 6.9561525,
+          "peor": 8.543306000000001
+        },
+        "resolucionMs": {
+          "minimo": 6.307133,
+          "mediana": 6.8582114999999995,
+          "peor": 8.220784000000002
+        },
+        "salidaMs": {
+          "minimo": 0.9558919999999986,
+          "mediana": 1.0722650000000016,
+          "peor": 1.540894999999999
+        },
+        "totalMs": {
+          "minimo": 14.023879999999998,
+          "mediana": 15.106987500000002,
+          "peor": 18.506556000000003
+        }
+      },
+      "cociente": null
+    },
+    {
+      "serie": "tamano",
+      "cantidad": 10,
+      "archivos": 311,
+      "consulta": "valores",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 80.25689000000011,
+        "mediana": 88.12840649999976,
+        "peor": 107.55737399999998
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.128069,
+          "mediana": 0.14839049999999965,
+          "peor": 0.18357400000000013
+        },
+        "lecturaMs": {
+          "minimo": 19.730524,
+          "mediana": 21.287518,
+          "peor": 25.137498
+        },
+        "resolucionMs": {
+          "minimo": 24.763540000000006,
+          "mediana": 28.027050000000003,
+          "peor": 39.697708999999996
+        },
+        "salidaMs": {
+          "minimo": 1.1195240000000126,
+          "mediana": 1.1778614999999917,
+          "peor": 1.619297000000003
+        },
+        "totalMs": {
+          "minimo": 45.855596000000006,
+          "mediana": 50.991657999999994,
+          "peor": 66.61451299999999
+        }
+      },
+      "cociente": {
+        "mediana": 1.9830463572075778,
+        "peor": 1.985664320346502
+      }
+    },
+    {
+      "serie": "tamano",
+      "cantidad": 10,
+      "archivos": 311,
+      "consulta": "permiso",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 86.45245900000009,
+        "mediana": 89.09182899999996,
+        "peor": 107.97992599999998
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.13920399999999944,
+          "mediana": 0.15819549999999793,
+          "peor": 0.2011800000000008
+        },
+        "lecturaMs": {
+          "minimo": 19.035815,
+          "mediana": 20.7343965,
+          "peor": 25.541272999999997
+        },
+        "resolucionMs": {
+          "minimo": 29.695624000000002,
+          "mediana": 31.1347525,
+          "peor": 49.767141
+        },
+        "salidaMs": {
+          "minimo": 1.004798000000008,
+          "mediana": 1.2139409999999984,
+          "peor": 1.4302760000000063
+        },
+        "totalMs": {
+          "minimo": 50.71611399999999,
+          "mediana": 53.398915,
+          "peor": 71.003693
+        }
+      },
+      "cociente": {
+        "mediana": 1.9148593712000865,
+        "peor": 2.1489949063531784
+      }
+    },
+    {
+      "serie": "tamano",
+      "cantidad": 10,
+      "archivos": 311,
+      "consulta": "hallazgos",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 90.36296200000015,
+        "mediana": 93.8819739999999,
+        "peor": 101.7113330000002
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.1393330000000006,
+          "mediana": 0.15219800000000028,
+          "peor": 0.19962699999999955
+        },
+        "lecturaMs": {
+          "minimo": 20.329773000000003,
+          "mediana": 21.029768,
+          "peor": 23.594815
+        },
+        "resolucionMs": {
+          "minimo": 33.48119499999999,
+          "mediana": 35.8065955,
+          "peor": 39.689096
+        },
+        "salidaMs": {
+          "minimo": 1.1931709999999924,
+          "mediana": 1.3187335000000004,
+          "peor": 1.7736819999999938
+        },
+        "totalMs": {
+          "minimo": 55.59821699999999,
+          "mediana": 58.600961,
+          "peor": 62.791743
+        }
+      },
+      "cociente": {
+        "mediana": 1.7440629378729924,
+        "peor": 1.5435315803773126
+      }
+    },
+    {
+      "serie": "tamano",
+      "cantidad": 10,
+      "archivos": 311,
+      "consulta": "permiso --explicar",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 84.72884999999951,
+        "mediana": 87.57431899999983,
+        "peor": 91.4147380000004
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.13461300000000165,
+          "mediana": 0.14741100000000174,
+          "peor": 0.25513799999999875
+        },
+        "lecturaMs": {
+          "minimo": 19.939552000000003,
+          "mediana": 20.52852,
+          "peor": 22.052251999999996
+        },
+        "resolucionMs": {
+          "minimo": 28.453417,
+          "mediana": 30.4365395,
+          "peor": 33.292204000000005
+        },
+        "salidaMs": {
+          "minimo": 1.2642120000000006,
+          "mediana": 1.3383184999999926,
+          "peor": 1.5935630000000032
+        },
+        "totalMs": {
+          "minimo": 49.845825000000005,
+          "mediana": 52.50189999999999,
+          "peor": 56.867077
+        }
+      },
+      "cociente": {
+        "mediana": 1.7242687800639955,
+        "peor": 1.4941754857297915
+      }
+    },
+    {
+      "serie": "reglas",
+      "cantidad": 10,
+      "archivos": 1,
+      "consulta": "hallazgos",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 40.84998900000028,
+        "mediana": 42.043940499999735,
+        "peor": 44.454295999999886
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.13127899999999926,
+          "mediana": 0.14275600000000033,
+          "peor": 0.1755980000000008
+        },
+        "lecturaMs": {
+          "minimo": 3.9308109999999985,
+          "mediana": 4.103594000000001,
+          "peor": 4.478293999999998
+        },
+        "resolucionMs": {
+          "minimo": 4.284060000000004,
+          "mediana": 4.6618759999999995,
+          "peor": 4.9740210000000005
+        },
+        "salidaMs": {
+          "minimo": 0.8363719999999972,
+          "mediana": 0.8865864999999999,
+          "peor": 1.0774479999999969
+        },
+        "totalMs": {
+          "minimo": 9.255682,
+          "mediana": 9.789128999999999,
+          "peor": 10.495254
+        }
+      },
+      "cociente": null
+    },
+    {
+      "serie": "reglas",
+      "cantidad": 100,
+      "archivos": 1,
+      "consulta": "hallazgos",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 53.14610200000061,
+        "mediana": 55.75263449999966,
+        "peor": 68.69843900000069
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.13431600000000188,
+          "mediana": 0.14862100000000034,
+          "peor": 0.15958700000000192
+        },
+        "lecturaMs": {
+          "minimo": 5.594628999999998,
+          "mediana": 6.207006999999997,
+          "peor": 19.596075
+        },
+        "resolucionMs": {
+          "minimo": 12.269618000000001,
+          "mediana": 13.969203,
+          "peor": 16.830603000000004
+        },
+        "salidaMs": {
+          "minimo": 0.8992209999999972,
+          "mediana": 0.9749504999999985,
+          "peor": 1.1060829999999982
+        },
+        "totalMs": {
+          "minimo": 19.688939999999995,
+          "mediana": 21.914895,
+          "peor": 32.973957999999996
+        }
+      },
+      "cociente": {
+        "mediana": 1.3260563552552838,
+        "peor": 1.545372330269292
+      }
+    },
+    {
+      "serie": "reglas",
+      "cantidad": 1000,
+      "archivos": 1,
+      "consulta": "hallazgos",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 346.7834439999997,
+        "mediana": 351.57536700000037,
+        "peor": 360.317325
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.13229300000000066,
+          "mediana": 0.14349500000000148,
+          "peor": 0.23639599999999916
+        },
+        "lecturaMs": {
+          "minimo": 38.521141,
+          "mediana": 41.7014015,
+          "peor": 46.362562
+        },
+        "resolucionMs": {
+          "minimo": 267.70246399999996,
+          "mediana": 273.053512,
+          "peor": 282.00012899999996
+        },
+        "salidaMs": {
+          "minimo": 0.9038659999999936,
+          "mediana": 0.9841319999999882,
+          "peor": 1.4236389999999801
+        },
+        "totalMs": {
+          "minimo": 310.503912,
+          "mediana": 316.41855250000003,
+          "peor": 322.424103
+        }
+      },
+      "cociente": {
+        "mediana": 6.30598661665042,
+        "peor": 5.244912842924951
+      }
+    },
+    {
+      "serie": "reglas",
+      "cantidad": 10000,
+      "archivos": 1,
+      "consulta": "hallazgos",
+      "estado": "completa",
+      "cortes": 0,
+      "invocacionMs": {
+        "minimo": 28595.862283,
+        "mediana": 29247.399441499998,
+        "peor": 30721.21487699999
+      },
+      "tiempos": {
+        "arranqueMs": {
+          "minimo": 0.1353919999999995,
+          "mediana": 0.15379249999999978,
+          "peor": 0.19546199999999914
+        },
+        "lecturaMs": {
+          "minimo": 2827.064132,
+          "mediana": 2909.4767890000003,
+          "peor": 3007.039077
+        },
+        "resolucionMs": {
+          "minimo": 25729.035645,
+          "mediana": 26270.8810165,
+          "peor": 27672.556366
+        },
+        "salidaMs": {
+          "minimo": 1.084781000001385,
+          "mediana": 1.2182639999991807,
+          "peor": 1.3926060000012512
+        },
+        "totalMs": {
+          "minimo": 28557.575186000002,
+          "mediana": 29203.496122,
+          "peor": 30680.951982
+        }
+      },
+      "cociente": {
+        "mediana": 83.18955816236115,
+        "peor": 85.2615534848345
+      }
+    }
+  ],
+  "codigo": 0
+}

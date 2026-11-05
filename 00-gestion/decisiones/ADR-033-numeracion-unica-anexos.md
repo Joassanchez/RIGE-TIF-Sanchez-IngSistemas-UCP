@@ -1,6 +1,6 @@
 # ADR-033 — Numeración única de los anexos: la de la plantilla AE2 como columna vertebral, con el material del AE1 reubicado por su naturaleza
 
-- Estado: aceptado (25/09/2026)
+- Estado: reemplazado por ADR-107 (05/11/2026); aceptado el 25/09/2026
 - Fecha: 25/09/2026
 - Capítulos afectados: todos los que remiten a anexos (I, II, III, IV y V); `informe/anexos/`; `00-gestion/anexo-III.md`
 - Origen: pendiente M-02; análisis integral del 25/09/2026, hallazgo T-07 (revisión «analisis-integral» del 25/09/2026 (eliminada el 28/09/2026; en el historial de git))

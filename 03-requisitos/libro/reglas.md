@@ -1,6 +1,6 @@
 # Registro de reglas de negocio
 
-> Hoja del Libro de trabajo · Instrumento 29. Migrado de Cap. III, Anexo V, A.V.2. Fuente para `/exportar libro`.
+> Hoja del Libro de trabajo · Instrumento 29. Migrado de Cap. III, Anexo II, A.II.7. Fuente para `/exportar libro`.
 
 | **Cód.** | **Tipo**    | **Enunciado verificable**                                                                                                                                                                         | **Fuente**                        | **Estado**              | **Requisito derivado** |
 |----------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|-------------------------|------------------------|
@@ -16,7 +16,7 @@
 | RR-02 | Restricción | RIGE no expone el contenido que una sustitución incorpora; informa su origen y su condición de definido o no definido | Acta del 26/09/2026, decisión L-03; extensión del acta del 01/10/2026; segunda extensión del acta del 15/10/2026 | Validada | RNF-04 |
 | RR-03 | Restricción | RIGE resuelve únicamente sobre OpenCode 1.18.25; ante otra versión instalada advierte y no presenta sus resultados como válidos | Acta del 26/09/2026, decisión L-05 | Validada | RF-05 |
 | RE-01 | Existencia | Un elemento ingresa a la resolución si proviene de una entrada legible o si la herramienta lo incorpora sin declaración (nativo); si una entrada es ilegible, su carga se detiene con error y se registra el hallazgo correspondiente | AE1, I.6.3; acta del 26/09/2026; extensión del acta del 01/10/2026; segunda extensión del acta del 15/10/2026 | Validada | RF-04, RF-07 |
-| RE-02 | Existencia | Una regla se marca sin efecto si otra posterior del mismo tipo abarca todos sus casos. También si declara ruta absoluta del árbol de trabajo para `read` o `edit` en las herramientas `read`, `edit`, `write` y `apply_patch` (RF-07). | H-05; adaptado de Al-Shaer y Hamed (2004); constancia v2, punto 4.5: archivo confirmado. Extensión a directorio pendiente (R-07, R-11); A.VI.8; H-24 | Pendiente | RF-07 |
+| RE-02 | Existencia | Una regla se marca sin efecto si otra posterior del mismo tipo abarca todos sus casos. También si declara ruta absoluta del árbol de trabajo para `read` o `edit` en las herramientas `read`, `edit`, `write` y `apply_patch` (RF-07). | H-05; adaptado de Al-Shaer y Hamed (2004); constancia v2, punto 4.5: archivo confirmado. Extensión a directorio pendiente (R-07, R-11); A.I.8; H-24 | Pendiente | RF-07 |
 | RE-03 | Existencia | Un elemento declarado se marca sin uso solo si ninguna declaración de un agente ni de un comando lo nombra | AE1, I.6.3; acta del 26/09/2026; extensión del acta del 01/10/2026; segunda extensión del acta del 15/10/2026 | Validada | RF-07 |
 
-*Tabla A.V.2. Registro de reglas de negocio. Fuente: elaboración propia.*
+*Tabla A.II.5. Registro de reglas de negocio. Fuente: elaboración propia.*

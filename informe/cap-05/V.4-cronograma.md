@@ -43,7 +43,7 @@ Antes del corte del 07/11/2026, la preparación comprende:
 
 - Admisión nativa, readmisión y ensayo del conjunto reservado.
 
-- Corrección de las formas de referencia defectuosas, con readmisión y ensayo; los casos se identifican en el Anexo VI, A.VI.8.
+- Corrección de las formas de referencia defectuosas, con readmisión y ensayo; los casos se identifican en el Anexo I, A.I.8.
 
 - Remuestreo de las condiciones de no regresión.
 
@@ -95,7 +95,7 @@ Nota: la estimación del ingeniero del 24/10/2026 agrega las siguientes tareas a
 
 - Preparación de la medición final, según las tareas y la distribución de horas indicadas antes de la tabla.
 
-Los seis requisitos Should se financian con las horas que quedan libres al cierre de cada iteración o con las acreditaciones previstas dentro de la estabilización. Los cambios de iteración, la precisión de rutas y la verificación de agentes internos se detallan en V.1, con evidencia en el Anexo VI, A.VI.11.
+Los seis requisitos Should se financian con las horas que quedan libres al cierre de cada iteración o con las acreditaciones previstas dentro de la estabilización. Los cambios de iteración, la precisión de rutas y la verificación de agentes internos se detallan en V.1, con evidencia en el Anexo I, A.I.11.
 
 Las comprobaciones de RNF-06 y RNF-07 se planifican dentro de las 11 h de estabilización y se postergan primero si esta se reduce. Su resultado registrado consta en V.2.
 

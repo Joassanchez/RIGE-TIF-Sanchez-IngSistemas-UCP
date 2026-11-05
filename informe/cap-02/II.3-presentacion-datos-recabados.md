@@ -1,10 +1,10 @@
 ## II.3 · Presentación de los datos recabados
 
-Los registros extensos constan en el Anexo VI. La interpretación de los resultados corresponde a los apartados II.5 y II.6.
+Los registros extensos constan en el Anexo I. La interpretación de los resultados corresponde a los apartados II.5 y II.6.
 
 ### II.3.1 · Datos del relevamiento documental de incidencias
 
-El autor releva el historial público de incidencias de OpenCode mediante búsqueda y clasificación por título, con un único codificador. La consulta del 17/09/2026 arroja 46 candidatas que abarcan del 28/11/2025 al 16/09/2026, según el criterio del Anexo VI, A.VI.6.
+El autor releva el historial público de incidencias de OpenCode mediante búsqueda y clasificación por título, con un único codificador. La consulta del 17/09/2026 arroja 46 candidatas que abarcan del 28/11/2025 al 16/09/2026, según el criterio del Anexo I, A.I.6.
 
 Se excluyen 12 pedidos de funcionalidad que no relatan un comportamiento experimentado. Otra exclusión corresponde a la expresividad de la interfaz de programación de permisos. Una más trata una discrepancia de nomenclatura en el esquema publicado. La revisión del 09/10/2026 excluye la n.º 32581 porque corresponde a OpenClaw. Quedan incluidas 31 incidencias, de las cuales 8 permanecen abiertas y 23 se encuentran cerradas a la fecha de consulta.
 
@@ -15,19 +15,19 @@ Se excluyen 12 pedidos de funcionalidad que no relatan un comportamiento experim
 | Excluidas por no versar sobre el fenómeno             | 3         | Expresividad de la interfaz, nomenclatura del esquema y otro proyecto (n.º 32581, excluida el 09/10/2026) |
 | Incluidas                                             | 31        | 8 abiertas y 23 cerradas                               |
 
-*Tabla 13. Resultado del relevamiento de incidencias del repositorio de OpenCode. Fuente: elaboración propia sobre el relevamiento del 17/09/2026, revisado el 09/10/2026; nómina completa de las 46 incidencias en el Anexo VI, A.VI.6.*
+*Tabla 13. Resultado del relevamiento de incidencias del repositorio de OpenCode. Fuente: elaboración propia sobre el relevamiento del 17/09/2026, revisado el 09/10/2026; nómina completa de las 46 incidencias en el Anexo I, A.I.6.*
 
-La clasificación por título de ese codificador distribuye las 31 incidencias en 10 de precedencia y fusión, 10 de decisión de permiso y 1 de valor implícito. Otras 2 quedan fuera del compromiso del período y 8 fuera de alcance. El corpus corresponde al período indicado y carece de casos clasificados como ruta absoluta (Anexo VI, A.VI.6).
+La clasificación por título de ese codificador distribuye las 31 incidencias en 10 de precedencia y fusión, 10 de decisión de permiso y 1 de valor implícito. Otras 2 quedan fuera del compromiso del período y 8 fuera de alcance. El corpus corresponde al período indicado y carece de casos clasificados como ruta absoluta (Anexo I, A.I.6).
 
 Los antecedentes específicos de ruta absoluta, identificados después del hallazgo propio y separados de las 31 incidencias, se desarrollan en I.1.3 a).
 
-La n.º 43669 corresponde a OpenCode 2. La n.º 46873 reporta una regresión en 1.18.26 y afirma que 1.18.25 funcionaba (Anexo VI, A.VI.6).
+La n.º 43669 corresponde a OpenCode 2. La n.º 46873 reporta una regresión en 1.18.26 y afirma que 1.18.25 funcionaba (Anexo I, A.I.6).
 
 ### II.3.2 · Datos de la medición de la línea de base
 
 Los valores agregados por estrato y ejecutor corresponden a la Tabla 4 del apartado I.3.2. La Tabla 14 reúne los problemas de E2 y E4 con éxito declarado falso en al menos una repetición de la lectura principal y conserva N-21 como problema solo en la preregistrada. Las fracciones proceden de la medición que el autor coordina con el arnés los días 20 y 21/10/2026, con tres repeticiones por problema y ejecutor sobre el banco del apartado II.2.1.
 
-Las lecturas principal y preregistrada se definen en I.3.2; su diferencia corresponde al tratamiento del exceso de alcance según la definición de colateral del Anexo VI, A.VI.7.
+Las lecturas principal y preregistrada se definen en I.3.2; su diferencia corresponde al tratamiento del exceso de alcance según la definición de colateral del Anexo I, A.I.7.
 
 | **Problema** | **`build`** | **Charles** | **Familia del banco** | **Mecanismo observado** | **Consecuencia** | **Cuenta en la lectura principal (al menos 2/3)** |
 |---|---|---|---|---|---|---|
@@ -40,15 +40,15 @@ Las lecturas principal y preregistrada se definen en I.3.2; su diferencia corres
 | N-23 (E2) | 3/3 | 3/3 | `deny` con ruta absoluta que nunca coincide | Ruta absoluta en regla `read` con `deny` | Exposición | Sí |
 | S-1 (E4) | 2/3 | 3/3 | Regla `read` con ruta absoluta, como M-1 | Ruta absoluta en regla `read` | Bloqueo | Sí, en E4 |
 
-*Tabla 14. Éxito declarado falso por problema y ejecutor. Fuente: elaboración propia sobre el banco y los informes ecológicos, correspondientes a la modificación dentro del proyecto. Los archivos finales constan en el registro de casos con error de la medición del 20 y el 21/10/2026 (registro de la evidencia, Anexo VI, A.VI.11). Las fracciones corresponden a la lectura principal; la última columna identifica la preregistrada de N-21. En N-14, 2/3 indica la presencia de ruta absoluta en Charles; el éxito declarado falso ocurre en 3/3. Su repetición 1 contiene solo `list: deny`, sin ruta absoluta.*
+*Tabla 14. Éxito declarado falso por problema y ejecutor. Fuente: elaboración propia sobre el banco y los informes ecológicos, correspondientes a la modificación dentro del proyecto. Los archivos finales constan en el registro de casos con error de la medición del 20 y el 21/10/2026 (registro de la evidencia, Anexo I, A.I.11). Las fracciones corresponden a la lectura principal; la última columna identifica la preregistrada de N-21. En N-14, 2/3 indica la presencia de ruta absoluta en Charles; el éxito declarado falso ocurre en 3/3. Su repetición 1 contiene solo `list: deny`, sin ruta absoluta.*
 
-En detección, el autor aplica el mismo arnés el 21/10/2026 sobre once defectos, con tres repeticiones por ejecutor. Ambos detectan ocho de once según el umbral de dos repeticiones; los defectos con ruta absoluta y la sustitución sin valor quedan por debajo de ese umbral. El detalle por defecto consta en el Anexo VI, A.VI.8.
+En detección, el autor aplica el mismo arnés el 21/10/2026 sobre once defectos, con tres repeticiones por ejecutor. Ambos detectan ocho de once según el umbral de dos repeticiones; los defectos con ruta absoluta y la sustitución sin valor quedan por debajo de ese umbral. El detalle por defecto consta en el Anexo I, A.I.8.
 
 De los 29 problemas de E2 cuya familia es ajena a la ruta absoluta, 28 se resuelven con cada ejecutor según el umbral de dos de tres repeticiones. La verificación declarativa precede a todos los éxitos declarados falsos; el desglose completo se presenta en I.3.2. El exceso de alcance se registra en el mismo apartado.
 
 ### II.3.3 · Datos de la entrevista al referente
 
-La constancia de entrevistas, versión 2, respalda las declaraciones de la referente. El registro completo consta en el Anexo VI, A.VI.5. Los contactos, con su canal y sus fechas, se describen en el apartado I.1.2.
+La constancia de entrevistas, versión 2, respalda las declaraciones de la referente. El registro completo consta en el Anexo I, A.I.5. Los contactos, con su canal y sus fechas, se describen en el apartado I.1.2.
 
 #### Composición del equipo y adopción
 
@@ -68,7 +68,7 @@ La definición de Charles, entregada por la referente el 13/10/2026, constituye 
 
 La respuesta 1.4 registra cambios de configuración cuyo efecto ausente se advierte más tarde, ante un comportamiento distinto del esperado. La referente relata dos episodios: la invocación reiterada de un agente a sí mismo y la operación a través de otro agente que, según el testimonio, incorpora la herramienta (respuestas 2.5 y 2.6). En el segundo relato, la referente desconoce la existencia y las funciones de ese agente.
 
-Se desconocen las causas de ambos episodios por falta de configuraciones y trazas; la verificación de agentes internos y sus límites constan en el Anexo VI, A.VI.3, resultado 18.
+Se desconocen las causas de ambos episodios por falta de configuraciones y trazas; la verificación de agentes internos y sus límites constan en el Anexo I, A.I.3, resultado 18.
 
 #### Respuesta al enfoque presentado
 
@@ -86,12 +86,12 @@ La referente señala como aporte principal la identificación del archivo que de
 
 ### II.3.4 · Resultados técnicos y contraste de soluciones
 
-La lectura del cargador de OpenCode 1.18.25 identifica hasta doce entradas de configuración, cuatro ajenas a archivos. Los escenarios controlados verifican la fusión profunda y la resolución de permisos por la última regla coincidente (Anexo VI, A.VI.3).
+La lectura del cargador de OpenCode 1.18.25 identifica hasta doce entradas de configuración, cuatro ajenas a archivos. Los escenarios controlados verifican la fusión profunda y la resolución de permisos por la última regla coincidente (Anexo I, A.I.3).
 
-La verificación nativa de ruta del 14/10/2026 comprueba que una regla con ruta absoluta del árbol de trabajo se evalúa contra la ruta relativa y queda sin coincidencia (registro de la evidencia, Anexo VI, A.VI.11). El comando `opencode debug` presenta la regla agregada sin evaluar su efecto para una acción concreta (Anexo VI, A.VI.3).
+La verificación nativa de ruta del 14/10/2026 comprueba que una regla con ruta absoluta del árbol de trabajo se evalúa contra la ruta relativa y queda sin coincidencia (registro de la evidencia, Anexo I, A.I.11). El comando `opencode debug` presenta la regla agregada sin evaluar su efecto para una acción concreta (Anexo I, A.I.3).
 
-El contraste documental del autor al 01/10/2026 reúne 33 soluciones publicadas y utilizables sobre configuración de herramientas agénticas: cinco sobre OpenCode y 28 sobre otras herramientas. Las posiciones de cada solución constan en la Tabla A.VI.6 del Anexo VI, A.VI.4.
+El contraste documental del autor al 01/10/2026 reúne 33 soluciones publicadas y utilizables sobre configuración de herramientas agénticas: cinco sobre OpenCode y 28 sobre otras herramientas. Las posiciones de cada solución constan en la Tabla A.I.6 del Anexo I, A.I.4.
 
 El eje horizontal (H) distingue declaraciones o validación (0), resultado efectivo (1), reglas en orden de evaluación (2) y decisión con regla determinante (3). El eje vertical (V) distingue ausencia de procedencia (0), alcance o capa (1) y declaración con entrada, archivo y posición (2).
 
-Sobre OpenCode, `debug config` ocupa (1, 0) y `debug agent`, (2, 0); OCCM, CC Switch y agnix ocupan (0, 0). Entre las otras herramientas, Amp `permissions test` ocupa (3, 1) y Codex `execpolicy check`, (3, 0). El servidor de aplicación de Codex (`config/read`) ocupa (1, 1), junto con otras soluciones que informan valores por alcance. La combinación de decisión, regla determinante y procedencia por declaración queda sin cubrir en el conjunto relevado (Anexo VI, A.VI.4).
+Sobre OpenCode, `debug config` ocupa (1, 0) y `debug agent`, (2, 0); OCCM, CC Switch y agnix ocupan (0, 0). Entre las otras herramientas, Amp `permissions test` ocupa (3, 1) y Codex `execpolicy check`, (3, 0). El servidor de aplicación de Codex (`config/read`) ocupa (1, 1), junto con otras soluciones que informan valores por alcance. La combinación de decisión, regla determinante y procedencia por declaración queda sin cubrir en el conjunto relevado (Anexo I, A.I.4).

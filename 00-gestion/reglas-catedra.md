@@ -45,6 +45,7 @@ Prevalecen sobre guías y plantillas en el punto aclarado. Los agentes las aplic
 | Tema | Aclaración |
 |------|-----------|
 | Extensión | La cantidad de páginas es libre, a criterio del autor. La extensión orientativa de guías y plantillas no se controla ni se objeta. |
+| Inteligencia artificial | Se admite en cualquier pieza (capítulos, catálogo, bitácora, código) con declaración de herramienta, función, archivo o commit, fecha y verificación; se sanciona solo el uso no declarado. Criterio de la cátedra del 08/10/2026 (DEV-AE2 14/2026, segunda revisión) y Consigna AE4 v02, apartado 14. Para el código, la misma declaración figura en el archivo de lectura y debe coincidir con la bitácora. |
 
 ## 5. Observaciones del AE1 que no deben reaparecer
 
@@ -97,7 +98,12 @@ Los scripts de `tools/` no fijan destinos: el agente elige la carpeta con esta t
 | Instrumento 34 · Recursos | `instrumentos/instrumento-34-recursos.md` | `03-requisitos/` | `Instrumento34` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
 | Instrumento 35 · Ficha del v1 | `instrumentos/instrumento-35-ficha-v1.md` | `src/` | `Instrumento35` | Cuadernillo AE2, recuadro inicial (`catedra/AE2-plantilla-instrumentos.md`) |
 
-Nomenclatura: `AAAAMMDD_TipoDocumento_Equipo_vN.ext` (Guía AE2, 10.2). Los scripts la aplican y nunca sobrescriben un archivo existente.
+| Manual de despliegue | `src/` (dentro de la etiqueta entregada; 11 secciones de la Guía 07, §3) | carga: `AE4_Sanchez_Manual.pdf` | copia exacta del repositorio | Consigna AE4, apartados 3 y 7 |
+| Instrumentos 36 a 39 | `instrumentos/` | Portafolio AE4, punto (a); se vuelcan en los Caps. VIII, XI y XIII | `Instrumento36` a `Instrumento39` | Plantillas AE4 |
+| Instrumento 40 · Guion y contingencia | `instrumentos/` | Portafolio AE4, punto (g) | `Instrumento40` | Plantillas AE4 |
+| Bitácora individual | `00-gestion/bitacora.md` | carga: `AE4_Sanchez_Bitacora.pdf` | semanas 13 a 15 arriba | Consigna AE4, apartados 3 y 13 |
+
+Nomenclatura: `AAAAMMDD_TipoDocumento_Equipo_vN.ext` (Guía AE2, 10.2). Los scripts la aplican y nunca sobrescriben un archivo existente. **Carga de la AE4:** cuatro PDF con nombre fijo (`AE4_Sanchez_Informe.pdf`, `_Manual`, `_CapXII`, `_Bitacora`; Consigna AE4, apartado 3; lista 09, punto 29).
 
 ## 9. Correspondencia entre entregas y capítulos
 

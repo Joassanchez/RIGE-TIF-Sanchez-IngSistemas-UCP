@@ -2,13 +2,13 @@
 
 El catálogo comprende 27 requisitos: 17 funcionales y 10 no funcionales de seguridad, fiabilidad, mantenibilidad, portabilidad, rendimiento y cumplimiento normativo. La referente valida 20 en la sesión del 26/09/2026 y 7 en la extensión del 01/10/2026, cuya constancia firma el 15/10/2026. La segunda extensión del 15/10/2026 confirma precisiones posteriores a aquella sesión (Anexo II, A.II.1).
 
-La validación corresponde a las redacciones de esas instancias. El libro registra 19 requisitos validados y ocho pendientes, seis de ellos Must. Los compromisos modificados pasan a Pendiente y conservan en Trazabilidad la redacción y la fecha validadas. Los cambios constan como R-01 a R-07 y R-10 a R-13; la revisión del umbral de rendimiento se registra como R-15 (Anexo I, A.I.1).
+La validación corresponde a las redacciones de esas instancias. El libro registra 19 requisitos validados y ocho pendientes, seis de ellos Must. Los compromisos modificados pasan a Pendiente y conservan en Trazabilidad la redacción y la fecha validadas. Los cambios constan como R-01 a R-07 y R-10 a R-13; la revisión del umbral de rendimiento se registra como R-15 (Anexo III, A.III.6).
 
 La prioridad sigue MoSCoW (Clegg y Barker, 1994): 18 Must, 6 Should, 2 Could y 1 Won't. Los Must coinciden con el producto mínimo viable de V.5; las capacidades diferidas se incluyen como Should, Could o Won't. Una revisión del MVP antes del 07/11/2026 exige actualizar la prioridad correspondiente en el catálogo, según V.4.
 
 La nómina de los requisitos que se validan en la primera extensión consta en el Anexo II, A.II.1.
 
-Cada requisito se origina en un resultado del relevamiento técnico, un hallazgo del análisis o un acuerdo del acta. Las fichas y la matriz de trazabilidad en doble vía constan en el Anexo I.
+Cada requisito se origina en un resultado del relevamiento técnico, un hallazgo del análisis o un acuerdo del acta. Las fichas y la matriz de trazabilidad en doble vía constan en el Anexo III.
 
 | **Cód.** | **Enunciado sintético**                                                                        | **Tipo**       | **Prioridad** |
 |----------|------------------------------------------------------------------------------------------------|----------------|---------------|
@@ -40,4 +40,4 @@ Cada requisito se origina en un resultado del relevamiento técnico, un hallazgo
 | RNF-09   | Atención exclusiva de solicitudes dirigidas a la dirección local por la interfaz web           | Seguridad      | Must          |
 | RNF-10   | Conservación del aviso y la licencia del código incorporado                                    | Cumplimiento normativo | Must          |
 
-*Tabla 6. Síntesis del catálogo de requisitos. Fichas completas en el Anexo I. Fuente: elaboración propia.*
+*Tabla 6. Síntesis del catálogo de requisitos. Fichas completas en el Anexo III. Fuente: elaboración propia.*
