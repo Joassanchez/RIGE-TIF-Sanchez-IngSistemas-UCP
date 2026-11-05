@@ -2,9 +2,9 @@
 
 El catálogo comprende 27 requisitos: 17 funcionales y 10 no funcionales de seguridad, fiabilidad, mantenibilidad, portabilidad, rendimiento y cumplimiento normativo. La referente valida 20 en la sesión del 26/09/2026 y 7 en la extensión del 01/10/2026, cuya constancia firma el 15/10/2026. La segunda extensión del 15/10/2026 confirma precisiones posteriores a aquella sesión (Anexo II, A.II.1).
 
-La validación corresponde a las redacciones de esas instancias. Las precisiones del 16/10 y del 22/10 permanecen pendientes de revalidación, según R-01 a R-07 del registro de cambios para la referente. Las fichas consignan esa condición y la de las precisiones del 24/10 (R-10 y R-11), con el estado de validación original conservado (Anexo I, A.I.1).
+La validación corresponde a las redacciones de esas instancias. El libro registra 19 requisitos validados y ocho pendientes, seis de ellos Must. Los compromisos modificados pasan a Pendiente y conservan en Trazabilidad la redacción y la fecha validadas. Los cambios constan como R-01 a R-07 y R-10 a R-13; la revisión del umbral de rendimiento se registra como R-15 (Anexo I, A.I.1).
 
-La prioridad sigue MoSCoW (Clegg y Barker, 1994): 18 Must, 6 Should, 2 Could y 1 Won't. Los Must coinciden con el producto mínimo viable de V.5; las capacidades diferidas se incluyen como Could o Won't. Una revisión del MVP antes del 07/11/2026 exige actualizar la prioridad correspondiente en el catálogo, según V.4.
+La prioridad sigue MoSCoW (Clegg y Barker, 1994): 18 Must, 6 Should, 2 Could y 1 Won't. Los Must coinciden con el producto mínimo viable de V.5; las capacidades diferidas se incluyen como Should, Could o Won't. Una revisión del MVP antes del 07/11/2026 exige actualizar la prioridad correspondiente en el catálogo, según V.4.
 
 La nómina de los requisitos que se validan en la primera extensión consta en el Anexo II, A.II.1.
 
@@ -20,7 +20,7 @@ Cada requisito se origina en un resultado del relevamiento técnico, un hallazgo
 | RF-06    | Distinción de valores implícitos y de reglas nativas                                           | Funcional      | Must          |
 | RF-07    | Detección de los seis tipos de hallazgo, con su localización y su explicación                  | Funcional      | Must          |
 | RF-08    | Advertencia ante un comando de terminal compuesto                                              | Funcional      | Must          |
-| RF-09    | Advertencia cuando una declaración del usuario desactiva una protección nativa                 | Funcional      | Must          |
+| RF-09    | Advertencia cuando una declaración del usuario desactiva o debilita una protección nativa de denegación o confirmación | Funcional | Must |
 | RF-10    | Efecto de la decisión sobre la oferta de la herramienta de acción al modelo                                | Funcional      | Should        |
 | RF-11    | Resumen del ecosistema por tipo de elemento y por tipo de hallazgo                             | Funcional      | Should        |
 | RF-12    | Localización de cada declaración en el formato ruta:línea:columna                              | Funcional      | Should        |

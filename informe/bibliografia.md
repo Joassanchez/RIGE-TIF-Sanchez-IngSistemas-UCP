@@ -96,7 +96,9 @@ Leporis14. (2026). *leporis-agentlint* (Versión 0.1.3) [Software]. PyPI. https:
 
 Ley N.º 25.326 de Protección de los Datos Personales. (2000, 2 de noviembre). *Boletín Oficial de la República Argentina*. https://www.argentina.gob.ar/normativa/nacional/ley-25326-64790/texto
 
-Ley N.º 27.506. Régimen de Promoción de la Economía del Conocimiento. (2019, 10 de junio). *Boletín Oficial de la República Argentina*.
+Ley N.º 27.506. Régimen de Promoción de la Economía del Conocimiento. (2019, 10 de junio). *Boletín Oficial de la República Argentina*, 34132, 3. https://www.argentina.gob.ar/normativa/nacional/ley-27506-324101/texto
+
+Ley N.º 27.570. Régimen de Promoción de la Economía del Conocimiento: Ley N.º 27.506, modificación. (2020, 26 de octubre). *Boletín Oficial de la República Argentina*, 34505, 3. https://www.argentina.gob.ar/normativa/nacional/ley-27570-343520/texto
 
 Matplotlib Development Team. (s. f.). *License agreement* [Documentación de software, versión 3.11.2]. Recuperado el 24 de octubre de 2026, de https://matplotlib.org/stable/project/license.html
 
@@ -108,13 +110,14 @@ Microsoft. (s. f.-c). *What is the Windows Subsystem for Linux?* [Documentación
 
 Naciones Unidas. (2015). *Transformar nuestro mundo: la Agenda 2030 para el Desarrollo Sostenible* (Resolución A/RES/70/1). Asamblea General de las Naciones Unidas.
 
-Naciones Unidas, División de Estadística. (2026). *Marco de indicadores mundiales para los Objetivos de Desarrollo Sostenible y metas de la Agenda 2030 para el Desarrollo Sostenible* (versión con los refinamientos de 2026). https://unstats.un.org/sdgs/indicators/Global-Indicator-Framework-after-2026-refinement_Spa.pdf
+Naciones Unidas. (2026). *Marco de indicadores mundiales para los Objetivos de Desarrollo Sostenible y metas de la Agenda 2030 para el Desarrollo Sostenible* (versión con los refinamientos de 2026). https://unstats.un.org/sdgs/indicators/Global-Indicator-Framework-after-2026-refinement_Spa.pdf
 
-NLnet. (2026). *Apply for a grant*. https://nlnet.nl/propose/
 
 nlscott. (2026, 9 de septiembre). *Any read or edit permission rule written as an absolute path (~/.ssh, ~/.aws, /etc/hosts, etc.) silently never matches, including MDM managed rules* (Incidencia n.º 48049) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/48049
 
 ns-calvinwu. (2026, 6 de agosto). *permission.edit patterns are matched against worktree-relative paths — absolute/~ patterns silently never match (fail-open for deny rules)* (Incidencia n.º 40945) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/40945
+
+Observatorio Permanente de la Industria del Software y Servicios Informáticos. (2025, julio). *Sector de software y servicios informáticos de Argentina: Foco talento*. CESSI. https://cessi.org.ar/wp-content/uploads/2025/08/CESSI-OPSSI-Reporte-de-los-principales-indicadores-de-la-industria-del-Software-con-Foco-en-Talento_Julio-2025.pdf
 
 Onufriichuk, A. (2026). *Claude Code Config Manager* (Versión 0.10.0) \[Extensión de VS Code\]. Visual Studio Marketplace. https://marketplace.visualstudio.com/items?itemName=agnislav.claude-code-config-manager
 
@@ -142,6 +145,10 @@ Oven. (s. f.). *Bun* [Software]. GitHub. https://github.com/oven-sh/bun/blob/mai
 
 piratf. (s. f.). *Context Editor* (Versión 0.3.0) [Extensión de VS Code]. Visual Studio Marketplace. Recuperado el 1 de octubre de 2026, de https://marketplace.visualstudio.com/items?itemName=piratf.context-editor
 
+Polo IT Chaco. (s. f.). *Polo IT Chaco*. Recuperado el 4 de noviembre de 2026, de https://poloitchaco.org.ar/
+
+Polo IT Corrientes. (s. f.). *Portada*. Recuperado el 4 de noviembre de 2026, de https://poloitcorrientes.org.ar/
+
 Porter, M. E. (1980). *Competitive strategy: Techniques for analyzing industries and competitors*. Free Press.
 
 Ries, E. (2017). *El método Lean Startup*. Deusto. (Obra original publicada en 2011).
@@ -152,9 +159,10 @@ Saad, W. (2026). *agent-bom* (Versión 0.107.0) [Software]. PyPI. https://pypi.o
 
 samilozturk. (s. f.). *AgentLint* (Versión 0.8.1) [Software]. npm. Recuperado el 1 de octubre de 2026, de https://www.npmjs.com/package/@agent-lint/cli
 
-Sayagh, M., Kerzazi, N., Adams, B., y Petrillo, F. (2020). Software configuration engineering in practice: Interviews, survey, and systematic literature review. *IEEE Transactions on Software Engineering, 46*(6), 646–673. https://doi.org/10.1109/TSE.2018.2867847
 
 Schwaber, K. y Sutherland, J. (2020). *La Guía de Scrum*. https://scrumguides.org
+
+Silicon Misiones. (2025). *Anuario 2025: Talento, tecnología e impacto para Misiones*. https://siliconmisiones.gob.ar/wp-content/uploads/2025/12/Anuario-SiMi-2025-1.pdf
 
 Snyk. (2026). *snyk-agent-scan* (Versión 0.6.8) [Software]. PyPI. https://pypi.org/project/snyk-agent-scan/
 

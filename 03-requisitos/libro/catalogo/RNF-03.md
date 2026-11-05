@@ -7,7 +7,7 @@
 | Tipo | No funcional |
 | Categoría (si es no funcional) | Mantenibilidad |
 | Prioridad | Must |
-| Motivo de la prioridad | Constituye la decisión arquitectónica que hace posible incorporar otras herramientas sin rehacer el sistema |
+| Motivo de la prioridad | La fidelidad de la resolución exige aislar las reglas de OpenCode del núcleo que las aplica. Sin esa separación, los cambios del adaptador alcanzan la lógica común y dificultan su verificación independiente. |
 | Criterio de aceptación | CA-1: El análisis estático de dependencias registra cero importaciones del núcleo hacia el adaptador. CA-2: La búsqueda en el código del núcleo registra cero apariciones de identificaciones de la herramienta. CA-3: Un adaptador de una herramienta ficticia, escrito únicamente contra el contrato del núcleo, se resuelve con cero modificaciones del núcleo |
 | Trazabilidad | HA-6 |
 | Estado de validación | Validado |

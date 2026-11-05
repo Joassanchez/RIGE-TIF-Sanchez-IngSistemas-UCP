@@ -2,6 +2,8 @@
 
 El producto mínimo viable comprende los casos de uso de la Tabla 18, cuatro objetivos del usuario y una subfunción. Junto con los requisitos transversales, satisfacen los dieciocho requisitos Must del catálogo sin excedente ni faltante, conforme a la coincidencia declarada en el apartado III.5. Los casos se enuncian al nivel del objetivo del usuario (Cockburn, 2001). CU-01 constituye una subfunción, un paso incluido por los demás casos para completar su objetivo. Se distinguen dos actores del entorno: el desarrollador, que opera la interfaz web local o la línea de comandos, y el agente externo, que consume la línea de comandos.
 
+Este alcance corresponde al plan vigente. Al activarse la contingencia de V.4, se redefine el MVP y se actualiza el catálogo: los Must postergados salen de ambos conjuntos comprometidos. El orden 6 posterga RF-07 y deja incompleto el flujo de verificación, con consulta de decisión y sin diagnóstico de hallazgos.
+
 | **Casos de uso que el producto mínimo viable incluye**                                                                                                                                                | **Requisitos que satisface (ID)**      |
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
 | CU-01 · Analizar un proyecto: descubrir sus entradas, verificar la versión instalada de OpenCode y registrar la resolución                                     | RF-04, RF-05, RF-17                    |
@@ -19,13 +21,17 @@ RF-05, RF-08 y RF-09 extienden los flujos de CU-01 y CU-03. Ante una versión di
 |----------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
 | Informar la disponibilidad de la herramienta para el modelo junto con la decisión (RF-10, Should) | Tercera iteración, si las horas lo permiten |
 | Consultar el resumen del ecosistema por tipo de elemento y por tipo de hallazgo (RF-11, Should)    | Tercera iteración, si las horas lo permiten |
-| Informar la localización de cada declaración en el formato ruta:línea:columna (RF-12, Should)     | Segunda iteración, si las horas lo permiten                                      |
+| Informar la localización de cada declaración en el formato ruta:línea:columna (RF-12, Should)     | Tercera iteración; trasladado desde la segunda el 30/10/2026 |
 | Explorar las relaciones entre los elementos del ecosistema (RF-13, Could)                          | Fuera del período                                                                |
 | Consultar por línea de comandos el estado resuelto completo (RF-14, Could)                         | Fuera del período                                                                |
 | Consultar la matriz de agentes por tipo de permiso y la consulta inversa por acción (RF-15, Won't) | Fuera del período; se reevalúa después de la medición final                      |
 | Listar por línea de comandos los elementos distintos de los agentes (decisión L-06) | Fuera del período |
 
 *Tabla 19. Casos de uso excluidos del producto mínimo viable, con la iteración prevista. Fuente: elaboración propia sobre los apartados III.3 y III.4.*
+
+Los Should incorporados en la iteración 3, las precisiones de rutas y de protección nativa, y la fecha de verificación de agentes internos se detallan en V.1. La evidencia de esta última figura en el Anexo VI, A.VI.11.
+
+Las mediciones del ingeniero del 04/11/2026 sobre `congelada` cumplen RNF-05 y RNF-07 en el contenedor de referencia, dentro de las condiciones y límites detallados en V.2. RNF-06 permanece sin acreditar: faltan la ejecución real en ambas plataformas y la instalación con cuenta común. Su estado de validación expresa la conformidad con el requisito y se distingue de esa comprobación.
 
 El producto mínimo viable se contrasta mediante dos hipótesis de aprendizaje validado (Ries, 2017). La primera sostiene que el procedimiento delegado reduce los problemas con éxito declarado falso con RIGE indicado por línea de comandos. La medición final pone a prueba la decisión de RF-02, incluido CA-9, y el diagnóstico de RF-07, sobre el banco de la línea de base (apartado I.3.5). RF-03 expone valores y procedencia, decisiones y reglas determinantes, y hallazgos.
 
@@ -35,4 +41,4 @@ La segunda hipótesis, que la verificación del ecosistema y la consulta program
 
 El prototipo v1 es un esqueleto arquitectónico ejecutable (Cockburn, 2004) que implementa CU-02 mínimo, precedido por CU-01 mínimo: un proyecto con tres entradas de archivo de distinta precedencia y la consulta de una clave. La interfaz atiende solo solicitudes locales (RNF-09), recibe la selección del proyecto y presenta la consulta. La lógica en el adaptador y el núcleo aplica RD-01, por el que prevalece la declaración de la última entrada que declara la clave. La persistencia escribe y recupera la resolución, sus valores y su procedencia en el almacén propio según RR-01 y RF-17, y el retorno presenta el valor, su procedencia y las declaraciones desplazadas en la interfaz. El recorrido acredita la separación entre núcleo y adaptador (RNF-03) y la coincidencia con el comando nativo de resolución por agente. El evaluador de permisos y la línea de comandos se acreditan en la segunda iteración (apartado V.1).
 
-La revisión etiquetada [v1](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/releases/tag/v1), commit a57c26b, se publica el 15/10/2026. Su corrida n.º 38822464930 del canal de integración continua, del 15/10/2026, concluye con éxito en Ubuntu y Windows, incluida la comparación con OpenCode 1.18.25 (Anexo IV). El repositorio es privado, con la cátedra como colaboradora (apartado X.4). La prueba de clonado integra las condiciones de aceptación del v1: [DATO PENDIENTE: quién realiza la prueba de clonado, en qué equipo y con qué resultado].
+La revisión etiquetada [v1](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/releases/tag/v1), commit a57c26b, se publica el 15/10/2026. Su corrida n.º 38822464930 del canal de integración continua, del 15/10/2026, concluye con éxito en Ubuntu y Windows, incluida la comparación con OpenCode 1.18.25 (Anexo IV). El acceso queda pendiente de adecuación (apartado X.4): [DATO PENDIENTE: pasar el repositorio a privado y agregar a la cátedra como colaboradora; el 04/11/2026 responde sin autenticación]. La prueba de clonado integra las condiciones de aceptación del v1: [DATO PENDIENTE: quién realiza la prueba de clonado, en qué equipo y con qué resultado].

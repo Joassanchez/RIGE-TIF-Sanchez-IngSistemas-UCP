@@ -38,6 +38,12 @@ La planificación se construye sobre las horas semanales declaradas y no sobre l
 
 *Las horas técnicas se asignan a las tareas de los dieciocho requisitos Must (apartado V.4, Tabla 16); los requisitos Should no reciben horas. Margen sin asignar: 0 h.*
 
+Las 190 h se conservan como plan. La estimación de 12 h de precisiones excede las 54 h de reserva, ya repartidas en 14 + 20 + 13 + 7 h. Sin absorción registrada, la previsión asciende a 202 h. El desvío representa $106.512 (USD 68,94), a $8.876 por hora y $1.545 por USD, sin imputar en la Tabla 22 de costos.
+
+Las iteraciones 1 y 2 exceden su capacidad en 7 h y 1 h. El traslado de 7 h supera el umbral de 6 h de ADR-052, sin activación de contingencia registrada. La cota alta de 23 h de la línea de base supera las 20 h de la Ventana. La dedicación real queda pendiente: [DATO PENDIENTE: registro de dedicación por iteración].
+
+La preparación de la medición comprende 7 h de reserva del 26/10 al 14/11/2026 y 3 h del cierre desde el 15/11, conforme a la Figura 3.
+
 **24.4 · Lo que no se sacrifica en ningún caso**
 
 Ante una caída de un tercio de la capacidad técnica rige la cláusula de contingencia del apartado V.4 (Tabla 17). En ningún caso se sacrifican la trazabilidad del catálogo y la ejecutabilidad de cada etiqueta, condiciones de cómputo que fija la cátedra; la fidelidad respecto de OpenCode 1.18.25 (RNF-02); las restricciones de seguridad RNF-01, RNF-04 y RNF-05; CU-01 en su forma mínima con la advertencia de versión, CU-02, CU-03 con la decisión de RF-02, RF-06, RF-08 y RF-09, y RF-03.

@@ -4,6 +4,8 @@ El análisis separa el costo económico del desembolso: imputa todo recurso cons
 
 El costo del período comprende las horas planificadas del 21/09 al 14/11/2026 y la amortización y la energía de esas horas. Se incluye la ejecución desatendida de la línea de base, cuya imputación queda por completar. Las suscripciones se imputan por meses calendario completos de septiembre a noviembre, según el servicio, porque se pagan por mes completo.
 
+Las 12 h estimadas de precisiones exceden las 190 h planificadas: sin absorción registrada, la previsión asciende a 202 h. Su costo adicional de $106.512 (USD 68,94) queda sin imputar en la Tabla 22. El total provisorio conserva la base presupuestada y queda sujeto a ese ajuste (apartado V.4).
+
 | Concepto | Clase | Pesos | USD | Quién lo soporta | Desembolso |
 |---|---|---|---|---|---|
 | Horas técnicas del autor, 136 h | CAPEX | $1.207.136 | 781,32 | Autor, costo de oportunidad | No |
@@ -14,7 +16,7 @@ El costo del período comprende las horas planificadas del 21/09 al 14/11/2026 y
 | Claude Pro, septiembre a noviembre | OPEX | $92.700 | 60,00 | Autor | Sí |
 | Espacio, agua y conexión | OPEX | Sin valorizar | Sin valorizar | Grupo familiar, aporte en especie | No para el autor |
 | Tiempo de la referente | Aporte de terceros | Sin valorizar | Sin valorizar | Referente u organización consultada | No para el autor |
-| Repositorio, integración continua, tablero, contenedores y bibliotecas | Gratuitos | $0 | 0,00 | Servicios y herramientas gratuitos; integración continua dentro de la cuota gratuita, apartado X.4 | No |
+| Repositorio, integración continua, tablero, contenedores y bibliotecas | Gratuitos | $0 | 0,00 | Servicios y herramientas gratuitos; costo cero de integración continua supuesto, sin consumo registrado, apartado X.4 | No |
 | **Total valorizado, provisorio** | **CAPEX y OPEX** | **$1.925.393 a $1.925.990** | **1.246,22 a 1.246,60** | | |
 | **Del cual, inversión en la construcción** | **CAPEX** | **$1.207.136** | **781,32** | **Autor** | **No** |
 | **Del cual, desembolso** | **OPEX** | **$154.500** | **100,00** | **Autor** | **Sí** |
@@ -44,7 +46,7 @@ La contingencia se sostiene mediante alcance variable y capacidad fija, sin rese
 
 El punto de equilibrio del sostenimiento es el ingreso anual por patrocinio que iguala su costo anual. El patrocinio previsto es incierto (apartado IV.1). Se descarta el cálculo sobre el valor del problema por los motivos del Anexo III, D-18 y D-62. La cadencia de versiones se analiza en el apartado IV.3. El cálculo utiliza 43 versiones con cambios declarados de configuración, permisos o agentes. El conteo propio clasifica las notas del equipo de OpenCode entre el 01/01 y el 30/09/2026, consultadas el 01/10/2026 (anomalyco, s. f.-c; anomalyco, s. f.-d).
 
-Se adoptan intervenciones agrupadas trimestralmente con la cota alta provisoria de 22 h del apartado X.5. El punto de equilibrio es de $820.203 a $820.480 por año (USD 530,88 a 531,05), unos $68.360 por mes (USD 44,25). Seguir cada versión con cambio declarado cuesta por año entre 1,07 y 9,02 veces el costo del proyecto del período, con la ventana de enero a septiembre. La cota alta incorpora los casos posibles y se calcula sobre el total alto, según la sensibilidad del Anexo III, A.III.3. Este costo sostiene la versión congelada (L-05). Entre intervenciones, RIGE advierte la diferencia de versión (RF-05). La sensibilidad completa consta en el Anexo III, A.III.3. El cálculo supone una readaptación sin suscripciones pagas; con ChatGPT Plus, el costo anual sube en USD 240.
+Se adoptan intervenciones agrupadas trimestralmente con la cota alta provisoria de 22 h del apartado X.5. El punto de equilibrio es de $820.203 a $820.480 por año (USD 530,88 a 531,06), unos $68.360 por mes (USD 44,25). Seguir cada versión con cambio declarado cuesta por año entre 1,07 y 9,02 veces el costo del proyecto del período, con la ventana de enero a septiembre. La cota alta incorpora los casos posibles y se calcula sobre el total alto, según la sensibilidad del Anexo III, A.III.3. Este costo sostiene la versión congelada (L-05). Entre intervenciones, RIGE advierte la diferencia de versión (RF-05). La sensibilidad completa consta en el Anexo III, A.III.3. El cálculo supone una readaptación sin suscripciones pagas; con ChatGPT Plus, el costo anual sube en USD 240.
 
 El ingreso previsto proviene del patrocinio recurrente mediante GitHub Sponsors. La documentación institucional de GitHub, consultada el 02/10/2026, admite mantenedores residentes en Argentina y establece comisión nula sobre aportes de cuentas personales (GitHub, s. f.-a). El mantenedor fija niveles mensuales en dólares (GitHub, s. f.-c). Los niveles de la Tabla 24 son supuestos del autor. La alternativa descartada consta en el Anexo III, A.III.3.
 

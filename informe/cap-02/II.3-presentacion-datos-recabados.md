@@ -19,13 +19,15 @@ Se excluyen 12 pedidos de funcionalidad que no relatan un comportamiento experim
 
 La clasificación por título de ese codificador distribuye las 31 incidencias en 10 de precedencia y fusión, 10 de decisión de permiso y 1 de valor implícito. Otras 2 quedan fuera del compromiso del período y 8 fuera de alcance. El corpus corresponde al período indicado y carece de casos clasificados como ruta absoluta (Anexo VI, A.VI.6).
 
-La búsqueda complementaria del autor del 19/10/2026 identifica tres antecedentes de reglas con ruta absoluta ignoradas sin aviso: las incidencias n.º 40945, 46133 y 48049. Un codificador busca por título y lee los reportes completos del mismo repositorio, publicados entre el 06/08/2026 y el 09/09/2026 (ns-calvinwu, 2026; ouyangjian28, 2026; nlscott, 2026). Se informan por separado de las 31 incidencias; la admisión nativa del banco acredita su vigencia en OpenCode 1.18.25 (Anexo VI, A.VI.6).
+Los antecedentes específicos de ruta absoluta, identificados después del hallazgo propio y separados de las 31 incidencias, se desarrollan en I.1.3 a).
+
+La n.º 43669 corresponde a OpenCode 2. La n.º 46873 reporta una regresión en 1.18.26 y afirma que 1.18.25 funcionaba (Anexo VI, A.VI.6).
 
 ### II.3.2 · Datos de la medición de la línea de base
 
 Los valores agregados por estrato y ejecutor corresponden a la Tabla 4 del apartado I.3.2. La Tabla 14 reúne los problemas de E2 y E4 con éxito declarado falso en al menos una repetición de la lectura principal y conserva N-21 como problema solo en la preregistrada. Las fracciones proceden de la medición que el autor coordina con el arnés los días 20 y 21/10/2026, con tres repeticiones por problema y ejecutor sobre el banco del apartado II.2.1.
 
-La lectura preregistrada es la definición fijada antes de medir, que cuenta todo colateral como éxito declarado falso. La principal registra el colateral de batería como exceso de alcance: cambios adicionales respecto de la forma correcta, sin alteración de una guarda declarada (Anexo VI, A.VI.7).
+Las lecturas principal y preregistrada se definen en I.3.2; su diferencia corresponde al tratamiento del exceso de alcance según la definición de colateral del Anexo VI, A.VI.7.
 
 | **Problema** | **`build`** | **Charles** | **Familia del banco** | **Mecanismo observado** | **Consecuencia** | **Cuenta en la lectura principal (al menos 2/3)** |
 |---|---|---|---|---|---|---|
@@ -42,7 +44,7 @@ La lectura preregistrada es la definición fijada antes de medir, que cuenta tod
 
 En detección, el autor aplica el mismo arnés el 21/10/2026 sobre once defectos, con tres repeticiones por ejecutor. Ambos detectan ocho de once según el umbral de dos repeticiones; los defectos con ruta absoluta y la sustitución sin valor quedan por debajo de ese umbral. El detalle por defecto consta en el Anexo VI, A.VI.8.
 
-El exceso de alcance se registra en el Anexo VI, A.VI.8.
+De los 29 problemas de E2 cuya familia es ajena a la ruta absoluta, 28 se resuelven con cada ejecutor según el umbral de dos de tres repeticiones. La verificación declarativa precede a todos los éxitos declarados falsos; el desglose completo se presenta en I.3.2. El exceso de alcance se registra en el mismo apartado.
 
 ### II.3.3 · Datos de la entrevista al referente
 
@@ -54,9 +56,9 @@ La referente declara que el equipo de desarrollo tiene cinco integrantes e incor
 
 #### Frecuencia y procedimiento
 
-Valeria Areco estima alrededor de cinco consultas semanales a los archivos de configuración en su propia práctica (constancia, respuesta 1.3). Es una estimación retrospectiva de consultas, en general menores, sin registro de respaldo: [DATO PENDIENTE: período de referencia de las cinco consultas semanales]. La frecuencia de cambios de configuración queda sin cuantificar.
+La estimación retrospectiva de consultas de la referente (constancia, respuesta 1.3), sus límites y la corrección del error de registro se detallan en I.3.1. La frecuencia de cambios de configuración se desconoce.
 
-El equipo realiza las correcciones y los cambios de configuración siempre mediante un pedido a un agente, según la respuesta 2.2. La respuesta 2.9 identifica a Charles como el agente propio del equipo para configurar OpenCode. La referente declara que consulta menos a mano a medida que aumenta su confianza en Charles (respuesta 2.1). Se registra además el relato de una consulta de la configuración de su entorno mediante un agente con permisos elevados (respuesta 2.3).
+El equipo realiza las correcciones y los cambios de configuración siempre mediante un pedido a un agente, según la respuesta 2.2. La respuesta 2.9 identifica a Charles como el agente propio del equipo para configurar OpenCode. La respuesta 2.1 declara una baja de la consulta manual al aumentar la confianza en el agente interno. Su identificación con Charles es una inferencia conjunta de las respuestas 2.1 y 2.9. Se registra además el relato de una consulta de la configuración de su entorno mediante un agente con permisos elevados (respuesta 2.3).
 
 #### Definición observada de Charles
 
@@ -66,7 +68,7 @@ La definición de Charles, entregada por la referente el 13/10/2026, constituye 
 
 La respuesta 1.4 registra cambios de configuración cuyo efecto ausente se advierte más tarde, ante un comportamiento distinto del esperado. La referente relata dos episodios: la invocación reiterada de un agente a sí mismo y la operación a través de otro agente que, según el testimonio, incorpora la herramienta (respuestas 2.5 y 2.6). En el segundo relato, la referente desconoce la existencia y las funciones de ese agente.
 
-Las causas de ambos episodios quedan sin establecer por falta de configuraciones y trazas. La existencia del agente interno del segundo relato permanece pendiente de verificación propia (Anexo VI, A.VI.3, resultado 18).
+Se desconocen las causas de ambos episodios por falta de configuraciones y trazas; la verificación de agentes internos y sus límites constan en el Anexo VI, A.VI.3, resultado 18.
 
 #### Respuesta al enfoque presentado
 
@@ -90,6 +92,6 @@ La verificación nativa de ruta del 14/10/2026 comprueba que una regla con ruta 
 
 El contraste documental del autor al 01/10/2026 reúne 33 soluciones publicadas y utilizables sobre configuración de herramientas agénticas: cinco sobre OpenCode y 28 sobre otras herramientas. Las posiciones de cada solución constan en la Tabla A.VI.6 del Anexo VI, A.VI.4.
 
-El eje horizontal distingue declaraciones o validación (0), resultado efectivo (1), reglas en orden de evaluación (2) y decisión con regla determinante (3). El vertical distingue ausencia de procedencia (0), alcance o capa (1) y declaración con entrada, archivo y posición (2).
+El eje horizontal (H) distingue declaraciones o validación (0), resultado efectivo (1), reglas en orden de evaluación (2) y decisión con regla determinante (3). El eje vertical (V) distingue ausencia de procedencia (0), alcance o capa (1) y declaración con entrada, archivo y posición (2).
 
 Sobre OpenCode, `debug config` ocupa (1, 0) y `debug agent`, (2, 0); OCCM, CC Switch y agnix ocupan (0, 0). Entre las otras herramientas, Amp `permissions test` ocupa (3, 1) y Codex `execpolicy check`, (3, 0). El servidor de aplicación de Codex (`config/read`) ocupa (1, 1), junto con otras soluciones que informan valores por alcance. La combinación de decisión, regla determinante y procedencia por declaración queda sin cubrir en el conjunto relevado (Anexo VI, A.VI.4).

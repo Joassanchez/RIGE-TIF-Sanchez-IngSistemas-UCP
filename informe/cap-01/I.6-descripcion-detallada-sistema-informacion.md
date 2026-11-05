@@ -2,15 +2,15 @@
 
 ### I.6.1 · Elementos del ecosistema y criterio de inclusión
 
-RIGE abarca los elementos de configuración que determinan el comportamiento de los agentes o su capacidad de acción en un proyecto de OpenCode 1.18.25, con las exclusiones del apartado I.6.5. El criterio comprende los elementos declarados por el usuario y los nativos documentados, como los agentes `build` y `plan`. La incorporación de los agentes internos del episodio relatado en I.1.3 queda condicionada a verificar su existencia y las acciones que ejecutan (Anexo VI, A.VI.3, resultado 18).
+RIGE abarca los elementos de configuración que determinan el comportamiento de los agentes o su capacidad de acción en un proyecto de OpenCode 1.18.25, con las exclusiones del apartado I.6.5. El criterio comprende los elementos declarados por el usuario y los nativos documentados, como los agentes `build` y `plan`. La verificación de los agentes internos y el límite de su relación con el segundo episodio de I.1.3 constan en el Anexo VI, A.VI.3, resultado 18.
 
-El agente es el eje de la representación porque sobre él se manifiesta el efecto de la configuración. Se descarta organizarla por archivo porque este no representa ese efecto y presupone que quien se incorpora a un proyecto ajeno conoce qué archivos existen (Anexo III, D-08).
+El agente es el eje de la representación porque sobre él se manifiesta el efecto de la configuración. Se descarta organizarla por archivo porque este representa una entrada y presupone que quien se incorpora a un proyecto ajeno conoce qué archivos existen (Anexo III, D-08).
 
 La Tabla 6 delimita los elementos considerados y distingue sus vínculos diferidos. La resolución comprometida informa valores por agente y clave; la representación de relaciones pertenece a RF-13, Could, fuera del período (apartado III.4).
 
 | **Elemento**          | **Información considerada en la resolución**                                                                                                                                       | **Relaciones diferidas (RF-13)**                                                                  |
 |-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| Agentes y subagentes  | Valores efectivos, procedencia, declaraciones desplazadas y permisos. Se distinguen los declarados por el usuario y los nativos, con la condición indicada para los agentes internos | Modelo asignado, instrucciones aplicables, herramientas disponibles y comandos que los invocan |
+| Agentes y subagentes  | Valores efectivos, procedencia, declaraciones desplazadas y permisos. Se distinguen los declarados por el usuario y los nativos, incluidos los internos verificados | Modelo asignado, instrucciones aplicables, herramientas disponibles y comandos que los invocan |
 | Proveedores y modelos | Modelo efectivo por agente y proveedor declarado | Agentes que utilizan cada modelo |
 | Permisos              | Decisión por acción, cadena de reglas y regla determinante. El subagente se rige por sus reglas propias y las denegaciones de `task` y `todowrite` previstas en RF-02, CA-3 | Agentes sobre los que rigen las reglas |
 | Instrucciones         | Archivos de alcance global y de proyecto como entradas. Su orden de incorporación queda fuera del compromiso del período y las instrucciones de subdirectorios quedan excluidas (apartado III.4) | Agentes que las reciben |
@@ -28,7 +28,7 @@ RIGE se organiza en seis funciones que descubren las entradas de configuración,
 
 Las funciones se exponen por dos interfaces sobre las mismas resoluciones. La interfaz de línea de comandos es la interfaz completa: ofrece las consultas comprometidas con salida estructurada para agentes, otras herramientas y desarrolladores que trabajan en la terminal. La interfaz web local se limita a formularios y vistas de consulta para la inspección humana; sus funciones también están disponibles por línea de comandos.
 
-Esta distribución responde a la práctica relevada: el equipo consultado ya interroga la configuración mediante un agente con permisos elevados (Anexo VI, A.VI.5). Se descarta conservar solo la interfaz gráfica porque dejaría sin atender a ese consumidor programático (Anexo III, D-17). La resolución de RIGE no depende de un modelo de lenguaje; el costo del procedimiento delegado completo se evalúa mediante la salvaguarda del apartado I.3.4.
+Esta distribución responde a la práctica relevada: el equipo consultado ya interroga la configuración mediante un agente con permisos elevados (Anexo VI, A.VI.5). Se descarta conservar solo la interfaz gráfica porque dejaría sin atender a ese consumidor programático (Anexo III, D-17). RIGE ofrece una explicación determinista, idéntica ante entradas idénticas y sin conexión saliente; el costo del procedimiento delegado completo se evalúa mediante la salvaguarda del apartado I.3.4.
 
 | **Cód.** | **Función**                                      | **Descripción**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | **Objetivo** |
 |----------|--------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
@@ -41,7 +41,7 @@ Esta distribución responde a la práctica relevada: el equipo consultado ya int
 
 *Tabla 7. Componentes funcionales de RIGE y objetivo que verifica cada uno. Fuente: elaboración propia.*
 
-La explicación en lenguaje natural se reserva para las decisiones de permiso de F4 y los hallazgos de F5, donde responde el motivo del resultado. Se construye mediante plantillas deterministas sobre el rastro de resolución, con la regla determinante, su posición, el motivo de su prevalencia y las reglas desplazadas. Se descarta generarla con un modelo de lenguaje porque exigiría conexión saliente y agregaría variabilidad ante entradas idénticas (Anexo III, D-21).
+La explicación en lenguaje natural se reserva para las decisiones de permiso de F4 y los hallazgos de F5, donde responde el motivo del resultado. Es determinista, idéntica ante entradas idénticas y sin conexión saliente. Se descarta generarla con un modelo de lenguaje porque exigiría conexión saliente y agregaría variabilidad ante entradas idénticas (Anexo III, D-21).
 
 La explicación se presenta junto a cada decisión y hallazgo en la interfaz web local. Por línea de comandos se solicita con `--explicar` y contiene el mismo texto; sin esa opción, la salida contiene los datos estructurados. La coincidencia con el comportamiento de OpenCode se verifica para mitigar el riesgo del apartado I.3.5. El criterio de resolución final por agente, frente a la configuración que muestra `opencode debug config`, se establece en el apartado I.2.4.
 
@@ -51,10 +51,10 @@ La Tabla 8 reúne las distinciones necesarias para interpretar las salidas. Las 
 
 | **Término**            | **Definición operativa**                                                                                                                                                                                                                            |
 |------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Declaración sin efecto | Denominación general de una declaración que no produce el efecto esperado. Su causa se precisa mediante los estados siguientes; no identifica un tipo adicional de hallazgo. |
+| Declaración sin efecto | Declaración desplazada, descartada o con una referencia o patrón que carece de coincidencia en la resolución. La causa objetiva se precisa mediante los estados siguientes, dentro de los tipos de hallazgo existentes. |
 | Declaración desplazada | Declaración reemplazada por otra de mayor precedencia sobre la misma clave. |
 | Regla sin efecto       | Regla de permiso que nunca determina una decisión. Puede quedar sombreada por una regla posterior del mismo tipo que abarca todos sus casos, según la noción adaptada de Al-Shaer y Hamed (2004). También puede contener un patrón que no coincide con ninguna acción posible, como una ruta absoluta del árbol de trabajo. |
-| Referencia no resuelta | Declaración que nombra por su nombre un elemento que no figura en la resolución, o un archivo inexistente. |
+| Referencia no resuelta | Declaración que nombra un elemento que no figura en la resolución. Una sustitución de archivo inexistente corresponde a Entrada ilegible. |
 | Elemento sin uso       | Elemento declarado al que ninguna declaración de un agente ni de un comando nombra. |
 | Sustitución sin valor  | Sustitución de una variable de entorno no definida, que se reemplaza por un texto vacío sin advertencia. |
 | Entrada ilegible       | Entrada que no puede interpretarse por errores de sintaxis o por referenciar una sustitución de archivo inexistente. Su carga se detiene con error. |
@@ -90,9 +90,9 @@ La Tabla 9 sintetiza las entradas y salidas de la frontera y sitúa el almacén 
 
 *Figura 1. Diagrama de contexto de RIGE. Elementos externos, entradas y salidas que atraviesan la frontera del sistema. Fuente: elaboración propia.*
 
-Las variables de entorno leídas corresponden al proceso de RIGE, que puede diferir del entorno de la terminal desde la que se ejecuta OpenCode. Se advierte cuando una variable relevante no está definida; la limitación se recoge en el apartado I.6.5.
+Las variables de entorno leídas corresponden al proceso de RIGE, que puede diferir del entorno de la terminal desde la que se ejecuta OpenCode. Se advierte cuando falta una variable relevante; la limitación se recoge en el apartado I.6.5.
 
-El análisis es estático: describe el estado resultante de las entradas de configuración. Una aprobación persistida conserva la autorización permanente concedida por el desarrollador para el texto literal de una acción y subsiste entre sesiones. Evita que una acción sujeta a confirmación vuelva a solicitarla; una denegación declarada prevalece sobre esa aprobación. Los comandos de introspección omiten estas aprobaciones (Anexo VI, A.VI.3, resultado 11). RIGE no accede a su registro y declara esa condición junto a cada decisión de permiso, por ambas interfaces.
+OpenCode tiene dos motores de permisos; RIGE modela el que usan la terminal y la interfaz. El análisis es estático; el detalle técnico, la verificación parcial y los límites de las aprobaciones constan en el Anexo VI, A.VI.3, resultados 10 y 11. RIGE excluye las aprobaciones y declara esa condición junto a cada decisión de permiso, por ambas interfaces.
 
 ### I.6.5 · Alcance y exclusiones declaradas
 
@@ -113,6 +113,7 @@ La Tabla 10 resume las inclusiones y exclusiones necesarias para interpretar las
 | Detección de entradas ilegibles | Validación completa contra el esquema | La validación completa es una función distinta de la resolución del estado efectivo. |
 | Instrucciones globales y de proyecto como entradas de configuración | Instrucciones de subdirectorios y evaluación de la calidad del contenido | La incorporación de instrucciones de subdirectorios depende de los archivos leídos durante la sesión. La evaluación de calidad examina el contenido de las instrucciones. El orden de incorporación queda fuera del compromiso del período (apartado III.4). |
 | Variables de entorno del proceso de RIGE | Entorno de ejecución de una sesión concreta de OpenCode | RIGE opera sin conectarse a la ejecución de OpenCode y declara esa limitación. |
+| `PATH` del proceso de RIGE para localizar OpenCode y detectar su versión | `PATH` de otra terminal o de una sesión concreta de OpenCode | Los entornos pueden diferir. La versión se detecta desde el primer `opencode` del `PATH` de RIGE, sin ejecutar procesos (ADR-102). |
 | Consulta de valores efectivos, decisiones y hallazgos por línea de comandos, con esquema versionado y explicación a pedido | Escritura, modificación o generación de configuración y ejecución de acciones sobre el proyecto | La lectura exclusiva protege las entradas por ambas interfaces. Generar configuración exige decidir qué declarar. |
 | Línea de comandos como vía programática | Biblioteca de integración o kit de desarrollo | El comando cubre el caso relevado con un contrato de datos acotado. Se descarta agregar una biblioteca porque compromete una superficie de funciones mayor (Anexo III, D-17). La compatibilidad entre versiones queda fuera de esta etapa para ambas vías. |
 | Persistencia y recuperación de resoluciones fechadas (RF-17, Must) | Comparación entre estados resueltos | La comparación exige interfaz y pruebas propias. La consulta del estado completo y su exportación quedan diferidas (RF-14, Could; apartado III.4). |
@@ -123,7 +124,7 @@ La Tabla 10 resume las inclusiones y exclusiones necesarias para interpretar las
 
 ### I.6.6 · Prototipo v0
 
-La maqueta validada el 26/09/2026 reformula la presentada el 29/08/2026 a partir del pedido de la referente en la entrevista del 24/09/2026 (Anexo VI, A.VI.5). Simplifica la interfaz gráfica a cinco pantallas y representa la consulta por línea de comandos para un agente (Anexo II, A.II.2). Las herramientas generativas se utilizan como apoyo para construir en HTML la maqueta navegable, de baja fidelidad y no funcional. Sus datos son ilustrativos: no calcula, no persiste ni lee archivos.
+La maqueta validada el 26/09/2026 reformula la presentada el 29/08/2026 a partir del pedido de la referente en la entrevista del 24/09/2026 (Anexo VI, A.VI.5). Simplifica la interfaz gráfica a cinco pantallas y representa la consulta por línea de comandos para un agente (Anexo II, A.II.2). Las herramientas generativas se utilizan como apoyo para construir en HTML la maqueta navegable, de baja fidelidad y no funcional. Sus datos son ilustrativos; el cálculo, la persistencia y la lectura de archivos quedan fuera de la maqueta.
 
 Se adopta la baja fidelidad para detectar errores de flujo. Se descarta la alta fidelidad por el criterio general de que una maqueta terminada tiende a recibir una crítica más moderada (Anexo III, D-09). Los casos de atribución se conservan como antecedente del flujo (Anexo VI, A.VI.1, Tabla A.VI.2).
 

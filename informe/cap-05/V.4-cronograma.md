@@ -29,25 +29,29 @@ El presupuesto se construye sobre las horas semanales declaradas en el Instrumen
 
 Nota: el reparto de 136 h entre los 53 días redondea las 15,4 h de la cuarta iteración a 16 h para conservar el total. El cómputo excluye los domingos 25/10 y 08/11/2026 entre iteraciones.
 
-Las dos primeras iteraciones se planifican con 8 h por encima de su capacidad, que la holgura de las dos últimas compensa en el total del período, pero no antes del hito de la primera. Ese exceso se traslada a la segunda iteración, en la que se completa el recorrido vertical del v1 (apartado V.2).
+Las iteraciones 1 y 2 exceden su capacidad en 7 h y 1 h, respectivamente. La holgura de las dos últimas compensa las 8 h en el total del período, pero queda después de los primeros hitos. El traslado de 7 h a la segunda iteración supera el umbral de 6 h que activa la contingencia de ADR-052, sin activación registrada. El recorrido vertical del v1 se completa en esa iteración (apartado V.2).
 
-La reserva efectiva asigna 14 h a la AE2 y 20 h a la Ventana de Mejora y Cumplimiento y las correcciones del informe de la AE1. Se destinan 13 h a los Capítulos VI y IX y 7 h a la preparación de la medición final. La estimación de la línea de base, de 16 a 23 h, se carga a la Ventana (Anexo III, D-41).
+La dedicación efectiva queda por contrastar con el plan: [DATO PENDIENTE: registro de dedicación por iteración].
 
-El trabajo agregado después del 02/10/2026 se absorbe en la reserva existente, según la estimación del ingeniero del 24/10/2026 que acompaña a la Tabla 16. Las precisiones de requisitos insumen 12 h de la reserva de la iteración 3. La preparación de la medición final se estima en 10 h, con 7 h de la reserva de la iteración 4 y 3 h de la fase de cierre. Las 190 h del período se conservan.
+La reserva efectiva asigna 14 h a la AE2 y 20 h a la Ventana de Mejora y Cumplimiento y las correcciones del informe de la AE1. Se destinan 13 h a los Capítulos VI y IX; el resto de la reserva cubre la preparación de la medición final, detallada debajo. La estimación de la línea de base, de 16 a 23 h, se carga a la Ventana (Anexo III, D-41). Su cota alta excede por 3 h las 20 h de esa reserva, aun antes de las correcciones del informe.
+
+Las 54 h de reserva tienen asignación completa. La estimación del ingeniero del 24/10/2026 agrega 12 h de precisiones que quedan fuera de ese reparto. El plan conserva 190 h; sin absorción registrada, la previsión asciende a 202 h. El desvío agrega $106.512 (USD 68,94), todavía sin imputar en la Tabla 22 de costos de X.3; allí constan el valor horario y el factor de conversión.
+
+La preparación de la medición final se estima en 10 h: 7 h de reserva entre el 26/10 y el 14/11/2026 y 3 h de la fase de cierre desde el 15/11. La Figura 3 representa del 26/10 al 07/11 la preparación de escenarios y remuestreo, y del 09/11 al 14/11 la fijación del texto de la instrucción. La preparación del cierre integra la barra de medición final y análisis.
 
 Antes del corte del 07/11/2026, la preparación comprende:
 
 - Admisión nativa, readmisión y ensayo del conjunto reservado.
 
-- Corrección de las formas de referencia de S-3 y M-2, con readmisión y ensayo.
+- Corrección de las formas de referencia defectuosas, con readmisión y ensayo; los casos se identifican en el Anexo VI, A.VI.8.
 
 - Remuestreo de las condiciones de no regresión.
 
 - Incorporación al manifiesto de los escenarios de CA-9 de RF-02 y del defecto de RF-07, CA-5.
 
-El texto de la instrucción del brazo con instrucción de probar se fija antes del congelamiento del 14/11/2026 (Anexo III, D-41).
+El texto de la instrucción del brazo con instrucción de probar se fija antes del congelamiento planificado del 14/11/2026 (Anexo III, D-41).
 
-La fase de cierre se estima en dos semanas según la correspondencia de clases de la consigna. Sus 48 h se desglosan en 15 h para la medición final y su análisis, incluidas las 3 h de preparación, y 24 h para los capítulos de la AE4. Se asignan 5 h a la constancia de la referente y la demostración, y 4 h a holgura. Este presupuesto queda sujeto a la confirmación de las fechas de la cuarta actividad de evaluación; un cambio de fechas altera esa línea y mantiene el alcance comprometido.
+La fase de cierre se estima en dos semanas según la correspondencia de clases de la consigna. Sus 48 h se desglosan en 15 h para la medición final y su análisis, incluida la preparación, y 24 h para los capítulos de la AE4. Se asignan 5 h a la constancia de la referente y la demostración, y 4 h a holgura. Este presupuesto queda sujeto a la confirmación de las fechas de la cuarta actividad de evaluación; un cambio de fechas altera esa línea y mantiene el alcance comprometido.
 
 ### Estimación por tareas
 
@@ -83,15 +87,17 @@ La estimación descompone cada iteración en tareas y les asigna horas por juici
 
 *Tabla 16. Estimación de horas por tarea e iteración. Fuente: elaboración propia.*
 
-Nota: la estimación del ingeniero del 24/10/2026 agrega las siguientes tareas a las previstas al 02/10, con cargo a la reserva y al cierre:
+Nota: la estimación del ingeniero del 24/10/2026 agrega las siguientes tareas a las previstas al 02/10:
 
-- Precisiones de RF-02, CA-9, por tipo de permiso y contra el binario; RF-07, CA-5; y RF-03 con hallazgos: junto con las precisiones siguientes, 12 h de la reserva de la iteración 3.
+- Precisiones de la normalización de rutas y de la forma que coincide, verificadas contra el binario (RF-02, CA-9; RF-07, CA-5).
 
-- Precisiones de RNF-04, RNF-07 con la consulta de decisión y RD-08, incluidas en esas 12 h.
+- Salida de hallazgos por línea de comandos, representación pública de sustituciones, consulta de decisión medida y regla del sujeto relativo (RF-03, RNF-04, RNF-07 y RD-08). Junto con las anteriores, se estiman en 12 h adicionales al presupuesto.
 
-- Preparación de la medición final: 10 h, con 7 h de la reserva de la iteración 4 y 3 h del cierre, según las tareas y fechas indicadas antes de la tabla.
+- Preparación de la medición final, según las tareas y la distribución de horas indicadas antes de la tabla.
 
-Los seis requisitos Should se financian con las horas que quedan libres al cierre de cada iteración o con las acreditaciones previstas dentro de la estabilización. RF-12 se incorpora en la segunda iteración, condicionado a las horas disponibles. RF-10, RF-11 y RNF-08 se incorporan en la tercera bajo la misma condición. La acreditación de RNF-06 y RNF-07 sigue lo previsto para las 11 h de estabilización en el apartado V.1 y es lo primero que se posterga si esta se reduce.
+Los seis requisitos Should se financian con las horas que quedan libres al cierre de cada iteración o con las acreditaciones previstas dentro de la estabilización. Los cambios de iteración, la precisión de rutas y la verificación de agentes internos se detallan en V.1, con evidencia en el Anexo VI, A.VI.11.
+
+Las comprobaciones de RNF-06 y RNF-07 se planifican dentro de las 11 h de estabilización y se postergan primero si esta se reduce. Su resultado registrado consta en V.2.
 
 ### Cronograma y dependencias
 
@@ -113,23 +119,23 @@ La figura omite tres dependencias no consecutivas: núcleo → hallazgos, cadena
 
 ### Cláusula de contingencia
 
-La cláusula de contingencia opera sobre la capacidad técnica, que es la que determina los requisitos comprometidos. La magnitud de la caída, un tercio del presupuesto, la fija la consigna de la AE2 en su exigencia (vii). Esa caída reduce las 136 h a 91 h, y la pérdida de 45 h se absorbe mediante las postergaciones de la Tabla 17, aplicadas en el orden indicado hasta cubrirla. La consigna fija la caída sobre el presupuesto; se aplica a la capacidad técnica porque la reserva financia entregables de fecha fija (capítulos, Ventana y Caps. VI y IX), que no admiten postergación sin perder el hito.
+La cláusula de contingencia toma como base las 136 h técnicas: un tercio equivale a 45 h redondeadas y deja 91 h. La Tabla 17 libera esas 45 h mediante postergaciones en el orden indicado. La exigencia (vii) de la consigna se refiere a un tercio del presupuesto: sobre las 190 h serían 63 h redondeadas. Las 18 h restantes quedan sin cobertura definida. La reserva financia entregables de fecha fija y conserva su asignación (Anexo III, D-38 a D-40).
 
 | **Orden** | **Qué se posterga**                                                                                                       | **Horas liberadas** | **Acumulado** |
 |-----------|---------------------------------------------------------------------------------------------------------------------------|---------------------|---------------|
-| 1         | Requisitos Should RF-10, RF-11, RF-12 y RNF-08, sin horas propias; acreditaciones de RNF-06 en Windows 11 y de RNF-07, incluidas en las 11 h de estabilización, cuya reducción se computa en el orden 7 | 0 | 0 |
+| 1         | Requisitos Should RF-10, RF-11, RF-12 y RNF-08, sin horas propias. Acreditaciones de RNF-06 en Windows 11 y de RNF-07, incluidas en las 11 h de estabilización. Su reducción se computa en el orden 7 | 0 | 0 |
 | 2         | Regeneración automática de los resultados de referencia, sustituida por una regeneración manual registrada en la bitácora | 2                   | 2             |
-| 3         | Vista web de consulta de permiso; la decisión se conserva por línea de comandos; la parte de los criterios de RF-02 y RF-03 que exige coincidencia con la interfaz web queda sin cumplir | 4                   | 6             |
+| 3         | Vista web de consulta de permiso. La decisión se conserva por línea de comandos. Se incumple la parte de RF-02 y RF-03 que exige coincidencia con la interfaz web | 4                   | 6             |
 | 4         | Explicación en lenguaje natural de las decisiones de permiso, mediante plantillas de RF-02 y explicación a pedido         | 5                   | 11            |
-| 5         | RF-04 · descubrimiento completo; se conservan las entradas de archivo del v1                                              | 8                   | 19            |
-| 6         | RF-07 · hallazgos, con su vista web y su salida por línea de comandos (CU-04)                                             | 16                  | 35            |
+| 5         | RF-04 · descubrimiento completo, que sale del MVP; se conservan las entradas de archivo del v1 | 8 | 19 |
+| 6         | RF-07 · hallazgos, con su vista web y su salida por línea de comandos (CU-04). Sale del MVP y deja incompleto el flujo de verificación | 16 | 35 |
 | 7         | Estabilización, reducida de 11 h a 1 h                                                                                    | 10                  | 45            |
 
 *Tabla 17. Cláusula de contingencia ante una caída de un tercio de la capacidad técnica. Fuente: elaboración propia sobre la Tabla 16.*
 
-Se postergan primero las capacidades ajenas a la medición final y a la mitigación del riesgo principal. Entre ellas, se difiere antes la que menos debilita un objetivo específico. Las postergaciones se registran en la bitácora y el tablero y se reflejan en la prioridad del catálogo y, si afectan un Must, en el producto mínimo viable del apartado V.5. El efecto de cada orden sobre los objetivos específicos consta en el Anexo III, A.III.3.
+Se postergan primero las capacidades ajenas a la medición final y a la mitigación del riesgo principal. Entre ellas, se difiere antes la que menos debilita un objetivo específico. Al activarse la contingencia, se redefine el MVP y se actualiza el catálogo: los Must postergados salen del conjunto comprometido. Las postergaciones constan en la bitácora y el tablero. El efecto de cada orden sobre los objetivos específicos consta en el Anexo III, A.III.3.
 
-El orden 6 alcanza a RF-07, que interviene en la medición final y en el diagnóstico de la regla sin efecto. Su postergación deja sin acreditar OE-3 y sin evaluar la condición de detección. La cobertura de los problemas se revisa antes del corte del 07/11/2026; con menos de tres cubiertos se activa la rama de respaldo, según sus condiciones de detección y falsos positivos (apartado I.3.4).
+El orden 6 retira RF-07 del MVP y deja incompleto el flujo de verificación: conserva la consulta de decisión y pierde el diagnóstico de la regla sin efecto. Su postergación deja sin acreditar OE-3 y sin evaluar la condición de detección. La cobertura de los problemas se revisa antes del corte del 07/11/2026; con menos de tres cubiertos se activa la rama de respaldo, según sus condiciones de detección y falsos positivos (apartado I.3.4).
 
 Se conservan en todos los órdenes:
 
@@ -145,4 +151,4 @@ Se conservan en todos los órdenes:
 
 - RF-03 para consultar valores y permisos por línea de comandos, canal de la medición final.
 
-Estas capacidades sostienen el flujo de valor del apartado IV.3.
+Estas capacidades sostienen la consulta del flujo de valor del apartado IV.3; su verificación completa requiere conservar los hallazgos.

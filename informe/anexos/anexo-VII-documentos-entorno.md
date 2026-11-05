@@ -22,4 +22,4 @@ Electricidad de Misiones S. A. participa como referente de validación y fuente 
 
 ## A.VII.3 · Licencia de la herramienta base
 
-OpenCode se distribuye bajo licencia MIT, que admite la incorporación de porciones de su código con atribución. Esa condición sustenta la mitigación principal del riesgo declarado en el apartado I.3.5: la reutilización de las funciones de evaluación de permisos asegura por construcción la coincidencia de las decisiones que RIGE informa con el comportamiento de la herramienta, por ambas interfaces. Texto de la licencia: \[ \].
+OpenCode se distribuye bajo licencia MIT, que admite la incorporación de porciones de su código con atribución. Esa condición sustenta la mitigación principal del riesgo declarado en el apartado I.3.5: la reutilización asegura la coincidencia por construcción solo en las funciones de evaluación de permisos incorporadas. La normalización de rutas, la integración y las dos interfaces se contrastan contra el oráculo de OpenCode 1.18.25. Texto de la licencia: \[ \].
