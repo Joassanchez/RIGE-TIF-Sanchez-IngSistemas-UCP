@@ -1,0 +1,61 @@
+imagen: sha256:0088bbb1962bae4b78f8bb61aea071e1e182f580a2603a9d176a9e293c426e55
+0df6cb7a8a3a740b76d987c60d06cc9e334cbc48
+1.18.25
+1.3.14
+
+########## subdirectorio · proyecto=/tmp/repo/sub/dir
+--- RIGE hallazgos
+codigo 0
+
+hallazgos: 1
+{"tipo":"regla-sin-efecto","causa":"ruta-absoluta-con-forma","parametros":{"sujeto":"read","patron":"/tmp/repo/sub/dir/a.txt","efecto":"permitida","formaRelativa":"sub/dir/a.txt","decision":"permitida"},"localizacion":"/tmp/repo/sub/dir/opencode.json:1:35"}
+explicacion: La regla read /tmp/repo/sub/dir/a.txt → permitida declara una ruta absoluta del árbol de trabajo y no coincide con ninguna acción: OpenCode 1.18.25 evalúa la ruta relativa al árbol de trabajo. Con la forma relativa sub/dir/a.txt, en la misma posición, la decisión es permitida.
+FORMA PROPUESTA: [sub/dir/a.txt]
+--- RIGE permiso con la regla absoluta
+{"decision":"deny","motivoSinDecision":null}
+--- OpenCode con la regla absoluta
+codigo 1 · ejecuta: 0 · denegada: 1
+--- OpenCode con la forma propuesta
+codigo 0 · ejecuta: 3 · denegada: 0
+--- RIGE permiso con la forma propuesta
+{"decision":"allow","motivoSinDecision":null}
+--- RIGE hallazgos con la forma propuesta
+hallazgos: 0
+
+########## raiz-repo · proyecto=/tmp/raiz
+--- RIGE hallazgos
+codigo 0
+
+hallazgos: 1
+{"tipo":"regla-sin-efecto","causa":"ruta-absoluta-con-forma","parametros":{"sujeto":"read","patron":"/tmp/raiz/sub/a.txt","efecto":"permitida","formaRelativa":"sub/a.txt","decision":"permitida"},"localizacion":"/tmp/raiz/opencode.json:1:35"}
+explicacion: La regla read /tmp/raiz/sub/a.txt → permitida declara una ruta absoluta del árbol de trabajo y no coincide con ninguna acción: OpenCode 1.18.25 evalúa la ruta relativa al árbol de trabajo. Con la forma relativa sub/a.txt, en la misma posición, la decisión es permitida.
+FORMA PROPUESTA: [sub/a.txt]
+--- RIGE permiso con la regla absoluta
+{"decision":"deny","motivoSinDecision":null}
+--- OpenCode con la regla absoluta
+codigo 1 · ejecuta: 0 · denegada: 1
+--- OpenCode con la forma propuesta
+codigo 0 · ejecuta: 3 · denegada: 0
+--- RIGE permiso con la forma propuesta
+{"decision":"allow","motivoSinDecision":null}
+--- RIGE hallazgos con la forma propuesta
+hallazgos: 0
+
+########## sin-git · proyecto=/tmp/sin-git/proyecto
+--- RIGE hallazgos
+codigo 0
+
+hallazgos: 1
+{"tipo":"regla-sin-efecto","causa":"ruta-absoluta-con-forma","parametros":{"sujeto":"read","patron":"/tmp/sin-git/proyecto/sub/dir/a.txt","efecto":"permitida","formaRelativa":"tmp/sin-git/proyecto/sub/dir/a.txt","decision":"permitida"},"localizacion":"/tmp/sin-git/proyecto/opencode.json:1:35"}
+explicacion: La regla read /tmp/sin-git/proyecto/sub/dir/a.txt → permitida declara una ruta absoluta del árbol de trabajo y no coincide con ninguna acción: OpenCode 1.18.25 evalúa la ruta relativa al árbol de trabajo. Con la forma relativa tmp/sin-git/proyecto/sub/dir/a.txt, en la misma posición, la decisión es permitida.
+FORMA PROPUESTA: [tmp/sin-git/proyecto/sub/dir/a.txt]
+--- RIGE permiso con la regla absoluta
+{"decision":"deny","motivoSinDecision":null}
+--- OpenCode con la regla absoluta
+codigo 1 · ejecuta: 0 · denegada: 1
+--- OpenCode con la forma propuesta
+codigo 0 · ejecuta: 3 · denegada: 0
+--- RIGE permiso con la forma propuesta
+{"decision":"allow","motivoSinDecision":null}
+--- RIGE hallazgos con la forma propuesta
+hallazgos: 0

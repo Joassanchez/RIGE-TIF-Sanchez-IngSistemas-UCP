@@ -1,5 +1,6 @@
 """ADR-098 P-6: descripción conservadora de la traza, sin autoinforme."""
 import argparse
+import ast
 import json
 from pathlib import Path
 import re
@@ -7,6 +8,76 @@ import shlex
 
 CONFIG = re.compile(r'(?:opencode\.jsonc?|AGENTS\.md|\.opencode/[^\s\'";]+|\.config/opencode/[^\s\'";]+)')
 LECTORES = {'cat', 'head', 'tail', 'less', 'more', 'sed', 'awk', 'grep', 'rg', 'jq', 'python', 'python3', 'node'}
+
+
+def comandos_debug_tool(cmd):
+    """Invocaciones de debug agent que ejecutan una herramienta, sin menciones en echo."""
+    def ejecutables(argv):
+        if not argv:
+            return []
+        nombre = Path(argv[0]).name
+        if (nombre == 'opencode' and argv[1:3] == ['debug', 'agent']
+                and any(p == '--tool' or p.startswith('--tool=') for p in argv[3:])):
+            return [shlex.join(argv)]
+        if nombre == 'como-dev':
+            return comandos_debug_tool(argv[1]) if len(argv) == 2 else ejecutables(argv[1:])
+        if nombre in ('sh', 'bash') and '-c' in argv:
+            n = argv.index('-c') + 1
+            return comandos_debug_tool(argv[n]) if n < len(argv) else []
+        if re.fullmatch(r'python\d*', nombre) and '-c' in argv:
+            n = argv.index('-c') + 1
+            try:
+                programa = ast.parse(argv[n])
+            except (SyntaxError, IndexError):
+                return []
+            out = []
+            for llamada in ast.walk(programa):
+                if (isinstance(llamada, ast.Call) and isinstance(llamada.func, ast.Attribute)
+                        and isinstance(llamada.func.value, ast.Name) and llamada.func.value.id == 'subprocess'
+                        and llamada.func.attr in ('run', 'call', 'check_call', 'check_output', 'Popen')
+                        and llamada.args):
+                    try:
+                        args = ast.literal_eval(llamada.args[0])
+                    except (ValueError, TypeError):
+                        continue
+                    if isinstance(args, (list, tuple)) and all(isinstance(a, str) for a in args):
+                        out.extend(ejecutables(list(args)))
+                    elif isinstance(args, str):
+                        out.extend(comandos_debug_tool(args))
+            return out
+        if nombre == 'node' and any(p in argv for p in ('-e', '--eval')):
+            n = next(i for i, p in enumerate(argv) if p in ('-e', '--eval')) + 1
+            if n >= len(argv):
+                return []
+            # Argumentos literales de child_process; no se ejecuta el código.
+            literal = r'''(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')'''
+            patron = r'\b(execFileSync|execFile|spawnSync|spawn|execSync|exec)\s*\(\s*(' + literal + r')(?:\s*,\s*(\[(?:' + literal + r'|[\s,])*\]))?'
+            out = []
+            for metodo, primero, resto in re.findall(patron, argv[n]):
+                try:
+                    primero = ast.literal_eval(primero)
+                    args = ast.literal_eval(resto) if resto else []
+                except (ValueError, SyntaxError):
+                    continue
+                out.extend(comandos_debug_tool(primero) if metodo in ('exec', 'execSync')
+                           else ejecutables([primero, *args]))
+            return out
+        return []
+
+    try:
+        lexer = shlex.shlex(cmd, posix=True, punctuation_chars=';&|()')
+        lexer.whitespace_split = True
+        palabras = list(lexer)
+    except ValueError:
+        return []
+    out, segmento = [], []
+    for palabra in [*palabras, ';']:
+        if palabra and set(palabra) <= set(';&|()'):
+            out.extend(ejecutables(segmento))
+            segmento = []
+        else:
+            segmento.append(palabra)
+    return out
 
 
 def comandos_desarrollador(cmd):
@@ -85,26 +156,30 @@ def clasificar_proceso(registro, regla):
         if nombre == 'skill' and args.get('name') == 'customize-opencode':
             skills.append(i)
         anidadas = comandos_desarrollador(cmd) if h.get('estado') == 'completed' else []
+        pruebas_debug = comandos_debug_tool(cmd) if h.get('estado') == 'completed' else []
         rutas = []
         if nombre in ('edit', 'write'):
             rutas = [ruta]
         if nombre == 'apply_patch':
             rutas = re.findall(r'\*\*\* (?:Update|Add|Delete) File: (.+)', args.get('patchText', args.get('patch', '')))
-        if cmd and not anidadas and re.search(r'(?:>|\bsed\s+-i|\btee\b|writeFile|write_text|write_bytes)', cmd):
+        if cmd and not (anidadas or pruebas_debug) and re.search(r'(?:>|\bsed\s+-i|\btee\b|writeFile|write_text|write_bytes)', cmd):
             rutas = CONFIG.findall(cmd) or ['indeterminada']
         if rutas and h.get('estado') != 'error':
             ultima = i
             editadas.extend(dict(archivo=r, capa=capa(r)) for r in rutas)
         tipo = None
         invocacion = r'(?:^|[;&|])\s*(?:como-dev\s+[\'"]?)?(?:[^\s]+/)?'
-        if anidadas:
+        if anidadas or pruebas_debug:
             tipo = 'comportamiento'
-            acciones_probadas.append(dict(indice=i, comandos=anidadas,
+            acciones_probadas.append(dict(indice=i, comandos=anidadas + pruebas_debug,
                 objetivos_identificados=[o[:3] for o in [regla['objetivo'], *regla.get('objetivos_adicionales', [])]
                                         if o[2] in cmd] if 'objetivo' in regla else []))
         elif nombre.lower().startswith('rige') or re.search(invocacion + r'rige(?:\s|$)', cmd, re.I):
             tipo = 'rige'
-        elif re.search(invocacion + r'opencode\s+debug\s+(?:config|agent|skill)\b', cmd):
+        # También listas de subprocess/execFileSync y comillas escapadas en bash:
+        # leer debug no demuestra el efecto del permiso sobre el sujeto.
+        elif (re.search(invocacion + r'(?:[\'"]?opencode[\'"]?\s+[\'"]?debug\b|(?:python\d*|node)\b)', cmd)
+              and re.search(r'\bopencode[\s\'"\\,\[\]]+debug\b', cmd)):
             tipo = 'declarativa'
         else:
             objetivos = [regla['objetivo'], *regla.get('objetivos_adicionales', [])] if 'objetivo' in regla else []

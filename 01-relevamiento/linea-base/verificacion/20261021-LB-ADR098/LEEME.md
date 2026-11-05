@@ -90,6 +90,7 @@ Lectura principal (MED-17): M-1 y M-10 dan 3/3 en los dos ejecutores; M-2, 1/3 c
 - **Verificación final:**
   - `build`: 129 declarativas, 8 sin verificación y 1 de comportamiento;
   - Charles: 133 declarativas, 4 sin verificación y 1 de comportamiento.
+  - **Corrección del 04/11/2026 (ADR-098, punto 26):** esas dos de comportamiento son falsos positivos del clasificador; leen `opencode debug agent`. Valor vigente: 130, 8 y 0 con `build`; 134, 4 y 0 con Charles (`MED-18-reclasificacion.md`).
 - **Todos los éxitos declarados falsos vinieron después de una verificación declarativa:** 34 en la lectura principal (16 de `build` y 18 de Charles), 55 en la preregistrada (25 + 30).
 - **Sesiones anidadas:** 0 en la ecológica, a pesar de que el agente tenía la credencial (punto 3). Hubo una sola en toda la tanda: M-8:1 del contraste de Charles.
 - **Costo (`build`):** mediana de 127 mil tokens, 7 solicitudes y 39 s por ejecución.

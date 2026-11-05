@@ -1,14 +1,16 @@
-# RNF-07 · Medición formal del rendimiento y tiempos por etapa · 03/11/2026
+# RNF-07 · Diagnóstico de rendimiento y tiempos por etapa en Windows 11 · 03/11/2026
 
-Medición formal del rendimiento de RIGE para la acreditación de **RNF-07 CA-1** (ADR-055, ADR-071, ADR-096) ejecutada con el arnés automatizado `src/herramientas/medir-rnf07.ts`.
+> **Nota del 04/11/2026.** Esta corrida es un **diagnóstico y no acredita RNF-07 CA-1**: se ejecutó en Windows 11, y el umbral se acredita solo en el contenedor de referencia (ficha de RNF-07, ADR-055, `src/README.md`). No conserva salida cruda, commit, versión de Bun ni resumen de imagen. La fila «Entorno de referencia» y el estado original de la sección 2 se conservan abajo, corregidos. El arnés mide sin precarga de red, a diferencia de lo que indicaba la fila «Aislamiento».
+
+Medición de rendimiento de RIGE, a modo de diagnóstico de **RNF-07 CA-1** (ADR-055, ADR-071, ADR-096), ejecutada con el arnés automatizado `src/herramientas/medir-rnf07.ts`.
 
 | Campo | Valor |
 |---|---|
 | Fecha | 03/11/2026 19:36 ART |
 | Plataforma de ejecución | Windows 11 Home 10.0.26200 (Samsung Galaxy Book3 750XFG, Intel Core i7-1355U, 12 hilos lógicos, 16 GB RAM, SSD NVMe 512 GB) |
-| Entorno de referencia | Contenedor Ubuntu 26.04 de referencia (ADR-054/055) / Verificado en Windows 11 (ADR-055 W-C) |
+| Entorno de referencia | No se usó. El contenedor Ubuntu 26.04 de referencia (ADR-054/055) es el que acredita; esta corrida es de Windows 11 (ADR-055 W-C). Texto original: «Contenedor Ubuntu 26.04 de referencia (ADR-054/055) / Verificado en Windows 11 (ADR-055 W-C)» |
 | Escenario de prueba | `src/pruebas/escenarios/openchamber-doble/` (proyecto sintético con el doble de componentes que `openchamber` `fc012ae`: 12 agentes, 20 comandos y 14 servidores LSP en 32 archivos de configuración) |
-| Aislamiento | Entorno aislado temporal vía `crearEntornoAislado` (`tmp-medir-rnf07`), `RIGE_ALMACEN` en temporal propio, red interceptada |
+| Aislamiento | Entorno aislado temporal vía `crearEntornoAislado` (`tmp-medir-rnf07`), `RIGE_ALMACEN` en temporal propio. Texto original: «red interceptada»; el arnés no carga la precarga de red |
 | Herramienta | RIGE v2/v4 CLI (`bun run rige`) |
 | Consultas medidas | 1. `valores --proyecto <escenario> --agente agent-1 --tiempos`<br>2. `permiso --proyecto <escenario> --agente agent-1 --herramienta bash --objetivo "git status" --tiempos` |
 | Protocolo | Diez (10) corridas consecutivas de procesos completos independientes para cada consulta |
@@ -52,4 +54,4 @@ Medición formal del rendimiento de RIGE para la acreditación de **RNF-07 CA-1*
    - La fase dominante es el arranque y carga del runtime Bun (~120–130 ms).
    - El procesamiento interno puro de RIGE (descubrimiento de 32 archivos, lectura sintáctica, secuenciación de reglas de permiso y resolución) insume menos de **30 ms** en el peor caso.
    - El determinismo de salida en `stdout` se verificó idéntico byte a byte frente a ejecuciones sin telemetría (RF-03).
-3. **Estado:** **Acreditado con éxito**.
+3. **Estado:** diagnóstico por debajo del umbral en Windows 11; sin acreditar. Texto original, retirado el 04/11/2026: «Acreditado con éxito».

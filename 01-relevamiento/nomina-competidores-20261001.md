@@ -223,6 +223,7 @@ Referencia adicional de demanda, **no de herramienta incluida**:
 
 - **Codex `config/read` — H=1, V=1.** Existe infraestructura concreta de configuración efectiva y procedencia por clave/capa. Agregar posiciones sería una evolución técnicamente plausible, pero no está demostrado en el protocolo publicado consultado. [Protocolo](https://raw.githubusercontent.com/openai/codex/rust-v0.159.3/codex-rs/app-server-protocol/src/protocol/v2/config.rs).
 
+- *Corrección del 04/11/2026: el changelog de la extensión documenta navegación a líneas JSON desde 0.7.0; V=1 es una lectura conservadora, sin efecto sobre la vacancia en H=3.*
 - **Claude Code Config Manager — H=1, V=1.** Ya explica sobrescrituras y detecta relaciones parciales. La navegación a declaraciones lo acerca visualmente al problema de procedencia, pero no acredité cobertura publicada que justifique V=2.
 
 - **agnix — H=0, V=0 en estos ejes.** Tiene análisis y diagnósticos con posiciones, una base útil para desarrollar procedencia. Actualmente esas posiciones pertenecen a hallazgos de validación, no al origen de un valor efectivo o una decisión.

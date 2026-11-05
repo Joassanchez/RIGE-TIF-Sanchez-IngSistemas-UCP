@@ -1,0 +1,1076 @@
+[
+  {
+    "escenario": "openchamber-doble",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "843ea25259e89c683d54bc72669c1a54354d01a851f7dba95e0afee219065671"
+  },
+  {
+    "escenario": "openchamber-doble",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "3a1a1d623e73ffb45ae78bf38ef0919f86c9d604afc61098c146fb0b8e5fe89e"
+  },
+  {
+    "escenario": "openchamber-doble",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "10126773fa6abea48ce01d3fd6d38adbf025918df699cd6445b99ca80105888a"
+  },
+  {
+    "escenario": "openchamber-doble",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "56b8d19870de10c0080c4e42b63c00c55f64e4cbb6527a2f24b124980503ffdb"
+  },
+  {
+    "escenario": "v1-precedencia",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "71881e60704fbc78d616bfb974e0a939be39b13049052af933bd1b0263e06c2d"
+  },
+  {
+    "escenario": "v1-precedencia",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "f31929405807d182f3ead8894449a72edd3148850b4d750f29277a8552217049"
+  },
+  {
+    "escenario": "v1-precedencia",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "7cc3d0f41b3065b03db2ec398837cac500f7a9880b36d87e11dd0093c83df689"
+  },
+  {
+    "escenario": "v1-precedencia",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "34639484f605ae99857b241ece0fc9161d846831884aa1318cfcde88766ac6c4"
+  },
+  {
+    "escenario": "v1-vias",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "533279bcb42eb584a463b6795358332498f497ae2be242c9df3a3ce231ea17c8"
+  },
+  {
+    "escenario": "v1-vias",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "51f9b6b4867ba67d229408d374d56c14c31988e818ff9ef20603102cbe38ba76"
+  },
+  {
+    "escenario": "v1-vias",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "60422a3025b3b418d83bddb197b4b23a0bd10a350e4feaa91ce1aab547ca085a"
+  },
+  {
+    "escenario": "v1-vias",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "82ca32969fb6e67e6fe461b948ab2fb20f6add4948b466b02574d676895d4cd1"
+  },
+  {
+    "escenario": "v2-agentes",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "11b469ab883b312d5be34b5ba020652eb35dc3e923d1a02febe45dee52050a26"
+  },
+  {
+    "escenario": "v2-agentes",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "9111a0a4df40a1af7592ad1c11a5d058b2f8d06d8d278d1805077f2197e39676"
+  },
+  {
+    "escenario": "v2-agentes",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "a5bc432e38116ad6bc8b377de542119eca8326eb044799a9f5ea10a7ba3d6f5d"
+  },
+  {
+    "escenario": "v2-agentes",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "bdd9c6f37eb48dc339e97a868a4b1f0fdd42324dc69f17975c1a63994ac452a0"
+  },
+  {
+    "escenario": "v2-bash",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "438a1f9901ef0891cf1218303b2f043b33541e98bd1e4b0b1eada97931baea0b"
+  },
+  {
+    "escenario": "v2-bash",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "c73a8872fe51ec5c64e70d0e05a46926110817d1e4c9c430b9868e64e5735c15"
+  },
+  {
+    "escenario": "v2-bash",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "7b5f87d7458e282cb80e370c67c571692c7765a0d2bc979ee287da0a6b2aa465"
+  },
+  {
+    "escenario": "v2-bash",
+    "subcomando": "permiso:bash-0",
+    "codigo": 0,
+    "sha256": "509213a594aff3e7090364a9c201dd83f4841bfb86935423ce95fe43372dcfd5"
+  },
+  {
+    "escenario": "v2-bash",
+    "subcomando": "permiso:bash-1",
+    "codigo": 0,
+    "sha256": "2a09748a08c36823811bf34fa4a94d6b9a72fbd3f4d1d9091d86f72004282954"
+  },
+  {
+    "escenario": "v2-bash",
+    "subcomando": "permiso:bash-2",
+    "codigo": 0,
+    "sha256": "3aff770df5b297d74c4136fe87e6b1dffb6978e0c8dc3f030206b629b877d02f"
+  },
+  {
+    "escenario": "v2-bash",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "5d43b89b884edbf64229e4859fd771430a8b40a64ec98a733838b65b513695ab"
+  },
+  {
+    "escenario": "v2-cadena",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "0a3aeb77d9a524ee648fe609c4603371bb14759b598e85dc0d124f1a51f5ac51"
+  },
+  {
+    "escenario": "v2-cadena",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "19122f302bdb49184782ae2f43df5864094ea3ca2da15d02a7597c99c15875e2"
+  },
+  {
+    "escenario": "v2-cadena",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "8e8511e81c3a98ac73a39c248e5d83cb93d8239947901aa6d1ed4ce3a9ef6a38"
+  },
+  {
+    "escenario": "v2-cadena",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "f3ef5179417e2bd4e86bbcd54d1f352bb60a8230bdc81196a04de5f5aca680fa"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "896bf44d2153aa5fc3da802582a88bf0cb911c74d1f0ded8b1d4ae0934fd656f"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "7df788bb3d1fbd77490f85c7b0fb72290e9b2e13f8479a147db84896269f733b"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "cb28a3d24ff2eec7d4169469fd3f76415951f28c0e834837a3cabb8ed11d79b0"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "permiso:q0-read-.env",
+    "codigo": 0,
+    "sha256": "0ed7f486cbe7cd96e3a249e04a220e352f8a42f7282a48a0f7f902f1f1e92b19"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "permiso:q1-edit-src/a.js",
+    "codigo": 0,
+    "sha256": "0c11f2c4c47caeb5e3f08ee05da92b1db9eaef1d6bc0832041ced12ea2f10748"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "permiso:q2-bash-git status",
+    "codigo": 0,
+    "sha256": "64ff2d4e8ec4daf97162ac90bae7695fceaa42abf6953605d223aa0cfd6f28fd"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "permiso:q3-read-.env.local",
+    "codigo": 0,
+    "sha256": "ae220cc003d3e88619dac86d03865fb815e1ed61908caf426ebd4b91de80300c"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "permiso:q4-read-.env.example",
+    "codigo": 0,
+    "sha256": "09df8f85b31e3a4a85335d0bee2c4fb8ba9a58ebc79b447f3a52a805591d53da"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "permiso:q5-task-a",
+    "codigo": 0,
+    "sha256": "7a58c3371bf9ccc19c736a49bb13b81cea34400580c8bd563ea5a0693f6812a5"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "permiso:q6-edit-.opencode/plans/x.md",
+    "codigo": 0,
+    "sha256": "9dfc9f4584e01ca42a41ee6967644814acf03fd58a47d7bd431bc97644d6d9f4"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "permiso:q7-question-a",
+    "codigo": 0,
+    "sha256": "4696d5388b7e4569517c3cdba83a6a3c42fb6d07f6b9de8027731f21f93cf8bf"
+  },
+  {
+    "escenario": "v2-decision",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "ffb99fd3ba4d15db35601074134489473ddeab5bd9176eb149da7857e4ffdfe9"
+  },
+  {
+    "escenario": "v2-fusion-permisos",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "f360ffcb388156bc11564183041963007c90d00207f9bd12591ad1a3f266a3fd"
+  },
+  {
+    "escenario": "v2-fusion-permisos",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "c6e17e35c3ade0bad760040a7de760103bcc2e1ff66a3097f4ee9cb24f62c2c8"
+  },
+  {
+    "escenario": "v2-fusion-permisos",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "2a80c18640f57a240815bb9eadbab1a7c1f9e0335a37cb6a8b3479129285e8f3"
+  },
+  {
+    "escenario": "v2-fusion-permisos",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "843fbe601287ab1bdfa36d39d6d3a882477c619dfb97c7c12cf4daf90f1ad572"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "1aee6df2586d7174e5ad99c866037fd922d05b3eee6cc7bcabc7344c136cc09a"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "4e45c47f061edb85463720b5d59860a05e5c84475ece9fa1caed60e1f183935c"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "6fdc1b79e88eed9a19e29efcbea91a0c849c114bb26788274639016020d1a78e"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q0-read-src/productos.js",
+    "codigo": 0,
+    "sha256": "51cb5653017588fb9255fe4be4011cdf3c18d9181aab576426903e5779708fd1"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q1-read-src/productos.js",
+    "codigo": 0,
+    "sha256": "7a26b9a1f2e6aaf62cab7a70986dc264ce5132b7cfd2a18e054464fcdf93d87a"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q2-apply_patch-src/index.js",
+    "codigo": 0,
+    "sha256": "9a3f168fa3b60d4abf1de842855aa893c4fd66ea97c70be7db7f560d30210039"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q2-edit-src/index.js",
+    "codigo": 0,
+    "sha256": "85d0b8906d921d97e097a7510cc2f7c29667aa540df967b04fadb9f529a2fca8"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q2-write-src/index.js",
+    "codigo": 0,
+    "sha256": "9d99c07effb07fb8051a04d48a00b0453d882923bc6e94ac45349583930696ec"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q3-apply_patch-src/index.js",
+    "codigo": 0,
+    "sha256": "7da13e29304d09fe85be6fd93eca1fe10e1c9ed379f19477679350b793b513d4"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q3-edit-src/index.js",
+    "codigo": 0,
+    "sha256": "18e89316f231fbe95401e8ea24f6da56205b6bc36fe2e11e593bc6bb5f237096"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q3-write-src/index.js",
+    "codigo": 0,
+    "sha256": "889e16a3614810045b0ef8e98ef9d0e66ac5488bcf71b366cce68481d4784d8b"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q4-read-src/productos.js",
+    "codigo": 0,
+    "sha256": "673c84bf7d050017c939e31ada3c978ff5374a7f84845221594f0046575e34ab"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q5-read-src/productos.js",
+    "codigo": 0,
+    "sha256": "477fc72e12b6e96d01cb3040ef1787af996a7268ffda9a9c11791fafa8095f98"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "permiso:q6-read-../fuera.txt",
+    "codigo": 0,
+    "sha256": "75ed68240eaa7c21288744df0ed713a3961899ffa521267d1380b24d2b0cd47a"
+  },
+  {
+    "escenario": "v2-ruta-bloqueo",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "0de2f44c696f3d79bef347ac64742e816bad9d1699ac45e3072642a74d4364f0"
+  },
+  {
+    "escenario": "v2-ruta-env",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "797aed886067dbeaa05b4345ba86eb0e503de33c29cba2443b84ed6e0735df2a"
+  },
+  {
+    "escenario": "v2-ruta-env",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "728f78fb581d1b7cd7c81c3d8e7b485e7fccd6faf9324d6e71547736d723dc4a"
+  },
+  {
+    "escenario": "v2-ruta-env",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "3f226ddbe8d204eb57dd74efd6d8d437d06ba92e8349a60cc6d40b109fe29645"
+  },
+  {
+    "escenario": "v2-ruta-env",
+    "subcomando": "permiso:q0-read-.env",
+    "codigo": 0,
+    "sha256": "73fec248d1c334e78476a6c2d176dfc97eb60bedb68e95fde52074cdcb2e1d70"
+  },
+  {
+    "escenario": "v2-ruta-env",
+    "subcomando": "permiso:q1-read-.env",
+    "codigo": 0,
+    "sha256": "443b7a6656761928d77e1290fd35341e499122f16602ab5b52e8f4a7919ee2d0"
+  },
+  {
+    "escenario": "v2-ruta-env",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "9de43a022c89662dc38d176675acc5fbf13886232884c38b3c6e7e6df91cc479"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "f960c83bd27adf8e0946af25f21ba1256af86750caf486c8aa46dec2faca5a6a"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "d7bed0d060cf52113b6cc02e0d3af353d3e2a58d40ec9659f1a8323f0e5c841c"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "bd7cd3b283c8ab0687386b5e138eb2ff7fab6e2a9de26bee4c6e7a79b76b94b8"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:control_g-config/credenciales.json",
+    "codigo": 0,
+    "sha256": "03cd8e5db1c2cdb14da91b04706a6458184c855d0767f2f4a11c1a97cab960bd"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:control_g-leeme",
+    "codigo": 0,
+    "sha256": "0b4bd82f430b742dfebdd4ae7a30feb79788fb295f1ecb89beeb30ab087a6c60"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:control_g-privado",
+    "codigo": 0,
+    "sha256": "413362f9184b3999ec7bae139c73677777534b217c02307199639417b99770ee"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:control_g-read-config/credenciales.json",
+    "codigo": 0,
+    "sha256": "03cd8e5db1c2cdb14da91b04706a6458184c855d0767f2f4a11c1a97cab960bd"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:control_g-read-privado",
+    "codigo": 0,
+    "sha256": "413362f9184b3999ec7bae139c73677777534b217c02307199639417b99770ee"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:control_g-read-privado/LEEME.txt",
+    "codigo": 0,
+    "sha256": "9a1ced9479112264a992db725a05f661378ea5d4496e672492621dd0070060da"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:g-leeme",
+    "codigo": 0,
+    "sha256": "e2511925ab7fcfc5c7f57ccb201c54d5917bcec7308fa0190bfd85fe0b450a52"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:g-read-privado/LEEME.txt",
+    "codigo": 0,
+    "sha256": "cd5c1063619460af34fd78d92a9bce598556d787cce858c9b60b07d7d4904d9d"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:h-leeme",
+    "codigo": 0,
+    "sha256": "2df432da03afb73977dc5e78f8995877d391007276a4ca52a6785966c90b97e8"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:h-read-privado/LEEME.txt",
+    "codigo": 0,
+    "sha256": "3a6289256b306a935a012c91f702e571a59a1df3f8c65ef79e809e98ddc53f7b"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:q0-read-config/credenciales.json",
+    "codigo": 0,
+    "sha256": "23352448ab306d9083600d153ef88256bc0f76b4d17bd23dec056ef19f96a868"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:q0-read-privado",
+    "codigo": 0,
+    "sha256": "e83a98fb59776f5d7603cbb21cb55b3f541e7c752cbafcfc33ca76ea27a436cb"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:q1-read-config/credenciales.json",
+    "codigo": 0,
+    "sha256": "79f5f1d37a99973373cc0e878ecd4e9cde8b74665fcd9cf8e92766b02484245b"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "permiso:q2-read-privado",
+    "codigo": 0,
+    "sha256": "865c09818869303bb3a325f195eccf14e293522264151f4b20eb8ee6933534b6"
+  },
+  {
+    "escenario": "v2-ruta-exposicion",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "82f6eb3b4d011e7847ce590491d36e5932989f4ee9e74bb444180ebf8137ad45"
+  },
+  {
+    "escenario": "v2-subagente",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "56d944e6f281dad1f5e42fbf290e7c65df8d7c67a735552da27ba34749f6146c"
+  },
+  {
+    "escenario": "v2-subagente",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "4ff797e5dd0d485007fa3ec273da1c70a44b4512e33d98057cf3421b0605764f"
+  },
+  {
+    "escenario": "v2-subagente",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "a9fcf802fefc916f6cfa18053a7e719c4ac44e6e586996094e8d464c00d0632f"
+  },
+  {
+    "escenario": "v2-subagente",
+    "subcomando": "permiso:q0-bash-git status",
+    "codigo": 0,
+    "sha256": "39939d0d0cd21881e7beeffaa10dd0a722b9e5fa976402ca0552add4e65052ab"
+  },
+  {
+    "escenario": "v2-subagente",
+    "subcomando": "permiso:q1-task-general",
+    "codigo": 0,
+    "sha256": "fe20c2d80888de42427d00af9b46bd9a5b72c27c837a7454424bee878ff6c0f6"
+  },
+  {
+    "escenario": "v2-subagente",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "b6b34b8d7586cf3e315172654d88897d24c7b6867d43848aa76429f6379803c9"
+  },
+  {
+    "escenario": "v2-subagente-comodin",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "2600954a251e5c69da794d4cd2f31c38da1adb0e146051553546d027b95b63e9"
+  },
+  {
+    "escenario": "v2-subagente-comodin",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "f161a0b8bb036603971a1349a96dd9779d61fbaa2e453aed64ded92fa9523126"
+  },
+  {
+    "escenario": "v2-subagente-comodin",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "2befcd167f9b83ea4367594b16234f4ac0617437fe9ca40602915df66cf191e8"
+  },
+  {
+    "escenario": "v2-subagente-comodin",
+    "subcomando": "permiso:c-task",
+    "codigo": 0,
+    "sha256": "3f1a3cd92f0d14531bae4de337594f2424395a514bcc8e68b2d61f84687cd564"
+  },
+  {
+    "escenario": "v2-subagente-comodin",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "cbb34c8a4adaa56ba14a74862d5daca04b235266deb55c42031e1a63217e5a70"
+  },
+  {
+    "escenario": "v2-subagente-task",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "57c492a19630cd24465cf8d5812489133dd6340bf85d7c732c62b78f5cde9ad8"
+  },
+  {
+    "escenario": "v2-subagente-task",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "c94ff935420b0c799a080c6ad40cae08f764ed01679879a46282aabfb0fabc5f"
+  },
+  {
+    "escenario": "v2-subagente-task",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "1f3a7d880d81e55d25ea3f6270b533d83a585d1d244e9c1d68b9eef75e80454b"
+  },
+  {
+    "escenario": "v2-subagente-task",
+    "subcomando": "permiso:d-task",
+    "codigo": 0,
+    "sha256": "e077a90b685057cd5b04e034cf9f36bd6bc3320329d0387e5abab4451471c175"
+  },
+  {
+    "escenario": "v2-subagente-task",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "f353080fe7094ea0068d7c9e1d4fa23384e00d566abb4e0400b3bd2f3b59de75"
+  },
+  {
+    "escenario": "v2-worktree-dir-invalido-anidado",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "4255a44d957323e2138685de7c734020c69f90f2d4cfce88755cf3200487162a"
+  },
+  {
+    "escenario": "v2-worktree-dir-invalido-anidado",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "7b8b1f998c4f72bf48ff40c2f588da2bcd2271305ae01b2fde8c4582beb0fff6"
+  },
+  {
+    "escenario": "v2-worktree-dir-invalido-anidado",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "6861fefc3359c34cab23b5124ff924be56e2afb5d3570e000292cfd772a4d423"
+  },
+  {
+    "escenario": "v2-worktree-dir-invalido-anidado",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "0bda07b4b17a0ac24580d1f84c9a1a051d114235befc622aaf098153bfb7ba08"
+  },
+  {
+    "escenario": "v2-worktree-gitfile-roto",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "4255a44d957323e2138685de7c734020c69f90f2d4cfce88755cf3200487162a"
+  },
+  {
+    "escenario": "v2-worktree-gitfile-roto",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "7b8b1f998c4f72bf48ff40c2f588da2bcd2271305ae01b2fde8c4582beb0fff6"
+  },
+  {
+    "escenario": "v2-worktree-gitfile-roto",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "6861fefc3359c34cab23b5124ff924be56e2afb5d3570e000292cfd772a4d423"
+  },
+  {
+    "escenario": "v2-worktree-gitfile-roto",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "0bda07b4b17a0ac24580d1f84c9a1a051d114235befc622aaf098153bfb7ba08"
+  },
+  {
+    "escenario": "v2-worktree-sin-vcs",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "367ca6472510ea515f97f9add77949fc31e339afde0c2b37c229788403604161"
+  },
+  {
+    "escenario": "v2-worktree-sin-vcs",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "3b52b4cf0747b765f9dfd54e040d7919ef3ee3e986a722b54b97466b4cde17aa"
+  },
+  {
+    "escenario": "v2-worktree-sin-vcs",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "153e5984da1f3123691b2898cc6adaa41884eeb6c542c957dbdfe7ea77f72d0b"
+  },
+  {
+    "escenario": "v2-worktree-sin-vcs",
+    "subcomando": "permiso:q0-read-src/a.js",
+    "codigo": 0,
+    "sha256": "5e15da330d3fb78d814f56fc04867cbdcccf39abc8ec162f96ef30749e4ac649"
+  },
+  {
+    "escenario": "v2-worktree-sin-vcs",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "41ab36b6d0ae2dfc620cc3f6021b4802b847b46973207480ee3ebf81febe9c3c"
+  },
+  {
+    "escenario": "v2-worktree-sintetico",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "54c82c1e7507dca0a205111ce69080c0e7f84cc8c8151ceee24bba4d2f2f4c6b"
+  },
+  {
+    "escenario": "v2-worktree-sintetico",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "5e3781f9439b4ae0f44f2de65ffafff20335019d85d1190e9b404ba7d886760a"
+  },
+  {
+    "escenario": "v2-worktree-sintetico",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "9447abd57d371669dd8dd55b9460d5baba251abb53a2161c87ede89c57e11b8d"
+  },
+  {
+    "escenario": "v2-worktree-sintetico",
+    "subcomando": "permiso:q0-read-src/a.js",
+    "codigo": 0,
+    "sha256": "c96692f5b458af2eb40488cbdc3cbe2f772f7d0f0ae2fae603676a86cf6c02c3"
+  },
+  {
+    "escenario": "v2-worktree-sintetico",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "aad9cc000c4e79b26e76829d1ab53ffb5360fd20e8125be9a93945a65aac247b"
+  },
+  {
+    "escenario": "v2-worktree-valido",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "9a54d5ae19595e2e5a96b4193178c54e265faec42fc9617fe37e0f8ecf5e71fa"
+  },
+  {
+    "escenario": "v2-worktree-valido",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "dcc11adf6760fe4f133d4da8c71af1a953676e1a3caa24137e4cb53a1023b138"
+  },
+  {
+    "escenario": "v2-worktree-valido",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "25ffab8ae08c0e6ead0c81b17cd38730fd31b4959f7e63addb6d15306f84f4e6"
+  },
+  {
+    "escenario": "v2-worktree-valido",
+    "subcomando": "permiso:q0-read-src/a.js",
+    "codigo": 0,
+    "sha256": "1b1a475e90522cabe9593529a03d84d05e2aab8726b1ad6453d5a9c969e45c77"
+  },
+  {
+    "escenario": "v2-worktree-valido",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "7054cef14de920d2c8627a9787b3f3dc15a01c86f85851cc7da8d2072e37f734"
+  },
+  {
+    "escenario": "v3-control-permiso",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "1c2da0fb728877bce4ab70eb17eed0d5a7972bcc7be0eccb8531a17e1ae90103"
+  },
+  {
+    "escenario": "v3-control-permiso",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "5ce3619a4fa0590451d0187e32e667667cb40acee977ffd12ed1e4274351d46c"
+  },
+  {
+    "escenario": "v3-control-permiso",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "9ee84a891136ba72a11ccb3468e8d586f17609f27d79b005a32984abaa66c9b7"
+  },
+  {
+    "escenario": "v3-control-permiso",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "24082d98d0a7432ac71f0da6edf00384c61f63473587fa1ce5e65570c16b9e36"
+  },
+  {
+    "escenario": "v3-control-referencias",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "60bb2b182cf1ff5825a2543baaf674860655570e685ffef5c312ef595147bdb1"
+  },
+  {
+    "escenario": "v3-control-referencias",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "75ca9dc17aae8efeaf12cd213ce2a1c19c4d21161fac8998897d7de248a4c734"
+  },
+  {
+    "escenario": "v3-control-referencias",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "d4a143c2b26218c03e0b0d09077bfe6576eab58479c60c00c4ec513476aac169"
+  },
+  {
+    "escenario": "v3-control-referencias",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "d37698e11c2764a8a81f3b70a1f943df8c9568cab00f24f09aab82b0cb2f939c"
+  },
+  {
+    "escenario": "v3-control-sin-efecto",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "4bfaaf4e5f1de8ba42403826af0463866d735bd4e073dbc76a4c690ea9027aa8"
+  },
+  {
+    "escenario": "v3-control-sin-efecto",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "133b6d48f22df4e22060b4adab34ba9993b3151270b5b5c376430387bf9b165c"
+  },
+  {
+    "escenario": "v3-control-sin-efecto",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "2676d7e4d1ff754263decbf5146377c5003507ac9f79fa137f17e226ad1b1624"
+  },
+  {
+    "escenario": "v3-control-sin-efecto",
+    "subcomando": "permiso:read-a",
+    "codigo": 0,
+    "sha256": "0282c96796fb8be7e6583e0dbd38dcd811058f53fd870736af081c4d10f4e7a8"
+  },
+  {
+    "escenario": "v3-control-sin-efecto",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "6f18f8695eb28d4c154bd974f1ffef41d7e3447b2897c0818e376d51df2c9036"
+  },
+  {
+    "escenario": "v3-control-sin-uso",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "111dd09fc97db08246352a5fea0d74317610050b4a9aa21cc6eacde7064e25cb"
+  },
+  {
+    "escenario": "v3-control-sin-uso",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "cd1849ba23aa479b27ce0da0f147436b63190cf47052a49302dae1595ff08b23"
+  },
+  {
+    "escenario": "v3-control-sin-uso",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "2ab400ae2ed014e673424d8cf12f03f045273f4c1e860a98bd5aaa98213e17b0"
+  },
+  {
+    "escenario": "v3-control-sin-uso",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "16e57e7f51d2779510aec4d1c06bd8fea0cb4a75bdccb5117a4b1970467e2706"
+  },
+  {
+    "escenario": "v3-control-sustituciones",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "d7cafedc1d462d688adac2898094b497cafb3979ce30c3d325a79dcfdcd2c171"
+  },
+  {
+    "escenario": "v3-control-sustituciones",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "613dea1e20ed6beea3bfeac502e4f3b0f3257b2d0e6b137005264b73772b87c2"
+  },
+  {
+    "escenario": "v3-control-sustituciones",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "2df16650e9ac29219420e12d9f5c75106d7537aa1bf7dd8c225e99684bfae5c6"
+  },
+  {
+    "escenario": "v3-control-sustituciones",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "3ba01d4a2c7d1297ae484b62ac203c591f2e4e074c15f66c0cf522663be7d16c"
+  },
+  {
+    "escenario": "v3-entradas",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "73c689a3a66384c41c13eae92e2904b50518936f3f1f8df339d8c9722e830ba6"
+  },
+  {
+    "escenario": "v3-entradas",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "3d06d3ba69a4709019b90ee5b854a9354bfecd5dd8a1e5f306e387f3de5ce8e4"
+  },
+  {
+    "escenario": "v3-entradas",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "222c143169ec832823586b046385ea739ac287a4d09bf71e384a2b0026b61917"
+  },
+  {
+    "escenario": "v3-entradas",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "c9fe33a58931ac9c952ac2348ed36052f638d11b2fc55bc04933b334a556f81a"
+  },
+  {
+    "escenario": "v3-entradas-ilegible",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "3def4b063912f6cbbc28e220e4dad84fc1f778b9729a04014347944bc8a4fafa"
+  },
+  {
+    "escenario": "v3-entradas-ilegible",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "577a45770c499e01230834ba9b5f02b302d3a3cba5281c4e261e2d8f79b37fb5"
+  },
+  {
+    "escenario": "v3-herramientas",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "0779977cb6b375a58b262b25a4b23cfcaf1a2df93b1c7313f7e541a717d0d0e8"
+  },
+  {
+    "escenario": "v3-herramientas",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "9b39d97fd7e39a9098adc553dc27acde69c31fa234e4eb5e6a97f5de9e69426e"
+  },
+  {
+    "escenario": "v3-herramientas",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "89d3577cd881f8a28e03eb8f33f0b7268e78635684a60d4e1a0936e9ccbcb16c"
+  },
+  {
+    "escenario": "v3-herramientas",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "72c2b5fb254a2b2323fd665a6f68be17f298ca48af32ed8875aff80178836227"
+  },
+  {
+    "escenario": "v3-permiso-invalido",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "57291f40efaee3e5ba23a71da118840c895417c67c3f6b54942ee91532659d00"
+  },
+  {
+    "escenario": "v3-permiso-invalido",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "8f754cc31cfb282ae9bbd53efbbf8377c66f8387841e40a6e78f2c91ff450360"
+  },
+  {
+    "escenario": "v3-permiso-invalido",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "7a55db146692b5ee6042bc1373fb7b1155dccfe14c2b85c4f55eac45fc3dc3fa"
+  },
+  {
+    "escenario": "v3-permiso-invalido",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "e7c7d1a531821a3c30ef6dc72118e2e8ca8fe4b224a4c9f57c5e7f33a198d8b4"
+  },
+  {
+    "escenario": "v3-proteccion-env",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "b2dfd32e643f34e65288b279dcf715e625cf3256ea4b455c0c0e32745840160c"
+  },
+  {
+    "escenario": "v3-proteccion-env",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "cb4b1cb2181ebc9b91578cbd511779d454d2cd5ab133b10f676c99a44bedcbdc"
+  },
+  {
+    "escenario": "v3-proteccion-env",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "43ad52de03c18c732aa123e47609eb1d5041f6bead78322215548c977afe604a"
+  },
+  {
+    "escenario": "v3-proteccion-env",
+    "subcomando": "permiso:q0-read-.env",
+    "codigo": 0,
+    "sha256": "87008429dbf0b40a807d440807ec1aef8cefc7d9bdafa2131c0a5e6128945f5d"
+  },
+  {
+    "escenario": "v3-proteccion-env",
+    "subcomando": "permiso:q1-read-.env.example",
+    "codigo": 0,
+    "sha256": "61cae78f364ef3a00e2fdb4a941842a5ec1ac1a34a81ceedb3a8a338fd04f2cb"
+  },
+  {
+    "escenario": "v3-proteccion-env",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "3305d9242fa6def62a55d03d1b680b12996ce9169f3822397d6ce0aa777ecec4"
+  },
+  {
+    "escenario": "v3-referencias",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "dd61747031b6d158b95096df550d437c9bcf9c0d200432ff04020b3f96889068"
+  },
+  {
+    "escenario": "v3-referencias",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "fefa52273e85c1a6a88838b5366cc6ec5493bad51c1104ecf5485023bc6aaf6f"
+  },
+  {
+    "escenario": "v3-referencias",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "9321c4ce2a396be07cf3ea034b37066a185fe3632093f17c4e5775149a17e6fc"
+  },
+  {
+    "escenario": "v3-referencias",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "2ac80bcdd1cfddd85fc21d9ff848ec1b8b348da85b7847918e2769a84840f08c"
+  },
+  {
+    "escenario": "v3-sin-efecto",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "e6f5e2730ec5ebd9e876caa72016919b5233f101f1e9d068546fe04b6e9c9ef0"
+  },
+  {
+    "escenario": "v3-sin-efecto",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "5cffdbc34324417bb67be3214917cb0d84f4a7a44fe0220bfd05b038cab5b941"
+  },
+  {
+    "escenario": "v3-sin-efecto",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "9f0e800f3ebe14d79a204ca933ce5323e04ade57b871e56e6721b918adf51434"
+  },
+  {
+    "escenario": "v3-sin-efecto",
+    "subcomando": "permiso:read-a",
+    "codigo": 0,
+    "sha256": "a5052de3f2ef865d0faaa3d65780b309301e5ca0d82d99598ba8253dd0ef4d52"
+  },
+  {
+    "escenario": "v3-sin-efecto",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "9f60df7fd4e52c26a3d5ad36727e0af02dca1093bf2ba87d9d57d7968c87bcad"
+  },
+  {
+    "escenario": "v3-sin-uso",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "349499c3fb1f136949dbe3022289bde3514b8eca15255c14e6e777889e68dac2"
+  },
+  {
+    "escenario": "v3-sin-uso",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "f4b55b52e95a065414c519b4eb73f4c23a43f9b27e0632f869a8482ef1e0fd8a"
+  },
+  {
+    "escenario": "v3-sin-uso",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "7b133d489e5c1c78d3d96550315d133aa0918a9f9bf64d66b6f96e3ca6001f0d"
+  },
+  {
+    "escenario": "v3-sin-uso",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "fe18101b603b228aa1e6e459a1ccd378882d7ad7263697dbfa955c06ca538843"
+  },
+  {
+    "escenario": "v3-sustituciones",
+    "subcomando": "agentes",
+    "codigo": 0,
+    "sha256": "b2c6fb09bd3089a5ab6fc8fef9a5ca778d5e0339224ddc08e2aa557cf305f016"
+  },
+  {
+    "escenario": "v3-sustituciones",
+    "subcomando": "entradas",
+    "codigo": 0,
+    "sha256": "2978498b473df5670388aa1df70facd77ead98bbd223eecd965de651886c5aa6"
+  },
+  {
+    "escenario": "v3-sustituciones",
+    "subcomando": "hallazgos",
+    "codigo": 0,
+    "sha256": "fbb4531ba8b9ae48677f9fb5979eac5202d5fa4f6e4b61e1533a8f0003f6c30d"
+  },
+  {
+    "escenario": "v3-sustituciones",
+    "subcomando": "valores",
+    "codigo": 0,
+    "sha256": "d9413dd22f288f1a1a11fc040c96580a5cb5f2846e6477b2a1a54611885c1ac5"
+  }
+]

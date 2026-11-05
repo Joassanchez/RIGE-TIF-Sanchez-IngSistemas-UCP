@@ -1,0 +1,23 @@
+inicio: 04/11/2026 16:59:45 -0300
+0df6cb7a8a3a740b76d987c60d06cc9e334cbc48
+imagen nativo: sha256:a691196f0e3e7430ff52b90c09f1af7fbb22db1f7aa2c72a7a150e9c462f884c
+docker: NCPU=12 MemTotal=8160690176 version=29.9.2
+##### serie 1
+agent list: codigo 0
+validez build: codigo 0
+build (ms): 1299[0] 1352[0] 1285[0] 1233[0] 1294[0] 1341[0] 1294[0] 1362[0] 1508[0] 1438[0]
+validez agent-1: codigo 0
+agent-1 (ms): 1378[0] 1315[0] 1411[0] 1344[0] 1351[0] 1341[0] 1348[0] 1354[0] 1349[0] 1469[0]
+##### serie 2
+agent list: codigo 0
+validez build: codigo 0
+build (ms): 1286[0] 1271[0] 1311[0] 1353[0] 1299[0] 1325[0] 1402[0] 1270[0] 1376[0] 1395[0]
+validez agent-1: codigo 0
+agent-1 (ms): 1365[0] 1334[0] 1406[0] 1315[0] 1375[0] 1359[0] 1396[0] 1421[0] 1337[0] 1340[0]
+##### serie 3
+agent list: codigo 0
+validez build: codigo 0
+build (ms): 1293[0] 1456[0] 1338[0] 1338[0] 1319[0] 1314[0] 1320[0] 1395[0] 1325[0] 1303[0]
+validez agent-1: codigo 0
+agent-1 (ms): 1288[0] 1290[0] 1351[0] 1265[0] 1317[0] 1314[0] 1334[0] 1342[0] 1248[0] 1295[0]
+fin: 04/11/2026 17:01:20 -0300

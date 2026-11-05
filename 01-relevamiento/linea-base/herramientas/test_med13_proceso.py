@@ -1,6 +1,7 @@
 """MED-13: verificación observada y costo anidado por estrato."""
 import json
 from pathlib import Path
+import shlex
 import unittest
 
 from analizar_ecologica import por_estrato, tabla, markdown_med9
@@ -11,6 +12,96 @@ from unir import unir
 
 
 class ProcesoAnidadoTests(unittest.TestCase):
+    def test_MED_18b_debug_agent_tool_ejecuta_y_registra_objetivos(self):
+        parametros = '{"filePath":"src/productos.js"}'
+        argv = ['opencode', 'debug', 'agent', 'build', '--tool', 'read', '--params', parametros]
+        comandos = [shlex.join(argv), shlex.join(argv).replace('--tool read', '--tool=read'),
+                    r'''como-dev 'python3 -c "import subprocess; subprocess.check_output([\"opencode\",\"debug\",\"agent\",\"build\",\"--tool\",\"read\",\"--params\",\"src/productos.js\"])"' ''',
+                    shlex.join(['como-dev', shlex.join(argv)]),
+                    shlex.join(['bash', '-c', shlex.join(argv) + ' | cat']),
+                    shlex.join(['python3', '-c', 'import subprocess; subprocess.check_output(' + repr(argv) + ')']),
+                    shlex.join(['node', '-e', 'require("child_process").execFileSync("opencode", ' + json.dumps(argv[1:]) + ')'])]
+        regla = dict(objetivo=['build', 'read', 'src/productos.js', 'allow'],
+                     objetivos_adicionales=[['build', 'read', 'otro.js', 'deny']])
+        for cmd in comandos:
+            with self.subTest(cmd=cmd):
+                r = clasificar_proceso(dict(herramientas=[dict(herramienta='bash',
+                    argumentos=dict(command=cmd), estado='completed')]), regla)
+                self.assertEqual(r['verificacion_final'], 'comportamiento')
+                self.assertEqual(len(r['acciones_probadas']), 1)
+                self.assertEqual(r['acciones_probadas'][0]['objetivos_identificados'],
+                                 [['build', 'read', 'src/productos.js']])
+
+    def test_MED_18b_tool_respeta_estado_y_ultima_edicion(self):
+        editar = dict(herramienta='edit', argumentos=dict(filePath='opencode.json'), estado='completed')
+        verificar = dict(herramienta='bash', estado='completed', callID='debug',
+                         argumentos=dict(command='opencode debug agent build --tool read > /tmp/salida'))
+        r = clasificar_proceso(dict(herramientas=[editar, dict(verificar, estado='running'), verificar]), {})
+        self.assertEqual(r['verificacion_final'], 'comportamiento')
+        self.assertEqual(len(r['acciones_probadas']), 1)
+        self.assertEqual(r['acciones_probadas'][0]['indice'], 2)
+        self.assertEqual(r['acciones_probadas'][0]['objetivos_identificados'], [])
+        r = clasificar_proceso(dict(herramientas=[verificar, editar]), {})
+        self.assertEqual(r['verificacion_final'], 'ninguna')
+        self.assertEqual(r['acciones_probadas'], [])
+        r = clasificar_proceso(dict(herramientas=[dict(verificar, estado='error')]), {})
+        self.assertEqual(r['acciones_probadas'], [])
+
+    def test_MED_18b_tool_en_echo_no_es_ejecucion(self):
+        for cmd, esperado in [
+            ('echo "opencode debug agent build --tool read"', 'ninguna'),
+            ("como-dev 'echo opencode debug agent build --tool read'", 'ninguna'),
+            ('opencode debug agent build; echo --tool read', 'declarativa'),
+            ('opencode debug agent build "--params=--tool read"', 'declarativa'),
+            ('opencode debug config --tool read', 'declarativa'),
+            ('opencode debug agent build', 'declarativa'),
+        ]:
+            with self.subTest(cmd=cmd):
+                r = clasificar_proceso(dict(herramientas=[dict(herramienta='bash',
+                    argumentos=dict(command=cmd), estado='completed')]), {})
+                self.assertEqual(r['verificacion_final'], esperado)
+                self.assertEqual(r['acciones_probadas'], [])
+
+    def test_MED_18_debug_en_lista_python_es_declarativa(self):
+        comandos = [shlex.join(['como-dev', shlex.join([ejecutable, '-c' if ejecutable == 'python3' else '-e', codigo])])
+                    for ejecutable, codigo in (
+                        ('python3', 'import subprocess; subprocess.check_output(["opencode","debug","agent","build"]); print("src/productos.js")'),
+                        ('node', 'require("child_process").execFileSync("opencode", ["debug", "agent", "build"]); console.log("src/productos.js")'),
+                    )]
+        comandos.append(
+            r'''como-dev 'python3 -c "import subprocess; subprocess.check_output([\"opencode\",\"debug\",\"agent\",\"build\"]); print(\"src/productos.js\")"' ''',
+        )
+        for cmd in comandos:
+            with self.subTest(cmd=cmd):
+                r = clasificar_proceso(dict(herramientas=[dict(herramienta='bash',
+                    argumentos=dict(command=cmd), estado='completed')]),
+                    dict(objetivo=['build', 'read', 'src/productos.js', 'allow']))
+                self.assertEqual(r['verificacion_final'], 'declarativa')
+                self.assertEqual(r['acciones_probadas'], [])
+
+    def test_MED_18_debug_con_tuberia_es_declarativa(self):
+        cmd = shlex.join(['como-dev', '"opencode" "debug" "agent" build | cat src/productos.js'])
+        r = clasificar_proceso(dict(herramientas=[dict(herramienta='bash',
+            argumentos=dict(command=cmd), estado='completed')]),
+            dict(objetivo=['build', 'read', 'src/productos.js', 'allow']))
+        self.assertEqual(r['verificacion_final'], 'declarativa')
+        self.assertEqual(r['acciones_probadas'], [])
+
+    def test_MED_18_debug_subcomandos_y_prioridad_anidada(self):
+        for cmd in ("opencode debug --help", "como-dev 'opencode debug config'",
+                    "opencode debug agent build | cat", "opencode debug skill",
+                    "opencode debug nuevo"):
+            with self.subTest(cmd=cmd):
+                r = clasificar_proceso(dict(herramientas=[dict(herramienta='bash',
+                    argumentos=dict(command=cmd), estado='completed')]), {})
+                self.assertEqual(r['verificacion_final'], 'declarativa')
+        cmd = '''como-dev 'opencode debug config && opencode run "Leé src/productos.js"' '''
+        r = clasificar_proceso(dict(herramientas=[dict(herramienta='bash',
+            argumentos=dict(command=cmd), estado='completed')]),
+            dict(objetivo=['build', 'read', 'src/productos.js', 'allow']))
+        self.assertEqual(r['verificacion_final'], 'comportamiento')
+        self.assertEqual(len(r['acciones_probadas']), 1)
+
     def test_A_5_run_como_dev_posterior_a_ultima_edicion(self):
         editar = dict(herramienta='edit', argumentos=dict(filePath='opencode.json'), estado='completed')
         verificar = dict(herramienta='bash', argumentos=dict(command='como-dev \'opencode run "Leé src/productos.js"\''), estado='completed')
