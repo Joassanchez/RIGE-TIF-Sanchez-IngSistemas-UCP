@@ -1,7 +1,7 @@
 # ADR-098 — Línea de base consolidada: banco de problemas estratificado, alineado con el alcance de RIGE y con consecuencia por ejecución
 
 - Estado: aceptado (19/10/2026); modificado y aceptado el 20/10/2026 (puntos 2, 3, 6, 9 y 10); modificado el 21 y 22/10/2026 (puntos 2, 5, 6, 8, 9 y 13; Contextos 13 a 21) y consolidado el 22/10/2026; aceptado por el autor el 22/10/2026. Modificado el 22/10/2026 por la tarde (puntos 16 a 18: conjunto reservado, brazo con instrucción de probar y errata), con las recomendaciones del ingeniero aceptadas por el autor en la sesión. **Modificación del 24/10/2026 aceptada por el autor el 24/10/2026** (puntos 19 a 25: ruido en la no regresión, conjunto reservado como no regresión, interpretación del brazo con instrucción, rama de respaldo completa, tasa condicionada, productividad del procedimiento delegado y origen del error por traza)
-- Fecha: 19/10/2026; modificación del 20/10/2026
+- Fecha: 19/10/2026; modificación del 20/10/2026; modificación del 04/11/2026 (puntos 26 a 29, aceptada ese día)
 - **Registro único de la línea de base** (decisión del autor del 20/10/2026): todo cambio en la forma de medir se incorpora aquí, sin ADR nuevos. Absorbe el ex ADR-099 (retirado)
 - **Se decide después de conocer los resultados** de las mediciones del 13 al 15/10/2026 y **antes de ejecutar agentes sobre el banco**. La admisión de los problemas nuevos se hace en el contenedor, solo con OpenCode y sin agente.
 - Capítulos afectados: Cap. I (I.2.3, I.2.4, I.3.1, I.3.2, I.3.4); Cap. II (II.2, II.3, II.6.3); Cap. V (V.2); Anexo VI (A.VI.1, A.VI.2, A.VI.7, A.VI.8); Anexo III (D-41); diseño de la medición
@@ -231,6 +231,30 @@ ADR-076 (medición sobre ChatGPT Plus, valorización del consumo y tarifas conge
 25. **Origen del error, por traza, descriptivo** (misma revisión, [MÉTODO] 3). Agrega una lectura al punto 10. En las ejecuciones que escriben una regla con ruta absoluta, se clasifica qué fuente leyó el agente antes de escribirla: documentación local, skill `customize-opencode`, `webfetch` o ninguna, con la traza ya archivada (Contexto 9). Sirve para responder por qué el agente escribe la ruta absoluta. Es descriptivo y no es criterio.
     - **Condición que la invalida:** que la traza no conserve lo leído o que haya menos de 10 ejecuciones con lectura previa; se declara y no se informa.
 - **Descartado: meta sobre la detección** (hallazgo 32), limitada a los defectos que cubre RF-07 (D2 y el de N-23). Con RIGE indicado, la detección mediría a RF-07 copiando su propia salida (OE-3) y no al procedimiento delegado. ID-1 sigue como condición de no regresión.
+
+### Modificación del 04/11/2026 (aceptada el 04/11/2026)
+
+**Origen:** auditoría de los Caps. I y II con los apuntes de la AE3 (`.trabajo/revisiones/20261104-fase2-cap-01-02.md`, F2-01, F2-04, F2-13 y F2-32). El autor aceptó las recomendaciones del ingeniero en la sesión del 04/11/2026. Se toman **después del dato** y **antes de la medición final**. No cambian la meta ni los conteos de la línea de base.
+
+26. **Corrección del clasificador de la verificación** (F2-01). `herramientas/proceso.py` rotula «comportamiento» dos ejecuciones (M-8:2 de `build` y N-10:3 de Charles) que solo leen `opencode debug agent` desde Python y evalúan esa salida. En las 276 ejecuciones ecológicas no hay `opencode run`, ni sesiones anidadas, ni `acciones_probadas`.
+    - **Alternativas:** A, corregir el clasificador y el informe; B, conservar el dato y anotar el falso positivo; C, dejarlo como está.
+    - **Decisión: A** (ficha MED-18). Toda invocación de `opencode debug`, en cualquier forma, cuenta como declarativa. Valor corregido: 130 declarativas, 8 sin verificación y 0 de comportamiento con `build`; 134, 4 y 0 con Charles. La corrección favorece la tesis y se declara como posterior al dato. La medición final usa el clasificador corregido.
+27. **Regla de veredicto** (F2-04). Hasta ahora, «ejecución completa» bastaba como indicador del OE-4 y no se decía qué concluir si la salvaguarda se excede o si la meta no se alcanza con cobertura suficiente.
+    - **Alternativas:** A, tabla cerrada de resultado a veredicto y OE-4 falsable; B, describir cada caso en prosa; C, dejarlo como está.
+    - **Decisión: A.** La rama de respaldo y la tolerancia del punto 19 se conservan.
+
+    | Resultado de la medición final | Veredicto |
+    |---|---|
+    | Se cumplen la meta, la no regresión y la salvaguarda | **Criterio cumplido** |
+    | Se cumplen la meta y la no regresión; se excede la salvaguarda | **Meta alcanzada con costo excedido:** no se declara una mejora neta del procedimiento |
+    | Cobertura de tres o más problemas y meta no alcanzada | **Criterio no cumplido,** con hallazgo negativo |
+    | Se alcanza la meta y se rompe la no regresión | **Criterio no cumplido:** el procedimiento empeora en otros problemas |
+    | Cobertura de menos de tres problemas | **Meta sin evaluar:** rige la rama de respaldo |
+
+    En cualquier veredicto, si el brazo descriptivo con instrucción de probar también alcanza la meta, la reducción no se atribuye a RIGE (punto 17). Sin ese brazo, se informa lo observado con RIGE indicado y no se afirma que RIGE produzca la reducción. El OE-4 se alcanza solo con «Criterio cumplido» y la constancia de la referente; los OE-1 a OE-3 se evalúan por separado.
+28. **Denominador de la productividad** (F2-32; aclara el punto 24). Pedidos resueltos con efecto dividido por el costo total en USD de **todos los pedidos del estrato**, incluidos los fallidos. Con «esos pedidos», el indicador no cambiaría aunque desaparecieran los éxitos falsos. Valor de la línea de base, en pedidos por USD: E2, 12,18 (`build`, 85/6,977) y 10,64 (Charles, 84/7,893); E1, 15,33 (30/1,957) y 13,76 (30/2,181).
+29. **Alcance del conjunto reservado** (F2-13). Su condición se conserva, pero no detecta por sí sola el ajuste a los cinco problemas: RIGE podría cumplirla sin mejorar ninguna variante. Se informa como lectura descriptiva obligatoria junto a la meta, y el informe dice que **describe** el ajuste en lugar de decir que lo mitiga.
+30. **Precisión al Contexto 19 y al punto 9** (F2-09). «Costo igual al de una correcta» vale para los tokens y no para el costo en USD. En E2, las llamadas con éxito declarado falso tienen mediana de USD 0,0608 (n = 14), frente a 0,0678 (n = 82), con `build`, y de USD 0,0706 (n = 15), frente a 0,0785 (n = 78), con Charles: cerca de un 10 % menos, sobre problemas distintos. La lectura vigente es que el costo no delata el error. No cambia la salvaguarda.
 
 ### Consecuencias
 
