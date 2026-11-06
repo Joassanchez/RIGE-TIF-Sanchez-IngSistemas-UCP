@@ -31,7 +31,7 @@ RF-05, RF-08 y RF-09 extienden los flujos de CU-01 y CU-03. Ante una versión di
 
 Los Should incorporados en la iteración 3, las precisiones de rutas y de protección nativa, y la fecha de verificación de agentes internos se detallan en V.1. La evidencia de esta última figura en el Anexo I, A.I.11.
 
-Las mediciones del ingeniero del 04/11/2026 sobre `congelada` cumplen RNF-05 y RNF-07 en el contenedor de referencia, dentro de las condiciones y límites detallados en V.2. RNF-06 permanece sin acreditar: faltan la ejecución real en ambas plataformas y la instalación con cuenta común. Su estado de validación expresa la conformidad con el requisito y se distingue de esa comprobación.
+Las mediciones del 04/11/2026 sobre `congelada` cumplen RNF-05 y RNF-07 en el contenedor de referencia, dentro de las condiciones y límites detallados en V.2. RNF-06 permanece sin acreditar: faltan la ejecución real en ambas plataformas y la instalación con cuenta común. Su estado de validación expresa la conformidad con el requisito y se distingue de esa comprobación.
 
 El producto mínimo viable se contrasta mediante dos hipótesis de aprendizaje validado (Ries, 2017). La primera sostiene que el procedimiento delegado reduce los problemas con éxito declarado falso con RIGE indicado por línea de comandos. La medición final pone a prueba la decisión de RF-02, incluido CA-9, y el diagnóstico de RF-07, sobre el banco de la línea de base (apartado I.3.5). RF-03 expone valores y procedencia, decisiones y reglas determinantes, y hallazgos.
 

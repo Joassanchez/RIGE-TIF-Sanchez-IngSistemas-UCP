@@ -26,7 +26,7 @@
 
 ## 37.2 · Matriz ponderada
 
-Pesos de la cátedra, sin ajuste. Los puntajes son juicio: el ingeniero los propone junto con su índice y el autor los adopta sin cambios el 05/11/2026; desde entonces, no se ajustan. Competencias y Costo se cierran ese mismo día por delegación del autor, con la sensibilidad ya a la vista, y cada uno conserva el valor que no cambia la franja de decisión: se declara porque un punto más en cualquiera de los dos lleva a incorporar. La Hipótesis 1 queda sin puntuar por la regla de 37.1.
+Pesos de la cátedra, sin ajuste. Los puntajes son juicio: se proponen junto con su índice y el autor los adopta sin cambios el 05/11/2026; desde entonces, no se ajustan. Competencias y Costo se cierran ese mismo día por delegación del autor, con la sensibilidad ya a la vista, y cada uno conserva el valor que no cambia la franja de decisión: se declara porque un punto más en cualquiera de los dos lleva a incorporar. La Hipótesis 1 queda sin puntuar por la regla de 37.1.
 
 | Criterio | Peso (%) | Qué se evalúa | H1 (1-5) | H1 × peso | H2 (1-5) | H2 × peso |
 |---|---:|---|---:|---:|---:|---:|

@@ -17,7 +17,7 @@ El eje vertical (V) mide la granularidad de la procedencia en tres niveles:
 
 El nivel horizontal se asigna por la salida documentada, desde declaraciones hasta decisión por acción con regla determinante. El nivel vertical exige acreditar el origen: alcance o capa para V=1, y entrada, archivo y posición de la declaración para V=2. Ese eje mide procedencia, que `build` resuelve sin error en la medición de atribución del autor del 13/10/2026, sobre 54 consultas de C-2 a C-4 con tres repeticiones por caso (Anexo I, A.I.2).
 
-Cada solución se ubica según las capacidades relevadas al 01/10/2026 mediante el contraste de documentación oficial, README y páginas de paquetes (Anexo I, A.I.4). El autor produce la nómina con Codex como herramienta de apoyo para la búsqueda web y la clasificación documental. Las 33 soluciones del mapa constituyen un universo distinto de los 33 problemas de E2.
+Cada solución se ubica según las capacidades relevadas al 01/10/2026 mediante el contraste de documentación oficial, README y páginas de paquetes (Anexo I, A.I.4). El autor produce la nómina con una herramienta de IA como apoyo para la búsqueda web y la clasificación documental. Las 33 soluciones del mapa constituyen un universo distinto de los 33 problemas de E2.
 
 ![Mapa de posicionamiento de las soluciones relevadas](../figuras/cap-04/figura-mapeo-competencia.png){width="5.625in" height="4.21875in"}
 

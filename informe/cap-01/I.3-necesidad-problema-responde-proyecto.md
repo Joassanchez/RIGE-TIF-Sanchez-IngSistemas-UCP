@@ -38,7 +38,7 @@ El alcance del banco se delimita en II.2.4. Los criterios de inclusión constan 
 
 La familia de ruta absoluta se incorpora con conocimiento de su falla; el banco tiene ese límite de cegamiento. El resultado de cinco de 33 corresponde a cuatro de cuatro problemas de esa familia y a uno de 29 del resto, con ambos ejecutores.
 
-El cálculo de la tasa de ruta absoluta del 04/11/2026 examina mecánicamente las reglas por archivo o directorio agregadas o modificadas en las copias finales de esas tandas. Se realiza con apoyo de Codex para el análisis y revisión del ingeniero sobre los resultados. En E2 usan ruta absoluta 13 de 30 ejecuciones elegibles con `build` (43,33 %) y 16 de 31 con Charles (51,61 %). E1 tiene cero ejecuciones elegibles. La tasa describe esta medición; se desconoce la frecuencia en la práctica (Anexo I, A.I.11).
+El cálculo de la tasa de ruta absoluta del 04/11/2026 examina mecánicamente las reglas por archivo o directorio agregadas o modificadas en las copias finales de esas tandas. Se realiza con apoyo de una herramienta de IA para el análisis, con revisión de los resultados. En E2 usan ruta absoluta 13 de 30 ejecuciones elegibles con `build` (43,33 %) y 16 de 31 con Charles (51,61 %). E1 tiene cero ejecuciones elegibles. La tasa describe esta medición; se desconoce la frecuencia en la práctica (Anexo I, A.I.11).
 
 | **Estrato** | **Problemas** | **Función en la medición** |
 |---|---|---|
@@ -102,39 +102,54 @@ RIGE cumple funciones de control y apoyo a la decisión del desarrollador, confo
 
 ### I.3.4 · Criterio de éxito derivado de la línea de base
 
-«RIGE indicado» combina la herramienta y la instrucción al agente de consultarla para verificar el cambio. La meta es la reducción exigida de problemas con éxito declarado falso. La no regresión exige conservar o mejorar los resultados de los demás problemas y de la detección. La salvaguarda fija el aumento máximo de costo admitido. La cobertura es la cantidad de problemas con éxito declarado falso que atiende el producto mínimo viable. La rama de respaldo establece qué se informa cuando esa cobertura comprende menos de tres problemas.
+«RIGE indicado» combina la herramienta y la instrucción al agente de consultarla para verificar el cambio. La meta exige resolver los problemas cubiertos sin éxito declarado falso. La no regresión exige conservar o mejorar los resultados de los demás problemas y de la detección. La salvaguarda fija el aumento máximo de costo admitido. La cobertura es la cantidad de problemas con éxito declarado falso que atiende el producto mínimo viable. La rama de respaldo establece qué se informa cuando esa cobertura comprende menos de tres problemas.
 
-La regla de veredicto de la medición final es la siguiente:
+La regla de veredicto de la medición final se aplica en este orden:
 
-* Si se cumplen la meta, la no regresión y la salvaguarda: Criterio cumplido.
-* Si se cumplen la meta y la no regresión y se excede la salvaguarda: Meta alcanzada con costo excedido; no se declara una mejora neta del procedimiento.
-* Si la cobertura comprende tres o más problemas y la meta no se alcanza: Criterio no cumplido, con hallazgo negativo.
-* Si se alcanza la meta y se rompe la no regresión: Criterio no cumplido; el procedimiento empeora en otros problemas.
+* Si falta una tanda obligatoria de `build` después de agotar la continuación por cuota: Meta sin evaluar por falta de ejecución.
 * Si la cobertura comprende menos de tres problemas: Meta sin evaluar; rige la rama de respaldo.
+* Si la cobertura comprende tres o más problemas y la meta resulta inalcanzable: Criterio no cumplido, con hallazgo negativo.
+* Si se rompe la no regresión: Criterio no cumplido; el procedimiento empeora en otros problemas.
+* Si los registros incompletos impiden decidir un componente obligatorio: Criterio sin evaluar por registros incompletos.
+* Si se alcanza la meta operativa y quedan menos de cuatro mejoras atribuibles: Meta alcanzada sin atribución suficiente.
+* Si se cumplen la meta atribuible y la no regresión y se excede la salvaguarda: Meta alcanzada con costo excedido; no se declara una mejora neta del procedimiento.
+* Si se cumplen la meta atribuible, la no regresión y la salvaguarda: Criterio cumplido.
+
+Un incumplimiento concluyente prevalece sobre la incertidumbre. Las condiciones de atribución y evaluabilidad completan la regla con las decisiones aceptadas del preregistro (Anexo III, D-41).
 
 Se adopta esta regla y se descarta exigir solo la ejecución completa porque esa condición se cumple incluso si falla la meta (Anexo III, D-70).
 
-Nota: en cualquier veredicto, si el brazo descriptivo con instrucción de probar también alcanza la meta, la reducción no se atribuye a RIGE. Sin ese brazo, se informa lo observado con RIGE indicado, sin afirmar que RIGE produzca la reducción. OE-4 requiere «Criterio cumplido» y constancia de conformidad de la referente; OE-1 a OE-3 se evalúan por separado.
+Nota: si el brazo descriptivo con instrucción de probar alcanza la meta atribuible, la reducción no se atribuye a RIGE. Si solo alcanza la meta operativa, se informa que resuelve la meta sin atribución suficiente frente al control contemporáneo. Sin ese brazo, se informa lo observado con RIGE indicado, sin afirmar que RIGE produzca la reducción. OE-4 requiere «Criterio cumplido» y constancia de conformidad de la referente; «Meta alcanzada sin atribución suficiente» no lo alcanza. OE-1 a OE-3 se evalúan por separado.
 
 La medición final sigue el protocolo de validación del OE-4 sobre el mismo banco, ejecutores, modelo y versión de OpenCode de la línea de base, con la versión final publicada de RIGE. La revisión efectiva es `congelada`, `0df6cb7`, del 03/11/2026; todo cambio posterior lleva una etiqueta nueva. El criterio principal corresponde a `build` con `gpt-6.1-sol`, en el brazo que indica al agente que consulte RIGE para verificar el cambio (Anexo III, D-41).
 
-El procedimiento con RIGE indicado se compara con una base histórica, sin control simultáneo. Las formas de referencia defectuosas se corrigen antes de medir y se conserva la línea de base; los casos se identifican en el Anexo I, A.I.8.
+La comparación histórica se refiere al paquete «RIGE más la instrucción de verificar», sin atribución a la herramienta aislada. Los cinco problemas corren también con `build` sin RIGE y con la instrucción original, como control contemporáneo. Solo cuenta como atribuible una mejora cuyo problema no se resuelve también en ese control; el control limita la amenaza temporal a esos cinco. Las formas de referencia defectuosas se corrigen antes de medir y se conserva la línea de base; los casos se identifican en el Anexo I, A.I.8.
+
+Charles constituye la réplica dependiente y se juzga con sus propias tolerancias. Se comparan los tres componentes operativos, meta, no regresión y salvaguarda, sin la atribución temporal exclusiva de `build`. La coincidencia se publica como «replicado» y la diferencia como «no replicado con Charles». Un componente no evaluable lleva «réplica no evaluable»; la ausencia de medición, «sin réplica». La leyenda acompaña el veredicto y se muestra a la referente al pedir su conformidad. El veredicto vale para el procedimiento con `build`. La utilidad para el equipo queda pendiente si Charles no replica o no se mide; la conformidad de la referente no reemplaza esa validación (Anexo III, D-41).
 
 #### Criterio principal
 
-Al menos dos tercios, redondeados hacia arriba, de los problemas de E2 con éxito declarado falso que cubre el MVP congelado en el corte del 07/11/2026 dejan de tenerlo. Con los cinco problemas de la línea de base, la meta es cuatro. Los problemas inicialmente libres de éxito declarado falso conservan esa condición; ID-1 mantiene o mejora su valor e ID-2 se mantiene o disminuye. La condición comprueba que el procedimiento no empeora en los demás problemas de E1 y E2.
+Al menos dos tercios, redondeados hacia arriba, de los cinco problemas cubiertos de E2 alcanzan el objetivo sin éxito declarado falso en al menos dos de tres repeticiones. La meta queda fija en cuatro de los cinco originales, incluso con problemas no evaluables. Cada ejecución se clasifica como resolución correcta, fracaso reconocido o éxito declarado falso. La lectura anterior, que admite el abandono reconocido, se informa aparte como «reducción de declaraciones falsas» (Anexo III, D-41).
 
-Antes del corte del 07/11/2026 se estima, para cada condición de no regresión y ejecutor, la probabilidad de incumplimiento sin cambio real. El remuestreo distingue la variación por azar de un empeoramiento real. Se remuestrean las tres repeticiones de cada problema de la línea de base en 5.000 iteraciones. Hasta el 5 %, se conserva la condición y se declara la probabilidad; por encima, se fija una tolerancia en el percentil 95. El remuestreo conserva un resultado fijo en los problemas con cero de tres o tres de tres repeticiones con éxito declarado falso. La reutilización de las mismas repeticiones puede subestimar la variación (Anexo III, D-41).
+Solo la línea de base y el brazo indicado afectan la evaluabilidad principal. Un registro incompleto se repite una vez; si persiste, el problema es no evaluable y cuenta como mejora no acreditada. Sin esa repetición, permanece pendiente. Si las mejoras acreditadas no alcanzan cuatro pero podrían alcanzarlas sumando los no evaluables, rige «Criterio sin evaluar por registros incompletos». El universo de los demás problemas permanece en 38. Un desconocido que pueda superar una tolerancia o constituir exposición, o un reservado sin registro válido en cualquiera de sus brazos, activa esa misma fila (Anexo I, A.I.8).
 
-En el conjunto reservado, con RIGE indicado, la cantidad de variantes con éxito declarado falso en al menos dos de tres repeticiones no supera la del brazo sin RIGE. Si se admiten menos de tres variantes, la condición se informa como no puesta a prueba y el conjunto queda descriptivo (Anexo I, A.I.8).
+El 05/11/2026 se calculan y fijan las tolerancias sobre las tandas del autor del 20 y el 21/10/2026. Se remuestrean con reposición las tres repeticiones por problema, en 5.000 iteraciones con semilla 20261105. Hasta el 5 % de probabilidad de incumplimiento sin cambio real se conserva la condición; por encima, se usa el percentil 95. Entre los 38 problemas inicialmente libres se admite que, a lo sumo, uno adquiera éxito declarado falso, solo con bloqueo o valor distinto. Toda adquisición con exposición rompe la no regresión. ID-1 conserva al menos ocho de once defectos detectados e ID-2 admite a lo sumo nueve falsos positivos de 33 en ambos ejecutores (Anexo III, D-41).
+
+La no regresión exige además que, entre los 38 problemas resueltos de E1 y E2, a lo sumo uno deje de resolverse. El mismo remuestreo estima un 25,56 % de incumplimiento sin cambio real para cada ejecutor. Esta condición es vinculante y se informa también su lectura estricta, sin tolerancia. Cada adquisición de éxito falso se identifica por problema y consecuencia, con esa lectura estricta. «Dentro de tolerancia» expresa fluctuación bajo el modelo empleado, sin equivaler a ausencia de deterioro (Anexo III, D-41).
+
+El 0 % de ID-1 en ambos ejecutores y de ID-2 con Charles es por construcción: los problemas con cero de tres o tres de tres quedan fijos al remuestrear. La reutilización de las mismas repeticiones puede subestimar la variación (Anexo I, A.I.8).
+
+En el conjunto reservado se admite que RIGE indicado supere al brazo sin RIGE en a lo sumo una variante con éxito declarado falso, en al menos dos de tres repeticiones. La tolerancia se estima por analogía, porque el conjunto carece de línea de base. Si se admiten menos de tres variantes, la condición se informa como no puesta a prueba y el conjunto queda descriptivo (Anexo I, A.I.8).
 
 #### Cobertura
 
-La cobertura de los cinco problemas está prevista por la normalización de rutas de RF-02, CA-9, precisada para archivos y directorios después del dato, el 22/10/2026. Queda sujeta a la revisión del alcance del MVP en el corte; su acreditación requiere la verificación del producto. Todo problema observado que quede fuera del MVP congelado se informa junto a la meta, con su motivo; la lectura preregistrada agrega uno sin cobertura por exceso de alcance (Anexo I, A.I.8).
+El contraste sin agente del 05/11/2026 sobre `congelada` compara las formas de los 33 problemas de E2 con la admisión nativa. Cubre 22 de 33 y los cinco de cinco con éxito declarado falso; la meta sigue en cuatro. La acreditación de cobertura corresponde a la versión final. La normalización de rutas de RF-02, CA-9, se precisa para archivos y directorios después del dato, el 22/10/2026. Los criterios acreditados por el contraste se distinguen de la trazabilidad de requisitos por problema. Todo problema observado que quede fuera del MVP congelado se informa junto a la meta, con su motivo; la lectura preregistrada agrega uno sin cobertura por exceso de alcance (Anexo I, A.I.8).
 
 #### Salvaguarda de costo
 
 El costo cumple la función de salvaguarda, por separado de la meta de reducción del éxito declarado falso. Por problema se divide la mediana en USD de tres repeticiones con RIGE indicado por la mediana de tres repeticiones en la línea de base. La mediana de esos cocientes admite como máximo un aumento del 15 % en E2 y del 10 % en E1. Esta decisión posterior al dato reemplaza la reducción del costo como criterio; su fundamento y la alternativa descartada constan en el Anexo III, D-41.
+
+Como condición vinculante, el costo por pedido resuelto con efecto admite los mismos aumentos, a lo sumo +15 % en E2 y +10 % en E1. Incluye el costo de todos los intentos del estrato, también los fallidos y reemplazados, dividido por los resueltos. Un intento incompleto conserva su consumo acreditado; si falta, se imputa el mayor costo observado en ese brazo y estrato y se declara. El exceso activa «Meta alcanzada con costo excedido». La mejora económica se afirma solo cuando ese costo queda por debajo de la línea de base (Anexo III, D-41).
 
 #### Rama de respaldo
 
@@ -142,13 +157,13 @@ Si la revisión del MVP antes del corte del 07/11/2026 activa la rama de respald
 
 Las lecturas y los brazos descriptivos se informan por separado del criterio principal para conservar los contrastes y mostrar el efecto de las decisiones posteriores al dato (Anexo I, A.I.8). La coincidencia de RIGE con OpenCode se verifica como propiedad del producto mediante OE-1 y OE-2, por separado de la mejora del procedimiento delegado.
 
-Se informan como lecturas descriptivas la tasa de reglas por ruta escritas con ruta absoluta, la productividad del procedimiento delegado y la fuente leída antes de escribir la ruta absoluta (Anexo I, A.I.8).
+Se informan como lecturas descriptivas la tasa de reglas por ruta escritas con ruta absoluta, la productividad del procedimiento delegado y la fuente leída antes de escribir la ruta absoluta. Se obtienen del análisis final o se declara el motivo de omisión (Anexo I, A.I.8).
 
-El conjunto reservado de variantes de ruta absoluta describe el ajuste a los casos con los que se precisa el requisito y se informa como lectura obligatoria junto a la meta. La condición compara cantidades entre brazos: un empate cumple la no regresión aunque persista el éxito declarado falso en las mismas variantes (ADR-098, punto 29).
+El conjunto reservado de variantes de ruta absoluta describe el ajuste a los casos con los que se precisa el requisito y se informa como lectura obligatoria junto a la meta. Con tres o cuatro variantes con éxito falso sin RIGE se publica «sin capacidad discriminante», sin dar la condición por cumplida. Se informan las transiciones por variante. Una variante que adquiere éxito falso con exposición rompe la no regresión, incluso sin capacidad discriminante y aunque la diferencia agregada entre en la tolerancia (ADR-098, punto 29).
 
-Si alcanza la cuota, se incorpora además el brazo sin RIGE con instrucción de probar el efecto ejecutando OpenCode. Cuando alcanza la meta sin RIGE, el aporte frente a esa alternativa se acredita en el diagnóstico de RF-07, causa y forma correcta, y en el costo comparado entre los brazos mediante la salvaguarda. Si el brazo no alcanza la meta, se informa la diferencia por problema. Su omisión por cuota se declara como la principal amenaza a la validez del criterio (Anexo III, D-41).
+Si alcanza la cuota, se incorpora además el brazo sin RIGE con instrucción de probar el efecto ejecutando OpenCode. El aporte frente a esa alternativa en diagnóstico de RF-07, causa y forma correcta, y en costo comparado entre brazos se afirma solo si lo muestra el dato. El aporte en costo exige una mediana de cocientes de indicado sobre probar menor que uno. Si el brazo no alcanza la meta, se informa la diferencia por problema. Su omisión por cuota se declara como la principal amenaza a la validez del criterio (Anexo III, D-41).
 
-El corte del 07/11/2026 fija el MVP cuya cobertura delimita la meta. El 14/11/2026 se conserva como línea de base planificada del congelamiento. La medición final usa la versión final publicada y el texto de la instrucción se fija antes de medir (Anexo I, A.I.8).
+El corte del 07/11/2026 fija el MVP cuya cobertura delimita la meta. El 14/11/2026 se conserva como línea de base planificada del congelamiento. La medición final usa la versión final publicada. La cobertura, las tolerancias y los textos de las instrucciones se fijan el 05/11/2026; el autor acepta la modificación el 06/11/2026. Lo que se completa después del 07/11/2026 lleva su fecha real y la corrección declarada, sin antedatar (Anexo I, A.I.8).
 
 ### I.3.5 · Primer requisito y riesgo principal
 

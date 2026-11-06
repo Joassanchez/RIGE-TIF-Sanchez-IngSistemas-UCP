@@ -30,6 +30,11 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | V.3 | `informe/cap-05/V.3-organizacion-equipo.md` | revisada | AE2 | 24/10/2026 |
 | V.4 | `informe/cap-05/V.4-cronograma.md` | revisada | AE2 | 24/10/2026 |
 | V.5 | `informe/cap-05/V.5-descripcion-producto-minimo-viable.md` | revisada | AE2 | 24/10/2026 |
+| VII.1 | `informe/cap-07/VII.1-roles-interesado.md` | revisada | AE4 | 06/11/2026 |
+| VII.2 | `informe/cap-07/VII.2-producto.md` | revisada | AE4 | 06/11/2026 |
+| VII.3 | `informe/cap-07/VII.3-experiencia.md` | revisada | AE4 | 06/11/2026 |
+| VII.4 | `informe/cap-07/VII.4-canales.md` | revisada | AE4 | 06/11/2026 |
+| VII.5 | `informe/cap-07/VII.5-dinamicas-intercambio.md` | revisada | AE4 | 06/11/2026 |
 | X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 24/10/2026 |
 | X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 24/10/2026 |
 | X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 24/10/2026 |
@@ -43,7 +48,8 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | AE2 | **Entrega Completa, definitiva** (DEV-AE2 14/2026, segunda revisión del 16/10/2026) |
 | AE3 | Parcial teórico: no aporta insumos al informe (autor, 05/11/2026) |
 | Plan | `00-gestion/plan-cierre-ae4.md`, propuesto el 05/11/2026 |
-| Caps. VI, VII, VIII, IX, XI, XII, XIII y Conclusiones | Sin redactar |
+| Cap. VII | Revisado el 06/11/2026 (ADR-108, D-73); con el marcador de uso propio del autor (AE4-26) |
+| Caps. VI, VIII, IX, XI, XII, XIII y Conclusiones | Sin redactar |
 | Instrumentos 36, 37 y 39 | Borrador del 05/11/2026 con revisión de Codex (consigna, consistencia, crítico y fuentes) y hallazgos aplicados. Con marcadores para el autor (`pendientes.md`, AE4-18) |
 | Instrumentos 38 y 40, manual de despliegue, plan de implantación, actas | Sin elaborar |
 | Anexos | ADR-107 **propuesto**: I, II y III con tabla de equivalencias. Archivos y remisiones sin cambiar hasta su aceptación |

@@ -68,6 +68,28 @@ Reunidas de las revisiones del crítico y del ingeniero (25/09 y 28/09/2026). La
 | 35 | ¿Qué decisión cambió el lienzo? | IV.1. |
 | 36 | ¿Cuál es la barrera de entrada si todo es MIT? | IV.1, IV.3: no hay barrera; el proyecto se sostiene por su utilidad. |
 
+## Marketing del proyecto (Cap. VII)
+
+| # | Pregunta | Base de la respuesta |
+|---|---|---|
+| 57 | Sin usuarios, ¿de qué es marketing este capítulo? | ADR-108, D-73: define la propuesta por rol y cómo contrastarla. La decisión que produce es el mecanismo de adopción y las condiciones para ampliar. |
+| 58 | ¿Por qué instalaría RIGE alguien, en lugar de agregar una línea al pedido? | VII.2, IV.3: la ventaja frente a ese sustituto está sin demostrar. Decirlo; explicar la situación, el costo comparado y la condición de abandono. |
+| 59 | Si OpenCode corrige la ruta absoluta, ¿qué queda en pie? | IV.3: sin RIGE se resuelven 28 de 29 problemas ajenos a esa familia. Queda el testimonio sobre la procedencia (respuesta 1.6), sin línea de base propia. |
+| 60 | ¿Cuántos pueden usar RIGE hoy y dentro de nueve meses? | RF-05 y A.III.3: quien fija la versión soportada y delega en un agente; tamaño desconocido. Por eso E-04 precede a E-03 (ADR-108, M-5). |
+| 61 | ¿Qué ve quien instala con otra versión de OpenCode? | V.5, RF-05: advertencia, salida vacía y código 1. Es una fricción declarada en VII.3. |
+| 62 | E-03 da 3 de 5, 6 de 10 o 0 de 5 con criterio no cumplido: ¿qué hacen? | ADR-108, M-1 y M-2: repetir y decidir sobre diez; perseverar; acreditar la causa, y sin integración posible, salida conservadora. |
+| 63 | ¿Por qué 14 días y esos cortes? ¿Quien corrigió y no volvió fracasó? | M-1 y M-3: son juicio, sin dato de partida. Cuenta el evento de valor, no la vuelta a consultar. Quien no tuvo oportunidad de uso se reemplaza. |
+| 64 | Sin conexiones salientes, ¿cómo saben que volvió? | RNF-05 impide registrarlo: autoinforme con evidencia voluntaria, límite declarado (M-3). |
+| 65 | ¿Por qué el evento de valor es accionable y las descargas no? | M-2: sus registros orientan qué corregir; las descargas no cambian ninguna decisión. |
+| 66 | Si nadie se presenta, ¿qué concluyen? ¿Quién recluta, y sigue siendo autoservicio? | M-6 y M-7: sin adopción acreditada y sin ampliar. Solo se concluye sobre el canal con registros. El autor invita: mide adopción tras el contacto, no descubrimiento. |
+| 67 | ¿Un agente es un interesado? ¿Qué experiencia tiene un programa? | D-73: solo como consumidor delegado; condiciona la forma del producto y no decide. Su «experiencia» es el contrato de salida. |
+| 68 | La cátedra condiciona la publicación y OpenCode el valor: ¿por qué no son interesados? | VII.1, ADR-108: revisar el texto final del capítulo antes de responder. |
+| 69 | ¿Qué validó la referente: lo que hoy ofrecen o el flujo anterior? ¿Qué gana ella? | A.II.2, D-66, R-10: validó el flujo de consulta antes de la reorientación; R-10 sigue pendiente. Su motivación no consta. |
+| 70 | Si la medición refuta la hipótesis, ¿publican igual? ¿Qué prometen? | ADR-108, M-8: se publica con cualquier veredicto y cambia lo que se afirma. |
+| 71 | ¿Quién dona para sostener algo que no se compromete a actualizarse? | X.3, Tabla 24; M-5: 45, 9 o 5 patrocinadores según el nivel; dependencia circular declarada. |
+| 72 | Si adoptan 500 personas, ¿qué cede primero y quién atiende las incidencias? | Instrumento 39: cede la readaptación, no la infraestructura. La atención de incidencias se revisa en VII.5. |
+| 73 | ¿De dónde salen sus definiciones de canal, experiencia y métrica? | Son operativas del capítulo. Kotler y Armstrong (2012): responder según AE4-25, sin afirmar una lectura que no se hizo. |
+
 ## Iteración 2 (permisos) y versión
 
 Decisiones del ingeniero de la iteración 2 (25/10/2026, por delegación del autor) y de la sesión del 30/10/2026. Antes estaban en el índice de fichas de `.trabajo/`, que se descarta.

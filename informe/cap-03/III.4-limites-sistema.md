@@ -2,9 +2,23 @@
 
 La delimitación define el problema que el sistema resuelve. Los límites del sistema fijan su frontera funcional; los límites del período difieren capacidades o acreditaciones que el sistema puede incorporar. Una exclusión validada por la referente y asentada en el acta constituye una frontera. Las decisiones de ingeniería derivadas de una imposibilidad técnica o de la frontera individual se fundamentan en el Anexo III, A.III.3. Las ocho fronteras allí registradas se comunican a la referente en el acta del 26/09/2026, sección 2, sin observaciones. Cada exclusión se presenta junto a la inclusión que le corresponde.
 
-RIGE escribe únicamente en su almacén propio y conserva las entradas de configuración como registros de solo lectura. El sistema no ejecuta OpenCode ni acciones sobre el proyecto. RIGE detecta el árbol de trabajo por lectura, sin ejecutar `git`. Con Git, toma la raíz del repositorio; sin Git, calcula la forma relativa desde la raíz de la unidad, conforme al comportamiento de OpenCode (Anexo I, A.I.3). El ingeniero contrasta RIGE con OpenCode 1.18.25 el 04/11/2026, en Linux, con `read` y sobre la etiqueta `congelada`. La comprobación comprende tres casos: subdirectorio de repositorio, raíz de repositorio y proyecto sin Git. En ellos, la decisión de RIGE coincide con OpenCode y la forma propuesta produce el efecto declarado (Anexo I, A.I.11). La detección es aproximada ante `core.worktree` o `core.bare`, y RIGE declara esa limitación. Windows, otras herramientas y esas configuraciones quedan fuera de esta comprobación.
+RIGE escribe únicamente en su almacén propio y conserva las entradas de configuración como registros de solo lectura. El sistema no ejecuta OpenCode ni acciones sobre el proyecto. RIGE detecta el árbol de trabajo por lectura, sin ejecutar `git`. Con Git, toma la raíz del repositorio; sin Git, calcula la forma relativa desde la raíz de la unidad, conforme al comportamiento de OpenCode (Anexo I, A.I.3). Se contrasta RIGE con OpenCode 1.18.25 el 04/11/2026, en Linux, con `read` y sobre la etiqueta `congelada`. La comprobación comprende tres casos: subdirectorio de repositorio, raíz de repositorio y proyecto sin Git. En ellos, la decisión de RIGE coincide con OpenCode y la forma propuesta produce el efecto declarado (Anexo I, A.I.11). La detección es aproximada ante `core.worktree` o `core.bare`, y RIGE declara esa limitación. Windows, otras herramientas y esas configuraciones quedan fuera de esta comprobación.
 
 «Verificación» designa aquí la decisión evaluada sobre la configuración escrita, dentro de los supuestos de esta delimitación. Es una predicción estática: informa la decisión y las declaraciones sin efecto, sin certificar el efecto del cambio ni ejecutar OpenCode. El motor de permisos modelado y la exclusión de aprobaciones se delimitan en I.6.4; el detalle técnico consta en el Anexo I, A.I.3.
+
+El contraste de cobertura sin agente del 05/11/2026 sobre `congelada` identifica límites de la versión que restringen los problemas cubiertos del banco. RIGE rechaza la consulta con su causa cuando la cadena requerida queda incompleta. Se descarta responder un valor incompleto porque oculta la falta de resolución (Anexo III, D-41).
+
+- M-5 queda fuera por `external_directory`, no soportado.
+
+- M-6, N-3, N-10 y N-15 quedan fuera por agentes en Markdown, con rechazo `markdown-no-observado`. V-5 y V-7 presentan claves no resueltas por esa misma causa.
+
+- N-9 queda fuera por `tools` heredado, con rechazo `tools-legado-no-incorporado`.
+
+- V-8 queda fuera porque `instructions` permanece sin resolver y el prompt se informa sin expandir.
+
+- V-9 y V-10 quedan fuera porque `AGENTS.md` y `mcp` no son claves de agente consultables.
+
+Estos límites de la versión se registran en el contraste de cobertura, con los motivos por problema (Anexo I, A.I.11).
 
 | **Qué se incluye**                                          | **Qué queda fuera**                                                                                               | **Por qué motivo**                                                                                                                                                                                                                    | **Quién lo valida**    | **Estado y constancia**                                                       |
 |-------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|--------------------------------------------------------------------------------|

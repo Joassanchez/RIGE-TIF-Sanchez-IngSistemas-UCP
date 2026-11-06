@@ -24,7 +24,7 @@ Estado: `[ ]` pendiente · `[~]` en curso · `[x]` hecho.
 
 - [x] ADR-107 y migración a tres anexos.
 - [x] Instrumentos 36, 37 y 39 con E-01 medido.
-- [ ] Autor: leer el diff, commit y unir `cierre-ae4` (AE4-17, AE4-21).
+- [x] Autor: leer el diff, commit y unir `cierre-ae4` (AE4-17, AE4-21), unión `b9ecd2f`.
 
 ### B1 · Preregistro de la medición
 
@@ -41,16 +41,16 @@ Va sin agentes reales: no gasta cuota de medición. Da validez al resultado: la 
 - [x] Ensayo final con proveedor simulado (VER-08), sobre `congelada`. Se repite sobre la etiqueta en B5.
 - [x] Planilla de adjudicación lista.
 - [x] **Autor:** aceptar la modificación de ADR-098, puntos 31 a 46.
-- [ ] Propagar a I.3.4, A.I.8 y D-41 con el redactor (ficha lista).
+- [x] Propagar a I.3.4, A.I.8, III.4 y D-41 (redactor; D-41, ingeniero).
 
 **Si una fecha prometida en el informe no se cumple,** se corrige el texto y se declara; nunca se antedata.
 
 ### B2 · Capítulos sin resultado
 
-- [ ] VII Marketing (AE4-01).
+- [x] VII Marketing (AE4-01): revisada el 06/11/2026, con ADR-108. Queda el marcador de uso propio del autor (AE4-26).
 - [ ] XI Oportunidades, desde los Instrumentos 36, 37 y 39, con el veredicto como condición.
 - [ ] VIII Propiedad Intelectual, con Instrumento 38. Espera el INPI.
-- [ ] IX Diseño, con matriz ponderada y tabla de terceros (AE4-06).
+- [ ] IX Diseño, con matriz ponderada y tabla de terceros (AE4-06). **Próximo capítulo** (autor, 06/11/2026): empezar por llevarle los criterios y pesos de la matriz.
 - [ ] VI Metodologías, con plan de pruebas y resultados por requisito (AE4-06).
 - [ ] Actas, plan de implantación (AE4-07). Espera la consulta del autor sobre los sprints.
 - [ ] Horas reales por iteración: propuesta desde los commits, corregida por el autor (AE4-08).

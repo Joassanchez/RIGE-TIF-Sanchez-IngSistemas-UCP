@@ -35,7 +35,7 @@ La dedicación efectiva queda por contrastar con el plan: [DATO PENDIENTE: regis
 
 La reserva efectiva asigna 14 h a la AE2 y 20 h a la Ventana de Mejora y Cumplimiento y las correcciones del informe de la AE1. Se destinan 13 h a los Capítulos VI y IX; el resto de la reserva cubre la preparación de la medición final, detallada debajo. La estimación de la línea de base, de 16 a 23 h, se carga a la Ventana (Anexo III, D-41). Su cota alta excede por 3 h las 20 h de esa reserva, aun antes de las correcciones del informe.
 
-Las 54 h de reserva tienen asignación completa. La estimación del ingeniero del 24/10/2026 agrega 12 h de precisiones que quedan fuera de ese reparto. El plan conserva 190 h; sin absorción registrada, la previsión asciende a 202 h. El desvío agrega $106.512 (USD 68,94), todavía sin imputar en la Tabla 22 de costos de X.3; allí constan el valor horario y el factor de conversión.
+Las 54 h de reserva tienen asignación completa. La estimación del 24/10/2026 agrega 12 h de precisiones que quedan fuera de ese reparto. El plan conserva 190 h; sin absorción registrada, la previsión asciende a 202 h. El desvío agrega $106.512 (USD 68,94), todavía sin imputar en la Tabla 22 de costos de X.3; allí constan el valor horario y el factor de conversión.
 
 La preparación de la medición final se estima en 10 h: 7 h de reserva entre el 26/10 y el 14/11/2026 y 3 h de la fase de cierre desde el 15/11. La Figura 3 representa del 26/10 al 07/11 la preparación de escenarios y remuestreo, y del 09/11 al 14/11 la fijación del texto de la instrucción. La preparación del cierre integra la barra de medición final y análisis.
 
@@ -87,7 +87,7 @@ La estimación descompone cada iteración en tareas y les asigna horas por juici
 
 *Tabla 16. Estimación de horas por tarea e iteración. Fuente: elaboración propia.*
 
-Nota: la estimación del ingeniero del 24/10/2026 agrega las siguientes tareas a las previstas al 02/10:
+Nota: la estimación del 24/10/2026 agrega las siguientes tareas a las previstas al 02/10:
 
 - Precisiones de la normalización de rutas y de la forma que coincide, verificadas contra el binario (RF-02, CA-9; RF-07, CA-5).
 

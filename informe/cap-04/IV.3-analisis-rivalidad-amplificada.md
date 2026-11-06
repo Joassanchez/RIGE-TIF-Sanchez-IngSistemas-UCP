@@ -26,7 +26,7 @@ Se abandonaría RIGE para este mecanismo si una instrucción de rutas relativas 
 
 Si OpenCode corrige la ruta absoluta, el valor medido desaparece. Los demás tipos de RF-07 y la decisión de RF-02 requieren una línea de base propia. La medición del autor del 20 y el 21/10/2026, con el arnés sobre el banco y corrección por ejecución de OpenCode, resuelve sin RIGE 28 de los 29 problemas ajenos a esa familia (apartado I.3.2). La persistencia del mecanismo en versiones posteriores requiere comprobación; el relevamiento conserva el reporte sobre 1.18.29 registrado en A.I.6.
 
-El sostenimiento y sus límites se detallan en IV.1. La instrucción del brazo medido es una condición de la medición; el mecanismo de adopción real requiere definición.
+El sostenimiento y sus límites se detallan en IV.1. La instrucción del brazo medido es una condición de la medición; el mecanismo de adopción real consta en VII.4, con su contraste pendiente.
 
 ### Flujo de valor seleccionado para automatización
 
