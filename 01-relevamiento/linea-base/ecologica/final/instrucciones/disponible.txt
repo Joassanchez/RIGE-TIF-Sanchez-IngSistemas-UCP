@@ -1,0 +1,4 @@
+En este equipo está instalado RIGE, que informa qué decisión de permiso y qué valor de configuración rigen en OpenCode 1.18.25 y qué declaración los determina.
+    rige permiso --proyecto <ruta del proyecto> --agente <agente> --herramienta <herramienta> --objetivo <archivo o comando>
+    rige valores --proyecto <ruta del proyecto> --agente <agente> --clave <clave>
+    rige hallazgos --proyecto <ruta del proyecto> --explicar

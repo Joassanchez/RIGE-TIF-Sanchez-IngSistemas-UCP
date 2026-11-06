@@ -30,15 +30,18 @@ Estado: `[ ]` pendiente · `[~]` en curso · `[x]` hecho.
 
 Va sin agentes reales: no gasta cuota de medición. Da validez al resultado: la cátedra ya observó un criterio aplicado después del dato (dictamen del 16/10, ap. 7).
 
-- [ ] Corte del MVP: fijar los 18 Must y la cobertura de los cinco problemas (ADR-080, ADR-098).
-- [ ] Remuestreo de 5.000 iteraciones y tolerancias de no regresión (I.3.4).
-- [ ] Conjunto reservado: 3 a 5 variantes de ruta absoluta, admitidas por reproducción nativa (LB-07).
-- [ ] Corregir las referencias de S-3 y M-2, con readmisión (LB-06).
-- [ ] Salvaguarda de costo por problema en USD en el análisis (LB-06, punto 4).
-- [ ] Criterio y regla de ejecutores, por escrito y fechados (dictamen, ap. 7).
+- [x] Corte del MVP: fijar los 18 Must y la cobertura de los cinco problemas (ADR-080, ADR-098).
+- [x] Remuestreo de 5.000 iteraciones y tolerancias de no regresión (I.3.4).
+- [x] Conjunto reservado: 3 a 5 variantes de ruta absoluta, admitidas por reproducción nativa (LB-07).
+- [x] Corregir las referencias de S-3 y M-2, con readmisión (LB-06).
+- [x] Salvaguarda de costo por problema en USD en el análisis (LB-06, punto 4).
+- [x] Criterio y regla de ejecutores, por escrito y fechados (dictamen, ap. 7).
 - [ ] **Autor:** adjudicar a mano unas 20 de las 61 revisiones; se calcula la concordancia (AE4-09).
-- [ ] Texto exacto de la instrucción del brazo indicado y del brazo con instrucción de probar.
-- [ ] Ensayo final con proveedor simulado (VER-08).
+- [x] Texto exacto de la instrucción del brazo indicado y del brazo con instrucción de probar.
+- [x] Ensayo final con proveedor simulado (VER-08), sobre `congelada`. Se repite sobre la etiqueta en B5.
+- [x] Planilla de adjudicación lista.
+- [x] **Autor:** aceptar la modificación de ADR-098, puntos 31 a 46.
+- [ ] Propagar a I.3.4, A.I.8 y D-41 con el redactor (ficha lista).
 
 **Si una fecha prometida en el informe no se cumple,** se corrige el texto y se declara; nunca se antedata.
 
@@ -72,7 +75,8 @@ Va sin agentes reales: no gasta cuota de medición. Da validez al resultado: la 
 
 ### B5 · Medición final
 
-- [ ] Imagen con la etiqueta y arnés con el preregistro de B1.
+- [ ] Misma imagen de la línea de base, binario de la etiqueta y arnés con el preregistro de B1.
+- [ ] Sobre la etiqueta: repetir el ensayo y el contraste de cobertura, registrar el corte en `MANIFIESTO.json` y acreditar el diagnóstico de la sección 11 del preregistro.
 - [ ] Tandas en el orden de la sección 3.
 - [ ] Análisis y veredicto con la regla de I.3.4.
 
@@ -106,11 +110,12 @@ Va sin agentes reales: no gasta cuota de medición. Da validez al resultado: la 
 
 | Prioridad | Tanda | Por qué |
 |---|---|---|
-| 1 | `build`, RIGE indicado: E2, E1, detección y conjunto reservado con y sin RIGE | La regla de veredicto de I.3.4 exige la meta y la no regresión, que incluye detección y conjunto reservado: sin los cuatro no hay veredicto |
-| 2 | Brazo con instrucción de probar, sin RIGE | Su omisión es la principal amenaza a la validez (I.3.4) |
-| 3 | Charles, mismas tandas | «Mismos ejecutores» de I.3.4; [S] si se corta, se declara como cambio frente al protocolo |
+| 1 | `build`: banco con RIGE indicado (E1, E2 y E4), detección indicada, reservado con y sin RIGE, y control contemporáneo de los cinco problemas sin RIGE: 210 ejecuciones | La regla de veredicto exige meta, no regresión y atribución: sin esto no hay veredicto |
+| 2 | `build`, brazo con instrucción de probar, sin RIGE, E1 y E2: 129 | Su omisión es la principal amenaza a la validez (I.3.4) |
+| 3 | Charles, las tandas de la prioridad 1 sin el control: 195 | Réplica; si se corta, «sin réplica», y se declara como cambio frente a «mismos ejecutores» de I.3.4 |
+| 4 | `build`: brazo disponible (138) y contraste indicado (30): 168 | ADR-093, §6; descriptivos. Si se corta, se declara |
 
-Es una propuesta de orden: se confirma contra ADR-098 al cerrar B1. Cuánta cuota consume la medición no se sabe: la línea de base no registró el porcentaje semanal, y se cortó dos veces por la ventana de 5 h. El primer tramo de la tanda se usa para estimarlo.
+Orden contrastado con ADR-098 al cerrar B1 (puntos 38 y 43), aceptado por el autor. Comandos: `01-relevamiento/linea-base/verificacion/20261105-med19/README.md`. Cuánta cuota consume la medición no se sabe: la línea de base no registró el porcentaje semanal, y se cortó dos veces por la ventana de 5 h. El primer tramo de la tanda se usa para estimarlo.
 
 **Corte.** Si no se puede completar la prioridad 1 antes de propagar y armar, se entrega sin veredicto: el informe describe lo medido, declara «Meta sin evaluar» por falta de ejecución, y la medición queda como experimento para la defensa. No se presenta un resultado parcial como cumplimiento.
 

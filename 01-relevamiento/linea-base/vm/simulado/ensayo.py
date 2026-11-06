@@ -43,6 +43,12 @@ class Ensayo(Proveedor):
         lectura = self.leer_documentacion(cuerpo)
         if lectura:
             return lectura
+        identificador = 'med19_consulta_rige'
+        recibidos = {m.get('tool_call_id') for m in cuerpo.get('messages', []) if m.get('role') == 'tool'}
+        if self.plan.get('consulta_rige') and identificador not in recibidos:
+            return {'role': 'assistant', 'content': None, 'tool_calls': [dict(
+                id=identificador, type='function', function=dict(name='bash',
+                    arguments=json.dumps(dict(command=self.plan['consulta_rige']))))]}
         return {'role': 'assistant', 'content': 'ENSAYO: valores inventados.\n' + json.dumps(self.plan['salida'], ensure_ascii=False)}
 
 

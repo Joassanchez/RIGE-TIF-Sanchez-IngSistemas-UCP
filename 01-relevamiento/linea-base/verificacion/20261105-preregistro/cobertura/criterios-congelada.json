@@ -1,0 +1,106 @@
+[
+ {
+  "caso": "N-5",
+  "variante": "ingenua_global",
+  "agente": "plan",
+  "herramienta": "edit",
+  "objetivo": "src/index.js",
+  "decision": "allow",
+  "nativa": "allow",
+  "determinante": "declarado",
+  "origenes": [
+   "nativo",
+   "declarado"
+  ],
+  "advertencias": [
+   "proteccion-nativa-anulada"
+  ],
+  "codigos": [
+   "aprobaciones-permanentes-excluidas",
+   "sesion-no-interactiva-excluida",
+   "numeracion-sin-directorios-externos"
+  ],
+  "stderr": []
+ },
+ {
+  "caso": "N-5",
+  "variante": "correcta",
+  "agente": "plan",
+  "herramienta": "edit",
+  "objetivo": "src/index.js",
+  "decision": "deny",
+  "nativa": "deny",
+  "determinante": "nativo",
+  "origenes": [
+   "nativo"
+  ],
+  "advertencias": [],
+  "codigos": [
+   "aprobaciones-permanentes-excluidas",
+   "sesion-no-interactiva-excluida",
+   "numeracion-sin-directorios-externos"
+  ],
+  "stderr": []
+ },
+ {
+  "caso": "N-12",
+  "variante": "base",
+  "agente": "build",
+  "herramienta": "read",
+  "objetivo": ".env",
+  "decision": "ask",
+  "nativa": "ask",
+  "determinante": "nativo",
+  "origenes": [
+   "nativo"
+  ],
+  "advertencias": [],
+  "codigos": [
+   "aprobaciones-permanentes-excluidas",
+   "sesion-no-interactiva-excluida",
+   "numeracion-sin-directorios-externos"
+  ],
+  "stderr": []
+ },
+ {
+  "caso": "N-21",
+  "variante": "base",
+  "agente": "build",
+  "herramienta": "read",
+  "objetivo": ".env",
+  "decision": "ask",
+  "nativa": "ask",
+  "determinante": "nativo",
+  "origenes": [
+   "nativo"
+  ],
+  "advertencias": [],
+  "codigos": [
+   "aprobaciones-permanentes-excluidas",
+   "sesion-no-interactiva-excluida",
+   "numeracion-sin-directorios-externos"
+  ],
+  "stderr": []
+ },
+ {
+  "caso": "N-21",
+  "variante": "correcta",
+  "agente": "build",
+  "herramienta": "read",
+  "objetivo": ".env",
+  "decision": "deny",
+  "nativa": "deny",
+  "determinante": "declarado",
+  "origenes": [
+   "nativo",
+   "declarado"
+  ],
+  "advertencias": [],
+  "codigos": [
+   "aprobaciones-permanentes-excluidas",
+   "sesion-no-interactiva-excluida",
+   "numeracion-sin-directorios-externos"
+  ],
+  "stderr": []
+ }
+]

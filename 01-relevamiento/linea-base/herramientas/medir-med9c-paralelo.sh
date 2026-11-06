@@ -17,16 +17,27 @@ K=3
 SEMILLA=20261015
 ENSAYO=0
 CASOS=''
+HOJA=cerrada
+BRAZO=LB
 shift 4
 while [[ $# -gt 0 ]]; do
   case $1 in
     --fuera-del-arbol) [[ $DIMENSION == ecologica ]] || exit 2; FUERA=1; shift ;;
     --k) [[ $# -ge 2 && $2 =~ ^[1-9][0-9]*$ ]] || exit 2; K=$2; shift 2 ;;
+    --hoja) [[ $# -ge 2 && ( $2 == cerrada || $2 == final ) ]] || exit 2; HOJA=$2; shift 2 ;;
+    --brazo) [[ $# -ge 2 ]] || exit 2; BRAZO=$2; shift 2 ;;
     --ensayo) ENSAYO=1; shift ;;
     --casos) [[ $# -ge 2 && -n $2 ]] || exit 2; CASOS=$2; shift 2 ;;
     *) echo 'Opción inválida.' >&2; exit 2 ;;
   esac
 done
+case $BRAZO in LB|sin_rige|indicado|disponible|probar) ;; *) exit 2 ;; esac
+[[ $HOJA == final || $BRAZO == LB ]] || exit 2
+[[ $DIMENSION != deteccion || ( $BRAZO != sin_rige && $BRAZO != probar ) ]] || exit 2
+CONDICION=FIN
+if [[ $BRAZO == LB ]]; then CONDICION=LB; fi
+HOJA_DIR=ecologica
+if [[ $HOJA == final ]]; then HOJA_DIR+=/final; fi
 if [[ $ENSAYO == 1 && -n ${OPENCODE_AUTH_JSON:-} ]]; then
   echo 'El ensayo requiere un entorno sin OPENCODE_AUTH_JSON.' >&2
   exit 2
@@ -39,18 +50,18 @@ tanda4() {
   local tanda=$1 dimension=$2 ejecutor=$3 fuera=$4
   local parte pid reparto estado=0
   local -a extra union pids=() registros=()
-  extra=()
-  if [[ $fuera == 1 ]]; then extra=(--fuera-del-arbol); fi
+  extra=(--hoja "$HOJA")
+  if [[ $fuera == 1 ]]; then extra+=(--fuera-del-arbol); fi
   if [[ $ENSAYO == 1 ]]; then extra+=(--ensayo); fi
   union=()
   if [[ -n $CASOS ]]; then union=(--casos "$CASOS"); fi
   local -a grupos
-  reparto=$(python - "$dimension" "$fuera" "$K" "$SEMILLA" "$CASOS" "$EVIDENCIA/$tanda/reparto.json" <<'PY'
+  reparto=$(python - "$dimension" "$fuera" "$K" "$SEMILLA" "$CASOS" "$EVIDENCIA/$tanda/reparto.json" "$HOJA_DIR" <<'PY'
 import json, random, sys
 from pathlib import Path
 dimension, fuera, k = sys.argv[1], sys.argv[2] == '1', int(sys.argv[3])
 semilla, seleccion, destino = int(sys.argv[4]), sys.argv[5], Path(sys.argv[6])
-banco = json.loads(Path('ecologica/escenarios.json').read_text(encoding='utf-8'))['dimensiones'][dimension]
+banco = json.loads((Path(sys.argv[7] if len(sys.argv) > 7 else 'ecologica') / 'escenarios.json').read_text(encoding='utf-8'))['dimensiones'][dimension]
 casos = seleccion.split(',') if seleccion else [c for c in banco if not fuera or c.startswith('M-')]
 if (not casos or len(set(casos)) != len(casos) or not set(casos) <= set(banco)
         or (fuera and any(not c.startswith('M-') for c in casos))):
@@ -73,18 +84,18 @@ PY
       bash vm/contenedor.sh medir --dimension "$dimension" \
         --tanda "$tanda" --ejecutor "$ejecutor" \
         --modelo openai/gpt-6.1-sol --k "$K" --limite 600 --semilla "$SEMILLA" \
-        --condicion LB --brazo LB --casos "${grupos[$parte]}" \
+        --condicion "$CONDICION" --brazo "$BRAZO" --casos "${grupos[$parte]}" \
         "${extra[@]}" --destino "$EVIDENCIA/$tanda/p$parte"
       python "herramientas/corregir_$dimension.py" \
         "$EVIDENCIA/$tanda/p$parte/$tanda/registro.jsonl" \
-        --respuestas "ecologica/respuestas-$dimension.json" \
+        --respuestas "$HOJA_DIR/respuestas-$dimension.json" \
         --salida "$EVIDENCIA/$tanda/p$parte/$tanda/corregido.jsonl"
     ) >"$EVIDENCIA/logs/$tanda-p$parte.log" 2>&1 &
     pids+=("$!")
   done
   for pid in "${pids[@]}"; do wait "$pid" || estado=1; done
   [[ $estado == 0 ]] || { echo "Tanda $tanda detenida; revisar logs y evidencia." >&2; return 1; }
-  python herramientas/unir.py "${registros[@]}" \
+  python herramientas/unir.py "${registros[@]}" --respuestas "$HOJA_DIR/respuestas-$dimension.json" \
     "${union[@]}" \
     --salida "$EVIDENCIA/$tanda/unida/corregido.jsonl"
 }

@@ -20,9 +20,13 @@ def leer_captura(carpeta):
     return datos
 
 
-def evaluar(tareas, root, casos=None):
+def evaluar(tareas, root, casos=None, espec=None):
     seleccion = json.loads((root / 'captura.json').read_text(encoding='utf-8'))
-    digest = hashlib.sha256((ROOT / 'ecologica/espec.py').read_bytes()).hexdigest()
+    espec = espec or ROOT / 'ecologica/espec.py'
+    digest = hashlib.sha256(espec.read_bytes()).hexdigest()
+    from hoja_final import huella
+    if espec.resolve() != (ROOT / 'ecologica/espec.py').resolve() and seleccion.get('huellas_tareas') != {c: huella(tareas[c]) for c in seleccion['casos']}:
+        raise ValueError('Huellas de captura distintas de la especificación')
     if seleccion.get('hash_espec') != digest:
         raise ValueError('Captura de otra especificación')
     capturados = seleccion['casos']
@@ -75,25 +79,29 @@ def evaluar(tareas, root, casos=None):
             captura_completa=not errores,
             motivo='; '.join(motivos) if motivos else 'Base, correcta y contrastes nativos verificados',
             estrato=t['estrato'], familia=t['familia'], variantes=detalles)
-    return dict(adr='ADR-098', regla_colaterales='ADR-098, punto 6', valido=all(t['resultado'] == 'admitida' for t in salida.values()),
+    resultado = dict(adr='ADR-098', regla_colaterales='ADR-098, punto 6', valido=all(t['resultado'] == 'admitida' for t in salida.values()),
         tareas=salida, filas=filas, hash_espec=digest,
         hashes_evidencia={p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(root.rglob('*')) if p.is_file() and not p.name.startswith('admision')})
+    if espec.resolve() != (ROOT / 'ecologica/espec.py').resolve():
+        resultado['huellas_tareas'] = {c: huella(tareas[c]) for c in casos}
+    return resultado
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--espec', type=Path, default=ROOT / 'ecologica/espec.py')
     p.add_argument('capturas', type=Path)
     p.add_argument('--casos', help='Ids de la partición; deben coincidir con captura.json.')
     a = p.parse_args()
-    spec = importlib.util.spec_from_file_location('med12_espec', ROOT / 'ecologica/espec.py')
+    spec = importlib.util.spec_from_file_location('med12_espec', a.espec)
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     admision = a.capturas / 'admision.json'
     if admision.exists():
         p.error('Ya existe admision.json; conservar evidencia y usar una captura nueva')
     try:
-        datos = evaluar(m.T, a.capturas, [c.strip() for c in a.casos.split(',')] if a.casos is not None else None)
+        datos = evaluar(m.T, a.capturas, [c.strip() for c in a.casos.split(',')] if a.casos is not None else None, a.espec)
     except (OSError, KeyError, ValueError, TypeError) as error:
         p.error(str(error))
     admision.write_text(json.dumps(datos, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

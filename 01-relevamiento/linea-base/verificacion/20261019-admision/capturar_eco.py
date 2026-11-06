@@ -18,13 +18,14 @@ import ecologica as arnes
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--espec', type=Path, default=ROOT / 'ecologica/espec.py')
     p.add_argument('--salida', type=Path, required=True)
     p.add_argument('--casos', help='Ids de tarea separados por comas; por defecto todos los candidatos activos.')
     a = p.parse_args()
     a.salida = a.salida.resolve()
     if a.salida.exists():
         p.error('La salida debe ser nueva; conservar la evidencia anterior.')
-    spec = importlib.util.spec_from_file_location('med11_espec', ROOT / 'ecologica/espec.py')
+    spec = importlib.util.spec_from_file_location('med11_espec', a.espec)
     modulo = importlib.util.module_from_spec(spec)
     sys.dont_write_bytecode = True
     spec.loader.exec_module(modulo)
@@ -34,8 +35,12 @@ def main():
         p.error('--casos requiere ids activos, sin vacíos ni duplicados.')
     a.salida.mkdir(parents=True)
     errores = []
-    manifiesto = dict(casos=casos, errores=errores, sondas_exploracion={c: arnes.sondas_exploracion(tareas[c]) if c.startswith(('N-', 'S-')) else [] for c in casos},
-        hash_espec=hashlib.sha256((ROOT / 'ecologica/espec.py').read_bytes()).hexdigest())
+    manifiesto = dict(casos=casos, errores=errores, sondas_exploracion={c: arnes.sondas_reservadas(tareas[c]) if c.startswith('R-') else arnes.sondas_exploracion(tareas[c]) if c.startswith(('N-', 'S-')) else [] for c in casos},
+        hash_espec=hashlib.sha256(a.espec.read_bytes()).hexdigest())
+    if a.espec.resolve() != (ROOT / 'ecologica/espec.py').resolve():
+        sys.path.insert(0, str(ROOT / 'herramientas'))
+        from hoja_final import huella
+        manifiesto['huellas_tareas'] = {c: huella(tareas[c]) for c in casos}
     arnes.guardar(a.salida / 'captura.json', manifiesto)
     h = SimpleNamespace(BASE=Path('/opt/linea-base'),
         PATRON_ENTORNO=r'# >>> entorno local >>>\n.*?# <<< entorno local <<<\n?')

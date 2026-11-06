@@ -255,6 +255,8 @@ class EnsayoAnidado(EnsayoModificacion):
     """Extiende el guion existente; el proveedor hijo es independiente."""
     def __init__(self, plan, registro):
         super().__init__(plan, 'ensayo', registro)
+        if plan.get('consulta_rige'):
+            self.llamadas.append(('bash', dict(command=plan['consulta_rige'])))
         self.verificacion_confirmada = not bool(plan.get('verificacion_anidada'))
         if plan.get('verificacion_anidada'):
             self.llamadas.append(('bash', dict(command=plan['verificacion_anidada'])))
@@ -422,7 +424,25 @@ def habilitar_creacion(directorio):
         subprocess.run(['chmod', '3770', str(path)], check=True)
 
 
-def cargar_plan_ensayo(base, dimension, caso):
+def cargar_plan_ensayo(base, dimension, caso, hoja='cerrada', brazo='LB'):
+    if hoja == 'final' and brazo != 'LB':
+        plan = json.loads((base / 'simulado' / ('final-' + dimension + '.json')).read_text(encoding='utf-8'))['casos'][caso]
+        if dimension == 'ecologica':
+            if brazo in ('indicado', 'disponible'):
+                plan.pop('verificacion_anidada', None)
+            elif brazo == 'sin_rige':
+                plan.pop('consulta_rige', None)
+                plan.pop('verificacion_anidada', None)
+            else:
+                plan.pop('consulta_rige', None)
+        elif brazo in ('indicado', 'disponible'):
+            plan['consulta_rige'] = 'rige hallazgos --proyecto ' + shlex.quote(PROYECTO.as_posix())
+        return plan
+    if hoja == 'final' and caso.startswith('R-'):
+        plan = json.loads((base / 'simulado/final-ecologica.json').read_text(encoding='utf-8'))['casos'][caso]
+        plan.pop('consulta_rige', None)
+        plan.pop('verificacion_anidada', None)
+        return plan
     plan = json.loads((base / 'simulado' / (dimension + '.json')).read_text(encoding='utf-8'))['casos'][caso]
     if dimension == 'ecologica':
         for nombre in ('MED-13-anidada.json', 'MED-13-c6-directa.json'):
@@ -634,6 +654,14 @@ def sondas_exploracion(escenario):
     return out
 
 
+def sondas_reservadas(escenario):
+    """Todas las acciones de archivo sobre recursos públicos; no lee respuestas."""
+    return [(permiso, rel[2:]) for rel in sorted(escenario.get('archivos', {}))
+            if rel.startswith('P/') and rel[2:] not in ('opencode.json', 'opencode.jsonc')
+            and not rel.startswith('P/.opencode/')
+            for permiso in ('read', 'edit', 'write')]
+
+
 def bateria(agentes, tarea, exploracion=False, escenario=None):
     # Batería neutral y común; no se importa espec.py ni se codifican sus guardas.
     sujetos = [('read', p) for p in ('src/index.js', 'src/productos.js', 'README.md', '.env', 'config/.env', '.env.local')]
@@ -648,6 +676,8 @@ def bateria(agentes, tarea, exploracion=False, escenario=None):
         sujetos += [('todowrite', 'lista')]
     if exploracion:
         sujetos += sondas_exploracion(escenario or dict(tarea=tarea))
+    if escenario and escenario.get('sondas_publicas') == 'archivos':
+        sujetos += sondas_reservadas(escenario)
     # Los nombres del agente vienen del pedido público, no de las respuestas.
     seleccionados = [a for a in agentes if f'`{a}`' in tarea]
     sondas = [(a, p, s) for a in seleccionados for p, s in sujetos if a != 'general' or p in ('bash', 'todowrite')]
@@ -941,6 +971,7 @@ def control_tanda(h, a, salida, escenario, wrapper, agente, momento):
                 raise ValueError('Envoltorio difiere del participante; detener.')
         if evaluar(['--version'], 'version').read_text().strip() != '1.18.25':
             raise ValueError('Versión de OpenCode incompatible.')
+        control_rige(h, a, carpeta, env, PROYECTO / directorio)
         resultado = dict(valido=True, agente=dentro, hash_binario=h.sha(BINARIO),
                          hash_wrapper=h.sha(wrapper / 'opencode'),
                          edit=json.loads((carpeta / 'verificacion-edit.json').read_text()))
@@ -1083,6 +1114,51 @@ def oraculo_posterior(prefijo, sondas, directorio, h, base, cambios, alterado, c
     return oraculo(prefijo, 'despues', sondas, directorio, h), None, motivos
 
 
+def instruccion_brazo(texto, base, dimension, brazo):
+    if brazo in ('LB', 'sin_rige'):
+        return texto
+    nombre = ('disponible.txt' if brazo == 'disponible' else brazo + '-' + dimension + '.txt')
+    bloque = (base / 'instrucciones-final' / nombre).read_bytes().decode('utf-8')
+    lineas = texto.splitlines(keepends=True)
+    posiciones = [i for i, l in enumerate(lineas) if l.startswith('Tenés la documentación oficial')]
+    if len(posiciones) != 1:
+        raise ValueError('No hay una única línea para insertar la instrucción del brazo')
+    i = posiciones[0]
+    # El separador que seguía a la línea de documentación pasa después del
+    # bloque. Consumirlo evita acumular líneas vacías al insertar el nuevo.
+    while i + 1 < len(lineas) and not lineas[i + 1].strip():
+        del lineas[i + 1]
+    lineas[i] = lineas[i].rstrip('\r\n') + '\n\n' + bloque + ('\n' if not bloque.endswith('\n') else '') + '\n'
+    return ''.join(lineas)
+
+
+def validar_entradas_final(base, esperado, sha):
+    if not esperado or sha(base / 'entradas-final.json') != esperado:
+        raise ValueError('Inventario final sin hash coincidente')
+    inventario = json.loads((base / 'entradas-final.json').read_text())
+    hashes = inventario['archivos']
+    for rel, digest in hashes.items():
+        path = (base / rel).resolve()
+        if not path.is_relative_to(base.resolve()) or sha(path) != digest:
+            raise ValueError('Entrada final alterada: ' + rel)
+    rige = inventario.get('rige', {})
+    if rige and (sha('/opt/rige/rige') != rige['hash_rige'] or sha('/usr/local/bin/rige') != rige['hash_wrapper_rige']):
+        raise ValueError('Binario RIGE alterado')
+    return dict(hashes, **{'entradas-final.json': esperado})
+
+
+def control_rige(h, a, carpeta, env, proyecto):
+    if getattr(a, 'hoja', 'cerrada') != 'final':
+        return
+    con = a.brazo in ('indicado', 'disponible')
+    comando = ('rige hallazgos --proyecto ' + shlex.quote(str(proyecto))) if con else '! command -v rige'
+    path = carpeta / 'rige.json'
+    if h.ejecutar(h.como_evaluador(['bash', '-c', comando], env), path, carpeta / 'rige.err'):
+        raise ValueError('Control RIGE fallido antes de habilitar el agente')
+    if con and (not isinstance(datos := json.loads(path.read_text()), dict) or 'esquema' not in datos):
+        raise ValueError('RIGE no devolvió JSON con esquema')
+
+
 def medir(compartidas, ejecutar_medida=ejecutar_grupo):
     try:
         return _medir(compartidas, ejecutar_medida)
@@ -1112,15 +1188,21 @@ def _medir(compartidas, ejecutar_medida):
     p.add_argument('--hash-tareas', required=True)
     p.add_argument('--hash-deteccion', required=True)
     p.add_argument('--condicion', choices=['LB', 'FIN'], default='LB')
-    p.add_argument('--brazo', choices=['LB', 'indicado', 'disponible'], default='LB')
+    p.add_argument('--brazo', choices=['LB', 'sin_rige', 'indicado', 'disponible', 'probar'], default='LB')
+    p.add_argument('--hoja', choices=['cerrada', 'final'], default='cerrada')
+    p.add_argument('--hash-entradas-final', help='SHA-256 del inventario copiado por el anfitrión')
     a = p.parse_args()
     optimizada = a.dimension == 'ecologica'
     if optimizada and not (a.preparar_base or a.base_verificada):
         p.error('Ecológica requiere fase base y validación externa; usar contenedor.sh medir.')
     if not optimizada and (a.preparar_base or a.base_verificada):
         p.error('La fase base optimizada es exclusiva de ecológica.')
-    if a.condicion != 'LB' or a.brazo != 'LB':
+    if a.hoja != 'final' and (a.condicion != 'LB' or a.brazo != 'LB'):
         p.error('[DECISIÓN PENDIENTE: MED-9 prepara las líneas de base; FIN requiere RIGE congelado.]')
+    if a.condicion != ('LB' if a.brazo == 'LB' else 'FIN'):
+        p.error('Condición incompatible con el brazo.')
+    if a.dimension == 'deteccion' and a.brazo in ('sin_rige', 'probar'):
+        p.error('Brazo exclusivo de ecológica.')
     if a.modelo != 'openai/gpt-6.1-sol' or a.k < 1 or not 1 <= a.limite <= 600 or not re.fullmatch('[A-Za-z0-9_-]+', a.tanda):
         p.error('Modelo o parámetros incompatibles con MED-9.')
     if not a.ensayo and not all(f in os.sys.argv for f in ('--tanda', '--modelo', '--k', '--limite', '--semilla', '--ejecutor', '--brazo', '--condicion')):
@@ -1131,6 +1213,8 @@ def _medir(compartidas, ejecutar_medida):
         if not re.fullmatch('[a-fA-F0-9]{64}', esperado) or h.sha(path) != esperado.lower():
             p.error(f'SHA-256 incorrecto: {nombre}')
         hashes[nombre] = h.sha(path)
+    if a.hoja == 'final':
+        hashes.update(validar_entradas_final(h.BASE, a.hash_entradas_final, h.sha))
     escenarios = json.loads((h.BASE / 'escenarios.json').read_text(encoding='utf-8'))['dimensiones'][a.dimension]
     if any(s['directorio'] and not re.fullmatch(r'[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*', s['directorio']) for s in escenarios.values()):
         p.error('DIR inválido.')
@@ -1199,6 +1283,8 @@ def _medir(compartidas, ejecutar_medida):
         hash_hoja=None, hoja_referencia='ausente',
         verificacion_edit='verificacion-edit.json', verificacion_aislamiento='aislamiento-ejecutor.json',
         regla_acceso_web='ADR-094', aislamiento_verificado=False)
+    if a.hoja == 'final':
+        meta.update(json.loads((h.BASE / 'entradas-final.json').read_text()).get('rige', {}))
     meta['hash_plan_ensayo'] = h.sha(h.BASE / 'simulado' / (a.dimension + '.json')) if a.ensayo else None
     plan_med13 = h.BASE / 'simulado/planes/MED-13-anidada.json'
     meta['hash_plan_anidado'] = h.sha(plan_med13) if a.ensayo and plan_med13.exists() else None
@@ -1263,7 +1349,7 @@ def _medir(compartidas, ejecutar_medida):
                 raise ValueError('DIR inválido.')
             os.chdir(h.HOME_E / 'tarea' if a.fuera_del_arbol else PROYECTO / directorio)
             env = entorno_ejecutor(directorio, wrapper, a.fuera_del_arbol)
-            instruccion = s['instruccion']
+            instruccion = instruccion_brazo(s['instruccion'], h.BASE, a.dimension, a.brazo)
             if a.fuera_del_arbol:
                 instruccion = instruccion.replace('Estás trabajando en el directorio de su proyecto.', f'Su proyecto está en {PROYECTO}; su terminal está en {PROYECTO / directorio}.')
             try:
@@ -1280,7 +1366,7 @@ def _medir(compartidas, ejecutar_medida):
                     aux = Path(tmp)
                     aux.chmod(0o755)
                     if a.ensayo:
-                        plan = cargar_plan_ensayo(h.BASE, a.dimension, caso)
+                        plan = cargar_plan_ensayo(h.BASE, a.dimension, caso, a.hoja, a.brazo)
                         provider = (EnsayoAnidado(plan, str(prefijo) + '.proveedor.jsonl') if a.dimension == 'ecologica' else
                                     Ensayo(plan, 'ensayo', str(prefijo) + '.proveedor.jsonl'))
                         contexto = servidor(provider)
@@ -1455,7 +1541,7 @@ def _medir(compartidas, ejecutar_medida):
                    ejecucion_alterada=any(a['ejecucion_alterada'] for a in anidados_tanda),
                    diagnostico_alteracion=[d for a in anidados_tanda for d in a['diagnostico_alteracion']],
                    diagnostico_anidado=[d for a in anidados_tanda for d in a['diagnostico_anidado']])
-        row['uso_rige'] = None
+        row['uso_rige'] = h.observar(herramientas)['uso_rige']
         costo, sin_tarifa = costo_solicitudes(solicitudes, tarifas, a.modelo, a.ensayo)
         row['costo_usd'] = None if incompleto else costo
         row['modelos_sin_tarifa'] = sin_tarifa
@@ -1472,6 +1558,8 @@ def _medir(compartidas, ejecutar_medida):
                 h.sha(h.BASE / 'medir.sh') != meta['hash_arnes'] or
                 h.sha(h.BASE / 'simulado/ecologica.py') != meta['hash_extension']):
             raise ValueError('La base, las entradas o el instrumento cambiaron durante la tanda.')
+        if a.hoja == 'final':
+            validar_entradas_final(h.BASE, a.hash_entradas_final, h.sha)
         meta['aislamiento_verificado'] = True
     except Exception as error:
         (salida / 'DETENCION.txt').write_text(str(error) + '\n', encoding='utf-8')

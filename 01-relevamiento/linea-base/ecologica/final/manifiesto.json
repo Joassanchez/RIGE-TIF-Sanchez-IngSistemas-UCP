@@ -1,0 +1,122 @@
+{
+  "hoja": "final",
+  "adr": "ADR-098",
+  "hoja_cerrada": true,
+  "fecha_cierre": "05/11/2026",
+  "admisiones": [
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-completa-20261020c\\p1",
+      "hash_admision": "144f4579052fd98a8ce114d16092008b9217b03c9c39884e8ee3ccdd723ee354",
+      "hashes_verificados": 11378,
+      "tareas": [
+        "C-2",
+        "C-6",
+        "M-1",
+        "M-5",
+        "M-9",
+        "N-12",
+        "N-3",
+        "N-7",
+        "S-1",
+        "V-1",
+        "V-5",
+        "V-9"
+      ]
+    },
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-completa-20261020c\\p2",
+      "hash_admision": "b797d24914d6718eeb4a17d296f8ec4dcdb031bb4ec01ed268896bc0abb1a3a2",
+      "hashes_verificados": 9975,
+      "tareas": [
+        "C-3",
+        "M-10",
+        "M-2",
+        "M-6",
+        "N-13",
+        "N-21",
+        "N-4",
+        "N-9",
+        "S-2",
+        "V-10",
+        "V-2",
+        "V-6"
+      ]
+    },
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-completa-20261020c\\p3",
+      "hash_admision": "e99784fe0bfb51e0559842d86b4844fb3ca187ae8725f3b8bf01a890f204849e",
+      "hashes_verificados": 12086,
+      "tareas": [
+        "C-4",
+        "M-3",
+        "M-7",
+        "N-1",
+        "N-10",
+        "N-14",
+        "N-23",
+        "N-5",
+        "S-3",
+        "V-3",
+        "V-7"
+      ]
+    },
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-completa-20261020c\\p4",
+      "hash_admision": "57ce3346db6d3c71a92b3ac3a71aaff9dd99b547dbef2944f515c48ba3ee26ba",
+      "hashes_verificados": 10383,
+      "tareas": [
+        "C-1",
+        "C-5",
+        "M-4",
+        "M-8",
+        "N-11",
+        "N-15",
+        "N-2",
+        "N-24",
+        "N-6",
+        "V-4",
+        "V-8"
+      ]
+    },
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-med19-20261105",
+      "hash_admision": "8f9015de7bd5496dec1a2b8f64dc9e4eaee21010aefaf72be111672d95047bf6",
+      "hashes_verificados": 7215,
+      "tareas": [
+        "M-2",
+        "R-1",
+        "R-2",
+        "R-3",
+        "R-4",
+        "S-3"
+      ]
+    }
+  ],
+  "retiradas": {},
+  "hashes_fuentes": {
+    "ecologica\\espec.py": "4c04b6d241a0172c2236db8a76d64ca175b21bd15f3e9fa79a3e1b821f376572",
+    "ecologica\\corpus.py": "af6e8ac0af9de2285826e1dc10c4e2a3a39e45999e3109d3b20abb20e30965c2",
+    "ecologica\\exploracion.json": "386f7ac50b8399b961827df5917f2d9f51dc13507a95b2e76424451bdc944c45",
+    "ecologica\\tareas.md": "34aa7e315883c45c55b3ba6eb1a3b8df21fb8051bb80f84a0d0e4237b1623d22",
+    "ecologica\\deteccion.md": "f3e30ce71a48cfa0d8f2359e787dad21001f3b7be8a97dccf10ba5ded35b1012",
+    "ecologica\\escenarios.json": "7b41b87dfb8417c548666f9e998c7243409ebe56b007e0ad8d78d8eec35bbc47",
+    "ecologica\\respuestas-ecologica.json": "7255504b07b37c3b68ca3693ca48273415a53fbf3edcf69c54a9cb97e2b9a86e",
+    "ecologica\\respuestas-deteccion.json": "93628adcee474cafc1f2424e71dfae79cca85075a03b65b361a0f646c5b47538",
+    "ecologica\\final\\espec_final.py": "d7e81d2fabd977c0373b36db285d3295eeefef77f389ab3a51e73ab25209d110",
+    "herramientas\\hoja_final.py": "cf66a651f68b8f746f7ddfb501f29117b110f4ff44e22bce825a0f2d5632f4c9",
+    "herramientas\\generar-ecologica.py": "e38a64f62cd0268c434911bca77bef79dc32fb0a19658cf56c3e3952d32d110d",
+    "ecologica\\final\\instrucciones\\disponible.txt": "76ae92c053c355f1d23beca92f204ebf7a6e06b367530d267d1e97fe80eb88b9",
+    "ecologica\\final\\instrucciones\\indicado-deteccion.txt": "07549082140fe7cca55ca4811e955ebba09d6746c3f5ac5921734a463b588f9e",
+    "ecologica\\final\\instrucciones\\indicado-ecologica.txt": "4ecb0efa21f619c7738f6c9e2d1bfde79852759bccb714c5007178dc5caf7075",
+    "ecologica\\final\\instrucciones\\probar-ecologica.txt": "aa88a3760f9ac114d9179f002560aad28650e3fad387f4c1c0d5f16f7ed9af7e"
+  },
+  "hashes_generados": {
+    "escenarios.json": "c1a1dfc4a0f6475eabac1ab0d0e45bcfbd8bd782e1f8691845716dea814a2a70",
+    "respuestas-ecologica.json": "51b7c166532985962284237232f6a4642e28370c3b51674003b693cb88a97858",
+    "tareas.md": "41ecaebffeaf3dd875b363bbf202192e3f518e81e6ed9f9713a0e83eb27faeb3",
+    "deteccion.md": "f3e30ce71a48cfa0d8f2359e787dad21001f3b7be8a97dccf10ba5ded35b1012",
+    "respuestas-deteccion.json": "93628adcee474cafc1f2424e71dfae79cca85075a03b65b361a0f646c5b47538",
+    "planes-ecologica.json": "09336be8098deb0d3d393d54a5f7acc87e197b22be69e0b4d3893f37c8e77039",
+    "planes-deteccion.json": "effcac7d3ff326f7b4b838c380a134b32fb3e9bda9e9d032ff7a3eeb4e2581bf"
+  }
+}

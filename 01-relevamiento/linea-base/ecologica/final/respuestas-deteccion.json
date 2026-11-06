@@ -1,0 +1,487 @@
+{
+  "version": 1,
+  "dimension": "deteccion",
+  "adr": "ADR-098",
+  "k": 3,
+  "hoja_cerrada": true,
+  "estado": "cerrada",
+  "admision": "hecha",
+  "hashes_fuentes": {
+    "espec.py": "4c04b6d241a0172c2236db8a76d64ca175b21bd15f3e9fa79a3e1b821f376572",
+    "corpus.py": "af6e8ac0af9de2285826e1dc10c4e2a3a39e45999e3109d3b20abb20e30965c2",
+    "tareas.md": "34aa7e315883c45c55b3ba6eb1a3b8df21fb8051bb80f84a0d0e4237b1623d22",
+    "deteccion.md": "f3e30ce71a48cfa0d8f2359e787dad21001f3b7be8a97dccf10ba5ded35b1012"
+  },
+  "casos": {
+    "D-A": {
+      "items": [
+        {
+          "id": "D1",
+          "efecto": false,
+          "tipo": "regla de permiso sin efecto (desplazada por una regla posterior)",
+          "archivo": "G/opencode.json",
+          "clave": "permission.bash.\"git push\"",
+          "comprobacion": [
+            "perm",
+            "build",
+            "bash",
+            "git push",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(\\.config/opencode/opencode\\.json)",
+            "clave": "git push(?! \\*)"
+          }
+        },
+        {
+          "id": "D2",
+          "efecto": false,
+          "tipo": "regla de permiso sin efecto (ruta absoluta)",
+          "archivo": "P/opencode.json",
+          "clave": "permission.read.\"/home/participante/proyecto/.env\"",
+          "comprobacion": [
+            "perm",
+            "build",
+            "read",
+            ".env",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "/home/participante/proyecto/\\.env|\\.env"
+          }
+        },
+        {
+          "id": "D3",
+          "efecto": false,
+          "tipo": "regla de permiso sin efecto (desplazada por OPENCODE_PERMISSION)",
+          "archivo": "P/opencode.json",
+          "clave": "permission.webfetch",
+          "comprobacion": [
+            "perm",
+            "build",
+            "webfetch",
+            "https://example.com",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "webfetch"
+          }
+        },
+        {
+          "id": "C1",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "G/opencode.json",
+          "clave": "permission.bash.\"npm publish *\"",
+          "comprobacion": [
+            "perm",
+            "build",
+            "bash",
+            "npm publish --access public",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(\\.config/opencode/opencode\\.json)",
+            "clave": "npm publish"
+          }
+        },
+        {
+          "id": "C2",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "permission.read.\"secretos/*\"",
+          "comprobacion": [
+            "perm",
+            "build",
+            "read",
+            "secretos/claves.txt",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "secretos"
+          }
+        },
+        {
+          "id": "C3",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "agent.build.permission.edit",
+          "comprobacion": [
+            "perm",
+            "build",
+            "edit",
+            "src/index.js",
+            "ask"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "edit"
+          }
+        }
+      ]
+    },
+    "D-B": {
+      "items": [
+        {
+          "id": "D4",
+          "efecto": false,
+          "tipo": "valor desplazado por precedencia",
+          "archivo": "P/opencode.json",
+          "clave": "agent.build.model",
+          "comprobacion": [
+            "valor",
+            "build",
+            "model",
+            "openai/gpt-5-mini"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "model"
+          }
+        },
+        {
+          "id": "D5",
+          "efecto": false,
+          "tipo": "sustitución sin valor",
+          "archivo": "P/opencode.json",
+          "clave": "agent.plan.description",
+          "comprobacion": [
+            "valor",
+            "plan",
+            "description",
+            "Plan-{env:RIGE_ETIQUETA_INEXISTENTE}"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "description"
+          }
+        },
+        {
+          "id": "C4",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/.opencode/opencode.json",
+          "clave": "agent.build.model",
+          "comprobacion": [
+            "valor",
+            "build",
+            "model",
+            "google/gemini-2.5-flash"
+          ],
+          "coincide": {
+            "archivo": "\\.opencode/opencode\\.json",
+            "clave": "model"
+          }
+        },
+        {
+          "id": "C5",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "G/opencode.json",
+          "clave": "agent.build.temperature",
+          "comprobacion": [
+            "valor",
+            "build",
+            "temperature",
+            0.4
+          ],
+          "coincide": {
+            "archivo": "(\\.config/opencode/opencode\\.json)",
+            "clave": "temperature"
+          }
+        },
+        {
+          "id": "C6",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "agent.plan.temperature",
+          "comprobacion": [
+            "valor",
+            "plan",
+            "temperature",
+            0.2
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "temperature"
+          }
+        }
+      ]
+    },
+    "D-C": {
+      "items": [
+        {
+          "id": "D6",
+          "efecto": false,
+          "tipo": "entrada descartada sin error visible (JSON inválido)",
+          "archivo": "env:OPENCODE_PERMISSION",
+          "clave": "bash",
+          "comprobacion": [
+            "perm",
+            "build",
+            "bash",
+            "ls",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "OPENCODE_PERMISSION",
+            "clave": ".*"
+          }
+        },
+        {
+          "id": "D7",
+          "efecto": false,
+          "tipo": "valor desplazado por el agente en markdown",
+          "archivo": "P/opencode.json",
+          "clave": "agent.revisor.model",
+          "comprobacion": [
+            "valor",
+            "revisor",
+            "model",
+            "openai/gpt-5"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "model"
+          }
+        },
+        {
+          "id": "C7",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/.opencode/agent/revisor.md",
+          "clave": "model",
+          "comprobacion": [
+            "valor",
+            "revisor",
+            "model",
+            "anthropic/claude-sonnet-4-5"
+          ],
+          "coincide": {
+            "archivo": "\\.opencode/agents?/revisor\\.md",
+            "clave": "model"
+          }
+        },
+        {
+          "id": "C8",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "agent.revisor.temperature",
+          "comprobacion": [
+            "valor",
+            "revisor",
+            "temperature",
+            0.1
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "temperature"
+          }
+        },
+        {
+          "id": "C9",
+          "efecto": true,
+          "tipo": "control",
+          "archivo": "P/opencode.json",
+          "clave": "permission.bash",
+          "comprobacion": [
+            "perm",
+            "build",
+            "bash",
+            "ls",
+            "ask"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "bash"
+          }
+        }
+      ]
+    },
+    "N-10-ingenua_frontmatter-D": {
+      "items": [
+        {
+          "id": "N-10-ingenua_frontmatter-D",
+          "efecto": false,
+          "tipo": "forma ingenua admitida",
+          "archivo": "P/.opencode/agent/habilidades.md",
+          "clave": "skill",
+          "comprobacion": [
+            "perm",
+            "habilidades",
+            "skill",
+            "med11-interna",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "\\.opencode/agent/habilidades\\.md$",
+            "clave": "skill"
+          }
+        }
+      ]
+    },
+    "N-10-ingenua_frontmatter-C": {
+      "items": [
+        {
+          "id": "N-10-ingenua_frontmatter-C",
+          "efecto": true,
+          "tipo": "control admitido",
+          "archivo": "P/.opencode/agent/habilidades.md",
+          "clave": "skill",
+          "comprobacion": [
+            "perm",
+            "habilidades",
+            "skill",
+            "med11-interna",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "\\.opencode/agent/habilidades\\.md$",
+            "clave": "skill"
+          }
+        }
+      ]
+    },
+    "N-23-ingenua_absoluta-D": {
+      "items": [
+        {
+          "id": "N-23-ingenua_absoluta-D",
+          "efecto": false,
+          "tipo": "forma ingenua admitida",
+          "archivo": "P/opencode.json",
+          "clave": "read",
+          "comprobacion": [
+            "perm",
+            "build",
+            "read",
+            "config/credenciales.json",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "read"
+          }
+        }
+      ]
+    },
+    "N-23-ingenua_absoluta-C": {
+      "items": [
+        {
+          "id": "N-23-ingenua_absoluta-C",
+          "efecto": true,
+          "tipo": "control admitido",
+          "archivo": "P/opencode.json",
+          "clave": "read",
+          "comprobacion": [
+            "perm",
+            "build",
+            "read",
+            "config/credenciales.json",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "read"
+          }
+        }
+      ]
+    },
+    "V-10-ingenua_env-D": {
+      "items": [
+        {
+          "id": "V-10-ingenua_env-D",
+          "efecto": false,
+          "tipo": "forma ingenua admitida",
+          "archivo": "P/opencode.json",
+          "clave": "mcp",
+          "comprobacion": [
+            "valor",
+            "__config__",
+            "mcp.docs.environment.API_TOKEN",
+            "med12-ficticio"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "mcp"
+          }
+        }
+      ]
+    },
+    "V-10-ingenua_env-C": {
+      "items": [
+        {
+          "id": "V-10-ingenua_env-C",
+          "efecto": true,
+          "tipo": "control admitido",
+          "archivo": "P/opencode.json",
+          "clave": "mcp",
+          "comprobacion": [
+            "valor",
+            "__config__",
+            "mcp.docs.environment.API_TOKEN",
+            "med12-ficticio"
+          ],
+          "coincide": {
+            "archivo": "(^|[^.\\w/])(proyecto/)?opencode\\.json$|^\\./opencode\\.json$|^/home/participante/proyecto/opencode\\.json$",
+            "clave": "mcp"
+          }
+        }
+      ]
+    },
+    "N-24-ingenua_dotdir-D": {
+      "items": [
+        {
+          "id": "N-24-ingenua_dotdir-D",
+          "efecto": false,
+          "tipo": "forma ingenua admitida",
+          "archivo": "P/.opencode/opencode.json",
+          "clave": "webfetch",
+          "comprobacion": [
+            "perm",
+            "build",
+            "webfetch",
+            "https://example.com",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "\\.opencode/opencode\\.json",
+            "clave": "webfetch"
+          }
+        }
+      ]
+    },
+    "N-24-ingenua_dotdir-C": {
+      "items": [
+        {
+          "id": "N-24-ingenua_dotdir-C",
+          "efecto": true,
+          "tipo": "control admitido",
+          "archivo": "P/.opencode/opencode.json",
+          "clave": "webfetch",
+          "comprobacion": [
+            "perm",
+            "build",
+            "webfetch",
+            "https://example.com",
+            "deny"
+          ],
+          "coincide": {
+            "archivo": "\\.opencode/opencode\\.json",
+            "clave": "webfetch"
+          }
+        }
+      ]
+    }
+  },
+  "hash_admision": "7604913a3ddfd056e76398f17133c6a6cc1399f22a8f6dcdee2dc151919a376b",
+  "fecha_admision": "2026-10-20T02:12:27+00:00",
+  "fuente_fecha_admision": "mtime de admision.json (UTC)",
+  "fecha_cierre": "19/10/2026"
+}

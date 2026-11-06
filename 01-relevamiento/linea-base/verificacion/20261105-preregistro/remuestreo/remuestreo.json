@@ -1,0 +1,132 @@
+{
+  "iteraciones": 5000,
+  "semilla": 20261105,
+  "limite": 0.05,
+  "lectura": "principal",
+  "ejecutores": {
+    "principal": {
+      "perdida_resolucion": {
+        "problemas_resueltos_base": 38,
+        "problemas_totales": 38,
+        "sin_resolver_base": [],
+        "con_repeticion_no_resuelta": [
+          "N-21"
+        ],
+        "probabilidad_sin_cambio_real": 0.2556,
+        "percentil95": 1,
+        "decision": "tolerancia en el percentil 95"
+      },
+      "entradas": {
+        "eco-principal": "c809ea52d65d9ddfbafbc997a20a5bf07ea2453f8522037014f305f04e393425",
+        "det-principal": "3c84bacabb37db8fc2026a50d9c6b6ab4506c4385035a0fb984606d8b183b71f"
+      },
+      "problemas_libres": 38,
+      "libres_con_una_de_tres": [
+        "N-21"
+      ],
+      "adquisicion": {
+        "probabilidad_sin_cambio_real": 0.2608,
+        "percentil95": 1,
+        "decision": "tolerancia en el percentil 95"
+      },
+      "adquisicion_sensibilidad_jeffreys": {
+        "probabilidad_sin_cambio_real": 0.8674,
+        "percentil95": 4,
+        "decision": "tolerancia en el percentil 95"
+      },
+      "id1": {
+        "base": "8 de 11",
+        "probabilidad_sin_cambio_real": 0.0,
+        "percentil95": 0,
+        "decision": "se conserva la condición"
+      },
+      "id2": {
+        "base": "8 de 33",
+        "ejecuciones": 33,
+        "base_falsos_positivos": 8,
+        "probabilidad_sin_cambio_real": 0.294,
+        "percentil95": 9,
+        "decision": "tolerancia en el percentil 95"
+      },
+      "reservado": {
+        "3": {
+          "probabilidad_sin_cambio_real": 0.2058,
+          "percentil95": 1,
+          "decision": "tolerancia en el percentil 95"
+        },
+        "4": {
+          "probabilidad_sin_cambio_real": 0.2462,
+          "percentil95": 1,
+          "decision": "tolerancia en el percentil 95"
+        },
+        "5": {
+          "probabilidad_sin_cambio_real": 0.2746,
+          "percentil95": 2,
+          "decision": "tolerancia en el percentil 95"
+        }
+      }
+    },
+    "charles": {
+      "perdida_resolucion": {
+        "problemas_resueltos_base": 38,
+        "problemas_totales": 38,
+        "sin_resolver_base": [],
+        "con_repeticion_no_resuelta": [
+          "N-13"
+        ],
+        "probabilidad_sin_cambio_real": 0.2556,
+        "percentil95": 1,
+        "decision": "tolerancia en el percentil 95"
+      },
+      "entradas": {
+        "eco-charles": "66c2eda2decbe23b647d5322e1febd3922da58a94080bcf39620a85072433c07",
+        "det-charles": "badadeaad85fd68c7962716a4577f4d1a5f040cd41cbe48f41c098d6d05252d3"
+      },
+      "problemas_libres": 38,
+      "libres_con_una_de_tres": [
+        "N-13"
+      ],
+      "adquisicion": {
+        "probabilidad_sin_cambio_real": 0.2612,
+        "percentil95": 1,
+        "decision": "tolerancia en el percentil 95"
+      },
+      "adquisicion_sensibilidad_jeffreys": {
+        "probabilidad_sin_cambio_real": 0.8674,
+        "percentil95": 4,
+        "decision": "tolerancia en el percentil 95"
+      },
+      "id1": {
+        "base": "8 de 11",
+        "probabilidad_sin_cambio_real": 0.0,
+        "percentil95": 0,
+        "decision": "se conserva la condición"
+      },
+      "id2": {
+        "base": "9 de 33",
+        "ejecuciones": 33,
+        "base_falsos_positivos": 9,
+        "probabilidad_sin_cambio_real": 0.0,
+        "percentil95": 9,
+        "decision": "se conserva la condición"
+      },
+      "reservado": {
+        "3": {
+          "probabilidad_sin_cambio_real": 0.1236,
+          "percentil95": 1,
+          "decision": "tolerancia en el percentil 95"
+        },
+        "4": {
+          "probabilidad_sin_cambio_real": 0.1566,
+          "percentil95": 1,
+          "decision": "tolerancia en el percentil 95"
+        },
+        "5": {
+          "probabilidad_sin_cambio_real": 0.2018,
+          "percentil95": 1,
+          "decision": "tolerancia en el percentil 95"
+        }
+      }
+    }
+  }
+}

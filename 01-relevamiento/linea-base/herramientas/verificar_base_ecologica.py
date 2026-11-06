@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 
 from corregir_ecologica import clave, observar_captura, hoja_admitida, objetivos
 
@@ -25,11 +26,27 @@ def exigir_tarea(admision, caso):
 def cargar_admisiones(fuentes, hoja, permitir_legacy=False):
     """Cada raíz debe estar completa; nunca completar sus faltantes con otra."""
     indice, firmas, procedencia = {}, {}, []
+    final = hoja.get('hoja') == 'final'
+    if final:
+        from hoja_final import cargar, huella
+        historica = cargar(ROOT / 'ecologica/espec.py').T
+        nuevas = cargar(ROOT / 'ecologica/final/espec_final.py').T
+        esperadas = {c: huella(nuevas[c]) for c in hoja['casos']}
+        if hoja.get('huellas_tareas') != esperadas:
+            raise ValueError('La hoja final no coincide con las huellas vigentes')
+        hash_historica = hashlib.sha256((ROOT / 'ecologica/espec.py').read_bytes()).hexdigest()
+        hash_final = hashlib.sha256((ROOT / 'ecologica/final/espec_final.py').read_bytes()).hexdigest()
+    raices = []
     for fuente in dict.fromkeys(Path(f).expanduser().resolve() for f in fuentes):
+        # La raíz histórica completa es el directorio que contiene p1..p4.
+        particiones = sorted(p for p in fuente.glob('p*') if p.is_dir() and re.fullmatch(r'p\d+', p.name)) if final and not (fuente / 'admision.json').exists() else []
+        raices.extend(particiones or [fuente])
+    for fuente in dict.fromkeys(raices):
         path = fuente / 'admision.json'
         contenido = path.read_bytes()
         admision = json.loads(contenido)
-        if (admision.get('hash_espec') != hoja['hashes_fuentes']['espec.py'] or
+        hash_valido = admision.get('hash_espec') in (hash_historica, hash_final) if final else admision.get('hash_espec') == hoja['hashes_fuentes']['espec.py']
+        if (not hash_valido or
                 (admision.get('adr') != 'ADR-098' and not (permitir_legacy and admision.get('valido') is True))):
             raise ValueError('Admisión MED-11 ausente o de otra especificación: ' + str(path))
         hashes = admision['hashes_evidencia']
@@ -44,7 +61,16 @@ def cargar_admisiones(fuentes, hoja, permitir_legacy=False):
                 raise ValueError('Evidencia de admisión MED-11 alterada: ' + str(archivo))
         tareas = admision.get('tareas', {})
         casos = set(tareas) | {r['tarea'] for r in admision.get('filas', [])}
+        if final:
+            if admision['hash_espec'] == hash_final:
+                huellas = admision.get('huellas_tareas')
+                if not isinstance(huellas, dict) or set(huellas) != casos or any(c not in nuevas or h != huella(nuevas[c]) for c, h in huellas.items()):
+                    raise ValueError('Admisión final sin huellas por tarea válidas')
+            else:
+                huellas = {c: huella(historica[c]) for c in casos if c in historica}
         for caso in sorted(casos):
+            if final and (caso not in esperadas or huellas.get(caso) != esperadas[caso]):
+                continue
             firma = dict(tarea=tareas.get(caso),
                 filas=sorted((json.dumps(r, sort_keys=True) for r in admision.get('filas', []) if r.get('tarea') == caso)),
                 hashes={rel.replace('\\', '/'): digest for rel, digest in hashes.items() if rel.replace('\\', '/').startswith(caso + '/')})
@@ -99,8 +125,8 @@ def verificar(tanda, respuestas, capturas=CAPTURAS, exploracion=None, admisiones
     fuentes = admisiones if admisiones is not None else [exploracion or ROOT / 'verificacion/20261019-admision/salida']
     if admisiones is not None and not fuentes:
         raise ValueError('Indicar al menos una raíz completa de admisión.')
-    indice_admision, procedencia = cargar_admisiones(fuentes, hoja, permitir_legacy=exploracion is not None and admisiones is None) if no_m or admisiones is not None or exploracion is not None else ({}, [])
-    for caso in sorted(no_m):
+    indice_admision, procedencia = cargar_admisiones(fuentes, hoja, permitir_legacy=exploracion is not None and admisiones is None) if hoja.get('hoja') == 'final' or no_m or admisiones is not None or exploracion is not None else ({}, [])
+    for caso in sorted({c for c, _ in meta['orden']} if hoja.get('hoja') == 'final' else no_m):
         if caso not in indice_admision:
             raise ValueError('Tarea sin admisión ADR-098: ' + caso)
         exigir_tarea(indice_admision[caso][1], caso)

@@ -1,0 +1,1095 @@
+{
+  "ensayo": true,
+  "dimension": "ecologica",
+  "casos": {
+    "M-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo src/productos.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-2": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": {\n          \"*\": \"ask\",\n          \"src/index.js\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta edit --objetivo src/index.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-3": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"deny\",\n          \"npm test\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'npm test'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "npm test",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-4": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git push *\": \"deny\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'git push origin main'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git push origin main",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-5": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"external_directory\": {\n      \"/home/participante/compartido/*\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta external_directory --objetivo '/home/participante/compartido/*'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/compartido/notas.md"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-6": {
+      "archivos": {
+        "P/.opencode/agent/revisor.md": "---\ndescription: Revisor de código del equipo\nmode: primary\npermission:\n  edit: allow\n---\n\nRevisá los cambios pendientes.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente revisor --herramienta edit --objetivo src/index.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent revisor --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-7": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"rm *\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'rm -rf dist'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "rm -rf dist",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-8": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"general\": {\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"allow\",\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente general --herramienta bash --objetivo 'git push origin main'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git push origin main",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent general --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-9": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"ask\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta webfetch --objetivo https://example.com",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "webfetch",
+          "argumentos": {
+            "url": "https://example.com",
+            "format": "text"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "M-10": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \".env\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo .env",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/.env"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"model\": \"google/gemini-2.5-flash\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-2": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"plan\": {\n      \"temperature\": 0.55\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-3": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Desarrollo del inventario\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-4": {
+      "archivos": {
+        "P/.opencode/agent/docs.md": "---\ndescription: Redacta documentación\nmode: primary\nmodel: google/gemini-2.5-flash\n---\n\nRedactá la documentación.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-1": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'npm test'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "npm test",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-2": {
+      "archivos": {
+        "P/.opencode/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"webfetch\": \"allow\"\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta webfetch --objetivo https://example.com",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "webfetch",
+          "argumentos": {
+            "url": "https://example.com",
+            "format": "text"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-3": {
+      "archivos": {
+        "P/.opencode/agent/auditor.md": "---\ndescription: Auditor del equipo\nmode: primary\npermission:\n  bash: \n    \"*\": deny\n    \"npm test\": allow\n---\n\nAuditá el proyecto.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente auditor --herramienta bash --objetivo 'npm test'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "npm test",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent auditor --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-4": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"bash\": {\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'git push origin main'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git push origin main",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-5": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"allow\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta edit --objetivo src/index.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-6": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"git push *\": \"deny\"\n    },\n    \"read\": {\n      \"secretos.txt\": \"deny\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'git push origin main'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git push origin main",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-7": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"secretos.txt\": \"deny\"\n        },\n        \"grep\": \"deny\",\n        \"bash\": \"deny\",\n        \"task\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo secretos.txt",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/secretos.txt"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-9": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"tools\": {\n        \"bash\": false\n      },\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"allow\",\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'git push origin main'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git push origin main",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-10": {
+      "archivos": {
+        "P/.opencode/agent/habilidades.md": "---\ndescription: Agente del equipo\nmode: primary\npermission:\n  skill:\n    med11-interna: deny\n---\nConsultá los procedimientos del equipo.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente habilidades --herramienta skill --objetivo med11-interna",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "skill",
+          "argumentos": {
+            "name": "med11-interna"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent habilidades --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-11": {
+      "archivos": {
+        "G/opencode.jsonc": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'npm test'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "npm test",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-12": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Inspecciona el inventario\",\n      \"permission\": {\n        \"edit\": \"deny\",\n        \"bash\": \"deny\",\n        \"task\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta edit --objetivo src/index.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-13": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"write\": \"deny\",\n        \"edit\": {\n          \"src/productos.js\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta write --objetivo src/productos.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-14": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"list\": \"deny\",\n        \"read\": {\n          \"privado\": \"deny\",\n          \"privado/\": \"deny\",\n          \"privado/*\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo privado",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/privado"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-15": {
+      "archivos": {
+        "P/.opencode/agent/build.md": "---\ndescription: Desarrollo del equipo\nmode: primary\npermission:\n  edit: deny\n---\nDesarrollá el inventario.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta edit --objetivo src/index.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-5": {
+      "archivos": {
+        "G/agents/docs_global.md": "---\ndescription: Documentación del equipo\nmode: primary\nmodel: google/gemini-2.5-flash\n---\nDocumentá el inventario.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-6": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Equipo de inventario\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-7": {
+      "archivos": {
+        "P/.opencode/agent/guia.md": "---\ndescription: Guía de auditoría\nmode: primary\nprompt: MED11_PROMPT_INICIAL\n---\nRevisá el inventario y señalá inconsistencias.\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-8": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"guia\": {\n      \"mode\": \"primary\",\n      \"temperature\": 0.2,\n      \"prompt\": \"{file:./reglas.md}\",\n      \"instructions\": [\n        \"reglas.md\"\n      ]\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "S-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo src/productos.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/productos.js"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "S-2": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"rm *\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'rm -rf dist'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "rm -rf dist",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "S-3": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\",\n      \"npm test *\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'npm test'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "npm test",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "C-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"ask\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta edit --objetivo src/index.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "C-2": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"ask\",\n      \"npm run lint\": \"allow\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'npm run lint'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "npm run lint",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "C-3": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta webfetch --objetivo https://example.com",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "webfetch",
+          "argumentos": {
+            "url": "https://example.com",
+            "format": "text"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "C-4": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"allow\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta edit --objetivo src/index.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "C-5": {
+      "archivos": {
+        "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git commit *\": \"ask\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta bash --objetivo 'git commit -m x'",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "bash",
+          "argumentos": {
+            "command": "git commit -m x",
+            "description": "ENSAYO MED-19"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "C-6": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"revisor\": {\n      \"description\": \"Revisor del equipo\",\n      \"permission\": {\n        \"edit\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente revisor --herramienta edit --objetivo src/index.js",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/src/index.js",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent revisor --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-21": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \".env\": \"deny\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo .env",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/.env"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-23": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"config/credenciales.json\": \"deny\"\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo config/credenciales.json",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/config/credenciales.json"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-9": {
+      "archivos": {
+        "P/AGENTS.md": "Respondé siempre en español\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "V-10": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"mcp\": {\n    \"docs\": {\n      \"type\": \"local\",\n      \"command\": [\n        \"node\",\n        \"docs.js\"\n      ],\n      \"enabled\": false,\n      \"environment\": {\n        \"API_TOKEN\": \"med12-ficticio\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige hallazgos --proyecto /home/participante/proyecto",
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "N-24": {
+      "archivos": {
+        "P/.opencode/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"deny\"\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta webfetch --objetivo https://example.com",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "webfetch",
+          "argumentos": {
+            "url": "https://example.com",
+            "format": "text"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "R-1": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"*\": \"deny\",\n          \"docs/manual.md\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo docs/manual.md",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/docs/manual.md"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "R-2": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"informes/*\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta read --objetivo informes/trimestre.txt",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/informes/trimestre.txt"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "R-3": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": {\n          \"scripts/publicar.sh\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta edit --objetivo scripts/publicar.sh",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/scripts/publicar.sh",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    },
+    "R-4": {
+      "archivos": {
+        "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": {\n          \"*\": \"ask\",\n          \"plantillas/*\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "salida": {
+        "hecho": true,
+        "cambios": [
+          "ENSAYO MED-19"
+        ],
+        "impedimento": ""
+      },
+      "consulta_rige": "rige permiso --proyecto /home/participante/proyecto --agente build --herramienta edit --objetivo plantillas/base.html",
+      "llamadas_anidadas": [
+        {
+          "herramienta": "write",
+          "argumentos": {
+            "filePath": "/home/participante/proyecto/plantillas/base.html",
+            "content": "ENSAYO MED-19\n"
+          },
+          "objetivo": true
+        }
+      ],
+      "verificacion_anidada": "como-dev 'opencode run --model simulado/permisos --agent build --format json \"ENSAYO MED-19: probá el efecto\"'"
+    }
+  }
+}

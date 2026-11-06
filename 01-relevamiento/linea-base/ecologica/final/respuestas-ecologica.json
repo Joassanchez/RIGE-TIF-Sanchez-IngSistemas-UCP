@@ -1,0 +1,1856 @@
+{
+  "version": 1,
+  "dimension": "ecologica",
+  "adr": "ADR-098",
+  "k": 3,
+  "hoja_cerrada": true,
+  "estado": "final cerrada",
+  "admision": "por tarea",
+  "hashes_fuentes": {
+    "espec.py": "4c04b6d241a0172c2236db8a76d64ca175b21bd15f3e9fa79a3e1b821f376572",
+    "corpus.py": "af6e8ac0af9de2285826e1dc10c4e2a3a39e45999e3109d3b20abb20e30965c2",
+    "tareas.md": "34aa7e315883c45c55b3ba6eb1a3b8df21fb8051bb80f84a0d0e4237b1623d22",
+    "deteccion.md": "f3e30ce71a48cfa0d8f2359e787dad21001f3b7be8a97dccf10ba5ded35b1012",
+    "espec_final": "d7e81d2fabd977c0373b36db285d3295eeefef77f389ab3a51e73ab25209d110"
+  },
+  "casos": {
+    "M-1": {
+      "estrato": "E2",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          "README.md"
+        ]
+      ],
+      "mecanismo": "permiso read por archivo",
+      "objetivo": [
+        "build",
+        "read",
+        "src/productos.js",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"/home/participante/proyecto/src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "M-2": {
+      "estrato": "E2",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "edit",
+          "src/productos.js"
+        ],
+        [
+          "build",
+          "edit",
+          "README.md"
+        ]
+      ],
+      "mecanismo": "permiso edit por archivo",
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": {\n          \"*\": \"ask\",\n          \"src/index.js\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"edit\": {\n      \"*\": \"ask\",\n      \"/home/participante/proyecto/src/index.js\": \"allow\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "M-3": {
+      "estrato": "E2",
+      "familia": "M-3",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "npm install"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "patrón de bash",
+      "objetivo": [
+        "build",
+        "bash",
+        "npm test",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"deny\",\n          \"npm test\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_raiz": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"npm test\": \"allow\"\n    }\n  },\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"bash\": \"deny\"\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "M-4": {
+      "estrato": "E2",
+      "familia": "M-4",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "bash",
+          "npm test"
+        ]
+      ],
+      "mecanismo": "excepción de denegación con argumentos",
+      "objetivo": [
+        "build",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git push *\": \"deny\"\n    }\n  }\n}\n"
+        },
+        "ingenua_sin_argumentos": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git push\": \"deny\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "M-5": {
+      "estrato": "E2",
+      "familia": "M-5",
+      "guardas": [
+        [
+          "build",
+          "external_directory",
+          "/home/participante/otra/*"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "external_directory",
+      "objetivo": [
+        "build",
+        "external_directory",
+        "/home/participante/compartido/*",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"external_directory\": {\n      \"/home/participante/compartido/*\": \"allow\"\n    }\n  }\n}\n"
+        },
+        "ingenua_read": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"/home/participante/compartido/*\": \"allow\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "M-6": {
+      "estrato": "E2",
+      "familia": "M-6",
+      "guardas": [
+        [
+          "revisor",
+          "bash",
+          "ls"
+        ],
+        [
+          "revisor",
+          "read",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "agente en markdown y en JSON",
+      "objetivo": [
+        "revisor",
+        "edit",
+        "src/index.js",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/.opencode/agent/revisor.md": "---\ndescription: Revisor de código del equipo\nmode: primary\npermission:\n  edit: allow\n---\n\nRevisá los cambios pendientes.\n"
+        },
+        "ingenua_json": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"revisor\": {\n      \"description\": \"Revisa cambios antes del commit\",\n      \"permission\": {\n        \"edit\": \"allow\"\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "M-7": {
+      "estrato": "E2",
+      "familia": "M-7",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "bash",
+          "git status"
+        ]
+      ],
+      "mecanismo": "orden de reglas con comodín",
+      "objetivo": [
+        "build",
+        "bash",
+        "rm -rf dist",
+        "ask"
+      ],
+      "variantes": {
+        "correcta": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"rm *\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "ingenua_orden": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"rm *\": \"ask\",\n      \"*\": \"allow\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "M-8": {
+      "estrato": "E2",
+      "familia": "M-8",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git push origin main"
+        ],
+        [
+          "general",
+          "bash",
+          "git status"
+        ]
+      ],
+      "mecanismo": "subagente",
+      "objetivo": [
+        "general",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"general\": {\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"allow\",\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_padre": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"allow\",\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "M-9": {
+      "estrato": "E2",
+      "familia": "M-9",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "variable OPENCODE_PERMISSION",
+      "objetivo": [
+        "build",
+        "webfetch",
+        "https://example.com",
+        "ask"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"ask\"\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_raiz": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"webfetch\": \"ask\"\n  }\n}\n"
+        }
+      }
+    },
+    "M-10": {
+      "estrato": "E2",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "config/.env"
+        ],
+        [
+          "build",
+          "read",
+          ".env.local"
+        ]
+      ],
+      "mecanismo": "regla nativa",
+      "objetivo": [
+        "build",
+        "read",
+        ".env",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \".env\": \"allow\"\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"/home/participante/proyecto/.env\": \"allow\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "V-1": {
+      "estrato": "E1",
+      "familia": "V-1",
+      "mecanismo": "control: modelo",
+      "valor": [
+        "build",
+        "model",
+        "google/gemini-2.5-flash"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"model\": \"google/gemini-2.5-flash\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "V-2": {
+      "estrato": "E1",
+      "familia": "V-2",
+      "mecanismo": "control: temperatura",
+      "valor": [
+        "plan",
+        "temperature",
+        0.55
+      ],
+      "variantes": {
+        "correcta": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"plan\": {\n      \"temperature\": 0.55\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "V-3": {
+      "estrato": "E1",
+      "familia": "V-3",
+      "mecanismo": "control: descripción",
+      "valor": [
+        "build",
+        "description",
+        "Desarrollo del inventario"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Desarrollo del inventario\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "V-4": {
+      "estrato": "E1",
+      "familia": "V-4",
+      "mecanismo": "control: modelo de un agente en markdown",
+      "valor": [
+        "docs",
+        "model",
+        "google/gemini-2.5-flash"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/.opencode/agent/docs.md": "---\ndescription: Redacta documentación\nmode: primary\nmodel: google/gemini-2.5-flash\n---\n\nRedactá la documentación.\n"
+        }
+      }
+    },
+    "N-1": {
+      "estrato": "E2",
+      "familia": "N-1",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "npm install"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "posición heredada al fusionar capas",
+      "objetivo": [
+        "build",
+        "bash",
+        "npm test",
+        "ask"
+      ],
+      "variantes": {
+        "correcta": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "ingenua_merge": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "ingenua_amplia": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": \"ask\"\n  }\n}\n"
+        }
+      }
+    },
+    "N-2": {
+      "estrato": "E2",
+      "familia": "N-2",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "precedencia de .opencode anidados",
+      "objetivo": [
+        "build",
+        "webfetch",
+        "https://example.com",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/.opencode/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"webfetch\": \"allow\"\n  }\n}\n"
+        },
+        "ingenua_cercana": {
+          "P/sub/.opencode/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"webfetch\": \"allow\"\n  }\n}\n"
+        }
+      }
+    },
+    "N-3": {
+      "estrato": "E2",
+      "familia": "N-3",
+      "guardas": [
+        [
+          "auditor",
+          "bash",
+          "npm install"
+        ],
+        [
+          "auditor",
+          "bash",
+          "ls"
+        ],
+        [
+          "auditor",
+          "edit",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "misma clave bash en agente JSON y markdown",
+      "objetivo": [
+        "auditor",
+        "bash",
+        "npm test",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/.opencode/agent/auditor.md": "---\ndescription: Auditor del equipo\nmode: primary\npermission:\n  bash: \n    \"*\": deny\n    \"npm test\": allow\n---\n\nAuditá el proyecto.\n"
+        },
+        "ingenua_json": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"auditor\": {\n      \"temperature\": 0.2,\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"deny\",\n          \"npm test\": \"allow\"\n        },\n        \"edit\": \"deny\"\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_amplia": {
+          "P/.opencode/agent/auditor.md": "---\ndescription: Auditor del equipo\nmode: primary\npermission:\n  bash: allow\n---\n\nAuditá el proyecto.\n"
+        }
+      }
+    },
+    "N-4": {
+      "estrato": "E2",
+      "familia": "N-4",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "bash",
+          "npm test"
+        ]
+      ],
+      "mecanismo": "OPENCODE_PERMISSION inválido descartado",
+      "objetivo": [
+        "build",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"bash\": {\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_sin_argumentos": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git push\": \"deny\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "N-5": {
+      "estrato": "E2",
+      "familia": "N-5",
+      "guardas": [
+        [
+          "plan",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "plan",
+          "edit",
+          "README.md"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "allow raíz debilita plan",
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "allow"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "edit",
+          "src/productos.js",
+          "allow"
+        ]
+      ],
+      "variantes": {
+        "correcta": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"allow\"\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_global": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"edit\": \"allow\"\n  }\n}\n"
+        }
+      }
+    },
+    "N-6": {
+      "estrato": "E2",
+      "familia": "N-6",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "claves PascalCase importadas de Claude Code",
+      "objetivo": [
+        "build",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "read",
+          "secretos.txt",
+          "deny"
+        ]
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"git push *\": \"deny\"\n    },\n    \"read\": {\n      \"secretos.txt\": \"deny\"\n    }\n  }\n}\n"
+        },
+        "ingenua_pascal": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"Bash\": \"deny\",\n    \"Read\": \"deny\"\n  }\n}\n"
+        }
+      }
+    },
+    "N-7": {
+      "estrato": "E2",
+      "familia": "N-7",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "webfetch",
+          "https://example.com"
+        ]
+      ],
+      "mecanismo": "secreto accesible por grep y terminal pese a read deny",
+      "objetivo": [
+        "build",
+        "read",
+        "secretos.txt",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "grep",
+          "SECRETO_FICTICIO",
+          "deny"
+        ],
+        [
+          "build",
+          "bash",
+          "cat secretos.txt",
+          "deny"
+        ]
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"secretos.txt\": \"deny\"\n        },\n        \"grep\": \"deny\",\n        \"bash\": \"deny\",\n        \"task\": \"deny\"\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_solo_read": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"secretos.txt\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_grep_por_archivo": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"secretos.txt\": \"deny\"\n        },\n        \"grep\": {\n          \"secretos.txt\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "N-9": {
+      "candidato": "N-9",
+      "estrato": "E2",
+      "familia": "N-9",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "tools heredado frente a permission en el mismo agente",
+      "objetivo": [
+        "build",
+        "bash",
+        "git push origin main",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"tools\": {\n        \"bash\": false\n      },\n      \"permission\": {\n        \"bash\": {\n          \"*\": \"allow\",\n          \"git push *\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_tools": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"tools\": {\n        \"bash\": false\n      },\n      \"permission\": {\n        \"bash\": \"allow\"\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_quita_permission": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"tools\": {\n        \"bash\": false\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "N-10": {
+      "candidato": "N-10",
+      "estrato": "E2",
+      "familia": "N-10",
+      "guardas": [
+        [
+          "habilidades",
+          "skill",
+          "med11-publica"
+        ],
+        [
+          "habilidades",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "habilidades",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "skill",
+          "med11-interna"
+        ]
+      ],
+      "mecanismo": "permission.skill en supuesto frontmatter markdown",
+      "objetivo": [
+        "habilidades",
+        "skill",
+        "med11-interna",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/.opencode/agent/habilidades.md": "---\ndescription: Agente del equipo\nmode: primary\npermission:\n  skill:\n    med11-interna: deny\n---\nConsultá los procedimientos del equipo.\n"
+        },
+        "ingenua_frontmatter": {
+          "P/.opencode/agent/habilidades.md": "***\ndescription: Agente del equipo\nmode: primary\npermission:\n  skill:\n    \"*\": deny\n***\nConsultá los procedimientos del equipo.\n"
+        }
+      }
+    },
+    "N-11": {
+      "candidato": "N-11",
+      "estrato": "E2",
+      "familia": "N-11",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "bash",
+          "npm install"
+        ]
+      ],
+      "guardas_archivos": [
+        "G/opencode.json",
+        "P/.opencode/compartida.json"
+      ],
+      "mecanismo": "global symlink: carga y conservación de la vinculación",
+      "objetivo": [
+        "build",
+        "bash",
+        "npm test",
+        "ask"
+      ],
+      "variantes": {
+        "correcta": {
+          "G/opencode.jsonc": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "ingenua_destino": {
+          "P/.opencode/compartida.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "ingenua_reemplaza_enlace": {
+          "G/opencode.json": {
+            "archivo_regular": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+          }
+        }
+      }
+    },
+    "N-12": {
+      "candidato": "N-12",
+      "estrato": "E2",
+      "familia": "N-12",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          ".env"
+        ],
+        [
+          "build",
+          "webfetch",
+          "https://example.com"
+        ]
+      ],
+      "mecanismo": "allowlist parcial conserva defaults nativos",
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "write",
+          "src/productos.js",
+          "deny"
+        ],
+        [
+          "build",
+          "bash",
+          "ls",
+          "deny"
+        ]
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Inspecciona el inventario\",\n      \"permission\": {\n        \"edit\": \"deny\",\n        \"bash\": \"deny\",\n        \"task\": \"deny\"\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_allowlist": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Inspecciona el inventario\",\n      \"permission\": {\n        \"read\": \"allow\"\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "N-13": {
+      "candidato": "N-13",
+      "estrato": "E2",
+      "familia": "N-13",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/productos.js"
+        ],
+        [
+          "build",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "herramienta write consulta edit",
+      "objetivo": [
+        "build",
+        "write",
+        "src/productos.js",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"write\": \"deny\",\n        \"edit\": {\n          \"src/productos.js\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_write": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"write\": {\n          \"*\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "N-14": {
+      "candidato": "N-14",
+      "estrato": "E2",
+      "familia": "N-14",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          "README.md"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "read de directorio no consulta list",
+      "objetivo": [
+        "build",
+        "read",
+        "privado",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"list\": \"deny\",\n        \"read\": {\n          \"privado\": \"deny\",\n          \"privado/\": \"deny\",\n          \"privado/*\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_list": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"list\": {\n          \"*\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "N-15": {
+      "candidato": "N-15",
+      "estrato": "E2",
+      "familia": "N-15",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "YAML inválido descarta endurecimiento markdown",
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/.opencode/agent/build.md": "---\ndescription: Desarrollo del equipo\nmode: primary\npermission:\n  edit: deny\n---\nDesarrollá el inventario.\n"
+        },
+        "ingenua_regla": {
+          "P/.opencode/agent/build.md": "---\ndescription: Desarrollo del equipo\nmode: primary\npermission:\n  edit:\n    \"*\": deny\n  bash: [\n---\nDesarrollá el inventario.\n"
+        }
+      }
+    },
+    "V-5": {
+      "candidato": "N-16",
+      "estrato": "E2",
+      "familia": "V-5",
+      "guardas_valor": [
+        [
+          "docs_global",
+          "temperature"
+        ],
+        [
+          "docs_global",
+          "prompt"
+        ],
+        [
+          "docs_global",
+          "permission"
+        ]
+      ],
+      "mecanismo": "OPENCODE_CONFIG frente a markdown global",
+      "valor": [
+        "docs_global",
+        "model",
+        "google/gemini-2.5-flash"
+      ],
+      "variantes": {
+        "correcta": {
+          "G/agents/docs_global.md": "---\ndescription: Documentación del equipo\nmode: primary\nmodel: google/gemini-2.5-flash\n---\nDocumentá el inventario.\n"
+        },
+        "ingenua_config": {
+          "G/alternativa.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"docs_global\": {\n      \"model\": \"google/gemini-2.5-flash\",\n      \"temperature\": 0.2\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "V-6": {
+      "candidato": "N-17",
+      "estrato": "E2",
+      "familia": "V-6",
+      "guardas_valor": [
+        [
+          "build",
+          "permission"
+        ],
+        [
+          "build",
+          "mode"
+        ]
+      ],
+      "mecanismo": "sustitución env ausente produce cadena vacía",
+      "valor": [
+        "build",
+        "description",
+        "Equipo de inventario"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Equipo de inventario\"\n    }\n  }\n}\n"
+        },
+        "ingenua_global": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"description\": \"Equipo de inventario\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "V-7": {
+      "candidato": "N-18",
+      "estrato": "E2",
+      "familia": "V-7",
+      "guardas_valor": [
+        [
+          "guia",
+          "temperature"
+        ],
+        [
+          "guia",
+          "description"
+        ],
+        [
+          "guia",
+          "permission"
+        ]
+      ],
+      "mecanismo": "prompt del frontmatter reemplazado por cuerpo vacío",
+      "valor": [
+        "guia",
+        "prompt",
+        "Revisá el inventario y señalá inconsistencias."
+      ],
+      "variantes": {
+        "correcta": {
+          "P/.opencode/agent/guia.md": "---\ndescription: Guía de auditoría\nmode: primary\nprompt: MED11_PROMPT_INICIAL\n---\nRevisá el inventario y señalá inconsistencias.\n"
+        },
+        "ingenua_frontmatter": {
+          "P/.opencode/agent/guia.md": "---\ndescription: Guía de auditoría\nmode: primary\nprompt: Revisá el inventario y señalá inconsistencias.\n---\n"
+        }
+      }
+    },
+    "V-8": {
+      "candidato": "N-19",
+      "estrato": "E2",
+      "familia": "V-8",
+      "guardas_archivos": [
+        "P/reglas.md"
+      ],
+      "guardas_valor": [
+        [
+          "guia",
+          "temperature"
+        ],
+        [
+          "guia",
+          "permission"
+        ],
+        [
+          "guia",
+          "options"
+        ]
+      ],
+      "mecanismo": "instructions de agente no carga archivos al prompt",
+      "valor": [
+        "guia",
+        "prompt",
+        "MED11_REGLAS: verificá los códigos del inventario antes de responder."
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"guia\": {\n      \"mode\": \"primary\",\n      \"temperature\": 0.2,\n      \"prompt\": \"{file:./reglas.md}\",\n      \"instructions\": [\n        \"reglas.md\"\n      ]\n    }\n  }\n}\n"
+        },
+        "ingenua_instructions": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"guia\": {\n      \"mode\": \"primary\",\n      \"temperature\": 0.2,\n      \"prompt\": \"MED11_GUIA_BASE\",\n      \"instructions\": [\n        \"./reglas.md\"\n      ]\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "S-1": {
+      "estrato": "E4",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          "README.md"
+        ]
+      ],
+      "mecanismo": "pedido por síntoma: permiso read por archivo",
+      "objetivo": [
+        "build",
+        "read",
+        "src/productos.js",
+        "allow"
+      ],
+      "origen": "M-1",
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"*\": \"deny\",\n      \"/home/participante/proyecto/src/productos.js\": \"allow\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "S-2": {
+      "estrato": "E4",
+      "familia": "M-7",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "bash",
+          "git status"
+        ]
+      ],
+      "mecanismo": "pedido por síntoma: orden de reglas con comodín",
+      "objetivo": [
+        "build",
+        "bash",
+        "rm -rf dist",
+        "ask"
+      ],
+      "origen": "M-7",
+      "variantes": {
+        "correcta": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"rm *\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "ingenua_orden": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"rm *\": \"ask\",\n      \"*\": \"allow\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "S-3": {
+      "estrato": "E4",
+      "familia": "N-1",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "npm install"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "pedido por síntoma: posición heredada al fusionar capas",
+      "objetivo": [
+        "build",
+        "bash",
+        "npm test",
+        "ask"
+      ],
+      "origen": "N-1",
+      "variantes": {
+        "correcta": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"npm test\": \"ask\",\n      \"npm test *\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "ingenua_merge": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"npm test\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "ingenua_amplia": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": \"ask\"\n  }\n}\n"
+        }
+      }
+    },
+    "C-1": {
+      "estrato": "E1",
+      "familia": "C-1",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "pedido común",
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "ask"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "edit",
+          "src/productos.js",
+          "ask"
+        ],
+        [
+          "build",
+          "edit",
+          "README.md",
+          "ask"
+        ]
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"ask\"\n      }\n    }\n  }\n}\n"
+        },
+        "obvia": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"ask\"\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "C-2": {
+      "estrato": "E1",
+      "familia": "C-2",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "npm install"
+        ],
+        [
+          "build",
+          "bash",
+          "rm -rf dist"
+        ]
+      ],
+      "mecanismo": "pedido común",
+      "objetivo": [
+        "build",
+        "bash",
+        "npm run lint",
+        "allow"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"ask\",\n      \"npm run lint\": \"allow\"\n    }\n  }\n}\n"
+        },
+        "obvia": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"ask\",\n      \"npm run lint\": \"allow\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "C-3": {
+      "estrato": "E1",
+      "familia": "C-3",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "pedido común",
+      "objetivo": [
+        "build",
+        "webfetch",
+        "https://example.com",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"deny\"\n      }\n    }\n  }\n}\n"
+        },
+        "obvia": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"deny\"\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "C-4": {
+      "estrato": "E1",
+      "familia": "C-4",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "pedido común",
+      "objetivo": [
+        "build",
+        "edit",
+        "src/index.js",
+        "allow"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "edit",
+          "src/productos.js",
+          "allow"
+        ],
+        [
+          "build",
+          "edit",
+          "README.md",
+          "allow"
+        ]
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"allow\"\n      }\n    }\n  }\n}\n"
+        },
+        "obvia": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": \"allow\"\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "C-5": {
+      "estrato": "E1",
+      "familia": "C-5",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "git status"
+        ],
+        [
+          "build",
+          "bash",
+          "npm test"
+        ]
+      ],
+      "mecanismo": "pedido común",
+      "objetivo": [
+        "build",
+        "bash",
+        "git commit -m x",
+        "ask"
+      ],
+      "variantes": {
+        "correcta": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git commit *\": \"ask\"\n    }\n  }\n}\n"
+        },
+        "obvia": {
+          "G/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"bash\": {\n      \"*\": \"allow\",\n      \"git commit *\": \"ask\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "C-6": {
+      "estrato": "E1",
+      "familia": "C-6",
+      "guardas": [
+        [
+          "revisor",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "revisor",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "edit",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "pedido común",
+      "objetivo": [
+        "revisor",
+        "edit",
+        "src/index.js",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "revisor",
+          "edit",
+          "src/productos.js",
+          "deny"
+        ],
+        [
+          "revisor",
+          "edit",
+          "README.md",
+          "deny"
+        ]
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"revisor\": {\n      \"description\": \"Revisor del equipo\",\n      \"permission\": {\n        \"edit\": \"deny\"\n      }\n    }\n  }\n}\n"
+        },
+        "obvia": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"revisor\": {\n      \"description\": \"Revisor del equipo\",\n      \"permission\": {\n        \"edit\": \"deny\"\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "N-21": {
+      "estrato": "E2",
+      "familia": "N-21",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          ".env.local"
+        ]
+      ],
+      "mecanismo": "deny frente a ask nativo",
+      "objetivo": [
+        "build",
+        "read",
+        ".env",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \".env\": \"deny\"\n    }\n  }\n}\n"
+        },
+        "ingenua_sin_cambio": {}
+      }
+    },
+    "N-23": {
+      "estrato": "E2",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "deny con ruta absoluta",
+      "objetivo": [
+        "build",
+        "read",
+        "config/credenciales.json",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"config/credenciales.json\": \"deny\"\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"read\": {\n      \"/home/participante/proyecto/config/credenciales.json\": \"deny\"\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "V-9": {
+      "estrato": "E2",
+      "familia": "V-9",
+      "guardas_valor": [
+        [
+          "build",
+          "model"
+        ],
+        [
+          "build",
+          "temperature"
+        ],
+        [
+          "build",
+          "permission"
+        ],
+        [
+          "plan",
+          "permission"
+        ],
+        [
+          "general",
+          "permission"
+        ]
+      ],
+      "mecanismo": "ubicación de AGENTS.md",
+      "valor": [
+        "__sistema__",
+        "instruccion_espanol",
+        true
+      ],
+      "variantes": {
+        "correcta": {
+          "P/AGENTS.md": "Respondé siempre en español\n"
+        },
+        "ingenua_dotdir": {
+          "P/.opencode/AGENTS.md": "Respondé siempre en español\n"
+        }
+      }
+    },
+    "V-10": {
+      "estrato": "E2",
+      "familia": "V-10",
+      "mecanismo": "environment de MCP",
+      "valor": [
+        "__config__",
+        "mcp.docs.environment.API_TOKEN",
+        "med12-ficticio"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"mcp\": {\n    \"docs\": {\n      \"type\": \"local\",\n      \"command\": [\n        \"node\",\n        \"docs.js\"\n      ],\n      \"enabled\": false,\n      \"environment\": {\n        \"API_TOKEN\": \"med12-ficticio\"\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_env": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"mcp\": {\n    \"docs\": {\n      \"type\": \"local\",\n      \"command\": [\n        \"node\",\n        \"docs.js\"\n      ],\n      \"enabled\": false,\n      \"env\": {\n        \"API_TOKEN\": \"med12-ficticio\"\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "N-24": {
+      "estrato": "E2",
+      "familia": "N-24",
+      "guardas": [
+        [
+          "build",
+          "bash",
+          "ls"
+        ],
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ]
+      ],
+      "mecanismo": "OPENCODE_CONFIG_CONTENT frente a .opencode (#11628)",
+      "objetivo": [
+        "build",
+        "webfetch",
+        "https://example.com",
+        "deny"
+      ],
+      "variantes": {
+        "correcta": {
+          "P/.opencode/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"webfetch\": \"deny\"\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_dotdir": {
+          "P/.opencode/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"permission\": {\n    \"webfetch\": \"deny\"\n  }\n}\n"
+        }
+      }
+    },
+    "R-1": {
+      "estrato": "R",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          "README.md"
+        ]
+      ],
+      "mecanismo": "reservado: ruta absoluta",
+      "objetivo": [
+        "build",
+        "read",
+        "docs/manual.md",
+        "allow"
+      ],
+      "sondas_publicas": "archivos",
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"*\": \"deny\",\n          \"docs/manual.md\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"*\": \"deny\",\n          \"/home/participante/proyecto/docs/manual.md\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "R-2": {
+      "estrato": "R",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "reservado: ruta absoluta",
+      "objetivo": [
+        "build",
+        "read",
+        "informes/trimestre.txt",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "read",
+          "informes/anual.txt",
+          "deny"
+        ]
+      ],
+      "sondas_publicas": "archivos",
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"informes/*\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"read\": {\n          \"/home/participante/proyecto/informes/*\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "R-3": {
+      "estrato": "R",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "read",
+          "scripts/publicar.sh"
+        ],
+        [
+          "build",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "bash",
+          "ls"
+        ]
+      ],
+      "mecanismo": "reservado: ruta absoluta",
+      "objetivo": [
+        "build",
+        "edit",
+        "scripts/publicar.sh",
+        "deny"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "write",
+          "scripts/publicar.sh",
+          "deny"
+        ]
+      ],
+      "sondas_publicas": "archivos",
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": {\n          \"scripts/publicar.sh\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": {\n          \"/home/participante/proyecto/scripts/publicar.sh\": \"deny\"\n        }\n      }\n    }\n  }\n}\n"
+        }
+      }
+    },
+    "R-4": {
+      "estrato": "R",
+      "familia": "ruta_absoluta",
+      "guardas": [
+        [
+          "build",
+          "edit",
+          "src/index.js"
+        ],
+        [
+          "build",
+          "read",
+          "plantillas/base.html"
+        ]
+      ],
+      "mecanismo": "reservado: ruta absoluta",
+      "objetivo": [
+        "build",
+        "edit",
+        "plantillas/base.html",
+        "allow"
+      ],
+      "objetivos_adicionales": [
+        [
+          "build",
+          "edit",
+          "plantillas/pie.html",
+          "allow"
+        ]
+      ],
+      "sondas_publicas": "archivos",
+      "variantes": {
+        "correcta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": {\n          \"*\": \"ask\",\n          \"plantillas/*\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+        },
+        "ingenua_absoluta": {
+          "P/opencode.json": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"agent\": {\n    \"build\": {\n      \"permission\": {\n        \"edit\": {\n          \"*\": \"ask\",\n          \"/home/participante/proyecto/plantillas/*\": \"allow\"\n        }\n      }\n    }\n  }\n}\n"
+        }
+      }
+    }
+  },
+  "hoja": "final",
+  "huellas_tareas": {
+    "M-1": "0a2a788a21916effc3369efb22c427dee50ae1ec9fe3b8efa957725cf6d71a65",
+    "M-2": "ffe9a103d3f8830f04e9077e8a6aac39b9f798f78b8b45b4d8f50bc89072a8bc",
+    "M-3": "8a1e5d803f7cad03fca710ebbf1c37fe2ed9f24e200d613858399435b19c5883",
+    "M-4": "714d80ef91cf21843cf71d69f869325d743ff6b3da3a1f3a342827b5961af404",
+    "M-5": "99d8008a32177bda63990e339d9c46136a64b61acc77aa00a02c68cac8c400a7",
+    "M-6": "4915626b60b10b3ca1b3d3e0d20cad1569477edc536d8168abb73d4e13f3f4cd",
+    "M-7": "95ebd5adce2840111039491c385a23593f400a4edf560780900c3d326794e61b",
+    "M-8": "c0429e771761763dc99a46b03bc07a574fe059097f65aec700383b97cd4d0442",
+    "M-9": "966ede6771616cd9f92b8dca37f10a99cf3719bd663e300b0019f077a8db1072",
+    "M-10": "03550ab73845b8081dcf6a8d921849bc0264ac765f18ec6a48cea17de1b1366f",
+    "V-1": "7b3e5bcd1a8ded0cc9a7c58e71105240ef6708ab4b9d1b9db10e206ab38da28e",
+    "V-2": "89ea14ea6c5a5b8abda82ab404f10274fee32282d9aebd9c0e3b37c678fefd78",
+    "V-3": "022d6f8a691b1d8108e79692ea2a826cf592ce53849e692fc68ef8f580bd12e1",
+    "V-4": "549a7c2d0110d17d6d763226bd213f2b324fab4429192669036815dfbddef2b5",
+    "N-1": "9751d30bdde5f6277cde0d9e52833d8fa4025c82a258e6e79246533cb24f121e",
+    "N-2": "655fa073179d6aed62072f285443b0fe764494d45c892354ac6ba08edd70e18e",
+    "N-3": "1a47f85eee4237d1147a6305efb720face88d73b7ae03f6671825e4ea36c18d4",
+    "N-4": "d3239eacaa52fa651a96bad2d59c6a06c6689df10a0e92c36c9e75a840e57cd2",
+    "N-5": "2266e95e95bde68d95deddd973ab0a9f409a29212f25d26ef2107cd12730ef79",
+    "N-6": "cdb5aef0d71277e9b398343270c5b808ff8a9b41f07393b4ac6ae83e07d0167e",
+    "N-7": "8b0a9777063efa1996a656f908e4b92444b7fb22520282d89c413fd24d391abd",
+    "N-9": "475f95694171a327a91dd6e5b15de0aed3d98df7687c20eb68692ec92bc3e71e",
+    "N-10": "8445c63f21ae2ec98d85c6a3b22d1ea829d5bb2196a3543494e011b74ac88ed5",
+    "N-11": "5a781731a1e638476f83c5f640c22e17c27332c6a9c8ab4305fe4024062d833b",
+    "N-12": "7e56932c9a6647ed1def80ac757768bce51f4473785c553dd89524baf233eb7d",
+    "N-13": "41fd69489274e1ca2210f4873801aad79bd134d8e74e29cf17498c3b1cd5d610",
+    "N-14": "23f46cbb6f7edff31cebd8375d3314ec95b39a3608787740e3d9d36bd95d86e7",
+    "N-15": "c6e9067d3425bed1b26deece06691c82fa28b2694d77458ed90a91b773a7fa7e",
+    "V-5": "5aad6ea9e8b833bba4b32bd95672421b67611ca1f693e9ddb65f95dc16500e17",
+    "V-6": "e86dea225e0a90cba6de3445770daf1417d5e68f3b601eeddfa10c6aa6234d65",
+    "V-7": "15d6fc0a588dd6c15cfac1c63d1b7e5f0b15e02a04ca94cf166d9cb2f561d8ab",
+    "V-8": "b8102976cb57ca6405a1fffdbff436103bfdd4a3274325b5dd8e44f5c9ea8cc0",
+    "S-1": "58567b0c7fe5292064ae08cab715a635cb9919a602d65cd19aa45abf74713402",
+    "S-2": "845e23e7aa55451fa7a84d526bedb6cebf5f4c76a89b55dd2a7354f47d15ca26",
+    "S-3": "c2e4fcecb50fb5eaf9d43afe44f8d0b593fcf9b272bc66b39524e3740e191fd9",
+    "C-1": "43a337902a175ec2f89797f38123f824ee4e35a864e8034edb5d36cbc9c8ad88",
+    "C-2": "63792a6e792fe884c42da5a4d737a8e35ae74dea04fc12abb64d21082ed9ed03",
+    "C-3": "b19fa8108bc7a196a0f0751a0649213d81aaa5c50238805d07ea473dcd1a65e3",
+    "C-4": "abbd2fceb561eb5815d9dda07ab02057caf696cfa3b712721615583d2ae72f68",
+    "C-5": "c884f4117b63f4c16df2dc37fb4b0681b6d90d319c3400dffead270f35202804",
+    "C-6": "8fc22e1e0a4498109fb0b3d7dad9f37987b05c0fecfa2b7fc1cc0a2f4cf6d9b2",
+    "N-21": "f2a7266df5ea6318af50d4dfe0c7bf92c3163170ca263ac3488398ff51980e40",
+    "N-23": "63ddd305911649334d9a3d1090e4c50b781839ff394cf50c2b7f2b68e5c90d99",
+    "V-9": "2d7ca52267c8606b2c22789a53bb9e17e2670aa13a984a6629a72d5298c022a4",
+    "V-10": "0d5f675feb5b2849b30ef6a2428b03cde9230a944141877c5550e0e12388946a",
+    "N-24": "894b324931d3ce89923c95fd71dbbf763e9e562e2f2ba55f40605ab94c158d77",
+    "R-1": "e1ecffe6c28bf83aae4ab4e06e5e915695d1c280a2db21aa6979b72b54afff25",
+    "R-2": "bd69035918b6e033102f1445b0e132738aa72be1091ae6fd22dd35f868b25d9d",
+    "R-3": "d6bf0256468344c71a2ce9eb916d5d7b0d289f65646470d63cf4ec7429a0f06a",
+    "R-4": "5f290a14e35217e2b371700a1a512572bf38aa80106db2c8bd792c3f6f7c5297"
+  },
+  "fecha_cierre": "05/11/2026",
+  "admisiones": [
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-completa-20261020c\\p1",
+      "hash_admision": "144f4579052fd98a8ce114d16092008b9217b03c9c39884e8ee3ccdd723ee354",
+      "hashes_verificados": 11378,
+      "tareas": [
+        "C-2",
+        "C-6",
+        "M-1",
+        "M-5",
+        "M-9",
+        "N-12",
+        "N-3",
+        "N-7",
+        "S-1",
+        "V-1",
+        "V-5",
+        "V-9"
+      ]
+    },
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-completa-20261020c\\p2",
+      "hash_admision": "b797d24914d6718eeb4a17d296f8ec4dcdb031bb4ec01ed268896bc0abb1a3a2",
+      "hashes_verificados": 9975,
+      "tareas": [
+        "C-3",
+        "M-10",
+        "M-2",
+        "M-6",
+        "N-13",
+        "N-21",
+        "N-4",
+        "N-9",
+        "S-2",
+        "V-10",
+        "V-2",
+        "V-6"
+      ]
+    },
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-completa-20261020c\\p3",
+      "hash_admision": "e99784fe0bfb51e0559842d86b4844fb3ca187ae8725f3b8bf01a890f204849e",
+      "hashes_verificados": 12086,
+      "tareas": [
+        "C-4",
+        "M-3",
+        "M-7",
+        "N-1",
+        "N-10",
+        "N-14",
+        "N-23",
+        "N-5",
+        "S-3",
+        "V-3",
+        "V-7"
+      ]
+    },
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-completa-20261020c\\p4",
+      "hash_admision": "57ce3346db6d3c71a92b3ac3a71aaff9dd99b547dbef2944f515c48ba3ee26ba",
+      "hashes_verificados": 10383,
+      "tareas": [
+        "C-1",
+        "C-5",
+        "M-4",
+        "M-8",
+        "N-11",
+        "N-15",
+        "N-2",
+        "N-24",
+        "N-6",
+        "V-4",
+        "V-8"
+      ]
+    },
+    {
+      "raiz": "C:\\Users\\Joa\\evidencia-admision-med19-20261105",
+      "hash_admision": "8f9015de7bd5496dec1a2b8f64dc9e4eaee21010aefaf72be111672d95047bf6",
+      "hashes_verificados": 7215,
+      "tareas": [
+        "M-2",
+        "R-1",
+        "R-2",
+        "R-3",
+        "R-4",
+        "S-3"
+      ]
+    }
+  ]
+}

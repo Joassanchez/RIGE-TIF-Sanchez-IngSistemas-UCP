@@ -1,0 +1,37 @@
+[
+  {
+    "prueba": "S-3 y M-2",
+    "corridas": 1,
+    "fallos_esperados": 1,
+    "errores_esperados": 0,
+    "detalle": "F\n======================================================================\nFAIL: test_solo_cambia_correcta_S3_M2 (test_med19_final.HojaTests.test_solo_cambia_correcta_S3_M2)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\Joa\\Documents\\RIGE-TIF-Sanchez-IngSistemas-UCP\\01-relevamiento\\linea-base\\herramientas\\test_med19_final.py\", line 24, in test_solo_cambia_correcta_S3_M2\n    self.assertNotEqual(antes['variantes']['correcta'], despues['variantes']['correcta'])\nAssertionError: {'P/opencode.json': '{\\n  \"$schema\": \"https://opencode.ai/config.json\",\\n  \"permission\": {\\n    \"edit\": {\\n      \"*\": \"ask\",\\n      \"src/index.js\": \"allow\"\\n    }\\n  }\\n}\\n'} == {'P/opencode.json': '{\\n  \"$schema\": \"https://opencode.ai/config.json\",\\n  \"permission\": {\\n    \"edit\": {\\n      \"*\": \"ask\",\\n      \"src/index.js\": \"allow\"\\n    }\\n  }\\n}\\n'}\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (failures=1)\n"
+  },
+  {
+    "prueba": "Sondas R",
+    "corridas": 1,
+    "fallos_esperados": 1,
+    "errores_esperados": 0,
+    "detalle": "F\n======================================================================\nFAIL: test_sondas_R_cubren_objetivos_guardas_solo_desde_archivos (test_med19_arnes.FinalTests.test_sondas_R_cubren_objetivos_guardas_solo_desde_archivos)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\Joa\\Documents\\RIGE-TIF-Sanchez-IngSistemas-UCP\\01-relevamiento\\linea-base\\vm\\simulado\\test_med19_arnes.py\", line 33, in test_sondas_R_cubren_objetivos_guardas_solo_desde_archivos\n    self.assertIn(tuple(o[:3]), sondas)\nAssertionError: ('build', 'read', 'docs/manual.md') not found in [('build', 'read', 'src/index.js'), ('build', 'read', 'src/productos.js'), ('build', 'read', 'README.md'), ('build', 'read', '.env'), ('build', 'read', 'config/.env'), ('build', 'read', '.env.local'), ('build', 'bash', 'npm test'), ('build', 'bash', 'npm install'), ('build', 'bash', 'npm run lint'), ('build', 'bash', 'git commit -m x'), ('build', 'bash', 'npm test -- --watch'), ('build', 'bash', 'git push origin main'), ('build', 'bash', 'git status'), ('build', 'bash', 'ls'), ('build', 'bash', 'rm -rf dist'), ('build', 'read', 'config/credenciales.json'), ('build', 'external_directory', '/home/participante/compartido/*'), ('build', 'external_directory', '/home/participante/otra/*'), ('build', 'webfetch', 'https://example.com'), ('build', 'edit', 'src/index.js'), ('build', 'edit', 'src/productos.js'), ('build', 'edit', 'README.md'), ('plan', 'edit', 'src/index.js'), ('plan', 'edit', 'src/productos.js'), ('plan', 'edit', 'README.md')]\n\n----------------------------------------------------------------------\nRan 1 test in 0.009s\n\nFAILED (failures=1)\n"
+  },
+  {
+    "prueba": "Instrucciones por brazo",
+    "corridas": 1,
+    "fallos_esperados": 0,
+    "errores_esperados": 1,
+    "detalle": "E\n======================================================================\nERROR: test_instruccion_exacta_y_posicion (test_med19_arnes.FinalTests.test_instruccion_exacta_y_posicion)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\Joa\\Documents\\RIGE-TIF-Sanchez-IngSistemas-UCP\\01-relevamiento\\linea-base\\vm\\simulado\\test_med19_arnes.py\", line 63, in test_instruccion_exacta_y_posicion\n    self.assertEqual(eco.instruccion_brazo(texto, base, 'ecologica', b).encode(), texto.encode())\n                     ^^^^^^^^^^^^^^^^^^^^^\nAttributeError: module 'previo_med19' has no attribute 'instruccion_brazo'\n\n----------------------------------------------------------------------\nRan 1 test in 0.004s\n\nFAILED (errors=1)\n"
+  },
+  {
+    "prueba": "Planes finales",
+    "corridas": 1,
+    "fallos_esperados": 0,
+    "errores_esperados": 1,
+    "detalle": "E\n======================================================================\nERROR: test_comandos_efectivamente_pedidos_al_proveedor_por_brazo (test_med19_arnes.FinalTests.test_comandos_efectivamente_pedidos_al_proveedor_por_brazo)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\Joa\\Documents\\RIGE-TIF-Sanchez-IngSistemas-UCP\\01-relevamiento\\linea-base\\vm\\simulado\\test_med19_arnes.py\", line 79, in test_comandos_efectivamente_pedidos_al_proveedor_por_brazo\n    plan = eco.cargar_plan_ensayo(root, 'ecologica', c, 'final', b)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: cargar_plan_ensayo() takes 3 positional arguments but 5 were given\n\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nFAILED (errors=1)\n"
+  },
+  {
+    "prueba": "Admisión por tarea",
+    "corridas": 1,
+    "fallos_esperados": 0,
+    "errores_esperados": 1,
+    "detalle": "E\n======================================================================\nERROR: test_herencia_por_tarea_y_referencias_corregidas (test_med19_final.AdmisionesTests.test_herencia_por_tarea_y_referencias_corregidas)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\Joa\\Documents\\RIGE-TIF-Sanchez-IngSistemas-UCP\\01-relevamiento\\linea-base\\herramientas\\test_med19_final.py\", line 105, in test_herencia_por_tarea_y_referencias_corregidas\n    indice, _ = cargar_admisiones([vieja, nueva], HOJA)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Joa\\Documents\\RIGE-TIF-Sanchez-IngSistemas-UCP\\01-relevamiento\\linea-base\\herramientas\\verificar_base_ecologica.py\", line 34, in cargar_admisiones\n    esperadas = {c: huella(nuevas[c]) for c in hoja['casos']}\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: Admisión MED-11 ausente o de otra especificación: C:\\Users\\Joa\\AppData\\Local\\Temp\\tmpvaim9chi\\nueva\\admision.json\n\n----------------------------------------------------------------------\nRan 1 test in 0.014s\n\nFAILED (errors=1)\n"
+  }
+]

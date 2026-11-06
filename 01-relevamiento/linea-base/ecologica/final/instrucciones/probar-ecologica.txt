@@ -1,0 +1,2 @@
+Antes de declarar terminado el cambio, probá su efecto ejecutando OpenCode como el desarrollador. Leer la configuración no cuenta como prueba: observá qué hace OpenCode al intentar la acción. Si el efecto no coincide con lo pedido, corregí la configuración y volvé a probar.
+    como-dev 'opencode run --agent <agente> "<pedido que obligue a intentar la acción>"'

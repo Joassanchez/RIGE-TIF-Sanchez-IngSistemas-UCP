@@ -61,11 +61,20 @@ case "$SUBCOMANDO" in
   medir)
     ENSAYO=0
     DIMENSION=
+    HOJA=cerrada
+    BRAZO=LB
+    CONDICION=''
     TANDA=ensayo
     DESTINO=''
     ARGUMENTOS=()
     while [[ $# -gt 0 ]]; do
       case "$1" in
+        --hoja) [[ $# -ge 2 ]] || fallar 'Falta --hoja.'; HOJA=$2; ARGUMENTOS+=(--hoja "$2"); shift 2 ;;
+        --brazo) [[ $# -ge 2 ]] || fallar 'Falta --brazo.'; BRAZO=$2; ARGUMENTOS+=(--brazo "$2"); shift 2 ;;
+        --condicion) [[ $# -ge 2 ]] || fallar 'Falta --condicion.'; CONDICION=$2; ARGUMENTOS+=(--condicion "$2"); shift 2 ;;
+        --condicion=*) CONDICION=${1#--condicion=}; ARGUMENTOS+=("$1"); shift ;;
+        --hoja=*|--brazo=*) fallar 'Usar --hoja y --brazo con valor separado.' ;;
+        --hash-entradas-final|--hash-entradas-final=*) fallar 'El inventario lo administra contenedor.sh.' ;;
         --ensayo) ENSAYO=1; ARGUMENTOS+=(--ensayo); shift ;;
         --destino) [[ $# -ge 2 ]] || fallar 'Falta carpeta para --destino.'; DESTINO=$2; shift 2 ;;
         --tanda) [[ $# -ge 2 ]] || fallar 'Falta valor para --tanda.'; TANDA=$2; ARGUMENTOS+=(--tanda "$2"); shift 2 ;;
@@ -77,12 +86,23 @@ case "$SUBCOMANDO" in
       esac
     done
     [[ $DIMENSION == ecologica || $DIMENSION == deteccion ]] || fallar 'Dimensión inválida.'
+    [[ $HOJA == cerrada || $HOJA == final ]] || fallar 'Hoja inválida.'
+    case $BRAZO in LB|sin_rige|indicado|disponible|probar) ;; *) fallar 'Brazo inválido.' ;; esac
+    [[ $HOJA == final || $BRAZO == LB ]] || fallar 'El brazo requiere --hoja final.'
+    [[ $DIMENSION != deteccion || ( $BRAZO != sin_rige && $BRAZO != probar ) ]] || fallar 'Brazo exclusivo de ecológica.'
+    HOJA_DIR="$ORIGEN/../ecologica"
+    if [[ $HOJA == final ]]; then HOJA_DIR+=/final; fi
+    if [[ $HOJA == final && -z $CONDICION ]]; then
+      CONDICION=FIN
+      if [[ $BRAZO == LB ]]; then CONDICION=LB; fi
+      ARGUMENTOS+=(--condicion "$CONDICION")
+    fi
     if [[ $DIMENSION == ecologica || $DIMENSION == deteccion ]]; then
       # Hash calculado en el anfitrión y comprobado dentro antes de medir.
       # Lista de inclusión explícita: jamás copiar espec.py/corpus.py/respuestas.
       for ENTRADA in escenarios.json tareas.md deteccion.md; do
-        [[ -f $ORIGEN/../ecologica/$ENTRADA ]] || fallar "Falta generar ecologica/$ENTRADA."
-        HASH_ENTRADA=$(sha256sum "$ORIGEN/../ecologica/$ENTRADA")
+        [[ -f $HOJA_DIR/$ENTRADA ]] || fallar "Falta generar ecologica/$ENTRADA."
+        HASH_ENTRADA=$(sha256sum "$HOJA_DIR/$ENTRADA")
         case "$ENTRADA" in
           escenarios.json) ARGUMENTOS+=(--hash-escenarios "${HASH_ENTRADA%% *}") ;;
           tareas.md) ARGUMENTOS+=(--hash-tareas "${HASH_ENTRADA%% *}") ;;
@@ -114,8 +134,20 @@ case "$SUBCOMANDO" in
         ADMISION_ARGS+=(--evidencia-admision "$(ruta_docker "$RAIZ_ADMISION")")
       done
     fi
+    ENTRADAS_FINAL=''
+    if [[ $HOJA == final ]]; then
+      ENTRADAS_FINAL="$EVIDENCIA/entradas-final"
+      RIGE_ARGS=()
+      if [[ $BRAZO == indicado || $BRAZO == disponible ]]; then
+        [[ -n ${RIGE_BINARIO:-} && -f $RIGE_BINARIO && -n ${RIGE_ETIQUETA:-} ]] || fallar 'Faltan RIGE_BINARIO y RIGE_ETIQUETA.'
+        RIGE_ARGS=(--binario "$(ruta_docker "$RIGE_BINARIO")" --etiqueta "$RIGE_ETIQUETA")
+      fi
+      HASH_FINAL=$("${PYTHON:-python}" "$(ruta_docker "$ORIGEN/../herramientas/preparar_final.py")" \
+        --destino "$(ruta_docker "$ENTRADAS_FINAL")" --brazo "$BRAZO" "${RIGE_ARGS[@]}") || fallar 'No se pudieron preparar las entradas finales.'
+      ARGUMENTOS+=(--hash-entradas-final "$HASH_FINAL")
+    fi
     PLAN_DETECCION=''
-    if [[ $DIMENSION == deteccion && $ENSAYO -eq 1 ]]; then
+    if [[ $DIMENSION == deteccion && $ENSAYO -eq 1 && $HOJA == cerrada ]]; then
       # La hoja se lee solo aquí. La VM recibe un guion sintético, como los
       # planes históricos, sin corpus/respuestas/especificación ejecutables.
       PLAN_DETECCION="$EVIDENCIA/planes-ensayo/deteccion.json"
@@ -123,6 +155,10 @@ case "$SUBCOMANDO" in
         --solo-planes-deteccion --destino "$(ruta_docker "$EVIDENCIA/planes-ensayo")"
     fi
     command -v docker >/dev/null 2>&1 || fallar 'No se encuentra el cliente Docker.'
+    if [[ $HOJA == final ]]; then
+      ID_IMAGEN=$(docker image inspect "$IMAGEN" --format '{{.Id}}')
+      [[ $ID_IMAGEN == sha256:a691196f0e3e* ]] || fallar 'La hoja final exige la imagen existente a691196f0e3e; no reconstruir.'
+    fi
     CONTENEDOR="rige-medir-$$-$RANDOM"
     trap limpiar EXIT
     trap 'exit 130' INT
@@ -131,11 +167,24 @@ case "$SUBCOMANDO" in
     docker run --rm --detach --init "${RED[@]}" "${CREDENCIAL[@]}" --platform linux/amd64 \
       --name "$CONTENEDOR" --user root --workdir /opt/linea-base \
       "$IMAGEN" sleep infinity >/dev/null
+    if [[ $HOJA == final ]]; then
+      # cygpath normaliza /.; Docker necesita recibir ese sufijo literalmente.
+      docker cp "$(ruta_docker "$ENTRADAS_FINAL/arnes")/." "$CONTENEDOR:/opt/linea-base/"
+      docker exec "$CONTENEDOR" chown -R root:root /opt/linea-base/medir.sh /opt/linea-base/simulado /opt/linea-base/instrucciones-final /opt/linea-base/entradas-final.json
+      docker exec "$CONTENEDOR" chmod -R 700 /opt/linea-base/medir.sh /opt/linea-base/simulado /opt/linea-base/instrucciones-final /opt/linea-base/entradas-final.json
+      if [[ $BRAZO == indicado || $BRAZO == disponible ]]; then
+        docker exec "$CONTENEDOR" mkdir -p /opt/rige
+        docker cp "$(ruta_docker "$ENTRADAS_FINAL/rige-binario")" "$CONTENEDOR:/opt/rige/rige"
+        docker cp "$(ruta_docker "$ENTRADAS_FINAL/rige-wrapper")" "$CONTENEDOR:/usr/local/bin/rige"
+        docker exec "$CONTENEDOR" chown root:root /opt/rige/rige /usr/local/bin/rige
+        docker exec "$CONTENEDOR" chmod 755 /opt/rige/rige /usr/local/bin/rige
+      fi
+    fi
     docker cp "$(ruta_docker "$ORIGEN/../tarifas-congeladas-20261001.json")" "$CONTENEDOR:/opt/linea-base/tarifas.json"
     docker cp "$(ruta_docker "$ORIGEN/../catalogo-modelos-20261013.json")" "$CONTENEDOR:/opt/linea-base/modelos.json"
     if [[ $DIMENSION == ecologica || $DIMENSION == deteccion ]]; then
       for ENTRADA in escenarios.json tareas.md deteccion.md; do
-        docker cp "$(ruta_docker "$ORIGEN/../ecologica/$ENTRADA")" "$CONTENEDOR:/opt/linea-base/$ENTRADA"
+        docker cp "$(ruta_docker "$HOJA_DIR/$ENTRADA")" "$CONTENEDOR:/opt/linea-base/$ENTRADA"
       done
     fi
     if [[ -n $PLAN_DETECCION ]]; then
@@ -151,7 +200,7 @@ case "$SUBCOMANDO" in
       exportar_resultados /opt/linea-base/resultados base || fallar 'No se pudo conservar la fase base.'
       [[ $CODIGO -eq 0 ]] || exit "$CODIGO"
       HASH_BASE=$("${PYTHON:-python}" "$(ruta_docker "$ORIGEN/../herramientas/verificar_base_ecologica.py")" \
-        "$(ruta_docker "$EVIDENCIA/$TANDA")" "${ADMISION_ARGS[@]}") || fallar 'Base inicial distinta o incompleta: tanda detenida antes de ejecutar agentes.'
+        "$(ruta_docker "$EVIDENCIA/$TANDA")" --respuestas "$(ruta_docker "$HOJA_DIR/respuestas-ecologica.json")" "${ADMISION_ARGS[@]}") || fallar 'Base inicial distinta o incompleta: tanda detenida antes de ejecutar agentes.'
       [[ $HASH_BASE =~ ^[[:xdigit:]]{64}$ ]] || fallar 'Confirmación de base inválida.'
       docker exec "$CONTENEDOR" /opt/linea-base/medir.sh "${ARGUMENTOS[@]}" --base-verificada "$HASH_BASE" || CODIGO=$?
     else

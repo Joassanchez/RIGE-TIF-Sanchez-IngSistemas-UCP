@@ -6,7 +6,7 @@ from pathlib import Path
 
 from comun import escribir_json, leer_jsonl
 
-def unir_med9(registros, casos_esperados=None):
+def unir_med9(registros, casos_esperados=None, respuestas=None):
     """Fragmentos de una misma tanda; exige todos los pares y preserva evidencia."""
     from analizar_ecologica import ECO, DET, CONTRASTE
     campos = ('tanda', 'dimension', 'ejecutor', 'modelo', 'brazo', 'condicion', 'ensayo',
@@ -27,13 +27,21 @@ def unir_med9(registros, casos_esperados=None):
             raise ValueError('No mezclar reglas de acceso web.')
         if referencia is not None and referencia.get('hash_plan_anidado') != meta.get('hash_plan_anidado'):
             raise ValueError('No mezclar planes de verificación anidada.')
+        hoja_dir = Path(__file__).resolve().parents[1] / ('ecologica/final' if meta.get('hoja') == 'final' else 'ecologica')
+        ruta_respuestas = respuestas or hoja_dir / ('respuestas-' + meta['dimension'] + '.json')
+        if meta.get('hoja') == 'final' and meta['brazo'] in ('indicado', 'disponible'):
+            for campo in ('hash_rige', 'etiqueta_rige', 'hash_wrapper_rige'):
+                if not meta.get(campo) or referencia is not None and referencia.get(campo) != meta[campo]:
+                    raise ValueError('Falta o difiere ' + campo)
+        if referencia is not None and referencia.get('hoja', 'cerrada') != meta.get('hoja', 'cerrada'):
+            raise ValueError('No mezclar hojas.')
         if meta.get('regla_acceso_web') == 'ADR-094':
             from corregir_ecologica import validar_tanda
-            validar_tanda(registro.parent, Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json')
+            validar_tanda(registro.parent, ruta_respuestas)
         if meta['dimension'] == 'ecologica':
             from corregir_ecologica import validar_tanda
             # La validación externa conserva su hoja en el anfitrión.
-            validar_tanda(registro.parent, Path(__file__).resolve().parents[1] / 'ecologica/respuestas-ecologica.json')
+            validar_tanda(registro.parent, ruta_respuestas)
             if meta.get('protocolo_oraculo') != 'MED-9c':
                 raise ValueError('No unir versiones distintas del oráculo ecológico.')
         if type(meta['k']) is not int or meta['k'] < 1:
@@ -41,6 +49,10 @@ def unir_med9(registros, casos_esperados=None):
         if referencia is None:
             referencia = meta.copy()
         casos = (CONTRASTE if meta['fuera_del_arbol'] else ECO) if meta['dimension'] == 'ecologica' else DET
+        if meta.get('hoja') == 'final':
+            casos = tuple(json.loads(ruta_respuestas.read_text(encoding='utf-8'))['casos'])
+            if meta['fuera_del_arbol']:
+                casos = tuple(c for c in casos if c.startswith('M-'))
         if casos_esperados is not None:
             if (not casos_esperados or len(set(casos_esperados)) != len(casos_esperados)
                     or not set(casos_esperados) <= set(casos)):
@@ -49,6 +61,10 @@ def unir_med9(registros, casos_esperados=None):
         seleccion = {tuple(par) for par in meta['orden']}
         encontrados = set()
         for fila in leer_jsonl(registro):
+            if 'hash_respuestas' in fila:
+                from comun import hash_archivo
+                if fila['hash_respuestas'] != hash_archivo(ruta_respuestas):
+                    raise ValueError('Fila corregida con otra hoja de respuestas.')
             for campo in ('tanda', 'dimension', 'ejecutor', 'modelo', 'brazo', 'condicion', 'ensayo', 'fuera_del_arbol', 'k', 'hash_ejecutor'):
                 if fila.get(campo) != meta[campo]:
                     raise ValueError(f'{registro}: fila incompatible con {campo}.')
@@ -83,18 +99,19 @@ def unir_med9(registros, casos_esperados=None):
     return filas, referencia, []
 
 
-def unir(registros, casos_esperados=None):
-    return unir_med9(registros, casos_esperados)
+def unir(registros, casos_esperados=None, respuestas=None):
+    return unir_med9(registros, casos_esperados, respuestas)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('registros', nargs='+', type=Path)
+    parser.add_argument('--respuestas', type=Path, help='Hoja seleccionada, conservada en el anfitrión.')
     parser.add_argument('--salida', required=True, type=Path)
     parser.add_argument('--casos', help='Selección explícita MED-9; exige todos sus pares caso × k.')
     args = parser.parse_args()
     try:
-        filas, meta, faltantes = unir(args.registros, args.casos.split(',') if args.casos is not None else None)
+        filas, meta, faltantes = unir(args.registros, args.casos.split(',') if args.casos is not None else None, args.respuestas)
         manifiesto = args.salida.parent / 'tanda.json'
         if args.salida.name == 'tanda.json':
             raise ValueError('El registro de salida debe ser distinto de tanda.json.')

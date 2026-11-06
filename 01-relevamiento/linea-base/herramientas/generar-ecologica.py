@@ -211,13 +211,27 @@ def generar_planes_deteccion(origen, destino, plan_base):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--final', action='store_true', help='Generar exclusivamente la hoja final MED-19.')
     p.add_argument('--origen', type=Path, default=Path(__file__).resolve().parents[1] / 'ecologica')
     p.add_argument('--destino', type=Path, required=True)
     p.add_argument('--admitidas', type=Path)
+    p.add_argument('--evidencia-admision', action='append', type=Path, default=[], help='Raíces por tarea, solo para --final; repetible.')
     p.add_argument('--cerrar', type=fecha_cierre, metavar='DD/MM/AAAA')
     p.add_argument('--solo-planes-deteccion', action='store_true', help='Solo compila deteccion.json de ensayo; no regenera ni escribe hojas cerradas.')
     p.add_argument('--plan-base', type=Path, default=Path(__file__).resolve().parents[1] / 'vm/simulado/deteccion.json')
     a = p.parse_args()
+    if a.final:
+        if a.solo_planes_deteccion:
+            p.error('--final no admite --solo-planes-deteccion.')
+        from hoja_final import generar as generar_final
+        fuentes = a.evidencia_admision + ([a.admitidas.parent] if a.admitidas else [])
+        try:
+            generar_final(a.destino, fuentes, a.cerrar)
+        except (OSError, KeyError, TypeError, ValueError) as error:
+            p.error(str(error))
+        return
+    if a.evidencia_admision:
+        p.error('--evidencia-admision requiere --final.')
     if a.solo_planes_deteccion:
         if a.cerrar or a.admitidas:
             p.error('--solo-planes-deteccion no admite --cerrar ni --admitidas.')

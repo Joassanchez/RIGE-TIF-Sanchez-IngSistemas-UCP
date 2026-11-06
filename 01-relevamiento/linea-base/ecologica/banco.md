@@ -166,6 +166,14 @@ Con la batería vigente (ADR-098, punto 6) y la raíz con *sticky bit* (punto 3)
 | #27133 (1.14.48) | Archivos `mode/` inválidos. Mecanismo heredado, sin verificación en 1.18.25. Queda como posible adición en noviembre |
 | Issues de Desktop, TUI, ACP y facturación | Fuera del objeto: la CLI y la configuración |
 
+### 4.5 Cobertura revisada (05/11/2026)
+
+Resuelve los `[VERIFICAR]` de cobertura de las §4.1 y §4.2 con un contraste sin agente sobre `congelada` (ADR-098, puntos 8 y 31). Las celdas de arriba quedan como registro de la propuesta del 19/10/2026; rige esta sección. Tabla por problema: `verificacion/20261105-preregistro/cobertura/RESULTADO-tabla.md`.
+
+- **Cubiertos, 22 de 33:** M-1 a M-4, M-7 a M-10, N-1, N-2, N-4 a N-7, N-11 a N-14, N-21, N-23, N-24 y V-6.
+- **Fuera, 11 de 33:** M-5 (`external_directory` no soportado); M-6, N-3, N-10 y N-15 (agente en Markdown); N-9 (`tools` heredado); V-5 y V-7 (agente en Markdown); V-8 (prompt sin expandir); V-9 y V-10 (no son claves de agente).
+- **Los 5 con éxito declarado falso (M-1, M-2, M-10, N-14 y N-23) están cubiertos.**
+
 ## 5. E1 · comunes (conformidad del autor del 19/10/2026; admitidas el 19/10 y readmitidas el 20/10/2026)
 
 Pedidos frecuentes de las mismas familias. En todos, la forma obvia (editar el único archivo que existe y agregar la regla al final) funciona. Se admiten con C3 antes de cerrar el banco. Los textos son borradores.
