@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cpSync, mkdtempSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
+import { cpSync, mkdtempSync, mkdirSync, realpathSync, symlinkSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { tmpdir } from "node:os";
@@ -46,7 +46,7 @@ describe("T5-04 W-4b catalogo solo al ejecutar", () => {
       const comando = Bun.spawnSync([process.execPath, archivo], opciones);
       expect(comando.exitCode).toBe(1);
       expect(comando.stderr.toString()).toContain("Falta el catalogo de criterios");
-      expect(comando.stderr.toString()).toContain(join(temporal, "03-requisitos/libro/catalogo"));
+      expect(comando.stderr.toString()).toContain(join(realpathSync.native(temporal), "03-requisitos/libro/catalogo"));
     } finally { borrarTemporal(temporal); }
   });
   test("solo extrae definiciones de la fila Criterio de aceptación, sin remisiones", () => {
