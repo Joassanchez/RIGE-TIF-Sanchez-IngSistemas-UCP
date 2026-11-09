@@ -137,6 +137,135 @@
           "error": ""
         }
       }
+    },
+    {
+      "consulta": "edit-a",
+      "agente": "build",
+      "sujeto": "edit",
+      "objetivo": "sub/a.txt",
+      "herramienta": "edit",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "proyecto/sub/a.txt",
+          "regla": {
+            "permission": "edit",
+            "pattern": "*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
+        "version": "1.18.25",
+        "fecha": "2026-11-09T19:24:01.200Z",
+        "plataforma": "linux-x64",
+        "controlGit": {
+          "modo": "raiz",
+          "comando": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "codigo": 0,
+          "salida": "<RAIZ>",
+          "error": ""
+        }
+      }
+    },
+    {
+      "consulta": "write-a",
+      "agente": "build",
+      "sujeto": "edit",
+      "objetivo": "sub/a.txt",
+      "herramienta": "write",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "proyecto/sub/a.txt",
+          "regla": {
+            "permission": "edit",
+            "pattern": "*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
+        "version": "1.18.25",
+        "fecha": "2026-11-09T19:24:03.914Z",
+        "plataforma": "linux-x64",
+        "controlGit": {
+          "modo": "raiz",
+          "comando": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "codigo": 0,
+          "salida": "<RAIZ>",
+          "error": ""
+        }
+      }
+    },
+    {
+      "consulta": "apply_patch-a",
+      "agente": "build",
+      "sujeto": "edit",
+      "objetivo": "sub/a.txt",
+      "herramienta": "apply_patch",
+      "evaluaciones": [
+        {
+          "sujeto": "edit",
+          "patronEvaluado": "proyecto/sub/a.txt",
+          "regla": {
+            "permission": "edit",
+            "pattern": "*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
+        "version": "1.18.25",
+        "fecha": "2026-11-09T19:24:06.522Z",
+        "plataforma": "linux-x64",
+        "controlGit": {
+          "modo": "raiz",
+          "comando": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "codigo": 0,
+          "salida": "<RAIZ>",
+          "error": ""
+        }
+      }
     }
   ]
 }

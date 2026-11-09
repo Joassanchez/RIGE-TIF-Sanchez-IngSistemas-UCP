@@ -51,6 +51,49 @@
           "error": ""
         }
       }
+    },
+    {
+      "consulta": "read-a",
+      "agente": "build",
+      "sujeto": "read",
+      "objetivo": "sub/a.txt",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "sub/a.txt",
+          "regla": {
+            "permission": "read",
+            "pattern": "sub/a.txt",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
+        "version": "1.18.25",
+        "fecha": "2026-11-09T19:23:54.138Z",
+        "plataforma": "linux-x64",
+        "controlGit": {
+          "modo": "proyecto",
+          "comando": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "codigo": 0,
+          "salida": "<RAIZ>/proyecto",
+          "error": ""
+        }
+      }
     }
   ]
 }

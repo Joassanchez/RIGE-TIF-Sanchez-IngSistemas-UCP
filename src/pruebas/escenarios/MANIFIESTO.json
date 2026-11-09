@@ -2336,7 +2336,7 @@
         "proyecto/opencode.json": "cb6c7aaaf1a9f05963c5671b9279be02f41ba78a9007dbe8c8955cf463629193",
         "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
       },
-      "referencia": "08de7109af5cb7a638fcec13e5971fab6add55d63841f1440daecd99eac28d8b",
+      "referencia": "f0196e4bf30d45834c36f9351847506be6827658813607e1afc04b80505e8890",
       "agentes": [],
       "claves": [],
       "consultas": [
@@ -2380,7 +2380,7 @@
         "proyecto/opencode.json": "2edf094370f6ef8628f032db56aff28380dfae3aa18311848366af0aa1aecff9",
         "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
       },
-      "referencia": "03a63212625e249fd0dae9e95dac8439bba1acc0c6ea3e7ff8a7bb4f7599185b",
+      "referencia": "c57de15bdbe3f12eb713ac4cddc8142c68d1b1da637e483c64309c84d3bd6c12",
       "agentes": [],
       "claves": [],
       "consultas": [
@@ -2424,7 +2424,7 @@
         "proyecto/opencode.json": "cb6c7aaaf1a9f05963c5671b9279be02f41ba78a9007dbe8c8955cf463629193",
         "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
       },
-      "referencia": "c4421c83e72a289615a95ad9bd3ec7e49bad4139db29cc98496171d0954b9ba6",
+      "referencia": "ff1043ebd7f4ead71746391684f76b08f50fc6bbe4c196f73354c25a6ca24fb2",
       "agentes": [],
       "claves": [],
       "consultas": [
@@ -2468,7 +2468,7 @@
         "proyecto/opencode.json": "48647ca3b94aa1befc3a5f382dc117aea4d4d0b41658422f291cb2227fd59fff",
         "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
       },
-      "referencia": "0e044e048ee8a1d0d729ea38a38535486ee0c693856ebfd27a887c59c6b09a20",
+      "referencia": "dea3e5fa8a14ebfea1c55a75d30b1b9752d9fac54b6bbe36a105322d19fd286c",
       "agentes": [],
       "claves": [],
       "consultas": [
@@ -2512,7 +2512,7 @@
         "proyecto/opencode.json": "cb6c7aaaf1a9f05963c5671b9279be02f41ba78a9007dbe8c8955cf463629193",
         "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
       },
-      "referencia": "f65064f3787780d1a8bff5c13660ce0ecf4b098ca3ee151b1d34c502a20fb499",
+      "referencia": "7f0d0c060b8c2645a64f3e1af05d59f456824ac9153fbfe9812f364b687e231c",
       "agentes": [],
       "claves": [],
       "consultas": [
@@ -2556,7 +2556,7 @@
         "proyecto/opencode.json": "91e63f41c2da17f3f21b02a4532f245623642df063adad4b6bc38a52cac96499",
         "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
       },
-      "referencia": "d1d29bf2a90f3d8777cc379970f174446611ef935c8448e967ce8f216b68a7f1",
+      "referencia": "6fafdf1bc5e3466fa91b5fc7d61d24c86391ac5b3acc0a1cca89783a829141e6",
       "agentes": [],
       "claves": [],
       "consultas": [
@@ -2600,7 +2600,7 @@
         "proyecto/opencode.json": "94b086b35a616d60931a00863645515dc6d647b3acee29d0c528a2ef7bfb80ad",
         "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
       },
-      "referencia": "1d5180b4e7d799ac24bf6ed31ef21aa8f390bf54fadd4128c2030e1f8945d92e",
+      "referencia": "9d66c7e2509d9b68e6d2e8862b4846764610bd7265842e20af753732bc7ee3dc",
       "agentes": [],
       "claves": [],
       "consultas": [
@@ -2671,7 +2671,7 @@
         "proyecto/opencode.json": "4542e56bf518bbbeb529161dc429d2bdddc31d92e347c44ba12cfbb0ea8dc276",
         "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
       },
-      "referencia": "5322ffe198bd0e13309b1f30f75ed06dd6a8b39df4ba31f4969bf263d8d224b1",
+      "referencia": "df52ebbbcba9b8e7544c1b2bbf3de091e142859684f9344a463e1252ff9ed451",
       "agentes": [],
       "claves": [],
       "consultas": [
@@ -3207,7 +3207,7 @@
         "cambios": [
           "proyecto/opencode.json"
         ],
-        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 deny/allow y comparacion sin fallback en T5-06b.test.ts; Linux pendiente. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 y linux-x64 deny/allow; comparacion sin fallback en T5-06b.test.ts, ejecutada solo en su plataforma. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
       }
     },
     {
@@ -3235,7 +3235,7 @@
         "cambios": [
           "proyecto/opencode.json"
         ],
-        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 deny/allow y comparacion sin fallback en T5-06b.test.ts; Linux pendiente. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 y linux-x64 deny/allow; comparacion sin fallback en T5-06b.test.ts, ejecutada solo en su plataforma. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
       }
     },
     {
@@ -3263,7 +3263,7 @@
         "cambios": [
           "proyecto/opencode.json"
         ],
-        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 deny/allow y comparacion sin fallback en T5-06b.test.ts; Linux pendiente. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 y linux-x64 deny/allow; comparacion sin fallback en T5-06b.test.ts, ejecutada solo en su plataforma. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
       }
     },
     {
@@ -3290,7 +3290,7 @@
         "cambios": [
           "proyecto/opencode.json"
         ],
-        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 deny/allow y comparacion sin fallback en T5-06b.test.ts; Linux pendiente. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 y linux-x64 deny/allow; comparacion sin fallback en T5-06b.test.ts, ejecutada solo en su plataforma. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
       }
     }
   ],
