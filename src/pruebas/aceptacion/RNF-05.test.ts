@@ -5,6 +5,7 @@ import { join, resolve } from "node:path";
 import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { copiarEscenario } from "../utilidades/escenario";
 import { entornoDeReferencia, type ReferenciaEntorno } from "../utilidades/entorno-referencia";
+import { politicaStrace } from "../utilidades/politica-strace";
 
 const raiz = resolve(import.meta.dir, "../..");
 const rutaRige = "paquetes/rige/arranque/rige.ts";
@@ -65,7 +66,7 @@ function comandosEscenario(escenario: EscenarioManifiesto, dirProyecto: string, 
 }
 
 describe("T3-09 R-1", () => {
-  test("RNF-05 CA-2 (en proceso, todas las plataformas): con red interceptada, el análisis completo de los tres escenarios da salidas y códigos idénticos a los de la corrida normal", () => {
+  test("RNF-05 CA-2 (apoyo): intercepta la red en el proceso mediante precarga; la acreditacion con interfaz deshabilitada corresponde al contenedor", () => {
     const manifiesto = JSON.parse(readFileSync(join(raiz, "pruebas/escenarios/MANIFIESTO.json"), "utf8")) as Manifiesto;
     const escenarios = ["v2-decision", "v3-sustituciones", "v3-sin-efecto"];
 
@@ -103,6 +104,10 @@ describe("T3-09 R-1", () => {
             timeout: 30000,
           });
 
+          expect(normal.exitCode).toBe(0);
+          expect(normal.stdout.toString().trim()).not.toBe("");
+          expect(sinRed.exitCode).toBe(0);
+          expect(sinRed.stdout.toString().trim()).not.toBe("");
           expect(sinRed.exitCode).toBe(normal.exitCode);
           expect(sinRed.stdout.toString()).toBe(normal.stdout.toString());
           expect(sinRed.stderr.toString()).toBe(normal.stderr.toString());
@@ -161,10 +166,11 @@ describe("T3-09 R-2", () => {
 });
 
 describe("T3-09 R-3", () => {
-  const tieneStrace = process.platform === "linux" && Bun.which("strace") !== null;
-  const pruebaStrace = tieneStrace ? test : test.skip;
+  const politica = politicaStrace({ plataforma: process.platform, tieneStrace: Bun.which("strace") !== null, ci: process.env.CI });
+  const pruebaStrace = politica.accion === "omitir" ? test.skip : test;
 
-  pruebaStrace("RNF-05 CA-1 (Linux con strace): sin-red --strace sobre los tres escenarios cuenta cero connect AF_INET/AF_INET6", () => {
+  pruebaStrace(`RNF-05 CA-1: tres escenarios sin intentos externos; ${politica.motivo}`, () => {
+    if (politica.accion === "fallar") throw new Error(politica.motivo);
     const proc = Bun.spawnSync([
       process.execPath,
       "herramientas/sin-red.ts",
@@ -180,8 +186,12 @@ describe("T3-09 R-3", () => {
     });
     expect(proc.exitCode).toBe(0);
     const salida = proc.stdout.toString();
-    expect(salida).toContain("AF_INET: 0");
-    expect(salida).toContain("AF_INET6: 0");
+    expect(salida.trim()).not.toBe("");
+    for (const llamada of ["connect", "sendto", "sendmsg"]) {
+      const linea = salida.split(/\r?\n/).find(l => l.startsWith(`${llamada}: `));
+      expect(linea).toBeDefined();
+      expect(JSON.parse(linea!.slice(llamada.length + 2))).toMatchObject({ externoIPv4: 0, externoIPv6: 0, indeterminados: 0 });
+    }
   });
 });
 
