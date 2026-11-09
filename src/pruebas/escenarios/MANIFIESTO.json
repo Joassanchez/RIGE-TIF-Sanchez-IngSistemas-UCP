@@ -1593,13 +1593,13 @@
         {
           "item": "RF-05 CA-1",
           "archivo": "pruebas/aceptacion/RF-05.test.ts",
-          "describe": "RF-05 CA-1 T3-01 R-9",
+          "describe": "C-3 RF-05 CA-1 T3-01 R-9",
           "fuente": "caso-de-uso"
         },
         {
           "item": "RF-05 CA-2",
           "archivo": "pruebas/aceptacion/RF-05.test.ts",
-          "describe": "RF-05 CA-2 T3-01 R-9",
+          "describe": "C-3 RF-05 CA-2 T3-01 R-9",
           "fuente": "caso-de-uso"
         },
         {
@@ -2188,6 +2188,30 @@
       "claves": [],
       "consultas": [],
       "comprobaciones": []
+    },
+    {
+      "id": "v5-ruta-relativa-no-confirma",
+      "referencia": null,
+      "entradas": {
+        "proyecto/opencode.json": "e9f0087b80670bc61aa83f5789bd97fed09b16a1a0050b77d2d2d4d5c17b2378",
+        "proyecto/src/a.js": "037ecd1db38c230c248787e60fd7bfc0cb0101b187b59535b6e7483be762d350"
+      },
+      "agentes": [
+        "build"
+      ],
+      "claves": [
+        "permission",
+        "agent"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 CA-5",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "C-4 RF-07 CA-5",
+          "fuente": "caso-de-uso"
+        }
+      ]
     }
   ],
   "defectosSembrados": [

@@ -6,6 +6,7 @@ import { entornoDeReferencia } from "../utilidades/entorno-referencia";
 import { crearEntornoMemoria } from "../utilidades/entorno-memoria";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { decisionNativa } from "../utilidades/decision-nativa";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
@@ -958,7 +959,7 @@ function datosWeb(cuerpo: string) {
 const escaparHtml = (texto: string) => texto.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
   .replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
 
-describe("T3-07 R-1", () => {
+describe("C-1 RF-03 CA-1 T3-07 R-1", () => {
   test("CLI hallazgos: esquema, codigo 0 con y sin hallazgos, --explicar, errores de opciones y proyecto, determinismo y sin crear almacen", async () => {
     const rutaEsquema = join(import.meta.dir, "../../esquemas/salida/hallazgos.json");
     expect(existsSync(rutaEsquema)).toBe(true);
@@ -1124,4 +1125,90 @@ describe("T3-07 R-4", () => {
       await servidor.detener();
     }
   });
+});
+
+
+describe("C-4 RF-07 CA-5", () => {
+  test("la cadena completa de build no confirma el allow global: diagnostico sin forma y sustitucion denegada", () => {
+    const original = prepararSinReferencia("v5-ruta-relativa-no-confirma");
+    const resultado = cliHallazgos(original);
+    expect(resultado.codigo).toBe(0);
+    expect(resultado.error).toBe("");
+    const hallazgos = JSON.parse(resultado.salida).hallazgos as RespuestaHallazgos["hallazgos"];
+    const globales = hallazgos.filter(h => h.clave?.[0] === "permission");
+    expect(globales).toHaveLength(1);
+    expect(globales[0]).toMatchObject({ causa: "ruta-absoluta", parametros: { efecto: "permitida" } });
+    expect(globales[0]!.parametros).not.toHaveProperty("formaRelativa");
+    expect(globales[0]!.parametros).not.toHaveProperty("decision");
+
+    const relativa = prepararSinReferencia("v5-ruta-relativa-no-confirma");
+    const ruta = join(relativa.proyecto, "opencode.json");
+    const texto = readFileSync(ruta, "utf8");
+    const absoluto = `${relativa.proyecto.replaceAll("\\", "/")}/src/a.js`;
+    expect(texto.split(absoluto)).toHaveLength(2);
+    writeFileSync(ruta, texto.replace(absoluto, "src/a.js"));
+    const permiso = lanzar(relativa.raiz, ["permiso", "--proyecto", relativa.proyecto,
+      "--agente", "build", "--sujeto", "read", "--objetivo", "src/a.js"], relativa.env);
+    expect(permiso.codigo).toBe(0);
+    expect(permiso.error).toBe("");
+    expect(JSON.parse(permiso.salida).decision).toBe("deny");
+  });
+});
+
+describe("C-5 RF-07 CA-5", () => {
+  test("CLI bloqueo a propone src/productos.js con decision permitida", () => {
+    const e = preparar("v2-ruta-bloqueo");
+    const resultado = cliHallazgos(e);
+    expect(resultado.codigo).toBe(0);
+    expect(resultado.error).toBe("");
+    const hallazgos = JSON.parse(resultado.salida).hallazgos as RespuestaHallazgos["hallazgos"];
+    expect(hallazgos.find(h => h.clave?.[1] === "a")).toMatchObject({
+      causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: "src/productos.js", decision: "permitida" },
+    });
+  });
+  const manifiesto = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8"));
+  const formas = manifiesto.defectosSembrados.filter((d: DefectoSembrado) =>
+    ["v2-ruta-bloqueo", "v2-ruta-env", "v2-ruta-exposicion"].includes(d.escenario)
+    && d.causa === "ruta-absoluta-con-forma");
+  expect(formas).toHaveLength(6);
+  for (const defecto of formas) {
+    const referencia = JSON.parse(readFileSync(join(raiz, defecto.escenario, "REFERENCIA.json"), "utf8"));
+    const sujeto = defecto.clave[3];
+    const objetivo = defecto.parametros.formaRelativa;
+    const consulta = { agente: defecto.control.agente, sujeto, objetivo };
+    // decisionNativa arroja si existe una captura incompleta: nunca se convierte en pendiente.
+    const nativa = decisionNativa(referencia, consulta, objetivo);
+    const titulo = `${defecto.escenario} ${defecto.clave[1]} -> ${consulta.agente} ${sujeto} ${objetivo}`;
+    if (nativa === null) {
+      const registro = referencia.decisionesNativas?.find((d: { agente: string; sujeto: string; objetivo: string }) =>
+        d.agente === consulta.agente && d.sujeto === sujeto && d.objetivo === objetivo);
+      const motivo = !registro ? "captura ausente" : registro.procedencia
+        && registro.procedencia.plataforma !== `${process.platform}-${process.arch}` ? "plataforma distinta" : "herramienta no ofrecida";
+      describe("C-6 pendientes legitimos", () => { test.todo(`${titulo}: ${motivo}`, () => {}); });
+      continue;
+    }
+    test(`${titulo}: captura nativa, orden y efectos conservados`, () => {
+      const e = preparar(defecto.escenario);
+      const resultado = cliHallazgos(e);
+      expect(resultado.codigo).toBe(0);
+      expect(resultado.error).toBe("");
+      const hallazgos = JSON.parse(resultado.salida).hallazgos as RespuestaHallazgos["hallazgos"];
+      const h = hallazgos.find(h => h.clave?.[1] === defecto.clave[1] && h.parametros.formaRelativa === objetivo);
+      const decision = plantillasExplicacion.efectos[nativa.decision]!;
+      expect(h).toMatchObject({ causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: objetivo, decision, efecto: decision } });
+      expect(decision).toBe(defecto.parametros.decision);
+      const permiso = lanzar(e.raiz, ["permiso", "--proyecto", e.proyecto, "--agente", consulta.agente,
+        "--sujeto", sujeto, "--objetivo", objetivo], e.env);
+      expect(permiso.codigo).toBe(0);
+      expect(permiso.error).toBe("");
+      expect(JSON.parse(permiso.salida).decision).toBe(nativa.decision);
+      // Los controles difieren solo en la forma de las rutas: comparar listas conserva el orden.
+      const config = JSON.parse(readFileSync(join(e.proyecto, "opencode.jsonc"), "utf8"));
+      const reglas = (agente: string, sustituir: boolean) => Object.entries(config.agent[agente].permission)
+        .flatMap(([sujeto, patrones]) => typeof patrones === "string" ? [[sujeto, "*", patrones]]
+          : Object.entries(patrones as Record<string, string>).map(([patron, efecto]) => [sujeto,
+            sustituir ? patron.replace(`${e.proyecto.replaceAll("\\", "/")}/`, "") : patron, efecto]));
+      expect(reglas(defecto.clave[1], true)).toEqual(reglas(consulta.agente, false));
+    });
+  }
 });

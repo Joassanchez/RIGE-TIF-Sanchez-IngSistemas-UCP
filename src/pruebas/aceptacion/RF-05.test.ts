@@ -26,7 +26,7 @@ function preparar(version: string | null) {
 const consultas = [
   ["valores", ["--agente", "build"]],
   ["permiso", ["--agente", "build", "--sujeto", "bash", "--objetivo", "ls"]],
-  ["agentes", []],
+  ["agentes", []], ["hallazgos", []],
 ] as const;
 async function validar(nombre: string, valor: unknown) {
   const esquema = await Bun.file(new URL(`../../esquemas/salida/${nombre}.json`, import.meta.url)).json();
@@ -43,8 +43,8 @@ function contar(base: string): number {
   finally { db.close(); }
 }
 
-describe("RF-05 CA-1 T3-01 R-9", () => {
-  test("las tres consultas muestran la esperada y la detectada sin resultados", () => {
+describe("C-3 RF-05 CA-1 T3-01 R-9", () => {
+  test("las cuatro consultas muestran la esperada y la detectada sin resultados", () => {
     const escenario = preparar("1.18.24");
     for (const [comando, opciones] of consultas) {
       const recibida = lanzar(escenario.temporal, [comando, "--proyecto", escenario.proyecto, ...opciones], escenario.variables);
@@ -57,7 +57,7 @@ describe("RF-05 CA-1 T3-01 R-9", () => {
     }
   });
 });
-describe("RF-05 CA-2 T3-01 R-9", () => {
+describe("C-3 RF-05 CA-2 T3-01 R-9", () => {
   test("CLI devuelve codigo 1 y una linea del esquema error sin salida estandar", async () => {
     const escenario = preparar("1.18.24");
     for (const [comando, opciones] of consultas) {
@@ -89,7 +89,7 @@ describe("T3-01 R-10", () => {
     } finally { await servidor.detener(); }
   });
 });
-describe("T3-01 R-11", () => {
+describe("C-3 T3-01 R-11", () => {
   test("version ausente conserva resultados, advierte en CLI y presenta declaraciones y paridad web", async () => {
     const escenario = preparar(null);
     let valores: unknown;
@@ -130,7 +130,7 @@ describe("T3-01 R-11", () => {
     } finally { await servidor.detener(); }
   });
 });
-describe("T3-01 R-12", () => {
+describe("C-3 T3-01 R-12", () => {
   test("el PATH heredado soportado no agrega declaraciones de version ni advertencias", () => {
     const escenario = preparar(null);
     const { PATH: _, ...variables } = escenario.variables;
