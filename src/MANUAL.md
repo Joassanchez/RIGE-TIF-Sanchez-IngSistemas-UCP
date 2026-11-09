@@ -246,8 +246,8 @@ Las filas siguientes trasladan solo usos respaldados por la declaración de la b
 | 03/11 | [AUTOR: herramienta y modelo] | T3-12 y T4-01 a T4-04 | `893a309`, `5735544`, `4ab181a`, `5efb7b3`, `5dfa325` | 1014 pruebas; CI `41743284212` y `41743288096` |
 | 30/10 | Codex (`gpt-6.1-sol`) con respaldo de Claude | T2-19 y T3-01 a T3-05 | `8862069`, `5007e4c`, `bf1daae`, `f4629c5`, `ac89ccf`, `03e02cd`, `a436ac0`, `59f18f4`, `77bd4d0`, `a8f3e64` | Suites y revisores en `.trabajo/fichas/it3/INDICE.md` |
 | 25/10 | Codex (`gpt-6.1-sol`), orquestado por Claude Code | T2-01 a T2-18 | `197fc08` a `3ae11e1` | CI sobre `be010cf`; [AUTOR: revisión del diff] |
-| 09/11 (T5-06c-c1) | [AUTOR: completar] | [AUTOR: completar] | Capturas Linux incorporadas y comparación por plataforma | [AUTOR: completar] |
-| 09/11 (T5-07) | [AUTOR: completar] | [AUTOR: completar] | Versión 1.0.0, README y MANUAL | [AUTOR: completar] |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | Incorporación de las capturas linux-x64 de `core.worktree` y `core.bare` (T5-06c-c1) | `340d095` | Capturas tomadas por Claude Code en el contenedor; copias idénticas; Ubuntu 1234 aprobadas, 0 fallidas |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-07: versión 1.0.0, manual de despliegue (`src/MANUAL.md`), `rige.env.example`, utilidad de demostración y README | `c54067a` | Windows 1240 aprobadas en ambas condiciones; Ubuntu con `strace` y `CI=true` 1234 aprobadas; prueba de humo del manual seguida por Claude Code sobre una copia limpia con `git archive`: código 0, `0.3` en `opencode.jsonc:6:7` y desplazadas `0.1` y `0.2`. [AUTOR: lectura del manual] |
 
 El diseño, los requisitos y las decisiones (ADR) son del autor; las herramientas escriben y revisan código bajo esas decisiones.
 
