@@ -7,6 +7,7 @@ import { join, resolve } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
+import { seccionHtml } from "../utilidades/html";
 
 const regla = "OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).";
 const paginaPrimera = "/resoluciones/1?agente=build&clave=temperature";
@@ -64,11 +65,12 @@ function ubicacion(respuesta: Awaited<ReturnType<typeof solicitarLocal>>): strin
 }
 
 function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
+  const valores = seccionHtml(cuerpo, "valores");
   const ruta = raiz.replaceAll("\\", "/");
-  expect(cuerpo).toContain(`<td>temperature</td><td>${temperatura}</td>`);
-  expect(cuerpo).toContain(`${temperatura} en ${ruta}/proyecto/opencode.jsonc:6:7 (proyecto)`);
-  const primera = cuerpo.indexOf(`0.1 en ${ruta}/opencode.json:5:7 (proyecto)`);
-  const segunda = cuerpo.indexOf(`0.2 en ${ruta}/proyecto/opencode.json:5:7 (proyecto)`);
+  expect(valores).toContain(`<td>temperature</td><td>${temperatura}</td>`);
+  expect(valores).toContain(`${temperatura} en ${ruta}/proyecto/opencode.jsonc:6:7 (proyecto)`);
+  const primera = valores.indexOf(`0.1 en ${ruta}/opencode.json:5:7 (proyecto)`);
+  const segunda = valores.indexOf(`0.2 en ${ruta}/proyecto/opencode.json:5:7 (proyecto)`);
   expect(primera).toBeGreaterThan(-1);
   expect(segunda).toBeGreaterThan(primera);
   expect(cuerpo).toContain(regla);
@@ -76,7 +78,7 @@ function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
 }
 
 function resumen(cuerpo: string): string {
-  const encontrado = /<dt>Resumen de las entradas leídas<\/dt><dd>([a-f0-9]{64})<\/dd>/.exec(cuerpo);
+  const encontrado = /<dt>Resumen de las entradas leídas<\/dt><dd>([a-f0-9]{64})<\/dd>/.exec(seccionHtml(cuerpo, "entradas-leidas", "details"));
   if (!encontrado) throw new Error("La pagina no presenta el resumen de las entradas.");
   return encontrado[1]!;
 }
@@ -91,7 +93,7 @@ describe("RF-01 CA-1 · recorrido del README (guía, paso 8)", () => {
     const pagina = await recorrido.solicitar(paginaPrimera);
     expect(pagina.estado).toBe(200);
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
-    expect(pagina.cuerpo).toMatch(/Instante \(UTC\)<\/dt><dd>\d{4}-\d{2}-\d{2}T[^<]+Z<\/dd>/);
+    expect(seccionHtml(pagina.cuerpo, "resumen-resolucion")).toMatch(/Instante \(UTC\)<\/dt><dd>\d{4}-\d{2}-\d{2}T[^<]+Z<\/dd>/);
     resumen(pagina.cuerpo);
   });
 });
@@ -116,7 +118,7 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
     const referencia = await Bun.file(new URL("../escenarios/v1-precedencia/REFERENCIA.json", import.meta.url)).json() as {
       valores: Record<string, string | number>;
     };
-    const tabla = pagina.cuerpo.split("<tbody>")[1]!.split("</tbody>")[0]!;
+    const tabla = seccionHtml(pagina.cuerpo, "valores").split("<tbody>")[1]!.split("</tbody>")[0]!;
     const claves = [...tabla.matchAll(/<tr><td>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
     expect(claves.filter(clave => Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["description", "steps", "temperature"]);
     expect(claves.filter(clave => !Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["mode", "name", "native", "options"]);
@@ -126,7 +128,11 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const puntual = await recorrido.solicitar(paginaPrimera);
     expect(puntual.estado).toBe(200);
-    const fila = (cuerpo: string) => /<tr><td>temperature<\/td>.*?<\/tr>/s.exec(cuerpo)?.[0];
+    const fila = (cuerpo: string) => {
+      const encontrada = /<tr><td>temperature<\/td>.*?<\/tr>/s.exec(seccionHtml(cuerpo, "valores"));
+      expect(encontrada).not.toBeNull();
+      return encontrada![0];
+    };
     expect(fila(pagina.cuerpo)).toBe(fila(puntual.cuerpo));
     expect(resumir()).toEqual(antes);
     expect(arbol(recorrido.raiz)).toEqual(listado);
@@ -195,8 +201,13 @@ describe("RF-17", () => {
       const ruta = (id: number) => `/resoluciones/${id}?agente=build&clave=temperature`;
       const ultima = await recorrido.solicitar(ruta(guardadas.at(-1)!));
       expect(ultima.estado).toBe(200);
-      const ids = [...ultima.cuerpo.matchAll(/href="\/resoluciones\/(\d+)\?agente=build/g)].map(enlace => Number(enlace[1]));
+      const historia = seccionHtml(ultima.cuerpo, "historia");
+      const ids = [...historia.matchAll(/href="\/resoluciones\/(\d+)\?agente=build/g)].map(enlace => Number(enlace[1]));
       expect(ids).toEqual(guardadas.slice(1).reverse());
+      expect(ids).toHaveLength(20);
+      expect(ids).not.toContain(guardadas[0]!);
+      expect(historia).toContain(`href="/resoluciones/${guardadas.at(-1)}?agente=build&amp;clave=temperature" aria-current="page"`);
+      expect(historia.match(/aria-current="page"/g)).toHaveLength(1);
       const retirada = await recorrido.solicitar(ruta(guardadas[0]!));
       expect(retirada.estado).toBe(404);
       expect(retirada.cuerpo).toContain(`No existe la resolución ${guardadas[0]} en el almacén.`);
@@ -234,7 +245,7 @@ describe("V-7 RNF-09 ADR-062 C7", () => {
     const pagina = await recorrido.solicitar(paginaPrimera);
     expect(pagina.estado).toBe(200);
     for (const respuesta of [redireccion, pagina]) {
-      expect(respuesta.cabeceras["content-security-policy"]).toBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+      expect(respuesta.cabeceras["content-security-policy"]).toBe("default-src 'none'; style-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
       expect(respuesta.cabeceras["x-content-type-options"]).toBe("nosniff");
       expect(Object.keys(respuesta.cabeceras).filter(nombre => nombre.startsWith("access-control-"))).toEqual([]);
     }
@@ -309,7 +320,7 @@ describe("Errores de uso por la web", () => {
       expect(pagina.cuerpo).toContain("<td>temperature</td><td>0.3</td>");
       expect(pagina.cuerpo).toContain("Claves no incorporadas por RIGE");
       expect(pagina.cuerpo).toContain("<li>permission:");
-      const pendientes = /<h2>Claves no incorporadas por RIGE<\/h2>\s*<ul>(.*?)<\/ul>/s.exec(pagina.cuerpo)?.[1];
+      const pendientes = /<ul>(.*?)<\/ul>/s.exec(seccionHtml(pagina.cuerpo, "claves-no-incorporadas", "details"))?.[1];
       expect(pendientes).toBeDefined();
       expect(pendientes?.match(/<li>/g)).toHaveLength(2);
       expect(pendientes).toContain("<li>tools:");

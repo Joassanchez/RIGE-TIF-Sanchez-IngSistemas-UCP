@@ -145,7 +145,9 @@ Para el uso local con la configuración de §4 y el almacén de §5:
 bun run servir
 ```
 
-Debe informar `{"esquema":2,"direccion":"http://127.0.0.1:4747"}`. Abrir esa dirección: el inicio muestra **RIGE 1.0.0**, almacén y esquema 2. `RIGE_PUERTO` cambia el puerto; si se modifica, abrir `http://127.0.0.1:<puerto>`. Detener con **Ctrl+C**.
+Debe informar `{"esquema":2,"direccion":"http://127.0.0.1:4747"}`. Abrir esa dirección: el inicio muestra **RIGE 1.0.0** y «¿Qué configuración rige de verdad?». La tarjeta **Resolver y guardar** recibe Proyecto, Agente (`build` por defecto) y Clave opcional; vacía consulta todas las claves. La tarjeta **Inspeccionar un proyecto** ofrece **Hallazgos** y **Entradas** sobre las entradas actuales, sin guardar. La ruta del almacén y su esquema 2 aparecen al pie como información secundaria. `RIGE_PUERTO` cambia el puerto; si se modifica, abrir `http://127.0.0.1:<puerto>`. Detener con **Ctrl+C**.
+
+El tema claro u oscuro sigue la preferencia del sistema. La navegación ofrece Inicio, Entradas y Hallazgos al conocer el proyecto, y Agentes al conocer una resolución guardada. Los detalles técnicos se abren sin JavaScript; las tablas anchas se desplazan dentro de su contenedor. Los estilos se sirven localmente en `/estilos.css`, sin recursos externos.
 
 Para el recorrido aislado, detener primero ese servidor y usar la copia de §5:
 
@@ -198,7 +200,11 @@ Para escribir el comando de RF-08 sin escape de tabla:
 bun herramientas/demostracion.ts v2-decision -- permiso --agente build --herramienta bash --objetivo "ls | cat"
 ```
 
-En RF-03, el JSON embebido se obtiene del código fuente de la página, entre `<script type="application/json" id="respuesta">` y `</script>`, interpretando `\u003c` como `<` al parsear JSON. Comparar objetos, no el HTML ni el sobre con fecha/id del almacén. El mismo origen de navegador permite recorrer los enlaces de permisos, agentes e historia de la resolución guardada. Para `/hallazgos` y `/entradas`, codificar la ruta de proyecto como parámetro de URL (por ejemplo, con el formulario de la página inicial).
+En RF-03, el JSON embebido se obtiene del código fuente de la página, entre `<script type="application/json" id="respuesta">` y `</script>`, interpretando `\u003c` como `<` al parsear JSON. Comparar objetos, no el HTML ni el sobre con fecha/id del almacén. El mismo origen de navegador permite recorrer los enlaces de permisos, agentes e historia de la resolución guardada. Para `/hallazgos` y `/entradas`, usar **Inspeccionar un proyecto** o codificar la ruta de proyecto como parámetro de URL.
+
+En la resolución, **Valores efectivos** asocia cada valor con su declaración determinante y sus desplazadas; **Seguir explorando** ofrece Consultar permiso y Listar agentes. Abrir **Entradas leídas** y **Claves no incorporadas por RIGE** para ver el detalle técnico. **Resoluciones de este proyecto** marca la actual. En Permiso, la decisión se presenta como permitida, denegada o sujeta a confirmación; **Cadena efectiva** conserva todas las reglas en orden y resalta la determinante. Una decisión nula muestra «sin decisión» y su motivo. Hallazgos muestra seis conteos por tipo y distingue un proyecto sin hallazgos de un análisis parcial.
+
+La revisión visual en navegador corresponde al ingeniero: capturar claro y oscuro, comprobar contraste AA, foco de teclado y ancho de 360 px. Esta tarea no acredita esa revisión mediante las pruebas automatizadas.
 
 ## 9. Pruebas automatizadas
 

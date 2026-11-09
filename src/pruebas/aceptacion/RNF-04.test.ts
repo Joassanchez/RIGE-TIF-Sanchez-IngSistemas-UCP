@@ -145,7 +145,8 @@ describe("RNF-04 CA-1 y CA-2 T3-04 R-8", () => {
               expect(error).toBeDefined();
               validar("error", error);
               expect(error!.error.codigo).toBe(errorEsperado);
-              expect(r.cuerpo).toContain("<title>Error de RIGE</title>");
+              expect(r.cuerpo).toContain(`<title>Error ${r.estado} · RIGE</title>`);
+              expect(r.cuerpo).toContain('<main id="contenido"');
               expect(r.cuerpo).toContain(`<p>${escapar(error!.error.mensaje)}</p>`);
             }
             sinContenido(r.cuerpo, marcas);

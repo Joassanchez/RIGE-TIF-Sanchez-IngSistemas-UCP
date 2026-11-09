@@ -44,7 +44,7 @@ describe("W-7", () => {
       expect(await respuesta.text()).toBe(pagina.texto);
       expect(respuesta.headers.get("content-type")).toBe("text/html; charset=utf-8");
       expect(respuesta.headers.get("content-security-policy"))
-        .toBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+        .toBe("default-src 'none'; style-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
       expect(respuesta.headers.get("x-content-type-options")).toBe("nosniff");
       expect(respuesta.headers.get("cache-control")).toBe("no-store");
       expect(respuesta.headers.get("referrer-policy")).toBe("no-referrer");
@@ -79,7 +79,7 @@ describe("W-8", () => {
     for (const [respuesta, codigo] of respuestas) {
       expect(respuesta.status).toBe(codigo);
       expect(respuesta.headers.get("content-security-policy"))
-        .toBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+        .toBe("default-src 'none'; style-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
       expect(respuesta.headers.get("x-content-type-options")).toBe("nosniff");
     }
   });

@@ -1,5 +1,5 @@
 import type { ErrorUso } from "../../../aplicacion/errores";
-import { html } from "../plantillas";
+import { contenidoError, diseno } from "../diseno";
 import { responderHtml } from "../respuesta";
 
 const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
@@ -19,8 +19,8 @@ const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
 };
 
 export function paginaErrorUso(error: ErrorUso): Response {
-  const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Error de RIGE</title></head><body><p>${error.mensaje}</p></body></html>`;
-  return responderHtml(Object.hasOwn(estadoPorCodigo, error.codigo) ? estadoPorCodigo[error.codigo]! : 422, pagina);
+  const estado = Object.hasOwn(estadoPorCodigo, error.codigo) ? estadoPorCodigo[error.codigo]! : 422;
+  return responderHtml(estado, diseno(`Error ${estado}`, contenidoError(estado, error.mensaje, error.codigo)));
 }
 
 export function conErrores(manejador: (solicitud: Request) => Response): (solicitud: Request) => Response {
@@ -28,7 +28,7 @@ export function conErrores(manejador: (solicitud: Request) => Response): (solici
     try {
       return manejador(solicitud);
     } catch {
-      const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Error de RIGE</title></head><body><p>Falla interna de RIGE.</p></body></html>`;
+      const pagina = diseno("Error 500", contenidoError(500, "Falla interna de RIGE.", "interno"));
       return responderHtml(500, pagina);
     }
   };

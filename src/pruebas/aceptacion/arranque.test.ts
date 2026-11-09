@@ -49,7 +49,7 @@ describe("A-5", () => {
       expect(servidor.direccion).toBe(`http://127.0.0.1:${puerto}`);
       const inicio = await solicitarLocal({ host: "127.0.0.1", puerto, ruta: "/" });
       expect(inicio.estado).toBe(200);
-      expect(inicio.cuerpo).toContain(`RIGE ${estado.versionRige}`);
+      expect(inicio.cuerpo).toContain(`<span>RIGE <span class="version">${estado.versionRige}</span></span>`);
       expect(inicio.cuerpo).toContain(estado.almacen.ruta);
       expect(inicio.cuerpo).toContain(`Esquema del almacén: ${estado.almacen.versionEsquema}`);
       expect((await solicitarLocal({ host: "127.0.0.1", puerto, ruta: "/otra" })).estado).toBe(404);

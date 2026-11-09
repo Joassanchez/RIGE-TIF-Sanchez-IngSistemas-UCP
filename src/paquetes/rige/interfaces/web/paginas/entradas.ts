@@ -1,14 +1,17 @@
 import type { RespuestaEntradas } from "../../../aplicacion/respuestas/entradas";
 import { datosRespuesta, html } from "../plantillas";
+import { declaraciones, diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
 
 export function paginaEntradas(respuesta: RespuestaEntradas): Response {
-  return responderHtml(200, html`<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><title>Entradas</title></head><body>
-<h1>Entradas</h1><p>Proyecto: ${respuesta.proyecto}</p>
-<h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
+  return responderHtml(200, diseno("Entradas", html`
+<div class="cabecera-pagina"><p class="ceja">Fuentes de configuración</p><h1>Entradas</h1>
+<p>Proyecto: <code>${respuesta.proyecto}</code></p></div>
+${declaraciones(respuesta.declaraciones, respuesta.reglas)}
+<section id="tabla-entradas"><h2>Vías y legibilidad</h2>
+<div class="tabla-contenedor" role="region" aria-label="Entradas" tabindex="0">
 <table><thead><tr><th>Orden</th><th>Vía</th><th>Referencia</th><th>Condición</th><th>Legibilidad</th><th>Error</th></tr></thead>
-<tbody>${respuesta.entradas.map(entrada => html`<tr><td>${entrada.orden}</td><td>${entrada.via}</td><td>${entrada.referencia}</td><td>${entrada.condicion}</td><td>${entrada.legibilidad ?? "no observada"}</td><td>${entrada.error ? `${entrada.error.linea}:${entrada.error.columna} (${entrada.error.consecuencia})` : ""}</td></tr>`)}</tbody></table>
-<p>Resumen del conjunto: ${respuesta.resumenEntradas}</p>
-${datosRespuesta(respuesta)}</body></html>`);
+<tbody>${respuesta.entradas.map(entrada => html`<tr><td>${entrada.orden}</td><td>${entrada.via}</td><td><code class="ficha-codigo">${entrada.referencia}</code></td><td>${insignia(entrada.condicion, entrada.condicion === "no_observada" ? "neutra" : "permitida")}</td><td>${insignia(entrada.legibilidad ?? "no observada", entrada.legibilidad === "ilegible" ? "denegada" : entrada.legibilidad === "legible" ? "permitida" : "neutra")}</td><td>${entrada.error ? html`<div class="aviso aviso--advertencia">${`${entrada.error.linea}:${entrada.error.columna} (${entrada.error.consecuencia})`}</div>` : "—"}</td></tr>`)}</tbody></table></div></section>
+<p class="bloque atenuado">Resumen del conjunto: <code>${respuesta.resumenEntradas}</code></p>
+${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto, activa: "Entradas" }));
 }

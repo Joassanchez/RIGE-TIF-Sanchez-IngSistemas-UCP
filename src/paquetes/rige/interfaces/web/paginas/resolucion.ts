@@ -1,6 +1,7 @@
 import type { DeclaracionUbicada, RespuestaValores } from "../../../aplicacion/respuestas/valores";
 import type { SobreAlmacen } from "../../../aplicacion/respuestas/sobre";
 import { datosRespuesta, html } from "../plantillas";
+import { declaraciones, diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
 
 function presentarDeclaracion(declaracion: DeclaracionUbicada): string {
@@ -14,47 +15,52 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
     ? respuesta.ruta.join(".")
     : "/" + respuesta.ruta.map(segmento => segmento.replaceAll("~", "~0").replaceAll("/", "~1")).join("/");
   const consulta = `?agente=${encodeURIComponent(respuesta.agente)}${clave ? `&clave=${encodeURIComponent(clave)}` : ""}`;
-  const pagina = html`<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><title>Resolución ${sobre.id}</title></head>
-<body><h1>Resolución ${sobre.id}</h1>
+  return responderHtml(200, diseno(`Resolución ${sobre.id}`, html`
+<section id="resumen-resolucion" class="cabecera-pagina"><p class="ceja">Configuración efectiva · ${respuesta.valores.length} valores</p>
+<h1>Resolución ${sobre.id}</h1>
 <p>Página armada con la resolución leída del almacén de RIGE.</p>
-<h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
-<nav><a href="${`/agentes?id=${sobre.id}`}">Agentes</a>
-<a href="#consultar-permiso">Consultar permiso</a></nav>
-<form action="/agentes" method="get"><input type="hidden" name="id" value="${sobre.id}"><button>Listar agentes</button></form>
+<dl class="resumen"><div><dt>Proyecto</dt><dd><code>${respuesta.proyecto}</code></dd></div>
+<div><dt>Agente</dt><dd><code>${respuesta.agente}</code></dd></div>
+<div><dt>Instante (UTC)</dt><dd>${sobre.instante}</dd></div>
+<div><dt>Herramienta</dt><dd>${respuesta.herramienta} ${respuesta.versionHerramienta}</dd></div>
+<div><dt>Clave</dt><dd><code>${respuesta.ruta?.join(".") ?? "todas"}</code></dd></div></dl></section>
+${declaraciones(respuesta.declaraciones, respuesta.reglas)}
+<section id="valores"><h2>Valores efectivos</h2>
+<div class="tabla-contenedor" role="region" aria-label="Valores efectivos" tabindex="0">
+<table><thead><tr><th>Clave</th><th>Valor efectivo</th><th>Declaración determinante</th><th>Declaraciones desplazadas</th><th>Regla aplicada</th></tr></thead>
+<tbody>${respuesta.valores.length ? respuesta.valores.map(({ clave, rastro }) => html`<tr><td>${clave}</td><td>${JSON.stringify(rastro.valor)}</td>
+<td><code class="ficha-codigo">${presentarDeclaracion(rastro.determinante)}</code></td><td>${rastro.desplazadas.length
+    ? html`<ol>${rastro.desplazadas.map(declaracion => html`<li>${presentarDeclaracion(declaracion)}</li>`)}</ol>`
+    : "ninguna"}</td><td>${respuesta.reglas[rastro.determinante.regla]}</td></tr>`)
+    : html`<tr><td colspan="5">${respuesta.motivo === "clave-inexistente" ? "La clave consultada no existe para el agente." : "RIGE no incorpora claves resueltas para este agente."}</td></tr>`}</tbody></table></div>
+${respuesta.motivo ? html`<p class="aviso bloque">Motivo: ${respuesta.motivo}</p>` : html``}</section>
+<section id="acciones-resolucion"><h2>Seguir explorando</h2><div class="rejilla">
+<div class="tarjeta"><h3>Consultar permiso</h3>
 <form id="consultar-permiso" action="/permiso" method="get">
 <input type="hidden" name="id" value="${sobre.id}">
 <label>Agente <input name="agente" value="${respuesta.agente}" required></label>
-<label>Herramienta <input name="herramienta" required></label>
-<label>Objetivo <input name="objetivo" required></label>
+<div class="grupo-campos"><label>Herramienta <input name="herramienta" placeholder="read" required></label>
+<label>Objetivo <input name="objetivo" placeholder=".env" required></label></div>
 <button>Consultar permiso</button></form>
-<form action="/permiso" method="get">
+<details><summary>Consultar por sujeto</summary><form action="/permiso" method="get">
 <input type="hidden" name="id" value="${sobre.id}">
 <label>Agente <input name="agente" value="${respuesta.agente}" required></label>
 <label>Sujeto <input name="sujeto" required></label>
 <label>Objetivo <input name="objetivo" required></label>
-<button>Consultar sujeto de permiso</button></form>
-<dl><dt>Proyecto</dt><dd>${respuesta.proyecto}</dd>
-<dt>Instante (UTC)</dt><dd>${sobre.instante}</dd>
-<dt>Herramienta</dt><dd>${respuesta.herramienta} ${respuesta.versionHerramienta}</dd>
-<dt>Agente</dt><dd>${respuesta.agente}</dd>
-<dt>Clave</dt><dd>${respuesta.ruta?.join(".") ?? "todas"}</dd>
-<dt>Resumen de las entradas leídas</dt><dd>${respuesta.resumenEntradas}</dd></dl>
-<h2>Valores efectivos</h2>
-<table><thead><tr><th>Clave</th><th>Valor efectivo</th><th>Declaración determinante</th><th>Declaraciones desplazadas</th><th>Regla aplicada</th></tr></thead>
-<tbody>${respuesta.valores.length ? respuesta.valores.map(({ clave, rastro }) => html`<tr><td>${clave}</td><td>${JSON.stringify(rastro.valor)}</td>
-<td>${presentarDeclaracion(rastro.determinante)}</td><td>${rastro.desplazadas.length
-    ? html`<ol>${rastro.desplazadas.map((declaracion) => html`<li>${presentarDeclaracion(declaracion)}</li>`)}</ol>`
-    : "ninguna"}</td><td>${respuesta.reglas[rastro.determinante.regla]}</td></tr>`)
-    : html`<tr><td colspan="5">${respuesta.motivo === "clave-inexistente" ? "La clave consultada no existe para el agente." : "RIGE no incorpora claves resueltas para este agente."}</td></tr>`}</tbody></table>
-${respuesta.motivo ? html`<p>Motivo: ${respuesta.motivo}</p>` : html``}
-${respuesta.noResueltas.length ? html`<h2>Claves no incorporadas por RIGE</h2>
-<ul>${respuesta.noResueltas.map((clave) => html`<li>${clave.ruta.join(".")}: ${respuesta.reglas[clave.regla]}</li>`)}</ul>` : html``}
-<h2>Entradas leídas</h2>
+<button class="boton--secundario">Consultar sujeto de permiso</button></form></details></div>
+<div class="tarjeta"><h3>Agentes de esta resolución</h3><p class="atenuado">Revisá el origen, el modo y la visibilidad de cada agente.</p>
+<form action="/agentes" method="get"><input type="hidden" name="id" value="${sobre.id}"><button class="boton--secundario">Listar agentes</button></form></div>
+</div></section>
+${respuesta.noResueltas.length ? html`<details id="claves-no-incorporadas"><summary>Claves no incorporadas por RIGE</summary>
+<ul>${respuesta.noResueltas.map(clave => html`<li>${clave.ruta.join(".")}: ${respuesta.reglas[clave.regla]}</li>`)}</ul></details>` : html``}
+<details id="entradas-leidas"><summary>Entradas leídas</summary>
+<dl><dt>Resumen de las entradas leídas</dt><dd>${respuesta.resumenEntradas}</dd></dl>
+<div class="tabla-contenedor" role="region" aria-label="Entradas leídas" tabindex="0">
 <table><thead><tr><th>Orden</th><th>Vía</th><th>Referencia</th><th>Condición</th><th>Resumen SHA-256</th></tr></thead>
-<tbody>${respuesta.entradas.map((entrada) => html`<tr><td>${entrada.orden}</td><td>${entrada.via}</td><td>${entrada.referencia}</td><td>${entrada.condicion}</td><td>${entrada.resumen ?? "—"}</td></tr>`)}</tbody></table>
-<h2>Resoluciones de este proyecto</h2>
-<ul>${sobre.anteriores.map((anterior) => html`<li><a href="${`/resoluciones/${anterior.id}${consulta}`}">Resolución ${anterior.id}</a> ${anterior.instante}${anterior.id === sobre.id ? " (esta)" : ""}</li>`)}</ul>
-${datosRespuesta(respuesta)}</body></html>`;
-  return responderHtml(200, pagina);
+<tbody>${respuesta.entradas.map(entrada => html`<tr><td>${entrada.orden}</td><td>${entrada.via}</td><td><code class="ficha-codigo">${entrada.referencia}</code></td><td>${insignia(entrada.condicion, entrada.condicion === "no_observada" ? "neutra" : "permitida")}</td><td><code>${entrada.resumen ?? "—"}</code></td></tr>`)}</tbody></table></div></details>
+<section id="historia"><h2>Resoluciones de este proyecto</h2>
+<ul class="historia">${sobre.anteriores.map(anterior => html`<li>${anterior.id === sobre.id
+    ? html`<a href="${`/resoluciones/${anterior.id}${consulta}`}" aria-current="page">Resolución ${anterior.id}</a>`
+    : html`<a href="${`/resoluciones/${anterior.id}${consulta}`}">Resolución ${anterior.id}</a>`} <time>${anterior.instante}</time>${anterior.id === sobre.id ? html`<span class="insignia insignia--neutra">(esta)</span>` : html``}</li>`)}</ul></section>
+${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto, idResolucion: sobre.id }));
 }

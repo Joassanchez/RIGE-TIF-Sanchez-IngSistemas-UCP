@@ -1,8 +1,9 @@
 import { html } from "../plantillas";
 import { responderHtml } from "../respuesta";
+import { diseno } from "../diseno";
 
 function rechazar(estado: 403 | 405): Response {
-  const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>RIGE</title></head><body><p>Solicitud rechazada.</p></body></html>`;
+  const pagina = diseno("Solicitud rechazada", html`<section class="tarjeta pagina-error"><h1>Solicitud rechazada</h1><p>Solicitud rechazada.</p><a class="boton" href="/">Volver a Inicio</a></section>`, { minimo: true });
   return responderHtml(estado, pagina, estado === 405 ? { Allow: "GET" } : undefined);
 }
 

@@ -1,15 +1,19 @@
 import type { RespuestaAgentes } from "../../../aplicacion/respuestas/agentes";
 import { datosRespuesta, html } from "../plantillas";
+import { declaraciones, diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
 
-export function paginaAgentes(respuesta: RespuestaAgentes): Response {
-  return responderHtml(200, html`<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><title>Agentes</title></head><body>
-<h1>Agentes</h1><p>Proyecto: ${respuesta.proyecto}</p>
-<h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
+export function paginaAgentes(respuesta: RespuestaAgentes, idResolucion?: string): Response {
+  return responderHtml(200, diseno("Agentes", html`
+<div class="cabecera-pagina"><p class="ceja">Inventario de agentes</p><h1>Agentes</h1><p>Proyecto: <code>${respuesta.proyecto}</code></p></div>
+${declaraciones(respuesta.declaraciones, respuesta.reglas)}
+${respuesta.incompleta ? html`<div class="aviso aviso--advertencia"><p>Listado incompleto.</p>${respuesta.motivos.map(codigo => html`<p>${respuesta.reglas[codigo]}</p>`)}</div>` : html``}
+<section id="tabla-agentes"><h2>Agentes disponibles</h2>
+<div class="tabla-contenedor" role="region" aria-label="Agentes" tabindex="0">
 <table><thead><tr><th>Nombre</th><th>Origen</th><th>Modo</th><th>Oculto</th></tr></thead>
-<tbody>${respuesta.agentes.map(agente => html`<tr><td>${agente.nombre}</td><td>${agente.origen}</td><td>${agente.modo}</td><td>${agente.oculto}</td></tr>`)}</tbody></table>
-<h2>Agentes eliminados</h2><ul>${respuesta.eliminados.map(agente => html`<li>${agente.nombre}: ${agente.declaracion.localizacion ?? agente.declaracion.referencia}</li>`)}</ul>
-${respuesta.incompleta ? html`<p>Listado incompleto.</p><ul>${respuesta.motivos.map(motivo => html`<li>${respuesta.reglas[motivo]}</li>`)}</ul>` : html``}
-${datosRespuesta(respuesta)}</body></html>`);
+<tbody>${respuesta.agentes.map(agente => html`<tr><td><code>${agente.nombre}</code></td><td>${insignia(agente.origen)}</td><td>${insignia(agente.modo)}</td><td>${insignia(agente.oculto, agente.oculto ? "aviso" : "neutra")}</td></tr>`)}</tbody></table></div>
+${respuesta.agentes.length ? html`` : html`<p class="estado-vacio">Sin agentes disponibles.</p>`}</section>
+<section id="agentes-eliminados"><h2>Agentes eliminados</h2>
+${respuesta.eliminados.length ? respuesta.eliminados.map(agente => html`<div class="aviso aviso--advertencia"><p><code>${agente.nombre}</code>: <code class="ficha-codigo">${agente.declaracion.localizacion ?? agente.declaracion.referencia}</code> (${agente.declaracion.via})</p></div>`) : html`<p class="atenuado">Ningún agente eliminado.</p>`}</section>
+${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto, ...(idResolucion === undefined ? {} : { idResolucion }), activa: "Agentes" }));
 }

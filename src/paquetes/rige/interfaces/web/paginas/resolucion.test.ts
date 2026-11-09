@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { RespuestaValores, DeclaracionUbicada } from "../../../aplicacion/respuestas/valores";
 import { versionRige } from "../../../aplicacion/respuestas/estado";
+import { seccionHtml } from "../../../../../pruebas/utilidades/html";
 
 function respuesta(): RespuestaValores {
   const declaracion = (valor: string | number, orden: number): DeclaracionUbicada => ({
@@ -39,12 +40,15 @@ describe("W-13", () => {
     expect(recibida.status).toBe(200);
     expect(recibida.headers.get("content-type")).toBe("text/html; charset=utf-8");
     const cuerpo = await recibida.text();
+    const contenido = cuerpo.split('<main id="contenido" tabindex="-1">')[1]!;
+    expect(contenido).toBeDefined();
     const partes = ["<h1>Resolución 7</h1>", "Página armada con la resolución leída del almacén de RIGE.",
       "Proyecto", "Valores efectivos", "Regla aplicada", "Claves no incorporadas por RIGE",
       "Entradas leídas", "Resoluciones de este proyecto"];
     let posicion = -1;
     for (const parte of partes) {
-      const siguiente = cuerpo.indexOf(parte);
+      const siguiente = contenido.indexOf(parte);
+      expect(siguiente).toBeGreaterThan(-1);
       expect(siguiente).toBeGreaterThan(posicion);
       posicion = siguiente;
     }
@@ -85,8 +89,11 @@ describe("T3-01 R-11 declaraciones en resolucion", () => {
     const dato = { ...respuesta(), declaraciones: ["version-no-determinada", "ejecutable-no-encontrado"],
       reglas: { ...respuesta().reglas, "version-no-determinada": "Version <no determinada>.", "ejecutable-no-encontrado": "No hay ejecutable & paquete." } };
     const cuerpo = await paginaResolucion(dato, sobre).text();
-    expect(cuerpo).toContain("<h2>Declaraciones</h2><ul><li>Version &lt;no determinada&gt;.</li><li>No hay ejecutable &amp; paquete.</li></ul>");
-    expect(cuerpo.indexOf("<h2>Declaraciones</h2>")).toBeLessThan(cuerpo.indexOf("<h2>Valores efectivos</h2>"));
+    const declaraciones = seccionHtml(cuerpo, "declaraciones");
+    expect(declaraciones).toContain("<p>Version &lt;no determinada&gt;.</p>");
+    expect(declaraciones).toContain("<p>No hay ejecutable &amp; paquete.</p>");
+    seccionHtml(cuerpo, "valores");
+    expect(cuerpo.indexOf('id="declaraciones"')).toBeLessThan(cuerpo.indexOf('id="valores"'));
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(dato);
   });
 });
@@ -104,7 +111,7 @@ describe("W-14", () => {
       primera: "Conservar la primera <declaracion>.", ultima: "Conservar la ultima & su orden.",
       "fuera-del-v1": "No se resuelve <permiso>.",
     } }).text();
-    const filas = [...cuerpo.matchAll(/<tr><td>(description|steps)<\/td>.*?<\/tr>/gs)].map((fila) => fila[0]);
+    const filas = [...seccionHtml(cuerpo, "valores").matchAll(/<tr><td>(description|steps)<\/td>.*?<\/tr>/gs)].map((fila) => fila[0]);
     expect(filas).toHaveLength(2);
     expect(filas[0]).toContain("Conservar la primera &lt;declaracion&gt;.");
     expect(filas[0]).not.toContain("Conservar la ultima");
@@ -126,7 +133,7 @@ describe("W-15", () => {
     ] });
     expect(recibida.status).toBe(200);
     const cuerpo = await recibida.text();
-    const tabla = cuerpo.split("<tbody>")[1]!.split("</tbody>")[0]!;
+    const tabla = seccionHtml(cuerpo, "valores").split("<tbody>")[1]!.split("</tbody>")[0]!;
     expect(tabla.match(/<tr>/g)).toHaveLength(1);
     expect(tabla).toContain('<td colspan="5">RIGE no incorpora claves resueltas para este agente.</td>');
     expect(cuerpo).toContain("Claves no incorporadas por RIGE");

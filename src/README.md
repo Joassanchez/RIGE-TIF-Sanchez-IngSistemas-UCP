@@ -185,14 +185,16 @@ bun run servir
 
 El proceso informa `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y queda escuchando. Se usa el puerto de `RIGE_PUERTO` si está configurado. La interfaz solo acepta GET local, verifica Host y rechaza `Sec-Fetch-Site: cross-site` y `same-site`, sin CORS ni JavaScript ejecutable en el cliente.
 
-1. Abrir `http://127.0.0.1:4747/`. Debe mostrar «RIGE 1.0.0», la ruta del almacén y su esquema 2.
-2. Completar **Proyecto** con `pruebas/escenarios/v1-precedencia/proyecto`, **Agente** con `build` y **Clave** con `temperature`. Pulsar «Resolver y guardar».
+1. Abrir `http://127.0.0.1:4747/`. Debe mostrar «RIGE 1.0.0» y «¿Qué configuración rige de verdad?», con las tarjetas **Resolver y guardar** e **Inspeccionar un proyecto**. La ruta del almacén y su esquema 2 aparecen al pie. El tema claro u oscuro sigue al sistema, con estilos locales en `/estilos.css`.
+2. En **Resolver y guardar**, completar **Proyecto** con `pruebas/escenarios/v1-precedencia/proyecto`, **Agente** con `build` y **Clave** con `temperature`. Pulsar «Resolver y guardar». **Inspeccionar un proyecto** permite consultar **Hallazgos** o **Entradas** actuales sin guardar.
 3. En un almacén nuevo, se llega a `/resoluciones/1?agente=build&clave=temperature`. El valor es `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`. Las desplazadas son `0.1` en `…/v1-precedencia/opencode.json:5:7` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7`, en ese orden. Se presenta RD-01 y cada archivo leído con su SHA-256; vías remotas y preferencias de macOS aparecen no observadas. Las rutas completas usan `/`.
 4. Detener con Ctrl+C, ejecutar otra vez `bun run servir` en la misma terminal y abrir la misma dirección. Debe recuperar los mismos datos con «Página armada con la resolución leída del almacén de RIGE.» y el enlace de historia de la resolución 1.
 5. Volver al inicio y dejar **Clave** vacía: aparece una nueva resolución con `description`, `steps` y `temperature`. Los valores de referencia están en `pruebas/escenarios/v1-precedencia/REFERENCIA.json`.
 6. Detener el servidor con Ctrl+C antes de continuar. Si ya había resoluciones, usar el id obtenido en el paso 3. La configuración global propia puede agregar entradas y modificar resultados: para la comprobación controlada se usa el arnés aislado siguiente.
 
-La web recupera valores, agentes y permisos desde la resolución guardada con su contexto original; no relee entradas para esas consultas. Para observar cambios se crea otra resolución. `/entradas?proyecto=<ruta-codificada>` y `/hallazgos?proyecto=<ruta-codificada>` consultan las entradas actuales sin guardar. Cada página de consulta incluye el mismo objeto del caso de uso que la CLI como JSON no ejecutable, con `<` escapado.
+La web recupera valores, agentes y permisos desde la resolución guardada con su contexto original; no relee entradas para esas consultas. Para observar cambios se crea otra resolución. **Valores efectivos** presenta el valor y su procedencia antes que las acciones de **Seguir explorando**; **Entradas leídas** y **Claves no incorporadas por RIGE** son detalles plegables. **Resoluciones de este proyecto** marca la actual. Permiso muestra la decisión con una insignia y toda la **Cadena efectiva**, con la determinante resaltada. Hallazgos distingue «Sin hallazgos en este proyecto» de «Sin hallazgos observados; análisis parcial».
+
+La navegación ofrece Inicio, Entradas y Hallazgos cuando se conoce el proyecto, y Agentes cuando se conoce la resolución. `/entradas?proyecto=<ruta-codificada>` y `/hallazgos?proyecto=<ruta-codificada>` consultan las entradas actuales sin guardar. Cada página de consulta incluye el mismo objeto del caso de uso que la CLI como JSON no ejecutable, con `<` escapado. Las tablas anchas se desplazan dentro de su contenedor; no hay recursos externos ni JavaScript ejecutable. La revisión en navegador de ambos temas, contraste, foco y 360 px queda a cargo del ingeniero con capturas.
 
 **Verificación técnica:**
 
@@ -202,6 +204,7 @@ La preparación y los comandos de demostración del manual se ejecutan desde aqu
 bun herramientas/demostracion.ts v1-precedencia -- valores --agente build --clave temperature
 bun herramientas/demostracion.ts v1-precedencia --preparar
 bun herramientas/demostracion.ts --desde "<RAIZ>" -- servir
+bun herramientas/demostracion.ts --desde "<RAIZ>" --puerto 4848 -- servir
 ```
 
 Sustituir `<RAIZ>` por `raiz` del JSON de preparación. `--preparar` conserva escenario y almacén en un temporal para el reinicio; las consultas de una sola ejecución se limpian. Se carga el hogar, variables y topología Git de `REFERENCIA.json`, se reemplazan los marcadores de raíz y se antepone una instalación ficticia 1.18.25 que nunca se ejecuta. Solo se heredan PATH y SystemRoot. Git debe estar en PATH. Para RF-05 agregar `--version 1.18.24` antes de `--`; para otro puerto agregar `--puerto 4848`. La CLI no guarda resoluciones; se cargan con «Resolver y guardar» en la web. La matriz y los campos exactos del humo están en MANUAL §8.
@@ -214,7 +217,7 @@ bun run medir:rnf07 --estricto
 bun run cobertura
 ```
 
-Todos deben terminar con código 0. La prueba unitaria optimizada de combinatoria `abarca`, ejecutada con `bun test paquetes/opencode/hallazgos.test.ts`, corre en menos de 500 ms; la suite completa no requiere prórrogas de timeout. Durante el desarrollo se usa `bun test <archivo>` para las pruebas afectadas.
+Todos deben terminar con código 0. La prueba unitaria optimizada de combinatoria `abarca`, ejecutada con `bun test paquetes/opencode/hallazgos.test.ts`, corre en menos de 500 ms; la suite completa no requiere prórrogas de timeout. Durante el desarrollo se usa `bun test <archivo>` para las pruebas afectadas. El grupo de web y aceptación se ejecuta con `bun test paquetes/rige/interfaces/web pruebas/aceptacion`.
 
 El arnés RNF-07 copia `openchamber-doble` a un temporal (32 archivos, 12 agentes, 14 LSP y 20 comandos), aísla el entorno y ejecuta diez consultas de valores y diez de permiso en procesos nuevos. Informa mínimo, mediana y peor caso por etapa. `invocacionMs` mide el subproceso completo, incluido Bun; `--estricto` o `RNF07_ESTRICTO=1` exige un peor caso menor que 2000 ms. Sin la opción, `bun run medir:rnf07` es diagnóstico. La acreditación corresponde al contenedor Ubuntu 26.04 de referencia (ADR-054/055), con el escenario dentro de su sistema de archivos; Windows aporta diagnóstico.
 

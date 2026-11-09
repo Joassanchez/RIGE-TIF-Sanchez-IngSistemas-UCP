@@ -1,4 +1,5 @@
 import { borrarTemporal } from "../utilidades/borrar-temporal";
+import { seccionHtml } from "../utilidades/html";
 import { afterEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import { mkdtempSync } from "node:fs";
@@ -119,9 +120,10 @@ describe("C-3 T3-01 R-11", () => {
         const pagina = await solicitar(ruta);
         expect(pagina.estado).toBe(200);
         const respuesta = datos(pagina.cuerpo);
-        const resultados = ruta === "/agentes?id=1" ? "<table>" : "<h2>Valores efectivos</h2>";
-        expect(pagina.cuerpo.indexOf("<h2>Declaraciones</h2>")).toBeLessThan(pagina.cuerpo.indexOf(resultados));
-        const declaraciones = pagina.cuerpo.split("<h2>Declaraciones</h2>")[1]!.split("</ul>")[0]!;
+        const resultados = ruta === "/agentes?id=1" ? "tabla-agentes" : "valores";
+        seccionHtml(pagina.cuerpo, resultados);
+        const declaraciones = seccionHtml(pagina.cuerpo, "declaraciones");
+        expect(pagina.cuerpo.indexOf('id="declaraciones"')).toBeLessThan(pagina.cuerpo.indexOf(`id="${resultados}"`));
         for (const codigo of ["version-no-determinada", "ejecutable-no-encontrado"]) {
           expect(declaraciones).toContain(respuesta.reglas[codigo]);
         }

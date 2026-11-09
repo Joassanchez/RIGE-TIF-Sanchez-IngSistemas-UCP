@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
+import { seccionHtml } from "../utilidades/html";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, posix, win32 } from "node:path";
 import { copiarEscenario, type OpcionesEscenario } from "../utilidades/escenario";
@@ -1068,7 +1069,7 @@ describe("RF-07 CA-4 T3-07 R-3", () => {
         for (const h of rCli.hallazgos) {
           expect(typeof h.explicacion).toBe("string");
           expect(h.explicacion.length).toBeGreaterThan(0);
-          expect(pagina.cuerpo).toContain(`<td>${escaparHtml(h.tipo)}</td><td>${escaparHtml(h.localizacion)}</td><td>${escaparHtml(h.explicacion)}</td>`);
+          expect(seccionHtml(pagina.cuerpo, "tabla-hallazgos")).toContain(`<td><span class="insignia insignia--${h.tipo}">${escaparHtml(h.tipo)}</span></td><td><code class="ficha-codigo">${escaparHtml(h.localizacion)}</code></td><td>${escaparHtml(h.explicacion)}</td>`);
         }
       } finally {
         await servidor.detener();

@@ -14,8 +14,8 @@ import type { ConsultarHallazgos } from "../../aplicacion/casos-uso/consultar-ha
 import { paginaHallazgos } from "./paginas/hallazgos";
 import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-entradas";
 import { paginaEntradas } from "./paginas/entradas";
-import { html } from "./plantillas";
-import { redirigir, responderHtml } from "./respuesta";
+import { contenidoError, diseno } from "./diseno";
+import { redirigir, responderHtml, responderEstilos } from "./respuesta";
 
 export interface CasosWeb {
   readonly consultarEntradas: ConsultarEntradas;
@@ -30,6 +30,7 @@ export interface CasosWeb {
 export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Request) => Response {
   const enrutar = (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
+    if (url.pathname === "/estilos.css") return responderEstilos();
     if (url.pathname === "/hallazgos") {
       const resultado = casos.consultarHallazgos(url.searchParams.get("proyecto") ?? "", { explicar: true });
       return resultado.exito ? paginaHallazgos(resultado.valor) : paginaErrorUso(resultado.error);
@@ -50,11 +51,13 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
         ...accion,
         ...(parametros.has("lanzadoPor") ? { lanzadoPor: parametros.get("lanzadoPor")! } : {}),
       });
-      return resultado.exito ? paginaPermiso(resultado.valor) : paginaErrorUso(resultado.error);
+      const id = parametros.get("id") ?? "";
+      return resultado.exito ? paginaPermiso(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined) : paginaErrorUso(resultado.error);
     }
     if (url.pathname === "/agentes") {
       const resultado = casos.consultarAgentes(url.searchParams.get("id") ?? "");
-      return resultado.exito ? paginaAgentes(resultado.valor) : paginaErrorUso(resultado.error);
+      const id = url.searchParams.get("id") ?? "";
+      return resultado.exito ? paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined) : paginaErrorUso(resultado.error);
     }
     if (url.pathname === "/resolver") {
       const agente = url.searchParams.get("agente") ?? "";
@@ -71,7 +74,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       return resultado.exito ? paginaResolucion(resultado.valor.respuesta, resultado.valor.sobre) : paginaErrorUso(resultado.error);
     }
     if (url.pathname !== "/") {
-      const pagina = html`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>RIGE</title></head><body><p>Página no encontrada.</p></body></html>`;
+      const pagina = diseno("Error 404", contenidoError(404, "Página no encontrada.", "pagina-inexistente"));
       return responderHtml(404, pagina);
     }
     const resultado = casos.consultarEstado();

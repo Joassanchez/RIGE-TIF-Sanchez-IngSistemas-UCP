@@ -5,6 +5,7 @@ import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas
 import { prepararConsultas } from "../utilidades/consultas-cli";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
+import { seccionHtml } from "../utilidades/html";
 
 function incrustada(cuerpo: string): unknown {
   const dato = /<script type="application\/json" id="respuesta">([^]*?)<\/script>/.exec(cuerpo);
@@ -80,7 +81,12 @@ describe("RF-02 CA-7", () => {
       const pagina = await solicitar(`/permiso?id=${id}&agente=plan&sujeto=edit&objetivo=src/a.js`);
       expect(pagina.estado).toBe(200);
       const respuesta = incrustada(pagina.cuerpo) as RespuestaPermiso;
-      for (const regla of respuesta.cadena) expect(pagina.cuerpo).toContain(`<tr><td>${regla.indice + 1}</td>`);
+      const cadena = seccionHtml(pagina.cuerpo, "cadena-efectiva");
+      const filas = [...cadena.matchAll(/<tr class="([^"]+)"><td>(\d+)<\/td>/g)];
+      expect(filas.map(fila => Number(fila[2]))).toEqual(respuesta.cadena.map(regla => regla.indice + 1));
+      for (const [indice, regla] of respuesta.cadena.entries()) {
+        expect(filas[indice]![1]).toBe(regla.indice === respuesta.determinante ? "fila--determinante" : "fila");
+      }
       expect(respuesta.nativaAnulada).not.toBeNull();
       expect(pagina.cuerpo).toContain(`(regla ${respuesta.nativaAnulada!.regla + 1}, por ${respuesta.nativaAnulada!.por + 1})`);
     }, proyecto => writeFileSync(join(proyecto, "opencode.jsonc"), '{"permission":{"edit":"allow"}}'));
