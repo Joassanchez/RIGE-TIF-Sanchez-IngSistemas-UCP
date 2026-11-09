@@ -16,7 +16,8 @@ import { consultarAgentes } from "../../paquetes/rige/aplicacion/casos-uso/consu
 import { consultarEntradas } from "../../paquetes/rige/aplicacion/casos-uso/consultar-entradas";
 import { consultarHallazgos } from "../../paquetes/rige/aplicacion/casos-uso/consultar-hallazgos";
 import type { DeclaracionUbicada, Resolucion } from "../../paquetes/nucleo/resolucion/tipos";
-import { localizacion } from "../../paquetes/nucleo/permisos/explicar";
+import { clavesOriginales, coordenadasOriginales, type ClaveOriginal } from "../utilidades/claves-originales";
+import type { Manifiesto } from "../../herramientas/cobertura";
 
 const raizEscenarios = join(import.meta.dir, "../escenarios");
 const temporales: ReturnType<typeof copiarEscenario>[] = [];
@@ -45,27 +46,47 @@ function datosWeb(cuerpo: string) {
   return JSON.parse(bloque![1]!);
 }
 
-const regexArchivo = /^(?:[A-Za-z]:)?\/.+:\d+:\d+$/;
-const regexVariable = /^OPENCODE_[A-Z_]+:\d+:\d+$/;
+const esPrefijo = (a: readonly string[], b: readonly string[]) => a.length <= b.length && a.every((s, i) => s === b[i]);
+const nativos = ["build", "plan", "general", "explore", "compaction", "summary", "title"];
+const inventario = (JSON.parse(readFileSync(join(raizEscenarios, "MANIFIESTO.json"), "utf8")) as Manifiesto).defectosSembrados;
 
-function verificarDeclaracionUbicada(
-  d: DeclaracionUbicada,
-  condicionEntrada: (ref: string) => "observada" | "no_observada" | "definida" | undefined,
-  muestrasArchivo: { referencia: string; linea: number; columna: number }[],
-) {
-  if (d.origen.tipo === "declarado" && d.referencia !== null) {
-    expect(typeof d.localizacion).toBe("string");
-    expect(d.localizacion).toBe(`${d.referencia}:${d.origen.posicion.linea}:${d.origen.posicion.columna}`);
-    expect(d.localizacion).toBe(localizacion(d.referencia, d.origen.posicion));
-    const cond = condicionEntrada(d.referencia);
-    if (cond === "definida") {
-      expect(d.localizacion).toMatch(regexVariable);
-    } else {
-      expect(d.localizacion).toMatch(regexArchivo);
-      muestrasArchivo.push({ referencia: d.referencia, linea: d.origen.posicion.linea, columna: d.origen.posicion.columna });
-    }
-  } else {
-    expect(d.localizacion).toBeUndefined();
+function fuentesOriginales(e: ReturnType<typeof preparar>) {
+  const textos = new Map<string, string>();
+  for (const relativa of new Bun.Glob("**/*").scanSync({ cwd: e.raiz, onlyFiles: true, dot: true })) {
+    if (!/\.jsonc?$/.test(relativa)) continue;
+    const ref = join(e.raiz, relativa).replaceAll("\\", "/");
+    textos.set(ref, readFileSync(ref, "utf8"));
+  }
+  for (const variable of ["OPENCODE_CONFIG_CONTENT", "OPENCODE_PERMISSION"]) {
+    if (e.env[variable] !== undefined) textos.set(variable, e.env[variable]!);
+  }
+  const claves = new Map<string, ClaveOriginal[]>();
+  for (const [ref, texto] of textos) claves.set(ref, clavesOriginales(texto, ref === "OPENCODE_PERMISSION" ? ["permission"] : []));
+  return { textos, claves };
+}
+
+function comprobarUbicacion(d: DeclaracionUbicada, ref: string, original: ClaveOriginal, texto: string) {
+  const posicion = coordenadasOriginales(texto, original.indice);
+  expect(d.referencia).toBe(ref);
+  expect(d.origen).toMatchObject({ tipo: "declarado", posicion });
+  expect(d.localizacion).toBe(`${ref}:${posicion.linea}:${posicion.columna}`);
+}
+
+// La ruta y la ocurrencia se obtienen de las claves del texto original, nunca de
+// las coordenadas publicadas. Se conservan todos los hermanos desplazados al cambiar de forma.
+function comprobarRastro(declaraciones: readonly DeclaracionUbicada[], ruta: readonly string[], fuentes: ReturnType<typeof fuentesOriginales>) {
+  const grupos = new Map<string, DeclaracionUbicada[]>();
+  for (const d of declaraciones) {
+    if (d.origen.tipo !== "declarado") { expect(d.localizacion).toBeUndefined(); continue; }
+    expect(d.referencia).not.toBeNull();
+    const grupo = grupos.get(d.referencia!) ?? [];
+    grupo.push(d);
+    grupos.set(d.referencia!, grupo);
+  }
+  for (const [ref, grupo] of grupos) {
+    const originales = fuentes.claves.get(ref)!.filter(c => c.hoja && (esPrefijo(c.ruta, ruta) || esPrefijo(ruta, c.ruta)));
+    expect(originales.length, `${ref} ${JSON.stringify(ruta)}`).toBe(grupo.length);
+    grupo.forEach((d, i) => comprobarUbicacion(d, ref, originales[i]!, fuentes.textos.get(ref)!));
   }
 }
 
@@ -77,83 +98,110 @@ describe("RF-12 CA-1 T3-07 R-5", () => {
     return !JSON.parse(readFileSync(rutaRef, "utf8")).procedencia?.fallaEsperada;
   });
 
-  test("en todos los escenarios v1-*, v2-* y v3-* sin fallaEsperada toda localizacion cumple el formato y coincide con la posicion real en el archivo", () => {
-    expect(escenariosValidos.length).toBeGreaterThan(0);
-    const muestrasArchivo: { referencia: string; linea: number; columna: number }[] = [];
-    let totalDeclaracionesDeclaradas = 0;
-    let totalVariablesDeclaradas = 0;
-
-    for (const nombre of escenariosValidos) {
-      const e = preparar(nombre);
-      const deps = e.dependencias();
-
-      const rValores = consultarValores(deps, e.proyecto, "build", undefined);
-      expect(rValores.exito).toBe(true);
-      if (!rValores.exito) throw new Error(rValores.error.mensaje);
-      const condPorRef = (ref: string) => rValores.valor.entradas.find(en => en.referencia === ref)?.condicion;
-
-      for (const { rastro } of rValores.valor.valores) {
-        for (const decl of [rastro.determinante, ...rastro.desplazadas]) {
-          if (decl.origen.tipo === "declarado" && decl.referencia !== null) {
-            totalDeclaracionesDeclaradas++;
-            if (condPorRef(decl.referencia) === "definida") totalVariablesDeclaradas++;
-          }
-          verificarDeclaracionUbicada(decl, condPorRef, muestrasArchivo);
-        }
+  for (const nombre of escenariosValidos) test(`V-6 ${nombre}: todas las localizaciones publicadas coinciden con ruta y ocurrencia originales`, () => {
+    const e = preparar(nombre);
+    const deps = e.dependencias();
+    const fuentes = fuentesOriginales(e);
+    const hojas = [...fuentes.claves.entries()].flatMap(([ref, claves]) => claves.filter(c => c.hoja).map(c => ({ ...c, ref })));
+    const nombres = new Set([...nativos, ...hojas.filter(c => c.ruta[0] === "agent").map(c => c.ruta[1]!)]);
+    const deshabilitados = new Set(hojas.filter(c => c.ruta[0] === "agent" && c.ruta[2] === "disable"
+      && fuentes.textos.get(c.ref)!.slice(c.inicioValor, c.finValor) === "true").map(c => c.ruta[1]!));
+    let declaradas = 0;
+    for (const agente of nombres) {
+      if (deshabilitados.has(agente)) continue; // comprobadas abajo por eliminacion.
+      const valores = consultarValores(deps, e.proyecto, agente, undefined);
+      expect(valores.exito).toBe(true);
+      if (!valores.exito) throw new Error(`${nombre}/${agente}: ${valores.error.mensaje}`);
+      for (const { rastro } of valores.valor.valores) {
+        const declaraciones = [...rastro.desplazadas, rastro.determinante];
+        comprobarRastro(declaraciones, rastro.ruta, fuentes);
+        declaradas += declaraciones.filter(d => d.origen.tipo === "declarado").length;
       }
-
-      const rPermiso = consultarPermiso(deps, { proyecto: e.proyecto, agente: "build", sujeto: "read", objetivo: "src/a.js" });
-      expect(rPermiso.exito).toBe(true);
-      if (!rPermiso.exito) throw new Error(rPermiso.error.mensaje);
-      for (const regla of rPermiso.valor.cadena) {
-        if (regla.declaracion) {
-          if (regla.declaracion.origen.tipo === "declarado" && regla.declaracion.referencia !== null) totalDeclaracionesDeclaradas++;
-          verificarDeclaracionUbicada(regla.declaracion, condPorRef, muestrasArchivo);
-        }
-      }
-
-      const rAgentes = consultarAgentes(deps, e.proyecto);
-      expect(rAgentes.exito).toBe(true);
-      if (!rAgentes.exito) throw new Error(rAgentes.error.mensaje);
-      for (const elim of rAgentes.valor.eliminados) {
-        if (elim.declaracion.origen.tipo === "declarado" && elim.declaracion.referencia !== null) totalDeclaracionesDeclaradas++;
-        verificarDeclaracionUbicada(elim.declaracion, condPorRef, muestrasArchivo);
-      }
-
-      const rHallazgos = consultarHallazgos(deps, e.proyecto);
-      expect(rHallazgos.exito).toBe(true);
-      if (!rHallazgos.exito) throw new Error(rHallazgos.error.mensaje);
-      for (const h of rHallazgos.valor.hallazgos) {
-        expect(typeof h.localizacion).toBe("string");
-        expect(h.localizacion).toBe(`${h.entrada.referencia}:${h.posicion.linea}:${h.posicion.columna}`);
-        if (h.entrada.condicion === "definida") {
-          totalVariablesDeclaradas++;
-          expect(h.localizacion).toMatch(regexVariable);
-        } else {
-          expect(h.localizacion).toMatch(regexArchivo);
-          muestrasArchivo.push({ referencia: h.entrada.referencia, linea: h.posicion.linea, columna: h.posicion.columna });
+      // Consultas independientes de las coordenadas; incluyen patrones y sujetos
+      // de las entradas para cubrir tambien las cadenas distintas de read/build.
+      const permisos = hojas.filter(c => c.ruta[0] === "permission" || esPrefijo(["agent", agente, "permission"], c.ruta));
+      const consultas = [{ sujeto: "read", objetivo: "src/a.js" }, ...permisos.map(c => {
+        const segmentos = c.ruta.slice(c.ruta[0] === "permission" ? 1 : 3);
+        return { sujeto: segmentos[0] ?? "read", objetivo: (segmentos[1] ?? "src/a.js").replaceAll("*", "a").replaceAll("?", "b") };
+      })];
+      for (const consulta of consultas) {
+        const permiso = consultarPermiso(deps, { proyecto: e.proyecto, agente, ...consulta });
+        expect(permiso.exito).toBe(true);
+        if (!permiso.exito) throw new Error(`${nombre}/${agente}: ${permiso.error.mensaje}`);
+        const usados = new Map<string, number>();
+        for (const regla of permiso.valor.cadena) {
+          const d = regla.declaracion;
+          if (!d) { expect(regla.origen.tipo).not.toBe("declarado"); continue; }
+          if (d.origen.tipo !== "declarado") { expect(d.localizacion).toBeUndefined(); continue; }
+          const candidatos = permisos.filter(c => {
+            const segmentos = c.ruta.slice(c.ruta[0] === "permission" ? 1 : 3);
+            const patron = segmentos[1] ?? "*";
+            const expandido = patron.startsWith("~/") ? `${e.env.HOME!.replaceAll("\\", "/")}/${patron.slice(2)}` : patron;
+            return c.ref === d.referencia && (segmentos[0] ?? "*") === regla.sujeto && expandido === regla.patron;
+          }).sort((a, b) => Number(a.ruta[0] === "agent") - Number(b.ruta[0] === "agent") || a.indice - b.indice);
+          const id = JSON.stringify([d.referencia, regla.sujeto, regla.patron]);
+          const ocurrencia = usados.get(id) ?? 0;
+          const original = candidatos[ocurrencia];
+          expect(original, `${nombre} ${id} ocurrencia ${ocurrencia}`).toBeDefined();
+          comprobarUbicacion(d, original!.ref, original!, fuentes.textos.get(original!.ref)!);
+          usados.set(id, ocurrencia + 1);
+          declaradas++;
         }
       }
     }
-
-    expect(totalDeclaracionesDeclaradas).toBeGreaterThan(0);
-    expect(totalVariablesDeclaradas).toBeGreaterThan(0);
-    expect(muestrasArchivo.length).toBeGreaterThan(0);
-
-    for (const muestra of muestrasArchivo.slice(0, 15)) {
-      const texto = readFileSync(muestra.referencia, "utf8");
-      const lineas = texto.split(/\r?\n/);
-      expect(muestra.linea).toBeGreaterThanOrEqual(1);
-      expect(muestra.linea).toBeLessThanOrEqual(lineas.length);
-      const lineaTexto = lineas[muestra.linea - 1]!;
-      expect(muestra.columna).toBeGreaterThanOrEqual(1);
-      expect(muestra.columna).toBeLessThanOrEqual(lineaTexto.length + 1);
-      const caracterEnPosicion = lineaTexto[muestra.columna - 1] ?? "";
-      expect(['"', "{", "[", "t", "f", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-"]).toContain(caracterEnPosicion);
+    const agentes = consultarAgentes(deps, e.proyecto);
+    expect(agentes.exito).toBe(true);
+    if (!agentes.exito) throw new Error(agentes.error.mensaje);
+    expect(agentes.valor.eliminados.map(a => a.nombre).sort()).toEqual([...deshabilitados].sort());
+    for (const eliminado of agentes.valor.eliminados) {
+      comprobarRastro([eliminado.declaracion], ["agent", eliminado.nombre, "disable"], fuentes);
+      declaradas++;
     }
-  }, 30000);
+
+    const hallazgos = consultarHallazgos(deps, e.proyecto);
+    expect(hallazgos.exito).toBe(true);
+    if (!hallazgos.exito) throw new Error(hallazgos.error.mensaje);
+    const defectos = inventario.filter(d => d.escenario === nombre);
+    expect(hallazgos.valor.hallazgos).toHaveLength(defectos.length);
+    for (const defecto of defectos) {
+      const ref = "variable" in defecto.localizacion ? defecto.localizacion.variable
+        : join(e.raiz, defecto.localizacion.archivo).replaceAll("\\", "/");
+      const ruta = defecto.clave?.map(s => s.replaceAll("<RAIZ>", e.raiz.replaceAll("\\", "/"))) ?? null;
+      const coincidentes = hallazgos.valor.hallazgos.filter(h => h.tipo === defecto.tipo && h.causa === defecto.causa
+        && h.entrada.referencia === ref && JSON.stringify(h.clave) === JSON.stringify(ruta));
+      expect(coincidentes).toHaveLength(1);
+      const h = coincidentes[0]!;
+      const texto = fuentes.textos.get(ref)!;
+      let indice: number;
+      if (defecto.causa === "permiso-invalido") {
+        // JSON estricto rechaza el cierre que sigue a la coma final de este documento.
+        expect(h.entrada.referencia).toBe("OPENCODE_PERMISSION");
+        const cierreInvalido = /,\s*}/.exec(texto);
+        expect(cierreInvalido).not.toBeNull();
+        indice = cierreInvalido!.index + cierreInvalido![0].indexOf("}");
+      } else {
+        const originales = fuentes.claves.get(ref)!.filter(c => JSON.stringify(c.ruta) === JSON.stringify(ruta));
+        expect(originales).toHaveLength(1);
+        const original = originales[0]!;
+        indice = original.indice;
+        if (defecto.causa === "variable-sin-valor") {
+          // El token de este defecto figura en el original de general.description.
+          const token = "{env:RIGE_PRUEBA_SIN_DEFINIR}";
+          expect(e.env.RIGE_PRUEBA_SIN_DEFINIR).toBeUndefined();
+          const valor = texto.slice(original.inicioValor, original.finValor);
+          expect(valor.split(token)).toHaveLength(2);
+          indice = original.inicioValor + valor.indexOf(token);
+        }
+      }
+      const posicion = coordenadasOriginales(texto, indice);
+      expect(h.posicion).toEqual(posicion);
+      expect(h.localizacion).toBe(`${h.entrada.referencia}:${posicion.linea}:${posicion.columna}`);
+    }
+    // Estos dos escenarios solo prueban Git invalido y contienen un proyecto vacio.
+    if (["v2-worktree-dir-invalido-anidado", "v2-worktree-gitfile-roto"].includes(nombre)) expect(declaradas).toBe(0);
+    else expect(declaradas).toBeGreaterThan(0);
+  });
 });
-
 describe("RF-12 CA-2 T3-07 R-6", () => {
   test("la misma declaracion tiene la misma localizacion en la CLI y en la web, y las paginas no arman .posicion.linea por su cuenta", async () => {
     const dirPaginas = join(import.meta.dir, "../../paquetes/rige/interfaces/web/paginas");
@@ -245,7 +293,7 @@ function quitarLocalizacionDeclaraciones(valor: unknown): unknown {
 }
 
 describe("T3-07 R-7", () => {
-  test("esquema aditivo en valores, permiso, agentes, entradas y hallazgos; rechazo de esquema 1; localizacion calculada sobre resolucion-t3-03.json", async () => {
+  test("V-1 esquema aditivo en valores, permiso, agentes, entradas y hallazgos; rechazo de esquema 1; localizacion calculada sobre resolucion-t3-03.json", async () => {
     const esquemas: Record<string, unknown> = {};
     for (const nombre of ["valores", "permiso", "agentes", "entradas", "hallazgos"]) {
       const ruta = join(import.meta.dir, `../../esquemas/salida/${nombre}.json`);

@@ -164,13 +164,13 @@
         {
           "item": "RF-07 elemento-sin-uso",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
-          "describe": "T3-06 R-9",
+          "describe": "RF-07 CA-1 T3-08 R-1",
           "fuente": "referencia-binario"
         },
         {
           "item": "RE-03",
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
-          "describe": "T3-06 R-9",
+          "describe": "RF-07 CA-1 T3-08 R-1",
           "fuente": "referencia-binario"
         },
         {

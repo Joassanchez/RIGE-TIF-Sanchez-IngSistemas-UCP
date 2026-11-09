@@ -10,6 +10,9 @@ import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/e
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
+import { copiarEscenario } from "../utilidades/escenario";
+import { entornoDeReferencia } from "../utilidades/entorno-referencia";
+import { consultarValores } from "../../paquetes/rige/aplicacion/casos-uso/consultar-valores";
 
 const limpiezas: (() => void)[] = [];
 afterEach(() => { for (const borrar of limpiezas.splice(0).reverse()) borrar(); });
@@ -98,6 +101,51 @@ describe("RF-01 CA-1", () => {
   });
 });
 describe("RF-01 CA-2", () => {
+  test("V-4 las cuatro claves sustituidas conservan plantilla, procedencia y desplazadas en ambas consultas", () => {
+    const referencia = JSON.parse(readFileSync(join(import.meta.dir, "../escenarios/v3-sustituciones/REFERENCIA.json"), "utf8"));
+    const e = copiarEscenario("v3-sustituciones", { git: "proyecto" });
+    limpiezas.push(e.borrar);
+    const env = entornoDeReferencia(referencia, e);
+    const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: env });
+    const deps = { adaptador: adaptadorOpenCode, entorno, rutas: { canonica: () => e.proyecto } };
+    const casos = [
+      { agente: "revisor", clave: "description", plantilla: "Clave {env:RIGE_PRUEBA_CLAVE}",
+        tipo: "variable", origen: "RIGE_PRUEBA_CLAVE", definido: true, posicion: { linea: 6, columna: 29 }, referencia: join(e.proyecto, "opencode.json") },
+      { agente: "revisor", clave: "prompt", plantilla: "{file:./prompts/revisor.txt}",
+        tipo: "archivo", origen: join(e.proyecto, "prompts/revisor.txt").replaceAll("\\", "/"), definido: true, posicion: { linea: 7, columna: 18 }, referencia: join(e.proyecto, "opencode.json") },
+      { agente: "plan", clave: "description", plantilla: "{env:RIGE_PRUEBA_CONTENIDO}",
+        tipo: "variable", origen: "RIGE_PRUEBA_CONTENIDO", definido: true, posicion: { linea: 4, columna: 23 }, referencia: "OPENCODE_CONFIG_CONTENT" },
+      { agente: "general", clave: "description", plantilla: "x{env:RIGE_PRUEBA_SIN_DEFINIR}y",
+        tipo: "variable", origen: "RIGE_PRUEBA_SIN_DEFINIR", definido: false, posicion: { linea: 10, columna: 24 }, referencia: join(e.proyecto, "opencode.json") },
+    ] as const;
+    for (const { agente, clave, plantilla, tipo, origen, definido, posicion, referencia: ref } of casos) {
+      const todas = consultarValores(deps, e.proyecto, agente, undefined);
+      const una = consultarValores(deps, e.proyecto, agente, clave);
+      expect(todas.exito).toBe(true);
+      expect(una.exito).toBe(true);
+      if (!todas.exito || !una.exito) throw new Error("Consulta de sustitucion fallida");
+      const seleccionada = todas.valor.valores.filter(v => v.clave === clave);
+      expect(seleccionada).toHaveLength(1);
+      expect(una.valor.valores).toEqual(seleccionada);
+      const rastro = seleccionada[0]!.rastro;
+      const texto = ref === "OPENCODE_CONFIG_CONTENT" ? env[ref]! : readFileSync(ref, "utf8");
+      expect(texto).toContain(JSON.stringify(plantilla));
+      expect(rastro.valor).toBe(plantilla);
+      expect(rastro.determinante.valor).toBe(plantilla);
+      expect(rastro.determinante.referencia).toBe(ref.replaceAll("\\", "/"));
+      expect(rastro.determinante.sustituciones).toEqual([{ tipo, origen, definido, posicion }]);
+      if (tipo === "variable") expect(Boolean(env[origen])).toBe(definido);
+      else expect(existsSync(origen)).toBe(true);
+      if (agente === "revisor" && clave === "description") {
+        const global = join(e.raiz, "hogar/.config/opencode/opencode.json");
+        expect(readFileSync(global, "utf8")).toContain('"Global {env:RIGE_PRUEBA_GLOBAL}"');
+        expect(rastro.desplazadas).toEqual([expect.objectContaining({ referencia: global.replaceAll("\\", "/"),
+          valor: "Global {env:RIGE_PRUEBA_GLOBAL}", sustituciones: [{ tipo: "variable", origen: "RIGE_PRUEBA_GLOBAL", definido: true,
+            posicion: { linea: 4, columna: 30 } }] })]);
+      }
+    }
+    // La igualdad nativa del contenido expandido se verifica por hash en RNF-04 T3-04 R-10.
+  });
   test("sin clave coincide con toda la referencia y mantiene los rastros por clave", async () => {
     const { escenario, entorno, referencia } = await preparar();
     const resolucion = resolverEscenario(escenario.proyecto, entorno);

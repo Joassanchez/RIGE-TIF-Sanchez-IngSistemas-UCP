@@ -1,0 +1,133 @@
+{
+  "procedencia": {
+    "commit": "ee7cbf5",
+    "tarea": "T2-15",
+    "fecha": "2026-10-25",
+    "capturado": "2026-11-09",
+    "plataforma": "win32-x64",
+    "bun": "1.3.14",
+    "metodo": "git archive ee7cbf5 src; bun install --frozen-lockfile; copiarEscenario con git raiz y HOME en hogar; CLI por subproceso"
+  },
+  "casos": [
+    {
+      "escenario": "v1-precedencia",
+      "comando": "valores",
+      "argumentos": [
+        "--agente",
+        "build"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"versionRige\":\"0.1.0\",\"proyecto\":\"<RAIZ>/proyecto\",\"herramienta\":\"opencode\",\"versionHerramienta\":\"1.18.25\",\"resumenEntradas\":\"7b130d627d27d014420ad0e1a6235f876817e778af8b4f1d755d2dd8d60cd403\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"b5ed45d46159b07292d6c6723cafbb442e8b782bfed92b71fd339341723970c3\"},{\"orden\":2,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"defc00a1fb48eaa29bb2de50369bcbc2eebdb5de738a451158a273670411da0e\"},{\"orden\":3,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.jsonc\",\"condicion\":\"observada\",\"resumen\":\"07f85a893f34357526d700ed779e8fda8d9d62733ee30d3e862e8d296415992f\"},{\"orden\":4,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":5,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"agente\":\"build\",\"ruta\":null,\"valores\":[{\"clave\":\"name\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"name\"],\"valor\":\"build\",\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"build\",\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":0}},{\"clave\":\"description\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"description\"],\"valor\":\"Agente de construccion del proyecto de ejemplo\",\"determinante\":{\"origen\":{\"tipo\":\"declarado\",\"orden\":2,\"posicion\":{\"linea\":6,\"columna\":7}},\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.json\",\"valor\":\"Agente de construccion del proyecto de ejemplo\",\"regla\":\"orden-de-aplicacion\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"The default agent. Executes tools based on configured permissions.\",\"regla\":\"valor-implicito-del-agente\"}],\"indiceFusion\":1}},{\"clave\":\"options\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"options\"],\"valor\":{},\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":{},\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":2}},{\"clave\":\"mode\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"mode\"],\"valor\":\"primary\",\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"primary\",\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":3}},{\"clave\":\"native\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"native\"],\"valor\":true,\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":true,\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":4}},{\"clave\":\"temperature\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"temperature\"],\"valor\":0.3,\"determinante\":{\"origen\":{\"tipo\":\"declarado\",\"orden\":3,\"posicion\":{\"linea\":6,\"columna\":7}},\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.jsonc\",\"valor\":0.3,\"regla\":\"orden-de-aplicacion\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[{\"origen\":{\"tipo\":\"declarado\",\"orden\":1,\"posicion\":{\"linea\":5,\"columna\":7}},\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/opencode.json\",\"valor\":0.1,\"regla\":\"orden-de-aplicacion\"},{\"origen\":{\"tipo\":\"declarado\",\"orden\":2,\"posicion\":{\"linea\":5,\"columna\":7}},\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.json\",\"valor\":0.2,\"regla\":\"orden-de-aplicacion\"}],\"indiceFusion\":5}},{\"clave\":\"steps\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"steps\"],\"valor\":12,\"determinante\":{\"origen\":{\"tipo\":\"declarado\",\"orden\":1,\"posicion\":{\"linea\":6,\"columna\":7}},\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/opencode.json\",\"valor\":12,\"regla\":\"orden-de-aplicacion\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":6}}],\"reglas\":{\"orden-de-aplicacion\":\"OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"declaraciones\":[],\"noResueltas\":[],\"motivo\":null}\n",
+      "error": ""
+    },
+    {
+      "escenario": "v1-precedencia",
+      "comando": "valores",
+      "argumentos": [
+        "--agente",
+        "build",
+        "--clave",
+        "temperature"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"versionRige\":\"0.1.0\",\"proyecto\":\"<RAIZ>/proyecto\",\"herramienta\":\"opencode\",\"versionHerramienta\":\"1.18.25\",\"resumenEntradas\":\"20db96a4dcd1f0ad00840f3bd4b0f0a536f57c41eb39075d483f88d4eb7527a9\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"b5ed45d46159b07292d6c6723cafbb442e8b782bfed92b71fd339341723970c3\"},{\"orden\":2,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"defc00a1fb48eaa29bb2de50369bcbc2eebdb5de738a451158a273670411da0e\"},{\"orden\":3,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.jsonc\",\"condicion\":\"observada\",\"resumen\":\"07f85a893f34357526d700ed779e8fda8d9d62733ee30d3e862e8d296415992f\"},{\"orden\":4,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":5,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"agente\":\"build\",\"ruta\":[\"temperature\"],\"valores\":[{\"clave\":\"temperature\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"temperature\"],\"valor\":0.3,\"determinante\":{\"origen\":{\"tipo\":\"declarado\",\"orden\":3,\"posicion\":{\"linea\":6,\"columna\":7}},\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.jsonc\",\"valor\":0.3,\"regla\":\"orden-de-aplicacion\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[{\"origen\":{\"tipo\":\"declarado\",\"orden\":1,\"posicion\":{\"linea\":5,\"columna\":7}},\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/opencode.json\",\"valor\":0.1,\"regla\":\"orden-de-aplicacion\"},{\"origen\":{\"tipo\":\"declarado\",\"orden\":2,\"posicion\":{\"linea\":5,\"columna\":7}},\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.json\",\"valor\":0.2,\"regla\":\"orden-de-aplicacion\"}],\"indiceFusion\":5}}],\"reglas\":{\"orden-de-aplicacion\":\"OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"declaraciones\":[],\"noResueltas\":[],\"motivo\":null}\n",
+      "error": ""
+    },
+    {
+      "escenario": "v1-precedencia",
+      "comando": "agentes",
+      "argumentos": [],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"proyecto\":\"<RAIZ>/proyecto\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"b5ed45d46159b07292d6c6723cafbb442e8b782bfed92b71fd339341723970c3\"},{\"orden\":2,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"defc00a1fb48eaa29bb2de50369bcbc2eebdb5de738a451158a273670411da0e\"},{\"orden\":3,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.jsonc\",\"condicion\":\"observada\",\"resumen\":\"07f85a893f34357526d700ed779e8fda8d9d62733ee30d3e862e8d296415992f\"},{\"orden\":4,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":5,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"resumenEntradas\":\"5c2990f6bbef4701f5121b0185b377b935a0c87da6906aac118443bcacb93ea3\",\"agentes\":[{\"nombre\":\"build\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":false},{\"nombre\":\"compaction\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":true},{\"nombre\":\"explore\",\"origen\":\"nativo\",\"modo\":\"subagent\",\"oculto\":false},{\"nombre\":\"general\",\"origen\":\"nativo\",\"modo\":\"subagent\",\"oculto\":false},{\"nombre\":\"plan\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":false},{\"nombre\":\"summary\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":true},{\"nombre\":\"title\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":true}],\"eliminados\":[],\"incompleta\":false,\"motivos\":[],\"reglas\":{\"orden-de-aplicacion\":\"OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"declaraciones\":[]}\n",
+      "error": ""
+    },
+    {
+      "escenario": "v1-precedencia",
+      "comando": "permiso",
+      "argumentos": [
+        "--agente",
+        "build",
+        "--herramienta",
+        "read",
+        "--objetivo",
+        "src/a.js"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"proyecto\":\"<RAIZ>/proyecto\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"b5ed45d46159b07292d6c6723cafbb442e8b782bfed92b71fd339341723970c3\"},{\"orden\":2,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"defc00a1fb48eaa29bb2de50369bcbc2eebdb5de738a451158a273670411da0e\"},{\"orden\":3,\"via\":\"proyecto\",\"referencia\":\"<RAIZ>/proyecto/opencode.jsonc\",\"condicion\":\"observada\",\"resumen\":\"07f85a893f34357526d700ed779e8fda8d9d62733ee30d3e862e8d296415992f\"},{\"orden\":4,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":5,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"resumenEntradas\":\"ca3f689e85af6c7ef3a4a59e390920f81a874f86472eacfa86893aa71b5c0288\",\"agente\":\"build\",\"declaraciones\":[\"aprobaciones-permanentes-excluidas\",\"sesion-no-interactiva-excluida\",\"numeracion-sin-directorios-externos\"],\"consulta\":{\"sujeto\":\"read\",\"objetivo\":\"src/a.js\",\"objetivoEvaluado\":\"proyecto\\\\src\\\\a.js\",\"forma\":\"herramienta\",\"herramienta\":\"read\"},\"decision\":\"allow\",\"motivoSinDecision\":null,\"porDefecto\":false,\"determinante\":8,\"desplazadas\":[0],\"nativaAnulada\":null,\"advertencias\":[],\"cadena\":[{\"indice\":0,\"sujeto\":\"*\",\"patron\":\"*\",\"efecto\":\"allow\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null},{\"indice\":8,\"sujeto\":\"read\",\"patron\":\"*\",\"efecto\":\"allow\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null}],\"reglas\":{\"aprobaciones-permanentes-excluidas\":\"Las aprobaciones permanentes (\\\"permitir siempre\\\") no integran el análisis.\",\"nativa-general\":\"Regla de permiso incorporada en los defaults de OpenCode 1.18.25.\",\"numeracion-sin-directorios-externos\":\"Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.\",\"orden-de-aplicacion\":\"OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).\",\"sesion-no-interactiva-excluida\":\"En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"explicacion\":null}\n",
+      "error": ""
+    },
+    {
+      "escenario": "v2-decision",
+      "comando": "valores",
+      "argumentos": [
+        "--agente",
+        "build"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"versionRige\":\"0.1.0\",\"proyecto\":\"<RAIZ>/proyecto\",\"herramienta\":\"opencode\",\"versionHerramienta\":\"1.18.25\",\"resumenEntradas\":\"ed474d5565cf41e4a135bb3c9cf4ec2f6c8188e9eca4e71c2aea2a82d320e07a\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"global\",\"referencia\":\"<RAIZ>/hogar/.config/opencode/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"e67a3c6b9828dcada77c0d7f60dc3ce2231adbded42fb682c226ecefdc302159\"},{\"orden\":2,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":3,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"agente\":\"build\",\"ruta\":null,\"valores\":[{\"clave\":\"name\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"name\"],\"valor\":\"build\",\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"build\",\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":0}},{\"clave\":\"description\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"description\"],\"valor\":\"The default agent. Executes tools based on configured permissions.\",\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"The default agent. Executes tools based on configured permissions.\",\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":1}},{\"clave\":\"options\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"options\"],\"valor\":{},\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":{},\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":2}},{\"clave\":\"mode\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"mode\"],\"valor\":\"primary\",\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"primary\",\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":3}},{\"clave\":\"native\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"native\"],\"valor\":true,\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":true,\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":4}}],\"reglas\":{\"orden-de-aplicacion\":\"OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"declaraciones\":[],\"noResueltas\":[],\"motivo\":null}\n",
+      "error": ""
+    },
+    {
+      "escenario": "v2-decision",
+      "comando": "agentes",
+      "argumentos": [],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"proyecto\":\"<RAIZ>/proyecto\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"global\",\"referencia\":\"<RAIZ>/hogar/.config/opencode/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"e67a3c6b9828dcada77c0d7f60dc3ce2231adbded42fb682c226ecefdc302159\"},{\"orden\":2,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":3,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"resumenEntradas\":\"bc1480e76200d3faeee1df7a9c58e55f31d9beb6d92fabb803f8bc41316096fb\",\"agentes\":[{\"nombre\":\"build\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":false},{\"nombre\":\"compaction\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":true},{\"nombre\":\"explore\",\"origen\":\"nativo\",\"modo\":\"subagent\",\"oculto\":false},{\"nombre\":\"general\",\"origen\":\"nativo\",\"modo\":\"subagent\",\"oculto\":false},{\"nombre\":\"plan\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":false},{\"nombre\":\"summary\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":true},{\"nombre\":\"title\",\"origen\":\"nativo\",\"modo\":\"primary\",\"oculto\":true}],\"eliminados\":[],\"incompleta\":false,\"motivos\":[],\"reglas\":{\"orden-de-aplicacion\":\"OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"declaraciones\":[]}\n",
+      "error": ""
+    },
+    {
+      "escenario": "v2-decision",
+      "comando": "permiso",
+      "argumentos": [
+        "--agente",
+        "plan",
+        "--herramienta",
+        "edit",
+        "--objetivo",
+        "src/a.js",
+        "--explicar"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"proyecto\":\"<RAIZ>/proyecto\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"global\",\"referencia\":\"<RAIZ>/hogar/.config/opencode/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"e67a3c6b9828dcada77c0d7f60dc3ce2231adbded42fb682c226ecefdc302159\"},{\"orden\":2,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":3,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"resumenEntradas\":\"5779430575a1b7a39791b978a2c21b1b4e84ed1f2271c437f5b27ce20ef899a6\",\"agente\":\"plan\",\"declaraciones\":[\"aprobaciones-permanentes-excluidas\",\"sesion-no-interactiva-excluida\",\"numeracion-sin-directorios-externos\"],\"consulta\":{\"sujeto\":\"edit\",\"objetivo\":\"src/a.js\",\"objetivoEvaluado\":\"proyecto\\\\src\\\\a.js\",\"forma\":\"herramienta\",\"herramienta\":\"edit\"},\"decision\":\"allow\",\"motivoSinDecision\":null,\"porDefecto\":false,\"determinante\":20,\"desplazadas\":[0,16],\"nativaAnulada\":{\"regla\":16,\"por\":20},\"advertencias\":[\"proteccion-nativa-anulada\"],\"cadena\":[{\"indice\":0,\"sujeto\":\"*\",\"patron\":\"*\",\"efecto\":\"allow\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null},{\"indice\":16,\"sujeto\":\"edit\",\"patron\":\"*\",\"efecto\":\"deny\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-agente\"},\"declaracion\":null},{\"indice\":20,\"sujeto\":\"edit\",\"patron\":\"*\",\"efecto\":\"allow\",\"origen\":{\"tipo\":\"declarado\",\"orden\":1,\"posicion\":{\"linea\":4,\"columna\":5}},\"declaracion\":{\"origen\":{\"tipo\":\"declarado\",\"orden\":1,\"posicion\":{\"linea\":4,\"columna\":5}},\"via\":\"global\",\"referencia\":\"<RAIZ>/hogar/.config/opencode/opencode.json\",\"valor\":\"allow\",\"regla\":\"orden-de-aplicacion\"}}],\"reglas\":{\"aprobaciones-permanentes-excluidas\":\"Las aprobaciones permanentes (\\\"permitir siempre\\\") no integran el análisis.\",\"nativa-agente\":\"Regla de permiso incorporada para el agente nativo de OpenCode 1.18.25.\",\"nativa-general\":\"Regla de permiso incorporada en los defaults de OpenCode 1.18.25.\",\"numeracion-sin-directorios-externos\":\"Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.\",\"orden-de-aplicacion\":\"OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).\",\"proteccion-nativa-anulada\":\"La declaracion determinante desactiva una proteccion nativa coincidente anterior (RD-07). El rastro identifica la regla nativa y la declaracion con su archivo y linea.\",\"sesion-no-interactiva-excluida\":\"En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"explicacion\":[\"La regla 21 de 23, edit * → permitida, declarada en <RAIZ>/hogar/.config/opencode/opencode.json:4, es la última regla coincidente; OpenCode 1.18.25 aplica la última coincidencia.\",\"Hay 2 reglas coincidentes desplazadas.\",\"La protección nativa de la regla 17, edit * → denegada, queda anulada por la declaración determinante.\",\"La declaracion determinante desactiva una proteccion nativa coincidente anterior (RD-07). El rastro identifica la regla nativa y la declaracion con su archivo y linea.\",\"En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.\",\"Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.\",\"Las aprobaciones permanentes (\\\"permitir siempre\\\") no integran el análisis.\"]}\n",
+      "error": ""
+    },
+    {
+      "escenario": "v2-decision",
+      "comando": "permiso",
+      "argumentos": [
+        "--agente",
+        "build",
+        "--herramienta",
+        "bash",
+        "--objetivo",
+        "ls && rm -rf x"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"proyecto\":\"<RAIZ>/proyecto\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"global\",\"referencia\":\"<RAIZ>/hogar/.config/opencode/opencode.json\",\"condicion\":\"observada\",\"resumen\":\"e67a3c6b9828dcada77c0d7f60dc3ce2231adbded42fb682c226ecefdc302159\"},{\"orden\":2,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":3,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"resumenEntradas\":\"078f68c301cbd7aa79d22ca4a428ff2923a01f219cedddebfce44fed4a93482d\",\"agente\":\"build\",\"declaraciones\":[\"aprobaciones-permanentes-excluidas\",\"sesion-no-interactiva-excluida\",\"numeracion-sin-directorios-externos\"],\"consulta\":{\"sujeto\":\"bash\",\"objetivo\":\"ls && rm -rf x\",\"objetivoEvaluado\":\"ls && rm -rf x\",\"forma\":\"herramienta\",\"herramienta\":\"bash\"},\"decision\":null,\"motivoSinDecision\":\"comando-compuesto\",\"porDefecto\":false,\"determinante\":null,\"desplazadas\":[],\"nativaAnulada\":null,\"advertencias\":[\"encadenamiento\"],\"cadena\":[],\"reglas\":{\"aprobaciones-permanentes-excluidas\":\"Las aprobaciones permanentes (\\\"permitir siempre\\\") no integran el análisis.\",\"comando-compuesto\":\"El comando es compuesto o no analizable; no se informa una decision de permiso (RF-08).\",\"encadenamiento\":\"Comando compuesto: encadenamiento (&&, || o ;).\",\"numeracion-sin-directorios-externos\":\"Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.\",\"orden-de-aplicacion\":\"OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).\",\"sesion-no-interactiva-excluida\":\"En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"explicacion\":null}\n",
+      "error": ""
+    },
+    {
+      "escenario": "v1-precedencia",
+      "comando": "valores",
+      "argumentos": [
+        "--agente",
+        "inexistente"
+      ],
+      "codigo": 1,
+      "salida": "",
+      "error": "{\"esquema\":2,\"error\":{\"codigo\":\"agente-sin-declaraciones\",\"mensaje\":\"El agente inexistente no tiene declaraciones.\"}}\n"
+    },
+    {
+      "escenario": "v1-precedencia",
+      "comando": "valores",
+      "argumentos": [
+        "--agente",
+        "build",
+        "--explicar"
+      ],
+      "codigo": 2,
+      "salida": "",
+      "error": "{\"esquema\":2,\"error\":{\"codigo\":\"argumentos-invalidos\",\"mensaje\":\"valores no admite --explicar.\"}}\n"
+    }
+  ]
+}

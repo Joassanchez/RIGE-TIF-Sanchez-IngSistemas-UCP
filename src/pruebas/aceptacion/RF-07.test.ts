@@ -40,6 +40,11 @@ function prepararSinReferencia(nombre: string, opciones: OpcionesEscenario = { g
     entorno: new EntornoLecturaSistema({ plataforma: process.platform, entorno: env }),
     rutas: { canonica: (ruta: string) => ruta === copia.proyecto ? ruta : null } }) };
 }
+function prepararDisponible(nombre: string) {
+  return existsSync(join(raiz, nombre, "REFERENCIA.json")) ? preparar(nombre) : prepararSinReferencia(nombre);
+}
+const manifiestoParidad = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8")) as Manifiesto;
+const escenariosParidad = [...new Set(manifiestoParidad.defectosSembrados.map(d => d.escenario)), "v5-ruta-relativa-no-confirma"];
 function obtener(d: Parameters<typeof consultarHallazgos>[0], proyecto: string): RespuestaHallazgos {
   const r = consultarHallazgos(d, proyecto);
   if (!r.exito) throw new Error(r.error.mensaje);
@@ -52,35 +57,23 @@ function memoria(archivos: Record<string, string>, variables: Record<string, str
 }
 
 describe("T3-05 R-9 completitud", () => {
-  test("todas las causas de los detectores tienen plantilla completa derivadas del adaptador y ejecucion", () => {
+  test("V-7 todas las causas de los detectores tienen plantilla completa derivadas del adaptador y ejecucion", () => {
     const manifiesto = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8")) as Manifiesto;
     const causasEmitidas = new Set<string>();
 
     for (const esc of manifiesto.escenarios) {
-      try {
-        const e = preparar(esc.id);
-        const r = consultarHallazgos(e.dependencias(), e.proyecto);
-        if (r.exito) {
-          for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
-        }
-      } catch {
-        try {
-          const eSin = prepararSinReferencia(esc.id);
-          const r = consultarHallazgos(eSin.dependencias(), eSin.proyecto);
-          if (r.exito) {
-            for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
-          }
-        } catch {
-          // Escenario no disponible
-        }
-      }
+      const e = prepararDisponible(esc.id);
+      const r = consultarHallazgos(e.dependencias(), e.proyecto);
+      expect(r.exito).toBe(true);
+      if (!r.exito) throw new Error(`${esc.id}: ${r.error.codigo}: ${r.error.mensaje}`);
+      for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
     }
 
     const dInexistente = memoria({ "/p/opencode.json": '{"model":"{file:./no-existe.txt}"}' });
     const rInexistente = consultarHallazgos(dInexistente, "/p");
-    if (rInexistente.exito) {
-      for (const h of rInexistente.valor.hallazgos) causasEmitidas.add(h.causa);
-    }
+    expect(rInexistente.exito).toBe(true);
+    if (!rInexistente.exito) throw new Error(rInexistente.error.mensaje);
+    for (const h of rInexistente.valor.hallazgos) causasEmitidas.add(h.causa);
 
     const causas = new Set<string>([
       ...(adaptadorOpenCode.referencias ?? []).map((r: { causa: string }) => r.causa),
@@ -942,12 +935,6 @@ describe("T3-06 R-8", () => {
   });
 });
 
-describe("T3-06 R-9", () => {
-  test("reemplazado por RF-07 CA-1 T3-08 R-1", () => {
-    expect(true).toBe(true);
-  });
-});
-
 function cliHallazgos(e: { raiz: string; proyecto: string; env: Record<string, string> }, opciones: readonly string[] = []) {
   return lanzar(e.raiz, ["hallazgos", "--proyecto", e.proyecto, ...opciones], e.env);
 }
@@ -1019,10 +1006,13 @@ describe("C-1 RF-03 CA-1 T3-07 R-1", () => {
 });
 
 describe("RF-07 CA-3 T3-07 R-2", () => {
-  test("el conjunto de hallazgos de la CLI sin explicacion es igual al de la web quitando explicacion en los cinco escenarios", async () => {
-    const nombres = ["v3-entradas-ilegible", "v3-permiso-invalido", "v3-sustituciones", "v3-referencias", "v3-sin-efecto"] as const;
+  test("V-3 el conjunto de hallazgos de la CLI y web coincide para todo el inventario", async () => {
+    const nombres = escenariosParidad;
+    expect(nombres.length).toBeGreaterThan(0);
+    expect(manifiestoParidad.defectosSembrados.some(d => nombres.includes(d.escenario) && d.tipo === "elemento-sin-uso")).toBe(true);
+    expect(manifiestoParidad.defectosSembrados.some(d => nombres.includes(d.escenario) && d.causa === "ruta-absoluta-con-forma")).toBe(true);
     for (const nombre of nombres) {
-      const e = nombre === "v3-sin-efecto" ? prepararSinReferencia(nombre) : preparar(nombre);
+      const e = prepararDisponible(nombre);
       expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
       const cli = cliHallazgos(e);
       expect(cli.codigo).toBe(0);
@@ -1052,10 +1042,13 @@ describe("RF-07 CA-3 T3-07 R-2", () => {
 });
 
 describe("RF-07 CA-4 T3-07 R-3", () => {
-  test("con --explicar la explicacion de cada hallazgo de la CLI es identica a la de la web y al texto visible escapado en la tabla", async () => {
-    const nombres = ["v3-entradas-ilegible", "v3-permiso-invalido", "v3-sustituciones", "v3-referencias", "v3-sin-efecto"] as const;
+  test("V-3 con --explicar la explicacion de cada hallazgo de la CLI es identica a la de la web y al texto visible escapado en la tabla", async () => {
+    const nombres = escenariosParidad;
+    expect(nombres.length).toBeGreaterThan(0);
+    expect(manifiestoParidad.defectosSembrados.some(d => nombres.includes(d.escenario) && d.tipo === "elemento-sin-uso")).toBe(true);
+    expect(manifiestoParidad.defectosSembrados.some(d => nombres.includes(d.escenario) && d.causa === "ruta-absoluta-con-forma")).toBe(true);
     for (const nombre of nombres) {
-      const e = nombre === "v3-sin-efecto" ? prepararSinReferencia(nombre) : preparar(nombre);
+      const e = prepararDisponible(nombre);
       expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
       const cli = cliHallazgos(e, ["--explicar"]);
       expect(cli.codigo).toBe(0);
