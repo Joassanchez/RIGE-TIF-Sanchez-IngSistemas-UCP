@@ -3,6 +3,19 @@ import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { copiarEscenario } from "./escenario";
 
+test("T5-06a A-a4 copia core.worktree y core.bare solo en temporales, con estructura Git explicita", () => {
+  for (const git of ["core.worktree", "core.bare"] as const) {
+    const copia = copiarEscenario("v2-worktree-valido", { git });
+    try {
+      const directorio = git === "core.bare" ? copia.raiz : join(copia.raiz, ".git");
+      expect(readFileSync(join(directorio, "HEAD"), "utf8")).toBe("ref: refs/heads/main\n");
+      for (const nombre of ["objects", "refs"]) expect(statSync(join(directorio, nombre)).isDirectory()).toBe(true);
+      const config = readFileSync(join(directorio, "config"), "utf8");
+      expect(config).toContain(git === "core.bare" ? "bare = true" : "worktree = ../proyecto");
+    } finally { copia.borrar(); }
+  }
+});
+
 test("T2-11b W-1 W-2 prepara marcadores invalidos anidados en un repositorio exterior", () => {
   for (const git of ["gitfile-roto", "dir-invalido-anidado"] as const) {
     const copia = copiarEscenario(`v2-worktree-${git}`, { git });

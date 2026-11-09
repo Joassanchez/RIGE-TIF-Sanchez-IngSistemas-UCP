@@ -109,7 +109,7 @@ describe("T3-03 referencias de entradas", () => {
 });
 
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.
-function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno";
+function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno" | "core.worktree" | "core.bare";
   diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
   agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean; posicion?: boolean; registroNativo?: boolean;
   sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean; entornoLiteral?: boolean; entornoFiltrado?: boolean } = {}) {
@@ -176,6 +176,8 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         llamadas.push(llamada);
         if (argumentos[0] === "git") {
           writeFileSync(${JSON.stringify(registro)}, JSON.stringify(llamadas));
+          if (argumentos.includes("--show-toplevel") && ${opciones.git === "core.bare"}) return { exitCode: 128, stdout: Buffer.from(""), stderr: Buffer.from("fatal: this operation must be run in a work tree") };
+          if (argumentos.includes("--show-toplevel") && ${opciones.git === "core.worktree"}) return { exitCode: 0, stdout: Buffer.from(opciones.cwd), stderr: Buffer.from("") };
           return { exitCode: 0, stdout: Buffer.from(argumentos.includes("--show-toplevel") ? llamadas.findLast(l => l.argumentos.includes("init")).cwd : ""), stderr: Buffer.from("") };
         }
         if (argumentos[1] === "--version") {
@@ -305,6 +307,20 @@ describe("RN-5 copia, aislamiento y limite del comando nativo", () => {
     expect(fallido.codigo).toBe(1);
     expect(fallido.copiasBorradas).toBe(true);
     expect(fallido.restos.sort()).toEqual(["fuente", "llamadas.json", "opencode-ai", "precarga.ts"]);
+  });
+});
+
+describe("T5-06a A-a4 referencias con topologias Git", () => {
+  test("conserva la topologia configurada y registra el resultado nativo de rev-parse", () => {
+    for (const git of ["core.worktree", "core.bare"] as const) {
+      const r = ejecutar({ git, regenerar: true });
+      expect(r.codigo).toBe(0);
+      expect(r.llamadas.some(l => l.argumentos.includes("init"))).toBe(false);
+      expect(r.regenerada.procedencia.controlGit).toEqual({ modo: git,
+        comando: ["git", "rev-parse", "--show-toplevel"], codigo: git === "core.bare" ? 128 : 0,
+        salida: git === "core.bare" ? "" : "<RAIZ>/proyecto", error: git === "core.bare" ? "fatal: this operation must be run in a work tree" : "" });
+      expect(r.copiasBorradas).toBe(true);
+    }
   });
 });
 

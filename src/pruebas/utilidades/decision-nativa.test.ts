@@ -27,6 +27,20 @@ describe("T2-14 preferencia del oraculo", () => {
   });
 });
 
+describe("T5-06a A-a2 selector por plataforma antes de consulta", () => {
+  test("obtiene cada decision aunque Windows figure primero y Linux decida distinto", () => {
+    const consulta = { agente: "build", sujeto: "read", herramienta: "read", objetivo: "a" };
+    const referencia = { decisionesNativas: ["win32-x64", "linux-x64"].map(plataforma => ({ ...consulta,
+      procedencia: { plataforma }, evaluaciones: [{ sujeto: "read", patronEvaluado: "a",
+        regla: { permission: "read", pattern: "*", action: plataforma === "win32-x64" ? "deny" : "allow" } }],
+    })) };
+    expect(decisionNativa(referencia, consulta, "a", undefined, "linux-x64")?.decision).toBe("allow");
+    expect(decisionNativa(referencia, consulta, "a", undefined, "win32-x64")?.decision).toBe("deny");
+    expect(oraculoDecision(referencia, consulta, "linux-x64")).toBe("nativa linux-x64");
+    expect(evidenciaDecision(referencia, consulta, undefined, "linux-x64").tipo).toBe("captura-nativa");
+  });
+});
+
 // Compara dos oraculos registrados, sin ejecutar el evaluador de RIGE ni vendor.
 describe("X-1 derivadas validadas contra nativa win32-x64", () => {
   const directorio = join(import.meta.dir, "../escenarios");

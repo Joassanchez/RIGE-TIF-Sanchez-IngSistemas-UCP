@@ -1,10 +1,11 @@
 import { parse, relative } from "node:path";
+import type { ControlGit } from "../referencias-nativas/git";
 
 export interface EvaluacionNativa { sujeto: string; patronEvaluado: string; regla: { permission: string; pattern: string; action: string } }
 export interface DecisionNativa {
   consulta: string; agente: string; sujeto: string; objetivo?: string; herramienta?: string; lanzadoPor?: string;
   evaluaciones: EvaluacionNativa[]; herramientaNoOfrecida?: boolean;
-  procedencia?: { comando: string[]; sha256Binario: string; version: string; fecha: string; plataforma: string };
+  procedencia?: { comando: string[]; sha256Binario: string; version: string; fecha: string; plataforma: string; controlGit?: ControlGit };
 }
 
 export function normalizarEvaluaciones(evaluaciones: EvaluacionNativa[], raiz: string): EvaluacionNativa[] {

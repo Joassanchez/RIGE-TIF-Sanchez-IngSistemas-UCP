@@ -45,7 +45,7 @@ export interface Comprobacion {
 }
 export interface ConsultaNativa {
   id: string; agente: string; sujeto: string; objetivo: string; herramienta: string;
-  argumentos: Record<string, unknown>; nativa: boolean; lanzadoPor?: string;
+  argumentos: Record<string, unknown>; nativa: boolean; lanzadoPor?: string; modelo?: string;
 }
 export interface Escenario {
   id: string; entradas: Record<string, string>; referencia: string | null;

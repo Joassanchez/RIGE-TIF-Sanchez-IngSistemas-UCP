@@ -7,20 +7,21 @@ interface RegistroNativo {
 }
 type Referencia = { decisionesNativas?: RegistroNativo[] };
 type Consulta = { agente: string; sujeto?: string; herramienta?: string; objetivo: string; lanzadoPor?: string };
-function buscar(referencia: Referencia, consulta: Consulta) {
+function buscar(referencia: Referencia, consulta: Consulta, plataforma: string) {
   const sujeto = consulta.sujeto ?? (consulta.herramienta === "read" ? "read" : "edit");
-  return referencia.decisionesNativas?.find(d => d.agente === consulta.agente && d.sujeto === sujeto
+  return referencia.decisionesNativas?.filter(d => !d.procedencia || d.procedencia.plataforma === plataforma)
+    .find(d => d.agente === consulta.agente && d.sujeto === sujeto
     && d.objetivo === consulta.objetivo && d.lanzadoPor === consulta.lanzadoPor && (!d.herramienta || !consulta.herramienta || d.herramienta === consulta.herramienta));
 }
 export function oraculoDecision(referencia: Referencia, consulta: Consulta, plataforma = `${process.platform}-${process.arch}`): string {
-  const registro = buscar(referencia, consulta);
+  const registro = buscar(referencia, consulta, plataforma);
   return registro && !registro.herramientaNoOfrecida && (!registro.procedencia || registro.procedencia.plataforma === plataforma)
     ? `nativa ${registro.procedencia?.plataforma ?? plataforma}` : "derivada";
 }
 /** Clasificar no calcula una decision ni convierte una captura de otra plataforma en nativa. */
 export function evidenciaDecision(referencia: Referencia, consulta: Consulta, documento?: string,
   plataforma = `${process.platform}-${process.arch}`) {
-  const registro = buscar(referencia, consulta);
+  const registro = buscar(referencia, consulta, plataforma);
   const compatible = registro?.procedencia?.plataforma === plataforma;
   const tipo = compatible && registro.herramientaNoOfrecida ? "herramienta-no-ofrecida"
     : compatible && registro.evaluaciones.length ? "captura-nativa"
@@ -30,7 +31,7 @@ export function evidenciaDecision(referencia: Referencia, consulta: Consulta, do
 /** null significa captura ausente, herramienta no ofrecida o plataforma distinta; nunca una decision calculada. */
 export function decisionNativa(referencia: Referencia, consulta: Consulta, evaluado: string, raiz?: string,
   plataforma = `${process.platform}-${process.arch}`) {
-  const registro = buscar(referencia, consulta);
+  const registro = buscar(referencia, consulta, plataforma);
   if (!registro || registro.procedencia && registro.procedencia.plataforma !== plataforma) return null;
   if (registro.herramientaNoOfrecida) return null;
   const objetivo = (raiz ? normalizarRutaTemporal(evaluado, raiz) : evaluado).replaceAll("\\", "/");
