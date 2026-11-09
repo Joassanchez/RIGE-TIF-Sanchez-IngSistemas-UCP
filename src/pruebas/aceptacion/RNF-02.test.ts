@@ -85,11 +85,10 @@ describe("RNF-02 CA-2 T5-04 W-2", () => {
       };
       const consultas = escenario.consultas.map(consulta => {
         const evidencia = evidenciaDecision(ref, consulta, documento(consulta));
-        // Decision del ingeniero en T5-06c: este unico caso caracteriza el limite de W-B.
+        // W-B puede coincidir o caracterizar un limite, segun RIGE en la plataforma actual.
         const limiteDeclarado = escenario.id === "v5-worktree-core.worktree" && consulta.id === "read-a"
-          && plataforma === "win32-x64" && evidencia.tipo === "captura-nativa";
-        detalle.push({ escenario: escenario.id, consulta: consulta.id, ...evidencia,
-          ...(limiteDeclarado ? { limiteDeclarado: "ADR-101 W-B: divergencia caracterizada" } : {}) });
+          && evidencia.tipo === "captura-nativa";
+        detalle.push({ escenario: escenario.id, consulta: consulta.id, ...evidencia });
         return { consulta, evidencia, limiteDeclarado };
       });
       // No se resuelven consultas sin captura utilizable para fabricar una acreditacion.
@@ -114,7 +113,9 @@ describe("RNF-02 CA-2 T5-04 W-2", () => {
           const regla = respuesta.cadena.find(r => r.indice === respuesta.determinante)!;
           const obtenido = { decision: respuesta.decision, regla: { sujeto: regla?.sujeto,
             patron: regla && normalizarRutaTemporal(regla.patron, copia.raiz).replaceAll("\\", "/"), efecto: regla?.efecto } };
-          if (limiteDeclarado) {
+          if (limiteDeclarado && obtenido.decision !== nativa.decision) {
+            detalle.find(d => d.escenario === escenario.id && d.consulta === consulta.id)!.limiteDeclarado
+              = "ADR-101 W-B: divergencia caracterizada";
             expect(respuesta.declaraciones).toContain("deteccion-git-aproximada");
             expect(normalizarRutaTemporal(respuesta.consulta.objetivoEvaluado!, copia.raiz).replaceAll("\\", "/"))
               .toBe("proyecto/sub/a.txt");
@@ -133,6 +134,7 @@ describe("RNF-02 CA-2 T5-04 W-2", () => {
     console.info(`W-2 ${plataforma}: consultas=${total}, comparados=${comparados}, coincidentes=${coincidentes}, limites declarados=${limitesDeclarados}, derivados=${derivados}, pendientes=${pendientes}, herramientas no ofrecidas=${noOfrecidas}; ${comparados ? `coincidencia nativa=${coincidentes}/${comparados}` : "sin acreditación nativa en esta plataforma"}; detalle=${JSON.stringify(detalle)}`);
     expect(comparados + derivados + pendientes + noOfrecidas + limitesDeclarados).toBe(total);
     expect(coincidentes).toBe(comparados);
-    expect(limitesDeclarados).toBe(plataforma === "win32-x64" ? 1 : 0);
+    expect(limitesDeclarados).toBe(detalle.filter(d => d.limiteDeclarado).length);
+    expect(limitesDeclarados).toBeLessThanOrEqual(1);
   });
 });

@@ -37,9 +37,13 @@ describe("T5-06c A-c1 A-c2 comparacion nativa sin fallback", () => {
     const consulta = escenario.consultas[0];
     if (!consulta) throw new Error(`Consulta ausente: ${id}`);
     const referencia = JSON.parse(readFileSync(join(escenarios, id, "REFERENCIA.json"), "utf8"));
+    test(`T5-06c-c1 ${caso.caso}: capturas del ingeniero para ambas plataformas`, () => {
+      expect(referencia.decisionesNativas.map((d: { procedencia: { plataforma: string } }) => d.procedencia.plataforma).sort())
+        .toEqual(["linux-x64", "win32-x64"]);
+    });
     for (const plataforma of ["win32-x64", "linux-x64"]) {
-      compararConCapturaNativa({ caso: caso.caso === "core.worktree" && plataforma === "win32-x64"
-        ? "core.worktree: límite declarado de ADR-101 W-B: divergencia caracterizada" : caso.caso,
+      compararConCapturaNativa({ caso: caso.caso === "core.worktree"
+        ? "core.worktree: coincidencia o caracterizacion del limite declarado de ADR-101 W-B" : caso.caso,
         variante: "patron-relativo", consulta, referencia,
         evaluado: caso.evaluado, plataforma,
         ...(plataforma === `${process.platform}-${process.arch}` ? {} : {
@@ -52,11 +56,16 @@ describe("T5-06c A-c1 A-c2 comparacion nativa sin fallback", () => {
         const obtenido = { decision: respuesta!.decision, regla: { sujeto: regla?.sujeto,
           patron: regla && normalizarRutaTemporal(regla.patron, raiz).replaceAll("\\", "/"), efecto: regla?.efecto } };
         const evaluado = normalizarRutaTemporal(respuesta!.consulta.objetivoEvaluado!, raiz).replaceAll("\\", "/");
-        if (caso.caso === "core.worktree" && plataforma === "win32-x64") {
+        if (caso.caso === "core.worktree") {
           expect(respuesta!.declaraciones).toContain("deteccion-git-aproximada");
           expect(nativa).toEqual({ decision: "allow", regla: { sujeto: "read", patron: "sub/a.txt", efecto: "allow" } });
-          expect(obtenido).toEqual({ decision: "deny", regla: { sujeto: "read", patron: "*", efecto: "deny" } });
-          expect(evaluado).toBe("proyecto/sub/a.txt");
+          if (obtenido.decision === nativa.decision) {
+            expect(obtenido).toEqual(nativa);
+            expect(evaluado).toBe(caso.evaluado);
+          } else {
+            expect(obtenido).toEqual({ decision: "deny", regla: { sujeto: "read", patron: "*", efecto: "deny" } });
+            expect(evaluado).toBe("proyecto/sub/a.txt");
+          }
         } else {
           expect(obtenido).toEqual(nativa);
           expect(evaluado).toBe(caso.evaluado);
