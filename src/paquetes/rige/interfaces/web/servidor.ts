@@ -57,7 +57,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
     if (url.pathname === "/agentes") {
       const resultado = casos.consultarAgentes(url.searchParams.get("id") ?? "");
       const id = url.searchParams.get("id") ?? "";
-      return resultado.exito ? paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined) : paginaErrorUso(resultado.error);
+      return resultado.exito ? paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, url.searchParams.get("clave") ?? undefined) : paginaErrorUso(resultado.error);
     }
     if (url.pathname === "/resolver") {
       const agente = url.searchParams.get("agente") ?? "";
@@ -71,7 +71,11 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
     if (id !== undefined) {
       const clave = url.searchParams.get("clave") ?? "";
       const resultado = casos.consultarResolucion(id, url.searchParams.get("agente") ?? "", clave);
-      return resultado.exito ? paginaResolucion(resultado.valor.respuesta, resultado.valor.sobre) : paginaErrorUso(resultado.error);
+      if (!resultado.exito) return paginaErrorUso(resultado.error);
+      const agentes = casos.consultarAgentes(id);
+      return paginaResolucion(resultado.valor.respuesta, resultado.valor.sobre, {
+        clave, ...(agentes.exito ? { agentes: agentes.valor.agentes } : {}),
+      });
     }
     if (url.pathname !== "/") {
       const pagina = diseno("Error 404", contenidoError(404, "Página no encontrada.", "pagina-inexistente"));

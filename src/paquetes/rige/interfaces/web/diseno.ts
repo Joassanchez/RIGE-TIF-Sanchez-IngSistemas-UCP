@@ -4,6 +4,7 @@ import { html, type HtmlSeguro } from "./plantillas";
 interface ContextoDiseno {
   readonly proyecto?: string;
   readonly idResolucion?: string | number;
+  readonly clave?: string;
   readonly activa?: "Inicio" | "Entradas" | "Hallazgos" | "Agentes";
   readonly almacen?: { readonly ruta: string; readonly versionEsquema: number };
   readonly minimo?: boolean;
@@ -18,7 +19,7 @@ export function diseno(titulo: string, contenido: HtmlSeguro, contexto: Contexto
       { texto: "Hallazgos", ruta: `/hallazgos?proyecto=${proyecto}` });
   }
   if (!contexto.minimo && contexto.idResolucion !== undefined) {
-    enlaces.push({ texto: "Agentes", ruta: `/agentes?id=${encodeURIComponent(contexto.idResolucion)}` });
+    enlaces.push({ texto: "Agentes", ruta: `/agentes?id=${encodeURIComponent(contexto.idResolucion)}${contexto.clave ? `&clave=${encodeURIComponent(contexto.clave)}` : ""}` });
   }
   return html`<!doctype html>
 <html lang="es"><head><meta charset="utf-8">

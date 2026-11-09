@@ -62,6 +62,7 @@ form { margin: 0; }
 label { display: flex; flex-direction: column; gap: .45rem; font-size: .85rem; font-weight: 650; margin-bottom: 1.1rem; min-width: 0; }
 input { width: 100%; min-width: 0; padding: .8rem .9rem; font-size: .9rem; line-height: 1.4; border: 1px solid var(--borde); border-radius: .55rem; color: var(--texto); background: var(--fondo); transition: border-color .15s; }
 input:hover { border-color: var(--secundario); }
+select { width: 100%; padding: .8rem .9rem; font: inherit; border: 1px solid var(--borde); border-radius: .55rem; color: var(--texto); background: var(--fondo); }
 input::placeholder { color: var(--secundario); opacity: 1; }
 input[type="hidden"] { display: none; }
 .ayuda { font-size: .8rem; margin-top: -.5rem; }
@@ -112,6 +113,7 @@ tbody tr:nth-child(even) { background: var(--fondo); }
 tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover { background: var(--acento-suave); }
 .fila--determinante { background: var(--acento-suave); box-shadow: inset 3px 0 var(--acento); }
+tbody tr:target { background: var(--acento-suave); outline: 2px solid var(--acento); outline-offset: -2px; scroll-margin-top: 3rem; }
 #valores td:nth-child(1), #valores td:nth-child(2) { font-family: ui-monospace, monospace; }
 #valores td:nth-child(1) { white-space: nowrap; min-width: 11rem; overflow-wrap: normal; }
 #valores td:nth-child(2) { color: var(--acento); font-size: 1rem; font-weight: 700; }

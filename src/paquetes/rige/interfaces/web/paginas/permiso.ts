@@ -8,6 +8,8 @@ export function paginaPermiso(respuesta: RespuestaPermiso, idResolucion?: string
   return responderHtml(200, diseno(`Permiso de ${respuesta.agente}`, html`
 <div class="cabecera-pagina"><p class="ceja">Consulta de permiso</p><h1>Permiso de ${respuesta.agente}</h1>
 <p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
+${"lanzadoPor" in respuesta && typeof respuesta.lanzadoPor === "string" && respuesta.lanzadoPor
+    ? html`<p>Lanzado por: <code>${respuesta.lanzadoPor}</code></p>` : html``}
 <p><code class="ficha-codigo">${respuesta.consulta.sujeto}: ${respuesta.consulta.objetivo}</code></p></div>
 <section id="resultado-permiso" class="tarjeta decision-principal"><h2>Decisión</h2>${efectoVisual(respuesta.decision)}
 ${respuesta.decision === null ? html`<p>Motivo: <code>${respuesta.motivoSinDecision}</code></p>` : html``}

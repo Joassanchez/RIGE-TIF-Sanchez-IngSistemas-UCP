@@ -24,7 +24,7 @@ ${respuesta.incompleta ? html`<div class="aviso aviso--advertencia"><p>Hallazgos
 <section id="tabla-hallazgos"><h2>Detalle de hallazgos</h2>
 ${respuesta.hallazgos.length ? html`<div class="tabla-contenedor" role="region" aria-label="Hallazgos" tabindex="0">
 <table><thead><tr><th>Tipo</th><th>Localización</th><th>Explicación</th></tr></thead>
-<tbody>${respuesta.hallazgos.map(hallazgo => html`<tr><td>${insignia(hallazgo.tipo, hallazgo.tipo)}</td><td>${presentarRuta(hallazgo.localizacion)}</td><td>${hallazgo.explicacion}</td></tr>`)}</tbody></table></div>`
+<tbody>${respuesta.hallazgos.map(hallazgo => html`<tr><td>${insignia(hallazgo.tipo, hallazgo.tipo)}</td><td><a href="${`/entradas?proyecto=${encodeURIComponent(respuesta.proyecto)}#entrada-${encodeURIComponent(hallazgo.entrada.orden)}`}">${presentarRuta(hallazgo.localizacion)}</a></td><td>${hallazgo.explicacion}</td></tr>`)}</tbody></table></div>`
     : html`<p class="estado-vacio">${respuesta.incompleta ? "Sin hallazgos observados; análisis parcial" : "Sin hallazgos en este proyecto"}</p>`}</section>
 ${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto, activa: "Hallazgos" }));
 }

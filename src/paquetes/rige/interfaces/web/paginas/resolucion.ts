@@ -1,5 +1,6 @@
 import type { DeclaracionUbicada, RespuestaValores } from "../../../aplicacion/respuestas/valores";
 import type { SobreAlmacen } from "../../../aplicacion/respuestas/sobre";
+import type { RespuestaAgentes } from "../../../aplicacion/respuestas/agentes";
 import { datosRespuesta, html, type HtmlSeguro } from "../plantillas";
 import { declaraciones, diseno, insignia } from "../diseno";
 import { presentarRuta } from "../rutas";
@@ -15,10 +16,11 @@ function presentarDesplazada(declaracion: DeclaracionUbicada): HtmlSeguro {
   return html`<span class="valor-desplazado">${JSON.stringify(declaracion.valor)}</span> ${presentarOrigen(declaracion)}`;
 }
 
-export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmacen): Response {
-  const clave = respuesta.ruta === null ? null : respuesta.ruta.every(segmento => !/[./~]/.test(segmento))
+export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmacen,
+  contexto: { readonly agentes?: RespuestaAgentes["agentes"]; readonly clave?: string } = {}): Response {
+  const clave = contexto.clave ?? (respuesta.ruta === null ? null : respuesta.ruta.every(segmento => !/[./~]/.test(segmento))
     ? respuesta.ruta.join(".")
-    : "/" + respuesta.ruta.map(segmento => segmento.replaceAll("~", "~0").replaceAll("/", "~1")).join("/");
+    : "/" + respuesta.ruta.map(segmento => segmento.replaceAll("~", "~0").replaceAll("/", "~1")).join("/"));
   const consulta = `?agente=${encodeURIComponent(respuesta.agente)}${clave ? `&clave=${encodeURIComponent(clave)}` : ""}`;
   const reglasUsadas = [...new Set(respuesta.valores.map(valor => valor.rastro.determinante.regla))].filter(codigo => codigo.trim().length > 0);
   return responderHtml(200, diseno(`Resolución ${sobre.id}`, html`
@@ -30,6 +32,12 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
 <div><dt>Instante (UTC)</dt><dd>${sobre.instante}</dd></div>
 <div><dt>Herramienta</dt><dd>${respuesta.herramienta} ${respuesta.versionHerramienta}</dd></div>
 <div><dt>Clave</dt><dd><code>${respuesta.ruta?.join(".") ?? "todas"}</code></dd></div></dl></section>
+${contexto.agentes === undefined ? html`` : html`<form id="seleccionar-agente" action="${`/resoluciones/${encodeURIComponent(sobre.id)}`}" method="get">
+<label>Agente <select name="agente">${contexto.agentes.map(agente => agente.nombre === respuesta.agente
+    ? html`<option value="${agente.nombre}" selected>${agente.nombre}</option>`
+    : html`<option value="${agente.nombre}">${agente.nombre}</option>`)}</select></label>
+${clave ? html`<input type="hidden" name="clave" value="${clave}">` : html``}
+<button class="boton--secundario">Ver agente</button></form>`}
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="valores"><h2>Valores efectivos</h2>
 <div class="tabla-contenedor" role="region" aria-label="Valores efectivos" tabindex="0">
@@ -50,14 +58,26 @@ ${respuesta.motivo ? html`<p class="aviso bloque">Motivo: ${respuesta.motivo}</p
 <div class="grupo-campos"><label>Herramienta <input name="herramienta" placeholder="read" required></label>
 <label>Objetivo <input name="objetivo" placeholder=".env" required></label></div>
 <button>Consultar permiso</button></form>
+<details><summary>Consultar como subagente (opcional)</summary>
+<form id="consultar-permiso-subagente" action="/permiso" method="get">
+<input type="hidden" name="id" value="${sobre.id}">
+<label>Agente <input name="agente" value="${respuesta.agente}" required></label>
+<label>Lanzado por (subagente) <input name="lanzadoPor" aria-describedby="ayuda-lanzado-por" required pattern=".*\\S.*"></label>
+<p id="ayuda-lanzado-por" class="ayuda">agente que lo lanza, para evaluar el permiso en contexto de subagente</p>
+<div class="grupo-campos"><label>Herramienta <input name="herramienta" placeholder="read" required></label>
+<label>Objetivo <input name="objetivo" placeholder=".env" required></label></div>
+<button class="boton--secundario">Consultar permiso como subagente</button></form></details>
 <details><summary>Consultar por sujeto</summary><form action="/permiso" method="get">
 <input type="hidden" name="id" value="${sobre.id}">
 <label>Agente <input name="agente" value="${respuesta.agente}" required></label>
 <label>Sujeto <input name="sujeto" required></label>
 <label>Objetivo <input name="objetivo" required></label>
-<button class="boton--secundario">Consultar sujeto de permiso</button></form></details></div>
+<button class="boton--secundario">Consultar sujeto de permiso</button></form></details>
+<section id="consultas-rapidas"><h3>Consultas rápidas</h3><ul>
+${([["read", ".env"], ["edit", "opencode.json"], ["bash", "git status"], ["bash", "rm -rf build"]] as const).map(([herramienta, objetivo]) => html`<li><a href="${`/permiso?id=${encodeURIComponent(sobre.id)}&agente=${encodeURIComponent(respuesta.agente)}&herramienta=${encodeURIComponent(herramienta)}&objetivo=${encodeURIComponent(objetivo)}`}"><code class="ficha-codigo">${herramienta} ${objetivo}</code></a></li>`)}
+</ul></section></div>
 <div class="tarjeta"><h3>Agentes de esta resolución</h3><p class="atenuado">Revisá el origen, el modo y la visibilidad de cada agente.</p>
-<form action="/agentes" method="get"><input type="hidden" name="id" value="${sobre.id}"><button class="boton--secundario">Listar agentes</button></form></div>
+<form action="/agentes" method="get"><input type="hidden" name="id" value="${sobre.id}">${clave ? html`<input type="hidden" name="clave" value="${clave}">` : html``}<button class="boton--secundario">Listar agentes</button></form></div>
 </div></section>
 ${respuesta.noResueltas.length ? html`<details id="claves-no-incorporadas"><summary>Claves no incorporadas por RIGE</summary>
 <ul>${respuesta.noResueltas.map(clave => html`<li>${clave.ruta.join(".")}: ${respuesta.reglas[clave.regla]}</li>`)}</ul></details>` : html``}
@@ -65,10 +85,10 @@ ${respuesta.noResueltas.length ? html`<details id="claves-no-incorporadas"><summ
 <dl><dt>Resumen de las entradas leídas</dt><dd>${respuesta.resumenEntradas}</dd></dl>
 <div class="tabla-contenedor" role="region" aria-label="Entradas leídas" tabindex="0">
 <table><thead><tr><th>Orden</th><th>Vía</th><th>Referencia</th><th>Condición</th><th>Resumen SHA-256</th></tr></thead>
-<tbody>${respuesta.entradas.map(entrada => html`<tr><td>${entrada.orden}</td><td>${entrada.via}</td><td>${presentarRuta(entrada.referencia)}</td><td>${insignia(entrada.condicion, entrada.condicion === "no_observada" ? "neutra" : "permitida")}</td><td><code>${entrada.resumen ?? "—"}</code></td></tr>`)}</tbody></table></div></details>
+<tbody>${respuesta.entradas.map(entrada => html`<tr id="${`entrada-leida-${entrada.orden}`}"><td>${entrada.orden}</td><td>${entrada.via}</td><td>${presentarRuta(entrada.referencia)}</td><td>${insignia(entrada.condicion, entrada.condicion === "no_observada" ? "neutra" : "permitida")}</td><td><code>${entrada.resumen ?? "—"}</code></td></tr>`)}</tbody></table></div></details>
 <section id="historia"><h2>Resoluciones de este proyecto</h2>
 <ul class="historia">${sobre.anteriores.map(anterior => html`<li>${anterior.id === sobre.id
     ? html`<a href="${`/resoluciones/${anterior.id}${consulta}`}" aria-current="page">Resolución ${anterior.id}</a>`
     : html`<a href="${`/resoluciones/${anterior.id}${consulta}`}">Resolución ${anterior.id}</a>`} <time>${anterior.instante}</time>${anterior.id === sobre.id ? html`<span class="insignia insignia--neutra">(esta)</span>` : html``}</li>`)}</ul></section>
-${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto, idResolucion: sobre.id }));
+${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto, idResolucion: sobre.id, ...(clave ? { clave } : {}) }));
 }
