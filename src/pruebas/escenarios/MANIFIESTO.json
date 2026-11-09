@@ -2735,6 +2735,138 @@
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
+    },
+    {
+      "id": "v5-worktree-control-ordinario",
+      "entradas": {
+        "proyecto/opencode.json": "48647ca3b94aa1befc3a5f382dc117aea4d4d0b41658422f291cb2227fd59fff",
+        "proyecto/sub/a.txt": "7372011de259e0cde74dad2fa02bfd3423c5c853cf4a3813e64ae25fdecf6e68"
+      },
+      "referencia": "1fcb65b458653c32c4cb915de011bf506b80ac2b85c6b4c65062c59e7abe5958",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; coincidencia-estricta"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; coincidencia-estricta"
+        },
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 declaracion estructurada independiente de la decision",
+          "fuente": "caso-de-uso; declaracion-estructurada-no-acredita-coincidencia"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-core.worktree",
+      "entradas": {
+        "proyecto/opencode.json": "48647ca3b94aa1befc3a5f382dc117aea4d4d0b41658422f291cb2227fd59fff",
+        "proyecto/sub/a.txt": "7372011de259e0cde74dad2fa02bfd3423c5c853cf4a3813e64ae25fdecf6e68"
+      },
+      "referencia": "875fe139d851f92945479200aa3eca15877bc1321167e2753919b742c440f948",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "fuente": "caracterizacion-limite-declarado-ADR-101-W-B; win32-x64: OpenCode allow, RIGE deny; linux-x64: test.todo"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "fuente": "caracterizacion-limite-declarado-ADR-101-W-B; win32-x64: OpenCode allow, RIGE deny; linux-x64: test.todo"
+        },
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 declaracion estructurada independiente de la decision",
+          "fuente": "caso-de-uso; declaracion-estructurada-no-acredita-coincidencia"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-core.bare",
+      "entradas": {
+        "proyecto/opencode.json": "48647ca3b94aa1befc3a5f382dc117aea4d4d0b41658422f291cb2227fd59fff",
+        "proyecto/sub/a.txt": "7372011de259e0cde74dad2fa02bfd3423c5c853cf4a3813e64ae25fdecf6e68"
+      },
+      "referencia": "4495e4e57d980bad02522e2c3c41f8ccff403c647464cc30d634e5d51e46f5a5",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; coincidencia-estricta"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; coincidencia-estricta"
+        },
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06c.test.ts",
+          "describe": "T5-06c A-c1 declaracion estructurada independiente de la decision",
+          "fuente": "caso-de-uso; declaracion-estructurada-no-acredita-coincidencia"
+        }
+      ]
     }
   ],
   "defectosSembrados": [
