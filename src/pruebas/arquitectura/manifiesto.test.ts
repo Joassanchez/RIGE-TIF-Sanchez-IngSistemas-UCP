@@ -9,6 +9,34 @@ const raiz = resolve(import.meta.dir, "../..");
 const escenarios = join(raiz, "pruebas/escenarios");
 const leer = () => JSON.parse(readFileSync(join(escenarios, "MANIFIESTO.json"), "utf8")) as Manifiesto;
 const matriz = () => JSON.parse(readFileSync(join(escenarios, "COBERTURA.json"), "utf8")) as Matriz;
+// Catalogo sintetico: las pruebas nunca leen las fichas externas a src/.
+const criterios = Object.entries({ "RF-01": 2, "RF-02": 9, "RF-03": 5, "RF-04": 2, "RF-05": 2,
+  "RF-06": 2, "RF-07": 5, "RF-08": 3, "RF-09": 3, "RF-10": 3, "RF-11": 1, "RF-12": 2,
+  "RF-16": 3, "RF-17": 3, "RNF-01": 3, "RNF-02": 2, "RNF-03": 3, "RNF-04": 3,
+  "RNF-05": 2, "RNF-06": 3, "RNF-07": 1, "RNF-08": 2, "RNF-09": 3, "RNF-10": 3 })
+  .flatMap(([id, cantidad]) => Array.from({ length: cantidad }, (_, i) => `${id} CA-${i + 1}`));
+
+describe("T5-04 W-4 W-7 cobertura completa", () => {
+  test("70 CA de 24 requisitos, auxiliares separados y modalidades independientes de acreditacion", () => {
+    const informe = informarCobertura(leer(), matriz());
+    expect(informe.alcance.criterios).toBe(70);
+    expect(informe.alcance.requisitos).toHaveLength(24);
+    expect(informe.alcance.excluidos).toEqual(["RF-13", "RF-14", "RF-15"]);
+    expect(informe.iteracion4.map(i => i.id)).toEqual(["RNF-06 CA-1", "RNF-06 CA-2", "RNF-06 CA-3", "RNF-07 CA-1"]);
+    for (const id of ["RF-16 CA-1", "RNF-10 CA-3"]) {
+      expect(informe.items.find(i => i.id === id)).toMatchObject({ verificacion: "automatica", acreditacion: "no ejecutada por este informe" });
+    }
+    expect(validarManifiesto(leer(), matriz(), escenarios, raiz, criterios)).toEqual([]);
+  });
+  test("vinculos de item sin escenario deben existir, incluso en la iteracion 4", () => {
+    const alterada = matriz();
+    alterada.items.push({ id: "auxiliar-sintetico", objetivo: "prueba", iteracion: 4, obligatorioV2: false, verificacion: "automatica",
+      comprobaciones: [{ archivo: "pruebas/ausente.test.ts", describe: "inexistente" }] });
+    expect(validarManifiesto(leer(), alterada, escenarios, raiz, criterios).join()).toContain("archivo inexistente");
+    alterada.items.at(-1)!.comprobaciones![0]!.archivo = "pruebas/aceptacion/RF-01.test.ts";
+    expect(validarManifiesto(leer(), alterada, escenarios, raiz, criterios).join()).toContain("describe inexistente");
+  });
+});
 
 describe("T3-04 cobertura RNF-04 RNF-02", () => {
   test("los cuatro criterios tienen escenario y pruebas de la iteracion 3", () => {
@@ -29,27 +57,33 @@ describe("T3-03 cobertura RF-04", () => {
 
 describe("T2-14 M-1", () => {
   test("inventario completo, entradas y referencias conservan su SHA-256; detecta un byte y entradas nuevas", () => {
-    expect(validarManifiesto(leer(), matriz(), escenarios, raiz)).toEqual([]);
+    expect(validarManifiesto(leer(), matriz(), escenarios, raiz, criterios)).toEqual([]);
     const temporal = mkdtempSync(join(tmpdir(), "rige-manifiesto-"));
     try {
       cpSync(escenarios, temporal, { recursive: true });
       const entrada = join(temporal, "v1-precedencia/proyecto/opencode.json");
       writeFileSync(entrada, readFileSync(entrada, "utf8") + " ");
-      expect(validarManifiesto(leer(), matriz(), temporal, raiz).join("\n")).toContain("SHA-256");
+      expect(validarManifiesto(leer(), matriz(), temporal, raiz, criterios).join("\n")).toContain("SHA-256");
       writeFileSync(join(temporal, "v1-precedencia/nueva.txt"), "nueva");
-      expect(validarManifiesto(leer(), matriz(), temporal, raiz).join("\n")).toContain("inventario");
+      expect(validarManifiesto(leer(), matriz(), temporal, raiz, criterios).join("\n")).toContain("inventario");
       writeFileSync(join(temporal, "v1-precedencia/REFERENCIA.json"), "{}");
-      expect(validarManifiesto(leer(), matriz(), temporal, raiz).join("\n")).toContain("referencia");
+      expect(validarManifiesto(leer(), matriz(), temporal, raiz, criterios).join("\n")).toContain("referencia");
     } finally { borrarTemporal(temporal); }
   });
 });
 
-describe("T2-14 M-2", () => {
+describe("T2-14 M-2 T5-04 W-1", () => {
   test("R-M1 CA-3 declara oraculo derivado sin ejecucion nativa de task", () => {
     const manifiesto = leer();
     const comprobaciones = manifiesto.escenarios.flatMap(e => e.comprobaciones).filter(c => c.item === "RF-02 CA-3");
     expect(comprobaciones.length).toBeGreaterThan(0);
     expect(comprobaciones.every(c => c.fuente === "derivada")).toBe(true);
+    for (const escenario of manifiesto.escenarios.filter(e => e.id.startsWith("v2-subagente"))) {
+      expect(escenario.comprobaciones.filter(c => c.item === "RNF-02" && c.aspecto === "decisiones"))
+        .toContainEqual(expect.objectContaining({ fuente: "derivada", documento: "v2-subagente/DERIVACION.md" }));
+      expect(escenario.comprobaciones.filter(c => c.item === "RNF-02" && c.aspecto === "cadenas-base"))
+        .toContainEqual(expect.objectContaining({ fuente: "referencia-binario" }));
+    }
     expect(informarCobertura(manifiesto, matriz()).items.find(i => i.id === "RF-02 CA-3")!.estado)
       .toBe("cubierto con oráculo derivado; sin ejecución nativa de task");
   });
@@ -62,10 +96,10 @@ describe("T2-14 M-2", () => {
     ].sort());
     const manifiesto = leer();
     for (const escenario of manifiesto.escenarios) escenario.comprobaciones = escenario.comprobaciones.filter(c => c.item !== "RF-02 CA-7");
-    expect(validarManifiesto(manifiesto, matriz(), escenarios, raiz).join("\n")).toContain("RF-02 CA-7 sin comprobacion");
+    expect(validarManifiesto(manifiesto, matriz(), escenarios, raiz, criterios).join("\n")).toContain("RF-02 CA-7 sin comprobacion");
     const inexistente = leer();
     inexistente.escenarios[0]!.comprobaciones[0]!.describe = "describe inexistente";
-    expect(validarManifiesto(inexistente, matriz(), escenarios, raiz).join("\n")).toContain("describe inexistente");
+    expect(validarManifiesto(inexistente, matriz(), escenarios, raiz, criterios).join("\n")).toContain("describe inexistente");
     const informe = informarCobertura(leer(), matriz());
     expect(informe.items.filter(i => i.iteracion === 2).every(i => i.estado.startsWith("cubierto"))).toBe(true);
     expect(informe.escenarios.length).toBe(leer().escenarios.length);
@@ -136,7 +170,7 @@ describe("T3-08 R-3", () => {
   });
 
   test("coherencia de SHA-256 en todo el manifiesto", () => {
-    const errores = validarManifiesto(leer(), matriz(), escenarios, raiz);
+    const errores = validarManifiesto(leer(), matriz(), escenarios, raiz, criterios);
     const erroresSha = errores.filter(e => e.includes("SHA-256"));
     expect(erroresSha).toEqual([]);
   });
@@ -171,7 +205,7 @@ describe("T3-08 R-4", () => {
     }
 
     // validarManifiesto no debe dar errores con toda la iteracion cubierta
-    const errores = validarManifiesto(manifiesto, matrizActual, escenarios, raiz);
+    const errores = validarManifiesto(manifiesto, matrizActual, escenarios, raiz, criterios);
     const erroresCobertura = errores.filter(e => e.includes("sin comprobacion") || e.includes("sin cobertura"));
     expect(erroresCobertura).toEqual([]);
   });
@@ -182,7 +216,7 @@ describe("T3-08 R-4", () => {
     for (const esc of manifiestoModificado.escenarios) {
       esc.comprobaciones = esc.comprobaciones.filter(c => c.item !== "RF-04 CA-1");
     }
-    const errores = validarManifiesto(manifiestoModificado, matriz(), escenarios, raiz);
+    const errores = validarManifiesto(manifiestoModificado, matriz(), escenarios, raiz, criterios);
     expect(errores.some(e => e.includes("RF-04 CA-1"))).toBe(true);
   });
 });

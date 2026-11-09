@@ -17,6 +17,16 @@ export function oraculoDecision(referencia: Referencia, consulta: Consulta, plat
   return registro && !registro.herramientaNoOfrecida && (!registro.procedencia || registro.procedencia.plataforma === plataforma)
     ? `nativa ${registro.procedencia?.plataforma ?? plataforma}` : "derivada";
 }
+/** Clasificar no calcula una decision ni convierte una captura de otra plataforma en nativa. */
+export function evidenciaDecision(referencia: Referencia, consulta: Consulta, documento?: string,
+  plataforma = `${process.platform}-${process.arch}`) {
+  const registro = buscar(referencia, consulta);
+  const compatible = registro?.procedencia?.plataforma === plataforma;
+  const tipo = compatible && registro.herramientaNoOfrecida ? "herramienta-no-ofrecida"
+    : compatible && registro.evaluaciones.length ? "captura-nativa"
+    : documento ? "derivacion-documentada" : "sin-evidencia";
+  return { tipo, plataforma, captura: registro?.procedencia?.plataforma ?? null, documento: documento ?? null };
+}
 /** null significa captura ausente, herramienta no ofrecida o plataforma distinta; nunca una decision calculada. */
 export function decisionNativa(referencia: Referencia, consulta: Consulta, evaluado: string, raiz?: string,
   plataforma = `${process.platform}-${process.arch}`) {
@@ -26,5 +36,6 @@ export function decisionNativa(referencia: Referencia, consulta: Consulta, evalu
   const objetivo = (raiz ? normalizarRutaTemporal(evaluado, raiz) : evaluado).replaceAll("\\", "/");
   const encontrado = registro.evaluaciones.find(e => e.sujeto === registro.sujeto && e.patronEvaluado.replaceAll("\\", "/") === objetivo);
   if (!encontrado) throw new Error("Referencia nativa sin evaluacion de la consulta");
-  return { decision: encontrado.regla.action, regla: { sujeto: encontrado.regla.permission, patron: encontrado.regla.pattern, efecto: encontrado.regla.action } };
+  return { decision: encontrado.regla.action, regla: { sujeto: encontrado.regla.permission,
+    patron: (raiz ? normalizarRutaTemporal(encontrado.regla.pattern, raiz) : encontrado.regla.pattern).replaceAll("\\", "/"), efecto: encontrado.regla.action } };
 }

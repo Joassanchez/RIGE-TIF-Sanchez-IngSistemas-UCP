@@ -267,6 +267,12 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -447,7 +453,7 @@
         {
           "item": "RF-02 CA-1",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "RF-02 CA-1 (decision)",
+          "describe": "RF-02 CA-1 (decision) T5-04 W-5",
           "fuente": "decisionesNativas-si-existe; decisiones-derivadas-en-otro-caso"
         },
         {
@@ -527,6 +533,12 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -781,6 +793,12 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -863,6 +881,12 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1086,6 +1110,12 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1097,7 +1127,7 @@
         "primary.json": "e788a87d0a131012fe245172fffacc649628a1c80ddea3625bf2770758e56ee9",
         "proyecto/opencode.json": "2c98b7c1e3052d93d73fce2164df7cfb4bb2f51ddca32a5e6debca010fad0b01"
       },
-      "referencia": "6fc3ef8c8c14df151272b60dee3c3eb4504b145991fe5e4d64ab01968606bec1",
+      "referencia": "758fe98bd64a2b9688b1b45847d40c2a8edcec08580ed888ed3e2502f5a71490",
       "agentes": [
         "build",
         "general",
@@ -1137,14 +1167,18 @@
         {
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "K-10 RF-02 CA-3",
-          "fuente": "derivada"
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "derivada",
+          "documento": "v2-subagente/DERIVACION.md",
+          "aspecto": "decisiones"
         },
         {
           "item": "RNF-02",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "K-10 RF-02 CA-3",
-          "fuente": "referencia-binario"
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "derivada",
+          "documento": "v2-subagente/DERIVACION.md",
+          "aspecto": "decisiones"
         },
         {
           "item": "RNF-08 CA-1",
@@ -1157,6 +1191,19 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "referencia-binario",
+          "aspecto": "cadenas-base"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1192,14 +1239,18 @@
         {
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "K-10 RF-02 CA-3",
-          "fuente": "derivada"
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "derivada",
+          "documento": "v2-subagente/DERIVACION.md",
+          "aspecto": "decisiones"
         },
         {
           "item": "RNF-02",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "K-10 RF-02 CA-3",
-          "fuente": "referencia-binario"
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "derivada",
+          "documento": "v2-subagente/DERIVACION.md",
+          "aspecto": "decisiones"
         },
         {
           "item": "RNF-08 CA-1",
@@ -1212,6 +1263,19 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "referencia-binario",
+          "aspecto": "cadenas-base"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1247,14 +1311,18 @@
         {
           "item": "RF-02 CA-3",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "K-10 RF-02 CA-3",
-          "fuente": "derivada"
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "derivada",
+          "documento": "v2-subagente/DERIVACION.md",
+          "aspecto": "decisiones"
         },
         {
           "item": "RNF-02",
           "archivo": "pruebas/aceptacion/RF-02.test.ts",
-          "describe": "K-10 RF-02 CA-3",
-          "fuente": "referencia-binario"
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "derivada",
+          "documento": "v2-subagente/DERIVACION.md",
+          "aspecto": "decisiones"
         },
         {
           "item": "RNF-08 CA-1",
@@ -1267,6 +1335,19 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "K-10 RF-02 CA-3 T5-04 W-1",
+          "fuente": "referencia-binario",
+          "aspecto": "cadenas-base"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1396,6 +1477,12 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1449,6 +1536,12 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1502,6 +1595,12 @@
           "archivo": "pruebas/aceptacion/RNF-08.test.ts",
           "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
           "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1558,6 +1657,12 @@
           "archivo": "pruebas/aceptacion/RF-09.test.ts",
           "describe": "T3-02 R-4",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -1745,7 +1850,7 @@
         {
           "item": "RNF-02 CA-1",
           "archivo": "pruebas/aceptacion/RNF-02.test.ts",
-          "describe": "RNF-02 CA-1 T3-04 R-10",
+          "describe": "RNF-02 CA-1 T3-04 R-10 T5-04 W-3",
           "fuente": "referencia-binario"
         },
         {
@@ -1920,6 +2025,12 @@
           "archivo": "pruebas/aceptacion/RF-11.test.ts",
           "describe": "T3-10 R-3 RF-11 CA-1",
           "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },
@@ -2071,6 +2182,12 @@
           "archivo": "pruebas/aceptacion/RF-07.test.ts",
           "describe": "RF-07 CA-1 T3-08 R-1",
           "fuente": "referencia-binario y caso-de-uso"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     },

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { decisionNativa, oraculoDecision } from "./decision-nativa";
+import { decisionNativa, oraculoDecision, evidenciaDecision } from "./decision-nativa";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";
@@ -53,4 +53,18 @@ describe("X-1 derivadas validadas contra nativa win32-x64", () => {
       });
     }
   }
+});
+
+describe("T5-04 W-2 evidencia por consulta y plataforma", () => {
+  const consulta = { agente: "plan", sujeto: "edit", objetivo: "a" };
+  const captura = { ...consulta, evaluaciones: [{ sujeto: "edit", patronEvaluado: "a", regla: { permission: "edit", pattern: "*", action: "allow" } }],
+    procedencia: { plataforma: "win32-x64" } };
+  test("captura compatible, derivacion documentada, pendiente y herramienta no ofrecida son distintos", () => {
+    expect(evidenciaDecision({ decisionesNativas: [captura] }, consulta, undefined, "win32-x64").tipo).toBe("captura-nativa");
+    expect(evidenciaDecision({ decisionesNativas: [captura] }, consulta, undefined, "linux-x64").tipo).toBe("sin-evidencia");
+    expect(evidenciaDecision({}, consulta, "DERIVACION.md", "linux-x64").tipo).toBe("derivacion-documentada");
+    expect(evidenciaDecision({ decisionesNativas: [{ ...captura, evaluaciones: [], herramientaNoOfrecida: true }] }, consulta, undefined, "win32-x64").tipo)
+      .toBe("herramienta-no-ofrecida");
+    expect(evidenciaDecision({ decisionesNativas: [{ ...captura, evaluaciones: [] }] }, consulta, undefined, "win32-x64").tipo).toBe("sin-evidencia");
+  });
 });
