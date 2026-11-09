@@ -53,6 +53,7 @@ main { max-width: 1280px; margin: auto; padding: 3rem 2rem 4rem; min-height: 70v
 .hero h1 { max-width: 700px; }
 .hero > p:last-child { font-size: 1.1rem; color: var(--secundario); max-width: 600px; }
 .rejilla { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+.rejilla > .tarjeta { margin-top: 0; }
 .tarjeta { background: var(--superficie); border: 1px solid var(--borde); border-radius: 1rem; padding: 1.75rem; box-shadow: var(--sombra); min-width: 0; }
 .tarjeta--principal { border-top: 3px solid var(--acento); }
 .paso { display: inline-grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: .5rem; font-size: .75rem; background: var(--acento-suave); color: var(--acento); margin-right: .5rem; vertical-align: middle; }
@@ -79,15 +80,29 @@ dd { margin: .25rem 0 1.25rem; overflow-wrap: anywhere; }
 .resumen div { min-width: 0; }
 .insignia { display: inline-block; border-radius: .4rem; padding: .2rem .55rem; font-size: .73rem; font-weight: 650; line-height: 1.6; background: var(--neutro-fondo); color: var(--neutro); overflow-wrap: anywhere; }
 .insignia--permitida { background: var(--exito-fondo); color: var(--exito); }
-.insignia--denegada, .insignia--entrada-ilegible { background: var(--peligro-fondo); color: var(--peligro); }
-.insignia--pregunta, .insignia--aviso, .insignia--entrada-descartada, .insignia--sustitucion-sin-valor, .insignia--referencia-no-resuelta { background: var(--aviso-fondo); color: var(--aviso); }
-.insignia--neutra, .insignia--regla-sin-efecto, .insignia--elemento-sin-uso { background: var(--neutro-fondo); color: var(--neutro); }
+.insignia--denegada, .insignia--entrada-ilegible, .insignia--referencia-no-resuelta { background: var(--peligro-fondo); color: var(--peligro); }
+.insignia--pregunta, .insignia--aviso, .insignia--regla-sin-efecto, .insignia--sustitucion-sin-valor { background: var(--aviso-fondo); color: var(--aviso); }
+.insignia--neutra, .insignia--entrada-descartada, .insignia--elemento-sin-uso { background: var(--neutro-fondo); color: var(--neutro); }
+.insignia--implicita { display: block; width: fit-content; color: var(--secundario); font-size: .65rem; font-weight: 500; margin-top: .4rem; }
 .decision-principal .insignia { font-size: clamp(1.4rem, 3vw, 2rem); padding: .4rem 1rem; border-radius: .7rem; margin-bottom: 1rem; }
 .aviso { padding: 1rem 1.2rem; border-radius: .6rem; border: 1px solid var(--borde); border-left: 3px solid var(--acento); font-size: .88rem; overflow-wrap: anywhere; background: var(--acento-suave); }
 .aviso p:last-child { margin-bottom: 0; }
 .aviso + .aviso { margin-top: .75rem; }
 .aviso--advertencia { border-left-color: var(--aviso); background: var(--aviso-fondo); color: var(--aviso); }
 .ficha-codigo { display: inline-block; padding: .35rem .55rem; border: 1px solid var(--borde); background: var(--superficie-suave); border-radius: .4rem; }
+.ruta { display: inline-flex; flex-direction: column; vertical-align: top; max-width: 100%; padding: .35rem .55rem; border: 1px solid var(--borde); background: var(--superficie-suave); border-radius: .4rem; overflow-wrap: normal; word-break: normal; hyphens: none; line-height: 1.6; }
+.ruta__directorio { display: block; color: var(--secundario); font-size: .72rem; white-space: normal; }
+.ruta__segmento, .ruta__archivo { white-space: nowrap; }
+.ruta__archivo { order: -1; color: var(--texto); font-weight: 650; }
+.cabecera-pagina .ruta { overflow-x: auto; }
+.motivo-origen { display: block; margin-top: .4rem; color: var(--secundario); }
+.valor-desplazado { display: block; font-family: ui-monospace, monospace; margin-bottom: .25rem; }
+.leyenda-reglas { margin-top: 1.5rem; padding: 1.25rem; background: var(--superficie); border: 1px solid var(--borde); border-radius: .75rem; font-size: .85rem; }
+.leyenda-reglas dl { margin: 0; }
+.leyenda-reglas dt { text-transform: none; letter-spacing: 0; }
+.leyenda-reglas dd:last-child { margin-bottom: 0; }
+.regla-detalle { margin: 0; padding: .75rem; min-width: 150px; }
+.regla-detalle p { margin: .75rem 0 0; }
 .tabla-contenedor { width: 100%; overflow-x: auto; border: 1px solid var(--borde); border-radius: .75rem; background: var(--superficie); }
 table { width: 100%; border-collapse: collapse; text-align: left; font-size: .83rem; }
 th { background: var(--superficie-suave); color: var(--secundario); font-size: .7rem; text-transform: uppercase; letter-spacing: .055em; white-space: nowrap; position: sticky; top: 0; }
@@ -98,6 +113,7 @@ tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover { background: var(--acento-suave); }
 .fila--determinante { background: var(--acento-suave); box-shadow: inset 3px 0 var(--acento); }
 #valores td:nth-child(1), #valores td:nth-child(2) { font-family: ui-monospace, monospace; }
+#valores td:nth-child(1) { white-space: nowrap; min-width: 11rem; overflow-wrap: normal; }
 #valores td:nth-child(2) { color: var(--acento); font-size: 1rem; font-weight: 700; }
 #valores td:nth-child(4) { color: var(--secundario); font-size: .78rem; }
 ol, ul { padding-left: 1.25rem; }
@@ -107,10 +123,19 @@ td ol { margin: 0; min-width: 190px; }
 .estadistica { background: var(--superficie); border: 1px solid var(--borde); border-radius: .75rem; padding: 1rem; min-width: 0; }
 .estadistica strong { display: block; font-size: 2rem; line-height: 1.2; font-variant-numeric: tabular-nums; color: var(--acento); margin-bottom: .5rem; }
 .estadistica span { font-size: .72rem; color: var(--secundario); overflow-wrap: anywhere; }
-.estadistica--cero { background: var(--fondo); }
+.estadistica .estadistica__nombre { display: block; min-height: 2.8em; font-size: .8rem; font-weight: 650; color: var(--texto); margin-bottom: .65rem; }
+.estadistica small { display: block; font: .65rem/1.6 ui-monospace, monospace; overflow-wrap: anywhere; }
+.estadistica--aviso { border-color: var(--aviso); background: var(--aviso-fondo); }
+.estadistica--aviso strong { color: var(--aviso); }
+.estadistica--cero { background: var(--fondo); border-style: dashed; }
 .estadistica--cero strong { color: var(--secundario); }
+.estadistica--cero .estadistica__nombre { color: var(--secundario); font-weight: 500; }
+.estadisticas--elementos { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 600px; }
+.estadistica--mini { padding: .75rem 1rem; background: var(--superficie-suave); }
+.estadistica--mini strong { font-size: 1.35rem; margin-bottom: .15rem; }
 .estado-vacio { text-align: center; padding: 2.5rem 1.5rem; background: var(--superficie); border: 1px dashed var(--borde); border-radius: .8rem; color: var(--secundario); }
 details { margin-top: 1rem; padding: 1.25rem; background: var(--superficie); border: 1px solid var(--borde); border-radius: .75rem; }
+details + section { margin-top: 2rem; }
 summary { cursor: pointer; font-size: .9rem; font-weight: 650; }
 details[open] > summary { margin-bottom: 1.25rem; }
 .historia { list-style: none; padding: 0; }

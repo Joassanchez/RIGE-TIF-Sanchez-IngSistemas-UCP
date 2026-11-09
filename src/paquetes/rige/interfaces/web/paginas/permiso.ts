@@ -2,17 +2,20 @@ import type { RespuestaPermiso } from "../../../aplicacion/respuestas/permiso";
 import { datosRespuesta, html } from "../plantillas";
 import { declaraciones, diseno, efectoVisual } from "../diseno";
 import { responderHtml } from "../respuesta";
+import { presentarRuta } from "../rutas";
 
 export function paginaPermiso(respuesta: RespuestaPermiso, idResolucion?: string): Response {
   return responderHtml(200, diseno(`Permiso de ${respuesta.agente}`, html`
 <div class="cabecera-pagina"><p class="ceja">Consulta de permiso</p><h1>Permiso de ${respuesta.agente}</h1>
-<p>Proyecto: <code>${respuesta.proyecto}</code></p>
+<p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
 <p><code class="ficha-codigo">${respuesta.consulta.sujeto}: ${respuesta.consulta.objetivo}</code></p></div>
 <section id="resultado-permiso" class="tarjeta decision-principal"><h2>Decisión</h2>${efectoVisual(respuesta.decision)}
 ${respuesta.decision === null ? html`<p>Motivo: <code>${respuesta.motivoSinDecision}</code></p>` : html``}
 ${respuesta.herramienta ? html`<p>Herramienta: ${respuesta.herramienta.nombre}, ${respuesta.herramienta.ofrecida ? "ofrecida" : "retirada"}.</p>` : html``}
 <h2>Explicación</h2>${respuesta.explicacion?.map(oracion => html`<p>${oracion}</p>`) ?? html``}</section>
-${declaraciones(respuesta.declaraciones, respuesta.reglas)}
+${respuesta.explicacion?.length && respuesta.declaraciones.length
+    ? html`<details id="notas-analisis"><summary>Notas del análisis (${respuesta.declaraciones.length})</summary>${declaraciones(respuesta.declaraciones, respuesta.reglas)}</details>`
+    : declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="cadena-efectiva"><h2>Cadena efectiva</h2><p class="atenuado">Reglas coincidentes y su prevalencia, en el orden de aplicación.</p>
 <div class="tabla-contenedor" role="region" aria-label="Cadena efectiva" tabindex="0">
 <table><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalencia</th></tr></thead>

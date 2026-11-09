@@ -10,6 +10,7 @@ import { paginaEntradas } from "./paginas/entradas";
 import { paginaAgentes } from "./paginas/agentes";
 import { paginaErrorUso, conErrores } from "./intermedios/errores";
 import { redirigir } from "./respuesta";
+import { textoHtml } from "../../../../pruebas/utilidades/html";
 
 const ataque = '<script>"&';
 const base = { esquema: 2 as const, proyecto: `/p/${ataque}`, entradas: [], resumenEntradas: "a".repeat(64),
@@ -182,7 +183,11 @@ describe("T5-08 U-8 P-9", () => {
       expect(cuerpo).toContain("Conteos de elementos no disponibles: resolución incompleta");
       expect(resumen).not.toContain("Agentes: 0");
       expect(cuerpo).toContain("&lt;script&gt;&quot;&amp;");
-    } else expect(cuerpo).toContain("Agentes: 2. Comandos: 3. Entradas: 4.");
+    } else {
+      expect(resumen).toContain('<strong>2</strong><span>Agentes</span>');
+      expect(resumen).toContain('<strong>3</strong><span>Comandos</span>');
+      expect(resumen).toContain('<strong>4</strong><span>Entradas</span>');
+    }
   });
   test("completo presenta el tipo, la localizacion y la explicacion asociados", async () => {
     const cuerpo = await paginaHallazgos({ ...hallazgos, hallazgos: [{ tipo: "entrada-ilegible", causa: "aviso",
@@ -190,7 +195,8 @@ describe("T5-08 U-8 P-9", () => {
       clave: null, parametros: {}, localizacion: "/p:3:5", explicacion: ataque }] }).text();
     const tabla = seccion(cuerpo, "tabla-hallazgos");
     expect(tabla).toContain("insignia--entrada-ilegible");
-    expect(tabla).toContain('<code class="ficha-codigo">/p:3:5</code>');
+    expect(tabla).toContain('<code class="ruta" title="/p:3:5">');
+    expect(textoHtml(tabla)).toContain("/p:3:5");
     expect(tabla).toContain("&lt;script&gt;&quot;&amp;");
     expect(cuerpo).not.toContain("Sin hallazgos en este proyecto");
   });
@@ -205,5 +211,58 @@ describe("T5-08 U-9", () => {
     expect(listado).toContain('class="insignia insignia--neutra">primary');
     expect(listado).toContain('class="insignia insignia--aviso">true');
     expect(listado).toContain("Listado incompleto");
+  });
+});
+
+describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
+  test("protege claves, cortes de rutas, alineacion y separacion de details", async () => {
+    const css = await solicitar("/estilos.css").text();
+    expect(css).toMatch(/#valores td:nth-child\(1\)\s*\{[^}]*white-space: nowrap;[^}]*min-width:/);
+    expect(css).toMatch(/\.ruta__segmento[^}]*white-space: nowrap/);
+    expect(css).toMatch(/\.ruta\s*\{[^}]*overflow-wrap: normal/);
+    expect(css).toMatch(/\.cabecera-pagina \.ruta\s*\{[^}]*overflow-x: auto/);
+    expect(css).toMatch(/\.rejilla\s*\{[^}]*align-items: start/);
+    expect(css).toMatch(/\.rejilla > \.tarjeta\s*\{[^}]*margin-top: 0/);
+    expect(css).toMatch(/details \+ section[^}]*margin-top: 2rem/);
+    for (const [pagina, id] of [[paginaResolucion(valores, sobre), "resumen-resolucion"], [paginaPermiso(permiso), null],
+      [paginaAgentes(agentes), null], [paginaEntradas(entradas), null], [paginaHallazgos(hallazgos), null]] as const) {
+      const cuerpo = await pagina.text();
+      const cabecera = id ? seccion(cuerpo, id) : cuerpo.split('<section')[0]!;
+      expect(cabecera).toContain('class="ruta"');
+      expect(cabecera).toContain('title="/p/&lt;script&gt;&quot;&amp;"');
+    }
+  });
+  test("pliega las declaraciones solo cuando existe explicacion, sin perder sus textos", async () => {
+    const cuerpo = await paginaPermiso(permiso).text();
+    const notas = /<details id="notas-analisis">(.*?)<\/details>/s.exec(cuerpo);
+    expect(notas).not.toBeNull();
+    expect(notas![1]).toContain("Notas del análisis (1)");
+    expect(notas![1]).toContain("&lt;script&gt;&quot;&amp;");
+    expect(cuerpo).not.toContain('<details id="notas-analisis" open');
+    expect(await paginaPermiso({ ...permiso, explicacion: [] }).text()).toContain('id="declaraciones"');
+    expect(await paginaPermiso({ ...permiso, explicacion: null }).text()).toContain('id="declaraciones"');
+  });
+  test("hallazgos ofrece nombres legibles, conteos de elementos separados y color por tipo", async () => {
+    const cantidades = { "entrada-ilegible": 1, "entrada-descartada": 2, "sustitucion-sin-valor": 3,
+      "referencia-no-resuelta": 4, "regla-sin-efecto": 5, "elemento-sin-uso": 6 };
+    const dato = { ...hallazgos, resumen: { ...hallazgos.resumen, hallazgos: cantidades } };
+    const cuerpo = await paginaHallazgos(dato).text();
+    const resumen = seccion(cuerpo, "resumen-hallazgos");
+    for (const nombre of ["Entradas ilegibles", "Entradas descartadas", "Sustituciones sin valor", "Referencias no resueltas", "Reglas sin efecto", "Elementos sin uso"])
+      expect(resumen).toContain(nombre);
+    expect(resumen.match(/class="estadistica estadistica--aviso"/g)).toHaveLength(6);
+    expect(resumen).toContain('<strong>2</strong><span>Agentes</span>');
+    expect(resumen).toContain('<strong>3</strong><span>Comandos</span>');
+    expect(resumen).toContain('<strong>4</strong><span>Entradas</span>');
+    for (const [tipo, cantidad] of Object.entries(cantidades)) {
+      expect(resumen).toContain(`<strong>${cantidad}</strong>`);
+      expect(resumen).toContain(`<small>${tipo}</small>`);
+    }
+    const css = await solicitar("/estilos.css").text();
+    expect(css).toMatch(/\.estadistica--aviso\s*\{[^}]*border-color: var\(--aviso\)/);
+    expect(css).toMatch(/\.estadistica--aviso strong\s*\{[^}]*color: var\(--aviso\)/);
+    expect(css).toMatch(/\.insignia--referencia-no-resuelta[^}]*color: var\(--peligro\)/);
+    expect(css).toMatch(/\.insignia--regla-sin-efecto[^}]*color: var\(--aviso\)/);
+    expect(css).toMatch(/\.insignia--entrada-descartada[^}]*color: var\(--neutro\)/);
   });
 });

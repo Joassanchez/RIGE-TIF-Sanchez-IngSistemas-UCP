@@ -6,3 +6,8 @@ export function seccionHtml(cuerpo: string, id: string, etiqueta = "section"): s
   expect(bloque).not.toBeNull();
   return bloque![1]!;
 }
+
+// Conserva las entidades escapadas para comprobar texto visible sin ejecutar HTML.
+export function textoHtml(cuerpo: string): string {
+  return cuerpo.replace(/<[^>]*>/g, "");
+}

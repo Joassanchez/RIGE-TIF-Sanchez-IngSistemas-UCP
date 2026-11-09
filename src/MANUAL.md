@@ -204,6 +204,8 @@ En RF-03, el JSON embebido se obtiene del código fuente de la página, entre `<
 
 En la resolución, **Valores efectivos** asocia cada valor con su declaración determinante y sus desplazadas; **Seguir explorando** ofrece Consultar permiso y Listar agentes. Abrir **Entradas leídas** y **Claves no incorporadas por RIGE** para ver el detalle técnico. **Resoluciones de este proyecto** marca la actual. En Permiso, la decisión se presenta como permitida, denegada o sujeta a confirmación; **Cadena efectiva** conserva todas las reglas en orden y resalta la determinante. Una decisión nula muestra «sin decisión» y su motivo. Hallazgos muestra seis conteos por tipo y distingue un proyecto sin hallazgos de un análisis parcial.
 
+Las rutas destacan el archivo con su línea y columna, con el directorio atenuado en otra línea y la ruta completa en la ayuda al pasar el puntero. Las claves no se parten: si falta ancho, se desplaza la tabla. La determinante muestra vía y procedencia sin repetir el valor; los valores implícitos se identifican como tales. **Reglas aplicadas**, debajo de la tabla, reúne una vez cada texto y lo vincula al identificador que aparece en las filas; si no hay identificador, cada fila conserva el texto en un detalle plegable. En Permiso, cuando hay explicación, las declaraciones se abren en **Notas del análisis (N)**. En Hallazgos, cada estadística muestra nombre legible y token técnico, los conteos positivos se destacan y los de agentes, comandos y entradas aparecen por separado.
+
 La revisión visual en navegador corresponde al ingeniero: capturar claro y oscuro, comprobar contraste AA, foco de teclado y ancho de 360 px. Esta tarea no acredita esa revisión mediante las pruebas automatizadas.
 
 ## 9. Pruebas automatizadas

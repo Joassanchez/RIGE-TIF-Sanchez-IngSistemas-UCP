@@ -7,7 +7,7 @@ import { join, resolve } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
-import { seccionHtml } from "../utilidades/html";
+import { seccionHtml, textoHtml } from "../utilidades/html";
 
 const regla = "OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).";
 const paginaPrimera = "/resoluciones/1?agente=build&clave=temperature";
@@ -68,11 +68,14 @@ function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
   const valores = seccionHtml(cuerpo, "valores");
   const ruta = raiz.replaceAll("\\", "/");
   expect(valores).toContain(`<td>temperature</td><td>${temperatura}</td>`);
-  expect(valores).toContain(`${temperatura} en ${ruta}/proyecto/opencode.jsonc:6:7 (proyecto)`);
-  const primera = valores.indexOf(`0.1 en ${ruta}/opencode.json:5:7 (proyecto)`);
-  const segunda = valores.indexOf(`0.2 en ${ruta}/proyecto/opencode.json:5:7 (proyecto)`);
-  expect(primera).toBeGreaterThan(-1);
-  expect(segunda).toBeGreaterThan(primera);
+  const fila = /<tr><td>temperature<\/td>.*?<\/tr>/s.exec(valores);
+  expect(fila).not.toBeNull();
+  const celdas = fila![0].match(/<td>.*?<\/td>/gs)!;
+  expect(celdas).toHaveLength(5);
+  expect(textoHtml(celdas[2]!)).toBe(`proyecto ${ruta}/proyecto/opencode.jsonc:6:7`);
+  expect(celdas[2]).toContain(`title="${ruta}/proyecto/opencode.jsonc:6:7"`);
+  const desplazadas = [...celdas[3]!.matchAll(/<li>(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
+  expect(desplazadas).toEqual([`0.1 proyecto ${ruta}/opencode.json:5:7`, `0.2 proyecto ${ruta}/proyecto/opencode.json:5:7`]);
   expect(cuerpo).toContain(regla);
   expect(cuerpo).toContain("Página armada con la resolución leída del almacén de RIGE.");
 }

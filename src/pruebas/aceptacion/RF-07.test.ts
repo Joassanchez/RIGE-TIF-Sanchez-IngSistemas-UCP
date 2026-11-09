@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { seccionHtml } from "../utilidades/html";
+import { seccionHtml, textoHtml } from "../utilidades/html";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, posix, win32 } from "node:path";
 import { copiarEscenario, type OpcionesEscenario } from "../utilidades/escenario";
@@ -1066,10 +1066,16 @@ describe("RF-07 CA-4 T3-07 R-3", () => {
         expect(pagina.estado).toBe(200);
         const rWeb = datosWeb(pagina.cuerpo);
         expect(rCli).toEqual(rWeb);
-        for (const h of rCli.hallazgos) {
+        const filas = [...seccionHtml(pagina.cuerpo, "tabla-hallazgos").matchAll(/<tr><td>(.*?)<\/td><td>(.*?)<\/td><td>(.*?)<\/td><\/tr>/gs)];
+        expect(filas).toHaveLength(rCli.hallazgos.length);
+        expect(filas.map(f => f.slice(1).map(celda => textoHtml(celda)))).toEqual(rCli.hallazgos.map((h: { tipo: string; localizacion: string; explicacion: string }) => [
+          escaparHtml(h.tipo), escaparHtml(h.localizacion), escaparHtml(h.explicacion),
+        ]));
+        for (const [indice, h] of rCli.hallazgos.entries()) {
           expect(typeof h.explicacion).toBe("string");
           expect(h.explicacion.length).toBeGreaterThan(0);
-          expect(seccionHtml(pagina.cuerpo, "tabla-hallazgos")).toContain(`<td><span class="insignia insignia--${h.tipo}">${escaparHtml(h.tipo)}</span></td><td><code class="ficha-codigo">${escaparHtml(h.localizacion)}</code></td><td>${escaparHtml(h.explicacion)}</td>`);
+          expect(filas[indice]![1]).toBe(`<span class="insignia insignia--${h.tipo}">${escaparHtml(h.tipo)}</span>`);
+          expect(filas[indice]![2]).toContain(`class="ruta" title="${escaparHtml(h.localizacion)}"`);
         }
       } finally {
         await servidor.detener();
