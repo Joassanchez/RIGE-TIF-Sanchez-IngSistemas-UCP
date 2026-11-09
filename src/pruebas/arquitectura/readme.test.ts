@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { existsSync } from "node:fs";
 
 test("D-1 el archivo de lectura tiene las ocho secciones completas y un escenario existente", async () => {
   const raiz = new URL("../../", import.meta.url);
@@ -26,6 +27,11 @@ test("D-1 el archivo de lectura tiene las ocho secciones completas y un escenari
     if (invocacion) {
       expect(manifiesto.scripts).toHaveProperty(invocacion[1]!);
       return [invocacion[1]!];
+    }
+    const utilidad = /^(herramientas\/[^\s]+\.ts)(?:\s|$)/.exec(comando);
+    if (utilidad) {
+      expect(existsSync(new URL(utilidad[1]!, raiz))).toBe(true);
+      return [];
     }
     // install y test son comandos del ejecutor, no scripts del proyecto.
     expect(["install --frozen-lockfile", "test"]).toContain(comando.trim());

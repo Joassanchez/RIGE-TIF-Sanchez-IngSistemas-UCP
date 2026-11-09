@@ -192,7 +192,7 @@ describe("T0-05 analisis de dependencias", () => {
     expect(analizarManifiesto("nucleo", { dependencies: { "@rige/opencode": "workspace:*" } }).length).toBeGreaterThan(0);
     expect(analizarManifiesto("opencode", { dependencies: { "jsonc-parser": "^3.3.1" } }).length).toBeGreaterThan(0);
     expect(analizarManifiesto("opencode", { dependencies: { "jsonc-parser": "3.3.1" } })).toEqual([]);
-    expect(analizarManifiesto("rige", { devDependencies: { ajena: "1.0.0" } }).length).toBeGreaterThan(0);
+    expect(analizarManifiesto("rige", { devDependencies: { ajena: "2.3.4" } }).length).toBeGreaterThan(0);
     expect(analizarFuente("paquetes/nucleo/resultado.test.ts", 'import {test} from "bun:test";')).toEqual([]);
     expect(analizarFuente("paquetes/nucleo/resultado.ts", 'import {test} from "bun:test";').length).toBeGreaterThan(0);
     expect(analizarFuente("paquetes/nucleo/resultado.ts", 'import "./resultado.test";').length).toBeGreaterThan(0);

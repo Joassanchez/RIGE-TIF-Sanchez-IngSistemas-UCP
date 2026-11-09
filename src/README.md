@@ -1,13 +1,15 @@
-# RIGE · Prototipo v1
+# RIGE · 1.0.0
 
 > Archivo de lectura exigido por la Guía de comprobación del prototipo v1 (`catedra/AE2-guia-comprobacion-v1.md`). La cátedra lo sigue al pie de la letra, sin suplir pasos.
 
 ## 1. Identificación
 
+El despliegue de RIGE **1.0.0** (etiqueta prevista `v1.0.0`) se sigue en [MANUAL.md](MANUAL.md), con preparación aislada de datos y matriz de los 18 Must. Este README conserva sus ocho secciones y el antecedente del prototipo v1.
+
 - **Proyecto:** RIGE — Proyecto Integrador Final 2026
 - **Equipo:** Joaquín Sebastián Sánchez (autoría individual)
 - **Comisión:** A · Sede Posadas
-- **Actividad:** AE2 · etiqueta `v1` (esqueleto arquitectónico ejecutable)
+- **Actividad:** AE4 · etiqueta prevista `v1.0.0`; antecedente AE2 en `v1` (esqueleto arquitectónico ejecutable)
 
 ## 2. Qué hace este prototipo
 
@@ -33,7 +35,7 @@ La oferta de herramientas según la decisión (RF-10), el resumen del ecosistema
 
 La detección ante `core.worktree` y `core.bare` es aproximada (ADR-101 W-B) y emite `deteccion-git-aproximada`. Con `core.worktree`, la decisión de RIGE puede diferir de la de OpenCode y el caso está caracterizado. T5-06c separa la declaración y la decisión en [sus pruebas](pruebas/aceptacion/T5-06c.test.ts), con referencias por plataforma para [core.worktree](pruebas/escenarios/v5-worktree-core.worktree/REFERENCIA.json), [core.bare](pruebas/escenarios/v5-worktree-core.bare/REFERENCIA.json) y el [control ordinario](pruebas/escenarios/v5-worktree-control-ordinario/REFERENCIA.json). Una captura ausente queda como `test.todo`.
 
-Las capturas `win32-x64` de T5-06c muestran una divergencia con `core.worktree = ../proyecto`: con `read`, `*` → `deny` y `sub/a.txt` → `allow`, OpenCode evalúa `sub/a.txt` y permite; RIGE evalúa `proyecto/sub/a.txt` y deniega. La prueba «límite declarado de ADR-101 W-B: divergencia caracterizada» exige la declaración y ambas decisiones; falla si alguna cambia. El recuento RNF-02 informa ese límite por separado de las coincidencias nativas. El control ordinario y `core.bare = true` coinciden en `deny` para esa configuración. Las tres filas Linux carecen de captura y quedan como `test.todo` identificados para su captura por el ingeniero en el contenedor.
+Las capturas `win32-x64` y `linux-x64` de T5-06c muestran que, con `core.worktree = ../proyecto`, `read`, `*` → `deny` y `sub/a.txt` → `allow`, OpenCode evalúa `sub/a.txt` y permite. En Windows, RIGE evalúa `proyecto/sub/a.txt` y deniega. La prueba compara con RIGE en la plataforma ejecutada: si coincide, acredita coincidencia; si difiere, caracteriza el límite declarado de ADR-101 W-B y exige `deteccion-git-aproximada`. El recuento RNF-02 separa ese límite de las coincidencias nativas. Las capturas Linux las obtuvo el ingeniero en Ubuntu 26.04 sobre `8620aff`; T5-06c-c1 las incorporó sin modificarlas ni reemplazar Windows. Las comparaciones de otra plataforma se registran como pendientes de ejecución allí.
 
 `OPENCODE_CONFIG_CONTENT` se analiza como JSONC y `OPENCODE_PERMISSION` como JSON estricto; su texto crudo no se emite ni se guarda. El resumen del conjunto incorpora su huella cuando constituyen entradas (ADR-104). `OPENCODE_CONFIG_DIR` agrega un directorio y exige una ruta absoluta canónica. El TOML legado `config`, las variables `OPENCODE_DISABLE_PROJECT_CONFIG`, `OPENCODE_TEST_HOME` y `OPENCODE_TEST_MANAGED_CONFIG_DIR`, y un `name:` en frontmatter Markdown producen `via-no-soportada`.
 
@@ -94,8 +96,9 @@ Los comandos son iguales en Bash y PowerShell:
 
 ```bash
 git clone https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP.git
-cd RIGE-TIF-Sanchez-IngSistemas-UCP/src
-git checkout v1
+cd RIGE-TIF-Sanchez-IngSistemas-UCP
+git checkout v1.0.0
+cd src
 bun install --frozen-lockfile
 ```
 
@@ -182,7 +185,7 @@ bun run servir
 
 El proceso informa `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y queda escuchando. Se usa el puerto de `RIGE_PUERTO` si está configurado. La interfaz solo acepta GET local, verifica Host y rechaza `Sec-Fetch-Site: cross-site` y `same-site`, sin CORS ni JavaScript ejecutable en el cliente.
 
-1. Abrir `http://127.0.0.1:4747/`. Debe mostrar «RIGE 0.1.0», la ruta del almacén y su esquema 2.
+1. Abrir `http://127.0.0.1:4747/`. Debe mostrar «RIGE 1.0.0», la ruta del almacén y su esquema 2.
 2. Completar **Proyecto** con `pruebas/escenarios/v1-precedencia/proyecto`, **Agente** con `build` y **Clave** con `temperature`. Pulsar «Resolver y guardar».
 3. En un almacén nuevo, se llega a `/resoluciones/1?agente=build&clave=temperature`. El valor es `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`. Las desplazadas son `0.1` en `…/v1-precedencia/opencode.json:5:7` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7`, en ese orden. Se presenta RD-01 y cada archivo leído con su SHA-256; vías remotas y preferencias de macOS aparecen no observadas. Las rutas completas usan `/`.
 4. Detener con Ctrl+C, ejecutar otra vez `bun run servir` en la misma terminal y abrir la misma dirección. Debe recuperar los mismos datos con «Página armada con la resolución leída del almacén de RIGE.» y el enlace de historia de la resolución 1.
@@ -192,6 +195,16 @@ El proceso informa `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y queda e
 La web recupera valores, agentes y permisos desde la resolución guardada con su contexto original; no relee entradas para esas consultas. Para observar cambios se crea otra resolución. `/entradas?proyecto=<ruta-codificada>` y `/hallazgos?proyecto=<ruta-codificada>` consultan las entradas actuales sin guardar. Cada página de consulta incluye el mismo objeto del caso de uso que la CLI como JSON no ejecutable, con `<` escapado.
 
 **Verificación técnica:**
+
+La preparación y los comandos de demostración del manual se ejecutan desde aquí:
+
+```bash
+bun herramientas/demostracion.ts v1-precedencia -- valores --agente build --clave temperature
+bun herramientas/demostracion.ts v1-precedencia --preparar
+bun herramientas/demostracion.ts --desde "<RAIZ>" -- servir
+```
+
+Sustituir `<RAIZ>` por `raiz` del JSON de preparación. `--preparar` conserva escenario y almacén en un temporal para el reinicio; las consultas de una sola ejecución se limpian. Se carga el hogar, variables y topología Git de `REFERENCIA.json`, se reemplazan los marcadores de raíz y se antepone una instalación ficticia 1.18.25 que nunca se ejecuta. Solo se heredan PATH y SystemRoot. Git debe estar en PATH. Para RF-05 agregar `--version 1.18.24` antes de `--`; para otro puerto agregar `--puerto 4848`. La CLI no guarda resoluciones; se cargan con «Resolver y guardar» en la web. La matriz y los campos exactos del humo están en MANUAL §8.
 
 ```bash
 bun run verificar
@@ -255,7 +268,7 @@ bun run decisiones --raiz $raizNpm --cache $cache --regenerar --escenario v5-wor
 bun run decisiones --raiz $raizNpm --cache $cache --escenario v5-worktree-control-ordinario --escenario v5-worktree-core.worktree --escenario v5-worktree-core.bare
 ```
 
-Tras regenerar, se actualizan los SHA-256 de `REFERENCIA.json` en `pruebas/escenarios/MANIFIESTO.json`. La comparación del capturador comprueba la estabilidad del binario; `bun test pruebas/aceptacion/T5-06c.test.ts` contrasta las decisiones de RIGE. En Linux se usan los mismos selectores con `bun run decisiones --raiz "$(npm root -g)" --cache "${TMPDIR:-/tmp}/rige-decisiones-T5-06" --regenerar`, con `RIGE_ALMACEN` temporal. Las filas Linux de T5-06c quedan pendientes hasta obtener sus capturas.
+Tras regenerar, se actualizan los SHA-256 de `REFERENCIA.json` en `pruebas/escenarios/MANIFIESTO.json`. La comparación del capturador comprueba la estabilidad del binario; `bun test pruebas/aceptacion/T5-06c.test.ts` contrasta las decisiones de RIGE. En Linux se usan los mismos selectores con `bun run decisiones --raiz "$(npm root -g)" --cache "${TMPDIR:-/tmp}/rige-decisiones-T5-06" --regenerar`, con `RIGE_ALMACEN` temporal. T5-06c-c1 incorporó las tres capturas Linux realizadas por el ingeniero.
 
 | Código CLI | Situación | stdout | stderr |
 |---|---|---|---|
@@ -264,13 +277,13 @@ Tras regenerar, se actualizan los SHA-256 de `REFERENCIA.json` en `pruebas/escen
 | 2 | Argumentos inválidos | Vacío | JSON `argumentos-invalidos` |
 | 70 | Falla interna | Vacío | JSON `interno`; stack solo con `--depurar` |
 
-Todos los errores declaran `esquema: 2`. Sin esquema, el servidor informa `almacen-sin-esquema` y pide `bun run esquema`; si el puerto está ocupado informa `puerto-ocupado`. La web usa HTTP 400 para solicitudes inválidas, 404 para proyecto, resolución o agente inexistente y 422 para configuración no soportada o ilegible. La versión de RIGE es `0.1.0`.
+Todos los errores declaran `esquema: 2`. Sin esquema, el servidor informa `almacen-sin-esquema` y pide `bun run esquema`; si el puerto está ocupado informa `puerto-ocupado`. La web usa HTTP 400 para solicitudes inválidas, 404 para proyecto, resolución o agente inexistente y 422 para configuración no soportada o ilegible. La versión de RIGE es `1.0.0`.
 
 ## 7. Estado del canal de construcción
 
 El archivo `.github/workflows/ci.yml` ejecuta en cada push, sobre entornos limpios `ubuntu-26.04` y `windows-latest` con Bun 1.3.14, los pasos `bun install --frozen-lockfile`, `bun run verificar` y `bun test`.
 
-Corrida local de referencia del 03/11/2026: `bun run verificar` terminó con código 0; `bun test` registró **1014 aprobadas, 2 omitidas y 0 fallidas**. Las omisiones corresponden a strace exclusivo de Linux y al enlace npm exclusivo de POSIX.
+Corrida local de esta rama del 09/11/2026, RIGE **1.0.0**, Windows: `bun run verificar` terminó con código 0; `bun test` registró **1240 aprobadas, 2 omitidas, 15 pendientes y 0 fallidas**. Las omisiones corresponden a strace exclusivo de Linux y al enlace npm exclusivo de POSIX. Las pendientes son comparaciones que requieren ejecución en la otra plataforma. El recuento no sustituye la corrida Ubuntu ni acredita un CI remoto nuevo; comprobar el commit del candidato en el enlace del canal.
 
 La batería de aceptación verifica el cumplimiento estricto de los criterios del catálogo:
 
@@ -304,13 +317,28 @@ El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSis
 
 ## 8. Declaración de herramientas auxiliares
 
-| Período | Herramienta y modelo | Función | Artefacto afectado |
-|---|---|---|---|
-| 29/09/2026–30/09/2026 (T0-01 a T0-09) | OpenCode con gentle-ai 3.7; modelos `opencode-go/mimo-v2.6-pro` y `openai/gpt-6.1-sol` | Escritura del código y de las pruebas por delegación sobre el documento ODD | `src/` hasta el commit `a613de6`; `odd/tasks/inc0-esqueleto.md` |
-| Desde el 30/09/2026 (T0-10 en adelante) | Codex (`gpt-6.1-sol`, plan ChatGPT Plus) como escritor, orquestado por Claude Code (`claude-opus-5-5`) | Escritura del código y de las pruebas sobre fichas del ingeniero; revisión por los subagentes `revisor-codigo` (Sonnet 5.5) y `critico-codigo` (Opus 5.5) | `src/` desde el commit `5ca3431`; este README |
-| 05/10/2026 (prototipo v1, V1-01 a V1-09) | Codex (`gpt-6.1-sol`) como escritor, orquestado por Claude Code (`claude-opus-5-5`); revisión de conformidad por Codex (`gpt-6-luna`) y crítica por el subagente `critico-codigo` (Opus 5.5); OpenCode 1.18.25 (binario `opencode-windows-x64@1.18.25`) ejecutado una vez por el ingeniero para generar los resultados de referencia | Escritura, revisión y generación de referencias | `src/` desde el commit `1b684d5`; `pruebas/escenarios/*/REFERENCIA.json` |
-| 13/10/2026 (V1-13) | Claude Code (`claude-opus-5-5`), por autorización expresa del autor como excepción a ADR-067 | Escritura del cambio y de sus pruebas sobre la ficha V1-13: aceptación de la variante baseline oficial del binario de OpenCode en Windows | `herramientas/referencias-nativas.ts`, `pruebas/arquitectura/referencias-nativas.test.ts`, este README |
-| 03/11/2026 (Iteración 4: T4-01 a T4-04) | Codex (`gpt-6.1-sol`, plan ChatGPT Plus) como escritor de código y pruebas, orquestado y auditado por Antigravity (Gemini 2.5 Flash / Pro) y Claude Code (`claude-opus-5-5`); revisión cruzada por subagentes `revisor-codigo` (Sonnet 5.5) y `critico-codigo` (Opus 5.5) | Implementación de `--tiempos` y arnés estricto de latencia RNF-07; suite formal de aceptación de portabilidad RNF-06; optimización de prueba combinatoria `abarca` en `hallazgos.test.ts`; consolidación de `src/README.md` y auditoría de clonado limpio | `src/`, `esquemas/salida/tiempos.json`, `pruebas/aceptacion/RNF-06.test.ts`, `pruebas/aceptacion/RNF-07.test.ts`, `instrumentos/` |
+Las filas siguientes trasladan solo usos respaldados por la declaración de la bitácora (../00-gestion/bitacora.md). Sustituyen atribuciones anteriores que aún no estaban conciliadas; no se infieren herramientas desde las fichas.
+
+| Fecha | Herramienta | Para qué | Pieza, archivo o commit | Verificación posterior |
+|---|---|---|---|---|
+| 09/11 | Claude Code (`claude-opus-5-5`) | Resumen de `src/`, planteo de las decisiones de PIL-B, fichas T5-02 a T5-07 y del redactor, registro de D-75 a D-77 y R-17 a R-19, revisión de los diff, corridas de pruebas y esta entrada | `.trabajo/fichas/cierre/`, `00-gestion/anexo-III.md`, `registro-cambios-referente.md`, `pendientes.md`, `bitacora.md` | Pruebas en Windows (local y `R:` con TEMP 8.3) y en Ubuntu 26.04 en Docker. [AUTOR: lectura y corrección] |
+| 09/11 | Claude Code (`claude-opus-5-5`) | Captura de diez salidas de RIGE en `ee7cbf5`, ejecutado desde un temporal | `src/pruebas/datos/salidas-ee7cbf5.json` (incorporado por el escritor en `99f8762`) | Esquema 2 en las diez y sin rutas locales; copia idéntica comprobada con `cmp` |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto) | Pre-crítica de las fichas T5-02 a T5-07, solo lectura | Fichas de `.trabajo/fichas/cierre/` | Hallazgos aplicados por Claude Code; un bloqueante de T5-02 descartado con evidencia |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo medio), como escritor | T5-02: conductas de RF-03, RF-05 y RF-07 | `d0ec131` | 1042 aprobadas, 2 omitidas; también en `R:` con TEMP 8.3; diff revisado por Claude Code |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-03: oráculos de RNF-08, RNF-04, RF-07, RF-01, RF-11 y RF-12 | `99f8762` | 1074 aprobadas, 2 omitidas, en ambas condiciones; cobertura sin errores |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-04: declaración de oráculos y cobertura de 24 requisitos y 70 CA; corrección por ruta 8.3 | `d29069b`, `acf8793` | 1085 aprobadas, 2 omitidas, en ambas condiciones |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-05: recuento de RNF-05, política de `strace` y paso de CI | `2882354` | Windows 1185 aprobadas; Ubuntu en Docker con `strace` y `CI=true` 1179 aprobadas y 6 pendientes de captura Linux |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-06a: arnés de decisiones nativas por plataforma, modelo y topología Git | `7f0fe72` | Windows 1196 aprobadas; `referencias` contra el binario real en ok; Ubuntu 1190 aprobadas |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-06b: matriz del árbol de trabajo, con captura del binario OpenCode 1.18.25 en win32-x64 | `e2e00f2` | 12 capturas coincidentes con RIGE; 1224 aprobadas en ambas condiciones de Windows |
+| 09/11 | Claude Code (`claude-opus-5-5`) | Captura de las decisiones linux-x64 de T5-06b y T5-06c en el contenedor `rige-medicion:congelada` (OpenCode 1.18.25, hash `d91e0d33…`) sobre copias de `src/` | `.trabajo/fichas/cierre/datos/`; incorporadas por el escritor en `30f8408` y siguiente | Capturas de Windows conservadas; sin rutas del contenedor; suite en Ubuntu sin fallas |
+| 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | Incorporación de las capturas linux-x64 (T5-06b-c1) y caracterización de `core.worktree` y `core.bare` (T5-06c) | `30f8408`, `8620aff` | 1233 aprobadas en Windows; divergencia de `core.worktree` fijada como límite de ADR-101 por decisión de Claude Code con delegación del autor |
+| 05/11 | Codex (`gpt-6.1-sol`, esfuerzo medio), como escritor | Modo `--escala` de la medición (T5-01) | `c9b6746` | 1021 pruebas aprobadas, 2 omitidas; `verificar` en verde, según su informe; diff revisado por Claude Code; corrida en contenedor |
+| 03/11 | Codex (`gpt-6.1-sol`) y Gemini en Antigravity [AUTOR: modelo] | T3-06 a T3-11, TDD en dos modelos | `6f98774`, `f5905c0`, `ce83d8a`, `28eb7ad`, `0fc2b0e`, `32c6e79` | Revisor conforme; crítico sin bloqueantes; CI `41720793417` |
+| 03/11 | [AUTOR: herramienta y modelo] | T3-12 y T4-01 a T4-04 | `893a309`, `5735544`, `4ab181a`, `5efb7b3`, `5dfa325` | 1014 pruebas; CI `41743284212` y `41743288096` |
+| 30/10 | Codex (`gpt-6.1-sol`) con respaldo de Claude | T2-19 y T3-01 a T3-05 | `8862069`, `5007e4c`, `bf1daae`, `f4629c5`, `ac89ccf`, `03e02cd`, `a436ac0`, `59f18f4`, `77bd4d0`, `a8f3e64` | Suites y revisores en `.trabajo/fichas/it3/INDICE.md` |
+| 25/10 | Codex (`gpt-6.1-sol`), orquestado por Claude Code | T2-01 a T2-18 | `197fc08` a `3ae11e1` | CI sobre `be010cf`; [AUTOR: revisión del diff] |
+| 09/11 (T5-06c-c1) | [AUTOR: completar] | [AUTOR: completar] | Capturas Linux incorporadas y comparación por plataforma | [AUTOR: completar] |
+| 09/11 (T5-07) | [AUTOR: completar] | [AUTOR: completar] | Versión 1.0.0, README y MANUAL | [AUTOR: completar] |
 
 El diseño, los requisitos y las decisiones (ADR) son del autor; las herramientas escriben y revisan código bajo esas decisiones.
 

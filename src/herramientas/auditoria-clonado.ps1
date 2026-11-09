@@ -118,8 +118,8 @@ try {
             Start-Sleep -Milliseconds 100
         }
     }
-    if ($respuesta.StatusCode -ne 200 -or $respuesta.Content -notmatch 'RIGE 0.1.0') {
-        throw 'La pagina inicial no respondio HTTP 200 con RIGE 0.1.0.'
+    if ($respuesta.StatusCode -ne 200 -or $respuesta.Content -notmatch 'RIGE 1.0.0') {
+        throw 'La pagina inicial no respondio HTTP 200 con RIGE 1.0.0.'
     }
     Stop-Process -Id $servidorProceso.Id -Force
     $servidorProceso.WaitForExit()
