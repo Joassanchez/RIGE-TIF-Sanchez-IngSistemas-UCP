@@ -1,7 +1,20 @@
 import { expect, test } from "bun:test";
 import { readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, parse, relative } from "node:path";
 import { copiarEscenario } from "./escenario";
+
+test("T5-06b A-b1 expande la forma sin Git desde la raiz efectiva de la unidad, sin tocar el escenario", () => {
+  const fuente = join(import.meta.dir, "../escenarios/v5-worktree-sin-git-relativa/proyecto/opencode.json");
+  const antes = readFileSync(fuente, "utf8");
+  const copia = copiarEscenario("v5-worktree-sin-git-relativa", { git: "ninguno" });
+  try {
+    const reglas = JSON.parse(readFileSync(join(copia.proyecto, "opencode.json"), "utf8")).permission.read;
+    const forma = relative(parse(copia.proyecto).root, join(copia.proyecto, "sub/a.txt")).replaceAll("\\", "/");
+    expect(Object.keys(reglas)).toEqual(["*", forma]);
+    expect(reglas[forma]).toBe("allow");
+    expect(readFileSync(fuente, "utf8")).toBe(antes);
+  } finally { copia.borrar(); }
+});
 
 test("T5-06a A-a4 copia core.worktree y core.bare solo en temporales, con estructura Git explicita", () => {
   for (const git of ["core.worktree", "core.bare"] as const) {

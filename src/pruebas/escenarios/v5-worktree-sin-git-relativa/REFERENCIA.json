@@ -1,0 +1,46 @@
+{
+  "procedencia": {
+    "version": "1.18.25",
+    "directorio": "proyecto",
+    "hogar": "hogar",
+    "git": "ninguno",
+    "alcance": "T5-06b: decisiones de herramienta; sin referencia de valores ni cadenas.",
+    "soloDecisiones": true,
+    "skillsExternosExcluidos": true
+  },
+  "valoresAgentes": {},
+  "decisionesNativas": [
+    {
+      "consulta": "read-a",
+      "agente": "build",
+      "sujeto": "read",
+      "objetivo": "sub/a.txt",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "<RAIZ>\\proyecto\\sub\\a.txt",
+          "regla": {
+            "permission": "read",
+            "pattern": "<RAIZ>/proyecto/sub/a.txt",
+            "action": "allow"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-09T18:41:25.014Z",
+        "plataforma": "win32-x64"
+      }
+    }
+  ]
+}

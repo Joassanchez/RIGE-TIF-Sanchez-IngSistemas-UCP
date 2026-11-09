@@ -2329,6 +2329,412 @@
           "fuente": "caso-de-uso"
         }
       ]
+    },
+    {
+      "id": "v5-worktree-subdirectorio-absoluta",
+      "entradas": {
+        "proyecto/opencode.json": "cb6c7aaaf1a9f05963c5671b9279be02f41ba78a9007dbe8c8955cf463629193",
+        "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
+      },
+      "referencia": "08de7109af5cb7a638fcec13e5971fab6add55d63841f1440daecd99eac28d8b",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-subdirectorio-relativa",
+      "entradas": {
+        "proyecto/opencode.json": "2edf094370f6ef8628f032db56aff28380dfae3aa18311848366af0aa1aecff9",
+        "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
+      },
+      "referencia": "03a63212625e249fd0dae9e95dac8439bba1acc0c6ea3e7ff8a7bb4f7599185b",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-raiz-absoluta",
+      "entradas": {
+        "proyecto/opencode.json": "cb6c7aaaf1a9f05963c5671b9279be02f41ba78a9007dbe8c8955cf463629193",
+        "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
+      },
+      "referencia": "c4421c83e72a289615a95ad9bd3ec7e49bad4139db29cc98496171d0954b9ba6",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-raiz-relativa",
+      "entradas": {
+        "proyecto/opencode.json": "48647ca3b94aa1befc3a5f382dc117aea4d4d0b41658422f291cb2227fd59fff",
+        "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
+      },
+      "referencia": "0e044e048ee8a1d0d729ea38a38535486ee0c693856ebfd27a887c59c6b09a20",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-sin-git-absoluta",
+      "entradas": {
+        "proyecto/opencode.json": "cb6c7aaaf1a9f05963c5671b9279be02f41ba78a9007dbe8c8955cf463629193",
+        "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
+      },
+      "referencia": "f65064f3787780d1a8bff5c13660ce0ecf4b098ca3ee151b1d34c502a20fb499",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-sin-git-relativa",
+      "entradas": {
+        "proyecto/opencode.json": "91e63f41c2da17f3f21b02a4532f245623642df063adad4b6bc38a52cac96499",
+        "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
+      },
+      "referencia": "d1d29bf2a90f3d8777cc379970f174446611ef935c8448e967ce8f216b68a7f1",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "read-a",
+          "agente": "build",
+          "sujeto": "read",
+          "objetivo": "sub/a.txt",
+          "herramienta": "read",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-subdirectorio-edit-absoluta",
+      "entradas": {
+        "proyecto/opencode.json": "94b086b35a616d60931a00863645515dc6d647b3acee29d0c528a2ef7bfb80ad",
+        "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
+      },
+      "referencia": "1d5180b4e7d799ac24bf6ed31ef21aa8f390bf54fadd4128c2030e1f8945d92e",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "edit-a",
+          "agente": "build",
+          "sujeto": "edit",
+          "objetivo": "sub/a.txt",
+          "herramienta": "edit",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt",
+            "oldString": "antes",
+            "newString": "despues"
+          },
+          "nativa": true
+        },
+        {
+          "id": "write-a",
+          "agente": "build",
+          "sujeto": "edit",
+          "objetivo": "sub/a.txt",
+          "herramienta": "write",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt",
+            "content": "despues\n"
+          },
+          "nativa": true
+        },
+        {
+          "id": "apply_patch-a",
+          "agente": "build",
+          "sujeto": "edit",
+          "objetivo": "sub/a.txt",
+          "herramienta": "apply_patch",
+          "modelo": "gpt-5",
+          "argumentos": {
+            "patchText": "*** Begin Patch\n*** Update File: sub/a.txt\n@@\n-antes\n+despues\n*** End Patch"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        }
+      ]
+    },
+    {
+      "id": "v5-worktree-subdirectorio-edit-relativa",
+      "entradas": {
+        "proyecto/opencode.json": "4542e56bf518bbbeb529161dc429d2bdddc31d92e347c44ba12cfbb0ea8dc276",
+        "proyecto/sub/a.txt": "abaffd6656d2dccd6a47fc55d0835c4f34c38226b0dc93e6e5d191dd1e9fd9f6"
+      },
+      "referencia": "5322ffe198bd0e13309b1f30f75ed06dd6a8b39df4ba31f4969bf263d8d224b1",
+      "agentes": [],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "edit-a",
+          "agente": "build",
+          "sujeto": "edit",
+          "objetivo": "sub/a.txt",
+          "herramienta": "edit",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt",
+            "oldString": "antes",
+            "newString": "despues"
+          },
+          "nativa": true
+        },
+        {
+          "id": "write-a",
+          "agente": "build",
+          "sujeto": "edit",
+          "objetivo": "sub/a.txt",
+          "herramienta": "write",
+          "modelo": "permisos",
+          "argumentos": {
+            "filePath": "<PROYECTO>/sub/a.txt",
+            "content": "despues\n"
+          },
+          "nativa": true
+        },
+        {
+          "id": "apply_patch-a",
+          "agente": "build",
+          "sujeto": "edit",
+          "objetivo": "sub/a.txt",
+          "herramienta": "apply_patch",
+          "modelo": "gpt-5",
+          "argumentos": {
+            "patchText": "*** Begin Patch\n*** Update File: sub/a.txt\n@@\n-antes\n+despues\n*** End Patch"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-9",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        },
+        {
+          "item": "RF-07 CA-4",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/T5-06b.test.ts",
+          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
+        }
+      ]
     }
   ],
   "defectosSembrados": [
@@ -2775,6 +3181,117 @@
         "privado/"
       ],
       "control": null
+    },
+    {
+      "id": "v5-worktree-subdirectorio-absoluta-read",
+      "escenario": "v5-worktree-subdirectorio-absoluta",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 5
+      },
+      "clave": [
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/sub/a.txt"
+      ],
+      "parametros": {
+        "formaRelativa": "proyecto/sub/a.txt",
+        "decision": "permitida"
+      },
+      "control": {
+        "escenario": "v5-worktree-subdirectorio-relativa",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/opencode.json"
+        ],
+        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 deny/allow y comparacion sin fallback en T5-06b.test.ts; Linux pendiente. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+      }
+    },
+    {
+      "id": "v5-worktree-subdirectorio-edit-absoluta-edit",
+      "escenario": "v5-worktree-subdirectorio-edit-absoluta",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 5
+      },
+      "clave": [
+        "permission",
+        "edit",
+        "<RAIZ>/proyecto/sub/a.txt"
+      ],
+      "parametros": {
+        "formaRelativa": "proyecto/sub/a.txt",
+        "decision": "permitida"
+      },
+      "control": {
+        "escenario": "v5-worktree-subdirectorio-edit-relativa",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/opencode.json"
+        ],
+        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 deny/allow y comparacion sin fallback en T5-06b.test.ts; Linux pendiente. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+      }
+    },
+    {
+      "id": "v5-worktree-raiz-absoluta-read",
+      "escenario": "v5-worktree-raiz-absoluta",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 5
+      },
+      "clave": [
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/sub/a.txt"
+      ],
+      "parametros": {
+        "formaRelativa": "sub/a.txt",
+        "decision": "permitida"
+      },
+      "control": {
+        "escenario": "v5-worktree-raiz-relativa",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/opencode.json"
+        ],
+        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 deny/allow y comparacion sin fallback en T5-06b.test.ts; Linux pendiente. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+      }
+    },
+    {
+      "id": "v5-worktree-sin-git-absoluta-read",
+      "escenario": "v5-worktree-sin-git-absoluta",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta-con-forma",
+      "localizacion": {
+        "archivo": "proyecto/opencode.json",
+        "linea": 5
+      },
+      "clave": [
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/sub/a.txt"
+      ],
+      "parametros": {
+        "decision": "permitida"
+      },
+      "control": {
+        "escenario": "v5-worktree-sin-git-relativa",
+        "agente": null,
+        "clave": null,
+        "cambios": [
+          "proyecto/opencode.json"
+        ],
+        "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 deny/allow y comparacion sin fallback en T5-06b.test.ts; Linux pendiente. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+      }
     }
   ],
   "iteracion": 3,

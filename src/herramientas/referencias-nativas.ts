@@ -79,7 +79,9 @@ function ejecutar(): number {
     .filter(entrada => !seleccion.size || seleccion.has(entrada.name))
     .map(entrada => entrada.name).sort().map(nombre => ({ nombre,
       referencia: JSON.parse(readFileSync(join(escenarios, nombre, "REFERENCIA.json"), "utf8")) as Referencia,
-    }));
+    }))
+    // Las decisiones de herramienta se capturan y comparan con bun run decisiones.
+    .filter(({ referencia }) => referencia.procedencia.soloDecisiones !== true);
   if (!referencias.length) throw new Error("No se encontraron referencias nativas.");
   if ([...seleccion].some(nombre => !referencias.some(r => r.nombre === nombre))) throw new Error("Escenario sin referencia nativa.");
   for (const { nombre, referencia } of referencias) {

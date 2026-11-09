@@ -27,6 +27,15 @@ const raiz = resolve(import.meta.dir, "../..");
 const hashWindows = "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff";
 const hashWindowsBaseline = "954f2869f9cc2131b03cb6aa7ee50c70601c1a56811fb5bcf749b827c970d290";
 const hashLinux = "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb";
+
+describe("T5-06b A-b4 referencias exclusivas de decisiones", () => {
+  test("el capturador de valores y cadenas omite las referencias explicitamente exclusivas de decisiones", () => {
+    const r = ejecutar({ soloDecisiones: true });
+    expect(r.codigo).toBe(0);
+    expect(r.salida).toContain("v1-precedencia: ok");
+    expect(r.llamadas.filter(l => l.copia)).toHaveLength(7);
+  });
+});
 describe("A8-3", () => {
   test("un worktree valido no excluye skills externos", () => {
     const referencia = JSON.parse(readFileSync(join(raiz, "pruebas/escenarios/v2-worktree-valido/REFERENCIA.json"), "utf8"));
@@ -110,7 +119,7 @@ describe("T3-03 referencias de entradas", () => {
 
 // El doble del binario y del hash vive solo en el subproceso; bun test nunca ejecuta OpenCode.
 function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: string; plataforma?: string; git?: "proyecto" | "sintetico" | "ninguno" | "core.worktree" | "core.bare";
-  diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean;
+  diferente?: boolean; falla?: boolean; desconocido?: boolean; regenerar?: boolean; fuga?: boolean; referenciaFiltrada?: boolean; soloDecisiones?: boolean;
   agentes?: boolean; agentesInvalidos?: boolean; entradas?: boolean; fallaEsperada?: boolean; posicion?: boolean; registroNativo?: boolean;
   sustituciones?: boolean; nombreEntorno?: string; salidaInvalida?: boolean; entornoLiteral?: boolean; entornoFiltrado?: boolean } = {}) {
   const temporal = mkdtempSync(join(tmpdir(), "rige-nativas-test-"));
@@ -150,6 +159,11 @@ function ejecutar(opciones: { argumentos?: string[]; version?: string; hash?: st
         if (opciones.fallaEsperada) { ref.procedencia.fallaEsperada = true; ref.cadenas = {}; }
         if (opciones.git) { ref.procedencia.git = opciones.git; ref.procedencia.skillsExternosExcluidos = true; }
         if (opciones.referenciaFiltrada) ref.cadenas.build.push({ permission: "external_directory", pattern: join(temporal, ".agents/skills/filtrada/*"), action: "allow" });
+        if (opciones.soloDecisiones && nombre === "v1-vias") {
+          ref.procedencia.soloDecisiones = true;
+          delete ref.cadenas;
+          ref.decisionesNativas = [];
+        }
         writeFileSync(join(fuente, "pruebas/escenarios", nombre, "REFERENCIA.json"), JSON.stringify(ref));
       }
       if (opciones.desconocido) mkdirSync(join(fuente, "pruebas/escenarios/desconocido/proyecto"), { recursive: true });
