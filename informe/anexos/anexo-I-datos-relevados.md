@@ -672,5 +672,11 @@ La evidencia consta en el repositorio entregado, en la revisión [DATO PENDIENTE
 | Preregistro de la medición final | Reglas fijadas el 05/11/2026, aceptadas el 06/11/2026; punto 46 precisado el 06/11/2026. | `01-relevamiento/linea-base/verificacion/20261105-preregistro/PREREGISTRO.md` |
 | Contraste de cobertura sin agente | Formas de los 33 problemas de E2 sobre congelada; resultado del 05/11/2026 y criterios de contraste. | `01-relevamiento/linea-base/verificacion/20261105-preregistro/cobertura/`; `01-relevamiento/linea-base/verificacion/20261105-preregistro/cobertura/RESULTADO-tabla.md` |
 | Remuestreo de no regresión | Cálculo del 05/11/2026 sobre tres repeticiones por problema de la línea de base: 5.000 iteraciones, semilla 20261105. | `01-relevamiento/linea-base/verificacion/20261105-preregistro/remuestreo/` |
+| Guiones de esquema de la base | Creación del esquema inicial y actualización al formato 2 del documento de resolución. | `src/esquemas/almacen/001_inicial.sql`; `src/esquemas/almacen/002_formato2.sql` |
+| Canal de integración continua | Instalación, construcción y pruebas en Ubuntu y Windows, con referencia nativa de OpenCode 1.18.25. | `.github/workflows/ci.yml` |
+| Definición del contenedor de referencia | Imagen Ubuntu 26.04 fijada por resumen para el oráculo y las mediciones. | `01-relevamiento/linea-base/vm/Dockerfile` |
+| Archivo de lectura del código | Requisitos, instalación, configuración, ejecución y verificación del prototipo. | `src/README.md` |
+| Inventario de componentes de terceros | Inventario del 08/11/2026, versiones bloqueadas, licencia, avisos y procedencia de la copia del evaluador. | `04-diseno/README.md`, §4; `src/bun.lock`; `src/paquetes/opencode/vendor/LICENSE`; `src/paquetes/opencode/vendor/AVISOS.md`; `src/paquetes/opencode/vendor/PROCEDENCIA.md` |
+| Guion de sensibilidad de las matrices de decisión | Cálculo reproducible de índices y sensibilidad de pesos y puntajes, con la salida del 08/11/2026. | `tools/sensibilidad_matriz.py` |
 
 *Tabla A.I.16. Registro de la evidencia. Fuente: elaboración propia sobre el repositorio entregado.*

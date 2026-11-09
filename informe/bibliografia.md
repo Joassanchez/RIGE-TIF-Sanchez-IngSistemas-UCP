@@ -72,6 +72,10 @@ GitHub. (s. f.-c). *Setting up GitHub Sponsors for your personal account*. Recup
 
 GitHub. (s. f.-d). *GitHub Actions billing* [Documentación]. https://docs.github.com/en/billing/concepts/product-billing/github-actions
 
+GitHub. (s. f.-e). *checkout* (Versión mayor v5) [Software]. GitHub. Recuperado el 8 de noviembre de 2026, de https://github.com/actions/checkout
+
+GitHub. (s. f.-f). *setup-node* (Versión mayor v5) [Software]. GitHub. Recuperado el 8 de noviembre de 2026, de https://github.com/actions/setup-node
+
 Google. (2026). *Gemini CLI* (Versión 0.62.0) [Software]. GitHub. https://github.com/google-gemini/gemini-cli/releases/tag/v0.62.0
 
 Highflame AI. (2026). *Ramparts* (Versión 0.8.7) [Software]. GitHub. https://github.com/highflame-ai/ramparts
@@ -108,12 +112,20 @@ Microsoft. (s. f.-b). *TypeScript* [Software]. GitHub. https://github.com/micros
 
 Microsoft. (s. f.-c). *What is the Windows Subsystem for Linux?* [Documentación]. Microsoft Learn. https://learn.microsoft.com/en-us/windows/wsl/about
 
+Microsoft. (s. f.-d). *jsonc-parser* (Versión 3.3.1) [Software]. GitHub. https://github.com/microsoft/node-jsonc-parser/tree/v3.3.1
+
 Naciones Unidas. (2015). *Transformar nuestro mundo: la Agenda 2030 para el Desarrollo Sostenible* (Resolución A/RES/70/1). Asamblea General de las Naciones Unidas.
 
 Naciones Unidas. (2026). *Marco de indicadores mundiales para los Objetivos de Desarrollo Sostenible y metas de la Agenda 2030 para el Desarrollo Sostenible* (versión con los refinamientos de 2026). https://unstats.un.org/sdgs/indicators/Global-Indicator-Framework-after-2026-refinement_Spa.pdf
 
 
 nlscott. (2026, 9 de septiembre). *Any read or edit permission rule written as an absolute path (~/.ssh, ~/.aws, /etc/hosts, etc.) silently never matches, including MDM managed rules* (Incidencia n.º 48049) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/48049
+
+Node.js. (s. f.-a). *Node.js* [Software]. GitHub. https://github.com/nodejs/node/blob/main/LICENSE
+
+Node.js. (s. f.-b). *Node.js v24.21.0 documentation* [Documentación de software]. Recuperado el 8 de noviembre de 2026, de https://nodejs.org/docs/v24.21.0/api/
+
+Node.js Release Working Group. (s. f.). *Node.js Release Working Group* [Calendario de versiones]. GitHub. Recuperado el 8 de noviembre de 2026, de https://github.com/nodejs/release
 
 ns-calvinwu. (2026, 6 de agosto). *permission.edit patterns are matched against worktree-relative paths — absolute/~ patterns silently never match (fail-open for deny rules)* (Incidencia n.º 40945) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/40945
 
@@ -141,7 +153,9 @@ Osterwalder, A. y Pigneur, Y. (2019). *Generación de modelos de negocio*. Deust
 
 ouyangjian28. (2026, 29 de agosto). *Permission read/edit rules with absolute path patterns are silently ignored (matching appears workspace-relative only)* (Incidencia n.º 46133) [Incidencia de GitHub]. https://github.com/anomalyco/opencode/issues/46133
 
-Oven. (s. f.). *Bun* [Software]. GitHub. https://github.com/oven-sh/bun/blob/main/LICENSE.md
+Oven. (s. f.-a). *Bun* [Software]. GitHub. https://github.com/oven-sh/bun/blob/main/LICENSE.md
+
+Oven. (s. f.-b). *setup-bun* (Versión mayor v2) [Software]. GitHub. Recuperado el 8 de noviembre de 2026, de https://github.com/oven-sh/setup-bun
 
 piratf. (s. f.). *Context Editor* (Versión 0.3.0) [Extensión de VS Code]. Visual Studio Marketplace. Recuperado el 1 de octubre de 2026, de https://marketplace.visualstudio.com/items?itemName=piratf.context-editor
 

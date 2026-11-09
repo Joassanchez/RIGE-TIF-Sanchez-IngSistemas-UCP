@@ -19,6 +19,10 @@ Insumo principal del Cap. IX y de `04-diseno/README.md`.
 | [ADR-051](ADR-051-interfaces-salida-explicacion-consolidado.md) | Consolidado de interfaces: línea de comandos completa con esquema versionado y `--explicar`; interfaz web local limitada; explicación por plantillas deterministas. Reúne ADR-021, 022, 036, 041 y 042 (eliminados) | aceptado (28/09/2026) | Cap. I (I.6.2, I.6.5); Cap. III (III.1, III.3 a III.5); Cap. V (V.1, V.2, V.5); Anexo I; libro (RF-02, RF-03, RF-07, RNF-08) |
 | [ADR-069](ADR-069-errores-entorno-usuario-codigo-salida.md) | Errores del entorno del usuario detectables antes de operar (p. ej., `RIGE_ALMACEN` que no es un directorio) como `configuracion-invalida`, código 1; el resto, 70. Precisa ADR-058 y fija los códigos `configuracion-invalida` y `puerto-ocupado` | aceptado (01/10/2026) | `src/` (adaptador de sistema, aceptación A-4); `src/AGENTS.md` §5 (lo edita el autor) |
 
+| ADR | Decisión | Estado | Afecta |
+|---|---|---|---|
+| [ADR-109](ADR-109-matriz-ponderada-arquitectura-runtime.md) | Matriz de decisión ponderada, como formalización posterior de ADR-058 (estilo y empaquetado) y ADR-032 (runtime): seis criterios con pesos fijados antes de puntuar (fidelidad 30, aislamiento 20, ejecutabilidad 20, solo lectura y sin red 15, costo 10, madurez 5), puntajes citados del ADR de origen y sensibilidad de pesos y de puntajes. Runtime: Bun por 0,20, elección del equipo (coincidencia de motor con el oráculo sobre madurez). Estilo: puertos y adaptadores domina a capas, impuesto por la evidencia. Empaquetado: tres paquetes por 0,20 sobre uno y empatado con dos, elección del equipo. Veto solo por fidelidad, ocho puntajes corregidos (seis aumentos a favor de una perdedora, una disminución y un veto; efecto neto: diferencias más chicas) y verificación posterior de las condiciones de invalidación | aceptado (08/11/2026) | IX.1; `04-diseno/README.md` §1; Anexo III; `tools/sensibilidad_matriz.py` |
+
 ### 1.2 Modelo del dominio y de datos
 
 | ADR | Decisión | Estado | Afecta |

@@ -27,6 +27,7 @@ Cada registro contiene el contexto, las alternativas evaluadas con su criterio d
 | [ADR-061](../00-gestion/decisiones/ADR-061-ciclo-vida-resolucion-modelo-datos.md) | Ciclo de vida de la Resolución y modelo de datos del almacén | aceptado | Proyecto identificado por su ruta canónica; Resolución inmutable persistida como documento con sus entradas leídas en tablas; retención de las últimas veinte por Proyecto; esquema creado por guion explícito con versión verificada al arrancar |
 | [ADR-062](../00-gestion/decisiones/ADR-062-distribucion-web-dependencias-configuracion.md) | Distribución, web, dependencias, configuración propia, versionado y arnés de pruebas | aceptado | Ejecución con `bun run` sobre el código fuente; HTML generado en el servidor con escape por defecto; dependencias exactas, las de ejecución solo si la herramienta las usa en la misma versión; configuración propia en `rige.env`; versiones independientes de RIGE, del esquema de salida y de la base; pruebas aisladas por subproceso; rechazo de solicitudes de otro sitio; vías locales observadas por el adaptador del v1 |
 | [ADR-070](../00-gestion/decisiones/ADR-070-guardas-arquitectura-analizador-propio.md) | Guardas de arquitectura con un analizador léxico propio | aceptado | Reglas de dependencia, identificaciones, red y globales verificadas como pruebas con un tokenizador único sobre el escáner de TypeScript 7.0.2, sin herramientas externas; base de la verificación de RNF-03 |
+| [ADR-109](../00-gestion/decisiones/ADR-109-matriz-ponderada-arquitectura-runtime.md) | Matriz de decisión ponderada de la arquitectura y del runtime (formalización posterior de ADR-058 y ADR-032) | aceptado | Criterios, pesos, puntajes y sensibilidad que fundamentan el estilo, el empaquetado y el runtime adoptados |
 | [ADR-101](../00-gestion/decisiones/ADR-101-worktree-criterio-git-sin-procesos.md) | Descubrimiento del worktree leyendo `.git` sin ejecutar procesos | aceptado | Criterio de descubrimiento de git sin subprocesos; `"/"` sin repositorio o sin `git` en `PATH` |
 | [ADR-102](../00-gestion/decisiones/ADR-102-deteccion-version-opencode-sin-ejecutar.md) | Detección de la versión instalada de OpenCode sin ejecutarlo | aceptado | Lectura del `package.json` de `opencode-ai` desde el primer `opencode` del `PATH`; `version-no-soportada` (código 1) o `version-no-determinada` (advertencia) |
 | [ADR-104](../00-gestion/decisiones/ADR-104-resumen-variables-que-constituyen-entrada.md) | Resumen de las variables que constituyen una entrada | aceptado | `OPENCODE_CONFIG_CONTENT` y `OPENCODE_PERMISSION` entran por el resumen de su contenido dentro del resumen del conjunto; las que ubican entradas siguen por nombre y condición |
@@ -41,25 +42,57 @@ El modelo de datos del almacén SQLite se fija en [ADR-061](../00-gestion/decisi
 - la retención;
 - los pragmas de la conexión.
 
-El guion versionado que crea el esquema reside en `src/esquemas/almacen/` (`001_inicial.sql`, `PRAGMA user_version = 1`), única fuente de la estructura de la base.
+Los guiones versionados que crean el esquema residen en `src/esquemas/almacen/`, única fuente de la estructura de la base:
+- `001_inicial.sql` crea las tres tablas, sus índices y los disparadores que impiden modificar una Resolución o sus entradas leídas (`PRAGMA user_version = 1`);
+- `002_formato2.sql` deja la base en `PRAGMA user_version = 2` sin cambiar las tablas: el formato 2 cambia el contenido del documento JSON (precisión de ADR-061 del 30/10/2026; ADR-062).
+
+`bun run esquema` aplica los guiones en orden y es idempotente.
 
 El modelo del dominio del que se deriva se encuentra en [`03-requisitos/libro/entidades.md`](../03-requisitos/libro/entidades.md).
 
 ## 3. Canal de integración continua
 
-El canal se configura en `.github/workflows/ci.yml` y corre en cada envío y en cada solicitud de integración.
+El canal se configura en `.github/workflows/ci.yml` y corre en cada envío (`on: push`). Tiene dos trabajos, cada uno con la matriz de plataformas de ADR-054: `ubuntu-26.04` y `windows-latest`.
 
-Matriz de plataformas (ADR-054): `ubuntu-latest` y `windows-latest`.
-
-Pasos (ADR-032 y ADR-062):
+Trabajo `verificar` (ADR-032 y ADR-062):
 1. instalación de Bun 1.3.14;
 2. `bun install --frozen-lockfile`;
 3. `bun run verificar`, que comprende la verificación de tipos con TypeScript 7.0.2 y una construcción de comprobación;
-4. `bun test`.
+4. `bun test`;
+5. `bun run prueba:lenta`.
+
+Trabajo `referencia-nativa`: instala Node.js 22 y `opencode-ai@1.18.25`, corre `bun run referencias` contra la instalación real y comprueba que la consulta de agentes no emite advertencias con la versión instalada (ADR-102).
 
 Las pruebas incluyen:
 - las de arquitectura: RNF-03 CA-1 y CA-2, RNF-05, aislamiento del entorno y guarda del repositorio;
 - las del almacén (ADR-061);
 - las de aceptación, una por criterio, con el ID en el nombre.
 
-El archivo reside en `.github/workflows/ci.yml`; el incremento 0 (`src/odd/tasks/v1-inc0-esqueleto.md`) construye lo que el canal ejecuta. El registro de corridas se consulta en la pestaña Actions del repositorio.
+El archivo reside en `.github/workflows/ci.yml`. El registro de corridas se consulta en la pestaña Actions del repositorio.
+
+## 4. Componentes de terceros
+
+Inventario del 08/11/2026 sobre `main` (`0efa74f`), fuente de IX.4. Se vuelve a verificar sobre la etiqueta entregada (plan de cierre, B4), porque el bloque B3 todavía puede cambiar `package.json`.
+
+Rótulos de la licencia: **[archivo]**, leída del `package.json` o del `LICENSE` instalado o copiado; **[CG]**, conocimiento general, que se confirma con el repositorio del proyecto antes de redactar.
+
+### 4.1 Incorporados al producto
+
+| Componente | Versión | Licencia | Cómo se incorpora | Motivo | Decisión |
+|---|---|---|---|---|---|
+| Evaluador de permisos de OpenCode (`evaluate`, `expand`, `fromConfig`, `merge`, `disabled`, `match`) | Etiqueta `v1.18.25` | MIT [archivo: `src/paquetes/opencode/vendor/LICENSE`] | Copia atribuida en `src/paquetes/opencode/vendor/`, con cabecera, `AVISOS.md` y `PROCEDENCIA.md` (SHA-256 del tarball y de cada archivo de origen) | Fidelidad por construcción con la herramienta | D-06; ADR-032, eje 3; ADR-058, eje 7 |
+| Reglas y agentes nativos de OpenCode | Etiqueta `v1.18.25` | MIT [archivo] | Transcriptos como datos (`agentes-nativos.ts`, `textos-agentes.ts`) | Reproducir los valores implícitos sin ejecutar la herramienta | ADR-032, precisiones del 28/09/2026; ADR-060 |
+| `jsonc-parser` | 3.3.1 | MIT [archivo] | Dependencia de ejecución de `@rige/opencode` | Lee JSONC con el mismo analizador y versión que OpenCode | ADR-062 |
+| Bun (runtime, `bun:sqlite`, `bun test`, servidor HTTP) | 1.3.14 | MIT [CG] | Prerrequisito único de ejecución | Runtime de origen del evaluador; SQLite, pruebas y servidor integrados | ADR-032, eje 1; ADR-109 |
+| SQLite (embebido en Bun) | La de Bun 1.3.14 | Dominio público [CG] | A través de `bun:sqlite` | Almacén con esquema por guion en un motor real | ADR-023; ADR-032; ADR-061 |
+
+### 4.2 De desarrollo y verificación (no se distribuyen con el producto)
+
+| Componente | Versión | Licencia | Uso | Decisión |
+|---|---|---|---|---|
+| TypeScript | 7.0.2 | Apache-2.0 [archivo] | Verificación de tipos y escáner de las guardas de arquitectura | ADR-062; ADR-070 |
+| `@types/bun` y `bun-types` | 1.3.14 | MIT [archivo] | Tipos del runtime | ADR-062 |
+| `@types/node` y `undici-types` | 26.6.3 y 8.9.0 | MIT [archivo] | Transitivas de `bun-types` (`bun.lock`) | — |
+| GitHub Actions: `actions/checkout`, `oven-sh/setup-bun`, `actions/setup-node` | `v5`, `v2`, `v5` | MIT [CG] | Canal de integración continua | ADR-032, eje 4 |
+| Node.js y `opencode-ai` | 22 y 1.18.25 | MIT [CG] y MIT [archivo] | Solo en el trabajo `referencia-nativa` del CI: OpenCode real como referencia | ADR-029; ADR-102 |
+| Imagen `ubuntu:26.04` | Fijada por resumen en `01-relevamiento/linea-base/vm/Dockerfile` | Licencias de la distribución [CG] | Contenedor de referencia del oráculo, la medición y RNF-07 | ADR-054 |

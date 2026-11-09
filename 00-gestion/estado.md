@@ -35,6 +35,10 @@ Estados: `borrador` → `revisada` → `aprobada` (esta última solo la asigna e
 | VII.3 | `informe/cap-07/VII.3-experiencia.md` | revisada | AE4 | 06/11/2026 |
 | VII.4 | `informe/cap-07/VII.4-canales.md` | revisada | AE4 | 06/11/2026 |
 | VII.5 | `informe/cap-07/VII.5-dinamicas-intercambio.md` | revisada | AE4 | 06/11/2026 |
+| IX.1 | `informe/cap-09/IX.1-arquitectura-matriz-decision.md` | revisada | AE4 | 08/11/2026 |
+| IX.2 | `informe/cap-09/IX.2-modelo-datos.md` | revisada | AE4 | 08/11/2026 |
+| IX.3 | `informe/cap-09/IX.3-infraestructura-entornos.md` | revisada | AE4 | 08/11/2026 |
+| IX.4 | `informe/cap-09/IX.4-componentes-terceros.md` | revisada | AE4 | 08/11/2026 |
 | X.1 | `informe/cap-10/X.1-recursos-humanos.md` | revisada | AE2 | 24/10/2026 |
 | X.2 | `informe/cap-10/X.2-recursos-fisicos-materiales.md` | revisada | AE2 | 24/10/2026 |
 | X.3 | `informe/cap-10/X.3-recursos-financieros.md` | revisada | AE2 | 24/10/2026 |
