@@ -32,10 +32,11 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
 <div><dt>Instante (UTC)</dt><dd>${sobre.instante}</dd></div>
 <div><dt>Herramienta</dt><dd>${respuesta.herramienta} ${respuesta.versionHerramienta}</dd></div>
 <div><dt>Clave</dt><dd><code>${respuesta.ruta?.join(".") ?? "todas"}</code></dd></div></dl></section>
-${contexto.agentes === undefined ? html`` : html`<form id="seleccionar-agente" action="${`/resoluciones/${encodeURIComponent(sobre.id)}`}" method="get">
-<label>Agente <select name="agente">${contexto.agentes.map(agente => agente.nombre === respuesta.agente
+${contexto.agentes === undefined ? html`` : html`<form id="seleccionar-agente" class="selector-agente" action="${`/resoluciones/${encodeURIComponent(sobre.id)}`}" method="get">
+<label for="agente-seleccionado">Agente</label>
+<select name="agente" id="agente-seleccionado">${contexto.agentes.map(agente => agente.nombre === respuesta.agente
     ? html`<option value="${agente.nombre}" selected>${agente.nombre}</option>`
-    : html`<option value="${agente.nombre}">${agente.nombre}</option>`)}</select></label>
+    : html`<option value="${agente.nombre}">${agente.nombre}</option>`)}</select>
 ${clave ? html`<input type="hidden" name="clave" value="${clave}">` : html``}
 <button class="boton--secundario">Ver agente</button></form>`}
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
@@ -73,8 +74,8 @@ ${respuesta.motivo ? html`<p class="aviso bloque">Motivo: ${respuesta.motivo}</p
 <label>Sujeto <input name="sujeto" required></label>
 <label>Objetivo <input name="objetivo" required></label>
 <button class="boton--secundario">Consultar sujeto de permiso</button></form></details>
-<section id="consultas-rapidas"><h3>Consultas rápidas</h3><ul>
-${([["read", ".env"], ["edit", "opencode.json"], ["bash", "git status"], ["bash", "rm -rf build"]] as const).map(([herramienta, objetivo]) => html`<li><a href="${`/permiso?id=${encodeURIComponent(sobre.id)}&agente=${encodeURIComponent(respuesta.agente)}&herramienta=${encodeURIComponent(herramienta)}&objetivo=${encodeURIComponent(objetivo)}`}"><code class="ficha-codigo">${herramienta} ${objetivo}</code></a></li>`)}
+<section id="consultas-rapidas"><h3>Consultas rápidas</h3><ul class="consultas-rapidas">
+${([["read", ".env"], ["edit", "opencode.json"], ["bash", "git status"], ["bash", "rm -rf build"]] as const).map(([herramienta, objetivo]) => html`<li><a href="${`/permiso?id=${encodeURIComponent(sobre.id)}&agente=${encodeURIComponent(respuesta.agente)}&herramienta=${encodeURIComponent(herramienta)}&objetivo=${encodeURIComponent(objetivo)}`}" class="consulta-rapida">${insignia(herramienta)} <code>${objetivo}</code></a></li>`)}
 </ul></section></div>
 <div class="tarjeta"><h3>Agentes de esta resolución</h3><p class="atenuado">Revisá el origen, el modo y la visibilidad de cada agente.</p>
 <form action="/agentes" method="get"><input type="hidden" name="id" value="${sobre.id}">${clave ? html`<input type="hidden" name="clave" value="${clave}">` : html``}<button class="boton--secundario">Listar agentes</button></form></div>

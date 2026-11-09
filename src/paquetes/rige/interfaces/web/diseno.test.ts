@@ -209,7 +209,7 @@ describe("T5-08 U-9", () => {
     expect(cuerpo).toContain('class="aviso aviso--advertencia">3:5 (falla)');
     const listado = await paginaAgentes(agentes).text();
     expect(listado).toContain('class="insignia insignia--neutra">primary');
-    expect(listado).toContain('class="insignia insignia--aviso">true');
+    expect(listado).toContain('class="insignia insignia--aviso">sí');
     expect(listado).toContain("Listado incompleto");
   });
 });

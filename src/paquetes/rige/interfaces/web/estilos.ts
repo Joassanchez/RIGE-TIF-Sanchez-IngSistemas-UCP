@@ -63,6 +63,9 @@ label { display: flex; flex-direction: column; gap: .45rem; font-size: .85rem; f
 input { width: 100%; min-width: 0; padding: .8rem .9rem; font-size: .9rem; line-height: 1.4; border: 1px solid var(--borde); border-radius: .55rem; color: var(--texto); background: var(--fondo); transition: border-color .15s; }
 input:hover { border-color: var(--secundario); }
 select { width: 100%; padding: .8rem .9rem; font: inherit; border: 1px solid var(--borde); border-radius: .55rem; color: var(--texto); background: var(--fondo); }
+.selector-agente { display: flex; align-items: center; gap: 1rem; margin: 2rem 0; padding: 1rem 1.25rem; background: var(--superficie); border: 1px solid var(--borde); border-radius: .75rem; }
+.selector-agente label { display: block; margin: 0; }
+.selector-agente select { width: 18rem; max-width: 100%; min-width: 0; }
 input::placeholder { color: var(--secundario); opacity: 1; }
 input[type="hidden"] { display: none; }
 .ayuda { font-size: .8rem; margin-top: -.5rem; }
@@ -91,6 +94,10 @@ dd { margin: .25rem 0 1.25rem; overflow-wrap: anywhere; }
 .aviso + .aviso { margin-top: .75rem; }
 .aviso--advertencia { border-left-color: var(--aviso); background: var(--aviso-fondo); color: var(--aviso); }
 .ficha-codigo { display: inline-block; padding: .35rem .55rem; border: 1px solid var(--borde); background: var(--superficie-suave); border-radius: .4rem; }
+.consultas-rapidas { display: flex; flex-wrap: wrap; gap: .6rem; list-style: none; padding: 0; margin: 0; }
+.consultas-rapidas li { margin: 0; max-width: 100%; }
+.consulta-rapida { display: inline-flex; align-items: center; gap: .6rem; border: 1px solid var(--borde); border-radius: .55rem; padding: .6rem .75rem; max-width: 100%; background: var(--superficie); text-decoration: none; transition: background .15s, border-color .15s; }
+.consulta-rapida:hover { background: var(--acento-suave); border-color: var(--acento); }
 .ruta { display: inline-flex; flex-direction: column; vertical-align: top; max-width: 100%; padding: .35rem .55rem; border: 1px solid var(--borde); background: var(--superficie-suave); border-radius: .4rem; overflow-wrap: normal; word-break: normal; hyphens: none; line-height: 1.6; }
 .ruta__directorio { display: block; color: var(--secundario); font-size: .72rem; white-space: normal; }
 .ruta__segmento, .ruta__archivo { white-space: nowrap; }
@@ -151,6 +158,7 @@ details[open] > summary { margin-bottom: 1.25rem; }
 .pagina-error { max-width: 700px; margin: 2rem auto; padding: clamp(1.5rem, 5vw, 3rem); }
 .pagina-error h1 { font-size: 2.2rem; }
 @media (max-width: 760px) {
+  .selector-agente { flex-wrap: wrap; }
   main { padding: 2rem 1rem 3rem; }
   .cabecera__interior { padding: 1rem; gap: .75rem; }
   .subtitulo { flex-basis: 55%; font-size: .7rem; }
@@ -161,6 +169,11 @@ details[open] > summary { margin-bottom: 1.25rem; }
   .pie { margin: 0 1rem; }
   .pie__almacen { text-align: left; max-width: 100%; }
 }
-@media (max-width: 420px) { .grupo-campos { grid-template-columns: minmax(0, 1fr); gap: 0; } .hero { padding-top: .5rem; } }
+@media (max-width: 420px) {
+  .selector-agente { flex-direction: column; align-items: stretch; }
+  .selector-agente select { width: 100%; }
+  .grupo-campos { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .hero { padding-top: .5rem; }
+}
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 `;

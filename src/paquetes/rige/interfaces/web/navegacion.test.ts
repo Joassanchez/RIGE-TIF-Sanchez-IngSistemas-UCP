@@ -7,6 +7,7 @@ import { paginaPermiso } from "./paginas/permiso";
 import { paginaHallazgos } from "./paginas/hallazgos";
 import { paginaEntradas } from "./paginas/entradas";
 import { crearManejador, type CasosWeb } from "./servidor";
+import { estilos } from "./estilos";
 
 const base = { esquema: 2 as const, proyecto: "/proyecto", entradas: [], resumenEntradas: "a".repeat(64), declaraciones: [], reglas: {} };
 const agentes: RespuestaAgentes = { ...base, agentes: [
@@ -53,7 +54,7 @@ describe("T5-09 N-2 selector de agente", () => {
     const formulario = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)?.[0];
     expect(formulario).toBeDefined();
     expect(formulario!).toContain('action="/resoluciones/7" method="get"');
-    expect(formulario!).toContain('<select name="agente">');
+    expect(formulario!).toContain('<select name="agente" id="agente-seleccionado">');
     expect(formulario!).toContain('<option value="build" selected>build</option>');
     expect(formulario!).toContain('<option value="explore">explore</option>');
     expect(formulario!).not.toContain("deshabilitado");
@@ -68,6 +69,40 @@ describe("T5-09 N-2 selector de agente", () => {
     expect(fallo).not.toContain('id="seleccionar-agente"');
     expect(fallo).toContain('<section id="valores">');
     expect(JSON.parse(fallo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(valores);
+  });
+});
+
+describe("T5-09-c1 C-1 selector compacto", () => {
+  test("presenta etiqueta, selector acotado y boton en una banda separada que se apila en movil", async () => {
+    const cuerpo = await solicitar(casos, "/resoluciones/7?agente=build").text();
+    const formulario = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)![0];
+    expect(formulario).toContain('class="selector-agente"');
+    expect(formulario).toContain('<label for="agente-seleccionado">Agente</label>');
+    expect(formulario).toMatch(/<\/label>\s*<select name="agente" id="agente-seleccionado">/);
+    expect(formulario).toMatch(/<\/select>\s*<button class="boton--secundario">Ver agente<\/button>/);
+    expect(estilos).toMatch(/\.selector-agente\s*\{[^}]*display: flex;[^}]*align-items: center;[^}]*gap: 1rem;[^}]*margin: 2rem 0;[^}]*background: var\(--superficie\);[^}]*border:/);
+    expect(estilos).toMatch(/\.selector-agente label\s*\{[^}]*display: block;[^}]*margin: 0;/);
+    expect(estilos).toMatch(/\.selector-agente select\s*\{[^}]*width: 18rem;[^}]*max-width: 100%;/);
+    expect(estilos).toMatch(/@media \(max-width: 760px\)[^]*?\.selector-agente\s*\{[^}]*flex-wrap: wrap;/);
+    expect(estilos).toMatch(/@media \(max-width: 420px\)[^]*?\.selector-agente\s*\{[^}]*flex-direction: column;[^}]*align-items: stretch;/);
+    expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(valores);
+  });
+});
+
+describe("T5-09-c1 C-2 visibilidad en castellano", () => {
+  test("muestra si y no por agente con sus insignias y mantiene los booleanos del JSON", async () => {
+    const cuerpo = await paginaAgentes(agentes, "7").text();
+    const tabla = cuerpo.match(/<section id="tabla-agentes">[^]*?<\/section>/)![0];
+    const filas = [...tabla.matchAll(/<tbody>([^]*?)<\/tbody>/g)][0]![1]!.match(/<tr>[^]*?<\/tr>/g)!;
+    expect(filas).toHaveLength(2);
+    expect(filas[0]).toContain('<code>build</code>');
+    expect(filas[0]).toContain('<td><span class="insignia insignia--neutra">no</span></td>');
+    expect(filas[1]).toContain('<code>explore</code>');
+    expect(filas[1]).toContain('<td><span class="insignia insignia--aviso">sí</span></td>');
+    expect(tabla).not.toMatch(/>true<|>false</);
+    const dato = JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
+    expect(dato).toEqual(agentes);
+    expect(dato.agentes.map((agente: { oculto: boolean }) => agente.oculto)).toEqual([false, true]);
   });
 });
 
@@ -105,13 +140,31 @@ describe("T5-09 N-4 consultas rapidas", () => {
     const lista = cuerpo.match(/<section id="consultas-rapidas"[^]*?<\/section>/)?.[0];
     expect(lista).toBeDefined();
     expect(lista!).toContain("Consultas rápidas");
-    const enlaces = [...lista!.matchAll(/<a href="([^"]+)">([^]*?)<\/a>/g)];
+    const enlaces = [...lista!.matchAll(/<a href="([^"]+)" class="consulta-rapida">([^]*?)<\/a>/g)];
     expect(enlaces).toHaveLength(4);
     for (const [i, [herramienta, objetivo]] of [["read", ".env"], ["edit", "opencode.json"], ["bash", "git status"], ["bash", "rm -rf build"]].entries()) {
       const [url, texto] = [enlaces[i]![1]!, enlaces[i]![2]!];
       expect(url).toBe(`/permiso?id=7&amp;agente=build&amp;herramienta=${herramienta}&amp;objetivo=${encodeURIComponent(objetivo!)}`);
-      expect(texto).toBe(`<code class="ficha-codigo">${herramienta} ${objetivo}</code>`);
+      expect(texto).toBe(`<span class="insignia insignia--neutra">${herramienta}</span> <code>${objetivo}</code>`);
     }
+  });
+});
+
+describe("T5-09-c1 C-3 fichas de consultas rapidas", () => {
+  test("agrupa las fichas sin vinetas en una fila ajustable y destaca hover sin estilos en linea", async () => {
+    const cuerpo = await paginaResolucion(valores, sobre).text();
+    const lista = cuerpo.match(/<section id="consultas-rapidas"[^]*?<\/section>/)![0];
+    expect(lista).toContain('<ul class="consultas-rapidas">');
+    expect(lista.match(/class="consulta-rapida"/g)).toHaveLength(4);
+    expect(lista.match(/class="insignia insignia--neutra"/g)).toHaveLength(4);
+    expect(lista.match(/<code>[^]*?<\/code>/g)).toHaveLength(4);
+    expect(estilos).toMatch(/\.consultas-rapidas\s*\{[^}]*display: flex;[^}]*flex-wrap: wrap;[^}]*gap:[^}]*list-style: none;[^}]*padding: 0;/);
+    expect(estilos).toMatch(/\.consultas-rapidas li\s*\{[^}]*margin: 0;/);
+    expect(estilos).toMatch(/\.consulta-rapida\s*\{[^}]*display: inline-flex;[^}]*align-items: center;[^}]*gap:[^}]*border:/);
+    expect(estilos).toMatch(/\.consulta-rapida:hover\s*\{[^}]*background: var\(--acento-suave\);[^}]*border-color: var\(--acento\);/);
+    expect(cuerpo).not.toMatch(/\sstyle\s*=|<style\b/i);
+    expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/g, "")).not.toMatch(/<script\b/i);
+    expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(valores);
   });
 });
 
