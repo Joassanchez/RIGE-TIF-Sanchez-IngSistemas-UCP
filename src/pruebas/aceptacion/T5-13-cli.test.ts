@@ -24,8 +24,13 @@ describe("T5-13 R-3", () => {
   test("infraestructura: codigo 70 solo por stderr, stack solo con --depurar", () => {
     const e = preparar();
     const precarga = join(e.raiz, "fallar.ts");
-    const modulo = resolve(import.meta.dir, "../../paquetes/rige/adaptadores/sistema/entorno-lectura.ts");
-    writeFileSync(precarga, `import { EntornoLecturaSistema } from ${JSON.stringify(modulo)};\nEntornoLecturaSistema.prototype.canonica = () => { throw new Error("FALLO-T513-INFRAESTRUCTURA"); };`);
+    // Como RF-03 CA-5: el modulo del runtime no depende del alias de unidad de src/.
+    writeFileSync(precarga, `import { mock } from "bun:test";
+      const fs = await import("node:fs");
+      mock.module("node:fs", () => ({ ...fs, readFileSync: (...args) => {
+        if (String(args[0]).endsWith("opencode.json")) throw new Error("FALLO-T513-INFRAESTRUCTURA");
+        return fs.readFileSync(...args);
+      } }));`);
     for (const depurar of [false, true]) {
       const proceso = Bun.spawnSync([process.execPath, "--preload", precarga, "paquetes/rige/arranque/rige.ts", "reglas", "--proyecto", e.proyecto,
         "--agente", "build", ...(depurar ? ["--depurar"] : [])], { cwd: resolve(import.meta.dir, "../.."),
