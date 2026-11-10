@@ -25,10 +25,9 @@ describe("W-10", () => {
       almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 } }).text();
     expect(cuerpo).toContain('<form method="get" action="/resolver">');
     expect(cuerpo).toMatch(/<input[^>]*name="proyecto"[^>]*required/);
-    expect(cuerpo).toMatch(/<input[^>]*name="agente"[^>]*value="build"/);
-    expect(cuerpo).toMatch(/<input[^>]*name="clave"[^>]*value=""/);
-    expect(cuerpo).toContain("vacía: todas las claves del agente");
-    expect(cuerpo).toContain("Resolver y guardar");
+    expect(cuerpo.match(/<form\b/g)).toHaveLength(1);
+    expect(cuerpo).not.toMatch(/name="(?:agente|clave)"/);
+    expect(cuerpo).toContain('>Analizar</button>');
     expect(cuerpo).toContain(`class="version">${versionRige}</span>`);
     expect(cuerpo).toContain("/temporal/rige.db");
     expect(cuerpo).not.toContain("<script");

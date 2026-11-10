@@ -38,7 +38,7 @@ describe("W-11", () => {
     const solicitar = (ruta: string) => manejar(new Request(`http://127.0.0.1${ruta}`, {
       headers: { Host: "127.0.0.1:12345" },
     }));
-    for (const agente of ["", "&agente=", "&agente=%20%09"]) {
+    for (const agente of ["&agente=", "&agente=%20%09"]) {
       expect(solicitar(`/resolver?proyecto=/proyecto${agente}`).status).toBe(400);
     }
     expect(solicitudes).toEqual([]);
@@ -75,8 +75,7 @@ describe("W-12", () => {
     const inexistente = solicitar("/resoluciones/7?agente=a%20%26%20b&clave=c%20%26%20d");
     expect(inexistente.status).toBe(404);
     expect(await inexistente.text()).toContain("No existe la resolución 7 en el almacén.");
-    solicitar("/resoluciones/7");
-    expect(consultas).toEqual([["7", "a & b", "c & d"], ["7", "", ""]]);
+    expect(consultas).toEqual([["7", "a & b", "c & d"]]);
   });
 });
 

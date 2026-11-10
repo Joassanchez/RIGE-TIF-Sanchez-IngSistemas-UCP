@@ -67,11 +67,11 @@ function ubicacion(respuesta: Awaited<ReturnType<typeof solicitarLocal>>): strin
 function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
   const valores = seccionHtml(cuerpo, "valores");
   const ruta = raiz.replaceAll("\\", "/");
-  expect(valores).toContain(`<td>temperature</td><td>${temperatura}</td>`);
-  const fila = /<tr><td>temperature<\/td>.*?<\/tr>/s.exec(valores);
+  expect(valores).toContain(`<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor efectivo">${temperatura}</td>`);
+  const fila = /<tr><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(valores);
   expect(fila).not.toBeNull();
-  const celdas = fila![0].match(/<td>.*?<\/td>/gs)!;
-  expect(celdas).toHaveLength(5);
+  const celdas = fila![0].match(/<td\b[^>]*>.*?<\/td>/gs)!;
+  expect(celdas).toHaveLength(4);
   expect(textoHtml(celdas[2]!)).toBe(`proyecto ${ruta}/proyecto/opencode.jsonc:6:7`);
   expect(celdas[2]).toContain(`title="${ruta}/proyecto/opencode.jsonc:6:7"`);
   const desplazadas = [...celdas[3]!.matchAll(/<li>(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
@@ -85,6 +85,39 @@ function resumen(cuerpo: string): string {
   if (!encontrado) throw new Error("La pagina no presenta el resumen de las entradas.");
   return encontrado[1]!;
 }
+
+describe("T5-11 P-1 P-3 panel con foto y entradas actuales", () => {
+  const preparar = prepararRecorrido();
+  test("Analizar sin agente guarda la foto; editar entradas solo cambia las vistas actuales", async () => {
+    const recorrido = preparar();
+    const redireccion = await recorrido.solicitar(`/resolver?proyecto=${encodeURIComponent(recorrido.proyecto)}`);
+    expect(redireccion.estado).toBe(303);
+    const ruta = ubicacion(redireccion);
+    expect(ruta).toBe("/resoluciones/1");
+    const foto = await recorrido.solicitar(ruta);
+    expect(foto.estado).toBe(200);
+    const extraer = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
+    expect(extraer(foto.cuerpo).agente).toBe("build");
+    comprobarTemperatura(foto.cuerpo, recorrido.raiz);
+    const contexto = `proyecto=${encodeURIComponent(recorrido.proyecto)}&id=1&agente=build&clave=temperature`;
+    const entradasAntes = await recorrido.solicitar(`/entradas?${contexto}`);
+    const hallazgosAntes = await recorrido.solicitar(`/hallazgos?${contexto}`);
+    for (const actual of [entradasAntes, hallazgosAntes]) expect(actual.estado).toBe(200);
+    writeFileSync(join(recorrido.proyecto, "opencode.jsonc"), "{ archivo roto");
+    const recuperada = await recorrido.solicitar(ruta);
+    expect(recuperada.estado).toBe(200);
+    expect(recuperada.cuerpo).toBe(foto.cuerpo);
+    for (const [vista, antes] of [["entradas", entradasAntes], ["hallazgos", hallazgosAntes]] as const) {
+      const actual = await recorrido.solicitar(`/${vista}?${contexto}`);
+      expect(actual.estado).toBe(200);
+      expect(extraer(actual.cuerpo)).not.toEqual(extraer(antes.cuerpo));
+      expect(actual.cuerpo).toContain("Estado actual de las entradas de configuración (no es la foto guardada)");
+      expect(actual.cuerpo).toContain('aria-label="Panel del proyecto"');
+    }
+    await recorrido.reiniciar();
+    expect((await recorrido.solicitar(ruta)).cuerpo).toBe(foto.cuerpo);
+  });
+});
 
 describe("RF-01 CA-1 · recorrido del README (guía, paso 8)", () => {
   const preparar = prepararRecorrido(true);
@@ -122,17 +155,17 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
       valores: Record<string, string | number>;
     };
     const tabla = seccionHtml(pagina.cuerpo, "valores").split("<tbody>")[1]!.split("</tbody>")[0]!;
-    const claves = [...tabla.matchAll(/<tr><td>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
+    const claves = [...tabla.matchAll(/<tr><td[^>]*>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
     expect(claves.filter(clave => Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["description", "steps", "temperature"]);
     expect(claves.filter(clave => !Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["mode", "name", "native", "options"]);
     for (const [clave, valor] of Object.entries(referencia.valores)) {
-      expect(tabla).toContain(`<td>${clave}</td><td>${JSON.stringify(valor).replaceAll('"', "&quot;")}</td>`);
+      expect(tabla).toContain(`<td data-etiqueta="Clave">${clave}</td><td data-etiqueta="Valor efectivo">${JSON.stringify(valor).replaceAll('"', "&quot;")}</td>`);
     }
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const puntual = await recorrido.solicitar(paginaPrimera);
     expect(puntual.estado).toBe(200);
     const fila = (cuerpo: string) => {
-      const encontrada = /<tr><td>temperature<\/td>.*?<\/tr>/s.exec(seccionHtml(cuerpo, "valores"));
+      const encontrada = /<tr><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(seccionHtml(cuerpo, "valores"));
       expect(encontrada).not.toBeNull();
       return encontrada![0];
     };
@@ -320,7 +353,7 @@ describe("Errores de uso por la web", () => {
       expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build");
       const pagina = await recorrido.solicitar("/resoluciones/2?agente=build");
       expect(pagina.estado).toBe(200);
-      expect(pagina.cuerpo).toContain("<td>temperature</td><td>0.3</td>");
+      expect(pagina.cuerpo).toContain('<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor efectivo">0.3</td>');
       expect(pagina.cuerpo).toContain("Claves no incorporadas por RIGE");
       expect(pagina.cuerpo).toContain("<li>permission:");
       const pendientes = /<ul>(.*?)<\/ul>/s.exec(seccionHtml(pagina.cuerpo, "claves-no-incorporadas", "details"))?.[1];

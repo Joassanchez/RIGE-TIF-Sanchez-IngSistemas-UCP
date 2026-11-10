@@ -16,6 +16,8 @@ import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-ent
 import { paginaEntradas } from "./paginas/entradas";
 import { contenidoError, diseno } from "./diseno";
 import { redirigir, responderHtml, responderEstilos } from "./respuesta";
+import { agenteInicial, type ContextoPanel } from "./panel";
+import { paginaConsultasPermiso } from "./paginas/consultas-permiso";
 
 export interface CasosWeb {
   readonly consultarEntradas: ConsultarEntradas;
@@ -30,14 +32,28 @@ export interface CasosWeb {
 export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Request) => Response {
   const enrutar = (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
+    const contextoSolicitud = { clave: url.searchParams.get("clave") ?? "", agente: url.searchParams.get("agente") ?? undefined };
+    const contextoActual = (proyecto: string): Resultado<ContextoPanel, ErrorUso> => {
+      const id = url.searchParams.get("id");
+      if (id === null) return { exito: true, valor: {} };
+      const agentes = casos.consultarAgentes(id);
+      if (!agentes.exito) return agentes;
+      if (agentes.valor.proyecto !== proyecto) return { exito: false, error: errorSolicitudInvalida("la resolución no pertenece al proyecto consultado") };
+      return { exito: true, valor: { ...contextoSolicitud, idResolucion: id, agentes: agentes.valor.agentes,
+        agente: contextoSolicitud.agente ?? agenteInicial(agentes.valor.agentes) } };
+    };
     if (url.pathname === "/estilos.css") return responderEstilos();
     if (url.pathname === "/hallazgos") {
       const resultado = casos.consultarHallazgos(url.searchParams.get("proyecto") ?? "", { explicar: true });
-      return resultado.exito ? paginaHallazgos(resultado.valor) : paginaErrorUso(resultado.error);
+      if (!resultado.exito) return paginaErrorUso(resultado.error);
+      const contexto = contextoActual(resultado.valor.proyecto);
+      return contexto.exito ? paginaHallazgos(resultado.valor, contexto.valor) : paginaErrorUso(contexto.error);
     }
     if (url.pathname === "/entradas") {
       const resultado = casos.consultarEntradas(url.searchParams.get("proyecto") ?? "");
-      return resultado.exito ? paginaEntradas(resultado.valor) : paginaErrorUso(resultado.error);
+      if (!resultado.exito) return paginaErrorUso(resultado.error);
+      const contexto = contextoActual(resultado.valor.proyecto);
+      return contexto.exito ? paginaEntradas(resultado.valor, contexto.valor) : paginaErrorUso(contexto.error);
     }
     if (url.pathname === "/permiso") {
       const parametros = url.searchParams;
@@ -52,29 +68,57 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
         ...(parametros.has("lanzadoPor") ? { lanzadoPor: parametros.get("lanzadoPor")! } : {}),
       });
       const id = parametros.get("id") ?? "";
-      return resultado.exito ? paginaPermiso(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined) : paginaErrorUso(resultado.error);
+      if (!resultado.exito) return paginaErrorUso(resultado.error);
+      const listado = casos.consultarAgentes(id);
+      return paginaPermiso(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, {
+        ...contextoSolicitud, ...(listado.exito ? { agentes: listado.valor.agentes } : {}),
+      });
     }
     if (url.pathname === "/agentes") {
       const resultado = casos.consultarAgentes(url.searchParams.get("id") ?? "");
       const id = url.searchParams.get("id") ?? "";
-      return resultado.exito ? paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, url.searchParams.get("clave") ?? undefined) : paginaErrorUso(resultado.error);
+      return resultado.exito ? paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, contextoSolicitud.clave, {
+        agente: contextoSolicitud.agente ?? agenteInicial(resultado.valor.agentes), agentes: resultado.valor.agentes,
+      }) : paginaErrorUso(resultado.error);
     }
     if (url.pathname === "/resolver") {
-      const agente = url.searchParams.get("agente") ?? "";
+      const agente = url.searchParams.get("agente");
       const clave = url.searchParams.get("clave") ?? "";
-      if (!agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
-      const resultado = casos.resolverProyecto(url.searchParams.get("proyecto") ?? "", agente);
+      if (agente !== null && !agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
+      const proyecto = url.searchParams.get("proyecto") ?? "";
+      const resultado = agente === null ? casos.resolverProyecto(proyecto) : casos.resolverProyecto(proyecto, agente);
       if (!resultado.exito) return paginaErrorUso(resultado.error);
-      return redirigir(`/resoluciones/${resultado.valor.id}?agente=${encodeURIComponent(agente)}${clave ? `&clave=${encodeURIComponent(clave)}` : ""}`);
+      const contexto = new URLSearchParams();
+      if (agente !== null) contexto.set("agente", agente);
+      if (clave) contexto.set("clave", clave);
+      // encodeURIComponent conserva la codificación de los enlaces existentes (espacios como %20).
+      const consulta = [...contexto].map(([nombre, valor]) => `${nombre}=${encodeURIComponent(valor)}`).join("&");
+      return redirigir(`/resoluciones/${resultado.valor.id}${consulta ? `?${consulta}` : ""}`);
     }
-    const id = /^\/resoluciones\/([0-9]+)$/.exec(url.pathname)?.[1];
+    const rutaResolucion = /^\/resoluciones\/([0-9]+)(\/permisos)?$/.exec(url.pathname);
+    const id = rutaResolucion?.[1];
     if (id !== undefined) {
+      if (rutaResolucion?.[2]) {
+        const agentes = casos.consultarAgentes(id);
+        if (!agentes.exito) return paginaErrorUso(agentes.error);
+        const agente = contextoSolicitud.agente ?? agenteInicial(agentes.valor.agentes);
+        if (agente === undefined) return redirigir(`/agentes?id=${encodeURIComponent(id)}`);
+        if (!agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
+        return paginaConsultasPermiso(agentes.valor, { ...contextoSolicitud, agente, idResolucion: id, agentes: agentes.valor.agentes });
+      }
       const clave = url.searchParams.get("clave") ?? "";
-      const resultado = casos.consultarResolucion(id, url.searchParams.get("agente") ?? "", clave);
+      let agente = url.searchParams.get("agente");
+      const agentes = agente === null ? casos.consultarAgentes(id) : undefined;
+      if (agentes !== undefined) {
+        if (!agentes.exito) return paginaErrorUso(agentes.error);
+        agente = agenteInicial(agentes.valor.agentes) ?? null;
+        if (agente === null) return redirigir(`/agentes?id=${encodeURIComponent(id)}`);
+      }
+      const resultado = casos.consultarResolucion(id, agente!, clave);
       if (!resultado.exito) return paginaErrorUso(resultado.error);
-      const agentes = casos.consultarAgentes(id);
+      const listado = agentes ?? casos.consultarAgentes(id);
       return paginaResolucion(resultado.valor.respuesta, resultado.valor.sobre, {
-        clave, ...(agentes.exito ? { agentes: agentes.valor.agentes } : {}),
+        clave, q: url.searchParams.get("q") ?? "", ...(listado.exito ? { agentes: listado.valor.agentes } : {}),
       });
     }
     if (url.pathname !== "/") {

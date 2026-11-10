@@ -1066,7 +1066,7 @@ describe("RF-07 CA-4 T3-07 R-3", () => {
         expect(pagina.estado).toBe(200);
         const rWeb = datosWeb(pagina.cuerpo);
         expect(rCli).toEqual(rWeb);
-        const filas = [...seccionHtml(pagina.cuerpo, "tabla-hallazgos").matchAll(/<tr><td>(.*?)<\/td><td>(.*?)<\/td><td>(.*?)<\/td><\/tr>/gs)];
+        const filas = [...seccionHtml(pagina.cuerpo, "tabla-hallazgos").matchAll(/<tr><td data-etiqueta="Tipo">(.*?)<\/td><td data-etiqueta="Localización">(.*?)<\/td><td data-etiqueta="Explicación">(.*?)<\/td><\/tr>/gs)];
         expect(filas).toHaveLength(rCli.hallazgos.length);
         expect(filas.map(f => f.slice(1).map(celda => textoHtml(celda)))).toEqual(rCli.hallazgos.map((h: { tipo: string; localizacion: string; explicacion: string }) => [
           escaparHtml(h.tipo), escaparHtml(h.localizacion), escaparHtml(h.explicacion),

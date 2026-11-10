@@ -112,10 +112,10 @@ describe("T5-08 U-2 U-10 U-11 P-1 P-2 P-3 P-6", () => {
   test("codifica navegacion y marca la pagina activa sin agregar contexto al JSON", async () => {
     for (const [ruta, activo] of [["/entradas?proyecto=p", "Entradas"], ["/hallazgos?proyecto=p", "Hallazgos"], ["/agentes?id=7", "Agentes"]]) {
       const cuerpo = await solicitar(ruta!).text();
-      expect(cuerpo).toContain(`href="/entradas?proyecto=${encodeURIComponent(base.proyecto)}"`);
-      expect(cuerpo).toContain(`href="/hallazgos?proyecto=${encodeURIComponent(base.proyecto)}"`);
+      expect(cuerpo).toContain(`href="/entradas?proyecto=${encodeURIComponent(base.proyecto)}${activo === "Agentes" ? "&amp;id=7&amp;agente=" + encodeURIComponent(ataque) : ""}"`);
+      expect(cuerpo).toContain(`href="/hallazgos?proyecto=${encodeURIComponent(base.proyecto)}${activo === "Agentes" ? "&amp;id=7&amp;agente=" + encodeURIComponent(ataque) : ""}"`);
       expect(cuerpo).toMatch(new RegExp(`aria-current="page">${activo}</a>`));
-      expect(cuerpo.includes('href="/agentes?id=7"')).toBe(activo === "Agentes");
+      expect(cuerpo.includes('href="/agentes?id=7&amp;agente=')).toBe(activo === "Agentes");
       expect(cuerpo).not.toContain(estado.almacen.ruta);
     }
     const invalida = await solicitar("/agentes?id=%22%3E%3Cscript%3E").text();
@@ -136,12 +136,11 @@ describe("T5-08 U-3 U-4 tema y componentes", () => {
 });
 
 describe("T5-08 U-5 U-6", () => {
-  test("inicio ofrece resolver e inspeccionar; resolucion pone resumen primero y pliega detalles", async () => {
+  test("inicio ofrece analizar; resolucion pone resumen primero y pliega detalles", async () => {
     const inicio = await paginaInicio(estado).text();
     expect(inicio).toContain("¿Qué configuración rige de verdad?");
-    expect(inicio).toContain("Inspeccionar un proyecto");
-    expect(inicio).toContain('formaction="/entradas"');
-    expect(inicio).toContain('formaction="/hallazgos"');
+    expect(inicio).toContain('>Analizar</button>');
+    expect(inicio.match(/<form\b/g)).toHaveLength(1);
     const cuerpo = await paginaResolucion(valores, sobre).text();
     expect(seccion(cuerpo, "resumen-resolucion")).toContain("0 valores");
     expect(cuerpo.indexOf('id="resumen-resolucion"')).toBeLessThan(cuerpo.indexOf('id="valores"'));
@@ -163,8 +162,8 @@ describe("T5-08 U-7 P-5", () => {
     const cadena = seccion(cuerpo, "cadena-efectiva");
     expect(cadena).toContain("Cadena efectiva");
     expect(cadena.match(/<tr[ >]/g)).toHaveLength(3);
-    expect(cadena).toContain('<tr class="fila--determinante"><td>1</td>');
-    expect(cadena.indexOf("<td>1</td>")).toBeLessThan(cadena.indexOf("<td>2</td>"));
+    expect(cadena).toContain('<tr class="fila--determinante"><td data-etiqueta="Índice">1</td>');
+    expect(cadena.indexOf('<td data-etiqueta="Índice">1</td>')).toBeLessThan(cadena.indexOf('<td data-etiqueta="Índice">2</td>'));
     const sinDeterminante = await paginaPermiso({ ...dato, determinante: null }).text();
     expect(seccion(sinDeterminante, "cadena-efectiva")).not.toContain('class="fila--determinante"');
   });

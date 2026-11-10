@@ -82,7 +82,7 @@ describe("RF-02 CA-7", () => {
       expect(pagina.estado).toBe(200);
       const respuesta = incrustada(pagina.cuerpo) as RespuestaPermiso;
       const cadena = seccionHtml(pagina.cuerpo, "cadena-efectiva");
-      const filas = [...cadena.matchAll(/<tr class="([^"]+)"><td>(\d+)<\/td>/g)];
+      const filas = [...cadena.matchAll(/<tr class="([^"]+)"><td data-etiqueta="Índice">(\d+)<\/td>/g)];
       expect(filas.map(fila => Number(fila[2]))).toEqual(respuesta.cadena.map(regla => regla.indice + 1));
       for (const [indice, regla] of respuesta.cadena.entries()) {
         expect(filas[indice]![1]).toBe(regla.indice === respuesta.determinante ? "fila--determinante" : "fila");
@@ -101,8 +101,12 @@ describe("RF-02 CA-7", () => {
       expect(respuesta.explicacion!.length).toBeGreaterThan(0);
       for (const oracion of respuesta.explicacion!) expect(pagina.cuerpo).toContain(`<p>${escapar(oracion)}</p>`);
       const resolucion = await solicitar(`/resoluciones/${id}?agente=build`);
-      expect(resolucion.cuerpo).toContain('action="/permiso"');
-      expect(resolucion.cuerpo).toContain(`href="/agentes?id=${id}"`);
+      expect(resolucion.cuerpo).toContain(`href="/resoluciones/${id}/permisos?agente=build"`);
+      expect(resolucion.cuerpo).toContain(`href="/agentes?id=${id}&amp;agente=build"`);
+      const formularios = await solicitar(`/resoluciones/${id}/permisos?agente=build`);
+      expect(formularios.estado).toBe(200);
+      expect(formularios.cuerpo).toContain('action="/permiso"');
+      expect(formularios.cuerpo).not.toContain('id="respuesta"');
     }, proyecto => writeFileSync(join(proyecto, "opencode.json"), '{"agent":{"build":{"temperature":0.2}}}'));
   });
 });

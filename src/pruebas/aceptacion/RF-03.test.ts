@@ -328,7 +328,7 @@ describe("S-1", () => {
       const web = JSON.parse(proceso.stdout.toString());
       expect(web.exito).toBe(true);
       expect(web.valor.respuesta).toEqual(JSON.parse(escenario.consultar(...(clave ? ["--clave", clave] : [])).salida));
-      if (clave === "temperature") expect(puntual.cuerpo).toContain(`<td>${web.valor.respuesta.valores[0].rastro.valor}</td>`);
+      if (clave === "temperature") expect(puntual.cuerpo).toContain(`<td data-etiqueta="Valor efectivo">${web.valor.respuesta.valores[0].rastro.valor}</td>`);
       if (clave === "inexistente") expect(puntual.cuerpo).toContain("clave-inexistente");
       expect(web.valor.sobre).toMatchObject({ id: 1, instante: expect.any(String), anteriores: [expect.objectContaining({ id: 1 })] });
       }

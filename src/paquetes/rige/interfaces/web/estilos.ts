@@ -178,6 +178,22 @@ details[open] > summary { margin-bottom: 1.25rem; }
   .pie { margin: 0 1rem; }
   .pie__almacen { text-align: left; max-width: 100%; }
 }
+.pestanas { display: flex; flex-wrap: nowrap; gap: .5rem; width: 100%; min-width: 0; max-width: 100%; overflow-x: auto; padding: .5rem 0; margin-bottom: 1rem; }
+.pestanas a { flex-shrink: 0; }
+.filtros { margin: 2rem 0; }
+#comando-cli { min-width: 0; max-width: 100%; }
+#comando-cli pre { max-width: 100%; overflow-x: auto; padding: 1rem; background: var(--fondo); }
+#comando-cli code { white-space: pre; overflow-wrap: normal; }
+@media (max-width: 640px) {
+  .tabla-tarjetas, .tabla-tarjetas tbody, .tabla-tarjetas tr, .tabla-tarjetas td { display: block; width: 100%; min-width: 0; max-width: 100%; }
+  /* Conserva los encabezados para tecnologías de asistencia. */
+  .tabla-tarjetas thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+  .tabla-tarjetas tr { padding: .75rem; border-bottom: 1px solid var(--borde); }
+  .tabla-tarjetas td { padding: .5rem; border: 0; }
+  .tabla-tarjetas td[data-etiqueta]::before { content: attr(data-etiqueta); display: block; font: 600 .75rem system-ui; color: var(--secundario); margin-bottom: .4rem; }
+  #valores .tabla-tarjetas td:nth-child(1) { white-space: normal; min-width: 0; overflow-wrap: anywhere; }
+  .tabla-tarjetas td ol, .tabla-tarjetas .regla-detalle { min-width: 0; }
+}
 @media (max-width: 420px) {
   .hero { padding-top: .5rem; }
 }

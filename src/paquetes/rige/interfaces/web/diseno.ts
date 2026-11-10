@@ -1,11 +1,10 @@
 import { versionRige } from "../../aplicacion/respuestas/estado";
 import { html, type HtmlSeguro } from "./plantillas";
+import { consultaPanel, selectorAgente, type ContextoPanel } from "./panel";
 
-interface ContextoDiseno {
+interface ContextoDiseno extends ContextoPanel {
   readonly proyecto?: string;
-  readonly idResolucion?: string | number;
-  readonly clave?: string;
-  readonly activa?: "Inicio" | "Entradas" | "Hallazgos" | "Agentes";
+  readonly activa?: "Inicio" | "Valores" | "Permisos" | "Entradas" | "Hallazgos" | "Agentes";
   readonly almacen?: { readonly ruta: string; readonly versionEsquema: number };
   readonly minimo?: boolean;
 }
@@ -13,14 +12,20 @@ interface ContextoDiseno {
 // Composición de presentación: no consulta ni modifica respuestas de aplicación.
 export function diseno(titulo: string, contenido: HtmlSeguro, contexto: ContextoDiseno = {}): HtmlSeguro {
   const enlaces: { texto: string; ruta: string }[] = [{ texto: "Inicio", ruta: "/" }];
-  if (!contexto.minimo && contexto.proyecto !== undefined) {
+  if (!contexto.minimo && contexto.proyecto !== undefined && contexto.idResolucion === undefined) {
     const proyecto = encodeURIComponent(contexto.proyecto);
     enlaces.push({ texto: "Entradas", ruta: `/entradas?proyecto=${proyecto}` },
       { texto: "Hallazgos", ruta: `/hallazgos?proyecto=${proyecto}` });
   }
-  if (!contexto.minimo && contexto.idResolucion !== undefined) {
-    enlaces.push({ texto: "Agentes", ruta: `/agentes?id=${encodeURIComponent(contexto.idResolucion)}${contexto.clave ? `&clave=${encodeURIComponent(contexto.clave)}` : ""}` });
-  }
+  const id = contexto.idResolucion === undefined ? undefined : encodeURIComponent(contexto.idResolucion);
+  const consulta = consultaPanel(contexto);
+  const pestanas = id === undefined || contexto.minimo ? [] : [
+    { texto: "Valores", ruta: `/resoluciones/${id}${consulta ? `?${consulta.slice(1)}` : ""}` },
+    { texto: "Permisos", ruta: `/resoluciones/${id}/permisos${consulta ? `?${consulta.slice(1)}` : ""}` },
+    { texto: "Agentes", ruta: `/agentes?id=${id}${consulta}` },
+    { texto: "Entradas", ruta: `/entradas?proyecto=${encodeURIComponent(contexto.proyecto ?? "")}&id=${id}${consulta}` },
+    { texto: "Hallazgos", ruta: `/hallazgos?proyecto=${encodeURIComponent(contexto.proyecto ?? "")}&id=${id}${consulta}` },
+  ];
   return html`<!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,7 +38,8 @@ ${contexto.minimo ? html`` : html`<p class="subtitulo">Configuración efectiva d
 <nav aria-label="Principal">${enlaces.map(enlace => contexto.activa === enlace.texto
     ? html`<a href="${enlace.ruta}" aria-current="page">${enlace.texto}</a>`
     : html`<a href="${enlace.ruta}">${enlace.texto}</a>`)}</nav></div></header>
-<main id="contenido" tabindex="-1">${contenido}</main>
+<main id="contenido" tabindex="-1">${pestanas.length ? html`<nav class="pestanas" aria-label="Panel del proyecto">${pestanas.map(enlace => contexto.activa === enlace.texto
+    ? html`<a href="${enlace.ruta}" aria-current="page">${enlace.texto}</a>` : html`<a href="${enlace.ruta}">${enlace.texto}</a>`)}</nav>${selectorAgente(contexto, contexto.activa, contexto.proyecto)}` : html``}${contenido}</main>
 <footer class="pie"><p><span class="punto" aria-hidden="true"></span>Local · solo lectura · sin red</p>
 ${contexto.almacen && !contexto.minimo ? html`<div class="pie__almacen"><p>Almacén: <code>${contexto.almacen.ruta}</code></p><p>Esquema del almacén: ${contexto.almacen.versionEsquema}</p></div>` : html``}
 </footer></body></html>`;

@@ -43,7 +43,7 @@ describe("W-13", () => {
     const contenido = cuerpo.split('<main id="contenido" tabindex="-1">')[1]!;
     expect(contenido).toBeDefined();
     const partes = ["<h1>Resolución 7</h1>", "Página armada con la resolución leída del almacén de RIGE.",
-      "Proyecto", "Valores efectivos", "Regla aplicada", "Claves no incorporadas por RIGE",
+      "Proyecto", "Valores efectivos", "Cómo se decide", "Claves no incorporadas por RIGE",
       "Entradas leídas", "Resoluciones de este proyecto"];
     let posicion = -1;
     for (const parte of partes) {
@@ -55,7 +55,7 @@ describe("W-13", () => {
     for (const dato of ["/proyecto/&lt;ejemplo&gt;", "Instante (UTC)", "2026-10-05T12:00:00.000Z",
       "Herramienta", "opencode 1.18.25", "Agente", "a &amp; b", "Clave", "todas",
       "Resumen de las entradas leídas", "a".repeat(64), "Clave", "Valor efectivo",
-      "Declaración determinante", "Declaraciones desplazadas", "<td>description</td>", "<td>steps</td>",
+      "Declaración determinante", "Declaraciones desplazadas", '<td data-etiqueta="Clave">description</td>', '<td data-etiqueta="Clave">steps</td>',
       "&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;", "ninguna",
       "Prevalece la ultima &lt;declaracion&gt; (RD-01).", "Sin resolver &lt;permiso&gt;.",
       "permission: Sin resolver &lt;permiso&gt;.", "Orden", "Vía", "Referencia", "Condición", "Resumen SHA-256",
@@ -63,9 +63,9 @@ describe("W-13", () => {
       expect(cuerpo).toContain(dato);
     }
     expect(cuerpo).toMatch(/<ol>.*0\.1.*0\.2.*<\/ol>/s);
-    const fila = seccionHtml(cuerpo, "valores").match(/<tr><td>description<\/td>.*?<\/tr>/s)![0];
-    const celdas = fila.match(/<td>.*?<\/td>/gs)!;
-    expect(celdas).toHaveLength(5);
+    const fila = seccionHtml(cuerpo, "valores").match(/<tr><td[^>]*>description<\/td>.*?<\/tr>/s)![0];
+    const celdas = fila.match(/<td\b[^>]*>.*?<\/td>/gs)!;
+    expect(celdas).toHaveLength(4);
     expect(celdas[1]).toContain("&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;");
     expect(textoHtml(celdas[2]!)).toContain("proyecto /proyecto/&lt;entrada3&gt;.jsonc:6:7");
     const desplazadas = [...celdas[3]!.matchAll(/<li>(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
@@ -117,16 +117,14 @@ describe("W-14", () => {
       primera: "Conservar la primera <declaracion>.", ultima: "Conservar la ultima & su orden.",
       "fuera-del-v1": "No se resuelve <permiso>.",
     } }).text();
-    const filas = [...seccionHtml(cuerpo, "valores").matchAll(/<tr><td>(description|steps)<\/td>.*?<\/tr>/gs)].map((fila) => fila[0]);
+    const filas = [...seccionHtml(cuerpo, "valores").matchAll(/<tr><td[^>]*>(description|steps)<\/td>.*?<\/tr>/gs)].map((fila) => fila[0]);
     expect(filas).toHaveLength(2);
-    expect(filas[0]!.match(/<td>.*?<\/td>/gs)![4]).toContain('>primera</span>');
-    expect(filas[1]!.match(/<td>.*?<\/td>/gs)![4]).toContain('>ultima</span>');
-    const leyenda = /<div id="leyenda-reglas"[^>]*>(.*?)<\/div>/s.exec(seccionHtml(cuerpo, "valores"));
-    expect(leyenda).not.toBeNull();
-    const definiciones = [...leyenda![1]!.matchAll(/<dt>(.*?)<\/dt><dd>(.*?)<\/dd>/gs)];
-    expect(definiciones.map(d => [textoHtml(d[1]!), textoHtml(d[2]!)])).toEqual([
-      ["primera", "Conservar la primera &lt;declaracion&gt;."], ["ultima", "Conservar la ultima &amp; su orden."],
-    ]);
+    const procedencias = filas.map(fila => fila.match(/<td\b[^>]*>.*?<\/td>/gs)![2]!);
+    expect(procedencias[0]).toContain('<code>primera</code>');
+    expect(procedencias[0]).toContain('<p>Conservar la primera &lt;declaracion&gt;.</p>');
+    expect(procedencias[1]).toContain('<code>ultima</code>');
+    expect(procedencias[1]).toContain('<p>Conservar la ultima &amp; su orden.</p>');
+    expect(cuerpo).not.toContain('id="leyenda-reglas"');
     expect(cuerpo).toContain("permission: No se resuelve &lt;permiso&gt;.");
     expect(cuerpo).not.toContain("grupo.a &amp; b");
     expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")).not.toContain("orden-de-aplicacion");
@@ -145,7 +143,7 @@ describe("W-15", () => {
     const cuerpo = await recibida.text();
     const tabla = seccionHtml(cuerpo, "valores").split("<tbody>")[1]!.split("</tbody>")[0]!;
     expect(tabla.match(/<tr>/g)).toHaveLength(1);
-    expect(tabla).toContain('<td colspan="5">RIGE no incorpora claves resueltas para este agente.</td>');
+    expect(tabla).toContain('<td colspan="4">RIGE no incorpora claves resueltas para este agente.</td>');
     expect(cuerpo).toContain("Claves no incorporadas por RIGE");
     expect(cuerpo).toContain("<li>steps: Sin resolver &lt;permiso&gt;.</li>");
     expect(cuerpo).toContain("<li>maxSteps: Sin resolver &lt;permiso&gt;.</li>");
@@ -153,7 +151,7 @@ describe("W-15", () => {
 });
 
 describe("T5-08-c1 C3 C4 determinante y leyenda", () => {
-  test("no repite el valor determinante y publica una leyenda por identificador usado", async () => {
+  test("no repite el valor determinante y presenta plantillas comunes antes de la tabla", async () => {
     const { paginaResolucion } = await import("./resolucion");
     const original = respuesta();
     const implicito = { ...original.valores[1]!, clave: "native", rastro: { ...original.valores[1]!.rastro,
@@ -163,21 +161,18 @@ describe("T5-08-c1 C3 C4 determinante y leyenda", () => {
       ...original.reglas, "valor-implicito": "Texto <implícito> completo (RD-04)." } };
     const cuerpo = await paginaResolucion(dato, sobre).text();
     const valores = seccionHtml(cuerpo, "valores");
-    const filas = [...valores.matchAll(/<tr><td>.*?<\/tr>/gs)].map(f => f[0]);
+    const filas = [...valores.matchAll(/<tr><td[^>]*>.*?<\/tr>/gs)].map(f => f[0]);
     expect(filas).toHaveLength(3);
-    const celdas = filas[0]!.match(/<td>.*?<\/td>/gs)!;
+    const celdas = filas[0]!.match(/<td\b[^>]*>.*?<\/td>/gs)!;
     expect(celdas[2]).not.toContain("alert(1)");
     expect(celdas[2]).toContain('class="insignia insignia--neutra">proyecto');
     expect(celdas[2]).toContain('title="/proyecto/&lt;entrada3&gt;.jsonc:6:7"');
-    expect(celdas[4]).toContain('class="insignia insignia--neutra">orden-de-aplicacion');
-    expect(filas[2]!.match(/<td>.*?<\/td>/gs)![1]).toContain("implícito");
-    expect(filas[2]!.match(/<td>.*?<\/td>/gs)![2]).toContain("valor-implicito");
-    const leyenda = /<div id="leyenda-reglas"[^>]*>(.*?)<\/div>/s.exec(valores);
-    expect(leyenda).not.toBeNull();
-    const texto = leyenda![1]!;
-    expect(texto.match(/Prevalece la ultima &lt;declaracion&gt; \(RD-01\)\./g)).toHaveLength(1);
-    expect(texto.match(/Texto &lt;implícito&gt; completo \(RD-04\)\./g)).toHaveLength(1);
-    expect(valores.split('id="leyenda-reglas"')[0]).not.toContain("Prevalece la ultima");
+    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![1]).toContain("implícito");
+    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain("valor-implicito");
+    const comunes = valores.split('<table')[0]!;
+    expect(comunes.match(/Prevalece la ultima &lt;declaracion&gt; \(RD-01\)\./g)).toHaveLength(1);
+    expect(comunes.match(/Texto &lt;implícito&gt; completo \(RD-04\)\./g)).toHaveLength(1);
+    expect(valores).not.toContain('id="leyenda-reglas"');
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(dato);
   });
   test("sin identificador legible conserva el texto completo en un details por fila", async () => {

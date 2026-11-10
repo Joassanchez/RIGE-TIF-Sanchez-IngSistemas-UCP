@@ -1,3 +1,5 @@
+import { comandoCli } from "../comando-cli";
+import { consultaPanel, type ContextoPanel } from "../panel";
 import type { RespuestaHallazgos } from "../../../aplicacion/respuestas/hallazgos";
 import { datosRespuesta, html } from "../plantillas";
 import { declaraciones, diseno, insignia } from "../diseno";
@@ -10,9 +12,10 @@ const nombresHallazgos: Readonly<Record<string, string>> = {
   "regla-sin-efecto": "Reglas sin efecto", "elemento-sin-uso": "Elementos sin uso",
 };
 
-export function paginaHallazgos(respuesta: RespuestaHallazgos): Response {
+export function paginaHallazgos(respuesta: RespuestaHallazgos, contexto: ContextoPanel = {}): Response {
   return responderHtml(200, diseno("Hallazgos", html`
 <div class="cabecera-pagina"><p class="ceja">Diagnóstico del proyecto</p><h1>Hallazgos</h1><p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p></div>
+<p>Estado actual de las entradas de configuración (no es la foto guardada)</p>
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="resumen-hallazgos"><h2>Resumen</h2>
 ${respuesta.resumen.elementos === null ? html`<p class="aviso aviso--advertencia">Conteos de elementos no disponibles: resolución incompleta.</p>` : html`<div class="estadisticas estadisticas--elementos" aria-label="Elementos del proyecto">
@@ -23,8 +26,9 @@ ${respuesta.resumen.elementos === null ? html`<p class="aviso aviso--advertencia
 ${respuesta.incompleta ? html`<div class="aviso aviso--advertencia"><p>Hallazgos parciales.</p>${respuesta.motivos.map(motivo => html`<p>${respuesta.reglas[motivo]}</p>`)}</div>` : html``}
 <section id="tabla-hallazgos"><h2>Detalle de hallazgos</h2>
 ${respuesta.hallazgos.length ? html`<div class="tabla-contenedor" role="region" aria-label="Hallazgos" tabindex="0">
-<table><thead><tr><th>Tipo</th><th>Localización</th><th>Explicación</th></tr></thead>
-<tbody>${respuesta.hallazgos.map(hallazgo => html`<tr><td>${insignia(hallazgo.tipo, hallazgo.tipo)}</td><td><a href="${`/entradas?proyecto=${encodeURIComponent(respuesta.proyecto)}#entrada-${encodeURIComponent(hallazgo.entrada.orden)}`}">${presentarRuta(hallazgo.localizacion)}</a></td><td>${hallazgo.explicacion}</td></tr>`)}</tbody></table></div>`
+<table class="tabla-tarjetas"><thead><tr><th>Tipo</th><th>Localización</th><th>Explicación</th></tr></thead>
+<tbody>${respuesta.hallazgos.map(hallazgo => html`<tr><td data-etiqueta="Tipo">${insignia(hallazgo.tipo, hallazgo.tipo)}</td><td data-etiqueta="Localización"><a href="${`/entradas?proyecto=${encodeURIComponent(respuesta.proyecto)}${contexto.idResolucion === undefined ? "" : `&id=${encodeURIComponent(contexto.idResolucion)}${consultaPanel(contexto)}`}#entrada-${encodeURIComponent(hallazgo.entrada.orden)}`}">${presentarRuta(hallazgo.localizacion)}</a></td><td data-etiqueta="Explicación">${hallazgo.explicacion}</td></tr>`)}</tbody></table></div>`
     : html`<p class="estado-vacio">${respuesta.incompleta ? "Sin hallazgos observados; análisis parcial" : "Sin hallazgos en este proyecto"}</p>`}</section>
-${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto, activa: "Hallazgos" }));
+${comandoCli("hallazgos", { proyecto: respuesta.proyecto, explicar: true })}
+${datosRespuesta(respuesta)}`, { ...contexto, proyecto: respuesta.proyecto, activa: "Hallazgos" }));
 }

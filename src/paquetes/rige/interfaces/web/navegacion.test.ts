@@ -59,7 +59,7 @@ describe("T5-09 N-2 selector de agente", () => {
     expect(formulario!).toContain('<option value="explore">explore</option>');
     expect(formulario!).not.toContain("deshabilitado");
     expect(formulario!).toContain('<input type="hidden" name="clave" value="/temperature">');
-    expect(cuerpo).toContain('href="/agentes?id=7&amp;clave=%2Ftemperature"');
+    expect(cuerpo).toContain('href="/agentes?id=7&amp;agente=build&amp;clave=%2Ftemperature"');
     expect(await solicitar(conAgentes, ruta).text()).toBe(cuerpo);
     expect(ids).toEqual(["7", "7"]);
     const sinClave = await solicitar(conAgentes, "/resoluciones/7?agente=build").text();
@@ -108,7 +108,7 @@ describe("T5-09-c1 C-2 visibilidad en castellano", () => {
 
 describe("T5-09 N-3 permiso como subagente", () => {
   test("ofrece consultas separadas para omitir lanzadoPor vacio y presenta el dato solo si viene en la respuesta", async () => {
-    const cuerpo = await paginaResolucion(valores, sobre).text();
+    const cuerpo = await solicitar(casos, "/resoluciones/7/permisos?agente=build").text();
     const normal = cuerpo.match(/<form id="consultar-permiso"[^]*?<\/form>/)![0];
     expect(normal).not.toContain('name="lanzadoPor"');
     const subagente = cuerpo.match(/<form id="consultar-permiso-subagente"[^]*?<\/form>/)?.[0];
@@ -136,7 +136,7 @@ describe("T5-09 N-3 permiso como subagente", () => {
 
 describe("T5-09 N-4 consultas rapidas", () => {
   test("enlaza las cuatro consultas con id y agente actuales y fichas de codigo", async () => {
-    const cuerpo = await paginaResolucion(valores, sobre).text();
+    const cuerpo = await solicitar(casos, "/resoluciones/7/permisos?agente=build").text();
     const lista = cuerpo.match(/<section id="consultas-rapidas"[^]*?<\/section>/)?.[0];
     expect(lista).toBeDefined();
     expect(lista!).toContain("Consultas rápidas");
@@ -152,7 +152,7 @@ describe("T5-09 N-4 consultas rapidas", () => {
 
 describe("T5-09-c1 C-3 fichas de consultas rapidas", () => {
   test("agrupa las fichas sin vinetas en una fila ajustable y destaca hover sin estilos en linea", async () => {
-    const cuerpo = await paginaResolucion(valores, sobre).text();
+    const cuerpo = await solicitar(casos, "/resoluciones/7/permisos?agente=build").text();
     const lista = cuerpo.match(/<section id="consultas-rapidas"[^]*?<\/section>/)![0];
     expect(lista).toContain('<ul class="consultas-rapidas">');
     expect(lista.match(/class="consulta-rapida"/g)).toHaveLength(4);
@@ -164,7 +164,7 @@ describe("T5-09-c1 C-3 fichas de consultas rapidas", () => {
     expect(estilos).toMatch(/\.consulta-rapida:hover\s*\{[^}]*background: var\(--acento-suave\);[^}]*border-color: var\(--acento\);/);
     expect(cuerpo).not.toMatch(/\sstyle\s*=|<style\b/i);
     expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/g, "")).not.toMatch(/<script\b/i);
-    expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(valores);
+    expect(cuerpo).not.toContain('id="respuesta"');
   });
 });
 
@@ -172,9 +172,9 @@ describe("T5-09 N-5 del hallazgo a su entrada", () => {
   test("enlaza la localizacion incluso con orden cero y resalta filas con ids distintos", async () => {
     const cuerpo = await paginaHallazgos(hallazgos).text();
     expect(cuerpo).toContain('<a href="/entradas?proyecto=%2Fproyecto#entrada-0"><code class="ruta" title="/proyecto/config:2:3">');
-    expect(await paginaEntradas(entradas).text()).toContain('<tr id="entrada-0"><td>0</td>');
+    expect(await paginaEntradas(entradas).text()).toContain('<tr id="entrada-0"><td data-etiqueta="Orden">0</td>');
     const resolucion = await paginaResolucion({ ...valores, entradas: [entrada] }, sobre).text();
-    expect(resolucion).toContain('<tr id="entrada-leida-0"><td>0</td>');
+    expect(resolucion).toContain('<tr id="entrada-leida-0"><td data-etiqueta="Orden">0</td>');
     const ids = [...resolucion.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
     expect(new Set(ids).size).toBe(ids.length);
     const css = await solicitar(casos, "/estilos.css").text();
@@ -193,13 +193,16 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
     const conAtaque: CasosWeb = { ...casos, consultarAgentes: () => ({ exito: true, valor: listado }),
       consultarResolucion: () => ({ exito: true, valor: { sobre, respuesta: { ...valores, proyecto, agente: ataque } } }) };
     const paginaListado = await solicitar(conAtaque, `/agentes?id=7&clave=${codificado}`).text();
-    expect(paginaListado).toContain(`href="/agentes?id=7&amp;clave=${codificado}"`);
+    expect(paginaListado).toContain(`href="/agentes?id=7&amp;agente=${codificado}&amp;clave=${codificado}"`);
     expect(paginaListado).toContain(`href="/resoluciones/7?agente=${codificado}&amp;clave=${codificado}"`);
     expect(paginaListado).toContain(`<code>${escapado}</code></a>`);
     const paginaValores = await solicitar(conAtaque, `/resoluciones/7?agente=${codificado}&clave=${codificado}`).text();
     expect(paginaValores).toContain(`<option value="${escapado}" selected>${escapado}</option>`);
     expect(paginaValores).toContain(`<input type="hidden" name="clave" value="${escapado}">`);
-    expect(paginaValores).toContain(`href="/permiso?id=7&amp;agente=${codificado}&amp;herramienta=bash&amp;objetivo=rm%20-rf%20build"`);
+    const formularios = await solicitar(conAtaque, `/resoluciones/7/permisos?agente=${codificado}&clave=${codificado}`).text();
+    expect(formularios).toContain(`href="/permiso?id=7&amp;agente=${codificado}&amp;herramienta=bash&amp;objetivo=rm%20-rf%20build&amp;clave=${codificado}"`);
+    expect(formularios).not.toContain('id="respuesta"');
+    expect(formularios).not.toMatch(/<script\b|\sstyle\s*=/i);
     const diagnostico = { ...hallazgos, proyecto, hallazgos: hallazgos.hallazgos.map(h => ({ ...h, localizacion: ataque, explicacion: ataque })) };
     const paginaDiagnostico = await paginaHallazgos(diagnostico).text();
     expect(paginaDiagnostico).toContain(`href="/entradas?proyecto=${encodeURIComponent(proyecto)}#entrada-0"`);
@@ -215,7 +218,9 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
     const paginas: [string, unknown][] = [[paginaListado, listado], [paginaValores, { ...valores, proyecto, agente: ataque }],
       [paginaDiagnostico, diagnostico], [paginaConsulta, consulta], [await paginaEntradas({ ...entradas, proyecto }).text(), { ...entradas, proyecto }]];
     for (const [cuerpo, dato] of paginas) {
-      expect(cuerpo).toContain(`href="/entradas?proyecto=${encodeURIComponent(proyecto)}"`);
+      const enlace = [...cuerpo.matchAll(/href="([^"]+)"/g)].map(m => m[1]!).find(url => url.startsWith(`/entradas?proyecto=${encodeURIComponent(proyecto)}`));
+      expect(enlace).toBeDefined();
+      if ([paginaListado, paginaValores, paginaConsulta].includes(cuerpo)) expect(enlace).toContain("&amp;id=7");
       expect(cuerpo).not.toMatch(/\sstyle\s*=|<style\b/i);
       const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
       expect(bloques).toHaveLength(1);
