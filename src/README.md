@@ -158,14 +158,27 @@ Termina con código 0 y JSON con `esquema: 2`, `versionRige: "0.1.0"`, `almacen.
 ```bash
 bun run rige -- valores --proyecto <ruta> --agente <nombre> [--clave <ruta>] [--tiempos]
 bun run rige -- permiso --proyecto <ruta> --agente <nombre> --herramienta <h> --objetivo <obj> [--explicar] [--tiempos]
+bun run rige -- reglas --proyecto <ruta> --agente <nombre> [--lanzado-por <agente>] [--tiempos]
 bun run rige -- agentes --proyecto <ruta> [--tiempos]
 bun run rige -- entradas --proyecto <ruta> [--tiempos]
 bun run rige -- hallazgos --proyecto <ruta> [--explicar] [--tiempos]
 ```
 
-Los marcadores entre `<…>` se reemplazan por valores propios; los corchetes indican opciones. Estas cinco consultas resuelven en memoria y no crean ni modifican el almacén. `valores` sin `--clave` consulta todas las claves; admite segmentos con puntos o puntero JSON (`/options/a.b`). Una clave ausente devuelve `valores: []`, `motivo: "clave-inexistente"` y código 0. `permiso` admite `--sujeto` en lugar de `--herramienta`, y `--lanzado-por <agente>` para contexto de subagente. Un comando compuesto devuelve `decision: null` con su motivo y código 0. `--explicar` presenta las mismas plantillas que la web para permisos y hallazgos; `valores --explicar` es inválido.
+Los marcadores entre `<…>` se reemplazan por valores propios; los corchetes indican opciones. Estas seis consultas resuelven en memoria y no crean ni modifican el almacén. `valores` sin `--clave` consulta todas las claves; admite segmentos con puntos o puntero JSON (`/options/a.b`). Una clave ausente devuelve `valores: []`, `motivo: "clave-inexistente"` y código 0. `permiso` admite `--sujeto` en lugar de `--herramienta`, y `--lanzado-por <agente>` para contexto de subagente. Un comando compuesto devuelve `decision: null` con su motivo y código 0. `--explicar` presenta las mismas plantillas que la web para permisos y hallazgos; `valores --explicar` es inválido.
 
 `agentes` incluye los ocultos, ordena nativos primero y luego por nombre; informa los eliminados por `disable` y la condición de listado incompleto por Markdown. `entradas` identifica vías, orden, legibilidad y consecuencias de errores, aun cuando una entrada impida resolver. `hallazgos` incluye resumen del ecosistema y seis tipos de hallazgo, con localización sobre el texto original (línea y columna desde 1, columna UTF-16).
+
+`reglas` es una **capacidad adicional (ADR-111, T5-13)**, fuera de los 18 Must: publica la cadena completa y la matriz de agentes activos en `esquemas/salida/reglas.json`. Considera solo patrones literales `*` para el efecto general por sujeto y conserva los comodines de sujeto del evaluador. Las reglas por patrón pueden cambiar ese efecto para una acción concreta: usar `permiso`. `external_directory` se muestra como **parcial, sin decisión**; una cadena incompleta conserva su error. No admite `--explicar` (código 2). La web ofrece `/reglas?id=<id>&agente=<nombre>[&lanzadoPor=<agente>]` desde **Permisos**, sobre la foto guardada; la CLI consulta las entradas actuales sin abrir el almacén.
+
+| Verificación | Ejecución | Resultado |
+|---|---|---|
+| Capacidad adicional · cadena y matriz | `bun herramientas/demostracion.ts v2-decision -- reglas --agente build` | Cadena en orden, índices desde 1 y matriz con prevalencia por sujeto; no agrega un Must |
+
+Pruebas auxiliares de la capacidad (sin CA nuevos del catálogo):
+
+```bash
+bun test pruebas/aceptacion/T5-13.test.ts pruebas/aceptacion/T5-13-cli.test.ts pruebas/aceptacion/T5-13-web.test.ts
+```
 
 Ejemplo ejecutable de la consulta de valores:
 

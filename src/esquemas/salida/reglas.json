@@ -1,0 +1,547 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Respuesta reglas de RIGE v2",
+  "type": "object",
+  "properties": {
+    "esquema": {
+      "const": 2
+    },
+    "proyecto": {
+      "type": "string"
+    },
+    "entradas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Entrada"
+      }
+    },
+    "resumenEntradas": {
+      "type": "string"
+    },
+    "agente": {
+      "type": "string"
+    },
+    "lanzadoPor": {
+      "type": "string"
+    },
+    "cadena": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "indice": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sujeto": {
+            "type": "string"
+          },
+          "patron": {
+            "type": "string"
+          },
+          "efecto": {
+            "type": "string"
+          },
+          "origen": {
+            "$ref": "#/$defs/Origen"
+          },
+          "declaracion": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Declaracion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "prevalece": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "indice",
+          "sujeto",
+          "patron",
+          "efecto",
+          "origen",
+          "declaracion",
+          "prevalece"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "ejesParciales": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "declaraciones": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "advertencias": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reglas": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "matriz": {
+      "type": "object",
+      "properties": {
+        "sujetos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "agente": {
+                "type": "string"
+              },
+              "oculto": {
+                "type": "boolean"
+              },
+              "error": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "codigo": {
+                        "type": "string"
+                      },
+                      "mensaje": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "codigo",
+                      "mensaje"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "ejesParciales": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "declaraciones": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "advertencias": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "celdas": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "sujeto": {
+                      "type": "string"
+                    },
+                    "efecto": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "prevalece": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "motivo": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "sujeto",
+                    "efecto",
+                    "prevalece",
+                    "motivo"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "agente",
+              "oculto",
+              "error",
+              "ejesParciales",
+              "declaraciones",
+              "advertencias",
+              "celdas"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "noObservados": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "nombre": {
+                "type": "string"
+              },
+              "motivo": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "nombre",
+              "motivo"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "motivos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "sujetos",
+        "filas",
+        "noObservados",
+        "motivos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "esquema",
+    "proyecto",
+    "entradas",
+    "resumenEntradas",
+    "agente",
+    "cadena",
+    "ejesParciales",
+    "declaraciones",
+    "advertencias",
+    "reglas",
+    "matriz"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Valor": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Valor"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Valor"
+          }
+        }
+      ]
+    },
+    "Origen": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "const": "declarado"
+            },
+            "orden": {
+              "type": "integer"
+            },
+            "posicion": {
+              "type": "object",
+              "properties": {
+                "linea": {
+                  "type": "integer"
+                },
+                "columna": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "linea",
+                "columna"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "tipo",
+            "orden",
+            "posicion"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "enum": [
+                "implicito",
+                "nativo"
+              ]
+            },
+            "regla": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tipo",
+            "regla"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Declaracion": {
+      "type": "object",
+      "properties": {
+        "origen": {
+          "$ref": "#/$defs/Origen"
+        },
+        "via": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "referencia": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valor": {
+          "$ref": "#/$defs/Valor"
+        },
+        "regla": {
+          "type": "string"
+        },
+        "sustituciones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValorSustituido"
+          }
+        },
+        "localizacion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "origen",
+        "via",
+        "referencia",
+        "valor",
+        "regla"
+      ],
+      "additionalProperties": false
+    },
+    "Entrada": {
+      "type": "object",
+      "properties": {
+        "orden": {
+          "type": "integer"
+        },
+        "via": {
+          "type": "string"
+        },
+        "referencia": {
+          "type": "string"
+        },
+        "condicion": {
+          "enum": [
+            "observada",
+            "no_observada",
+            "definida"
+          ]
+        },
+        "resumen": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "legibilidad": {
+          "enum": [
+            "legible",
+            "ilegible",
+            null
+          ]
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "columna": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "consecuencia": {
+              "enum": [
+                "falla",
+                "descartada"
+              ]
+            }
+          },
+          "required": [
+            "linea",
+            "columna",
+            "consecuencia"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "orden",
+        "via",
+        "referencia",
+        "condicion",
+        "resumen"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "legibilidad": {
+                "const": "ilegible"
+              }
+            },
+            "required": [
+              "legibilidad"
+            ]
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        }
+      ]
+    },
+    "ValorSustituido": {
+      "type": "object",
+      "properties": {
+        "tipo": {
+          "enum": [
+            "variable",
+            "archivo"
+          ]
+        },
+        "origen": {
+          "type": "string"
+        },
+        "definido": {
+          "type": "boolean"
+        },
+        "posicion": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer"
+            },
+            "columna": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "linea",
+            "columna"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "tipo",
+        "origen",
+        "definido",
+        "posicion"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -6,7 +6,8 @@ export interface ContextoPanel {
   readonly agente?: string | undefined;
   readonly clave?: string;
   readonly q?: string;
-  readonly agentes?: RespuestaAgentes["agentes"];
+  readonly agentes?: readonly { readonly nombre: string }[];
+  readonly lanzadoPor?: string;
 }
 
 export function agenteInicial(agentes: RespuestaAgentes["agentes"]): string | undefined {
@@ -14,7 +15,7 @@ export function agenteInicial(agentes: RespuestaAgentes["agentes"]): string | un
 }
 
 export function consultaPanel(contexto: ContextoPanel): string {
-  return `${contexto.agente !== undefined ? `&agente=${encodeURIComponent(contexto.agente)}` : ""}${contexto.clave ? `&clave=${encodeURIComponent(contexto.clave)}` : ""}`;
+  return `${contexto.agente !== undefined ? `&agente=${encodeURIComponent(contexto.agente)}` : ""}${contexto.clave ? `&clave=${encodeURIComponent(contexto.clave)}` : ""}${contexto.lanzadoPor === undefined ? "" : `&lanzadoPor=${encodeURIComponent(contexto.lanzadoPor)}`}`;
 }
 
 export function camposContexto(contexto: ContextoPanel): HtmlSeguro {
@@ -34,5 +35,6 @@ export function selectorAgente(contexto: ContextoPanel, vista: string | undefine
 ${["Agentes", "Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type="hidden" name="id" value="${id}">` : html``}
 ${["Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type="hidden" name="proyecto" value="${proyecto}">` : html``}
 ${camposContexto(contexto)}
+${contexto.lanzadoPor === undefined ? html`` : html`<input type="hidden" name="lanzadoPor" value="${contexto.lanzadoPor}">`}
 <button class="boton--secundario">Ver agente</button></form>`;
 }

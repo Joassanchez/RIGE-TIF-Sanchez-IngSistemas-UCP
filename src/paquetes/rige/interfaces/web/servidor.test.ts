@@ -10,7 +10,7 @@ const respuesta: RespuestaEstado = {
 };
 
 function casosEstado(consultarEstado: ConsultarEstado): CasosWeb {
-  return { consultarEstado, consultarHallazgos: () => { throw new Error("No consultar hallazgos en pruebas de estado"); },
+  return { consultarEstado, consultarReglas: () => { throw new Error("No consultar reglas en pruebas de estado"); }, consultarHallazgos: () => { throw new Error("No consultar hallazgos en pruebas de estado"); },
     resolverProyecto: () => { throw new Error("No resolver en pruebas de estado"); },
     consultarPermiso: () => { throw new Error("No consultar permisos en pruebas de estado"); },
     consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },
@@ -19,6 +19,20 @@ function casosEstado(consultarEstado: ConsultarEstado): CasosWeb {
 }
 const manejarEstado = (puerto: number, consultar: ConsultarEstado) => crearManejador(puerto, casosEstado(consultar));
 const iniciarEstado = (puerto: number, consultar: ConsultarEstado) => iniciarServidor(puerto, casosEstado(consultar));
+
+describe("T5-13 R-4 borde", () => {
+  test("/reglas rechaza Host ausente y sitios ajenos antes de llamar a aplicacion", async () => {
+    let consultas = 0;
+    const noConsultar = (): never => { consultas++; throw new Error("No consultar"); };
+    const manejar = crearManejador(12345, { ...casosEstado(noConsultar), consultarReglas: noConsultar });
+    for (const headers of [{}, { Host: "ajeno" }, ...["cross-site", "same-site", "otro"].map(s => ({ Host: "localhost:12345", "Sec-Fetch-Site": s }))]) {
+      const r = manejar(new Request("http://127.0.0.1/reglas?id=1&agente=build", { headers }));
+      expect(r.status).toBe(403);
+      expect(await r.text()).not.toContain("rige.db");
+    }
+    expect(consultas).toBe(0);
+  });
+});
 
 describe("W-11", () => {
   test("valida agente antes de resolver, propaga errores escapados y codifica la Location", async () => {

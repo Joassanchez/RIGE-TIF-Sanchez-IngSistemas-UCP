@@ -35,6 +35,7 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
     directorios: ["/proyecto"],
   });
   const adaptador: Adaptador = {
+    resumirPermisos: () => { throw new Error("No resumir permisos al resolver"); },
     referencias: [], plantillasHallazgo: {},
     contexto: adaptadorFicticio.contexto,
     prepararConsulta: adaptadorFicticio.prepararConsulta,

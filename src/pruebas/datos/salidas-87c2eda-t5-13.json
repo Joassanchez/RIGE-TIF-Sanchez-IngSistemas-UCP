@@ -1,0 +1,47 @@
+{
+  "procedencia": {
+    "commit": "87c2eda",
+    "captura": "Antes de T5-13; mismo temporal y entorno comparados despues. Prefijo temporal y resumen dependiente de rutas parametrizados; resumen verificado por separado."
+  },
+  "casos": [
+    {
+      "comando": "valores",
+      "argumentos": [
+        "--agente",
+        "build"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"versionRige\":\"1.0.0\",\"proyecto\":\"<RAIZ>/proyecto\",\"herramienta\":\"opencode\",\"versionHerramienta\":\"1.18.25\",\"resumenEntradas\":\"<RESUMEN>\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":2,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"agente\":\"build\",\"ruta\":null,\"valores\":[{\"clave\":\"name\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"name\"],\"valor\":\"build\",\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"build\",\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":0}},{\"clave\":\"description\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"description\"],\"valor\":\"The default agent. Executes tools based on configured permissions.\",\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"The default agent. Executes tools based on configured permissions.\",\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":1}},{\"clave\":\"options\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"options\"],\"valor\":{},\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":{},\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":2}},{\"clave\":\"mode\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"mode\"],\"valor\":\"primary\",\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":\"primary\",\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":3}},{\"clave\":\"native\",\"rastro\":{\"ruta\":[\"agent\",\"build\",\"native\"],\"valor\":true,\"determinante\":{\"origen\":{\"tipo\":\"implicito\",\"regla\":\"valor-implicito-del-agente\"},\"via\":null,\"referencia\":null,\"valor\":true,\"regla\":\"valor-implicito-del-agente\"},\"motivo\":\"entrada-posterior\",\"desplazadas\":[],\"indiceFusion\":4}}],\"reglas\":{\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"declaraciones\":[],\"noResueltas\":[],\"motivo\":null}\n",
+      "error": ""
+    },
+    {
+      "comando": "permiso",
+      "argumentos": [
+        "--agente",
+        "build",
+        "--sujeto",
+        "read",
+        "--objetivo",
+        ".env"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"proyecto\":\"<RAIZ>/proyecto\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":2,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"resumenEntradas\":\"<RESUMEN>\",\"herramienta\":{\"nombre\":\"read\",\"ofrecida\":true},\"agente\":\"build\",\"declaraciones\":[\"aprobaciones-permanentes-excluidas\",\"sesion-no-interactiva-excluida\",\"numeracion-sin-directorios-externos\"],\"consulta\":{\"sujeto\":\"read\",\"objetivo\":\".env\",\"objetivoEvaluado\":\".env\",\"forma\":\"sujeto\"},\"decision\":\"ask\",\"motivoSinDecision\":null,\"porDefecto\":false,\"determinante\":9,\"desplazadas\":[0,8],\"nativaAnulada\":null,\"advertencias\":[],\"cadena\":[{\"indice\":0,\"sujeto\":\"*\",\"patron\":\"*\",\"efecto\":\"allow\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null},{\"indice\":8,\"sujeto\":\"read\",\"patron\":\"*\",\"efecto\":\"allow\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null},{\"indice\":9,\"sujeto\":\"read\",\"patron\":\"*.env\",\"efecto\":\"ask\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null}],\"reglas\":{\"aprobaciones-permanentes-excluidas\":\"Las aprobaciones permanentes (\\\"permitir siempre\\\") no integran el análisis.\",\"nativa-general\":\"Regla de permiso incorporada en los defaults de OpenCode 1.18.25.\",\"numeracion-sin-directorios-externos\":\"Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.\",\"sesion-no-interactiva-excluida\":\"En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"explicacion\":null}\n",
+      "error": ""
+    },
+    {
+      "comando": "permiso",
+      "argumentos": [
+        "--agente",
+        "build",
+        "--sujeto",
+        "read",
+        "--objetivo",
+        ".env",
+        "--explicar"
+      ],
+      "codigo": 0,
+      "salida": "{\"esquema\":2,\"proyecto\":\"<RAIZ>/proyecto\",\"entradas\":[{\"orden\":0,\"via\":\"remota-wellknown\",\"referencia\":\"remota-wellknown\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":1,\"via\":\"remota-organizacion\",\"referencia\":\"remota-organizacion\",\"condicion\":\"no_observada\",\"resumen\":null},{\"orden\":2,\"via\":\"preferencias-macos\",\"referencia\":\"preferencias-macos\",\"condicion\":\"no_observada\",\"resumen\":null}],\"resumenEntradas\":\"<RESUMEN>\",\"herramienta\":{\"nombre\":\"read\",\"ofrecida\":true},\"agente\":\"build\",\"declaraciones\":[\"aprobaciones-permanentes-excluidas\",\"sesion-no-interactiva-excluida\",\"numeracion-sin-directorios-externos\"],\"consulta\":{\"sujeto\":\"read\",\"objetivo\":\".env\",\"objetivoEvaluado\":\".env\",\"forma\":\"sujeto\"},\"decision\":\"ask\",\"motivoSinDecision\":null,\"porDefecto\":false,\"determinante\":9,\"desplazadas\":[0,8],\"nativaAnulada\":null,\"advertencias\":[],\"cadena\":[{\"indice\":0,\"sujeto\":\"*\",\"patron\":\"*\",\"efecto\":\"allow\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null},{\"indice\":8,\"sujeto\":\"read\",\"patron\":\"*\",\"efecto\":\"allow\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null},{\"indice\":9,\"sujeto\":\"read\",\"patron\":\"*.env\",\"efecto\":\"ask\",\"origen\":{\"tipo\":\"nativo\",\"regla\":\"nativa-general\"},\"declaracion\":null}],\"reglas\":{\"aprobaciones-permanentes-excluidas\":\"Las aprobaciones permanentes (\\\"permitir siempre\\\") no integran el análisis.\",\"nativa-general\":\"Regla de permiso incorporada en los defaults de OpenCode 1.18.25.\",\"numeracion-sin-directorios-externos\":\"Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.\",\"sesion-no-interactiva-excluida\":\"En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.\",\"valor-implicito-del-agente\":\"Valor fijado por OpenCode 1.18.25 para el agente, sin entrada declarada (RD-04).\"},\"explicacion\":[\"La regla 10 de 15, read *.env → sujeta a confirmación, nativa, es la última regla coincidente; OpenCode 1.18.25 aplica la última coincidencia.\",\"Hay 2 reglas coincidentes desplazadas.\",\"En opencode run no interactivo, la sesión agrega al final question, plan_enter y plan_exit con efecto deny; RIGE evalúa la configuración del agente.\",\"Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.\",\"Las aprobaciones permanentes (\\\"permitir siempre\\\") no integran el análisis.\"]}\n",
+      "error": ""
+    }
+  ]
+}

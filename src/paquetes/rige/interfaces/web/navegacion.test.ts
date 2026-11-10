@@ -29,6 +29,7 @@ const hallazgos: RespuestaHallazgos = { ...base, entradas: [entrada], incompleta
   resumen: { elementos: { agentes: 2, entradas: 1, comandos: 0 }, hallazgos: { "entrada-ilegible": 0, "entrada-descartada": 0, "sustitucion-sin-valor": 0, "referencia-no-resuelta": 0, "regla-sin-efecto": 1, "elemento-sin-uso": 0 } } };
 const noConsultar = () => { throw new Error("Consulta inesperada"); };
 const casos: CasosWeb = { consultarEstado: noConsultar, consultarEntradas: noConsultar, consultarHallazgos: noConsultar,
+  consultarReglas: noConsultar,
   resolverProyecto: noConsultar, consultarPermiso: noConsultar, consultarResolucion: () => ({ exito: true, valor: { respuesta: valores, sobre } }),
   consultarAgentes: () => ({ exito: true, valor: agentes }) };
 const solicitar = (casos: CasosWeb, ruta: string) => crearManejador(12345, casos)(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));

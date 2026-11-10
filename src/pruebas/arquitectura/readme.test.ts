@@ -33,6 +33,13 @@ test("D-1 el archivo de lectura tiene las ocho secciones completas y un escenari
       expect(existsSync(new URL(utilidad[1]!, raiz))).toBe(true);
       return [];
     }
+    if (comando.startsWith("test ")) {
+      for (const archivo of comando.slice(5).trim().split(/\s+/)) {
+        expect(archivo).toMatch(/\.test\.ts$/);
+        expect(existsSync(new URL(archivo, raiz))).toBe(true);
+      }
+      return [];
+    }
     // install y test son comandos del ejecutor, no scripts del proyecto.
     expect(["install --frozen-lockfile", "test"]).toContain(comando.trim());
     return [];

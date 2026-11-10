@@ -1,7 +1,7 @@
 import { html, type HtmlSeguro } from "./plantillas";
 
 // Las opciones son nombres fijos de la CLI; cada valor se cita antes del escape HTML.
-export function comandoCli(subcomando: "valores" | "permiso" | "agentes" | "entradas" | "hallazgos",
+export function comandoCli(subcomando: "valores" | "permiso" | "reglas" | "agentes" | "entradas" | "hallazgos",
   opciones: Readonly<Record<string, string | true>>): HtmlSeguro {
   const comando = (citar: (valor: string) => string) => `bun run rige -- ${subcomando}` + Object.entries(opciones).map(([nombre, valor]) => valor === true
     ? ` --${nombre}`

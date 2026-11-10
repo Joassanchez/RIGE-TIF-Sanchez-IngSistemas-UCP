@@ -32,6 +32,7 @@ const hallazgos: RespuestaHallazgos = { ...base, hallazgos: [], incompleta: fals
     "sustitucion-sin-valor": 0, "referencia-no-resuelta": 0, "regla-sin-efecto": 0, "elemento-sin-uso": 0 } } };
 const sobre = { id: 7, instante: "2026-11-09T12:00:00Z", anteriores: [{ id: 7, instante: "2026-11-09T12:00:00Z", resumenEntradas: base.resumenEntradas }] };
 const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: estado }),
+  consultarReglas: () => { throw new Error("No consultar reglas en este doble"); },
   consultarResolucion: () => ({ exito: true, valor: { respuesta: valores, sobre } }),
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }),
   consultarAgentes: () => ({ exito: true, valor: agentes }), consultarPermiso: () => ({ exito: true, valor: permiso }),
@@ -52,7 +53,7 @@ describe("T5-08 U-1 U-11 P-4 estilos y seguridad", () => {
     const noConsultar = () => { llamadas++; throw new Error("No consultar"); };
     const cssManejar = crearManejador(12345, { consultarEstado: noConsultar, consultarResolucion: noConsultar,
       consultarEntradas: noConsultar, consultarHallazgos: noConsultar, consultarAgentes: noConsultar,
-      consultarPermiso: noConsultar, resolverProyecto: noConsultar });
+      consultarPermiso: noConsultar, consultarReglas: noConsultar, resolverProyecto: noConsultar });
     for (const sitio of [undefined, "same-origin", "none"]) {
       const respuesta = cssManejar(new Request("http://127.0.0.1/estilos.css", {
         headers: { Host: "localhost:12345", ...(sitio ? { "Sec-Fetch-Site": sitio } : {}) },

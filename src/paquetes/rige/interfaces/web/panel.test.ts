@@ -17,6 +17,7 @@ const hallazgos: RespuestaHallazgos = { ...base, hallazgos: [], incompleta: fals
 const permiso: RespuestaPermiso = { ...base, agente: "build", consulta: { sujeto: "read", herramienta: "read", objetivo: ".env", objetivoEvaluado: ".env", forma: "herramienta" }, decision: "ask", motivoSinDecision: null, determinante: null, desplazadas: [], nativaAnulada: null, advertencias: [], cadena: [], explicacion: [], porDefecto: true };
 const sobre = { id: 7, instante: "2026-11-10T12:00:00Z", anteriores: [] };
 const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: { esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 2 } } }),
+  consultarReglas: () => { throw new Error("No consultar reglas en este doble"); },
   resolverProyecto: () => ({ exito: true, valor: { id: 7 } }), consultarAgentes: () => ({ exito: true, valor: agentes }),
   consultarResolucion: (_id, agente) => ({ exito: true, valor: { respuesta: { ...valores, agente }, sobre } }),
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }), consultarPermiso: () => ({ exito: true, valor: permiso }) };

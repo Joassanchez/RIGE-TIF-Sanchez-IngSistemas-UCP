@@ -11,6 +11,7 @@ const declarada = (ruta: readonly string[], valor: number, orden: number): Aplic
 });
 function resolverSecuencia(secuencia: Secuencia, cantidad = 0) {
   const adaptador: Adaptador = {
+    resumirPermisos: () => { throw new Error("No resumir permisos al resolver"); },
     referencias: [], plantillasHallazgo: {},
     contexto: adaptadorFicticio.contexto,
     prepararConsulta: adaptadorFicticio.prepararConsulta,

@@ -12,6 +12,7 @@ const primera: Estrategia = (estado, nueva, ruta) => {
 };
 
 export const adaptadorFicticio: Adaptador = {
+  resumirPermisos: () => { throw new Error("No resumir permisos en este doble"); },
   referencias: [], plantillasHallazgo: {},
   contexto: (proyecto, entorno) => ({ exito: true, valor: { proyecto, entorno, parametros: {}, declaraciones: [] } }),
   prepararConsulta: (_, solicitud) => ({ exito: true, valor: { sujeto: solicitud.sujeto ?? solicitud.herramienta,

@@ -7,7 +7,8 @@ import { conErrores, paginaErrorUso } from "./intermedios/errores";
 import { conVerificacionDeOrigen } from "./intermedios/origen";
 import { paginaInicio } from "./paginas/inicio";
 import { paginaResolucion } from "./paginas/resolucion";
-import type { consultarPermisoGuardado, consultarAgentesGuardados } from "../../aplicacion/casos-uso/consultar-guardada";
+import type { consultarPermisoGuardado, consultarAgentesGuardados, consultarReglasGuardadas } from "../../aplicacion/casos-uso/consultar-guardada";
+import { paginaReglas } from "./paginas/reglas";
 import { paginaPermiso } from "./paginas/permiso";
 import { paginaAgentes } from "./paginas/agentes";
 import type { ConsultarHallazgos } from "../../aplicacion/casos-uso/consultar-hallazgos";
@@ -20,6 +21,7 @@ import { agenteInicial, type ContextoPanel } from "./panel";
 import { paginaConsultasPermiso } from "./paginas/consultas-permiso";
 
 export interface CasosWeb {
+  readonly consultarReglas: (id: string, solicitud: Parameters<typeof consultarReglasGuardadas>[2]) => ReturnType<typeof consultarReglasGuardadas>;
   readonly consultarEntradas: ConsultarEntradas;
   readonly consultarHallazgos: ConsultarHallazgos;
   readonly consultarEstado: ConsultarEstado;
@@ -32,7 +34,8 @@ export interface CasosWeb {
 export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Request) => Response {
   const enrutar = (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
-    const contextoSolicitud = { clave: url.searchParams.get("clave") ?? "", agente: url.searchParams.get("agente") ?? undefined };
+    const contextoSolicitud = { clave: url.searchParams.get("clave") ?? "", agente: url.searchParams.get("agente") ?? undefined,
+      ...(url.searchParams.has("lanzadoPor") ? { lanzadoPor: url.searchParams.get("lanzadoPor")! } : {}) };
     const contextoActual = (proyecto: string): Resultado<ContextoPanel, ErrorUso> => {
       const id = url.searchParams.get("id");
       if (id === null) return { exito: true, valor: {} };
@@ -43,6 +46,12 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
         agente: contextoSolicitud.agente ?? agenteInicial(agentes.valor.agentes) } };
     };
     if (url.pathname === "/estilos.css") return responderEstilos();
+    if (url.pathname === "/reglas") {
+      const id = url.searchParams.get("id") ?? "";
+      const resultado = casos.consultarReglas(id, { agente: url.searchParams.get("agente") ?? "",
+        ...(url.searchParams.has("lanzadoPor") ? { lanzadoPor: url.searchParams.get("lanzadoPor")! } : {}) });
+      return resultado.exito ? paginaReglas(resultado.valor, id, contextoSolicitud) : paginaErrorUso(resultado.error);
+    }
     if (url.pathname === "/hallazgos") {
       const resultado = casos.consultarHallazgos(url.searchParams.get("proyecto") ?? "", { explicar: true });
       if (!resultado.exito) return paginaErrorUso(resultado.error);

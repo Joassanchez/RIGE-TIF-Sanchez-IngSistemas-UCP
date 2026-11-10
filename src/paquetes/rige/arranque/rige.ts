@@ -13,10 +13,11 @@ import { resolverProyecto } from "../aplicacion/casos-uso/resolver-proyecto";
 import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucion";
 import { consultarValores } from "../aplicacion/casos-uso/consultar-valores";
 import { consultarPermiso } from "../aplicacion/casos-uso/consultar-permiso";
+import { consultarReglas } from "../aplicacion/casos-uso/consultar-reglas";
 import { consultarAgentes } from "../aplicacion/casos-uso/consultar-agentes";
 import { consultarHallazgos } from "../aplicacion/casos-uso/consultar-hallazgos";
 import { consultarEntradas } from "../aplicacion/casos-uso/consultar-entradas";
-import { consultarPermisoGuardado, consultarAgentesGuardados } from "../aplicacion/casos-uso/consultar-guardada";
+import { consultarPermisoGuardado, consultarAgentesGuardados, consultarReglasGuardadas } from "../aplicacion/casos-uso/consultar-guardada";
 import { versionRige } from "../aplicacion/respuestas/estado";
 import { iniciarServidor } from "../interfaces/web/servidor";
 import { ejecutarCli, type Ensamblado } from "../interfaces/cli/ejecutar";
@@ -32,13 +33,14 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
   const entorno = new EntornoLecturaSistema({ entorno: process.env, plataforma: process.platform });
   const consultas = { adaptador: adaptadorOpenCode, entorno, rutas: entorno, medicion };
   const casosConsulta = {
+    consultarReglas: (solicitud: Parameters<typeof consultarReglas>[1]) => consultarReglas(consultas, solicitud),
     consultarValores: (proyecto: string, agente: string, clave: string | undefined) => consultarValores(consultas, proyecto, agente, clave),
     consultarPermiso: (solicitud: Parameters<typeof consultarPermiso>[1]) => consultarPermiso(consultas, solicitud),
     consultarAgentes: (proyecto: string) => consultarAgentes(consultas, proyecto),
     consultarEntradas: (proyecto: string) => consultarEntradas(consultas, proyecto),
     consultarHallazgos: (proyecto: string, opciones?: { readonly explicar?: boolean }) => consultarHallazgos(consultas, proyecto, opciones),
   };
-  if (["valores", "permiso", "agentes", "entradas", "hallazgos"].includes(comando)) {
+  if (["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos"].includes(comando)) {
     const noEnsamblado = (): never => { throw new Error("Caso ajeno a una consulta en memoria"); };
     return { exito: true, valor: { ...casosConsulta, prepararAlmacen: noEnsamblado,
       consultarEstado: noEnsamblado, iniciarServidor: noEnsamblado } };
@@ -50,6 +52,7 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
   const dependencias = { adaptador: adaptadorOpenCode, entorno, rutas: entorno, resoluciones, reloj: new RelojSistema() };
   return {
     exito: true, valor: {
+      consultarReglas: solicitud => consultarReglas(dependencias, solicitud),
       consultarValores: (proyecto, agente, clave) => consultarValores(dependencias, proyecto, agente, clave),
       consultarPermiso: solicitud => consultarPermiso(dependencias, solicitud),
       consultarAgentes: (proyecto) => consultarAgentes(dependencias, proyecto),
@@ -58,6 +61,7 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
       prepararAlmacen: () => prepararAlmacen(almacen),
       consultarEstado: () => consultarEstado(almacen),
       iniciarServidor: () => iniciarServidor(resultado.valor.puerto, {
+        consultarReglas: (id, solicitud) => consultarReglasGuardadas(dependencias, id, solicitud),
         consultarEstado: () => consultarEstado(almacen),
         resolverProyecto: (proyecto, agente) => resolverProyecto(dependencias, proyecto, agente),
         consultarResolucion: (id, agente, clave) => consultarResolucion(resoluciones, id, agente, clave),

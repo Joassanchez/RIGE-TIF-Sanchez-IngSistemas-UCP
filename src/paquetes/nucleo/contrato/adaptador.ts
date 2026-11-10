@@ -129,6 +129,18 @@ export interface ResultadoElementosSinUso {
   readonly motivos: readonly string[];
 }
 
+/** Resumen independiente del objetivo. Los indices conservan la base interna de la cadena. */
+export interface CeldaPermisoGeneral {
+  readonly sujeto: string;
+  readonly efecto: string | null;
+  readonly prevalece: number | null;
+  readonly motivo: string | null;
+}
+export interface ResumenPermisos {
+  readonly sujetos: readonly string[];
+  readonly filas: readonly { readonly agente: string; readonly celdas: readonly CeldaPermisoGeneral[] }[];
+}
+
 export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   readonly referencias: readonly ReferenciaElemento[];
   readonly plantillasHallazgo: Readonly<Record<string, string>>;
@@ -144,6 +156,7 @@ export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   cadena(resolucion: Resolucion, agente: string, contexto: C, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
   prepararConsulta(contexto: C, solicitud: SolicitudPermiso): Resultado<ObjetivoPermiso, ErrorAnalisis>;
   listarAgentes(resolucion: Resolucion, contexto: C): ListadoAgentes;
+  resumirPermisos(cadenas: readonly Cadena[], contexto: C): ResumenPermisos;
   abarca?(posterior: string, anterior: string): boolean;
   causaRutaRegla?(resolucion: Resolucion, contexto: C, regla: ReglaDeclarada): CausaRutaRegla | null;
   elementosSinUso?(resolucion: Resolucion, contexto: C): ResultadoElementosSinUso;
