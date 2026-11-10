@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, realpathSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { crearEntornoAislado } from "./entorno-aislado";
@@ -8,7 +8,7 @@ import { lanzar } from "./subproceso";
 
 // Solo variables: la huella no depende de rutas temporales de archivos.
 export function capturarRegresionT512() {
-  const raiz = mkdtempSync(join(tmpdir(), "rige-t512-"));
+  const raiz = realpathSync.native(mkdtempSync(join(tmpdir(), "rige-t512-")));
   const proyecto = join(raiz, "proyecto");
   mkdirSync(proyecto);
   const git = join(proyecto, ".git");
