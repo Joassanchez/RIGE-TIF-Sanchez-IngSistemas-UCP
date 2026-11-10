@@ -1,6 +1,6 @@
 import { versionRige } from "../../aplicacion/respuestas/estado";
 import { html, type HtmlSeguro } from "./plantillas";
-import { consultaPanel, selectorAgente, type ContextoPanel } from "./panel";
+import { consultaPanel, type ContextoPanel } from "./panel";
 
 interface ContextoDiseno extends ContextoPanel {
   readonly proyecto?: string;
@@ -39,7 +39,7 @@ ${contexto.minimo ? html`` : html`<p class="subtitulo">Configuración efectiva d
     ? html`<a href="${enlace.ruta}" aria-current="page">${enlace.texto}</a>`
     : html`<a href="${enlace.ruta}">${enlace.texto}</a>`)}</nav></div></header>
 <main id="contenido" tabindex="-1">${pestanas.length ? html`<nav class="pestanas" aria-label="Panel del proyecto">${pestanas.map(enlace => contexto.activa === enlace.texto
-    ? html`<a href="${enlace.ruta}" aria-current="page">${enlace.texto}</a>` : html`<a href="${enlace.ruta}">${enlace.texto}</a>`)}</nav>${selectorAgente(contexto, contexto.activa, contexto.proyecto)}` : html``}${contenido}</main>
+    ? html`<a href="${enlace.ruta}" aria-current="page">${enlace.texto}</a>` : html`<a href="${enlace.ruta}">${enlace.texto}</a>`)}</nav>` : html``}${contenido}</main>
 <footer class="pie"><p><span class="punto" aria-hidden="true"></span>Local · solo lectura · sin red</p>
 ${contexto.almacen && !contexto.minimo ? html`<div class="pie__almacen"><p>Almacén: <code>${contexto.almacen.ruta}</code></p><p>Esquema del almacén: ${contexto.almacen.versionEsquema}</p></div>` : html``}
 </footer></body></html>`;

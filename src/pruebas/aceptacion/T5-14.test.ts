@@ -88,13 +88,15 @@ describe("T5-14 K-2", () => {
       expect(r.comparaciones.find(a => a.agente === "build")!.cambios).toContainEqual(expect.objectContaining({
         ruta: ["temperature"], tipo: "cambiada", motivos: ["valor"], antes: expect.objectContaining({ valor: 0.3 }), despues: expect.objectContaining({ valor: 0.7 }),
       }));
-      for (const texto of ["Agentes agregados", "nuevo", "antes", "después", "temperature", "insignia--pregunta"]) expect(pagina.cuerpo).toContain(texto);
+      for (const texto of ["Agentes agregados", "nuevo", "Antes", "Después", "temperature", "insignia--pregunta"]) expect(pagina.cuerpo).toContain(texto);
       const filtrada = await pedir(ruta + "&agente=build");
       expect(datos(filtrada.cuerpo)).toEqual(r);
       const cliFiltro = e.cli(["comparar", "--desde", desde, "--hasta", hasta, "--agente", "build"]);
       expect(cliFiltro).toEqual(cli);
       const a = r.comparaciones.find(a => a.agente === "build")!;
-      expect(filtrada.cuerpo).toContain(`${a.resumen.cambiadas} cambios, ${a.resumen.agregadas} claves nuevas, ${a.resumen.quitadas} quitadas`);
+      for (const [cantidad, singular, plural] of [
+        [a.resumen.cambiadas, "cambio", "cambios"], [a.resumen.agregadas, "clave nueva", "claves nuevas"], [a.resumen.quitadas, "quitada", "quitadas"],
+      ] as const) expect(filtrada.cuerpo).toContain(`>${cantidad} ${cantidad === 1 ? singular : plural}</span>`);
       const actual = await pedir(`/resoluciones/${hasta}?agente=build`);
       expect(actual.cuerpo).toContain(`href="${escapar(`/comparar?desde=${desde}&hasta=${hasta}&agente=build`)}">Comparar con la anterior`);
       expect(actual.cuerpo).toContain("comparar con esta");

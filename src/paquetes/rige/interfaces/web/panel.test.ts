@@ -26,6 +26,28 @@ const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: { esquem
 const solicitar = (ruta: string, cambios: Partial<CasosWeb> = {}, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET") => crearManejador(12345, { ...casos, ...cambios })(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
 const dato = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
 
+describe("T5-15 Z-1 estado entre pestanas", () => {
+  test("cada ruta recibe y devuelve q y clave escapadas en pestanas y selector sin tocar el dato", async () => {
+    const q = 'TEMP & "<#', clave = "/options/a.b";
+    const estado = `agente=build&clave=${encodeURIComponent(clave)}&q=${encodeURIComponent(q)}`;
+    for (const ruta of [`/resoluciones/7?${estado}`, `/resoluciones/7/permisos?${estado}`, `/agentes?id=7&${estado}`,
+      `/entradas?proyecto=%2Fproyecto&id=7&${estado}`, `/hallazgos?proyecto=%2Fproyecto&id=7&${estado}`]) {
+      const cuerpo = await solicitar(ruta).text();
+      const pestanas = cuerpo.match(/aria-label="Panel del proyecto">([^]*?)<\/nav>/)![1]!;
+      expect([...pestanas.matchAll(/href="([^"]+)"/g)]).toHaveLength(5);
+      for (const [, enlace] of pestanas.matchAll(/href="([^"]+)"/g)) {
+        expect(enlace).toContain(`clave=${encodeURIComponent(clave)}`);
+        expect(enlace).toContain(`q=${encodeURIComponent(q)}`);
+      }
+      const selector = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)![0];
+      expect(selector).toContain('name="clave" value="/options/a.b"');
+      expect(selector).toContain('name="q" value="TEMP &amp; &quot;&lt;#"');
+      if (!ruta.includes("/permisos")) expect(dato(cuerpo)).toEqual(ruta.startsWith("/agentes") ? agentes
+        : ruta.startsWith("/entradas") ? entradas : ruta.startsWith("/hallazgos") ? hallazgos : valores);
+    }
+  });
+});
+
 describe("T5-11 P-1 inicio", () => {
   test("solo pide proyecto y Analizar; omite el argumento agente al guardar", async () => {
     const cuerpo = await solicitar("/").text();
@@ -97,7 +119,7 @@ describe("T5-11 P-4 filtro visual y consulta por clave", () => {
   test("q cuenta despues de clave, distingue ausencia y quitarlo conserva la consulta", async () => {
     const puntual = { ...valores, ruta: ["options", "model"], valores: [valores.valores[1]!] };
     const cuerpo = await solicitar("/resoluciones/7?agente=build&clave=%2Foptions%2Fmodel&q=TEMP", { consultarResolucion: () => ({ exito: true, valor: { respuesta: puntual, sobre } }) }).text();
-    expect(cuerpo).toContain("0 de 1 claves");
+    expect(cuerpo).toContain("0 de 1 clave");
     expect(dato(cuerpo)).toEqual(puntual);
     expect(cuerpo).toContain('href="/resoluciones/7?agente=build&amp;clave=%2Foptions%2Fmodel">Quitar filtro</a>');
     expect(cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)![0]).toContain('name="q" value="TEMP"');

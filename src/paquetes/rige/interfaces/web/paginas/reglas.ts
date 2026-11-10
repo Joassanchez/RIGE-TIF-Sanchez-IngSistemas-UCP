@@ -4,17 +4,22 @@ import { declaraciones, diseno, efectoVisual, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
 import { presentarRuta } from "../rutas";
 import { comandoCli } from "../comando-cli";
-import type { ContextoPanel } from "../panel";
+import { selectorAgente, type ContextoPanel } from "../panel";
 import { consultasPermiso } from "./consultas-permiso";
 
 export function paginaReglas(respuesta: RespuestaReglas, id: string, contexto: ContextoPanel = {}): Response {
   const { agente, lanzadoPor, matriz } = respuesta;
-  const consulta = (nombre: string) => new URLSearchParams({ id, agente: nombre, ...(lanzadoPor === undefined ? {} : { lanzadoPor }) }).toString();
+  const consulta = (nombre: string) => new URLSearchParams({ id, agente: nombre, ...(lanzadoPor === undefined ? {} : { lanzadoPor }),
+    ...(contexto.clave ? { clave: contexto.clave } : {}), ...(contexto.q ? { q: contexto.q } : {}) }).toString();
   const panel = { ...contexto, idResolucion: id, agente, ...(lanzadoPor === undefined ? {} : { lanzadoPor }),
     agentes: matriz.filas.map(f => ({ nombre: f.agente })) };
-  return responderHtml(200, diseno(`Reglas de ${agente}`, html`<h1>Reglas de ${agente}</h1>
+  const motivosFila = (fila: typeof matriz.filas[number]) => [...new Set(fila.celdas.flatMap(c => c.motivo !== null && c.motivo !== "eje-parcialmente-observado" ? [c.motivo] : []))];
+  const filasLimitadas = matriz.filas.filter(f => f.error !== null || f.ejesParciales.length || f.declaraciones.length || f.advertencias.length || motivosFila(f).length);
+  const ejesParciales = matriz.sujetos.filter(s => matriz.filas.some(f => f.celdas.some(c => c.sujeto === s && c.motivo === "eje-parcialmente-observado")));
+  return responderHtml(200, diseno(`Reglas de ${agente}`, html`<div class="cabecera-pagina"><h1>Reglas de ${agente}</h1>
 <p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p><p>Foto guardada · resolución ${id}</p>
-${lanzadoPor === undefined ? html`` : html`<p>Lanzado por: <code>${lanzadoPor}</code></p>`}
+${lanzadoPor === undefined ? html`` : html`<p>Lanzado por: <code>${lanzadoPor}</code></p>`}</div>
+${selectorAgente(panel, "Permisos", respuesta.proyecto)}
 <section id="cadena-completa"><h2>Cadena completa</h2><p>Orden de evaluación, con índices desde 1. Prevalece indica el efecto general por sujeto, sin evaluar objetivos.</p>
 <div class="tabla-contenedor" role="region" aria-label="Cadena completa" tabindex="0">
 <table class="tabla-tarjetas"><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalece para *</th></tr></thead>
@@ -28,14 +33,18 @@ ${lanzadoPor === undefined ? html`` : html`<p>Lanzado por: <code>${lanzadoPor}</
 <div class="tabla-contenedor" role="region" aria-label="Matriz de permisos" tabindex="0">
 <table><thead><tr><th>Agente</th>${matriz.sujetos.map(s => html`<th scope="col">${s}</th>`)}</tr></thead><tbody>
 ${matriz.filas.map(f => html`<tr><th scope="row"><a href="${`/reglas?${consulta(f.agente)}#cadena-completa`}">${f.agente}</a>${f.oculto ? insignia("oculto") : html``}
-${f.error ? html`<p>${f.error.codigo}: ${f.error.mensaje}</p>` : html``}
-<details><summary>Límites de la fila</summary>${f.declaraciones.map(c => html`<p class="ayuda">${respuesta.reglas[c]}</p>`)}${f.advertencias.map(c => html`<p class="aviso aviso--advertencia">${respuesta.reglas[c]}</p>`)}</details></th>
-${f.celdas.map(c => html`<td><a href="${`/reglas?${consulta(f.agente)}#cadena-completa`}">${c.motivo === "eje-parcialmente-observado"
-    ? insignia("parcial, sin decisión") : efectoVisual(c.efecto)}</a>
+${filasLimitadas.includes(f) ? html`<a href="#limites-matriz">${insignia(f.error ? "incompleta" : "parcial", "aviso")}</a>` : html``}</th>
+${f.celdas.map(c => html`<td><a href="${`/reglas?${consulta(f.agente)}#cadena-completa`}">${ejesParciales.includes(c.sujeto)
+    ? insignia("parcial", "aviso") : efectoVisual(c.efecto)}</a>
 ${c.prevalece === null ? html`` : html`<p class="ayuda">Regla ${c.prevalece}</p>`}
-${c.motivo ? html`<p>${respuesta.reglas[c.motivo] ?? c.motivo}</p>` : html``}</td>`)}</tr>`)}</tbody></table></div>
+</td>`)}</tr>`)}</tbody></table></div>
+${ejesParciales.length ? html`<p class="aviso">${insignia("parcial", "aviso")} <code>${ejesParciales.join(", ")}</code>: ${respuesta.reglas["eje-parcialmente-observado"] ?? "Eje parcialmente observado; sin decisión general."}</p>` : html``}
 ${matriz.motivos.map(c => html`<p class="aviso aviso--advertencia">Listado incompleto: ${respuesta.reglas[c]}</p>`)}
 ${matriz.noObservados.map(a => html`<p>Agente no observado: <code>${a.nombre}</code> (${a.motivo})</p>`)}</section>
+${filasLimitadas.length ? html`<section id="limites-matriz"><h2>Límites</h2><ul>${filasLimitadas.map(f => html`<li><strong>${f.agente}</strong>
+${f.error ? html`<p>${f.error.codigo}: ${f.error.mensaje}</p>` : html``}
+${f.ejesParciales.length ? html`<p>Ejes parciales: <code>${f.ejesParciales.join(", ")}</code></p>` : html``}
+${[...new Set([...f.declaraciones, ...f.advertencias, ...motivosFila(f)])].map(c => html`<p>${respuesta.reglas[c] ?? c}</p>`)}</li>`)}</ul></section>` : html``}
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 ${respuesta.advertencias.map(c => html`<p class="aviso aviso--advertencia">${respuesta.reglas[c]}</p>`)}
 ${consultasPermiso(panel, lanzadoPor)}

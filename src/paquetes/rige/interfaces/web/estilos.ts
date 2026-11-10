@@ -34,7 +34,7 @@ a:hover { color: var(--acento-fuerte); }
 :focus-visible { outline: 3px solid var(--acento); outline-offset: 4px; }
 ::selection { background: var(--acento-suave); color: var(--texto); }
 h1, h2, h3, p { margin-top: 0; }
-h1 { font-size: clamp(2rem, 4.5vw, 3.5rem); letter-spacing: -.045em; line-height: 1.12; margin-bottom: 1.25rem; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4vw, 2.7rem); letter-spacing: -.045em; line-height: 1.12; margin-bottom: 1.25rem; text-wrap: balance; }
 h2 { font-size: clamp(1.15rem, 2.5vw, 1.3rem); line-height: 1.3; letter-spacing: -.025em; margin-bottom: 1.25rem; }
 h3 { font-size: clamp(1rem, 2vw, 1.05rem); }
 p { margin-bottom: 1rem; }
@@ -88,7 +88,7 @@ section + section, .bloque { margin-top: 2rem; }
 dt { font-size: .72rem; font-weight: 650; color: var(--secundario); text-transform: uppercase; letter-spacing: .06em; }
 dd { margin: .25rem 0 1.25rem; overflow-wrap: anywhere; }
 .resumen div { min-width: 0; }
-.insignia { display: inline-block; border-radius: .4rem; padding: .2rem .55rem; font-size: .73rem; font-weight: 650; line-height: 1.6; background: var(--neutro-fondo); color: var(--neutro); overflow-wrap: anywhere; }
+.insignia { display: inline-block; border-radius: .4rem; padding: .2rem .55rem; font-size: .73rem; font-weight: 650; line-height: 1.6; background: var(--neutro-fondo); color: var(--neutro); white-space: nowrap; overflow-wrap: normal; }
 .insignia--permitida { background: var(--exito-fondo); color: var(--exito); }
 .insignia--no-observada { background: var(--neutro-fondo); color: var(--neutro); border: 1px dotted var(--neutro); }
 .mapa-vias details, .mapa-vias code { max-width: 100%; overflow-wrap: anywhere; }
@@ -164,7 +164,7 @@ details[open] > summary { margin-bottom: 1.25rem; }
 .punto { display: inline-block; width: .45rem; height: .45rem; border-radius: 50%; background: var(--exito); margin-right: .5rem; }
 .pie__almacen { text-align: right; max-width: 65%; overflow-wrap: anywhere; }
 .pagina-error { max-width: 700px; margin: 2rem auto; padding: clamp(1.5rem, 5vw, 3rem); }
-.pagina-error h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.pagina-error h1 { font-size: clamp(2rem, 4vw, 2.7rem); }
 @media (max-width: 760px) {
   .selector-agente, .acciones { flex-direction: column; align-items: stretch; }
   form, button, .boton { width: 100%; }
@@ -183,11 +183,27 @@ details[open] > summary { margin-bottom: 1.25rem; }
 }
 .pestanas { display: flex; flex-wrap: nowrap; gap: .5rem; width: 100%; min-width: 0; max-width: 100%; overflow-x: auto; padding: .5rem 0; margin-bottom: 1rem; }
 .pestanas a { flex-shrink: 0; }
-.filtros { margin: 2rem 0; }
+.filtros { grid-template-columns: minmax(0, 1fr); max-width: 48rem; margin: 2rem 0; gap: 1rem; }
+.filtros > * { width: 100%; margin: 0; padding: 1.25rem; border: 1px solid var(--borde); border-radius: .75rem; background: var(--superficie); }
+.resumen-cambios { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--borde); border-radius: .75rem; background: var(--superficie); }
+.resumen-cambios .insignia { font-size: .9rem; }
+.fotos-comparadas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+.fotos-comparadas h2 { margin-bottom: .5rem; }
+@media (min-width: 641px) {
+  .tabla-comparacion td[data-etiqueta="Antes"], .tabla-comparacion td[data-etiqueta="Después"] { width: 30%; }
+}
+.comparacion-flecha { min-width: 2rem; text-align: center; color: var(--acento); }
+.grupo-vias th { position: static; color: var(--texto); }
+#ayuda-analizar { margin-top: 1rem; margin-bottom: 0; }
 #comando-cli { min-width: 0; max-width: 100%; }
 #comando-cli pre { max-width: 100%; overflow-x: auto; padding: 1rem; background: var(--fondo); }
 #comando-cli code { white-space: pre; overflow-wrap: normal; }
 @media (max-width: 640px) {
+  .decision-principal { overflow-x: auto; }
+  .decision-principal .insignia { font-size: clamp(.9rem, 4vw, 1.4rem); padding: .4rem .6rem; }
+  .fotos-comparadas { grid-template-columns: minmax(0, 1fr); }
+  .recientes li { flex-direction: column; align-items: stretch; padding: 1rem; gap: .75rem; border: 1px solid var(--borde); border-radius: .75rem; background: var(--fondo); }
+  .tabla-tarjetas .comparacion-flecha { display: none; }
   .tabla-tarjetas, .tabla-tarjetas tbody, .tabla-tarjetas tr, .tabla-tarjetas td { display: block; width: 100%; min-width: 0; max-width: 100%; }
   /* Conserva los encabezados para tecnologías de asistencia. */
   .tabla-tarjetas thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); }

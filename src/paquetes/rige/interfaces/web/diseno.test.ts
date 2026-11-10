@@ -250,7 +250,7 @@ describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
     const dato = { ...hallazgos, resumen: { ...hallazgos.resumen, hallazgos: cantidades } };
     const cuerpo = await paginaHallazgos(dato).text();
     const resumen = seccion(cuerpo, "resumen-hallazgos");
-    for (const nombre of ["Entradas ilegibles", "Entradas descartadas", "Sustituciones sin valor", "Referencias no resueltas", "Reglas sin efecto", "Elementos sin uso"])
+    for (const nombre of ["Entrada ilegible", "Entradas descartadas", "Sustituciones sin valor", "Referencias no resueltas", "Reglas sin efecto", "Elementos sin uso"])
       expect(resumen).toContain(nombre);
     expect(resumen.match(/class="estadistica estadistica--aviso"/g)).toHaveLength(6);
     expect(resumen).toContain('<strong>2</strong><span>Agentes</span>');

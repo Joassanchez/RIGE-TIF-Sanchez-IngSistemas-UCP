@@ -129,7 +129,9 @@ describe("RF-01 CA-1 · recorrido del README (guía, paso 8)", () => {
     const pagina = await recorrido.solicitar(paginaPrimera);
     expect(pagina.estado).toBe(200);
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
-    expect(seccionHtml(pagina.cuerpo, "resumen-resolucion")).toMatch(/Instante \(UTC\)<\/dt><dd>\d{4}-\d{2}-\d{2}T[^<]+Z<\/dd>/);
+    const cabecera = seccionHtml(pagina.cuerpo, "resumen-resolucion");
+    expect(cabecera).toMatch(/Foto guardada el \d{4}-\d{2}-\d{2}T[^<]+Z<\/p>/);
+    expect(cabecera.match(/\d{4}-\d{2}-\d{2}T[^<]+Z/g)).toHaveLength(1);
     resumen(pagina.cuerpo);
   });
 });

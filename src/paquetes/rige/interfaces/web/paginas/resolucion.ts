@@ -1,7 +1,8 @@
 import { comandoCli } from "../comando-cli";
 import type { DeclaracionUbicada, RespuestaValores } from "../../../aplicacion/respuestas/valores";
 import type { SobreAlmacen } from "../../../aplicacion/respuestas/sobre";
-import type { ContextoPanel } from "../panel";
+import { selectorAgente, type ContextoPanel } from "../panel";
+import { concordar } from "../textos";
 import { datosRespuesta, html, type HtmlSeguro } from "../plantillas";
 import { declaraciones, diseno, insignia } from "../diseno";
 import { presentarRuta } from "../rutas";
@@ -35,32 +36,33 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
   const detalleRegla = (codigo: string): HtmlSeguro => cubiertas.has(codigo) ? html``
     : html`<details class="regla-detalle"><summary>Regla aplicada: <code>${codigo}</code></summary><p>${Object.hasOwn(respuesta.reglas, codigo) ? respuesta.reglas[codigo] : codigo}</p></details>`;
   return responderHtml(200, diseno(`Resolución ${sobre.id}`, html`
-<section id="resumen-resolucion" class="cabecera-pagina"><p class="ceja">Configuración efectiva · ${respuesta.valores.length} valores</p>
+<section id="resumen-resolucion" class="cabecera-pagina"><p class="ceja">Configuración efectiva · ${respuesta.valores.length} ${concordar(respuesta.valores.length, "valor", "valores")}</p>
 <h1>Resolución ${sobre.id}</h1>
 <p>Foto guardada el ${sobre.instante}</p>
 <p>Página armada con la resolución leída del almacén de RIGE.</p>
 <dl class="resumen"><div><dt>Proyecto</dt><dd>${presentarRuta(respuesta.proyecto)}</dd></div>
 <div><dt>Agente</dt><dd><code>${respuesta.agente}</code></dd></div>
-<div><dt>Instante (UTC)</dt><dd>${sobre.instante}</dd></div>
 <div><dt>Herramienta</dt><dd>${respuesta.herramienta} ${respuesta.versionHerramienta}</dd></div>
 <div><dt>Clave</dt><dd><code>${respuesta.ruta?.join(".") ?? "todas"}</code></dd></div></dl></section>
-${anterior ? html`<p class="acciones"><a href="${enlaceComparar(anterior.id)}">Comparar con la anterior</a></p>` : html``}
-${declaraciones(respuesta.declaraciones, respuesta.reglas)}
+${selectorAgente({ ...contexto, idResolucion: sobre.id, agente: respuesta.agente, ...(clave ? { clave } : {}) }, "Valores", respuesta.proyecto)}
 <div class="rejilla filtros">
-<form id="consultar-clave" action="${`/resoluciones/${sobre.id}`}" method="get">
-<input type="hidden" name="agente" value="${respuesta.agente}">
-${q ? html`<input type="hidden" name="q" value="${q}">` : html``}
-<label>Clave <input name="clave" value="${clave ?? ""}" aria-describedby="ayuda-clave"></label>
-<p id="ayuda-clave" class="ayuda">Vacía: todas las claves. Segmentos con puntos o puntero JSON, por ejemplo /options/a.b.</p>
-<button class="boton--secundario">Consultar clave</button></form>
 <form id="filtrar-claves" action="${`/resoluciones/${sobre.id}`}" method="get">
 <input type="hidden" name="agente" value="${respuesta.agente}">
 ${clave ? html`<input type="hidden" name="clave" value="${clave}">` : html``}
 <label>Buscar clave <input name="q" value="${q}" aria-describedby="ayuda-filtro"></label>
 <p id="ayuda-filtro" class="ayuda">Filtra solo las filas visibles; no cambia la consulta ni su JSON.</p>
-<button class="boton--secundario">Filtrar</button></form></div>
+<button class="boton--secundario">Filtrar</button></form>
+<details><summary>Consulta exacta (avanzada)</summary>
+<form id="consultar-clave" action="${`/resoluciones/${sobre.id}`}" method="get">
+<input type="hidden" name="agente" value="${respuesta.agente}">
+${q ? html`<input type="hidden" name="q" value="${q}">` : html``}
+<label>Clave <input name="clave" value="${clave ?? ""}" aria-describedby="ayuda-clave"></label>
+<p id="ayuda-clave" class="ayuda">Vacía: todas las claves. Segmentos con puntos o puntero JSON, por ejemplo /options/a.b.</p>
+<button class="boton--secundario">Consultar clave</button></form></details></div>
+${anterior ? html`<p class="acciones"><a href="${enlaceComparar(anterior.id)}">Comparar con la anterior</a></p>` : html``}
+${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="valores"><h2>Valores efectivos</h2>
-${q ? html`<p class="aviso">Filtrado por "${q}" · ${visibles.length} de ${respuesta.valores.length} claves <a href="${`/resoluciones/${sobre.id}${consulta}`}">Quitar filtro</a></p>` : html``}
+${q ? html`<p class="aviso">Filtrado por "${q}" · ${visibles.length} de ${respuesta.valores.length} ${concordar(respuesta.valores.length, "clave", "claves")} <a href="${`/resoluciones/${sobre.id}${consulta}`}">Quitar filtro</a></p>` : html``}
 ${precedencia === undefined ? html`` : html`<p>Cómo se decide: ${precedencia}</p>`}
 ${implicitas.map(codigo => html`<p>Valores implícitos: ${respuesta.reglas[codigo]}</p>`)}
 <div class="tabla-contenedor" role="region" aria-label="Valores efectivos" tabindex="0">

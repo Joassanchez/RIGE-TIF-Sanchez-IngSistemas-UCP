@@ -39,7 +39,7 @@ export interface CasosWeb {
 export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Request) => Response {
   const enrutar = (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
-    const contextoSolicitud = { clave: url.searchParams.get("clave") ?? "", agente: url.searchParams.get("agente") ?? undefined,
+    const contextoSolicitud = { clave: url.searchParams.get("clave") ?? "", q: url.searchParams.get("q") ?? "", agente: url.searchParams.get("agente") ?? undefined,
       ...(url.searchParams.has("lanzadoPor") ? { lanzadoPor: url.searchParams.get("lanzadoPor")! } : {}) };
     const contextoActual = (proyecto: string): Resultado<ContextoPanel, ErrorUso> => {
       const id = url.searchParams.get("id");
@@ -98,7 +98,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       const resultado = casos.consultarAgentes(url.searchParams.get("id") ?? "");
       const id = url.searchParams.get("id") ?? "";
       return resultado.exito ? paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, contextoSolicitud.clave, {
-        agente: contextoSolicitud.agente ?? agenteInicial(resultado.valor.agentes), agentes: resultado.valor.agentes,
+        ...contextoSolicitud, agente: contextoSolicitud.agente ?? agenteInicial(resultado.valor.agentes), agentes: resultado.valor.agentes,
       }) : paginaErrorUso(resultado.error);
     }
     if (url.pathname === "/resolver") {

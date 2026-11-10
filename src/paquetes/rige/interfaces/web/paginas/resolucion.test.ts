@@ -52,7 +52,7 @@ describe("W-13", () => {
       expect(siguiente).toBeGreaterThan(posicion);
       posicion = siguiente;
     }
-    for (const dato of ["/proyecto/&lt;ejemplo&gt;", "Instante (UTC)", "2026-10-05T12:00:00.000Z",
+    for (const dato of ["/proyecto/&lt;ejemplo&gt;", "Foto guardada el 2026-10-05T12:00:00.000Z",
       "Herramienta", "opencode 1.18.25", "Agente", "a &amp; b", "Clave", "todas",
       "Resumen de las entradas leídas", "a".repeat(64), "Clave", "Valor efectivo",
       "Declaración determinante", "Declaraciones desplazadas", '<td data-etiqueta="Clave">description</td>', '<td data-etiqueta="Clave">steps</td>',

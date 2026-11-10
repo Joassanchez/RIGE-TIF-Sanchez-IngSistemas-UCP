@@ -30,7 +30,7 @@ describe("T5-14 K-5 plantillas", () => {
     expect(json).not.toContain("<");
     expect(pagina).toContain(`/comparar?desde=1&amp;hasta=2&amp;agente=${encodeURIComponent(nombre)}`);
     for (const clase of ["permitida", "denegada", "pregunta"]) expect(pagina).toContain(`insignia--${clase}`);
-    expect(pagina).toContain("1 cambios, 1 claves nuevas, 1 quitadas");
+    for (const conteo of ["1 cambio", "1 clave nueva", "1 quitada"]) expect(pagina).toContain(`>${conteo}</span>`);
     expect(pagina).not.toContain("<h2>Agente otro</h2>");
     const inicio = await paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/privado", versionEsquema: 2 } },
       { esquema: 2, proyectos: [{ proyecto: r.proyecto, id: 2, instante: "foto", cantidad: 2 }] }).text();

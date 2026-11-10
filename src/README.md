@@ -168,7 +168,7 @@ Los marcadores entre `<…>` se reemplazan por valores propios; los corchetes in
 
 `agentes` incluye los ocultos, ordena nativos primero y luego por nombre; informa los eliminados por `disable` y la condición de listado incompleto por Markdown. `entradas` identifica vías, orden, legibilidad y consecuencias de errores, aun cuando una entrada impida resolver. `hallazgos` incluye resumen del ecosistema y seis tipos de hallazgo, con localización sobre el texto original (línea y columna desde 1, columna UTF-16).
 
-`reglas` es una **capacidad adicional (ADR-111, T5-13)**, fuera de los 18 Must: publica la cadena completa y la matriz de agentes activos en `esquemas/salida/reglas.json`. Considera solo patrones literales `*` para el efecto general por sujeto y conserva los comodines de sujeto del evaluador. Las reglas por patrón pueden cambiar ese efecto para una acción concreta: usar `permiso`. `external_directory` se muestra como **parcial, sin decisión**; una cadena incompleta conserva su error. No admite `--explicar` (código 2). La web ofrece `/reglas?id=<id>&agente=<nombre>[&lanzadoPor=<agente>]` desde **Permisos**, sobre la foto guardada; la CLI consulta las entradas actuales sin abrir el almacén.
+`reglas` es una **capacidad adicional (ADR-111, T5-13)**, fuera de los 18 Must: publica la cadena completa y la matriz de agentes activos en `esquemas/salida/reglas.json`. Considera solo patrones literales `*` para el efecto general por sujeto y conserva los comodines de sujeto del evaluador. Las reglas por patrón pueden cambiar ese efecto para una acción concreta: usar `permiso`. `external_directory` es parcial, sin decisión general: muestra **parcial** con su leyenda debajo de la matriz; una cadena incompleta conserva su error. No admite `--explicar` (código 2). La web ofrece `/reglas?id=<id>&agente=<nombre>[&lanzadoPor=<agente>]` desde **Permisos**, sobre la foto guardada; la CLI consulta las entradas actuales sin abrir el almacén.
 
 | Verificación | Ejecución | Resultado |
 |---|---|---|
@@ -176,6 +176,10 @@ Los marcadores entre `<…>` se reemplazan por valores propios; los corchetes in
 | Capacidad adicional · comparación y recientes | `bun run rige -- comparar --desde <id1> --hasta <id2>`; `bun run rige -- recientes` | Fotos del mismo proyecto, cambios y procedencias; Proyectos recientes en Inicio; fuera de los Must y de la medición ADR-098 |
 
 `comparar` y `recientes` leen solo el almacén indicado por `RIGE_ALMACEN`; no lo crean ni releen las entradas. Requieren `bun run esquema`. `/comparar?desde=<id1>&hasta=<id2>[&agente=<nombre>]` comparte el JSON íntegro con la CLI (`esquema: 2`). `--agente <nombre>` conserva ese objeto en CLI; en web filtra la presentación y sus conteos. Desde Valores, **Comparar con la anterior** y **comparar con esta** fijan la dirección temporal. Inicio lista hasta diez proyectos con su última foto, cantidad retenida y **Analizar de nuevo**, que usa el recorrido existente de resolver y guardar. Las rutas no resueltas producen comparación parcial; sustituciones solo por representación protegida, sin afirmar igualdad de contenido. Cadenas de permisos fuera de alcance. Detalles y errores en MANUAL §6 y §8.
+
+En **Comparar**, el resumen destaca las cantidades con insignias y las fotos **Antes** y **Después** muestran hora local legible e ISO. Los agentes sin diferencias se reúnen en **Sin cambios:**; los demás mantienen su sección. El filtro de agente usa pestañas con desplazamiento propio. Las columnas **Antes → Después** se apilan en móvil. La clave se lee como `a › b`; el arreglo literal queda en su `title`.
+
+En **Proyectos recientes**, **Abrir la última foto** es la acción principal; **Analizar de nuevo**, la secundaria. El instante es legible y cada fila se apila como tarjeta en móvil. La ayuda del panel queda separada debajo de **Analizar**.
 
 ```bash
 bun test pruebas/aceptacion/T5-14.test.ts paquetes/rige/aplicacion/casos-uso/comparar-resoluciones.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts
@@ -194,15 +198,29 @@ subst R: $rigeRaiz
 try {
   $env:TEMP = $rigeCorto.Trim()
   $env:TMP = $rigeCorto.Trim()
-  $env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-prueba-t514'
+  $env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-prueba-t515'
   Push-Location R:\src
-  try { bun test } finally { Pop-Location }
+  try {
+    bun test
+    if ($LASTEXITCODE -ne 0) { throw 'Fallo bun test' }
+    bun run verificar
+    if ($LASTEXITCODE -ne 0) { throw 'Fallo verificar' }
+  } finally { Pop-Location }
 } finally {
   $env:TEMP = $rigeTempAnterior
   $env:TMP = $rigeTmpAnterior
   $env:RIGE_ALMACEN = $rigeAlmacenAnterior
   subst R: /d
 }
+```
+
+Para reproducir un temporal 8.3 concreto, asignar su ruta a `$rigeCorto` antes de `subst` (T5-15 usa el temporal indicado por el ingeniero). Las rutas esperadas de pruebas se construyen con `realpathSync.native`, porque la ruta recibida puede usar nombres cortos.
+
+Pruebas del pulido de presentación (Z-1 a Z-11), con `RIGE_ALMACEN` temporal:
+
+```bash
+bun test paquetes/rige/interfaces/web/pulido.test.ts
+bun test pruebas/aceptacion/T5-13-web.test.ts pruebas/aceptacion/T5-13-cli.test.ts pruebas/aceptacion/T5-14.test.ts
 ```
 
 Pruebas auxiliares de la capacidad (sin CA nuevos del catálogo):
@@ -231,9 +249,11 @@ El proceso informa `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y queda e
 
 1. Abrir `http://127.0.0.1:4747/`. Se muestra «RIGE 1.0.0» y «¿Qué configuración rige de verdad?». El inicio pide solo **Proyecto** y ofrece **Analizar**; el almacén y su esquema 2 aparecen al pie.
 2. Completar **Proyecto** con `pruebas/escenarios/v1-precedencia/proyecto` y pulsar **Analizar**. Se guarda el proyecto entero y se abre `/resoluciones/<id>`. Se elige `build` si está activo o el primer agente activo en el orden del listado; si no hay agentes, se abre **Agentes**.
-3. En **Valores**, escribir `temperature` en **Clave** y pulsar **Consultar clave**. En un almacén nuevo, la URL es `/resoluciones/1?agente=build&clave=temperature`. Se ve `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`. Las desplazadas son `0.1` en `…/v1-precedencia/opencode.json:5:7` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7`, en ese orden. **Cómo se decide** presenta RD-01 sobre la tabla; los implícitos explican RD-04. Las entradas leídas mantienen su SHA-256 y las vías remotas figuran no observadas.
+3. En **Valores**, abrir **Consulta exacta (avanzada)**, escribir `temperature` en **Clave** y pulsar **Consultar clave**. En un almacén nuevo, la URL es `/resoluciones/1?agente=build&clave=temperature`. Se ve `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`. Las desplazadas son `0.1` en `…/v1-precedencia/opencode.json:5:7` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7`, en ese orden. **Cómo se decide** presenta RD-01 sobre la tabla; los implícitos explican RD-04. Las entradas leídas mantienen su SHA-256 y las vías remotas figuran no observadas.
 4. Guardar la URL, detener con Ctrl+C, ejecutar otra vez `bun run servir` y abrirla: recupera la foto del almacén. **Resoluciones de este proyecto** marca la actual y conserva la historia.
-5. En **Valores**, dejar **Clave** vacía y pulsar **Consultar clave** para ver todas las claves. Se aceptan puntos o puntero JSON (`/options/a.b`). **Filtrar** (`q`) busca subcadenas en las claves ya consultadas, sin distinguir mayúsculas; solo oculta filas, conserva el JSON completo y muestra N de M claves. **Quitar filtro** conserva agente y clave.
+5. En **Valores**, abrir **Consulta exacta (avanzada)**, dejar **Clave** vacía y pulsar **Consultar clave** para ver todas las claves. Se aceptan puntos o puntero JSON (`/options/a.b`). El único campo visible inicialmente es **Buscar clave** (`q`): **Filtrar** busca subcadenas en las claves ya consultadas, sin distinguir mayúsculas; solo oculta filas, conserva el JSON completo y muestra N de M claves. **Quitar filtro** conserva agente y clave. Ambas consultas conservan su estado entre pestañas.
+
+El orden del panel es pestañas, título y metadatos del proyecto, selector de agente, filtros y contenido. **Foto guardada el …** aparece una sola vez en el resumen de Valores. En **Permisos**, la matriz muestra **parcial** o **incompleta** junto al agente con límites; su detalle se reúne debajo en **Límites**. Una columna parcial lleva insignias **parcial** en sus celdas y una sola leyenda debajo de la matriz. **Mapa de vías**, en Entradas, agrupa **Presentes**, **Ausentes** y **No observadas**, manteniendo el orden de revisión dentro de cada grupo.
 
 El panel tiene cinco pestañas: **Valores**, **Permisos**, **Agentes**, **Entradas** y **Hallazgos**. Las tres primeras consultan la foto con su contexto original; Valores muestra su instante y las otras el id. Entradas y Hallazgos muestran «Estado actual de las entradas de configuración (no es la foto guardada)» y releen las entradas actuales, incluso con un id de panel. Sin id siguen disponibles como consultas independientes. La navegación conserva resolución, proyecto, agente y clave; cada hallazgo enlaza a su entrada.
 
