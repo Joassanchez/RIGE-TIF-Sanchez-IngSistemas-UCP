@@ -11,6 +11,8 @@ import { prepararAlmacen } from "../aplicacion/casos-uso/preparar-almacen";
 import { consultarEstado } from "../aplicacion/casos-uso/consultar-estado";
 import { resolverProyecto } from "../aplicacion/casos-uso/resolver-proyecto";
 import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucion";
+import { compararResoluciones } from "../aplicacion/casos-uso/comparar-resoluciones";
+import { consultarProyectosRecientes } from "../aplicacion/casos-uso/consultar-proyectos-recientes";
 import { consultarValores } from "../aplicacion/casos-uso/consultar-valores";
 import { consultarPermiso } from "../aplicacion/casos-uso/consultar-permiso";
 import { consultarReglas } from "../aplicacion/casos-uso/consultar-reglas";
@@ -43,6 +45,7 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
   if (["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos"].includes(comando)) {
     const noEnsamblado = (): never => { throw new Error("Caso ajeno a una consulta en memoria"); };
     return { exito: true, valor: { ...casosConsulta, prepararAlmacen: noEnsamblado,
+      compararResoluciones: noEnsamblado, consultarProyectosRecientes: noEnsamblado,
       consultarEstado: noEnsamblado, iniciarServidor: noEnsamblado } };
   }
   const resultado = configuracion.leer();
@@ -52,6 +55,8 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
   const dependencias = { adaptador: adaptadorOpenCode, entorno, rutas: entorno, resoluciones, reloj: new RelojSistema() };
   return {
     exito: true, valor: {
+      compararResoluciones: (desde, hasta) => compararResoluciones(dependencias, desde, hasta),
+      consultarProyectosRecientes: () => consultarProyectosRecientes(resoluciones),
       consultarReglas: solicitud => consultarReglas(dependencias, solicitud),
       consultarValores: (proyecto, agente, clave) => consultarValores(dependencias, proyecto, agente, clave),
       consultarPermiso: solicitud => consultarPermiso(dependencias, solicitud),
@@ -61,6 +66,8 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
       prepararAlmacen: () => prepararAlmacen(almacen),
       consultarEstado: () => consultarEstado(almacen),
       iniciarServidor: () => iniciarServidor(resultado.valor.puerto, {
+        compararResoluciones: (desde, hasta) => compararResoluciones(dependencias, desde, hasta),
+        consultarProyectosRecientes: () => consultarProyectosRecientes(resoluciones),
         consultarReglas: (id, solicitud) => consultarReglasGuardadas(dependencias, id, solicitud),
         consultarEstado: () => consultarEstado(almacen),
         resolverProyecto: (proyecto, agente) => resolverProyecto(dependencias, proyecto, agente),

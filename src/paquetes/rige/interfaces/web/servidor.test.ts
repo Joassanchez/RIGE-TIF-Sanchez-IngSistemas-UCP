@@ -11,6 +11,8 @@ const respuesta: RespuestaEstado = {
 
 function casosEstado(consultarEstado: ConsultarEstado): CasosWeb {
   return { consultarEstado, consultarReglas: () => { throw new Error("No consultar reglas en pruebas de estado"); }, consultarHallazgos: () => { throw new Error("No consultar hallazgos en pruebas de estado"); },
+    compararResoluciones: () => { throw new Error("No comparar en pruebas de estado"); },
+    consultarProyectosRecientes: () => ({ exito: true, valor: { esquema: 2, proyectos: [] } }),
     resolverProyecto: () => { throw new Error("No resolver en pruebas de estado"); },
     consultarPermiso: () => { throw new Error("No consultar permisos en pruebas de estado"); },
     consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },
@@ -94,6 +96,22 @@ describe("W-12", () => {
 });
 
 describe("W-4", () => {
+  test("T5-14 recientes: consulta por inicio, representa datos separados y propaga errores", async () => {
+    const llamadas: string[] = [];
+    const recientes = { esquema: 2 as const, proyectos: [{ proyecto: '/p & "#', id: 7, instante: "2026-11-10", cantidad: 3 }] };
+    const casos = { ...casosEstado(() => { llamadas.push("estado"); return { exito: true, valor: respuesta }; }),
+      consultarProyectosRecientes: () => { llamadas.push("recientes"); return { exito: true as const, valor: recientes }; } };
+    const solicitar = (ruta = "/") => new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } });
+    const manejar = crearManejador(12345, casos);
+    expect(await manejar(solicitar()).text()).toBe(await paginaInicio(respuesta, recientes).text());
+    expect(llamadas).toEqual(["estado", "recientes"]);
+    manejar(solicitar("/otra")); expect(llamadas).toEqual(["estado", "recientes"]);
+    expect(crearManejador(12345, { ...casos, consultarProyectosRecientes: () => ({ exito: false, error: errorAlmacenSinEsquema }) })(solicitar()).status).toBe(503);
+    expect(crearManejador(12345, { ...casos, consultarProyectosRecientes: () => { throw new Error("Detalle privado"); } })(solicitar()).status).toBe(500);
+    const falloEstado = crearManejador(12345, { ...casos, consultarEstado: () => ({ exito: false, error: errorAlmacenSinEsquema }),
+      consultarProyectosRecientes: () => { throw new Error("No consultar tras error de estado"); } });
+    expect(falloEstado(solicitar()).status).toBe(503);
+  });
   test("consulta en cada inicio, presenta errores y omite la consulta en otras rutas", async () => {
     const puerto = 12345;
     const solicitar = (ruta = "/") => new Request(`http://127.0.0.1${ruta}`, { headers: { Host: `127.0.0.1:${puerto}` } });
@@ -114,6 +132,25 @@ describe("W-4", () => {
     expect(uso(solicitar()).status).toBe(503);
     const falla = manejarEstado(puerto, () => { throw new Error("Detalle privado"); });
     expect(falla(solicitar()).status).toBe(500);
+  });
+});
+
+describe("T5-14 K-5 borde", () => {
+  test("origen y metodo se rechazan antes de comparar, listar recientes o consultar estado", async () => {
+    let consultas = 0;
+    const no = (): never => { consultas++; throw new Error("Consulta privada"); };
+    const manejar = crearManejador(12345, { ...casosEstado(no), compararResoluciones: no, consultarProyectosRecientes: no });
+    for (const ruta of ["/", "/comparar?desde=1&hasta=2"]) {
+      for (const headers of [{}, { Host: "ajeno" }, ...["cross-site", "same-site"].map(s => ({ Host: "localhost:12345", "Sec-Fetch-Site": s }))]) {
+        const r = manejar(new Request(`http://localhost${ruta}`, { headers }));
+        expect(r.status).toBe(403); expect(await r.text()).not.toContain("Consulta privada");
+      }
+      for (const method of ["POST", "PUT", "DELETE", "HEAD", "OPTIONS"]) {
+        const r = manejar(new Request(`http://localhost${ruta}`, { method, headers: { Host: "localhost:12345" } }));
+        expect(r.status).toBe(405); expect(r.headers.get("Allow")).toBe("GET");
+      }
+    }
+    expect(consultas).toBe(0);
   });
 });
 

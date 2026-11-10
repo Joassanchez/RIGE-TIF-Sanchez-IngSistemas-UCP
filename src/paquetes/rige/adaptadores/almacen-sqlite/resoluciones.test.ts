@@ -15,6 +15,43 @@ const temporales: string[] = [];
 const conexiones: Database[] = [];
 const instante = "2026-10-05T12:00:00.000Z";
 
+describe("T5-14 K-3", () => {
+  test("recientes elige una misma fila por instante e id, cuenta retenidas y limita despues de agrupar", async () => {
+    const { repositorio } = await escenario();
+    expect(repositorio.listarProyectosRecientes()).toEqual({ exito: true, valor: [] });
+    const guardar = (proyecto: string, fecha = instante) => {
+      const r = repositorio.guardar(documento(proyecto), fecha);
+      if (!r.exito) throw new Error(r.error.mensaje);
+      return r.valor;
+    };
+    const ids = Array.from({ length: 12 }, (_, i) => guardar(`/p${i}`));
+    const ultimo = guardar("/p0");
+    guardar("/p0", "2020-01-01T00:00:00.000Z");
+    const recientes = repositorio.listarProyectosRecientes();
+    expect(recientes).toEqual({ exito: true, valor: [
+      { proyecto: "/p0", id: ultimo, instante, cantidad: 3 },
+      ...ids.slice(3).reverse().map((id, i) => ({ proyecto: `/p${11 - i}`, id, instante, cantidad: 1 })),
+    ] });
+    for (let i = 0; i < 21; i++) guardar("/retenido", `2027-01-${String(i + 1).padStart(2, "0")}T00:00:00.000Z`);
+    const lista = repositorio.listarProyectosRecientes();
+    if (!lista.exito) throw new Error(lista.error.mensaje);
+    expect(lista.valor).toHaveLength(10);
+    expect(lista.valor[0]).toMatchObject({ proyecto: "/retenido", instante: "2027-01-21T00:00:00.000Z", cantidad: 20 });
+  });
+  test("base ausente o incompatible es error, sin crear ni modificar el almacen", async () => {
+    const { repositorio, ruta } = await escenario(false);
+    expect(repositorio.listarProyectosRecientes()).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+    expect(existsSync(ruta)).toBe(false);
+    const { repositorio: valido, abrir, ruta: archivo } = await escenario();
+    const base = abrir();
+    base.exec("PRAGMA user_version = 99");
+    base.close(); conexiones.pop();
+    const antes = await Bun.file(archivo).bytes();
+    expect(valido.listarProyectosRecientes()).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+    expect(await Bun.file(archivo).bytes()).toEqual(antes);
+  });
+});
+
 function documento(proyecto = "/proyecto"): Resolucion {
   const resultado = resolver(adaptadorFicticio, proyecto, crearEntornoMemoria({ archivos: {
     [`${proyecto}/capa-b.json`]: '{"modelo":"primero","pasos":12}',

@@ -1,13 +1,13 @@
 import { resolve } from "node:path";
 
 type Esquema = { readonly [clave: string]: any };
-const nombres = ["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos", "error", "advertencia", "tiempos"] as const;
+const nombres = ["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos", "error", "advertencia", "tiempos", "comparacion", "proyectos-recientes"] as const;
 
 export async function generarTiposSalida(): Promise<string> {
   let salida = "// Generado desde esquemas/salida/*.json; no editar.\n// Comando: bun herramientas/tipos-salida.ts\n\n";
   let version: unknown;
   for (const nombre of nombres) {
-    const prefijo = nombre[0]!.toUpperCase() + nombre.slice(1);
+    const prefijo = nombre.split("-").map(parte => parte[0]!.toUpperCase() + parte.slice(1)).join("");
     const esquema = await Bun.file(resolve(import.meta.dir, `../esquemas/salida/${nombre}.json`)).json() as Esquema;
     if (nombre === "valores") {
       version = esquema.properties.esquema.const;

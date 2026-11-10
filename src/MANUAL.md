@@ -139,6 +139,19 @@ Las consultas de la CLI no escriben la base. Para cargar resoluciones de demostr
 
 ## 6. Ejecución
 
+Capacidades adicionales **comparar y recientes** (ADR-112, T5-14; fuera de los 18 Must y de la medición ADR-098):
+
+```bash
+bun run rige -- comparar --desde <id-anterior> --hasta <id-abierto> [--agente <nombre>]
+bun run rige -- recientes
+```
+
+Usan exclusivamente las fotos retenidas en `RIGE_ALMACEN`, sin releer entradas ni guardar: requieren el esquema creado explícitamente con `bun run esquema`. No crean un almacén ausente. En el panel de Valores, **Comparar con la anterior** elige la foto siguiente a la abierta en el historial (instante e id descendentes); **comparar con esta** permite elegir otra más antigua. `/comparar?desde=<id>&hasta=<id>[&agente=<nombre>]` muestra antes → después, ambas procedencias, agentes agregados o quitados y cantidades de claves cambiadas, nuevas, quitadas y sin cambio. El filtro de agente afecta la presentación y sus conteos, conservando el JSON completo e idéntico al de la CLI; `--agente` en la CLI conserva ese objeto íntegro.
+
+Las rutas de claves son arreglos de segmentos: no se confunden puntos o barras dentro de un nombre. Un cambio puede ser de valor, de procedencia o de ambos. Las rutas no resueltas y las presencias inciertas quedan fuera de los conteos confirmados; se informa **comparación parcial**. Las sustituciones solo se comparan por su representación protegida, sin afirmar igualdad del contenido. No se comparan cadenas ni decisiones de permisos. `desde` es antes y `hasta` después, sin reordenar; un mismo id produce cero diferencias. Proyecto distinto o id inexistente: código CLI 1 (web 422 o 404); argumentos inválidos: CLI 2 (web 400); falla interna: CLI 70, stack solo con `--depurar`. No admiten `--tiempos` ni `--explicar`. Contratos esquema 2: `comparacion.json` y `proyectos-recientes.json`.
+
+En Inicio, **Proyectos recientes** aparece debajo del formulario si hay fotos: hasta diez proyectos, última foto e instante y cantidad retenida (máximo veinte). El enlace abre esa foto y **Analizar de nuevo** usa `/resolver?proyecto=…`, el recorrido existente que lee las entradas actuales y guarda otra foto.
+
 Capacidad adicional **reglas** (ADR-111, T5-13; fuera de los 18 Must):
 
 ```bash
@@ -182,6 +195,8 @@ RIGE **no tiene usuario de demostración ni acceso con credenciales**. Es local,
 
 ## 8. Verificación
 
+Las capacidades adicionales se verifican sobre una misma copia temporal conservada: analizar, cambiar `temperature` y analizar de nuevo; abrir **Comparar con la anterior** o ejecutar `bun run rige -- comparar --desde <id1> --hasta <id2>`. Contrastar ambos valores y procedencias, volver a Inicio y comprobar **Proyectos recientes** frente a `bun run rige -- recientes`. No se atribuyen a estas capacidades resultados de productividad de ADR-098.
+
 Prueba de humo (desde `src/`, idéntica en Bash y PowerShell):
 
 ```bash
@@ -195,6 +210,7 @@ En la matriz, `demo E -- COMANDO` abrevia **`bun herramientas/demostracion.ts E 
 | Requisito | Preparación | Comando o pantalla | Resultado observable | Prueba automatizada |
 |---|---|---|---|---|
 | Capacidad adicional · ADR-111 (sin Must nuevo) | Copia aislada `v2-decision` | `demo v2-decision -- reglas --agente build`; en Permisos, abrir cadena y matriz | Cadena completa, prevalencia general por sujeto, limitaciones y JSON idéntico en CLI y web; foto guardada inmutable | `pruebas/aceptacion/T5-13.test.ts`; `T5-13-cli.test.ts`; `T5-13-web.test.ts` |
+| Capacidad adicional · ADR-112 (sin Must nuevo) | Dos fotos de una copia `v1-precedencia` | `bun run rige -- comparar --desde <id1> --hasta <id2>`; `bun run rige -- recientes` | Cambio y ambas procedencias, Proyectos recientes, consultas sin escrituras, paridad CLI/web | `pruebas/aceptacion/T5-14.test.ts` |
 | RF-01 | Copia aislada `v1-precedencia` | `demo v1-precedencia -- valores --agente build --clave temperature`; repetir sin `--clave temperature` | 0.3, origen proyecto/opencode.jsonc:6:7, desplazadas 0.1 y 0.2; sin clave aparece el mismo rastro junto a las demás claves | `pruebas/aceptacion/RF-01.test.ts` |
 | RF-02 | `v2-decision`, hogar y Git de su referencia | `demo v2-decision -- permiso --agente build --herramienta read --objetivo .env --explicar` | allow, regla declarada `*.env` determinante sobre ask nativo, cadena, procedencia y explicación de prevalencia | `pruebas/aceptacion/RF-02.test.ts`; `RF-02-explicacion.test.ts` |
 | RF-03 | Preparar `v1-precedencia` una sola vez con `--preparar` | Repetir dos veces `demo --desde "<RAIZ>" -- valores --agente build --clave temperature`; servir esa copia, pulsar Analizar, Consultar clave y comparar el JSON `id="respuesta"` de la página | Salidas CLI idénticas en la misma copia; objeto de valores igual al JSON no ejecutable de la web, esquema 2. Para permiso y hallazgos repetir sus consultas con y sin `--explicar` sobre la misma copia | `pruebas/aceptacion/RF-03.test.ts` |

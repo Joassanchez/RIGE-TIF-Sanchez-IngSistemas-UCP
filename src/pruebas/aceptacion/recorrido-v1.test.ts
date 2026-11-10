@@ -243,7 +243,10 @@ describe("RF-17", () => {
       expect(ids).toHaveLength(20);
       expect(ids).not.toContain(guardadas[0]!);
       expect(historia).toContain(`href="/resoluciones/${guardadas.at(-1)}?agente=build&amp;clave=temperature" aria-current="page"`);
-      expect(historia.match(/aria-current="page"/g)).toHaveLength(1);
+        expect(historia.match(/aria-current="page"/g)).toHaveLength(1);
+        const comparaciones = [...historia.matchAll(/href="\/comparar\?desde=(\d+)&amp;hasta=(\d+)&amp;agente=build/g)]
+          .map(enlace => [Number(enlace[1]), Number(enlace[2])]);
+        expect(comparaciones).toEqual(guardadas.slice(1, -1).reverse().map(id => [id, guardadas.at(-1)!]));
       const retirada = await recorrido.solicitar(ruta(guardadas[0]!));
       expect(retirada.estado).toBe(404);
       expect(retirada.cuerpo).toContain(`No existe la resolución ${guardadas[0]} en el almacén.`);

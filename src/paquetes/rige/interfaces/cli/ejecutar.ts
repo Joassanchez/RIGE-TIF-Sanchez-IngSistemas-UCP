@@ -5,6 +5,8 @@ import type { consultarReglas } from "../../aplicacion/casos-uso/consultar-regla
 import type { ConsultarAgentes } from "../../aplicacion/casos-uso/consultar-agentes";
 import type { ConsultarHallazgos } from "../../aplicacion/casos-uso/consultar-hallazgos";
 import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-entradas";
+import type { CompararResoluciones } from "../../aplicacion/casos-uso/comparar-resoluciones";
+import type { ConsultarProyectosRecientes } from "../../aplicacion/casos-uso/consultar-proyectos-recientes";
 import { versionEsquemaSalida } from "../../aplicacion/respuestas/valores";
 import type { ErrorUso } from "../../aplicacion/errores";
 import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
@@ -14,6 +16,8 @@ import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { parseArgs } from "node:util";
 
 export interface CasosUsoCli {
+  readonly compararResoluciones: CompararResoluciones;
+  readonly consultarProyectosRecientes: ConsultarProyectosRecientes;
   readonly consultarReglas: (solicitud: Parameters<typeof consultarReglas>[1]) => ReturnType<typeof consultarReglas>;
   readonly consultarValores: ConsultarValores;
   readonly consultarPermiso: (...args: Parameters<typeof consultarPermiso> extends [unknown, ...infer R] ? R : never) => ReturnType<typeof consultarPermiso>;
@@ -28,10 +32,13 @@ export interface CasosUsoCli {
 export type Ensamblado = Resultado<CasosUsoCli, ErrorUso>;
 
 interface OpcionesConsulta { readonly proyecto: string; readonly agente: string; readonly clave: string | undefined;
+  readonly desde: string; readonly hasta: string;
   readonly herramienta: string | undefined; readonly sujeto: string | undefined; readonly objetivo: string;
   readonly lanzadoPor: string | undefined; readonly explicar: boolean }
 
 const subcomandos = {
+  comparar: (casos, opciones) => casos.compararResoluciones(opciones.desde, opciones.hasta),
+  recientes: (casos) => casos.consultarProyectosRecientes(),
   reglas: (casos, opciones) => casos.consultarReglas({ proyecto: opciones.proyecto, agente: opciones.agente, lanzadoPor: opciones.lanzadoPor }),
   esquema: (casos) => casos.prepararAlmacen(),
   valores: (casos, opciones) => casos.consultarValores(opciones.proyecto, opciones.agente, opciones.clave),
@@ -73,6 +80,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
         depurar: { type: "boolean" }, proyecto: { type: "string" }, agente: { type: "string" }, clave: { type: "string" },
         herramienta: { type: "string" }, sujeto: { type: "string" }, objetivo: { type: "string" },
         "lanzado-por": { type: "string" }, explicar: { type: "boolean" }, tiempos: { type: "boolean" },
+        desde: { type: "string" }, hasta: { type: "string" },
       }, strict: true, allowPositionals: true,
     });
   } catch {
@@ -84,18 +92,24 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
   if (!Object.hasOwn(subcomandos, posicionales[0]!)) {
     return argumentosInvalidos(canales, `Subcomando desconocido: ${posicionales[0]}.`);
   }
-  const { proyecto, agente, clave, herramienta, sujeto, objetivo, explicar, "lanzado-por": lanzadoPor } = opciones.values;
+  const { proyecto, agente, clave, herramienta, sujeto, objetivo, explicar, desde, hasta, "lanzado-por": lanzadoPor } = opciones.values;
   const comando = posicionales[0]!;
   const admitidas: Record<string, readonly string[]> = {
+    comparar: ["desde", "hasta", "agente"], recientes: [],
     reglas: ["proyecto", "agente", "lanzado-por"],
     valores: ["proyecto", "agente", "clave"], agentes: ["proyecto", "explicar"], entradas: ["proyecto"], hallazgos: ["proyecto", "explicar"],
     permiso: ["proyecto", "agente", "herramienta", "sujeto", "objetivo", "lanzado-por", "explicar"], esquema: [], servir: [],
   };
   for (const nombre of Object.keys(opciones.values)) {
-    if (nombre !== "depurar" && !(nombre === "tiempos" && !["esquema", "servir"].includes(comando))
+    if (nombre !== "depurar" && !(nombre === "tiempos" && !["esquema", "servir", "comparar", "recientes"].includes(comando))
       && !admitidas[comando]!.includes(nombre)) return argumentosInvalidos(canales, `${comando} no admite --${nombre}.`);
   }
   const noVacio = (valor: unknown): valor is string => typeof valor === "string" && Boolean(valor.trim());
+  const idValido = (id: unknown): boolean => typeof id === "string" && id.length > 0 && !/[^0-9]/.test(id)
+    && Number.isSafeInteger(Number(id)) && Number(id) > 0;
+  if (comando === "comparar" && (!idValido(desde) || !idValido(hasta) || (agente !== undefined && !noVacio(agente)))) {
+    return argumentosInvalidos(canales, "comparar requiere --desde y --hasta enteros positivos decimales seguros; --agente no puede estar vacío.");
+  }
   if (posicionales[0] === "valores") {
     if (typeof proyecto !== "string" || !proyecto.trim() || typeof agente !== "string" || !agente.trim()
       || (clave !== undefined && (typeof clave !== "string" || !clave.trim()))) {
@@ -125,6 +139,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
     const inicioConsulta = performance.now();
     const resultado = subcomandos[posicionales[0] as keyof typeof subcomandos](casos.valor, {
       proyecto: proyecto as string, agente: agente as string, clave: clave as string | undefined,
+      desde: desde as string, hasta: hasta as string,
       herramienta: herramienta as string | undefined, sujeto: sujeto as string | undefined, objetivo: objetivo as string,
       lanzadoPor: lanzadoPor as string | undefined, explicar: explicar === true,
     });

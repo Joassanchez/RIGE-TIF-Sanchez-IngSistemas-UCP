@@ -32,6 +32,8 @@ const hallazgos: RespuestaHallazgos = { ...base, hallazgos: [], incompleta: fals
     "sustitucion-sin-valor": 0, "referencia-no-resuelta": 0, "regla-sin-efecto": 0, "elemento-sin-uso": 0 } } };
 const sobre = { id: 7, instante: "2026-11-09T12:00:00Z", anteriores: [{ id: 7, instante: "2026-11-09T12:00:00Z", resumenEntradas: base.resumenEntradas }] };
 const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: estado }),
+  compararResoluciones: () => { throw new Error("No comparar en este doble"); },
+  consultarProyectosRecientes: () => ({ exito: true, valor: { esquema: 2, proyectos: [] } }),
   consultarReglas: () => { throw new Error("No consultar reglas en este doble"); },
   consultarResolucion: () => ({ exito: true, valor: { respuesta: valores, sobre } }),
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }),
@@ -52,6 +54,7 @@ describe("T5-08 U-1 U-11 P-4 estilos y seguridad", () => {
     let llamadas = 0;
     const noConsultar = () => { llamadas++; throw new Error("No consultar"); };
     const cssManejar = crearManejador(12345, { consultarEstado: noConsultar, consultarResolucion: noConsultar,
+      compararResoluciones: noConsultar, consultarProyectosRecientes: noConsultar,
       consultarEntradas: noConsultar, consultarHallazgos: noConsultar, consultarAgentes: noConsultar,
       consultarPermiso: noConsultar, consultarReglas: noConsultar, resolverProyecto: noConsultar });
     for (const sitio of [undefined, "same-origin", "none"]) {

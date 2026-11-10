@@ -40,7 +40,7 @@ describe("T5-13 R-1", () => {
       entorno: { ...e.deps.entorno, plataforma: process.platform, variable: noLeer, tipo: noLeer, examinar: noLeer, leer: noLeer,
         listar: noLeer, real: noLeer, resumir: (t: string) => e.deps.entorno.resumir(t),
         rutasPara: (p: string) => e.deps.entorno.rutasPara(p), ...e.deps.entorno.rutasPara(process.platform) }, rutas: { canonica: noLeer },
-      resoluciones: { guardar: noLeer, listar: noLeer,
+      resoluciones: { guardar: noLeer, listar: noLeer, listarProyectosRecientes: noLeer,
         leer: () => { lecturas++; return { exito: true as const, valor: { resolucion: a.valor.resolucion, id: 1, instante: "2026-11-10" } }; } } };
     const r = consultarReglasGuardadas(deps, "1", { agente: "build" });
     expect(lecturas).toBe(1);

@@ -866,6 +866,84 @@
           "describe": "T5-13 R-6"
         }
       ]
+    },
+    {
+      "id": "T5-14 K-1",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-1"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-2",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-2"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-3",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-3"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-4",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-4"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-5",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-5"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-6",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-6"
+        }
+      ]
     }
   ]
 }

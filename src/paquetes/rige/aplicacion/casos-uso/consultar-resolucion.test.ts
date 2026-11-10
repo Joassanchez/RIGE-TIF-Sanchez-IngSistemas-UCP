@@ -21,6 +21,7 @@ function dobles() {
     { id: 6, instante: "2026-10-04T00:00:00.000Z", resumenEntradas: "a".repeat(64) }];
   const llamadas: (string | number)[] = [];
   const puerto: PuertoResoluciones = {
+    listarProyectosRecientes: () => { throw new Error("No listar recientes en este doble"); },
     guardar: () => { throw new Error("Consultar no guarda ni resuelve"); },
     leer: (id) => { llamadas.push(id); return { exito: true, valor: { id, instante, resolucion } }; },
     listar: (proyecto) => { llamadas.push(proyecto); return { exito: true, valor: anteriores }; },

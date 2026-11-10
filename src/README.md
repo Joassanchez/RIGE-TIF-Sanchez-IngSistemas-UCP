@@ -173,6 +173,37 @@ Los marcadores entre `<…>` se reemplazan por valores propios; los corchetes in
 | Verificación | Ejecución | Resultado |
 |---|---|---|
 | Capacidad adicional · cadena y matriz | `bun herramientas/demostracion.ts v2-decision -- reglas --agente build` | Cadena en orden, índices desde 1 y matriz con prevalencia por sujeto; no agrega un Must |
+| Capacidad adicional · comparación y recientes | `bun run rige -- comparar --desde <id1> --hasta <id2>`; `bun run rige -- recientes` | Fotos del mismo proyecto, cambios y procedencias; Proyectos recientes en Inicio; fuera de los Must y de la medición ADR-098 |
+
+`comparar` y `recientes` leen solo el almacén indicado por `RIGE_ALMACEN`; no lo crean ni releen las entradas. Requieren `bun run esquema`. `/comparar?desde=<id1>&hasta=<id2>[&agente=<nombre>]` comparte el JSON íntegro con la CLI (`esquema: 2`). `--agente <nombre>` conserva ese objeto en CLI; en web filtra la presentación y sus conteos. Desde Valores, **Comparar con la anterior** y **comparar con esta** fijan la dirección temporal. Inicio lista hasta diez proyectos con su última foto, cantidad retenida y **Analizar de nuevo**, que usa el recorrido existente de resolver y guardar. Las rutas no resueltas producen comparación parcial; sustituciones solo por representación protegida, sin afirmar igualdad de contenido. Cadenas de permisos fuera de alcance. Detalles y errores en MANUAL §6 y §8.
+
+```bash
+bun test pruebas/aceptacion/T5-14.test.ts paquetes/rige/aplicacion/casos-uso/comparar-resoluciones.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts
+```
+
+Comprobación de Windows con unidad alternativa y TEMP/TMP en nombre corto 8.3 (PowerShell, desde `src/`; `R:` debe estar libre):
+
+```powershell
+$rigeRaiz = (Resolve-Path ..).Path
+$rigeTemporal = [System.IO.Path]::GetTempPath()
+$rigeCorto = cmd /c "for %I in (`"$rigeTemporal`") do @echo %~sI"
+$rigeTempAnterior = $env:TEMP
+$rigeTmpAnterior = $env:TMP
+$rigeAlmacenAnterior = $env:RIGE_ALMACEN
+subst R: $rigeRaiz
+try {
+  $env:TEMP = $rigeCorto.Trim()
+  $env:TMP = $rigeCorto.Trim()
+  $env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-prueba-t514'
+  Push-Location R:\src
+  try { bun test } finally { Pop-Location }
+} finally {
+  $env:TEMP = $rigeTempAnterior
+  $env:TMP = $rigeTmpAnterior
+  $env:RIGE_ALMACEN = $rigeAlmacenAnterior
+  subst R: /d
+}
+```
 
 Pruebas auxiliares de la capacidad (sin CA nuevos del catálogo):
 

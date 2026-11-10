@@ -125,6 +125,8 @@ const respuesta: RespuestaEstado = {
   esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
 const noWeb = {
+  compararResoluciones: () => { throw new Error("No comparar en este doble"); },
+  consultarProyectosRecientes: () => { throw new Error("No listar recientes en este doble"); },
   consultarReglas: () => { throw new Error("No consultar reglas en este doble"); },
   consultarHallazgos: () => { throw new Error("No consultar hallazgos en este doble"); },
   consultarPermiso: () => { throw new Error("No consultar permiso"); },

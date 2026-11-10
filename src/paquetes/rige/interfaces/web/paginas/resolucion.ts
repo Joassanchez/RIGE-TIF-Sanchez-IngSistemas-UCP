@@ -7,7 +7,7 @@ import { declaraciones, diseno, insignia } from "../diseno";
 import { presentarRuta } from "../rutas";
 import { responderHtml } from "../respuesta";
 
-function presentarOrigen(declaracion: DeclaracionUbicada): HtmlSeguro {
+export function presentarOrigen(declaracion: DeclaracionUbicada): HtmlSeguro {
   const { origen } = declaracion;
   if (origen.tipo !== "declarado") return html`${insignia(origen.tipo === "implicito" ? "implícito" : origen.tipo)} <code class="motivo-origen">${origen.regla}</code>`;
   return html`${insignia(declaracion.via)} ${presentarRuta(String(declaracion.localizacion ?? declaracion.referencia))}`;
@@ -24,6 +24,9 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
     : "/" + respuesta.ruta.map(segmento => segmento.replaceAll("~", "~0").replaceAll("/", "~1")).join("/"));
   const consulta = `?agente=${encodeURIComponent(respuesta.agente)}${clave ? `&clave=${encodeURIComponent(clave)}` : ""}`;
   const q = contexto.q ?? "";
+  const indiceActual = sobre.anteriores.findIndex(foto => foto.id === sobre.id);
+  const anterior = indiceActual < 0 ? undefined : sobre.anteriores[indiceActual + 1];
+  const enlaceComparar = (desde: number) => `/comparar?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(sobre.id)}&agente=${encodeURIComponent(respuesta.agente)}`;
   const visibles = q ? respuesta.valores.filter(valor => valor.clave.toLowerCase().includes(q.toLowerCase())) : respuesta.valores;
   const precedencia = Object.hasOwn(respuesta.reglas, "orden-de-aplicacion") ? respuesta.reglas["orden-de-aplicacion"] : undefined;
   const implicitas = [...new Set(respuesta.valores.flatMap(({ rastro }) => rastro.determinante.origen.tipo === "implicito"
@@ -41,6 +44,7 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
 <div><dt>Instante (UTC)</dt><dd>${sobre.instante}</dd></div>
 <div><dt>Herramienta</dt><dd>${respuesta.herramienta} ${respuesta.versionHerramienta}</dd></div>
 <div><dt>Clave</dt><dd><code>${respuesta.ruta?.join(".") ?? "todas"}</code></dd></div></dl></section>
+${anterior ? html`<p class="acciones"><a href="${enlaceComparar(anterior.id)}">Comparar con la anterior</a></p>` : html``}
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <div class="rejilla filtros">
 <form id="consultar-clave" action="${`/resoluciones/${sobre.id}`}" method="get">
@@ -77,7 +81,7 @@ ${respuesta.noResueltas.length ? html`<details id="claves-no-incorporadas"><summ
 <section id="historia"><h2>Resoluciones de este proyecto</h2>
 <ul class="historia">${sobre.anteriores.map(anterior => html`<li>${anterior.id === sobre.id
     ? html`<a href="${`/resoluciones/${anterior.id}${consulta}`}" aria-current="page">Resolución ${anterior.id}</a>`
-    : html`<a href="${`/resoluciones/${anterior.id}${consulta}`}">Resolución ${anterior.id}</a>`} <time>${anterior.instante}</time>${anterior.id === sobre.id ? html`<span class="insignia insignia--neutra">(esta)</span>` : html``}</li>`)}</ul></section>
+    : html`<a href="${`/resoluciones/${anterior.id}${consulta}`}">Resolución ${anterior.id}</a>`} <time>${anterior.instante}</time>${anterior.id === sobre.id ? html`<span class="insignia insignia--neutra">(esta)</span>` : html``}${indiceActual >= 0 && sobre.anteriores.findIndex(foto => foto.id === anterior.id) > indiceActual ? html`<a href="${enlaceComparar(anterior.id)}">comparar con esta</a>` : html``}</li>`)}</ul></section>
 ${comandoCli("valores", { proyecto: respuesta.proyecto, agente: respuesta.agente, ...(clave ? { clave } : {}) })}
 ${datosRespuesta(respuesta)}`, { ...contexto, proyecto: respuesta.proyecto, idResolucion: sobre.id, agente: respuesta.agente, ...(clave ? { clave } : {}), activa: "Valores" }));
 }

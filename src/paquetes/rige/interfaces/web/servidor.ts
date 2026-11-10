@@ -1,6 +1,9 @@
 import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
 import type { ResolverProyecto } from "../../aplicacion/casos-uso/resolver-proyecto";
 import type { ConsultarResolucion } from "../../aplicacion/casos-uso/consultar-resolucion";
+import type { CompararResoluciones } from "../../aplicacion/casos-uso/comparar-resoluciones";
+import type { ConsultarProyectosRecientes } from "../../aplicacion/casos-uso/consultar-proyectos-recientes";
+import { paginaComparacion } from "./paginas/comparacion";
 import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { errorPuertoOcupado, errorSolicitudInvalida, type ErrorUso } from "../../aplicacion/errores";
 import { conErrores, paginaErrorUso } from "./intermedios/errores";
@@ -21,6 +24,8 @@ import { agenteInicial, type ContextoPanel } from "./panel";
 import { paginaConsultasPermiso } from "./paginas/consultas-permiso";
 
 export interface CasosWeb {
+  readonly compararResoluciones: CompararResoluciones;
+  readonly consultarProyectosRecientes: ConsultarProyectosRecientes;
   readonly consultarReglas: (id: string, solicitud: Parameters<typeof consultarReglasGuardadas>[2]) => ReturnType<typeof consultarReglasGuardadas>;
   readonly consultarEntradas: ConsultarEntradas;
   readonly consultarHallazgos: ConsultarHallazgos;
@@ -46,6 +51,12 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
         agente: contextoSolicitud.agente ?? agenteInicial(agentes.valor.agentes) } };
     };
     if (url.pathname === "/estilos.css") return responderEstilos();
+    if (url.pathname === "/comparar") {
+      const agente = url.searchParams.get("agente");
+      if (agente !== null && !agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
+      const resultado = casos.compararResoluciones(url.searchParams.get("desde") ?? "", url.searchParams.get("hasta") ?? "");
+      return resultado.exito ? paginaComparacion(resultado.valor, agente ?? undefined) : paginaErrorUso(resultado.error);
+    }
     if (url.pathname === "/reglas") {
       const id = url.searchParams.get("id") ?? "";
       const resultado = casos.consultarReglas(id, { agente: url.searchParams.get("agente") ?? "",
@@ -135,7 +146,9 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       return responderHtml(404, pagina);
     }
     const resultado = casos.consultarEstado();
-    return resultado.exito ? paginaInicio(resultado.valor) : paginaErrorUso(resultado.error);
+    if (!resultado.exito) return paginaErrorUso(resultado.error);
+    const recientes = casos.consultarProyectosRecientes();
+    return recientes.exito ? paginaInicio(resultado.valor, recientes.valor) : paginaErrorUso(recientes.error);
   };
   return conErrores(conVerificacionDeOrigen(puerto, enrutar));
 }

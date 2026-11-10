@@ -29,6 +29,11 @@ export function errorResolucionInexistente(id: number): ErrorUso {
   return { codigo: "resolucion-inexistente", mensaje: `No existe la resolución ${id} en el almacén.` };
 }
 
+export const errorResolucionesDeOtroProyecto: ErrorUso = Object.freeze({
+  codigo: "resoluciones-de-otro-proyecto",
+  mensaje: "Las resoluciones pertenecen a proyectos distintos.",
+});
+
 export function errorDesdeAnalisis(error: { categoria?: unknown; codigo: string; mensaje: string }): ErrorUso {
   if (error.categoria !== "uso") throw new Error(`Categoría de análisis inválida: ${error.codigo}`);
   return { codigo: error.codigo, mensaje: error.mensaje };
