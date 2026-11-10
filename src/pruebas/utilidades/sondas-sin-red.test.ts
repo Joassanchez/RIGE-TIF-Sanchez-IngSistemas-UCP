@@ -47,6 +47,38 @@ function crearSonda(temporal: string, trazado: boolean): string {
 }
 
 describe("T5-05 controles negativos", () => {
+  for (const patron of ["RNF-05 CA-1", "sin-red --salida seguido", "sin-red --comparar: una salida alterada"]) {
+    test(`T5-05-c1: ${patron} diagnostica codigo, senal y colas de ambas salidas`, () => {
+      const temporal = mkdtempSync(join(tmpdir(), "rige-sonda-diagnostico-"));
+      try {
+        const sonda = join(temporal, "sonda.ts");
+        writeFileSync(sonda, `
+          Object.defineProperty(process, "platform", { value: "linux" });
+          const buscar = Bun.which;
+          Bun.which = (nombre, opciones) => nombre === "strace" ? "/sonda/strace" : buscar(nombre, opciones);
+          const original = Bun.spawnSync;
+          Bun.spawnSync = (args, opciones) => args.includes("herramientas/sin-red.ts")
+            ? { exitCode: 70, signalCode: "SIGTERM",
+                stdout: Buffer.from("inicio-stdout\\n" + "linea\\n".repeat(30) + "final-stdout"),
+                stderr: Buffer.from("inicio-stderr\\n" + "linea\\n".repeat(30) + "final-stderr") }
+            : original(args, opciones);
+        `);
+        const resultado = Bun.spawnSync([process.execPath, "test", "--preload", sonda,
+          "pruebas/aceptacion/RNF-05.test.ts", "--test-name-pattern", patron], {
+          cwd: raiz, env: crearEntornoAislado(temporal, process.env),
+          stdout: "pipe", stderr: "pipe", timeout: 30000,
+        });
+        expect(resultado.exitCode).not.toBe(0);
+        const diagnostico = resultado.stderr.toString();
+        for (const dato of ["exitCode=70", "signalCode=SIGTERM", "final-stdout", "final-stderr"]) {
+          expect(diagnostico).toContain(dato);
+        }
+        expect(diagnostico).not.toContain("inicio-stdout");
+        expect(diagnostico).not.toContain("inicio-stderr");
+      } finally { borrarTemporal(temporal); }
+    }, 45000);
+  }
+
   for (const modo of ["N-2 R-1", "N-6 strace"]) {
     test(`${modo}: rechaza consultas fallidas o vacias aunque las dos corridas coincidan y la traza no tenga red`, () => {
       const temporal = mkdtempSync(join(tmpdir(), "rige-sonda-sin-red-"));

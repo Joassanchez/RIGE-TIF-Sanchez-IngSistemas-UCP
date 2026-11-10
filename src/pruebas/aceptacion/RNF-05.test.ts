@@ -11,6 +11,17 @@ const raiz = resolve(import.meta.dir, "../..");
 const rutaRige = "paquetes/rige/arranque/rige.ts";
 const rutaPreload = "./pruebas/utilidades/sin-red-preload.ts";
 
+function comprobarCodigo(proc: Bun.SyncSubprocess<"pipe", "pipe">, esperado: number): void {
+  if (proc.exitCode !== esperado) {
+    const ultimasLineas = (salida: Uint8Array) => Buffer.from(salida).toString().trimEnd().split(/\r?\n/).slice(-20).join("\n");
+    throw new Error([
+      `Subproceso: exitCode=${proc.exitCode}, signalCode=${proc.signalCode}; esperado=${esperado}`,
+      `stdout (ultimas 20 lineas):\n${ultimasLineas(proc.stdout)}`,
+      `stderr (ultimas 20 lineas):\n${ultimasLineas(proc.stderr)}`,
+    ].join("\n"));
+  }
+}
+
 interface ConsultaManifiesto {
   readonly id: string;
   readonly agente: string;
@@ -104,9 +115,9 @@ describe("T3-09 R-1", () => {
             timeout: 30000,
           });
 
-          expect(normal.exitCode).toBe(0);
+          comprobarCodigo(normal, 0);
           expect(normal.stdout.toString().trim()).not.toBe("");
-          expect(sinRed.exitCode).toBe(0);
+          comprobarCodigo(sinRed, 0);
           expect(sinRed.stdout.toString().trim()).not.toBe("");
           expect(sinRed.exitCode).toBe(normal.exitCode);
           expect(sinRed.stdout.toString()).toBe(normal.stdout.toString());
@@ -184,7 +195,7 @@ describe("T3-09 R-3", () => {
       stderr: "pipe",
       timeout: 120000,
     });
-    expect(proc.exitCode).toBe(0);
+    comprobarCodigo(proc, 0);
     const salida = proc.stdout.toString();
     expect(salida.trim()).not.toBe("");
     for (const llamada of ["connect", "sendto", "sendmsg"]) {
@@ -192,7 +203,7 @@ describe("T3-09 R-3", () => {
       expect(linea).toBeDefined();
       expect(JSON.parse(linea!.slice(llamada.length + 2))).toMatchObject({ externoIPv4: 0, externoIPv6: 0, indeterminados: 0 });
     }
-  });
+  }, 180000);
 });
 
 describe("T3-09 R-4", () => {
@@ -210,7 +221,7 @@ describe("T3-09 R-4", () => {
         stderr: "pipe",
         timeout: 30000,
       });
-      expect(procSalida.exitCode).toBe(0);
+      comprobarCodigo(procSalida, 0);
 
       const procComparar = Bun.spawnSync([
         process.execPath,
@@ -223,11 +234,11 @@ describe("T3-09 R-4", () => {
         stderr: "pipe",
         timeout: 30000,
       });
-      expect(procComparar.exitCode).toBe(0);
+      comprobarCodigo(procComparar, 0);
     } finally {
       borrarTemporal(temporal);
     }
-  });
+  }, 90000);
 
   test("sin-red --comparar: una salida alterada en el archivo de referencia da código 1 y nombra el escenario y el subcomando", () => {
     const temporal = join(tmpdir(), `rige-sin-red-alterado-${Date.now()}.json`);
@@ -252,12 +263,12 @@ describe("T3-09 R-4", () => {
         stderr: "pipe",
         timeout: 30000,
       });
-      expect(proc.exitCode).toBe(1);
+      comprobarCodigo(proc, 1);
       const salidaTotal = proc.stdout.toString() + "\n" + proc.stderr.toString();
       expect(salidaTotal).toContain("v2-decision");
       expect(salidaTotal).toContain("valores");
     } finally {
       borrarTemporal(temporal);
     }
-  });
+  }, 45000);
 });
