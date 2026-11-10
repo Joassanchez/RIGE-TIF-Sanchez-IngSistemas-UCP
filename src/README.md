@@ -35,7 +35,7 @@ La oferta de herramientas según la decisión (RF-10), el resumen del ecosistema
 
 La detección ante `core.worktree` y `core.bare` es aproximada (ADR-101 W-B) y emite `deteccion-git-aproximada`. Con `core.worktree`, la decisión de RIGE puede diferir de la de OpenCode y el caso está caracterizado. T5-06c separa la declaración y la decisión en [sus pruebas](pruebas/aceptacion/T5-06c.test.ts), con referencias por plataforma para [core.worktree](pruebas/escenarios/v5-worktree-core.worktree/REFERENCIA.json), [core.bare](pruebas/escenarios/v5-worktree-core.bare/REFERENCIA.json) y el [control ordinario](pruebas/escenarios/v5-worktree-control-ordinario/REFERENCIA.json). Una captura ausente queda como `test.todo`.
 
-Las capturas `win32-x64` y `linux-x64` de T5-06c muestran que, con `core.worktree = ../proyecto`, `read`, `*` → `deny` y `sub/a.txt` → `allow`, OpenCode evalúa `sub/a.txt` y permite. En Windows, RIGE evalúa `proyecto/sub/a.txt` y deniega. La prueba compara con RIGE en la plataforma ejecutada: si coincide, acredita coincidencia; si difiere, caracteriza el límite declarado de ADR-101 W-B y exige `deteccion-git-aproximada`. El recuento RNF-02 separa ese límite de las coincidencias nativas. Las capturas Linux las obtuvo el ingeniero en Ubuntu 26.04 sobre `8620aff`; T5-06c-c1 las incorporó sin modificarlas ni reemplazar Windows. Las comparaciones de otra plataforma se registran como pendientes de ejecución allí.
+Las capturas `win32-x64` y `linux-x64` de T5-06c muestran que, con `core.worktree = ../proyecto`, `read`, `*` → `deny` y `sub/a.txt` → `allow`, OpenCode evalúa `sub/a.txt` y permite. En Windows, RIGE evalúa `proyecto/sub/a.txt` y deniega. La prueba compara con RIGE en la plataforma ejecutada: si coincide, acredita coincidencia; si difiere, caracteriza el límite declarado de ADR-101 W-B y exige `deteccion-git-aproximada`. El recuento RNF-02 separa ese límite de las coincidencias nativas. Las capturas Linux se obtuvieron en Ubuntu 26.04 sobre `8620aff` y se incorporaron sin modificarlas ni reemplazar Windows (T5-06c-c1). Las comparaciones de otra plataforma se registran como pendientes de ejecución allí.
 
 `OPENCODE_CONFIG_CONTENT` se analiza como JSONC y `OPENCODE_PERMISSION` como JSON estricto; su texto crudo no se emite ni se guarda. El resumen del conjunto incorpora su huella cuando constituyen entradas (ADR-104). `OPENCODE_CONFIG_DIR` agrega un directorio y exige una ruta absoluta canónica. El TOML legado `config`, las variables `OPENCODE_DISABLE_PROJECT_CONFIG`, `OPENCODE_TEST_HOME` y `OPENCODE_TEST_MANAGED_CONFIG_DIR`, y un `name:` en frontmatter Markdown producen `via-no-soportada`.
 
@@ -214,7 +214,7 @@ try {
 }
 ```
 
-Para reproducir un temporal 8.3 concreto, asignar su ruta a `$rigeCorto` antes de `subst` (T5-15 usa el temporal indicado por el ingeniero). Las rutas esperadas de pruebas se construyen con `realpathSync.native`, porque la ruta recibida puede usar nombres cortos.
+Para reproducir un temporal 8.3 concreto, asignar a `$rigeCorto` la ruta corta del temporal que se quiera reproducir antes de `subst`. Las rutas esperadas de pruebas se construyen con `realpathSync.native`, porque la ruta recibida puede usar nombres cortos.
 
 Pruebas del pulido de presentación (Z-1 a Z-11), con `RIGE_ALMACEN` temporal:
 
@@ -261,7 +261,7 @@ El panel tiene cinco pestañas: **Valores**, **Permisos**, **Agentes**, **Entrad
 
 Cada resultado ofrece **Consultar por CLI con las entradas actuales**, plegable, con comandos citados para Bash y PowerShell 7.3+ y esta aclaración: «No recupera esta foto; coincide si las entradas y el contexto no cambiaron». Permiso siempre incluye `--explicar`; `q` solo afecta la presentación web. Las pestañas y los comandos largos desplazan dentro de sus contenedores. Hasta 640 px, las tablas de valores, detalle de hallazgos, cadena de permiso y entradas pasan a tarjetas con etiquetas, conservando contenido y orden. El tema sigue al sistema, sin JavaScript ni recursos externos.
 
-Cada página de resultado incluye exactamente el objeto del caso de uso como JSON no ejecutable, con `<` escapado. Las rutas destacan archivo y posición y conservan la ruta completa en `title`; la determinante no repite el valor y las desplazadas conservan su orden. Las reglas adicionales tienen su código y plantilla en la procedencia de la fila. La revisión real en navegador de temas, contraste, foco y 360 px corresponde al ingeniero con capturas.
+Cada página de resultado incluye exactamente el objeto del caso de uso como JSON no ejecutable, con `<` escapado. Las rutas destacan archivo y posición y conservan la ruta completa en `title`; la determinante no repite el valor y las desplazadas conservan su orden. Las reglas adicionales tienen su código y plantilla en la procedencia de la fila. Para la revisión en navegador, comprobar temas, contraste, foco y ancho de 360 px, y conservar capturas.
 
 ### Demostración aislada
 
@@ -336,7 +336,7 @@ bun run decisiones --raiz $raizNpm --cache $cache --regenerar --escenario v5-wor
 bun run decisiones --raiz $raizNpm --cache $cache --escenario v5-worktree-control-ordinario --escenario v5-worktree-core.worktree --escenario v5-worktree-core.bare
 ```
 
-Tras regenerar, se actualizan los SHA-256 de `REFERENCIA.json` en `pruebas/escenarios/MANIFIESTO.json`. La comparación del capturador comprueba la estabilidad del binario; `bun test pruebas/aceptacion/T5-06c.test.ts` contrasta las decisiones de RIGE. En Linux se usan los mismos selectores con `bun run decisiones --raiz "$(npm root -g)" --cache "${TMPDIR:-/tmp}/rige-decisiones-T5-06" --regenerar`, con `RIGE_ALMACEN` temporal. T5-06c-c1 incorporó las tres capturas Linux realizadas por el ingeniero.
+Tras regenerar, se actualizan los SHA-256 de `REFERENCIA.json` en `pruebas/escenarios/MANIFIESTO.json`. La comparación del capturador comprueba la estabilidad del binario; `bun test pruebas/aceptacion/T5-06c.test.ts` contrasta las decisiones de RIGE. En Linux se usan los mismos selectores con `bun run decisiones --raiz "$(npm root -g)" --cache "${TMPDIR:-/tmp}/rige-decisiones-T5-06" --regenerar`, con `RIGE_ALMACEN` temporal. Las tres capturas Linux se incorporaron en T5-06c-c1.
 
 | Código CLI | Situación | stdout | stderr |
 |---|---|---|---|
@@ -351,7 +351,7 @@ Todos los errores declaran `esquema: 2`. Sin esquema, el servidor informa `almac
 
 El archivo `.github/workflows/ci.yml` ejecuta en cada push, sobre entornos limpios `ubuntu-26.04` y `windows-latest` con Bun 1.3.14, los pasos `bun install --frozen-lockfile`, `bun run verificar` y `bun test`.
 
-Corrida local de esta rama del 09/11/2026, RIGE **1.0.0**, Windows: `bun run verificar` terminó con código 0; `bun test` registró **1240 aprobadas, 2 omitidas, 15 pendientes y 0 fallidas**. Las omisiones corresponden a strace exclusivo de Linux y al enlace npm exclusivo de POSIX. Las pendientes son comparaciones que requieren ejecución en la otra plataforma. El recuento no sustituye la corrida Ubuntu ni acredita un CI remoto nuevo; comprobar el commit del candidato en el enlace del canal.
+Última verificación del 10/11/2026, RIGE **1.0.0**: `bun run verificar` terminó con código 0; `bun test` registró en Windows **1364 aprobadas, 2 omitidas, 15 pendientes y 0 fallidas** y en Ubuntu **1358 aprobadas**. Las omisiones corresponden a strace exclusivo de Linux y al enlace npm exclusivo de POSIX. Las pendientes son comparaciones que requieren ejecución en la otra plataforma. El recuento no sustituye la corrida Ubuntu ni acredita un CI remoto nuevo; comprobar el commit del candidato en el enlace del canal.
 
 La batería de aceptación verifica el cumplimiento estricto de los criterios del catálogo:
 
@@ -385,10 +385,19 @@ El [registro de corridas](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSis
 
 ## 8. Declaración de herramientas auxiliares
 
-Las filas siguientes trasladan solo usos respaldados por la declaración de la bitácora (../00-gestion/bitacora.md). Sustituyen atribuciones anteriores que aún no estaban conciliadas; no se infieren herramientas desde las fichas.
+Las filas siguientes trasladan solo usos respaldados por la declaración de la bitácora (../00-gestion/bitacora.md). Sustituyen atribuciones anteriores que aún no estaban conciliadas.
 
 | Fecha | Herramienta | Para qué | Pieza, archivo o commit | Verificación posterior |
 |---|---|---|---|---|
+| 10/11 | Claude Code (`claude-opus-5-5`) | Fichas T5-10 a T5-15, ADR-112 propuesto, lanzamiento de las pre-críticas y del escritor, revisión de los diff, corridas de pruebas en Windows y Ubuntu, capturas de escritorio y móvil, demostración local y esta entrada | `.trabajo/fichas/cierre/`, `00-gestion/decisiones/ADR-112-comparar-resoluciones-recientes.md`, `bitacora.md` | [AUTOR: lectura y corrección; aceptar o rechazar ADR-111 y ADR-112] |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como revisor | Pre-críticas de las fichas T5-11 a T5-14 | `.trabajo/fichas/cierre/precriticas/` (material descartable) | Precisiones incorporadas a las fichas por Claude Code |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-10: responsive sin desbordamiento horizontal | `6eef1f4` | Windows 1281 aprobadas; emulación móvil a 360 px sin desbordamiento |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-11: panel único del proyecto (pestañas, selector, buscador, regla en una línea, comando equivalente) | `41b215c` | Windows 1296 aprobadas en `R:` con TEMP 8.3; capturas revisadas por Claude Code |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | Corrección del tiempo límite de la prueba de RNF-05 con `strace` (T5-05-c1) | `4118a09` | Ubuntu sin fallas |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-12: mapa completo de vías (ADR-111, propuesto) y corrección por TEMP 8.3 | `cc36c18`, `87c2eda` | Referencias nativas en ok en Windows y Linux |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-13: consulta `reglas` y matriz de permisos (ADR-111, propuesto) y corrección de la falla interna con `R:` | `fafbb28`, `d814418` | Windows 1331 aprobadas; Ubuntu 1325 |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-14: comparar resoluciones y proyectos recientes, en la web y en la CLI (ADR-112, propuesto) | `8136e4e` | Windows 1351 aprobadas en `R:` con TEMP 8.3; Ubuntu 1345; referencias nativas en ok; capturas revisadas por Claude Code |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-15: pulido visual final de la interfaz (un solo campo de clave visible, orden del panel, insignias, matriz, mapa de vías agrupado, comparación y plurales) | `641d220` | Windows 1364 aprobadas en `R:` con TEMP 8.3; Ubuntu 1358; capturas de escritorio y emulación móvil a 360 px sin desbordamiento, revisadas por Claude Code |
 | 09/11 | Claude Code (`claude-opus-5-5`) | Resumen de `src/`, planteo de las decisiones de PIL-B, fichas T5-02 a T5-07 y del redactor, registro de D-75 a D-77 y R-17 a R-19, revisión de los diff, corridas de pruebas y esta entrada | `.trabajo/fichas/cierre/`, `00-gestion/anexo-III.md`, `registro-cambios-referente.md`, `pendientes.md`, `bitacora.md` | Pruebas en Windows (local y `R:` con TEMP 8.3) y en Ubuntu 26.04 en Docker. [AUTOR: lectura y corrección] |
 | 09/11 | Claude Code (`claude-opus-5-5`) | Captura de diez salidas de RIGE en `ee7cbf5`, ejecutado desde un temporal | `src/pruebas/datos/salidas-ee7cbf5.json` (incorporado por el escritor en `99f8762`) | Esquema 2 en las diez y sin rutas locales; copia idéntica comprobada con `cmp` |
 | 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto) | Pre-crítica de las fichas T5-02 a T5-07, solo lectura | Fichas de `.trabajo/fichas/cierre/` | Hallazgos aplicados por Claude Code; un bloqueante de T5-02 descartado con evidencia |

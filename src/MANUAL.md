@@ -203,7 +203,7 @@ RIGE **no tiene usuario de demostración ni acceso con credenciales**. Es local,
 
 Las capacidades adicionales se verifican sobre una misma copia temporal conservada: analizar, cambiar `temperature` y analizar de nuevo; abrir **Comparar con la anterior** o ejecutar `bun run rige -- comparar --desde <id1> --hasta <id2>`. Contrastar ambos valores y procedencias, volver a Inicio y comprobar **Proyectos recientes** frente a `bun run rige -- recientes`. No se atribuyen a estas capacidades resultados de productividad de ADR-098.
 
-En las verificaciones de RF-03 y RF-17, abrir **Consulta exacta (avanzada)** antes de completar **Clave** y pulsar **Consultar clave**. **Buscar clave** solo filtra la presentación. Revisar también los grupos del mapa, la sección **Límites**, las pestañas de Comparar y **Abrir la última foto** en recientes; la revisión visual real a 360 px corresponde al ingeniero.
+En las verificaciones de RF-03 y RF-17, abrir **Consulta exacta (avanzada)** antes de completar **Clave** y pulsar **Consultar clave**. **Buscar clave** solo filtra la presentación. Revisar también los grupos del mapa, la sección **Límites**, las pestañas de Comparar y **Abrir la última foto** en recientes; comprobar visualmente la interfaz en un navegador con un ancho de 360 px.
 
 Prueba de humo (desde `src/`, idéntica en Bash y PowerShell):
 
@@ -250,7 +250,7 @@ En la resolución, **Valores efectivos** asocia cada valor con su declaración d
 
 Las rutas destacan el archivo con su línea y columna, con el directorio atenuado en otra línea y la ruta completa en la ayuda al pasar el puntero. Las claves no se parten: si falta ancho, se desplaza la tabla. La determinante muestra vía y procedencia sin repetir el valor; los valores implícitos se identifican como tales. **Reglas aplicadas**, debajo de la tabla, reúne una vez cada texto y lo vincula al identificador que aparece en las filas; si no hay identificador, cada fila conserva el texto en un detalle plegable. En Permiso, cuando hay explicación, las declaraciones se abren en **Notas del análisis (N)**. En Hallazgos, cada estadística muestra nombre legible y token técnico, los conteos positivos se destacan y los de agentes, comandos y entradas aparecen por separado.
 
-La revisión visual en navegador corresponde al ingeniero: capturar claro y oscuro, comprobar contraste AA, foco de teclado y ancho de 360 px. Esta tarea no acredita esa revisión mediante las pruebas automatizadas.
+Para la revisión visual en navegador, capturar claro y oscuro, comprobar contraste AA, foco de teclado y ancho de 360 px. Las pruebas automatizadas no acreditan esa revisión.
 
 ## 9. Pruebas automatizadas
 
@@ -260,7 +260,7 @@ bun test
 bun run cobertura
 ```
 
-Todos terminan con código **0**. Corrida local de esta rama del **09/11/2026**, Windows: **1240 aprobadas, 2 omitidas, 15 pendientes y 0 fallidas**. Las pendientes son comparaciones que deben correr en su plataforma; las omitidas corresponden a strace y al enlace npm exclusivo de POSIX. Este recuento no sustituye la corrida Ubuntu ni las referencias contra el binario real. `cobertura` informa la trazabilidad de requisitos, escenarios, CA y oráculos, con cero errores; no es porcentaje de líneas.
+Todos terminan con código **0**. Última verificación del **10/11/2026**: Windows, **1364 aprobadas, 2 omitidas, 15 pendientes y 0 fallidas**; Ubuntu, **1358 aprobadas**. Las pendientes son comparaciones que deben correr en su plataforma; las omitidas corresponden a strace y al enlace npm exclusivo de POSIX. Este recuento no sustituye la corrida Ubuntu ni las referencias contra el binario real. `cobertura` informa la trazabilidad de requisitos, escenarios, CA y oráculos, con cero errores; no es porcentaje de líneas.
 
 Consultar la [corrida de CI del candidato](https://github.com/Joassanchez/RIGE-TIF-Sanchez-IngSistemas-UCP/actions/workflows/ci.yml), verificar que corresponda al commit que se etiquetará y que ambos sistemas terminen en verde. No se declara aquí una corrida remota nueva: la publicación de la etiqueta y su respaldo en CI son pasos del autor. El canal usa Bun 1.3.14, instalación congelada, verificar y pruebas. El README §6 documenta también referencias nativas, prueba lenta y arneses de red y latencia.
 
@@ -278,10 +278,19 @@ Consultar la [corrida de CI del candidato](https://github.com/Joassanchez/RIGE-T
 
 Los componentes de terceros, versiones y licencias se detallan en el **Capítulo IX** del informe. El evaluador de permisos v1 y Wildcard de OpenCode 1.18.25 está incorporado bajo MIT; se incluyen LICENSE, AVISOS.md y PROCEDENCIA.md en `paquetes/opencode/vendor/`. La declaración de IA que sigue reproduce exactamente README §8 y debe conciliarse con la bitácora antes de la entrega.
 
-Las filas siguientes trasladan solo usos respaldados por la declaración de la bitácora (../00-gestion/bitacora.md). Sustituyen atribuciones anteriores que aún no estaban conciliadas; no se infieren herramientas desde las fichas.
+Las filas siguientes trasladan solo usos respaldados por la declaración de la bitácora (../00-gestion/bitacora.md). Sustituyen atribuciones anteriores que aún no estaban conciliadas.
 
 | Fecha | Herramienta | Para qué | Pieza, archivo o commit | Verificación posterior |
 |---|---|---|---|---|
+| 10/11 | Claude Code (`claude-opus-5-5`) | Fichas T5-10 a T5-15, ADR-112 propuesto, lanzamiento de las pre-críticas y del escritor, revisión de los diff, corridas de pruebas en Windows y Ubuntu, capturas de escritorio y móvil, demostración local y esta entrada | `.trabajo/fichas/cierre/`, `00-gestion/decisiones/ADR-112-comparar-resoluciones-recientes.md`, `bitacora.md` | [AUTOR: lectura y corrección; aceptar o rechazar ADR-111 y ADR-112] |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como revisor | Pre-críticas de las fichas T5-11 a T5-14 | `.trabajo/fichas/cierre/precriticas/` (material descartable) | Precisiones incorporadas a las fichas por Claude Code |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-10: responsive sin desbordamiento horizontal | `6eef1f4` | Windows 1281 aprobadas; emulación móvil a 360 px sin desbordamiento |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-11: panel único del proyecto (pestañas, selector, buscador, regla en una línea, comando equivalente) | `41b215c` | Windows 1296 aprobadas en `R:` con TEMP 8.3; capturas revisadas por Claude Code |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | Corrección del tiempo límite de la prueba de RNF-05 con `strace` (T5-05-c1) | `4118a09` | Ubuntu sin fallas |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-12: mapa completo de vías (ADR-111, propuesto) y corrección por TEMP 8.3 | `cc36c18`, `87c2eda` | Referencias nativas en ok en Windows y Linux |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-13: consulta `reglas` y matriz de permisos (ADR-111, propuesto) y corrección de la falla interna con `R:` | `fafbb28`, `d814418` | Windows 1331 aprobadas; Ubuntu 1325 |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-14: comparar resoluciones y proyectos recientes, en la web y en la CLI (ADR-112, propuesto) | `8136e4e` | Windows 1351 aprobadas en `R:` con TEMP 8.3; Ubuntu 1345; referencias nativas en ok; capturas revisadas por Claude Code |
+| 10/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como escritor | T5-15: pulido visual final de la interfaz (un solo campo de clave visible, orden del panel, insignias, matriz, mapa de vías agrupado, comparación y plurales) | `641d220` | Windows 1364 aprobadas en `R:` con TEMP 8.3; Ubuntu 1358; capturas de escritorio y emulación móvil a 360 px sin desbordamiento, revisadas por Claude Code |
 | 09/11 | Claude Code (`claude-opus-5-5`) | Resumen de `src/`, planteo de las decisiones de PIL-B, fichas T5-02 a T5-07 y del redactor, registro de D-75 a D-77 y R-17 a R-19, revisión de los diff, corridas de pruebas y esta entrada | `.trabajo/fichas/cierre/`, `00-gestion/anexo-III.md`, `registro-cambios-referente.md`, `pendientes.md`, `bitacora.md` | Pruebas en Windows (local y `R:` con TEMP 8.3) y en Ubuntu 26.04 en Docker. [AUTOR: lectura y corrección] |
 | 09/11 | Claude Code (`claude-opus-5-5`) | Captura de diez salidas de RIGE en `ee7cbf5`, ejecutado desde un temporal | `src/pruebas/datos/salidas-ee7cbf5.json` (incorporado por el escritor en `99f8762`) | Esquema 2 en las diez y sin rutas locales; copia idéntica comprobada con `cmp` |
 | 09/11 | Codex (`gpt-6.1-sol`, esfuerzo alto) | Pre-crítica de las fichas T5-02 a T5-07, solo lectura | Fichas de `.trabajo/fichas/cierre/` | Hallazgos aplicados por Claude Code; un bloqueante de T5-02 descartado con evidencia |
