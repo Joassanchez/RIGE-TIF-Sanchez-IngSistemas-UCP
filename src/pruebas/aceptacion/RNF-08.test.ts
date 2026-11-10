@@ -9,6 +9,7 @@ import { consultarValores } from "../../paquetes/rige/aplicacion/casos-uso/consu
 import { consultarPermiso } from "../../paquetes/rige/aplicacion/casos-uso/consultar-permiso";
 import { consultarAgentes } from "../../paquetes/rige/aplicacion/casos-uso/consultar-agentes";
 import { validarEsquema } from "../utilidades/validar-esquema";
+import { capturarRegresionT512 } from "../utilidades/regresion-t5-12";
 
 const raizEscenarios = join(import.meta.dir, "../escenarios");
 const dirEsquemasV2 = join(import.meta.dir, "../esquemas-v2");
@@ -131,6 +132,42 @@ function comprobarCompatibilidadEsquema(
   const versionActual = propEsquema?.const ?? propEsquema?.minimum ?? 2;
   return comprobarSubesquema(esquemaV2, esquemaActual, versionActual, "$");
 }
+
+describe("T5-12 M-2 RNF-08 PC-04 PC-05", () => {
+  const anterior = JSON.parse(readFileSync(join(import.meta.dir, "../datos/entradas-esquema-4118a09.json"), "utf8"));
+  const congeladas = JSON.parse(readFileSync(join(import.meta.dir, "../datos/salidas-4118a09-t5-12.json"), "utf8"));
+  test("contrato opcional compatible, respuesta anterior y nueva validas y controles negativos", () => {
+    const actual = JSON.parse(readFileSync(join(dirEsquemasV3, "entradas.json"), "utf8"));
+    expect(congeladas.procedencia.commit).toBe("4118a09");
+    const vieja = JSON.parse(congeladas.casos[0].salida);
+    expect(vieja.vias).toBeUndefined();
+    expect(validarEsquema(anterior, vieja)).toEqual([]);
+    expect(comprobarCompatibilidadEsquema(anterior, actual)).toEqual({ compatible: true });
+    expect(actual.additionalProperties).toBe(false);
+    expect(actual.required).not.toContain("vias");
+    expect(actual.properties.vias).toBeDefined();
+    expect(validarEsquema(actual, vieja)).toEqual([]);
+    const nueva = { ...vieja, vias: [{ via: "capa", estado: "ausente", cantidad: 0, revisados: ["/x"] }] };
+    expect(validarEsquema(actual, nueva)).toEqual([]);
+    const obligatorio = structuredClone(actual);
+    obligatorio.required.push("vias");
+    expect(comprobarCompatibilidadEsquema(anterior, obligatorio).compatible).toBe(false);
+    for (const cambio of [{ estado: "inventado" }, { cantidad: "0" }, { revisados: [7] }]) {
+      expect(validarEsquema(actual, { ...nueva, vias: [{ ...nueva.vias[0], ...cambio }] }).length).toBeGreaterThan(0);
+    }
+  });
+  test("CLI conserva valores, permiso, errores y campos anteriores de entradas byte a byte", () => {
+    const { casos } = capturarRegresionT512();
+    expect(casos).toHaveLength(congeladas.casos.length);
+    for (const [i, caso] of casos.entries()) {
+      if (i === 0) {
+        const { vias, ...resto } = JSON.parse(caso.salida);
+        expect(vias).toHaveLength(11);
+        expect({ ...caso, salida: JSON.stringify(resto) + "\n" }).toEqual(congeladas.casos[i]);
+      } else expect(caso).toEqual(congeladas.casos[i]);
+    }
+  });
+});
 
 describe("T3-10 R-4 RNF-08 CA-1 CA-2", () => {
   const historicas = JSON.parse(readFileSync(join(import.meta.dir, "../datos/salidas-ee7cbf5.json"), "utf8"));

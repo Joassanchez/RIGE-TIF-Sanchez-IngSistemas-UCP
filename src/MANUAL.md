@@ -80,7 +80,7 @@ Solo `RIGE_PUERTO` y `RIGE_ALMACEN` son asignaciones admitidas en ese archivo; o
 | `PATH` | Consola; búsqueda de Git y del primer OpenCode | `/usr/bin` |
 | `Path` | Consola; variante Windows si PATH no existe | `C:/Windows/System32` |
 | `PATHEXT` | Consola; extensiones de ejecutables Windows | `.COM;.EXE;.BAT;.CMD` |
-| `ProgramData` | Consola; vía administrada declarada no observada | `C:/ProgramData` |
+| `ProgramData` | Consola; base del directorio administrado observado en Windows (`opencode/`) | `C:/ProgramData` |
 | `OPENCODE_CONFIG` | Consola; entrada de archivo, exige ruta absoluta | `/tmp/rige-demo/externa/config.json` |
 | `OPENCODE_CONFIG_DIR` | Consola; directorio absoluto canónico, agrega entradas | `/tmp/rige-demo/dir-variable` |
 | `OPENCODE_CONFIG_CONTENT` | Consola; entrada JSONC, no se conserva el texto crudo | `{"agent":{}}` |
@@ -148,6 +148,8 @@ bun run servir
 Debe informar `{"esquema":2,"direccion":"http://127.0.0.1:4747"}`. Abrir esa dirección: el inicio muestra **RIGE 1.0.0** y «¿Qué configuración rige de verdad?». Completar **Proyecto** y pulsar **Analizar**. Se guarda el proyecto entero y se abre su panel. El agente inicial es `build` si está activo, o el primer agente activo del listado; el selector permite cambiarlo. Si no hay agentes, se abre **Agentes**. La ruta del almacén y su esquema 2 aparecen al pie del inicio. `RIGE_PUERTO` cambia el puerto; si se modifica, abrir `http://127.0.0.1:<puerto>`. Detener con **Ctrl+C**.
 
 Las pestañas **Valores**, **Permisos** y **Agentes** consultan la foto guardada. **Valores** indica «Foto guardada el <instante>»; las otras indican el id de resolución. **Entradas** y **Hallazgos** consultan el estado actual y lo advierten: pueden diferir de la foto si cambió una entrada. Mantienen el proyecto, la resolución, el agente y la clave al navegar; la localización de un hallazgo enlaza a su entrada. Se puede seguir abriendo `/entradas?proyecto=<ruta-codificada>` o `/hallazgos?proyecto=<ruta-codificada>` sin foto, como consultas independientes.
+
+**Entradas** abre con el **Mapa de vías**: ocho vías soportadas (incluida `administrada`) y tres no observadas (`remota-wellknown`, `remota-organizacion`, `preferencias-macos`). Cada fila muestra estado, cantidad de entradas y un plegable con los lugares revisados en orden de comprobación. **Presente** (verde) significa que aportó alguna entrada, incluso ilegible o sin declaraciones; **ausente** (neutro), que se revisó sin resultado; **no observada** (gris con borde punteado), que no se revisa. Las variables vacías son ausentes; sus contenidos no aparecen en los lugares revisados. Debajo permanece la tabla de entradas y legibilidad. El JSON de CLI y web incluye el mismo campo opcional `vias`, sin cambiar `entradas`, `resumenEntradas` ni el esquema 2. Si una respuesta anterior carece del mapa, se muestra «Mapa de vías no disponible». El mapa consulta archivos actuales y no se guarda en la resolución.
 
 En **Valores**, **Consultar clave** restringe la consulta: vacía trae todas, acepta puntos o puntero JSON (`/options/a.b`). **Filtrar** busca una subcadena sin distinguir mayúsculas en las claves de las filas ya consultadas; no cambia el JSON embebido. **Quitar filtro** conserva la clave consultada. La precedencia aparece sobre la tabla en **Cómo se decide**, con la plantilla RD-01; los implícitos explican RD-04 cuando corresponde. Las reglas adicionales se conservan en el detalle de procedencia.
 

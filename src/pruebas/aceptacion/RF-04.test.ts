@@ -23,6 +23,63 @@ function dependencias(escenario: ReturnType<typeof preparar>) {
     rutas: { canonica: (ruta: string) => ruta === escenario.proyecto ? ruta : null } };
 }
 
+describe("T5-12 M-3 M-5 RF-04 CA-1 CA-2", () => {
+  test("CLI informa las once vias y presencia contrastada con archivos de v1, no con entradas", () => {
+    for (const nombre of ["v1-vias", "v1-precedencia"]) {
+      const escenario = preparar(nombre);
+      const archivos = [...new Bun.Glob("**/*").scanSync({ cwd: escenario.raiz, dot: true, onlyFiles: true })].map(r => r.replaceAll("\\", "/"));
+      const presentes = new Set(["proyecto", ...(nombre === "v1-vias" ? ["global", "variable-config", "directorio-opencode"] : [])]);
+      expect(archivos.some(r => /^proyecto\/opencode\.jsonc?$/.test(r))).toBe(true);
+      expect(archivos.some(r => r.startsWith("hogar/.config/opencode/"))).toBe(presentes.has("global"));
+      expect(archivos.some(r => r.includes("/.opencode/"))).toBe(presentes.has("directorio-opencode"));
+      expect(archivos.includes("externa/config.json")).toBe(presentes.has("variable-config"));
+      const respuesta = JSON.parse(cli(escenario).salida);
+      expect(respuesta.vias).toHaveLength(11);
+      expect(new Set(respuesta.vias.map((v: any) => v.via)).size).toBe(11);
+      for (const via of ["global", "variable-config", "proyecto", "directorio-opencode", "markdown", "variable-contenido", "administrada", "variable-permiso"]) {
+        expect(respuesta.vias.find((v: any) => v.via === via)?.estado).toBe(presentes.has(via) ? "presente" : "ausente");
+      }
+      for (const via of ["remota-wellknown", "remota-organizacion", "preferencias-macos"]) {
+        expect(respuesta.vias.find((v: any) => v.via === via)).toEqual({ via, estado: "no_observada", cantidad: 0, revisados: [] });
+      }
+      expect(existsSync(escenario.env.RIGE_ALMACEN!)).toBe(false);
+    }
+  });
+  test("cuenta Markdown, variables ilegibles, descartadas o sin declaraciones y vacias sin filtrar texto", () => {
+    for (const nombre of ["v3-entradas", "v3-entradas-ilegible", "v3-permiso-invalido"]) {
+      const escenario = preparar(nombre);
+      const respuesta = consultarEntradas(dependencias(escenario), escenario.proyecto);
+      if (!respuesta.exito) throw new Error(respuesta.error.mensaje);
+      expect(respuesta.valor.vias).toBeDefined();
+      const textoMapa = JSON.stringify(respuesta.valor.vias);
+      for (const nombre of ["OPENCODE_CONFIG_CONTENT", "OPENCODE_PERMISSION"]) {
+        if (escenario.env[nombre]) expect(textoMapa).not.toContain(escenario.env[nombre]!);
+      }
+      const permiso = respuesta.valor.vias!.find(v => v.via === "variable-permiso");
+      expect(permiso).toMatchObject({ estado: "presente", cantidad: 1, revisados: ["OPENCODE_PERMISSION"] });
+      if (nombre.startsWith("v3-entradas")) expect(respuesta.valor.vias!.find(v => v.via === "markdown")).toMatchObject({ estado: "presente", cantidad: 5 });
+      for (const valor of ["null", "[]", "", "{"]) {
+        escenario.env.OPENCODE_PERMISSION = valor;
+        const r = consultarEntradas(dependencias(escenario), escenario.proyecto);
+        if (!r.exito) throw new Error(r.error.mensaje);
+        expect(r.valor.vias!.find(v => v.via === "variable-permiso")).toMatchObject({ estado: valor ? "presente" : "ausente", cantidad: valor ? 1 : 0 });
+      }
+      escenario.env.OPENCODE_CONFIG = "";
+      escenario.env.OPENCODE_CONFIG_CONTENT = "";
+      escenario.env.OPENCODE_PERMISSION = "";
+      const vacias = consultarEntradas(dependencias(escenario), escenario.proyecto);
+      if (!vacias.exito) throw new Error(vacias.error.mensaje);
+      for (const v of vacias.valor.vias!.filter(v => v.via.startsWith("variable-"))) expect(v).toMatchObject({ estado: "ausente", cantidad: 0 });
+      escenario.env.OPENCODE_CONFIG_CONTENT = " ";
+      const ilegible = consultarEntradas(dependencias(escenario), escenario.proyecto);
+      expect(ilegible).toMatchObject({ exito: true, valor: { vias: expect.arrayContaining([
+        expect.objectContaining({ via: "variable-contenido", estado: "presente", cantidad: 1, revisados: ["OPENCODE_CONFIG_CONTENT"] }),
+      ]) } });
+      expect(existsSync(escenario.env.RIGE_ALMACEN!)).toBe(false);
+    }
+  });
+});
+
 describe("T3-03-c1 R-2", () => {
   test("build coincide completo con la referencia sin t7 de la variable invalida", () => {
     cadena("v3-permiso-invalido");

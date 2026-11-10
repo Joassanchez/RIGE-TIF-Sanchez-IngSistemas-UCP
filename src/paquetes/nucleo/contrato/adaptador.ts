@@ -25,6 +25,14 @@ export interface ViaUbicada {
   readonly elemento?: readonly string[];
 }
 
+/** Observacion opcional del descubrimiento; no forma parte de la resolucion. */
+export interface ObservacionVia {
+  readonly via: string;
+  readonly estado: "presente" | "ausente" | "no_observada";
+  readonly revisados: readonly string[];
+}
+export type ObservarVias = (vias: readonly ObservacionVia[]) => void;
+
 export interface Declaracion {
   readonly ruta: readonly string[];
   readonly valor: ValorJson;
@@ -130,7 +138,7 @@ export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   readonly reglas: Readonly<Record<string, string>>;
   readonly estrategias: Readonly<Record<string, Estrategia>>;
   contexto(proyecto: string, entorno: EntornoLectura): Resultado<C, ErrorAnalisis>;
-  ubicar(proyecto: string, entorno: EntornoLectura, contexto: C): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
+  ubicar(proyecto: string, entorno: EntornoLectura, contexto: C, observar?: ObservarVias): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
   leer(via: ViaUbicada, texto: string, entorno: EntornoLectura, contexto: C): Resultado<readonly Declaracion[], ErrorAnalisis>;
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
   cadena(resolucion: Resolucion, agente: string, contexto: C, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;

@@ -90,6 +90,9 @@ dd { margin: .25rem 0 1.25rem; overflow-wrap: anywhere; }
 .resumen div { min-width: 0; }
 .insignia { display: inline-block; border-radius: .4rem; padding: .2rem .55rem; font-size: .73rem; font-weight: 650; line-height: 1.6; background: var(--neutro-fondo); color: var(--neutro); overflow-wrap: anywhere; }
 .insignia--permitida { background: var(--exito-fondo); color: var(--exito); }
+.insignia--no-observada { background: var(--neutro-fondo); color: var(--neutro); border: 1px dotted var(--neutro); }
+.mapa-vias details, .mapa-vias code { max-width: 100%; overflow-wrap: anywhere; }
+.mapa-vias details { margin: 0; padding: .6rem; }
 .insignia--denegada, .insignia--entrada-ilegible, .insignia--referencia-no-resuelta { background: var(--peligro-fondo); color: var(--peligro); }
 .insignia--pregunta, .insignia--aviso, .insignia--regla-sin-efecto, .insignia--sustitucion-sin-valor { background: var(--aviso-fondo); color: var(--aviso); }
 .insignia--neutra, .insignia--entrada-descartada, .insignia--elemento-sin-uso { background: var(--neutro-fondo); color: var(--neutro); }
