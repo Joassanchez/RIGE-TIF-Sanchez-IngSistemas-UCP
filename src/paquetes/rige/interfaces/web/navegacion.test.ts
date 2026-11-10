@@ -82,9 +82,9 @@ describe("T5-09-c1 C-1 selector compacto", () => {
     expect(formulario).toMatch(/<\/select>\s*<button class="boton--secundario">Ver agente<\/button>/);
     expect(estilos).toMatch(/\.selector-agente\s*\{[^}]*display: flex;[^}]*align-items: center;[^}]*gap: 1rem;[^}]*margin: 2rem 0;[^}]*background: var\(--superficie\);[^}]*border:/);
     expect(estilos).toMatch(/\.selector-agente label\s*\{[^}]*display: block;[^}]*margin: 0;/);
-    expect(estilos).toMatch(/\.selector-agente select\s*\{[^}]*width: 18rem;[^}]*max-width: 100%;/);
-    expect(estilos).toMatch(/@media \(max-width: 760px\)[^]*?\.selector-agente\s*\{[^}]*flex-wrap: wrap;/);
-    expect(estilos).toMatch(/@media \(max-width: 420px\)[^]*?\.selector-agente\s*\{[^}]*flex-direction: column;[^}]*align-items: stretch;/);
+    expect(estilos).toMatch(/\.selector-agente select\s*\{[^}]*flex: 1;[^}]*width: auto;[^}]*max-width: 18rem;/);
+    expect(estilos).toMatch(/@media \(max-width: 760px\)[^]*?\.selector-agente[^}]*flex-direction: column;[^}]*align-items: stretch;/);
+    expect(estilos).toMatch(/@media \(max-width: 760px\)[^]*?\.selector-agente select\s*\{[^}]*width: 100%;[^}]*max-width: 100%;/);
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(valores);
   });
 });

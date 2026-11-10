@@ -218,9 +218,8 @@ describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
   test("protege claves, cortes de rutas, alineacion y separacion de details", async () => {
     const css = await solicitar("/estilos.css").text();
     expect(css).toMatch(/#valores td:nth-child\(1\)\s*\{[^}]*white-space: nowrap;[^}]*min-width:/);
-    expect(css).toMatch(/\.ruta__segmento[^}]*white-space: nowrap/);
-    expect(css).toMatch(/\.ruta\s*\{[^}]*overflow-wrap: normal/);
-    expect(css).toMatch(/\.cabecera-pagina \.ruta\s*\{[^}]*overflow-x: auto/);
+    expect(css).toMatch(/\.ruta__segmento[^}]*white-space: normal;[^}]*overflow-wrap: anywhere/);
+    expect(css).toMatch(/\.ruta\s*\{[^}]*max-width: 100%;[^}]*overflow-wrap: anywhere/);
     expect(css).toMatch(/\.rejilla\s*\{[^}]*align-items: start/);
     expect(css).toMatch(/\.rejilla > \.tarjeta\s*\{[^}]*margin-top: 0/);
     expect(css).toMatch(/details \+ section[^}]*margin-top: 2rem/);
