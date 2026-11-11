@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 import { resolve } from "node:path";
 import { ConfiguracionSistema } from "../adaptadores/sistema/configuracion";
 import { ExistenciaSistema } from "../adaptadores/sistema/existencia";
@@ -82,6 +83,10 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
 }
 
 process.exitCode = ejecutarCli(process.argv.slice(2), ensamblar, {
+  esConsola: process.stdout.isTTY === true,
+  ancho: process.stdout.columns,
+  colorHabilitado: process.stdout.isTTY === true && process.env.NO_COLOR === undefined,
+  carpetaActual: process.cwd(),
   escribirSalida: (texto) => { process.stdout.write(texto); },
   escribirError: (texto) => { process.stderr.write(texto); },
 }, advertidas);

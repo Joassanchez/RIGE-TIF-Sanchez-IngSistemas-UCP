@@ -4,6 +4,13 @@ import type { PuertoConfiguracion } from "../../paquetes/rige/aplicacion/puertos
 import type { PuertoAlmacen } from "../../paquetes/rige/aplicacion/puertos/almacen";
 import { analizarFuente, analizarGlobales, analizarManifiesto, comprobarGlobales } from "../utilidades/analisis-arquitectura";
 
+test("T5-23 L-10 el shebang inicial no oculta imports prohibidos al scanner", () => {
+  const codigo = 'import "node:fs";';
+  const archivo = "paquetes/nucleo/sonda.ts";
+  expect(analizarFuente(archivo, "#!/usr/bin/env bun\n" + codigo)).toEqual(analizarFuente(archivo, codigo));
+  expect(analizarFuente(archivo, "#!/usr/bin/env bun\n" + codigo).length).toBeGreaterThan(0);
+});
+
 describe("M-1 imports entre paquetes por workspace", () => {
   test("rechaza rutas relativas y admite subpaths declarados", () => {
     expect(analizarFuente("paquetes/opencode/sonda.ts", 'import "../nucleo/resultado";').length).toBeGreaterThan(0);

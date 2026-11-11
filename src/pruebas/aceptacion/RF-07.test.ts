@@ -996,7 +996,8 @@ describe("C-1 RF-03 CA-1 T3-07 R-1", () => {
       expect(inv.salida).toBe("");
       expect(JSON.parse(inv.error).error.codigo).toBe("argumentos-invalidos");
     }
-    const sinProyectoArg = lanzar(conHallazgos.raiz, ["hallazgos"], conHallazgos.env);
+    expect(lanzar(conHallazgos.raiz, ["hallazgos"], conHallazgos.env, conHallazgos.proyecto)).toEqual(cliHallazgos(conHallazgos));
+    const sinProyectoArg = lanzar(conHallazgos.raiz, ["hallazgos", "--proyecto", ""], conHallazgos.env);
     expect(sinProyectoArg.codigo).toBe(2);
     expect(JSON.parse(sinProyectoArg.error).error.codigo).toBe("argumentos-invalidos");
 

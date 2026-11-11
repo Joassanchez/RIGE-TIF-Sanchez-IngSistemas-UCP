@@ -113,7 +113,7 @@ describe("CLI-7", () => {
       (tokens[indice - 1]?.valor === "from" || tokens[indice - 1]?.valor === "import"))
       .map((token) => token.valor);
     expect(imports.length).toBeGreaterThan(0);
-    expect(imports.filter((destino) => !destino.startsWith("../../aplicacion/") && destino !== "node:util")).toEqual([]);
+    expect(imports.filter((destino) => !destino.startsWith("../../aplicacion/") && !["node:util", "./ayuda", "./texto/index"].includes(destino))).toEqual([]);
     const resultado = await Bun.file(new URL("../../aplicacion/respuestas/resultado.ts", import.meta.url)).text();
     expect(analizarFuente("paquetes/rige/aplicacion/respuestas/resultado.ts", resultado, {
       dependencias: { "@rige/nucleo": "workspace:*" },
@@ -144,6 +144,7 @@ function ejecutar(argumentos: readonly string[], ensamblar: () => Ensamblado = e
   let salida = "";
   let error = "";
   const codigo = ejecutarCli(argumentos, ensamblar, {
+    carpetaActual: "/p",
     escribirSalida: (texto) => { salida += texto; },
     escribirError: (texto) => { error += texto; },
   });
@@ -195,7 +196,7 @@ describe("CLI-3", () => {
       { argumentos: ["esquema", "--proyecto", "/p"], mencionado: "--proyecto" },
       { argumentos: ["servir", "--agente", "a"], mencionado: "--agente" },
       { argumentos: ["valores", "--proyecto", "/p"], mencionado: "--agente" },
-      { argumentos: ["valores", "--agente", "a"], mencionado: "--proyecto" },
+      { argumentos: ["valores", "--agente", "a", "--proyecto", ""], mencionado: "--proyecto" },
       { argumentos: ["valores", "--proyecto", "/p", "--agente", "a", "--clave", ""], mencionado: "--clave" },
     ];
     for (const { argumentos, mencionado } of invalidos) {

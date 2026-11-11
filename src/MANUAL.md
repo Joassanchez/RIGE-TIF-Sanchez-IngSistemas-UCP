@@ -139,6 +139,31 @@ Las consultas de la CLI no escriben la base. Para cargar resoluciones de demostr
 
 ## 6. Ejecución
 
+La CLI muestra **texto breve con tablas** cuando stdout es una consola; conserva **JSON completo** al redirigir o usar una **tubería**. `--json` y `--texto` fuerzan la elección y no pueden combinarse. Para comparar objetos con la web, pedir siempre `--json`. Las consultas aceptan `--proyecto` optativo: se usa la **carpeta actual** si falta y se indica en el encabezado textual. Un valor vacío sigue siendo inválido.
+
+Para instalar el comando desde `src/`, ejecutar `bun link` y mantener el directorio de binarios de Bun en `PATH` (`~/.bun/bin` o `%USERPROFILE%\.bun\bin`). Después se puede ejecutar `rige valores --agente build` desde cualquier carpeta del proyecto. Se lee el `rige.env` de la instalación; `bun run rige -- …` sigue funcionando desde `src/`.
+
+```bash
+bun link
+```
+
+```bash
+rige valores --agente build
+rige valores --agente build --clave temperature --json
+rige reglas --agente build --todo --texto
+rige permiso --agente build --sujeto read --objetivo .env --explicar
+rige estado
+rige --help
+rige valores --help
+rige --version
+```
+
+`--todo` incluye los valores implícitos/nativos de `valores` y la cadena completa de `reglas`; no afecta el JSON ni los casos de uso. Una `--clave` explícita siempre muestra el resultado pedido. Permiso muestra decisión, determinante y última coincidente desplazada; `--explicar` amplía explicación y cadena coincidente. La matriz distingue parcialidad y ausencia de decisión: una celda parcial no decide sobre un objetivo. Los límites, rutas no resueltas y advertencias permanecen visibles. `comparar --agente` filtra solo la presentación textual.
+
+Las tablas usan el ancho de la consola (100 si no se conoce, mínimo 40), elipsis y ubicaciones cortas con línea/columna. ANSI solo en consola; **NO_COLOR** definida, aunque vacía, elimina el color. Texto por tubería no contiene ANSI. El pie indica «Respuesta completa: --json». Los errores textuales dicen «Error: …» por stderr, con los mismos códigos 1, 2 o 70; `--depurar` agrega stack solo en una falla interna. Las advertencias exitosas aparecen al final por stderr.
+
+`--help`, `-h` y `--version` no leen configuración ni almacén. La ayuda siempre es texto; sin subcomando, el texto de ayuda va a stderr y termina en 2; en JSON se conserva el error único. La versión es texto incluso por tubería, salvo `--json`. `rige estado` informa la ruta configurada, existencia y versión de esquema; sin almacén o sin esquema termina en 1 y sugiere `bun run rige -- esquema`. No crea directorio ni base ni modifica esquema o datos; admite auxiliares SQLite `-wal`/`-shm`. Su JSON propio, esquema 2, se publica en `esquemas/salida/estado.json` y omite la procedencia de la configuración.
+
 Recorrido final: **Inicio → resumen → agente → permiso / hallazgos**. Los recientes ocupan filas compactas en escritorio: nombre, fecha y cantidad, ruta con elipsis (completa en la ayuda) y **Analizar de nuevo**. En móvil se apilan. El marcador atenuado de **Carpeta del proyecto** usa `C:\proyectos\mi-app` como ejemplo.
 
 **Permiso** ofrece agente, herramienta (sugerencias no exhaustivas), **Acción u objetivo** y **Consultar**. **Opciones avanzadas** agrupa los formularios independientes **Como subagente de…** y **Por sujeto**. Cada envío contiene solo herramienta o sujeto; solo el formulario de subagente envía lanzador. Las consultas rápidas quedan debajo. El resultado destaca **Permitido**, **Pregunta antes** o **Denegado**, una oración de explicación y **Regla que decide** con patrón, efecto, carácter y ubicación enlazada al editor. **Explicación completa** conserva todas las oraciones. **Ver reglas coincidentes (n)** muestra solo las coincidentes de esa consulta, con determinante y desplazadas e índices desde 1; la cadena completa se enlaza en **Todas las reglas**. Se conservan herramienta ofrecida/retirada y advertencias; la anulación de protección nativa se destaca. Sin decisión se muestra el motivo llano sin insignia de efecto; una cadena incompleta mantiene el error 422.
@@ -225,6 +250,10 @@ La utilidad ejecuta `esquema` antes de servir, imprime proyecto y almacén para 
 RIGE **no tiene usuario de demostración ni acceso con credenciales**. Es local, de solo lectura sobre las entradas y escucha solo en **127.0.0.1**. Cualquier persona con acceso a esa sesión local puede consultar los datos; no hay rol ni contraseña que configurar.
 
 ## 8. Verificación
+
+Para comprobar las dos salidas en una copia temporal, consultar la misma clave con `--texto` y `--json`; comparar los datos y pedir `--todo` para ver los valores de fábrica. En una consola, comprobar color y repetir con NO_COLOR definida incluso vacía. Redirigir stdout y comprobar que el formato automático vuelve a JSON. `--texto` por tubería debe carecer de ANSI. Probar `rige estado` antes y después de crear el esquema, y la ayuda/versión con configuración inválida: ambas deben funcionar. Las pruebas T5-23 y la condición `R:\src`/TEMP 8.3 se ejecutan con los comandos del README §6; el enlace Windows se prueba aislado en PowerShell y cmd desde un temporal con espacios.
+
+Al contrastar paridad o guardar resultados completos, agregar `--json` a las consultas siguientes. La prueba de regresión contra `f085d3d` compara stdout/stderr como buffers y códigos, con las mismas rutas absolutas, cwd, entradas y estado inicial restaurado. No sustituye rutas ni reserializa el resultado. Tiempos y stacks se verifican por contrato por ser variables.
 
 Recorrer **Inicio → resumen → agente → permiso / hallazgos** en ambos temas y a 360 px. Consultar `read .env`: comprobar decisión, **Regla que decide**, enlace al editor y **Ver reglas coincidentes** cerrado; abrir **Explicación completa** y contrastar todas las oraciones con la CLI. Probar los tres formularios de **Opciones avanzadas**, incluido un agente con barras, y un comando compuesto sin decisión. Abrir Hallazgos desde el resumen: el ancla debe llevar a la tarjeta agrupada correspondiente y conservar **Estado actual de los archivos**, parcialidad y motivos. Revisar matriz antes de cadena, límites sin repetición, comparación con tres columnas y entradas por precedencia con lugares revisados plegados. Las capturas en ambos temas y a 360 px corresponden a la revisión visual del ingeniero; las pruebas automatizadas comprueban CSS, contraste y estructura, sin acreditar una captura de navegador.
 

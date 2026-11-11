@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "bin": { "rige": "./paquetes/rige/arranque/rige.ts" },
   "packageManager": "bun@1.3.14",
   "workspaces": ["paquetes/*"],
   "scripts": {

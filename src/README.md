@@ -104,6 +104,14 @@ bun install --frozen-lockfile
 
 La instalación termina con código 0. Todos los comandos siguientes se ejecutan desde `src/`.
 
+Para disponer además del comando `rige` desde cualquier carpeta, registrar esta instalación y agregar el directorio de binarios de Bun al `PATH` (`~/.bun/bin` o `%USERPROFILE%\.bun\bin`):
+
+```bash
+bun link
+```
+
+Desde la carpeta del proyecto se puede ejecutar `rige valores --agente build`. El comando enlazado lee el `rige.env` de esta instalación, no el de la carpeta actual. `bun run rige -- …` sigue disponible desde `src/`.
+
 ## 5. Configuración
 
 La copia de `rige.env.example` a `rige.env` es opcional. Sin `rige.env` se usan los valores por defecto, salvo las variables definidas en el entorno.
@@ -130,6 +138,41 @@ La copia termina sin errores. Se edita `rige.env` si se necesitan valores locale
 La prelación es: variable de entorno → `rige.env` → valor por defecto. El archivo solo admite esas dos claves; cualquier otra produce `configuracion-invalida`. No es un archivo `.env`: RIGE lo lee explícitamente y Bun no lo carga solo.
 
 ## 6. Ejecución y verificación
+
+La CLI elige **texto breve con tablas** si stdout es una consola interactiva; en una **tubería** o redirección devuelve el **JSON completo** de siempre. `--json` y `--texto` fuerzan el formato y son excluyentes. Sin `--proyecto`, las consultas usan la **carpeta actual**, indicada en el encabezado textual; un argumento vacío sigue siendo inválido. `--todo` amplía `valores` (incluye valores de fábrica) y `reglas` (cadena completa); con JSON no cambia nada. `permiso --explicar` agrega la explicación y las reglas coincidentes. `comparar --agente` filtra solo el texto, conservando el JSON íntegro.
+
+`rige --help`, `rige -h` y `rige <subcomando> --help` muestran uso, opciones y ejemplos sin abrir configuración ni almacén. `rige --version` informa ambas versiones; con `--json` devuelve un objeto esquema 2. `rige estado` consulta ruta, existencia y versión del almacén sin crear directorio/base ni modificar datos o esquema (puede haber auxiliares SQLite). Si falta, termina con código 1 y sugiere crear el esquema. En texto, los errores conservan sus códigos y se muestran por stderr; `--depurar` conserva el stack de fallas internas.
+
+El color ANSI solo se habilita en consola y si **NO_COLOR** no está definida; incluso `NO_COLOR=` lo deshabilita. Texto por tubería nunca lleva color. Las columnas se ajustan con elipsis al ancho conocido (100 por defecto, mínimo 40); las ubicaciones se acortan a archivo y posición. Las rutas no resueltas, parcialidad y advertencias siguen visibles. El pie recuerda «Respuesta completa: --json».
+
+```bash
+bun run rige -- --help
+bun run rige -- --version --json
+bun run rige -- estado --texto
+```
+
+Pruebas de esta interfaz (incluyen enlace aislado en Windows desde PowerShell y cmd):
+
+```bash
+bun test paquetes/rige/interfaces/cli/ejecutar.test.ts paquetes/rige/interfaces/cli/presentacion.test.ts paquetes/rige/interfaces/cli/texto/texto.test.ts pruebas/aceptacion/T5-23-json.test.ts pruebas/aceptacion/T5-23-uso.test.ts
+bun test pruebas/arquitectura/dependencias.test.ts pruebas/arquitectura/red.test.ts pruebas/arquitectura/sustituciones.test.ts pruebas/aceptacion/RNF-03.test.ts
+```
+
+La regresión conserva un bundle de referencia y su procedencia/SHA-256 en `pruebas/datos/cli-f085d3d.*`, para funcionar también con el checkout sin historial de CI. Si el commit está disponible, extrae además su árbol completo mediante `git archive --format=tar f085d3d` y `tar -xf <archivo> -C <temporal>`, copia la dependencia local exacta `jsonc-parser` 3.3.1 y enlaza exclusivamente los workspaces extraídos, sin red. Comprueba los bytes del bundle contra esa extracción y los del candidato contra la referencia. Las mismas rutas, entradas y semillas restauradas (ids/fechas fijos) se usan por par; no se normaliza nada. Incluye errores 1/2/70, advertencia, `servir` en puerto libre y contratos de tiempos/stack. Detalle, reproducción del bundle y tabla de precedencia: [pruebas/datos/T5-23.md](pruebas/datos/T5-23.md).
+
+Para repetir la condición Windows de unidad alternativa (PowerShell; elegir una letra libre y un temporal 8.3 existente, nunca el almacén real):
+
+```powershell
+$env:RIGE_ALMACEN = Join-Path ([IO.Path]::GetTempPath()) 'rige-prueba-almacen'
+subst R: <raíz-del-repositorio>
+try {
+  $env:TEMP = '<temporal-8.3>'
+  $env:TMP = $env:TEMP
+  Set-Location R:\src
+  bun test
+  bun run verificar
+} finally { Set-Location <raíz-del-repositorio>\src; subst R: /d }
+```
 
 Recorrido final: **Inicio → resumen → agente → permiso / hallazgos**. En Inicio, los recientes son filas compactas con fecha y cantidad a la derecha, ruta con elipsis (completa en la ayuda) y **Analizar de nuevo**; en móvil se apilan. El campo muestra el ejemplo `C:\proyectos\mi-app` como marcador atenuado.
 

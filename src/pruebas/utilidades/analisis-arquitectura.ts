@@ -175,6 +175,8 @@ function permitidoSql(origen: string, destino: string, literal: string): boolean
 export function analizarFuente(archivo: string, codigo: string, opciones: OpcionesAnalisis = {}): HallazgoDependencia[] {
   archivo = normalizar(archivo);
   if (/\.test\.[cm]?[jt]sx?$/.test(archivo)) return [];
+  // Bun 1.3.14 ejecuta el shebang, pero scanImports no lo admite.
+  codigo = codigo.replace(/^#![^\r\n]*/, "");
   const scanner = new Bun.Transpiler({ loader: /\.[jt]sx$/.test(archivo) ? "tsx" : "ts" }).scanImports(codigo);
   const imports = extraerImports(codigo);
   const hallazgos: HallazgoDependencia[] = [];

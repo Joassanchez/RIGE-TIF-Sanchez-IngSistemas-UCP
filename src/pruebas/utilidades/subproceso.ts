@@ -11,10 +11,10 @@ export function puertoLibre(): number {
   return puerto;
 }
 
-export function lanzar(temporal: string, argumentos: readonly string[], variables: Record<string, string> = {}):
+export function lanzar(temporal: string, argumentos: readonly string[], variables: Record<string, string> = {}, carpetaActual = raiz):
   { codigo: number | null; salida: string; error: string } {
-  const proceso = Bun.spawnSync([process.execPath, "paquetes/rige/arranque/rige.ts", ...argumentos], {
-    cwd: raiz,
+  const proceso = Bun.spawnSync([process.execPath, resolve(raiz, "paquetes/rige/arranque/rige.ts"), ...argumentos], {
+    cwd: carpetaActual,
     env: { ...crearEntornoAislado(temporal, process.env), RIGE_PUERTO: String(puertoLibre()), ...variables },
     stdout: "pipe", stderr: "pipe", timeout: 10000,
   });

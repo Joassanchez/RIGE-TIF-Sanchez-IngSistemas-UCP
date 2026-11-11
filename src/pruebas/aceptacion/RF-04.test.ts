@@ -165,7 +165,8 @@ describe("T3-03 R-5", () => {
     await validar("entradas", JSON.parse(primera.salida));
     expect(existsSync(escenario.env.RIGE_ALMACEN!)).toBe(false);
     for (const opciones of [["--agente", "build"], ["--explicar"], ["--clave", "x"]]) expect(cli(escenario, "entradas", opciones).codigo).toBe(2);
-    expect(lanzar(escenario.raiz, ["entradas"], escenario.env).codigo).toBe(2);
+    expect(lanzar(escenario.raiz, ["entradas"], escenario.env, escenario.proyecto)).toEqual(primera);
+    expect(lanzar(escenario.raiz, ["entradas", "--proyecto", ""], escenario.env).codigo).toBe(2);
     escenario.env.OPENCODE_DISABLE_PROJECT_CONFIG = "true";
     expect(JSON.parse(cli(escenario).error).error.codigo).toBe("via-no-soportada");
     delete escenario.env.OPENCODE_DISABLE_PROJECT_CONFIG;

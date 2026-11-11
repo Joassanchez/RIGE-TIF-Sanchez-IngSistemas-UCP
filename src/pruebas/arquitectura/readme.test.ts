@@ -40,8 +40,8 @@ test("D-1 el archivo de lectura tiene las ocho secciones completas y un escenari
       }
       return [];
     }
-    // install y test son comandos del ejecutor, no scripts del proyecto.
-    expect(["install --frozen-lockfile", "test"]).toContain(comando.trim());
+    // install, link y test son comandos del ejecutor, no scripts del proyecto.
+    expect(["install --frozen-lockfile", "link", "test"]).toContain(comando.trim());
     return [];
   });
   expect([...new Set(scripts)].sort()).toEqual(Object.keys(manifiesto.scripts).sort());
