@@ -147,7 +147,7 @@ describe("T5-09 N-3 permiso como subagente", () => {
     expect(subagente!).toContain('Lanzado por (subagente)');
     expect(subagente!).toMatch(/<input name="lanzadoPor"[^>]*required/);
     expect(subagente!).toContain('pattern=".*\\S.*"');
-    expect(subagente!).toContain("agente que lo lanza, para evaluar el permiso en contexto de subagente");
+    expect(cuerpo).toContain("agente que lo lanza, para evaluar el permiso en contexto de subagente");
     const solicitudes: Parameters<CasosWeb["consultarPermiso"]>[1][] = [];
     const consultar = { ...casos, consultarPermiso: (_id: string, solicitud: Parameters<CasosWeb["consultarPermiso"]>[1]) => {
       solicitudes.push(solicitud); return { exito: true as const, valor: permiso };

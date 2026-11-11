@@ -29,13 +29,13 @@ export function selectorAgente(contexto: ContextoPanel, vista: string | undefine
   if (contexto.idResolucion === undefined || contexto.agentes === undefined) return html``;
   const id = String(contexto.idResolucion);
   const accion = vista === "Permisos" ? `/resoluciones/${encodeURIComponent(id)}/permisos`
-    : vista === "Agentes" ? "/agentes" : vista === "Entradas" ? "/entradas" : vista === "Hallazgos" ? "/hallazgos" : `/resoluciones/${encodeURIComponent(id)}`;
+    : vista === "Todas las reglas" ? "/reglas" : vista === "Agentes" ? "/agentes" : vista === "Entradas" ? "/entradas" : vista === "Hallazgos" ? "/hallazgos" : `/resoluciones/${encodeURIComponent(id)}`;
   return html`<form id="seleccionar-agente" class="selector-agente" action="${accion}" method="get">
 <label for="agente-seleccionado">Agente</label>
 <select name="agente" id="agente-seleccionado">${contexto.agentes.map(agente => agente.nombre === contexto.agente
     ? html`<option value="${agente.nombre}" selected>${agente.nombre}</option>`
     : html`<option value="${agente.nombre}">${agente.nombre}</option>`)}</select>
-${["Agentes", "Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type="hidden" name="id" value="${id}">` : html``}
+${["Todas las reglas", "Agentes", "Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type="hidden" name="id" value="${id}">` : html``}
 ${["Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type="hidden" name="proyecto" value="${proyecto}">` : html``}
 ${camposContexto(contexto)}
 ${contexto.lanzadoPor === undefined ? html`` : html`<input type="hidden" name="lanzadoPor" value="${contexto.lanzadoPor}">`}

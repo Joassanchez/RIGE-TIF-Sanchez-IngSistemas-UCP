@@ -5,7 +5,7 @@ import { nombreProyecto } from "./textos";
 
 interface ContextoDiseno extends ContextoPanel {
   readonly proyecto?: string;
-  readonly activa?: "Inicio" | "Valores" | "Permisos" | "Entradas" | "Hallazgos" | "Agentes";
+  readonly activa?: "Inicio" | "Valores" | "Permisos" | "Permiso" | "Todas las reglas" | "Comparar" | "Entradas" | "Hallazgos" | "Agentes";
   readonly almacen?: { readonly ruta: string; readonly versionEsquema: number };
   readonly minimo?: boolean;
 }
@@ -22,7 +22,7 @@ export function diseno(titulo: string, contenido: HtmlSeguro, contexto: Contexto
 <header class="cabecera"><div class="cabecera__interior">
 <a class="marca" href="/" aria-label="RIGE · Inicio">RIGE</a>
 ${contexto.minimo ? html`` : html`<nav class="migas" aria-label="Migas de pan">
-${contexto.proyecto === undefined ? html`<span aria-current="page">${titulo}</span>` : html`
+${contexto.proyecto === undefined ? html`<span aria-hidden="true">›</span><span aria-current="page">${titulo.startsWith("Error ") ? "Error" : titulo}</span>` : html`
 <span aria-hidden="true">›</span>${id === undefined ? html`<span>${nombreProyecto(contexto.proyecto)}</span>` : html`<a href="${`/resoluciones/${id}`}">${nombreProyecto(contexto.proyecto)}</a>`}
 ${contexto.agente === undefined ? html`` : html`<span aria-hidden="true">›</span>${contexto.activa === "Valores" || id === undefined ? html`<span aria-current="page">${contexto.agente}</span>` : html`<a href="${`/resoluciones/${id}/agentes/${encodeURIComponent(contexto.agente)}`}">${contexto.agente}</a>`}`}
 ${contexto.activa === undefined || contexto.activa === "Valores" ? html`` : html`<span aria-hidden="true">›</span><span aria-current="page">${contexto.activa}</span>`}`}</nav>`}</div></header>

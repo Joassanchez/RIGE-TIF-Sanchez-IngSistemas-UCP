@@ -65,7 +65,8 @@ describe("T5-17 G-3 cabeceras concisas", () => {
 });
 
 function seccion(cuerpo: string, id: string): string {
-  const hallada = new RegExp(`<section[^>]*id="${id}"[^>]*>(.*?)</section>`, "s").exec(cuerpo);
+  const etiqueta = id === "cadena-efectiva" ? "details" : "section";
+  const hallada = new RegExp(`<${etiqueta}[^>]*id="${id}"[^>]*>(.*?)</${etiqueta}>`, "s").exec(cuerpo);
   expect(hallada).not.toBeNull();
   return hallada![1]!;
 }
@@ -179,17 +180,18 @@ describe("T5-08 U-5 U-6", () => {
 });
 
 describe("T5-08 U-7 P-5", () => {
-  test.each([["allow", "permitida", "permitida"], ["deny", "denegada", "denegada"], ["ask", "pregunta", "sujeta a confirmación"],
-    [null, "neutra", "sin decisión"], [ataque, "neutra", "&lt;script&gt;&quot;&amp;"]])("decision %s solo cambia su presentacion", async (decision, clase, texto) => {
+  test.each([["allow", "permitida", "Permitido"], ["deny", "denegada", "Denegado"], ["ask", "pregunta", "Pregunta antes"],
+    [null, "neutra", "El comando contiene varias operaciones"], [ataque, "neutra", "&lt;script&gt;&quot;&amp;"]])("decision %s solo cambia su presentacion", async (decision, clase, texto) => {
     const dato = { ...permiso, decision, motivoSinDecision: decision === null ? "comando-compuesto" : null };
     const cuerpo = await paginaPermiso(dato).text();
     const principal = seccion(cuerpo, "resultado-permiso");
-    expect(principal).toContain(`insignia--${clase}`);
+    if (decision === null) expect(principal).not.toContain('class="insignia');
+    else expect(principal).toContain(`insignia--${clase}`);
     expect(principal).toContain(texto!);
-    if (decision === null) expect(principal).toContain("comando-compuesto");
     const cadena = seccion(cuerpo, "cadena-efectiva");
-    expect(cadena).toContain("Cadena efectiva");
+    expect(cadena).toContain("Ver reglas coincidentes (2)");
     expect(cadena.match(/<tr[ >]/g)).toHaveLength(3);
+    expect(cadena.match(/<tr class=/g)).toHaveLength(2);
     expect(cadena).toContain('<tr class="fila--determinante"><td data-etiqueta="Índice">1</td>');
     expect(cadena.indexOf('<td data-etiqueta="Índice">1</td>')).toBeLessThan(cadena.indexOf('<td data-etiqueta="Índice">2</td>'));
     const sinDeterminante = await paginaPermiso({ ...dato, determinante: null }).text();

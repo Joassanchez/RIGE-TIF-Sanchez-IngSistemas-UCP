@@ -15,6 +15,7 @@ import { abarca } from "../../paquetes/opencode/hallazgos";
 import { consultarEntradas } from "../../paquetes/rige/aplicacion/casos-uso/consultar-entradas";
 import { consultarHallazgos } from "../../paquetes/rige/aplicacion/casos-uso/consultar-hallazgos";
 import type { RespuestaHallazgos } from "../../paquetes/rige/aplicacion/respuestas/hallazgos";
+import { nombresHallazgos } from "../../paquetes/rige/interfaces/web/componentes-proyecto";
 import type { TipoHallazgo } from "../../paquetes/nucleo/hallazgos/tipos";
 import { explicarHallazgo } from "../../paquetes/nucleo/hallazgos/explicar";
 import { plantillasExplicacion, plantillasHallazgo } from "../../paquetes/opencode/reglas";
@@ -1066,22 +1067,24 @@ describe("RF-07 CA-4 T3-07 R-3", () => {
         expect(pagina.estado).toBe(200);
         const rWeb = datosWeb(pagina.cuerpo);
         expect(rCli).toEqual(rWeb);
-        const filas = [...seccionHtml(pagina.cuerpo, "tabla-hallazgos").matchAll(/<tr id="h-\d+"><td data-etiqueta="Tipo">(.*?)<\/td><td data-etiqueta="Localización">(.*?)<\/td><td data-etiqueta="Explicación">(.*?)<\/td><\/tr>/gs)];
+        const filas = [...seccionHtml(pagina.cuerpo, "tabla-hallazgos").matchAll(/<article id="h-(\d+)"[^>]*>(.*?)<\/article>/gs)]
+          .sort((a, b) => Number(a[1]) - Number(b[1]));
         expect(filas).toHaveLength(rCli.hallazgos.length);
-        expect(filas.map(f => f.slice(1).map(celda => textoHtml(celda)))).toEqual(rCli.hallazgos.map((h: RespuestaHallazgos["hallazgos"][number]) => [
-          escaparHtml(h.tipo), escaparHtml(h.entrada.condicion === "observada" && (posix.isAbsolute(h.entrada.referencia) || win32.isAbsolute(h.entrada.referencia))
+        expect(filas.map(f => [f[2]!.match(/<h3>(.*?)<\/h3>/s)![1]!, f[2]!.match(/<p>Ubicación: (.*?)<\/p>/s)![1]!, f[2]!.match(/<p><strong>Causa:<\/strong> (.*?)<\/p>/s)![1]!].map(celda => textoHtml(celda)))).toEqual(rCli.hallazgos.map((h: RespuestaHallazgos["hallazgos"][number]) => [
+          escaparHtml(nombresHallazgos[h.tipo]![0]), escaparHtml(h.entrada.condicion === "observada" && (posix.isAbsolute(h.entrada.referencia) || win32.isAbsolute(h.entrada.referencia))
             ? h.entrada.referencia.replaceAll("\\", "/").split("/").at(-1) + `:${h.posicion.linea}:${h.posicion.columna}` : h.localizacion), escaparHtml(h.explicacion ?? ""),
         ]));
         for (const [indice, h] of rCli.hallazgos.entries()) {
           expect(typeof h.explicacion).toBe("string");
           expect(h.explicacion.length).toBeGreaterThan(0);
-          expect(filas[indice]![1]).toBe(`<span class="insignia insignia--${h.tipo}">${escaparHtml(h.tipo)}</span>`);
+          const tarjeta = filas[indice]![2]!;
+          expect(tarjeta).toContain(`<span class="insignia insignia--${h.tipo}">${escaparHtml(nombresHallazgos[h.tipo]![0])}</span>`);
           if (h.entrada.condicion === "observada" && (posix.isAbsolute(h.entrada.referencia) || win32.isAbsolute(h.entrada.referencia))) {
-            expect(filas[indice]![2]).toContain(`title="Abrir en VS Code: ${escaparHtml(h.entrada.referencia)}"`);
-            expect(filas[indice]![2]).toContain('href="vscode://file/');
+            expect(tarjeta).toContain(`title="Abrir en VS Code: ${escaparHtml(h.entrada.referencia)}"`);
+            expect(tarjeta).toContain('href="vscode://file/');
           } else {
-            expect(filas[indice]![2]).toContain(`class="ruta" title="${escaparHtml(h.localizacion)}"`);
-            expect(filas[indice]![2]).toContain(`#entrada-${h.entrada.orden}`);
+            expect(tarjeta).toContain(`class="ruta" title="${escaparHtml(h.localizacion)}"`);
+            expect(tarjeta).toContain(`#entrada-${h.entrada.orden}`);
           }
         }
       } finally {

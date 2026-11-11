@@ -131,6 +131,12 @@ La prelación es: variable de entorno → `rige.env` → valor por defecto. El a
 
 ## 6. Ejecución y verificación
 
+Recorrido final: **Inicio → resumen → agente → permiso / hallazgos**. En Inicio, los recientes son filas compactas con fecha y cantidad a la derecha, ruta con elipsis (completa en la ayuda) y **Analizar de nuevo**; en móvil se apilan. El campo muestra el ejemplo `C:\proyectos\mi-app` como marcador atenuado.
+
+En **Permiso**, elegí agente, herramienta y **Acción u objetivo**, y pulsá **Consultar**. Las sugerencias de herramienta no son exhaustivas. **Opciones avanzadas** reúne los formularios independientes **Como subagente de…** y **Por sujeto**; cada envío usa solo herramienta o sujeto y solo el de subagente envía lanzador. Debajo quedan las consultas rápidas. El resultado destaca **Permitido**, **Pregunta antes** o **Denegado** y **Regla que decide**, con patrón, carácter y procedencia enlazada a VS Code. **Explicación completa** conserva todas las oraciones; **Ver reglas coincidentes (n)** pliega la cadena de esa consulta, con índices desde 1. La cadena completa está en **Todas las reglas**, después de la matriz, con límites comunes una sola vez. Un comando compuesto informa el motivo sin insignia de efecto; una cadena incompleta conserva el error 422.
+
+**Hallazgos** muestra **Estado actual de los archivos**, parcialidad y motivos, y tarjetas agrupadas por tipo con causa, ubicación enlazada y acción solo cuando se desprende del tipo. Las anclas del resumen corresponden al orden original del diagnóstico, no identifican un hallazgo entre análisis. **Comparar** titula con ambas fechas locales y muestra **Clave / Antes / Después**, con procedencias enlazadas y agentes sin cambios en una línea. **Entradas** ordena por precedencia (**la de abajo prevalece**) y agrupa el mapa en **Presentes**, **Ausentes** y **No observadas**, con lugares revisados plegados.
+
 En **Entradas**, el mapa agrupa **Presentes**, **Ausentes** y **No observadas**, conservando el orden de revisión dentro de cada grupo. Los límites de la matriz completa se consultan en **Reglas**.
 
 **Lo determina** muestra vía y ubicación; los archivos locales con posición enlazan a **VS Code**, con la ruta completa en la ayuda. Variables, referencias remotas y rutas relativas quedan como texto.
@@ -196,6 +202,7 @@ En **Proyectos recientes**, toda la tarjeta abre la última foto; **Analizar de 
 bun test pruebas/aceptacion/T5-14.test.ts paquetes/rige/aplicacion/casos-uso/comparar-resoluciones.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts
 bun test ./paquetes/rige/interfaces/web/sistema-visual.test.ts
 bun test ./paquetes/rige/interfaces/web/recorrido-proyecto.test.ts
+bun test ./paquetes/rige/interfaces/web/vistas-secundarias.test.ts
 bun test ./paquetes/rige/interfaces/web/panel.test.ts ./paquetes/rige/interfaces/web/diseno.test.ts
 bun test pruebas/aceptacion/recorrido-v1.test.ts pruebas/aceptacion/T5-13-web.test.ts
 bun test

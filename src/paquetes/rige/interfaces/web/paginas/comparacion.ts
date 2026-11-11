@@ -3,7 +3,7 @@ import { datosRespuesta, html, type HtmlSeguro } from "../plantillas";
 import { diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
 import { presentarOrigen } from "./resolucion";
-import { concordar, nombreAnalisis } from "../textos";
+import { concordar, fechaLocal, nombreAnalisis } from "../textos";
 
 function presentarLado(lado: RespuestaComparacion["comparaciones"][number]["cambios"][number]["antes"]): HtmlSeguro {
   return lado === null ? html`<span>ausente</span>` : html`<code>${JSON.stringify(lado.valor)}</code><p>${presentarOrigen(lado.determinante)}</p>`;
@@ -19,7 +19,7 @@ export function paginaComparacion(respuesta: RespuestaComparacion, agente?: stri
   const enlace = (nombre?: string) => `/comparar?desde=${encodeURIComponent(respuesta.desde.id)}&hasta=${encodeURIComponent(respuesta.hasta.id)}${nombre === undefined ? "" : `&agente=${encodeURIComponent(nombre)}`}`;
   const nombres = [...new Set([...respuesta.agentes.comunes, ...respuesta.agentes.agregados, ...respuesta.agentes.quitados, ...respuesta.agentes.inciertos])];
   return responderHtml(200, diseno("Comparar resoluciones", html`
-<section id="resumen-comparacion" class="cabecera-pagina"><h1>Comparar resoluciones</h1>
+<section id="resumen-comparacion" class="cabecera-pagina"><h1>Cambios entre ${fechaLocal(respuesta.desde.instante)} y ${fechaLocal(respuesta.hasta.instante)}</h1>
 <p>¿Qué cambió entre estos análisis?</p>
 <div class="resumen-cambios" aria-label="Resumen de cambios">${insignia(`${resumen.cambiadas} ${concordar(resumen.cambiadas, "cambio", "cambios")}`, "neutra")}
 ${insignia(`${resumen.agregadas} ${concordar(resumen.agregadas, "clave nueva", "claves nuevas")}`, "neutra")}
@@ -39,13 +39,12 @@ ${hayCambios ? html`` : html`<p class="estado-vacio">${respuesta.parcial ? "Sin 
 ${visibles.some(c => !c.cambios.length) ? html`<p class="atenuado">Sin cambios: ${visibles.filter(c => !c.cambios.length).map(c => `${c.agente} (${c.resumen.sinCambio})`).join(", ")}</p>` : html``}
 ${visibles.filter(c => c.cambios.length).map(c => html`<section><h2>Agente ${c.agente}</h2><p>${c.resumen.sinCambio} ${concordar(c.resumen.sinCambio, "clave sin cambio", "claves sin cambio")}.</p>
 <div class="tabla-contenedor" role="region" aria-label="${`Cambios de ${c.agente}`}" tabindex="0">
-<table class="tabla-tarjetas tabla-comparacion"><thead><tr><th>Ruta de clave</th><th>Estado y motivo</th><th>Antes</th><th aria-label="Cambio">→</th><th>Después</th></tr></thead>
-<tbody>${c.cambios.map(cambio => html`<tr><td data-etiqueta="Ruta de clave"><code title="${JSON.stringify(cambio.ruta)}">${cambio.ruta.join(" › ")}</code></td>
-<td data-etiqueta="Estado y motivo">${insignia(cambio.tipo, "neutra")} ${cambio.motivos.join(", ")}</td>
-<td data-etiqueta="Antes">${presentarLado(cambio.antes)}</td><td class="comparacion-flecha" aria-hidden="true">→</td><td data-etiqueta="Después">${presentarLado(cambio.despues)}</td></tr>`)}</tbody></table></div></section>`)}
+<table class="tabla-tarjetas tabla-comparacion"><thead><tr><th>Clave</th><th>Antes</th><th>Después</th></tr></thead>
+<tbody>${c.cambios.map(cambio => html`<tr><td data-etiqueta="Clave"><code title="${JSON.stringify(cambio.ruta)}">${cambio.ruta.join(" › ")}</code><p>${insignia(cambio.tipo, "neutra")} ${cambio.motivos.join(", ")}</p></td>
+<td data-etiqueta="Antes">${presentarLado(cambio.antes)}</td><td data-etiqueta="Después">${presentarLado(cambio.despues)}</td></tr>`)}</tbody></table></div></section>`)}
 ${(["desde", "hasta"] as const).map(lado => html`<details><summary>Rutas no comparables y motivos (${lado})</summary>
 <ul>${respuesta[lado].noComparables.map(n => html`<li><code>${JSON.stringify(n.ruta)}</code>: ${respuesta[lado].reglas[n.regla] ?? n.regla}</li>`)}
 ${respuesta[lado].motivosAgentes.map(m => html`<li>${respuesta[lado].reglas[m] ?? m}</li>`)}</ul></details>`)}
 <details><summary>Ver en la consola</summary><p>Consulta por CLI sobre las mismas fotos</p><p><code>bun run rige -- comparar --desde &lt;id-anterior&gt; --hasta &lt;id-actual&gt;</code></p></details>
-${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto }));
+${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto, idResolucion: respuesta.hasta.id, activa: "Comparar" }));
 }

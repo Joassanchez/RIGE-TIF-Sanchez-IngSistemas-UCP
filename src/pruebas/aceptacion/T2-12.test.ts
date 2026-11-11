@@ -82,11 +82,11 @@ describe("RF-02 CA-7", () => {
       const pagina = await solicitar(`/permiso?id=${id}&agente=plan&sujeto=edit&objetivo=src/a.js`);
       expect(pagina.estado).toBe(200);
       const respuesta = incrustada(pagina.cuerpo) as RespuestaPermiso;
-      const cadena = seccionHtml(pagina.cuerpo, "cadena-efectiva");
+      const cadena = seccionHtml(pagina.cuerpo, "cadena-efectiva", "details");
       const filas = [...cadena.matchAll(/<tr class="([^"]+)"><td data-etiqueta="Índice">(\d+)<\/td>/g)];
       expect(filas.map(fila => Number(fila[2]))).toEqual(respuesta.cadena.map(regla => regla.indice + 1));
       for (const [indice, regla] of respuesta.cadena.entries()) {
-        expect(filas[indice]![1]).toBe(regla.indice === respuesta.determinante ? "fila--determinante" : "fila");
+        expect(filas[indice]![1]).toBe(regla.indice === respuesta.determinante ? "fila--determinante" : respuesta.desplazadas.includes(regla.indice) ? "fila--desplazada" : "fila");
       }
       expect(respuesta.nativaAnulada).not.toBeNull();
       expect(pagina.cuerpo).toContain(`(regla ${respuesta.nativaAnulada!.regla + 1}, por ${respuesta.nativaAnulada!.por + 1})`);

@@ -66,7 +66,7 @@ describe("T5-13 R-4", () => {
         expect(pagina.estado).toBe(200);
         expect(datos(pagina.cuerpo)).toEqual(JSON.parse(cli.salida));
         for (const texto of ["Cadena completa", "Matriz de permisos", "Efecto general por sujeto de permiso; las reglas por patrón pueden cambiarlo para objetivos concretos",
-          '>parcial</span>', 'id="limites-matriz"', 'aria-current="page">Permisos', "Foto guardada", "bun run rige -- reglas"]) expect(pagina.cuerpo).toContain(texto);
+          '>parcial</span>', 'id="limites-matriz"', 'aria-current="page">Todas las reglas', "Foto guardada", "bun run rige -- reglas"]) expect(pagina.cuerpo).toContain(texto);
         expect(pagina.cuerpo.match(/class="tabla-contenedor"/g)).toHaveLength(2);
         const r = datos(pagina.cuerpo);
         if (escenario === "v2-decision") expect(r.cadena.some(r => r.origen.tipo === "declarado")).toBe(true);
@@ -74,6 +74,10 @@ describe("T5-13 R-4", () => {
         for (const fila of r.matriz.filas) {
           const enlace = `/reglas?${new URLSearchParams({ id, agente: fila.agente, ...(lanzadoPor ? { lanzadoPor } : {}) })}#cadena-completa`;
           expect(pagina.cuerpo).toContain(`href="${escapar(enlace)}"`);
+          for (const celda of fila.celdas) {
+            const formulario = `/resoluciones/${id}/permisos?${new URLSearchParams({ id, agente: fila.agente, ...(lanzadoPor ? { lanzadoPor } : {}) })}&sujeto=${encodeURIComponent(celda.sujeto)}`;
+            expect(pagina.cuerpo).toContain(`href="${escapar(formulario)}"`);
+          }
         }
         const permisos = await pedir(`/resoluciones/${id}/permisos?agente=${agente}`);
         expect(permisos.cuerpo).toContain(`/reglas?id=${id}&amp;agente=${agente}`);

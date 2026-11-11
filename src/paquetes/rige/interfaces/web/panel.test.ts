@@ -62,7 +62,7 @@ describe("T5-15 Z-1 estado entre pestanas", () => {
       const cuerpo = await solicitar(ruta).text();
       expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
       if (!ruta.startsWith("/agentes")) {
-        const selector = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)![0];
+        const selector = cuerpo.match(/<form id="(?:seleccionar-agente|consultar-permiso)"[^]*?<\/form>/)![0];
         expect(selector).toContain('name="clave" value="/options/a.b"');
         expect(selector).toContain('name="q" value="TEMP &amp; &quot;&lt;#"');
       }
@@ -240,6 +240,11 @@ describe("T5-11 P-7 D-5 responsive", () => {
       await paginaPermiso({ ...permiso, cadena: [{ indice: 0, sujeto: "read", patron: "*", efecto: "ask", origen: { tipo: "nativo", regla: "nativa" }, declaracion: null }] }).text(),
     ];
     for (const cuerpo of paginas) {
+      if (cuerpo.includes('id="tabla-hallazgos"')) {
+        const tarjeta = cuerpo.match(/<article id="h-0"[^]*?<\/article>/)![0];
+        for (const texto of ["Entrada ilegible", "Ubicación:", "Causa:", "detalle", "#entrada-0"]) expect(tarjeta).toContain(texto);
+        continue;
+      }
       const tabla = cuerpo.match(/<table class="tabla-tarjetas">[^]*?<\/table>/)?.[0];
       expect(tabla).toBeDefined();
       const titulos = [...tabla!.matchAll(/<th>(.*?)<\/th>/g)].map(m => m[1]);
@@ -297,8 +302,12 @@ describe("T5-11 P-3 panel y contexto", () => {
         expect(cuerpo).not.toContain("Consultar por CLI");
       } else expect(dato(cuerpo)).toEqual(respuesta);
       const selector = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)?.[0];
-      expect(selector === undefined).toBe(activa === "Agentes");
-      if (activa === "Permisos") {
+      expect(selector === undefined).toBe(activa === "Agentes" || respuesta === null);
+      if (respuesta === null) {
+        const formulario = cuerpo.match(/<form id="consultar-permiso"[^]*?<\/form>/)![0];
+        expect(formulario).toContain('<select name="agente" required>');
+        expect(formulario).not.toContain('name="lanzadoPor"');
+      } else if (activa === "Permisos") {
         expect(selector).toContain('action="/resoluciones/7/permisos"');
         expect(selector).not.toMatch(/name="(?:herramienta|objetivo|lanzadoPor)"/);
       }

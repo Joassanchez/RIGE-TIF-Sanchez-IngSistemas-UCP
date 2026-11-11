@@ -95,8 +95,8 @@ describe("T5-17", () => {
     const ahora = new Date(); ahora.setHours(10, 42, 0, 0);
     const cuerpo = await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: '/p/<x>', id: 729, instante: ahora.toISOString(), cantidad: 3 }] }).text();
     expect(cuerpo).toMatch(/<a class="reciente__foto" href="\/resoluciones\/729">[^]*?<strong>&lt;x&gt;<\/strong>[^]*?<\/a>/);
-    expect(cuerpo).toContain("Último análisis:"); expect(cuerpo).toContain("hoy 10:42");
-    expect(cuerpo).toContain("3 análisis guardados");
+    expect(cuerpo).toContain("hoy 10:42");
+    expect(cuerpo).toContain("3 análisis");
     expect(cuerpo).toContain("Analizar de nuevo");
     expect(cuerpo).not.toMatch(/Resolución 729|<script/);
   });

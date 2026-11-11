@@ -225,7 +225,7 @@ describe("T5-18 R-9 sujetos de permiso", () => {
     expect(formulario.status).toBe(200);
     const html = await formulario.text();
     expect(html).toContain('name="sujeto" value="personalizado"');
-    expect(html).toContain('<details open><summary>Consultar por sujeto</summary>');
+    expect(html).toContain('<details open><summary>Opciones avanzadas</summary>');
     expect(html).toMatch(/name="objetivo" value=""/);
     expect(html).not.toContain('id="respuesta"');
   });

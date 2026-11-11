@@ -94,7 +94,9 @@ describe("T5-15 Z-5 limites de matriz", () => {
     for (const fila of filas.slice(0, 2)) expect(fila.split("</th>")[0]).toContain('>parcial</span>');
     expect(filas[2]!.split("</th>")[0]).toContain('>incompleta</span>');
     expect(filas[3]!.split("</th>")[0]).not.toMatch(/>parcial<|>incompleta</);
-    for (const fila of filas) expect(fila.split("</th>")[1]).toContain('>parcial</span>');
+    for (const [indice, fila] of filas.entries()) {
+      expect(fila.split("</th>")[1]).toContain(indice === 2 ? '>sin decisión</span>' : '>parcial</span>');
+    }
     expect(matriz.split("El eje externo no se observa por completo.")).toHaveLength(2);
     const limites = seccionHtml(cuerpo, "limites-matriz");
     expect(cuerpo.indexOf('id="limites-matriz"')).toBeGreaterThan(cuerpo.indexOf('aria-label="Matriz de permisos"'));
@@ -133,7 +135,8 @@ describe("T5-15 Z-7 coherencia de vistas", () => {
       expect(cabecera).not.toBeNull();
       expect(cabecera![1]).toContain("<h1>");
       expect(cabecera![1]).toContain("proyecto");
-      expect(cuerpo.indexOf('id="seleccionar-agente"')).toBeGreaterThan(cuerpo.indexOf(cabecera![0]) + cabecera![0].length - 1);
+      const selector = cuerpo.includes('id="seleccionar-agente"') ? 'id="seleccionar-agente"' : 'id="consultar-permiso"';
+      expect(cuerpo.indexOf(selector)).toBeGreaterThan(cuerpo.indexOf(cabecera![0]) + cabecera![0].length - 1);
       expect(cuerpo).not.toMatch(/style=|<style\b|<script(?! type="application\/json")/);
     }
     for (const pagina of [paginaInicio(estado), paginaComparacion(comparacion), paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "No existe" })]) {
@@ -169,7 +172,7 @@ describe("T5-15 Z-9 comparar", () => {
     expect(textoHtml(cuerpo)).toContain("Sin cambios: compaction (6), explore (6)");
     for (const nombre of ["compaction", "explore"]) expect(cuerpo).not.toContain(`<h2>Agente ${nombre}</h2>`);
     expect(cuerpo).toContain('<nav class="pestanas" aria-label="Filtrar comparación">');
-    expect(cuerpo).toContain('<th>Antes</th><th aria-label="Cambio">→</th><th>Después</th>');
+    expect(cuerpo).toContain('<th>Clave</th><th>Antes</th><th>Después</th>');
     expect(cuerpo).toContain('data-etiqueta="Antes"');
     expect(cuerpo).toContain('data-etiqueta="Después"');
     expect(cuerpo).toContain('title="[&quot;a&quot;,&quot;b&quot;]">a › b</code>');
@@ -210,7 +213,7 @@ describe("T5-15 Z-10 plurales", () => {
     for (const fragmento of ["1 cambio", "1 clave nueva", "1 quitada", "1 clave sin cambio"]) expect(texto).toContain(fragmento);
     for (const cantidad of [0, 1, 2]) {
       const inicio = textoHtml(await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: "/p", id: 7, instante: sobre.instante, cantidad }] }).text());
-      expect(inicio).toContain(`${cantidad} ${cantidad === 1 ? "análisis guardado" : "análisis guardados"}`);
+      expect(inicio).toContain(`${cantidad} análisis`);
     }
   });
 });
