@@ -20,11 +20,16 @@ const sobre = { id: 7, instante: "2026-11-10T12:00:00Z", anteriores: [] };
 const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: { esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 2 } } }),
   compararResoluciones: () => { throw new Error("No comparar en este doble"); },
   consultarProyectosRecientes: () => ({ exito: true, valor: { esquema: 2, proyectos: [] } }),
-  consultarReglas: () => { throw new Error("No consultar reglas en este doble"); },
+  consultarReglas: () => ({ exito: false, error: { codigo: "cadena-incompleta", mensaje: "Cadena no disponible" } }),
   resolverProyecto: () => ({ exito: true, valor: { id: 7 } }), consultarAgentes: () => ({ exito: true, valor: agentes }),
   consultarResolucion: (_id, agente) => ({ exito: true, valor: { respuesta: { ...valores, agente }, sobre } }),
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }), consultarPermiso: () => ({ exito: true, valor: permiso }) };
-const solicitar = (ruta: string, cambios: Partial<CasosWeb> = {}, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET") => crearManejador(12345, { ...casos, ...cambios })(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
+const solicitar = (ruta: string, cambios: Partial<CasosWeb> = {}, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET"): Response => {
+  const respuesta = crearManejador(12345, { ...casos, ...cambios })(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
+  if (respuesta.status !== 303 || ruta.startsWith("/resolver?")) return respuesta;
+  expect(respuesta.status).toBe(303);
+  return solicitar(respuesta.headers.get("location")!, cambios, headers, method);
+};
 const dato = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
 
 describe("T5-17 G-5 nombres de las fotos guardadas", () => {
@@ -32,7 +37,7 @@ describe("T5-17 G-5 nombres de las fotos guardadas", () => {
     for (const ruta of ["/resoluciones/7?agente=build", "/resoluciones/7/permisos?agente=build", "/agentes?id=7&agente=build",
       "/permiso?id=7&agente=build&herramienta=read&objetivo=.env"]) {
       const cuerpo = await solicitar(ruta).text();
-      expect(textoHtml(cuerpo)).toContain(nombreAnalisis(base.proyecto, sobre.instante));
+      expect(textoHtml(cuerpo)).toContain(ruta.startsWith("/agentes") ? "Análisis del " + nombreAnalisis(base.proyecto, sobre.instante).split(" · ")[1] : nombreAnalisis(base.proyecto, sobre.instante));
       expect(cuerpo.replace(/<script[^]*?<\/script>/g, "")).not.toMatch(/(?:Resolución|resolución|Foto) 7/);
       expect(cuerpo).not.toMatch(/hoy \d|ayer \d/);
     }
@@ -43,7 +48,7 @@ describe("T5-17 G-5 nombres de las fotos guardadas", () => {
     expect(recibida.status).toBe(200);
     const cuerpo = await recibida.text();
     expect(dato(cuerpo)).toEqual(agentes);
-    expect(cuerpo).toContain("Fecha no disponible (clave-no-resuelta)");
+    expect(cuerpo).toContain("Fecha no disponible");
     expect(cuerpo).not.toMatch(/Resolución 7|hoy \d|ayer \d/);
   });
 });
@@ -55,15 +60,12 @@ describe("T5-15 Z-1 estado entre pestanas", () => {
     for (const ruta of [`/resoluciones/7?${estado}`, `/resoluciones/7/permisos?${estado}`, `/agentes?id=7&${estado}`,
       `/entradas?proyecto=%2Fproyecto&id=7&${estado}`, `/hallazgos?proyecto=%2Fproyecto&id=7&${estado}`]) {
       const cuerpo = await solicitar(ruta).text();
-      const pestanas = cuerpo.match(/aria-label="Panel del proyecto">([^]*?)<\/nav>/)![1]!;
-      expect([...pestanas.matchAll(/href="([^"]+)"/g)]).toHaveLength(5);
-      for (const [, enlace] of pestanas.matchAll(/href="([^"]+)"/g)) {
-        expect(enlace).toContain(`clave=${encodeURIComponent(clave)}`);
-        expect(enlace).toContain(`q=${encodeURIComponent(q)}`);
+      expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
+      if (!ruta.startsWith("/agentes")) {
+        const selector = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)![0];
+        expect(selector).toContain('name="clave" value="/options/a.b"');
+        expect(selector).toContain('name="q" value="TEMP &amp; &quot;&lt;#"');
       }
-      const selector = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)![0];
-      expect(selector).toContain('name="clave" value="/options/a.b"');
-      expect(selector).toContain('name="q" value="TEMP &amp; &quot;&lt;#"');
       if (!ruta.includes("/permisos")) expect(dato(cuerpo)).toEqual(ruta.startsWith("/agentes") ? agentes
         : ruta.startsWith("/entradas") ? entradas : ruta.startsWith("/hallazgos") ? hallazgos : valores);
     }
@@ -94,20 +96,20 @@ describe("T5-11 P-2 agente predeterminado", () => {
       const cambios: Partial<CasosWeb> = { consultarAgentes: () => ({ exito: true, valor: { ...agentes, agentes: nombres.map(nombre => ({ ...agentes.agentes[0]!, nombre })) } }),
         consultarResolucion: (id, agente, clave) => { consultas.push([id, agente, clave]); return { exito: true, valor: { respuesta: { ...valores, agente }, sobre } }; } };
       const cuerpo = await solicitar("/resoluciones/7?clave=temperature", cambios).text();
-      expect(dato(cuerpo).agente).toBe(nombres.includes("build") ? "build" : "z");
+      expect(dato(cuerpo).agentes.map((a: { nombre: string }) => a.nombre)).toEqual(nombres);
       expect(await solicitar("/resoluciones/7?clave=temperature", cambios).text()).toBe(cuerpo);
-      expect(consultas).toEqual(Array(2).fill(["7", nombres.includes("build") ? "build" : "z", "temperature"]));
+      expect(consultas).toEqual(Array(2).fill(["7", nombres[0], ""]));
     }
     let consultas = 0;
     const noValores = () => { consultas++; throw new Error("No consultar valores"); };
     const vacia = solicitar("/resoluciones/7", { consultarAgentes: () => ({ exito: true, valor: { ...agentes, agentes: [] } }), consultarResolucion: noValores });
-    expect(vacia.status).toBe(303);
-    expect(vacia.headers.get("location")).toBe("/agentes?id=7");
+    expect(vacia.status).toBe(200);
+    expect(await vacia.text()).toContain("Sin agentes activos");
     expect(solicitar("/resoluciones/7", { consultarAgentes: () => ({ exito: false, error: { codigo: "resolucion-inexistente", mensaje: "No existe" } }), consultarResolucion: noValores }).status).toBe(404);
     expect(consultas).toBe(0);
     let intentos = 0;
-    expect(solicitar("/resoluciones/7", { consultarResolucion: () => { intentos++; return { exito: false, error: { codigo: "agente-sin-declaraciones", mensaje: "Sin declaraciones" } }; } }).status).toBe(404);
-    expect(intentos).toBe(1);
+    expect(solicitar("/resoluciones/7", { consultarResolucion: () => { intentos++; return { exito: false, error: { codigo: "agente-sin-declaraciones", mensaje: "Sin declaraciones" } }; } }).status).toBe(200);
+    expect(intentos).toBe(2);
   });
   test("agente explicito blanco es invalido y no guarda; conserva compatibilidad y clave", () => {
     let guardadas = 0;
@@ -132,8 +134,7 @@ describe("T5-11 P-4 filtro visual y consulta por clave", () => {
       if (q) expect(textoHtml(cuerpo)).toContain(`Filtrado por "${q === '<script>"&' ? '&lt;script&gt;&quot;&amp;' : q}" · ${cantidad} de 3 claves`);
       if (cantidad === 0) expect(tabla).toContain("Ninguna clave coincide con el filtro");
       if (q) expect(cuerpo).toContain(`name="q" value="${q === '<script>"&' ? '&lt;script&gt;&quot;&amp;' : q}"`);
-      expect(cuerpo).toContain('id="consultar-clave"');
-      expect(cuerpo).toContain("puntero JSON");
+      expect(cuerpo).not.toContain('id="consultar-clave"');
       expect(cuerpo).toContain('id="filtrar-claves"');
       expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/g, "")).not.toContain('<script>');
     }
@@ -167,7 +168,7 @@ describe("T5-11 P-5 reglas fuera de la tabla", () => {
     const tabla = cuerpo.match(/<section id="valores">[^]*?<\/section>/)![0];
     expect(tabla).not.toContain("<th>Regla aplicada</th>");
     expect(tabla.match(/<th>/g)).toHaveLength(4);
-    expect(tabla).toContain("Cómo se decide: Precedencia &lt;RD-01&gt; completa.");
+    expect(tabla).toContain("Precedencia &lt;RD-01&gt; completa.");
     expect(tabla).toContain("Valor &amp; implícito RD-04.");
     expect(tabla.indexOf("Cómo se decide")).toBeLessThan(tabla.indexOf("<table"));
     expect(tabla.match(/<details class="regla-detalle">/g)).toHaveLength(2);
@@ -231,7 +232,7 @@ describe("T5-11 P-7 D-5 responsive", () => {
     expect(movil).toContain("white-space: normal");
     expect(estilos).toMatch(/\.pestanas\s*\{[^}]*overflow-x: auto/);
     expect(estilos).toMatch(/#comando-cli pre\s*\{[^}]*overflow-x: auto/);
-    const entrada = { orden: 0, via: "proyecto", referencia: "/p", condicion: "observada" as const, resumen: null };
+    const entrada = { orden: 0, via: "variable-contenido", referencia: "VARIABLE", condicion: "observada" as const, resumen: null };
     const paginas = [
       await solicitar("/resoluciones/7?agente=build").text(),
       await solicitar("/entradas?proyecto=p", { consultarEntradas: () => ({ exito: true, valor: { ...entradas, entradas: [entrada] } }) }).text(),
@@ -254,12 +255,12 @@ describe("T5-11 P-8 documentacion", () => {
     for (const archivo of ["MANUAL.md", "README.md"]) {
       const documento = await Bun.file(archivo).text();
       const seccion = documento.split("## 6.")[1]!.split("## 7.")[0]!;
-      for (const texto of ["Analizar", "Valores", "Permisos", "Agentes", "Entradas", "Hallazgos", "Filtrar", "Consultar clave", "RD-01"]) expect(seccion).toContain(texto);
+      for (const texto of ["Analizar", "Resumen del proyecto", "Buscar clave", "Lo determina", "Historial", "Filtrar", "RD-01"]) expect(seccion).toContain(texto);
       expect(seccion).not.toContain("Resolver y guardar");
     }
     const matriz = (await Bun.file("MANUAL.md").text()).split("## 8.")[1]!;
     expect(matriz).toContain("Analizar");
-    expect(matriz).toContain("Consultar clave");
+    expect(matriz).toContain("Filtrar");
   });
 });
 
@@ -283,20 +284,11 @@ describe("T5-11 P-3 panel y contexto", () => {
       } : {});
       expect(recibida.status).toBe(200);
       const cuerpo = await recibida.text();
-      const nav = cuerpo.match(/<nav[^>]*aria-label="Panel del proyecto"[^]*?<\/nav>/)?.[0];
-      expect(nav).toBeDefined();
-      expect(nav!.match(/<a /g)).toHaveLength(5);
-      expect(nav).toContain(`aria-current="page">${activa}</a>`);
-      expect(nav!.match(/aria-current/g)).toHaveLength(1);
-      for (const enlace of nav!.matchAll(/href="([^"]+)"/g)) {
-        expect(enlace[1]).toContain("agente=build");
-        expect(enlace[1]).toContain("clave=temperature");
-        const destino = enlace[1]!.replaceAll("&amp;", "&");
-        expect(destino.startsWith("/resoluciones/7") || destino.includes("&id=7") || destino.startsWith("/agentes?id=7")).toBe(true);
-        expect(solicitar(destino).status).toBe(200);
-      }
+      expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
+      expect(cuerpo).toContain('aria-label="Migas de pan"');
       if (activa === "Valores") expect(cuerpo).toContain(nombreAnalisis(base.proyecto, sobre.instante));
       else if (["Entradas", "Hallazgos"].includes(activa)) expect(cuerpo).toContain("Estado actual de las entradas de configuración (no es la foto guardada)");
+      else if (activa === "Agentes") expect(cuerpo).toContain("Análisis del");
       else expect(cuerpo).toContain(`Foto guardada · ${nombreAnalisis(base.proyecto, sobre.instante)}`);
       if (respuesta === null) {
         expect(cuerpo).not.toContain('<script');
@@ -305,7 +297,7 @@ describe("T5-11 P-3 panel y contexto", () => {
         expect(cuerpo).not.toContain("Consultar por CLI");
       } else expect(dato(cuerpo)).toEqual(respuesta);
       const selector = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)?.[0];
-      expect(selector).toBeDefined();
+      expect(selector === undefined).toBe(activa === "Agentes");
       if (activa === "Permisos") {
         expect(selector).toContain('action="/resoluciones/7/permisos"');
         expect(selector).not.toMatch(/name="(?:herramienta|objetivo|lanzadoPor)"/);
@@ -324,7 +316,7 @@ describe("T5-11 P-3 panel y contexto", () => {
     }
   });
   test("el enlace de hallazgo a entrada conserva panel, clave y orden cero", async () => {
-    const entrada = { orden: 0, via: "proyecto", referencia: "/p", condicion: "observada" as const };
+    const entrada = { orden: 0, via: "variable-contenido", referencia: "VARIABLE", condicion: "observada" as const };
     const cuerpo = await solicitar("/hallazgos?proyecto=p&id=7&agente=build&clave=temperature", { consultarHallazgos: () => ({ exito: true, valor: { ...hallazgos, hallazgos: [{ tipo: "entrada-ilegible", causa: "x", entrada, posicion: { linea: 1, columna: 1 }, clave: null, parametros: {}, localizacion: "/p:1:1", explicacion: "x" }] } }) }).text();
     expect(cuerpo).toContain('href="/entradas?proyecto=%2Fproyecto&amp;id=7&amp;agente=build&amp;clave=temperature#entrada-0"');
   });

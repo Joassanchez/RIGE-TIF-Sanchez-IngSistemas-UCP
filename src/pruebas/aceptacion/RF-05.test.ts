@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { crearInstalacionOpenCode } from "../utilidades/instalacion-opencode";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { crearResolucionGuardadaAnterior } from "../utilidades/resolucion-guardada";
 
@@ -123,7 +123,8 @@ describe("C-3 T3-01 R-11", () => {
         const resultados = ruta === "/agentes?id=1" ? "tabla-agentes" : "valores";
         seccionHtml(pagina.cuerpo, resultados);
         const declaraciones = seccionHtml(pagina.cuerpo, "declaraciones");
-        expect(pagina.cuerpo.indexOf('id="declaraciones"')).toBeLessThan(pagina.cuerpo.indexOf(`id="${resultados}"`));
+        if (resultados === "valores") expect(pagina.cuerpo.indexOf('id="declaraciones"')).toBeLessThan(pagina.cuerpo.indexOf(`id="${resultados}"`));
+        else expect(pagina.cuerpo).toContain("Estado actual de los archivos");
         for (const codigo of ["version-no-determinada", "ejecutable-no-encontrado"]) {
           expect(declaraciones).toContain(respuesta.reglas[codigo]);
         }

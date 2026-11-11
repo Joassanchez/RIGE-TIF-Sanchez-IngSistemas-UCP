@@ -17,7 +17,8 @@ describe("T5-13 R-4 rutas y limitaciones", () => {
           ejesParciales: [], declaraciones: [], advertencias: [], celdas: [{ sujeto: "read", efecto: null, prevalece: null, motivo: "cadena-incompleta" }] },
       ] } };
     const pagina = await paginaReglas(respuesta, "7").text();
-    expect(pagina).toContain('/proyecto &amp; &quot;#&lt;/script&gt;/opencode.json:2:3');
+    expect(pagina).toContain('title="Abrir en VS Code: /proyecto &amp; &quot;#&lt;/script&gt;/opencode.json"');
+    expect(pagina).toContain('>opencode.json:2:3</a>');
     expect(pagina).not.toContain(ruta);
     expect(pagina).toContain('data-etiqueta="Índice">1</td>');
     expect(pagina).toContain("cadena-incompleta: No observable");

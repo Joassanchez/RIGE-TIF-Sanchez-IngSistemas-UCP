@@ -34,14 +34,18 @@ const sobre = { id: 7, instante: "2026-11-09T12:00:00Z", anteriores: [{ id: 7, i
 const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: estado }),
   compararResoluciones: () => { throw new Error("No comparar en este doble"); },
   consultarProyectosRecientes: () => ({ exito: true, valor: { esquema: 2, proyectos: [] } }),
-  consultarReglas: () => { throw new Error("No consultar reglas en este doble"); },
+  consultarReglas: () => ({ exito: false, error: { codigo: "cadena-incompleta", mensaje: "Cadena no disponible" } }),
   consultarResolucion: () => ({ exito: true, valor: { respuesta: valores, sobre } }),
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }),
   consultarAgentes: () => ({ exito: true, valor: agentes }), consultarPermiso: () => ({ exito: true, valor: permiso }),
   resolverProyecto: () => ({ exito: true, valor: { id: 7 } }) };
 const manejar = crearManejador(12345, casos);
-const solicitar = (ruta: string, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET") =>
-  manejar(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
+const solicitar = (ruta: string, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET"): Response => {
+  const respuesta = manejar(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
+  if (respuesta.status !== 303 || ruta.startsWith("/resolver?")) return respuesta;
+  expect(respuesta.status).toBe(303);
+  return solicitar(respuesta.headers.get("location")!, headers, method);
+};
 
 describe("T5-17 G-3 cabeceras concisas", () => {
   test("cada vista formula una pregunta y pliega su explicacion sin perder metadatos", async () => {
@@ -73,7 +77,7 @@ describe("T5-08 U-1 U-11 P-4 estilos y seguridad", () => {
     const cssManejar = crearManejador(12345, { consultarEstado: noConsultar, consultarResolucion: noConsultar,
       compararResoluciones: noConsultar, consultarProyectosRecientes: noConsultar,
       consultarEntradas: noConsultar, consultarHallazgos: noConsultar, consultarAgentes: noConsultar,
-      consultarPermiso: noConsultar, consultarReglas: noConsultar, resolverProyecto: noConsultar });
+      consultarPermiso: noConsultar, consultarReglas: () => ({ exito: false, error: { codigo: "cadena-incompleta", mensaje: "Cadena no disponible" } }), resolverProyecto: noConsultar });
     for (const sitio of [undefined, "same-origin", "none"]) {
       const respuesta = cssManejar(new Request("http://127.0.0.1/estilos.css", {
         headers: { Host: "localhost:12345", ...(sitio ? { "Sec-Fetch-Site": sitio } : {}) },
@@ -133,11 +137,12 @@ describe("T5-08 U-2 U-10 U-11 P-1 P-2 P-3 P-6", () => {
   test("codifica navegacion y marca la pagina activa sin agregar contexto al JSON", async () => {
     for (const [ruta, activo] of [["/entradas?proyecto=p", "Entradas"], ["/hallazgos?proyecto=p", "Hallazgos"], ["/agentes?id=7", "Agentes"]]) {
       const cuerpo = await solicitar(ruta!).text();
-      if (activo === "Agentes") expect(cuerpo).toContain(`href="/entradas?proyecto=${encodeURIComponent(base.proyecto)}&amp;id=7&amp;agente=${encodeURIComponent(ataque)}"`);
+      if (activo === "Agentes") expect(cuerpo).toContain(`href="/entradas?proyecto=${encodeURIComponent(base.proyecto)}&amp;id=7"`);
       else expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
-      if (activo === "Agentes") expect(cuerpo).toContain(`href="/hallazgos?proyecto=${encodeURIComponent(base.proyecto)}&amp;id=7&amp;agente=${encodeURIComponent(ataque)}"`);
-      expect(cuerpo).toMatch(new RegExp(`aria-current="page">${activo}</(?:a|span)>`));
-      expect(cuerpo.includes('href="/agentes?id=7&amp;agente=')).toBe(activo === "Agentes");
+      if (activo === "Agentes") expect(cuerpo).toContain(`href="/hallazgos?proyecto=${encodeURIComponent(base.proyecto)}&amp;id=7"`);
+      if (activo !== "Agentes") expect(cuerpo).toMatch(new RegExp(`aria-current="page">${activo}</(?:a|span)>`));
+      else expect(cuerpo).toContain("<h1>&lt;script&gt;&quot;&amp;</h1>");
+      expect(cuerpo).not.toContain('href="/agentes?id=7&amp;agente=');
       expect(cuerpo).not.toContain(estado.almacen.ruta);
     }
     const invalida = await solicitar("/agentes?id=%22%3E%3Cscript%3E").text();
@@ -168,7 +173,8 @@ describe("T5-08 U-5 U-6", () => {
     expect(cuerpo.indexOf('id="resumen-resolucion"')).toBeLessThan(cuerpo.indexOf('id="valores"'));
     expect(cuerpo).toContain('<details id="entradas-leidas"');
     expect(cuerpo).toContain('<details id="claves-no-incorporadas"');
-    expect(seccion(cuerpo, "historia")).toContain('aria-current="page"');
+    const resumen = await solicitar("/resoluciones/7").text();
+    expect(resumen).toContain('href="/resoluciones/7" aria-current="page"');
   });
 });
 
@@ -216,8 +222,8 @@ describe("T5-08 U-8 P-9", () => {
       clave: null, parametros: {}, localizacion: "/p:3:5", explicacion: ataque }] }).text();
     const tabla = seccion(cuerpo, "tabla-hallazgos");
     expect(tabla).toContain("insignia--entrada-ilegible");
-    expect(tabla).toContain('<code class="ruta" title="/p:3:5">');
-    expect(textoHtml(tabla)).toContain("/p:3:5");
+    expect(tabla).toContain('href="vscode://file/p:3:5" title="Abrir en VS Code: /p"');
+    expect(textoHtml(tabla)).toContain("p:3:5");
     expect(tabla).toContain("&lt;script&gt;&quot;&amp;");
     expect(cuerpo).not.toContain("Sin hallazgos en este proyecto");
   });
@@ -227,7 +233,7 @@ describe("T5-08 U-9", () => {
   test("entradas y agentes distinguen estados y avisos", async () => {
     const cuerpo = await paginaEntradas(entradas).text();
     expect(cuerpo).toContain('class="insignia insignia--entrada-ilegible">ilegible');
-    expect(cuerpo).toContain('class="aviso aviso--advertencia">3:5 (falla)');
+    expect(cuerpo).toContain('class="aviso aviso--advertencia"><code>&lt;script&gt;&quot;&amp;:3:5</code> (falla)');
     const listado = await paginaAgentes(agentes).text();
     expect(listado).toContain('class="insignia insignia--neutra">primary');
     expect(listado).toContain('class="insignia insignia--aviso">sí');

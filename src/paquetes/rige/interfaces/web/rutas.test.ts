@@ -1,5 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import { presentarRuta } from "./rutas";
+import { presentarRuta, presentarUbicacion } from "./rutas";
+
+describe("T5-18 R-8 rutas UNC", () => {
+  test("rutas absolutas de Windows normalizadas y vías remotas se distinguen por su referencia estructurada", () => {
+    for (const ruta of ["\\\\servidor\\carpeta\\a b.json", "//servidor/carpeta/a b.json"]) {
+      expect(presentarUbicacion(ruta, { linea: 2, columna: 3 }, "proyecto").texto).toContain('href="vscode://file//servidor/carpeta/a%20b.json:2:3"');
+    }
+    expect(presentarUbicacion("//servidor/carpeta/a b.json", { linea: 2, columna: 3 }, "remota-wellknown").texto).not.toContain("<a ");
+  });
+});
 
 describe("T5-08-c1 C2 rutas", () => {
   test("escapa cada segmento y el title completo; conserva todo el texto visible", () => {

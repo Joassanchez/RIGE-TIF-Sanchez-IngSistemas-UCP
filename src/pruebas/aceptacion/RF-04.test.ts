@@ -6,7 +6,7 @@ import { copiarEscenario } from "../utilidades/escenario";
 import { entornoDeReferencia } from "../utilidades/entorno-referencia";
 import { consultarCadenas } from "../utilidades/cadenas";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";

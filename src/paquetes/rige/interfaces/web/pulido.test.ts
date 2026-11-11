@@ -47,20 +47,12 @@ const css = (selector: string) => [...estilos.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
 describe("T5-15 Z-1 un campo visible y estado", () => {
   test("buscar queda visible; la consulta exacta cerrada conserva ayuda y ambos estados", async () => {
     const cuerpo = await paginaResolucion(valores, sobre, contexto).text();
-    const avanzada = cuerpo.match(/<details\b[^>]*>\s*<summary>Consulta exacta \(avanzada\)<\/summary>([^]*?)<\/details>/);
-    expect(avanzada).not.toBeNull();
-    expect(avanzada![0]).not.toMatch(/<details[^>]*\bopen\b/);
-    expect(avanzada![1]).toContain('name="clave" value="temperature"');
-    expect(avanzada![1]).toContain('name="q" value="TEMP"');
-    expect(avanzada![1]).toContain("puntero JSON");
-    const visible = cuerpo.replace(avanzada![0], "");
-    expect(visible).toContain('name="q" value="TEMP"');
-    expect(visible).not.toMatch(/<input(?![^>]*type="hidden")[^>]*name="clave"/);
-    const pestanas = cuerpo.match(/aria-label="Panel del proyecto">([^]*?)<\/nav>/)![1]!;
-    for (const enlace of pestanas.matchAll(/href="([^"]+)"/g)) {
-      expect(enlace[1]).toContain("clave=temperature");
-      expect(enlace[1]).toContain("q=TEMP");
-    }
+    expect(cuerpo).not.toContain("Consulta exacta (avanzada)");
+    expect(cuerpo).not.toContain('id="consultar-clave"');
+    expect(cuerpo).toContain('name="q" value="TEMP"');
+    expect(cuerpo).toContain('type="hidden" name="clave" value="temperature"');
+    expect(cuerpo).not.toMatch(/<input(?![^>]*type="hidden")[^>]*name="clave"/);
+    expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
     expect(json(cuerpo)).toEqual(valores);
   });
 });
@@ -68,7 +60,7 @@ describe("T5-15 Z-1 un campo visible y estado", () => {
 describe("T5-15 Z-2 orden del panel", () => {
   test("pestanas, titulo y metadatos, agente, filtros y valores", async () => {
     const cuerpo = await paginaResolucion({ ...valores, declaraciones: ["nota"], reglas: { nota: "Nota del análisis" } }, sobre, contexto).text();
-    const posiciones = ['aria-label="Panel del proyecto"', 'id="resumen-resolucion"', 'id="seleccionar-agente"', 'id="filtrar-claves"', 'id="declaraciones"', 'id="valores"'].map(s => cuerpo.indexOf(s));
+    const posiciones = ['id="resumen-resolucion"', 'id="seleccionar-agente"', 'id="filtrar-claves"', 'id="declaraciones"', 'id="valores"'].map(s => cuerpo.indexOf(s));
     expect(posiciones.every(p => p >= 0)).toBe(true);
     expect(posiciones).toEqual([...posiciones].sort((a, b) => a - b));
   });
@@ -164,10 +156,10 @@ describe("T5-15 Z-8 documentacion", () => {
     for (const archivo of ["README.md", "MANUAL.md"]) {
       const documento = await Bun.file(archivo).text();
       const ejecucion = documento.split("## 6.")[1]!.split("## 7.")[0]!;
-      for (const texto of ["Buscar clave", "Consulta exacta (avanzada)", "Límites", "Presentes", "Ausentes", "No observadas", "tarjeta abre", "Sin cambios:"]) expect(ejecucion).toContain(texto);
+      for (const texto of ["Buscar clave", "Resumen del proyecto", "Historial", "Presentes", "Ausentes", "No observadas", "tarjeta abre", "Sin cambios:"]) expect(ejecucion).toContain(texto);
     }
     const verificacion = (await Bun.file("MANUAL.md").text()).split("## 8.")[1]!;
-    expect(verificacion).toContain("Consulta exacta (avanzada)");
+    expect(verificacion).toContain("Resumen del proyecto → build");
   });
 });
 

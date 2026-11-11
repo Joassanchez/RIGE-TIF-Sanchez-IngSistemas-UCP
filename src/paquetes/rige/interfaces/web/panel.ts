@@ -10,6 +10,7 @@ export interface ContextoPanel {
   readonly q?: string;
   readonly agentes?: readonly { readonly nombre: string }[];
   readonly lanzadoPor?: string;
+  readonly sujeto?: string;
 }
 
 export function agenteInicial(agentes: RespuestaAgentes["agentes"]): string | undefined {
@@ -38,5 +39,6 @@ ${["Agentes", "Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type=
 ${["Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type="hidden" name="proyecto" value="${proyecto}">` : html``}
 ${camposContexto(contexto)}
 ${contexto.lanzadoPor === undefined ? html`` : html`<input type="hidden" name="lanzadoPor" value="${contexto.lanzadoPor}">`}
+${contexto.sujeto === undefined ? html`` : html`<input type="hidden" name="sujeto" value="${contexto.sujeto}">`}
 <button class="boton--secundario">Ver agente</button></form>`;
 }

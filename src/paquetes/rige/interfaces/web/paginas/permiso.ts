@@ -5,7 +5,7 @@ import type { RespuestaPermiso } from "../../../aplicacion/respuestas/permiso";
 import { datosRespuesta, html } from "../plantillas";
 import { declaraciones, diseno, efectoVisual } from "../diseno";
 import { responderHtml } from "../respuesta";
-import { presentarRuta } from "../rutas";
+import { presentarRuta, presentarUbicacion } from "../rutas";
 
 export function paginaPermiso(respuesta: RespuestaPermiso, idResolucion?: string, contexto: ContextoPanel = {}): Response {
   const lanzadoPor = "lanzadoPor" in respuesta && typeof respuesta.lanzadoPor === "string" ? respuesta.lanzadoPor : undefined;
@@ -29,9 +29,9 @@ ${respuesta.explicacion?.length && respuesta.declaraciones.length
 <div class="tabla-contenedor" role="region" aria-label="Cadena efectiva" tabindex="0">
 <table class="tabla-tarjetas"><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalencia</th></tr></thead>
 <tbody>${respuesta.cadena.map(regla => html`<tr class="${regla.indice === respuesta.determinante ? "fila--determinante" : "fila"}"><td data-etiqueta="Índice">${regla.indice + 1}</td><td data-etiqueta="Sujeto"><code>${regla.sujeto}</code></td><td data-etiqueta="Patrón"><code>${regla.patron}</code></td><td data-etiqueta="Efecto">${efectoVisual(regla.efecto)}</td>
-<td data-etiqueta="Procedencia"><code class="ficha-codigo">${regla.origen.tipo === "declarado"
-    ? `${regla.declaracion?.localizacion ?? regla.declaracion?.referencia} (${regla.declaracion?.via})`
-    : `${regla.origen.tipo}: ${regla.origen.regla}`}</code></td>
+<td data-etiqueta="Procedencia">${regla.origen.tipo === "declarado" && regla.declaracion
+    ? html`${regla.declaracion.via} · ${presentarUbicacion(regla.declaracion.referencia, regla.origen.posicion, regla.declaracion.via)}`
+    : html`<code class="ficha-codigo">${regla.origen.tipo === "declarado" ? "Declaración sin ubicación" : `${regla.origen.tipo}: ${regla.origen.regla}`}</code>`}</td>
 <td data-etiqueta="Prevalencia">${regla.indice === respuesta.determinante ? html`<strong>Determinante</strong>` : "Desplazada"}</td></tr>`)}</tbody></table></div></section>
 ${respuesta.nativaAnulada ? html`<div class="aviso aviso--advertencia bloque"><p>Advertencia RF-09: protección nativa anulada (regla ${respuesta.nativaAnulada.regla + 1}, por ${respuesta.nativaAnulada.por + 1}).</p></div>` : html``}
 ${respuesta.advertencias.length ? html`<section id="advertencias"><h2>Advertencias</h2>${respuesta.advertencias.map(codigo => html`<div class="aviso aviso--advertencia"><p>${respuesta.reglas[codigo]}</p></div>`)}</section>` : html``}

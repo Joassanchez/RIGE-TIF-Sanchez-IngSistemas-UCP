@@ -3,7 +3,7 @@ import type { RespuestaReglas } from "../../../aplicacion/respuestas/reglas";
 import { html, datosRespuesta } from "../plantillas";
 import { declaraciones, diseno, efectoVisual, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
-import { presentarRuta } from "../rutas";
+import { presentarRuta, presentarUbicacion } from "../rutas";
 import { comandoCli } from "../comando-cli";
 import { selectorAgente, type ContextoPanel } from "../panel";
 import { consultasPermiso } from "./consultas-permiso";
@@ -28,8 +28,8 @@ ${selectorAgente(panel, "Permisos", respuesta.proyecto)}
 <table class="tabla-tarjetas"><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalece para *</th></tr></thead>
 <tbody>${respuesta.cadena.map(r => html`<tr><td data-etiqueta="Índice">${r.indice}</td><td data-etiqueta="Sujeto"><code>${r.sujeto}</code></td>
 <td data-etiqueta="Patrón"><code>${r.patron}</code></td><td data-etiqueta="Efecto">${efectoVisual(r.efecto)}</td>
-<td data-etiqueta="Procedencia">${insignia(r.origen.tipo)} <code>${r.origen.tipo === "declarado"
-    ? `${r.declaracion?.localizacion ?? r.declaracion?.referencia} (${r.declaracion?.via})` : `${r.origen.regla}: ${respuesta.reglas[r.origen.regla]}`}</code></td>
+<td data-etiqueta="Procedencia">${insignia(r.origen.tipo)} ${r.origen.tipo === "declarado" && r.declaracion
+    ? html`${r.declaracion.via} · ${presentarUbicacion(r.declaracion.referencia, r.origen.posicion, r.declaracion.via)}` : html`<code>${r.origen.tipo === "declarado" ? "Declaración sin ubicación" : `${r.origen.regla}: ${respuesta.reglas[r.origen.regla]}`}</code>`}</td>
 <td data-etiqueta="Prevalece para *">${r.prevalece.map(s => insignia(s))}</td></tr>`)}</tbody></table></div></section>
 <section id="matriz-permisos"><h2>Matriz de permisos</h2>
 <p>Efecto general por sujeto de permiso; las reglas por patrón pueden cambiarlo para objetivos concretos. <a href="#acciones-resolucion">Consultar permiso para una acción concreta</a>.</p>

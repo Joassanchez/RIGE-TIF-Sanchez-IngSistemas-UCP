@@ -6,7 +6,8 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
+import { type SolicitudLocal } from "../utilidades/cliente-http-local";
 import { seccionHtml, textoHtml } from "../utilidades/html";
 
 const regla = "OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).";
@@ -37,7 +38,7 @@ function prepararRecorrido(usarReadme = false) {
   });
   return () => {
     if (!servidor || (!usarReadme && !escenario)) throw new Error("Recorrido no preparado.");
-    const raiz = usarReadme ? realpathSync.native(resolve(import.meta.dir, "../escenarios/v1-precedencia")) : escenario!.raiz;
+    const raiz = usarReadme ? realpathSync.native(resolve(import.meta.dir, "../escenarios/v1-precedencia")) : realpathSync.native(escenario!.raiz);
     const proyecto = usarReadme ? rutaReadme : escenario!.proyecto;
     const solicitar = (ruta: string, opciones: Omit<SolicitudLocal, "host" | "puerto" | "ruta"> = {}) => {
       if (!servidor) throw new Error("Servidor detenido.");
@@ -45,6 +46,7 @@ function prepararRecorrido(usarReadme = false) {
     };
     return {
       proyecto, raiz, solicitar,
+      consultar: (...argumentos: string[]) => lanzar(temporal, argumentos, variables),
       resolver: (clave = "temperature") => solicitar(
         `/resolver?proyecto=${encodeURIComponent(proyecto)}&agente=build&clave=${encodeURIComponent(clave)}`),
       async reiniciar() {
@@ -67,15 +69,15 @@ function ubicacion(respuesta: Awaited<ReturnType<typeof solicitarLocal>>): strin
 function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
   const valores = seccionHtml(cuerpo, "valores");
   const ruta = raiz.replaceAll("\\", "/");
-  expect(valores).toContain(`<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor efectivo">${temperatura}</td>`);
+  expect(valores).toContain(`<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor">${temperatura}</td>`);
   const fila = /<tr><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(valores);
   expect(fila).not.toBeNull();
   const celdas = fila![0].match(/<td\b[^>]*>.*?<\/td>/gs)!;
   expect(celdas).toHaveLength(4);
-  expect(textoHtml(celdas[2]!)).toBe(`proyecto ${ruta}/proyecto/opencode.jsonc:6:7`);
-  expect(celdas[2]).toContain(`title="${ruta}/proyecto/opencode.jsonc:6:7"`);
+  expect(textoHtml(celdas[2]!)).toBe("Proyecto · opencode.jsonc:6:7");
+  expect(celdas[2]).toContain(`title="Abrir en VS Code: ${ruta}/proyecto/opencode.jsonc"`);
   const desplazadas = [...celdas[3]!.matchAll(/<li>(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
-  expect(desplazadas).toEqual([`0.1 proyecto ${ruta}/opencode.json:5:7`, `0.2 proyecto ${ruta}/proyecto/opencode.json:5:7`]);
+  expect(desplazadas).toEqual(["0.1 Proyecto · opencode.json:5:7", "0.2 Proyecto · opencode.json:5:7"]);
   expect(cuerpo).toContain(regla);
   expect(cuerpo).toContain("Página armada con la resolución leída del almacén de RIGE.");
 }
@@ -97,8 +99,11 @@ describe("T5-11 P-1 P-3 panel con foto y entradas actuales", () => {
     const foto = await recorrido.solicitar(ruta);
     expect(foto.estado).toBe(200);
     const extraer = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
-    expect(extraer(foto.cuerpo).agente).toBe("build");
-    comprobarTemperatura(foto.cuerpo, recorrido.raiz);
+    expect(extraer(foto.cuerpo)).toEqual(JSON.parse(recorrido.consultar("agentes", "--proyecto", recorrido.proyecto).salida));
+    const fotoAgente = await recorrido.solicitar("/resoluciones/1/agentes/build");
+    expect(fotoAgente.estado).toBe(200);
+    expect(extraer(fotoAgente.cuerpo)).toEqual(JSON.parse(recorrido.consultar("valores", "--proyecto", recorrido.proyecto, "--agente", "build").salida));
+    comprobarTemperatura(fotoAgente.cuerpo, recorrido.raiz);
     const contexto = `proyecto=${encodeURIComponent(recorrido.proyecto)}&id=1&agente=build&clave=temperature`;
     const entradasAntes = await recorrido.solicitar(`/entradas?${contexto}`);
     const hallazgosAntes = await recorrido.solicitar(`/hallazgos?${contexto}`);
@@ -106,16 +111,20 @@ describe("T5-11 P-1 P-3 panel con foto y entradas actuales", () => {
     writeFileSync(join(recorrido.proyecto, "opencode.jsonc"), "{ archivo roto");
     const recuperada = await recorrido.solicitar(ruta);
     expect(recuperada.estado).toBe(200);
-    expect(recuperada.cuerpo).toBe(foto.cuerpo);
+    expect(extraer(recuperada.cuerpo)).toEqual(extraer(foto.cuerpo));
+    expect(recuperada.cuerpo).not.toBe(foto.cuerpo);
+    expect(seccionHtml(recuperada.cuerpo, "hallazgos-actuales")).not.toBe(seccionHtml(foto.cuerpo, "hallazgos-actuales"));
+    expect((await recorrido.solicitar("/resoluciones/1/agentes/build")).cuerpo).toBe(fotoAgente.cuerpo);
     for (const [vista, antes] of [["entradas", entradasAntes], ["hallazgos", hallazgosAntes]] as const) {
       const actual = await recorrido.solicitar(`/${vista}?${contexto}`);
       expect(actual.estado).toBe(200);
       expect(extraer(actual.cuerpo)).not.toEqual(extraer(antes.cuerpo));
       expect(actual.cuerpo).toContain("Estado actual de las entradas de configuración (no es la foto guardada)");
-      expect(actual.cuerpo).toContain('aria-label="Panel del proyecto"');
+      expect(actual.cuerpo).toContain('aria-label="Migas de pan"');
+      expect(actual.cuerpo).not.toContain('aria-label="Panel del proyecto"');
     }
     await recorrido.reiniciar();
-    expect((await recorrido.solicitar(ruta)).cuerpo).toBe(foto.cuerpo);
+    expect((await recorrido.solicitar("/resoluciones/1/agentes/build")).cuerpo).toBe(fotoAgente.cuerpo);
   });
 });
 
@@ -130,7 +139,8 @@ describe("RF-01 CA-1 · recorrido del README (guía, paso 8)", () => {
     expect(pagina.estado).toBe(200);
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const cabecera = seccionHtml(pagina.cuerpo, "resumen-resolucion");
-    expect(cabecera).toMatch(/<h1>proyecto · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}<\/h1>/);
+    expect(cabecera).toContain("<h1>build</h1>");
+    expect(cabecera).toMatch(/Foto guardada · proyecto · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/);
     expect(cabecera.match(/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/g)).toHaveLength(1);
     expect(cabecera).not.toMatch(/hoy \d|ayer \d|Resolución \d/);
     resumen(pagina.cuerpo);
@@ -162,7 +172,7 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
     expect(claves.filter(clave => Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["description", "steps", "temperature"]);
     expect(claves.filter(clave => !Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["mode", "name", "native", "options"]);
     for (const [clave, valor] of Object.entries(referencia.valores)) {
-      expect(tabla).toContain(`<td data-etiqueta="Clave">${clave}</td><td data-etiqueta="Valor efectivo">${JSON.stringify(valor).replaceAll('"', "&quot;")}</td>`);
+      expect(tabla).toContain(`<td data-etiqueta="Clave">${clave}</td><td data-etiqueta="Valor">${JSON.stringify(valor).replaceAll('"', "&quot;")}</td>`);
     }
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const puntual = await recorrido.solicitar(paginaPrimera);
@@ -220,9 +230,8 @@ describe("RF-17", () => {
       expect(recuperada.estado).toBe(200);
       comprobarTemperatura(recuperada.cuerpo, recorrido.raiz);
       expect(resumen(recuperada.cuerpo)).toBe(resumen(primera.cuerpo));
-      for (const pagina of [segunda, recuperada]) {
-        for (const ruta of [rutaPrimera, rutaSegunda]) expect(pagina.cuerpo).toContain(`href="${ruta.replaceAll("&", "&amp;")}"`);
-      }
+      const resumenProyecto = await recorrido.solicitar(rutaSegunda.split("?")[0]!);
+      for (const ruta of [rutaPrimera, rutaSegunda]) expect(resumenProyecto.cuerpo).toContain(`href="${ruta.split("?")[0]}"`);
     });
   });
 
@@ -237,19 +246,24 @@ describe("RF-17", () => {
         expect(ruta).toMatch(/^\/resoluciones\/\d+\?agente=build&clave=temperature$/);
         guardadas.push(Number(/^\/resoluciones\/(\d+)/.exec(ruta)![1]));
       }
-      const ruta = (id: number) => `/resoluciones/${id}?agente=build&clave=temperature`;
+      const ruta = (id: number) => `/resoluciones/${id}`;
       const ultima = await recorrido.solicitar(ruta(guardadas.at(-1)!));
       expect(ultima.estado).toBe(200);
-      const historia = seccionHtml(ultima.cuerpo, "historia");
-      const ids = [...historia.matchAll(/href="\/resoluciones\/(\d+)\?agente=build/g)].map(enlace => Number(enlace[1]));
+      const historia = seccionHtml(ultima.cuerpo, "historia", "details");
+      const ids = [...historia.matchAll(/href="\/resoluciones\/(\d+)"/g)].map(enlace => Number(enlace[1]));
       expect(ids).toEqual(guardadas.slice(1).reverse());
       expect(ids).toHaveLength(20);
       expect(ids).not.toContain(guardadas[0]!);
-      expect(historia).toContain(`href="/resoluciones/${guardadas.at(-1)}?agente=build&amp;clave=temperature" aria-current="page"`);
+      expect(historia).toContain(`href="/resoluciones/${guardadas.at(-1)}" aria-current="page"`);
         expect(historia.match(/aria-current="page"/g)).toHaveLength(1);
-        const comparaciones = [...historia.matchAll(/href="\/comparar\?desde=(\d+)&amp;hasta=(\d+)&amp;agente=build/g)]
+        const comparaciones = [...historia.matchAll(/href="\/comparar\?desde=(\d+)&amp;hasta=(\d+)"/g)]
           .map(enlace => [Number(enlace[1]), Number(enlace[2])]);
-        expect(comparaciones).toEqual(guardadas.slice(1, -1).reverse().map(id => [id, guardadas.at(-1)!]));
+        expect(comparaciones).toEqual(guardadas.slice(2).reverse().map(id => [id - 1, id]));
+      const intermedia = await recorrido.solicitar(ruta(guardadas[10]!));
+      const historialIntermedio = seccionHtml(intermedia.cuerpo, "historia", "details");
+      expect(historialIntermedio).toContain(`href="/resoluciones/${guardadas[10]}" aria-current="page"`);
+      expect(historialIntermedio).toContain("más reciente");
+      expect([...historialIntermedio.matchAll(/href="\/resoluciones\/(\d+)"/g)].map(e => Number(e[1]))).toEqual(ids);
       const retirada = await recorrido.solicitar(ruta(guardadas[0]!));
       expect(retirada.estado).toBe(404);
       expect(retirada.cuerpo).toContain("No encontramos ese análisis en el almacén.");
@@ -360,7 +374,7 @@ describe("Errores de uso por la web", () => {
       expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build");
       const pagina = await recorrido.solicitar("/resoluciones/2?agente=build");
       expect(pagina.estado).toBe(200);
-      expect(pagina.cuerpo).toContain('<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor efectivo">0.3</td>');
+      expect(pagina.cuerpo).toContain('<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor">0.3</td>');
       expect(pagina.cuerpo).toContain("Claves no incorporadas por RIGE");
       expect(pagina.cuerpo).toContain("<li>permission:");
       const pendientes = /<ul>(.*?)<\/ul>/s.exec(seccionHtml(pagina.cuerpo, "claves-no-incorporadas", "details"))?.[1];

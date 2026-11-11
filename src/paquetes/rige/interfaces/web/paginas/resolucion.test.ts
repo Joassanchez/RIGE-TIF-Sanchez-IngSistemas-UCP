@@ -44,9 +44,9 @@ describe("W-13", () => {
     const cuerpo = await recibida.text();
     const contenido = cuerpo.split('<main id="contenido" tabindex="-1">')[1]!;
     expect(contenido).toBeDefined();
-    const partes = [html`<h1>${nombreAnalisis(respuesta().proyecto, sobre.instante)}</h1>`.texto, "Página armada con la resolución leída del almacén de RIGE.",
+    const partes = [html`<h1>${respuesta().agente}</h1>`.texto, "Página armada con la resolución leída del almacén de RIGE.",
       "Proyecto", "Valores efectivos", "Cómo se decide", "Claves no incorporadas por RIGE",
-      "Entradas leídas", "Resoluciones de este proyecto"];
+      "Entradas leídas"];
     let posicion = -1;
     for (const parte of partes) {
       const siguiente = contenido.indexOf(parte);
@@ -56,12 +56,12 @@ describe("W-13", () => {
     }
     for (const dato of ["/proyecto/&lt;ejemplo&gt;", fechaLocal("2026-10-05T12:00:00.000Z"),
       "Herramienta", "opencode 1.18.25", "Agente", "a &amp; b", "Clave", "todas",
-      "Resumen de las entradas leídas", "a".repeat(64), "Clave", "Valor efectivo",
-      "Declaración determinante", "Declaraciones desplazadas", '<td data-etiqueta="Clave">description</td>', '<td data-etiqueta="Clave">steps</td>',
+      "Resumen de las entradas leídas", "a".repeat(64), "Clave", "Valor",
+      "Lo determina", "Desplazadas", '<td data-etiqueta="Clave">description</td>', '<td data-etiqueta="Clave">steps</td>',
       "&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;", "ninguna",
       "Prevalece la ultima &lt;declaracion&gt; (RD-01).", "Sin resolver &lt;permiso&gt;.",
       "permission: Sin resolver &lt;permiso&gt;.", "Orden", "Vía", "Referencia", "Condición", "Resumen SHA-256",
-      "remota-wellknown", "no_observada", "observada", "b".repeat(64), "—", "(esta)", fechaLocal("2026-10-04T12:00:00.000Z")]) {
+      "remota-wellknown", "no_observada", "observada", "b".repeat(64), "—"]) {
       expect(cuerpo).toContain(dato);
     }
     expect(cuerpo).toMatch(/<ol>.*0\.1.*0\.2.*<\/ol>/s);
@@ -69,10 +69,10 @@ describe("W-13", () => {
     const celdas = fila.match(/<td\b[^>]*>.*?<\/td>/gs)!;
     expect(celdas).toHaveLength(4);
     expect(celdas[1]).toContain("&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;");
-    expect(textoHtml(celdas[2]!)).toContain("proyecto /proyecto/&lt;entrada3&gt;.jsonc:6:7");
+    expect(textoHtml(celdas[2]!)).toContain("Proyecto · &lt;entrada3&gt;.jsonc:6:7");
     const desplazadas = [...celdas[3]!.matchAll(/<li>(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
-    expect(desplazadas).toEqual(["0.1 proyecto /proyecto/&lt;entrada1&gt;.jsonc:6:7", "0.2 proyecto /proyecto/&lt;entrada2&gt;.jsonc:6:7"]);
-    expect(cuerpo).toContain('href="/resoluciones/6?agente=a%20%26%20b"');
+    expect(desplazadas).toEqual(["0.1 Proyecto · &lt;entrada1&gt;.jsonc:6:7", "0.2 Proyecto · &lt;entrada2&gt;.jsonc:6:7"]);
+    expect(cuerpo).toContain('href="/resoluciones/7"');
     expect(cuerpo).not.toContain("agent.a &amp; b.description");
     const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
     expect(bloques).toHaveLength(1);
@@ -85,7 +85,7 @@ describe("W-13", () => {
     const { paginaResolucion: presentar } = await import("./resolucion");
     const paginaResolucion = (respuesta: RespuestaValores) => presentar(respuesta, sobre);
     const cuerpo = await paginaResolucion({ ...respuesta(), ruta: ["c & d"], noResueltas: [] }).text();
-    expect(cuerpo).toContain('href="/resoluciones/6?agente=a%20%26%20b&amp;clave=c%20%26%20d"');
+    expect(cuerpo).toContain('name="clave" value="c &amp; d"');
     expect(cuerpo).toContain("c &amp; d");
     expect(cuerpo).not.toContain("Claves no incorporadas por RIGE");
   });
@@ -167,8 +167,8 @@ describe("T5-08-c1 C3 C4 determinante y leyenda", () => {
     expect(filas).toHaveLength(3);
     const celdas = filas[0]!.match(/<td\b[^>]*>.*?<\/td>/gs)!;
     expect(celdas[2]).not.toContain("alert(1)");
-    expect(celdas[2]).toContain('class="insignia insignia--neutra">proyecto');
-    expect(celdas[2]).toContain('title="/proyecto/&lt;entrada3&gt;.jsonc:6:7"');
+    expect(celdas[2]).toContain("Proyecto ·");
+    expect(celdas[2]).toContain('title="Abrir en VS Code: /proyecto/&lt;entrada3&gt;.jsonc"');
     expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![1]).toContain("implícito");
     expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain("valor-implicito");
     const comunes = valores.split('<table')[0]!;

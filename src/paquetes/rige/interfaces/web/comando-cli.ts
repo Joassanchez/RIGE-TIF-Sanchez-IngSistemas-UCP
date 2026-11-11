@@ -9,7 +9,8 @@ export function comandoCli(subcomando: "valores" | "permiso" | "reglas" | "agent
     : ` --${nombre}${valor.startsWith("-") ? "=" : " "}${citar(valor)}`).join("");
   const bash = comando(valor => "'" + valor.replaceAll("'", "'\"'\"'") + "'");
   const powershell = comando(valor => "'" + valor.replaceAll("'", "''") + "'");
-  return html`<details id="comando-cli"><summary>Consultar por CLI con las entradas actuales</summary>
+  return html`<details id="comando-cli"><summary>Ver en la consola</summary>
+<p>Consultar por CLI con las entradas actuales</p>
 <p>No recupera esta foto; coincide si las entradas y el contexto no cambiaron</p>
 <h3>Bash</h3><pre><code>${bash}</code></pre>
 <h3>PowerShell 7.3+</h3><pre><code>${"& { $PSNativeCommandArgumentPassing = 'Standard'; " + powershell + " }"}</code></pre></details>`;

@@ -37,11 +37,11 @@ export function consultasPermiso(contexto: ContextoPanel, lanzadoPor?: string) {
 <div class="grupo-campos"><label>Herramienta <input name="herramienta" placeholder="read" required></label>
 <label>Objetivo <input name="objetivo" placeholder=".env" required></label></div>
 <button class="boton--secundario">Consultar permiso como subagente</button></form></details>
-<details><summary>Consultar por sujeto</summary><form action="/permiso" method="get">
+<details${contexto.sujeto === undefined ? html`` : html` open`}><summary>Consultar por sujeto</summary><form action="/permiso" method="get">
 <input type="hidden" name="id" value="${id}">${camposContexto(contexto)}${lanzador}
 <label>Agente <input name="agente" value="${agente}" required></label>
-<label>Sujeto <input name="sujeto" required></label>
-<label>Objetivo <input name="objetivo" required></label>
+<label>Sujeto <input name="sujeto" value="${contexto.sujeto ?? ""}" required></label>
+<label>Objetivo <input name="objetivo" value="" required></label>
 <button class="boton--secundario">Consultar sujeto de permiso</button></form></details>
 <section id="consultas-rapidas"><h3>Consultas rápidas</h3><ul class="consultas-rapidas">
 ${([["read", ".env"], ["edit", "opencode.json"], ["bash", "git status"], ["bash", "rm -rf build"]] as const).map(([herramienta, objetivo]) => html`<li><a href="${`/permiso?id=${encodeURIComponent(id)}&agente=${encodeURIComponent(agente)}&herramienta=${encodeURIComponent(herramienta)}&objetivo=${encodeURIComponent(objetivo)}${contexto.clave ? `&clave=${encodeURIComponent(contexto.clave)}` : ""}${contexto.q ? `&q=${encodeURIComponent(contexto.q)}` : ""}${lanzadoPor === undefined ? "" : `&lanzadoPor=${encodeURIComponent(lanzadoPor)}`}`}" class="consulta-rapida">${insignia(herramienta)} <code>${objetivo}</code></a></li>`)}

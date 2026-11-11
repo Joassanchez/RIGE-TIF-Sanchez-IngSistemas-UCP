@@ -3,7 +3,8 @@ import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from
 import { join, resolve } from "node:path";
 import { prepararConsultas } from "../utilidades/consultas-cli";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
+import { type SolicitudLocal } from "../utilidades/cliente-http-local";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
 import { capturarRegresionT512 } from "../utilidades/regresion-t5-12";
@@ -97,12 +98,12 @@ describe("T5-14 K-2", () => {
       for (const [cantidad, singular, plural] of [
         [a.resumen.cambiadas, "cambio", "cambios"], [a.resumen.agregadas, "clave nueva", "claves nuevas"], [a.resumen.quitadas, "quitada", "quitadas"],
       ] as const) expect(filtrada.cuerpo).toContain(`>${cantidad} ${cantidad === 1 ? singular : plural}</span>`);
-      const actual = await pedir(`/resoluciones/${hasta}?agente=build`);
-      expect(actual.cuerpo).toContain(`href="${escapar(`/comparar?desde=${desde}&hasta=${hasta}&agente=build`)}">Comparar con la anterior`);
-      expect(actual.cuerpo).toContain("comparar con esta");
-      const vieja = await pedir(`/resoluciones/${desde}?agente=build`);
-      expect(vieja.cuerpo).not.toContain("Comparar con la anterior");
-      expect(vieja.cuerpo).not.toContain("comparar con esta");
+      for (const id of [hasta, desde]) {
+        const resumen = await pedir(`/resoluciones/${id}`);
+        expect(resumen.estado).toBe(200);
+        expect(resumen.cuerpo).toContain(`href="${escapar(`/comparar?desde=${desde}&hasta=${hasta}`)}">Comparar con el anterior`);
+        expect(resumen.cuerpo).toContain(`href="/resoluciones/${id}" aria-current="page"`);
+      }
       const igual = await pedir(`/comparar?desde=${desde}&hasta=${desde}`);
       expect(igual.cuerpo).toContain("Sin cambios entre las dos fotos");
       expect(datos(igual.cuerpo).resumen.cambiadas).toBe(0);

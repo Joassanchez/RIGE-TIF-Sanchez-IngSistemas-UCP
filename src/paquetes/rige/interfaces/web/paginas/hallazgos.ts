@@ -5,13 +5,8 @@ import type { RespuestaHallazgos } from "../../../aplicacion/respuestas/hallazgo
 import { datosRespuesta, html } from "../plantillas";
 import { declaraciones, diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
-import { presentarRuta } from "../rutas";
-
-const nombresHallazgos: Readonly<Record<string, readonly [string, string]>> = {
-  "entrada-ilegible": ["Entrada ilegible", "Entradas ilegibles"], "entrada-descartada": ["Entrada descartada", "Entradas descartadas"],
-  "sustitucion-sin-valor": ["Sustitución sin valor", "Sustituciones sin valor"], "referencia-no-resuelta": ["Referencia no resuelta", "Referencias no resueltas"],
-  "regla-sin-efecto": ["Regla sin efecto", "Reglas sin efecto"], "elemento-sin-uso": ["Elemento sin uso", "Elementos sin uso"],
-};
+import { anclaHallazgo, nombresHallazgos } from "../componentes-proyecto";
+import { presentarRuta, presentarUbicacion, esArchivoLocal } from "../rutas";
 
 export function paginaHallazgos(respuesta: RespuestaHallazgos, contexto: ContextoPanel = {}): Response {
   return responderHtml(200, diseno("Hallazgos", html`
@@ -31,7 +26,7 @@ ${respuesta.incompleta ? html`<div class="aviso aviso--advertencia"><p>Hallazgos
 <section id="tabla-hallazgos"><h2>Detalle de hallazgos</h2>
 ${respuesta.hallazgos.length ? html`<div class="tabla-contenedor" role="region" aria-label="Hallazgos" tabindex="0">
 <table class="tabla-tarjetas"><thead><tr><th>Tipo</th><th>Localización</th><th>Explicación</th></tr></thead>
-<tbody>${respuesta.hallazgos.map(hallazgo => html`<tr><td data-etiqueta="Tipo">${insignia(hallazgo.tipo, hallazgo.tipo)}</td><td data-etiqueta="Localización"><a href="${`/entradas?proyecto=${encodeURIComponent(respuesta.proyecto)}${contexto.idResolucion === undefined ? "" : `&id=${encodeURIComponent(contexto.idResolucion)}${consultaPanel(contexto)}`}#entrada-${encodeURIComponent(hallazgo.entrada.orden)}`}">${presentarRuta(hallazgo.localizacion)}</a></td><td data-etiqueta="Explicación">${hallazgo.explicacion}</td></tr>`)}</tbody></table></div>`
+<tbody>${respuesta.hallazgos.map((hallazgo, indice) => html`<tr id="${anclaHallazgo(indice)}"><td data-etiqueta="Tipo">${insignia(hallazgo.tipo, hallazgo.tipo)}</td><td data-etiqueta="Localización">${hallazgo.posicion && esArchivoLocal(hallazgo.entrada.referencia, hallazgo.entrada.via) ? presentarUbicacion(hallazgo.entrada.referencia, hallazgo.posicion, hallazgo.entrada.via) : html`<a href="${`/entradas?proyecto=${encodeURIComponent(respuesta.proyecto)}${contexto.idResolucion === undefined ? "" : `&id=${encodeURIComponent(contexto.idResolucion)}${consultaPanel(contexto)}`}#entrada-${encodeURIComponent(hallazgo.entrada.orden)}`}">${presentarRuta(hallazgo.localizacion)}</a>`}</td><td data-etiqueta="Explicación">${hallazgo.explicacion}</td></tr>`)}</tbody></table></div>`
     : html`<p class="estado-vacio">${respuesta.incompleta ? "Sin hallazgos observados; análisis parcial" : "Sin hallazgos en este proyecto"}</p>`}</section>
 ${comandoCli("hallazgos", { proyecto: respuesta.proyecto, explicar: true })}
 ${datosRespuesta(respuesta)}`, { ...contexto, proyecto: respuesta.proyecto, activa: "Hallazgos" }));

@@ -46,6 +46,6 @@ ${visibles.filter(c => c.cambios.length).map(c => html`<section><h2>Agente ${c.a
 ${(["desde", "hasta"] as const).map(lado => html`<details><summary>Rutas no comparables y motivos (${lado})</summary>
 <ul>${respuesta[lado].noComparables.map(n => html`<li><code>${JSON.stringify(n.ruta)}</code>: ${respuesta[lado].reglas[n.regla] ?? n.regla}</li>`)}
 ${respuesta[lado].motivosAgentes.map(m => html`<li>${respuesta[lado].reglas[m] ?? m}</li>`)}</ul></details>`)}
-<details><summary>Consulta por CLI sobre las mismas fotos</summary><p><code>bun run rige -- comparar --desde &lt;id-anterior&gt; --hasta &lt;id-actual&gt;</code></p></details>
+<details><summary>Ver en la consola</summary><p>Consulta por CLI sobre las mismas fotos</p><p><code>bun run rige -- comparar --desde &lt;id-anterior&gt; --hasta &lt;id-actual&gt;</code></p></details>
 ${datosRespuesta(respuesta)}`, { proyecto: respuesta.proyecto }));
 }

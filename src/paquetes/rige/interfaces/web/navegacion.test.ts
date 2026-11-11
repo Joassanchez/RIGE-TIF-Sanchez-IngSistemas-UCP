@@ -28,22 +28,50 @@ const hallazgos: RespuestaHallazgos = { ...base, entradas: [entrada], incompleta
   hallazgos: [{ tipo: "regla-sin-efecto", causa: "regla", entrada, posicion: { linea: 2, columna: 3 }, clave: null, parametros: {}, localizacion: "/proyecto/config:2:3", explicacion: "Sin efecto" }],
   resumen: { elementos: { agentes: 2, entradas: 1, comandos: 0 }, hallazgos: { "entrada-ilegible": 0, "entrada-descartada": 0, "sustitucion-sin-valor": 0, "referencia-no-resuelta": 0, "regla-sin-efecto": 1, "elemento-sin-uso": 0 } } };
 const noConsultar = () => { throw new Error("Consulta inesperada"); };
-const casos: CasosWeb = { consultarEstado: noConsultar, consultarEntradas: noConsultar, consultarHallazgos: noConsultar,
+const casos: CasosWeb = { consultarEstado: noConsultar, consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }),
   compararResoluciones: noConsultar, consultarProyectosRecientes: noConsultar,
-  consultarReglas: noConsultar,
+  consultarReglas: () => ({ exito: false, error: { codigo: "cadena-incompleta", mensaje: "Cadena no disponible" } }),
   resolverProyecto: noConsultar, consultarPermiso: noConsultar, consultarResolucion: () => ({ exito: true, valor: { respuesta: valores, sobre } }),
   consultarAgentes: () => ({ exito: true, valor: agentes }) };
-const solicitar = (casos: CasosWeb, ruta: string) => crearManejador(12345, casos)(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
+const solicitar = (casos: CasosWeb, ruta: string): Response => {
+  const respuesta = crearManejador(12345, casos)(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
+  if (respuesta.status !== 303 || ruta.startsWith("/resolver?")) return respuesta;
+  expect(respuesta.status).toBe(303);
+  return solicitar(casos, respuesta.headers.get("location")!);
+};
+
+// Ruta antigua → destino → JSON principal: agentes para el resumen, valores para el agente.
+const rutasAnteriores = [
+  ["/agentes?id=7", "/resoluciones/7", agentes],
+  ["/resoluciones/7?agente=build&clave=temperature&q=TEMP&lanzadoPor=plan", "/resoluciones/7/agentes/build?clave=temperature&q=TEMP&lanzadoPor=plan", valores],
+] as const;
+
+describe("T5-18 R-10 matriz de navegación", () => {
+  test("prueba cada 303 y su destino 200, con el objeto íntegro de la consulta principal", async () => {
+    const manejar = crearManejador(12345, casos);
+    const pedir = (ruta: string) => manejar(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
+    for (const [anterior, destino, json] of rutasAnteriores) {
+      const redireccion = pedir(anterior);
+      expect(redireccion.status).toBe(303);
+      expect(redireccion.headers.get("location")).toBe(destino);
+      expect(await redireccion.text()).not.toContain('id="respuesta"');
+      const final = pedir(destino);
+      expect(final.status).toBe(200);
+      expect(JSON.parse((await final.text()).match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(json);
+    }
+  });
+});
 
 describe("T5-09 N-1 agentes navegables", () => {
   test("enlaza activos, conserva clave y distingue eliminados; sin id no enlaza", async () => {
     const cuerpo = await solicitar(casos, "/agentes?id=7&clave=temperature").text();
-    for (const nombre of ["build", "explore"]) expect(cuerpo).toContain(`href="/resoluciones/7?agente=${nombre}&amp;clave=temperature"`);
-    const eliminados = cuerpo.split('<section id="agentes-eliminados">')[1]!.split("</section>")[0]!;
+    for (const nombre of ["build", "explore"]) expect(cuerpo).toContain(`href="/resoluciones/7/agentes/${nombre}?clave=temperature"`);
+    const eliminados = cuerpo.split('<div id="agentes-eliminados">')[1]!.split("</div>")[0]!;
     expect(eliminados).toContain('class="insignia insignia--aviso">eliminado / deshabilitado</span>');
-    expect(eliminados).not.toContain("<a ");
+    expect(eliminados).not.toContain('href="/resoluciones/');
+    expect(eliminados).toContain("vscode://file/");
     expect(await paginaAgentes(agentes).text()).not.toContain('href="/resoluciones/');
-    expect(await solicitar(casos, "/agentes?id=7").text()).toContain('href="/resoluciones/7?agente=build"');
+    expect(await solicitar(casos, "/agentes?id=7").text()).toContain('href="/resoluciones/7/agentes/build"');
   });
 });
 
@@ -61,7 +89,7 @@ describe("T5-09 N-2 selector de agente", () => {
     expect(formulario!).toContain('<option value="explore">explore</option>');
     expect(formulario!).not.toContain("deshabilitado");
     expect(formulario!).toContain('<input type="hidden" name="clave" value="/temperature">');
-    expect(cuerpo).toContain('href="/agentes?id=7&amp;agente=build&amp;clave=%2Ftemperature"');
+    expect(cuerpo).toContain('href="/resoluciones/7"');
     expect(await solicitar(conAgentes, ruta).text()).toBe(cuerpo);
     expect(ids).toEqual(["7", "7"]);
     const sinClave = await solicitar(conAgentes, "/resoluciones/7?agente=build").text();
@@ -173,7 +201,9 @@ describe("T5-09-c1 C-3 fichas de consultas rapidas", () => {
 describe("T5-09 N-5 del hallazgo a su entrada", () => {
   test("enlaza la localizacion incluso con orden cero y resalta filas con ids distintos", async () => {
     const cuerpo = await paginaHallazgos(hallazgos).text();
-    expect(cuerpo).toContain('<a href="/entradas?proyecto=%2Fproyecto#entrada-0"><code class="ruta" title="/proyecto/config:2:3">');
+    expect(cuerpo).toContain('href="vscode://file/proyecto/config:2:3" title="Abrir en VS Code: /proyecto/config"');
+    const sinArchivo = await paginaHallazgos({ ...hallazgos, hallazgos: hallazgos.hallazgos.map(h => ({ ...h, entrada: { ...h.entrada, referencia: "VARIABLE", via: "variable-contenido" } })) }).text();
+    expect(sinArchivo).toContain('href="/entradas?proyecto=%2Fproyecto#entrada-0"');
     expect(await paginaEntradas(entradas).text()).toContain('<tr id="entrada-0"><td data-etiqueta="Orden">0</td>');
     const resolucion = await paginaResolucion({ ...valores, entradas: [entrada] }, sobre).text();
     expect(resolucion).toContain('<tr id="entrada-leida-0"><td data-etiqueta="Orden">0</td>');
@@ -195,8 +225,8 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
     const conAtaque: CasosWeb = { ...casos, consultarAgentes: () => ({ exito: true, valor: listado }),
       consultarResolucion: () => ({ exito: true, valor: { sobre, respuesta: { ...valores, proyecto, agente: ataque } } }) };
     const paginaListado = await solicitar(conAtaque, `/agentes?id=7&clave=${codificado}`).text();
-    expect(paginaListado).toContain(`href="/agentes?id=7&amp;agente=${codificado}&amp;clave=${codificado}"`);
-    expect(paginaListado).toContain(`href="/resoluciones/7?agente=${codificado}&amp;clave=${codificado}"`);
+    expect(paginaListado).toContain('href="/resoluciones/7"');
+    expect(paginaListado).toContain(`href="/resoluciones/7/agentes/${codificado}?clave=${codificado}"`);
     expect(paginaListado).toContain(`<code>${escapado}</code></a>`);
     const paginaValores = await solicitar(conAtaque, `/resoluciones/7?agente=${codificado}&clave=${codificado}`).text();
     expect(paginaValores).toContain(`<option value="${escapado}" selected>${escapado}</option>`);
@@ -207,8 +237,8 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
     expect(formularios).not.toMatch(/<script\b|\sstyle\s*=/i);
     const diagnostico = { ...hallazgos, proyecto, hallazgos: hallazgos.hallazgos.map(h => ({ ...h, localizacion: ataque, explicacion: ataque })) };
     const paginaDiagnostico = await paginaHallazgos(diagnostico).text();
-    expect(paginaDiagnostico).toContain(`href="/entradas?proyecto=${encodeURIComponent(proyecto)}#entrada-0"`);
-    expect(paginaDiagnostico).toContain(`title="${escapado}"`);
+    expect(paginaDiagnostico).toContain('href="vscode://file/proyecto/config:2:3"');
+    expect(paginaDiagnostico).toContain('title="Abrir en VS Code: /proyecto/config"');
     const consulta = { ...permiso, proyecto, agente: ataque, lanzadoPor: ataque, consulta: { ...permiso.consulta, objetivo: ataque } };
     let recibida: Parameters<CasosWeb["consultarPermiso"]>[1] | undefined;
     const paginaConsulta = await solicitar({ ...casos, consultarPermiso: (_id, solicitud) => {
@@ -224,8 +254,8 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
       if (cuerpo.includes('id="tabla-entradas"')) {
         expect(enlace).toBeUndefined(); // Ya no hay enlaces sueltos en la cabecera.
         expect(cuerpo).toContain(`title="/p/${escapado}"`);
-      } else expect(enlace).toBeDefined();
-      if ([paginaListado, paginaValores, paginaConsulta].includes(cuerpo)) expect(enlace).toContain("&amp;id=7");
+      } else if ([paginaListado, paginaValores].includes(cuerpo)) expect(enlace).toBeDefined();
+      if ([paginaListado, paginaValores].includes(cuerpo)) expect(enlace).toContain("&amp;id=7");
       expect(cuerpo).not.toMatch(/\sstyle\s*=|<style\b/i);
       const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
       expect(bloques).toHaveLength(1);

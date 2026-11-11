@@ -24,7 +24,7 @@ describe("T5-14 K-5 plantillas", () => {
     expect(pagina).toContain("¿Qué cambió entre estos análisis?");
     expect(pagina).not.toContain('class="ceja"');
     const escapar = (s: string) => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
-    for (const referencia of ["/anterior/", "/nueva/", "/alta/", "/baja/"]) expect(texto).toContain(escapar(referencia + ataque + ":2:3"));
+    for (const referencia of ["/anterior/", "/nueva/", "/alta/", "/baja/"]) expect(pagina).toContain(`title="Abrir en VS Code: ${escapar(referencia + ataque)}"`);
     expect(pagina).not.toContain("</script><script>");
     expect(pagina.match(/<script\b/g)).toHaveLength(1);
     const json = pagina.match(/id="respuesta">([^]*?)<\/script>/)![1]!;

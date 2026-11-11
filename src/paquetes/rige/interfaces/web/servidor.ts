@@ -13,14 +13,15 @@ import { paginaResolucion } from "./paginas/resolucion";
 import type { consultarPermisoGuardado, consultarAgentesGuardados, consultarReglasGuardadas } from "../../aplicacion/casos-uso/consultar-guardada";
 import { paginaReglas } from "./paginas/reglas";
 import { paginaPermiso } from "./paginas/permiso";
-import { paginaAgentes } from "./paginas/agentes";
+import type { SobreAlmacen } from "../../aplicacion/respuestas/sobre";
+import { paginaResumenProyecto } from "./paginas/resumen-proyecto";
 import type { ConsultarHallazgos } from "../../aplicacion/casos-uso/consultar-hallazgos";
 import { paginaHallazgos } from "./paginas/hallazgos";
 import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-entradas";
 import { paginaEntradas } from "./paginas/entradas";
 import { contenidoError, diseno } from "./diseno";
 import { redirigir, responderHtml, responderEstilos } from "./respuesta";
-import { agenteInicial, type ContextoPanel } from "./panel";
+import { agenteInicial, consultaPanel, type ContextoPanel } from "./panel";
 import { paginaConsultasPermiso } from "./paginas/consultas-permiso";
 
 export interface CasosWeb {
@@ -39,7 +40,7 @@ export interface CasosWeb {
 export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Request) => Response {
   const enrutar = (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
-    const contextoSolicitud = { clave: url.searchParams.get("clave") ?? "", q: url.searchParams.get("q") ?? "", agente: url.searchParams.get("agente") ?? undefined,
+    const contextoSolicitud = { ...(url.searchParams.has("sujeto") ? { sujeto: url.searchParams.get("sujeto")! } : {}), clave: url.searchParams.get("clave") ?? "", q: url.searchParams.get("q") ?? "", agente: url.searchParams.get("agente") ?? undefined,
       ...(url.searchParams.has("lanzadoPor") ? { lanzadoPor: url.searchParams.get("lanzadoPor")! } : {}) };
     const contextoFoto = (id: string, agente: string | undefined): Resultado<ContextoPanel, ErrorUso> => {
       if (agente === undefined) return { exito: true, valor: {} };
@@ -113,12 +114,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       const resultado = casos.consultarAgentes(url.searchParams.get("id") ?? "");
       const id = url.searchParams.get("id") ?? "";
       if (!resultado.exito) return paginaErrorUso(resultado.error);
-      const foto = contextoFoto(id, agenteInicial(resultado.valor.agentes));
-      if (!foto.exito) return paginaErrorUso(foto.error);
-      return paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, contextoSolicitud.clave, {
-        ...foto.valor,
-        ...contextoSolicitud, agente: contextoSolicitud.agente ?? agenteInicial(resultado.valor.agentes), agentes: resultado.valor.agentes,
-      });
+      return redirigir(`/resoluciones/${encodeURIComponent(id)}${consultaPanel({ ...contextoSolicitud, agente: undefined }).replace(/^&/, "?")}`);
     }
     if (url.pathname === "/resolver") {
       const agente = url.searchParams.get("agente");
@@ -134,32 +130,58 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       const consulta = [...contexto].map(([nombre, valor]) => `${nombre}=${encodeURIComponent(valor)}`).join("&");
       return redirigir(`/resoluciones/${resultado.valor.id}${consulta ? `?${consulta}` : ""}`);
     }
-    const rutaResolucion = /^\/resoluciones\/([0-9]+)(\/permisos)?$/.exec(url.pathname);
+    const rutaResolucion = /^\/resoluciones\/([0-9]+)(\/permisos|\/agentes\/([^/]+))?$/.exec(url.pathname);
     const id = rutaResolucion?.[1];
     if (id !== undefined) {
-      if (rutaResolucion?.[2]) {
+      if (rutaResolucion?.[2] === "/permisos") {
         const agentes = casos.consultarAgentes(id);
         if (!agentes.exito) return paginaErrorUso(agentes.error);
         const agente = contextoSolicitud.agente ?? agenteInicial(agentes.valor.agentes);
-        if (agente === undefined) return redirigir(`/agentes?id=${encodeURIComponent(id)}`);
+        if (agente === undefined) return redirigir(`/resoluciones/${encodeURIComponent(id)}`);
         if (!agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
         const foto = contextoFoto(id, agente);
         return foto.exito ? paginaConsultasPermiso(agentes.valor, { ...contextoSolicitud, ...foto.valor, agente, idResolucion: id, agentes: agentes.valor.agentes }) : paginaErrorUso(foto.error);
       }
-      const clave = url.searchParams.get("clave") ?? "";
-      let agente = url.searchParams.get("agente");
-      const agentes = agente === null ? casos.consultarAgentes(id) : undefined;
-      if (agentes !== undefined) {
-        if (!agentes.exito) return paginaErrorUso(agentes.error);
-        agente = agenteInicial(agentes.valor.agentes) ?? null;
-        if (agente === null) return redirigir(`/agentes?id=${encodeURIComponent(id)}`);
+      const nombreCodificado = rutaResolucion?.[3];
+      if (nombreCodificado === undefined && contextoSolicitud.agente !== undefined) {
+        if (!contextoSolicitud.agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
+        return redirigir(`/resoluciones/${id}/agentes/${encodeURIComponent(contextoSolicitud.agente)}${consultaPanel({ ...contextoSolicitud, agente: undefined }).replace(/^&/, "?")}`);
       }
-      const resultado = casos.consultarResolucion(id, agente!, clave);
-      if (!resultado.exito) return paginaErrorUso(resultado.error);
-      const listado = agentes ?? casos.consultarAgentes(id);
-      return paginaResolucion(resultado.valor.respuesta, resultado.valor.sobre, {
-        clave, q: url.searchParams.get("q") ?? "", ...(listado.exito ? { agentes: listado.valor.agentes } : {}),
-      });
+      if (nombreCodificado !== undefined) {
+        // Validar antes de decodificar, sin ocultar fallas internas con un catch.
+        if (/%(?![0-9a-f]{2})/i.test(nombreCodificado)) return paginaErrorUso(errorSolicitudInvalida("codificación de agente inválida"));
+        let agente: string;
+        try { agente = decodeURIComponent(nombreCodificado); }
+        catch (error) {
+          if (!(error instanceof URIError)) throw error;
+          return paginaErrorUso(errorSolicitudInvalida("codificación de agente inválida"));
+        }
+        if (!agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
+        const resultado = casos.consultarResolucion(id, agente, contextoSolicitud.clave);
+        if (!resultado.exito) return paginaErrorUso(resultado.error);
+        const listado = casos.consultarAgentes(id);
+        const reglas = casos.consultarReglas(id, { agente, ...(contextoSolicitud.lanzadoPor === undefined ? {} : { lanzadoPor: contextoSolicitud.lanzadoPor }) });
+        const agenteListado = listado.exito ? listado.valor.agentes.find(a => a.nombre === agente) : undefined;
+        const todos = contextoSolicitud.clave ? casos.consultarResolucion(id, agente, "") : resultado;
+        return paginaResolucion(resultado.valor.respuesta, resultado.valor.sobre, {
+          ...contextoSolicitud, agente, ...(listado.exito ? { agentes: listado.valor.agentes } : {}),
+        }, { ...(agenteListado === undefined ? {} : { agente: agenteListado }),
+          ...(reglas.exito ? { reglas: reglas.valor } : { errorReglas: reglas.error }),
+          cantidadDeclaradas: todos.exito ? todos.valor.respuesta.valores.filter(v => v.rastro.determinante.origen.tipo === "declarado").length : null,
+        });
+      }
+      const agentes = casos.consultarAgentes(id);
+      if (!agentes.exito) return paginaErrorUso(agentes.error);
+      const entradas = casos.consultarEntradas(agentes.valor.proyecto);
+      const hallazgos = casos.consultarHallazgos(agentes.valor.proyecto, { explicar: true });
+      let sobre: SobreAlmacen | undefined;
+      // Un agente puede tener valores no consultables mientras otro sí entrega el sobre.
+      for (const agente of agentes.valor.agentes) {
+        const foto = casos.consultarResolucion(id, agente.nombre, "");
+        if (foto.exito) { sobre = foto.valor.sobre; break; }
+        if (!["clave-no-resuelta", "agente-sin-declaraciones"].includes(foto.error.codigo)) return paginaErrorUso(foto.error);
+      }
+      return paginaResumenProyecto(agentes.valor, entradas, hallazgos, id, sobre, contextoSolicitud);
     }
     if (url.pathname !== "/") {
       const pagina = diseno("Error 404", contenidoError(404, `Página no encontrada. Ruta consultada: ${url.pathname}`, "pagina-inexistente"));

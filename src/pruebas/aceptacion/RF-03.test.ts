@@ -7,7 +7,7 @@ import { isAbsolute, join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
 import type { RespuestaValores } from "../../paquetes/rige/aplicacion/respuestas/valores";
 import { prepararConsultas } from "../utilidades/consultas-cli";
 import { validarEsquema } from "../utilidades/validar-esquema";
@@ -328,7 +328,7 @@ describe("S-1", () => {
       const web = JSON.parse(proceso.stdout.toString());
       expect(web.exito).toBe(true);
       expect(web.valor.respuesta).toEqual(JSON.parse(escenario.consultar(...(clave ? ["--clave", clave] : [])).salida));
-      if (clave === "temperature") expect(puntual.cuerpo).toContain(`<td data-etiqueta="Valor efectivo">${web.valor.respuesta.valores[0].rastro.valor}</td>`);
+      if (clave === "temperature") expect(puntual.cuerpo).toContain(`<td data-etiqueta="Valor">${web.valor.respuesta.valores[0].rastro.valor}</td>`);
       if (clave === "inexistente") expect(puntual.cuerpo).toContain("clave-inexistente");
       expect(web.valor.sobre).toMatchObject({ id: 1, instante: expect.any(String), anteriores: [expect.objectContaining({ id: 1 })] });
       }

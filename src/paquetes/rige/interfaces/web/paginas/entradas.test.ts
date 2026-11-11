@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { paginaEntradas } from "./entradas";
 import { estilos } from "../estilos";
+import { textoHtml } from "../../../../../pruebas/utilidades/html";
 
 describe("T5-12 M-4 PC-07 PC-08", () => {
   const anterior = { esquema: 2 as const, proyecto: "/p", resumenEntradas: "abc", declaraciones: [], reglas: {}, entradas: [] };
@@ -30,7 +31,8 @@ describe("T5-12 M-4 PC-07 PC-08", () => {
     expect(cuerpo).not.toContain("style=");
     expect(cuerpo.match(/id="respuesta"/g)).toHaveLength(1);
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(respuesta);
-    expect(cuerpo).toContain("Panel del proyecto");
+    expect(cuerpo).toContain("Migas de pan");
+    expect(cuerpo).not.toContain("Panel del proyecto");
     expect(estilos).toMatch(/\.insignia--no-observada\s*\{[^}]*border:[^}]*dotted/);
     expect(estilos).toMatch(/\.mapa-vias[^}]*overflow-wrap: anywhere/);
   });
@@ -47,7 +49,7 @@ describe("T3-03 R-6 escape de entradas", () => {
     const cuerpo = await pagina.text();
     expect(cuerpo).not.toContain(ataque);
     expect(cuerpo).toContain("&lt;/script&gt;&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;");
-    expect(cuerpo).toContain("3:5 (falla)");
+    expect(textoHtml(cuerpo)).toContain("3:5 (falla)");
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(respuesta);
   });
 });

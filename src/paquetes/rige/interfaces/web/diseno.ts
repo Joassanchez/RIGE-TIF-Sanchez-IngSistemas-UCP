@@ -1,6 +1,6 @@
 import { versionRige } from "../../aplicacion/respuestas/estado";
 import { html, type HtmlSeguro } from "./plantillas";
-import { consultaPanel, type ContextoPanel } from "./panel";
+import { type ContextoPanel } from "./panel";
 import { nombreProyecto } from "./textos";
 
 interface ContextoDiseno extends ContextoPanel {
@@ -13,14 +13,6 @@ interface ContextoDiseno extends ContextoPanel {
 // Composición de presentación: no consulta ni modifica respuestas de aplicación.
 export function diseno(titulo: string, contenido: HtmlSeguro, contexto: ContextoDiseno = {}): HtmlSeguro {
   const id = contexto.idResolucion === undefined ? undefined : encodeURIComponent(contexto.idResolucion);
-  const consulta = consultaPanel(contexto);
-  const pestanas = id === undefined || contexto.minimo ? [] : [
-    { texto: "Valores", ruta: `/resoluciones/${id}${consulta ? `?${consulta.slice(1)}` : ""}` },
-    { texto: "Permisos", ruta: `/resoluciones/${id}/permisos${consulta ? `?${consulta.slice(1)}` : ""}` },
-    { texto: "Agentes", ruta: `/agentes?id=${id}${consulta}` },
-    { texto: "Entradas", ruta: `/entradas?proyecto=${encodeURIComponent(contexto.proyecto ?? "")}&id=${id}${consulta}` },
-    { texto: "Hallazgos", ruta: `/hallazgos?proyecto=${encodeURIComponent(contexto.proyecto ?? "")}&id=${id}${consulta}` },
-  ];
   return html`<!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,10 +24,9 @@ export function diseno(titulo: string, contenido: HtmlSeguro, contexto: Contexto
 ${contexto.minimo ? html`` : html`<nav class="migas" aria-label="Migas de pan">
 ${contexto.proyecto === undefined ? html`<span aria-current="page">${titulo}</span>` : html`
 <span aria-hidden="true">›</span>${id === undefined ? html`<span>${nombreProyecto(contexto.proyecto)}</span>` : html`<a href="${`/resoluciones/${id}`}">${nombreProyecto(contexto.proyecto)}</a>`}
-${contexto.agente === undefined ? html`` : html`<span aria-hidden="true">›</span><span>${contexto.agente}</span>`}
-<span aria-hidden="true">›</span><span aria-current="page">${contexto.activa ?? titulo}</span>`}</nav>`}</div></header>
-<main id="contenido" tabindex="-1">${pestanas.length ? html`<nav class="pestanas" aria-label="Panel del proyecto">${pestanas.map(enlace => contexto.activa === enlace.texto
-    ? html`<a href="${enlace.ruta}" aria-current="page">${enlace.texto}</a>` : html`<a href="${enlace.ruta}">${enlace.texto}</a>`)}</nav>` : html``}${contenido}</main>
+${contexto.agente === undefined ? html`` : html`<span aria-hidden="true">›</span>${contexto.activa === "Valores" || id === undefined ? html`<span aria-current="page">${contexto.agente}</span>` : html`<a href="${`/resoluciones/${id}/agentes/${encodeURIComponent(contexto.agente)}`}">${contexto.agente}</a>`}`}
+${contexto.activa === undefined || contexto.activa === "Valores" ? html`` : html`<span aria-hidden="true">›</span><span aria-current="page">${contexto.activa}</span>`}`}</nav>`}</div></header>
+<main id="contenido" tabindex="-1">${contenido}</main>
 <footer class="pie"><p>Local · solo lectura · sin red${contexto.minimo ? html`` : html` · RIGE ${versionRige}`}</p></footer></body></html>`;
 }
 
