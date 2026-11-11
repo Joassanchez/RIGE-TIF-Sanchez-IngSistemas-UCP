@@ -11,16 +11,17 @@ const valores: RespuestaValores = { ...base, versionRige, herramienta: "prueba",
   valores: [{ clave: "temperature", rastro: { ruta: ["temperature"], indiceFusion: 0, valor: 0.7, determinante: declaracion,
     motivo: "RD-02", desplazadas: [{ ...declaracion, referencia: "/previa.json" }, { ...declaracion, referencia: "/ultima.json" }] } }],
   noResueltas: [], motivo: null };
-test("T5-23 L-4 valores: solo respuesta filtrada, encabezado, origen, ultima desplazada y fabrica", () => {
+test("T5-23 L-4 valores: respuesta filtrada, encabezado, origen y fabrica; X-11 antes y todo", () => {
   const t = renderizarValores(valores, contexto);
-  for (const s of ["build", "Proyecto: mi proyecto (carpeta actual)", "CLAVE", "VALOR", "LO DETERMINA", "temperature", "0.7", "opencode.jsonc:3:7", "proyecto", "ultima.json"]) expect(t).toContain(s);
-  expect(t).not.toContain("previa.json"); expect(t).not.toContain("Modo:");
+  for (const s of ["build", "Proyecto: mi proyecto (carpeta actual)", "CLAVE", "VALOR", "ANTES", "LO DETERMINA", "temperature", "0.7", "opencode.jsonc:3:7", "proyecto"]) expect(t).toContain(s);
+  expect(t).not.toContain("previa.json"); expect(t).not.toContain("ultima.json"); expect(t).not.toContain("Modo:");
+  for (const s of ["previa.json", "ultima.json"]) expect(renderizarValores(valores, { ...contexto, todo: true })).toContain(s);
   const nativos: RespuestaValores = { ...valores, ruta: null, valores: [{ ...valores.valores[0]!, rastro: { ...valores.valores[0]!.rastro,
     determinante: { ...declaracion, origen: { tipo: "nativo", regla: "fabrica" }, referencia: null, via: null }, desplazadas: [] } }] };
   expect(renderizarValores(nativos, contexto)).toContain("+ 1 valores de fábrica (--todo)");
   expect(renderizarValores(nativos, contexto)).not.toContain("temperature");
   expect(renderizarValores({ ...nativos, ruta: ["temperature"] }, contexto)).toContain("temperature");
-  expect(renderizarValores(nativos, { ...contexto, todo: true })).toContain("nativo");
+  expect(renderizarValores(nativos, { ...contexto, todo: true })).toContain("OpenCode");
   const implicitos: RespuestaValores = { ...nativos, ruta: ["temperature"], valores: [{ ...nativos.valores[0]!, rastro: { ...nativos.valores[0]!.rastro,
     determinante: { ...declaracion, origen: { tipo: "implicito", regla: "implicita" }, via: null, referencia: null } } }] };
   expect(renderizarValores(implicitos, contexto)).toContain("implicito: implicita");
@@ -47,7 +48,7 @@ test("T5-23 L-4 matriz conserva parcialidad, ausencia, limites y cadena con --to
     matriz: { sujetos: ["read", "bash"], filas: [{ agente: "build", oculto: false, error: null, ejesParciales: ["read"], declaraciones: [], advertencias: [],
       celdas: [{ sujeto: "read", efecto: null, prevalece: null, motivo: "parcial" }, { sujeto: "bash", efecto: null, prevalece: null, motivo: "sin-regla" }] }], noObservados: [{ nombre: "auxiliar", motivo: "markdown" }], motivos: ["incompleta"] } };
   const t = renderizarReglas(r, contexto);
-  for (const s of ["build", "read", "bash", "parcial, sin decisión", "sin-regla", "auxiliar", "markdown", "incompleta", "aviso"]) expect(t).toContain(s);
+  for (const s of ["build", "read", "bash", "parcial, sin decisión", "sin regla", "auxiliar", "markdown", "incompleta", "aviso"]) expect(t).toContain(s);
   expect(renderizarReglas(r, { ...contexto, todo: true })).toContain("*.env");
   const extensa: RespuestaReglas = { ...r, matriz: { ...r.matriz, sujetos: Array.from({ length: 30 }, (_, i) => `sujeto${i}`) } };
   const estrecha = renderizarReglas(extensa, { ...contexto, ancho: 1 });
@@ -63,7 +64,7 @@ test("T5-23 L-4 hallazgos vacios con analisis incompleto, ubicacion y causa", ()
   for (const s of ["referencia-no-resuelta", "opencode.jsonc:4:9", "ruta-no-encontrada", "Explicación del hallazgo"]) expect(t).toContain(s);
 });
 test("T5-23 L-4 comparar filtra presentacion y conserva limites de ambas fotos", () => {
-  const foto = { id: 1, instante: "fecha", entradas: [], resumenEntradas: "", noComparables: [{ ruta: ["prompt"], regla: "no-resuelta" }], motivosAgentes: ["markdown"], reglas: {} };
+  const foto = { id: 1, instante: "2020-01-02T11:14:00Z", entradas: [], resumenEntradas: "", noComparables: [{ ruta: ["prompt"], regla: "no-resuelta" }], motivosAgentes: ["markdown"], reglas: {} };
   const resumen = { cambiadas: 0, agregadas: 0, quitadas: 0, sinCambio: 1 };
   const r: RespuestaComparacion = { esquema: 2, proyecto: base.proyecto, desde: foto, hasta: { ...foto, id: 2 },
     agentes: { agregados: [], quitados: [], comunes: ["build", "plan"], inciertos: ["aux"] }, comparaciones: ["build", "plan"].map(agente => ({ agente, cambios: [], resumen })), resumen, parcial: true, sustituciones: "solo-representacion-protegida" };

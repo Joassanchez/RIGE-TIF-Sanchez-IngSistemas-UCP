@@ -143,7 +143,34 @@ La CLI elige **texto breve con tablas** si stdout es una consola interactiva; en
 
 `rige --help`, `rige -h` y `rige <subcomando> --help` muestran uso, opciones y ejemplos sin abrir configuración ni almacén. `rige --version` informa ambas versiones; con `--json` devuelve un objeto esquema 2. `rige estado` consulta ruta, existencia y versión del almacén sin crear directorio/base ni modificar datos o esquema (puede haber auxiliares SQLite). Si falta, termina con código 1 y sugiere crear el esquema. En texto, los errores conservan sus códigos y se muestran por stderr; `--depurar` conserva el stack de fallas internas.
 
-El color ANSI solo se habilita en consola y si **NO_COLOR** no está definida; incluso `NO_COLOR=` lo deshabilita. Texto por tubería nunca lleva color. Las columnas se ajustan con elipsis al ancho conocido (100 por defecto, mínimo 40); las ubicaciones se acortan a archivo y posición. Las rutas no resueltas, parcialidad y advertencias siguen visibles. El pie recuerda «Respuesta completa: --json».
+El color ANSI solo se habilita en consola y si **NO_COLOR** no está definida; incluso `NO_COLOR=` lo deshabilita. Texto por tubería nunca lleva color. Las tablas separan columnas con espacios y subrayan sus encabezados atenuados. Solo la última columna variable se trunca con elipsis al ancho conocido (100 por defecto, mínimo 40); nombres y decisiones se conservan completos. Los párrafos se ajustan solo en espacios: una ruta o palabra larga va entera. Las ubicaciones se acortan a archivo y posición. El pie recuerda «Respuesta completa: --json».
+
+En `permiso` y `reglas`, los avisos generales (aprobaciones permanentes, sesión no interactiva e índices de directorios externos) se leen con `--explicar`; las advertencias propias, rutas no resueltas y análisis incompletos siguen visibles. Para pedirlos por tubería: `rige reglas --agente build --explicar --texto`. La matriz agrupa, una sola vez: «external_directory: parcial en todos los agentes; no hay decisión sin un objetivo concreto». Los modos de agente son Principal, Subagente y Ambos; «oculto» es una marca atenuada en la fila.
+
+Ejemplo de `valores --agente build --clave temperature --texto` sobre `v1-precedencia` (desde otra carpeta, con proyecto explícito):
+
+```text
+Agente: build
+Proyecto: proyecto
+CLAVE        VALOR  ANTES  LO DETERMINA
+-----------  -----  -----  -----------------------------
+temperature  0.3    0.2    opencode.jsonc:6:7 (proyecto)
+Respuesta completa: --json
+```
+
+ANTES contiene el valor breve de la última desplazada; `--todo` lista todas las desplazadas con su procedencia. LO DETERMINA contiene solo la determinante. En el mismo escenario, `permiso --agente build --sujeto read --objetivo .env --texto` muestra:
+
+```text
+? PREGUNTA
+Agente: build
+Proyecto: proyecto
+Consulta: read · .env
+Decide: #10 read *.env → ask · OpenCode · general
+Desplaza: #9 read * → allow · OpenCode · general
+Respuesta completa: --json
+```
+
+Toda referencia a reglas parte de 1, igual que la explicación. Los orígenes nativos se resumen como «OpenCode · general», «OpenCode · agente» u «OpenCode · final». Las fechas de recientes y comparación usan hora local, por ejemplo `03/01/2020 18:05`. `estado` no incluye instante. Una comparación encabeza «Cambios entre 02/01/2020 11:14 y 03/01/2020 18:05», con ids entre paréntesis atenuados, resume las cifras en una línea y agrupa «Sin cambios en: compaction, explore, …». Los cambios usan CLAVE / ANTES / DESPUÉS / LO DETERMINA; el proyecto procede de la respuesta.
 
 ```bash
 bun run rige -- --help
@@ -155,6 +182,7 @@ Pruebas de esta interfaz (incluyen enlace aislado en Windows desde PowerShell y 
 
 ```bash
 bun test paquetes/rige/interfaces/cli/ejecutar.test.ts paquetes/rige/interfaces/cli/presentacion.test.ts paquetes/rige/interfaces/cli/texto/texto.test.ts pruebas/aceptacion/T5-23-json.test.ts pruebas/aceptacion/T5-23-uso.test.ts
+bun test pruebas/aceptacion/T5-24.test.ts
 bun test pruebas/arquitectura/dependencias.test.ts pruebas/arquitectura/red.test.ts pruebas/arquitectura/sustituciones.test.ts pruebas/aceptacion/RNF-03.test.ts
 ```
 

@@ -135,7 +135,7 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
   const comando = posicionales[0]!;
   const admitidas: Record<string, readonly string[]> = {
     comparar: ["desde", "hasta", "agente"], recientes: [],
-    reglas: ["proyecto", "agente", "lanzado-por", "todo"],
+    reglas: ["proyecto", "agente", "lanzado-por", "todo", ...(contexto.formato === "texto" ? ["explicar"] : [])],
     valores: ["proyecto", "agente", "clave", "todo"], agentes: ["proyecto", "explicar"], entradas: ["proyecto"], hallazgos: ["proyecto", "explicar"],
     permiso: ["proyecto", "agente", "herramienta", "sujeto", "objetivo", "lanzado-por", "explicar"], esquema: [], servir: [], estado: [],
   };

@@ -158,9 +158,34 @@ rige valores --help
 rige --version
 ```
 
-`--todo` incluye los valores implícitos/nativos de `valores` y la cadena completa de `reglas`; no afecta el JSON ni los casos de uso. Una `--clave` explícita siempre muestra el resultado pedido. Permiso muestra decisión, determinante y última coincidente desplazada; `--explicar` amplía explicación y cadena coincidente. La matriz distingue parcialidad y ausencia de decisión: una celda parcial no decide sobre un objetivo. Los límites, rutas no resueltas y advertencias permanecen visibles. `comparar --agente` filtra solo la presentación textual.
+`--todo` incluye los valores implícitos/nativos y todas las desplazadas de `valores`, o la cadena completa de `reglas`; no afecta el JSON ni los casos de uso. Una `--clave` explícita siempre muestra el resultado pedido. Permiso muestra decisión, determinante y última coincidente desplazada, numeradas desde 1 como la explicación. `--explicar` amplía explicación y cadena coincidente. En permiso y reglas, los avisos generales de aprobaciones permanentes, sesión no interactiva e índices de directorios externos se muestran solo con `--explicar`. Por tubería: `rige reglas --agente build --explicar --texto`. Las advertencias propias, rutas no resueltas y análisis incompletos permanecen visibles. La matriz agrupa «external_directory: parcial en todos los agentes; no hay decisión sin un objetivo concreto» y conserva solo las diferencias por agente. `comparar --agente` filtra solo la presentación textual.
 
-Las tablas usan el ancho de la consola (100 si no se conoce, mínimo 40), elipsis y ubicaciones cortas con línea/columna. ANSI solo en consola; **NO_COLOR** definida, aunque vacía, elimina el color. Texto por tubería no contiene ANSI. El pie indica «Respuesta completa: --json». Los errores textuales dicen «Error: …» por stderr, con los mismos códigos 1, 2 o 70; `--depurar` agrega stack solo en una falla interna. Las advertencias exitosas aparecen al final por stderr.
+Las tablas separan columnas con espacios y encabezados atenuados con guiones debajo. Usan el ancho de la consola (100 si no se conoce, mínimo 40), con elipsis solo en la última columna variable; nunca recortan nombres ni decisiones. Los párrafos se ajustan en espacios, sin partir rutas ni palabras largas. ANSI solo en consola; **NO_COLOR** definida, aunque vacía, elimina el color. Texto por tubería no contiene ANSI. El pie indica «Respuesta completa: --json». Los errores textuales dicen «Error: …» por stderr, con los mismos códigos 1, 2 o 70; `--depurar` agrega stack solo en una falla interna. Las advertencias exitosas aparecen al final por stderr.
+
+Sobre `v1-precedencia`, `valores --agente build --clave temperature --texto`, con proyecto explícito, muestra:
+
+```text
+Agente: build
+Proyecto: proyecto
+CLAVE        VALOR  ANTES  LO DETERMINA
+-----------  -----  -----  -----------------------------
+temperature  0.3    0.2    opencode.jsonc:6:7 (proyecto)
+Respuesta completa: --json
+```
+
+LO DETERMINA muestra solo la determinante; ANTES, el valor breve de la última desplazada. `--todo` agrega el detalle completo. El permiso de lectura de `.env` del mismo escenario muestra:
+
+```text
+? PREGUNTA
+Agente: build
+Proyecto: proyecto
+Consulta: read · .env
+Decide: #10 read *.env → ask · OpenCode · general
+Desplaza: #9 read * → allow · OpenCode · general
+Respuesta completa: --json
+```
+
+La procedencia declarada usa `archivo:línea:columna (vía)`; la nativa, «OpenCode · general», «OpenCode · agente» u «OpenCode · final». Agentes muestra Principal, Subagente o Ambos y una marca «oculto» atenuada si corresponde. Recientes y comparación usan fechas locales legibles, como `03/01/2020 18:05`; `estado` no trae instante. Comparar encabeza «Cambios entre 02/01/2020 11:14 y 03/01/2020 18:05» y los ids atenuados entre paréntesis, con cifras en una línea. Agrupa «Sin cambios en: compaction, explore, …» y muestra las diferencias por agente en CLAVE / ANTES / DESPUÉS / LO DETERMINA, con el proyecto de la respuesta.
 
 `--help`, `-h` y `--version` no leen configuración ni almacén. La ayuda siempre es texto; sin subcomando, el texto de ayuda va a stderr y termina en 2; en JSON se conserva el error único. La versión es texto incluso por tubería, salvo `--json`. `rige estado` informa la ruta configurada, existencia y versión de esquema; sin almacén o sin esquema termina en 1 y sugiere `bun run rige -- esquema`. No crea directorio ni base ni modifica esquema o datos; admite auxiliares SQLite `-wal`/`-shm`. Su JSON propio, esquema 2, se publica en `esquemas/salida/estado.json` y omite la procedencia de la configuración.
 
