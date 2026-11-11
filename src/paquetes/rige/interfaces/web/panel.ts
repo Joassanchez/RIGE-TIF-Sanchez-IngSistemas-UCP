@@ -2,6 +2,8 @@ import type { RespuestaAgentes } from "../../aplicacion/respuestas/agentes";
 import { html, type HtmlSeguro } from "./plantillas";
 
 export interface ContextoPanel {
+  readonly instante?: string;
+  readonly fechaNoDisponible?: string;
   readonly idResolucion?: string | number;
   readonly agente?: string | undefined;
   readonly clave?: string;

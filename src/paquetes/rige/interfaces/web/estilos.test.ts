@@ -52,8 +52,10 @@ describe("T5-10 diseno responsive a 360 y 390 px", () => {
     expect(reglas(movil, ".grupo-campos")).toMatch(/grid-template-columns:\s*minmax\(0,\s*1fr\)/);
   });
 
-  test("C6 usa titulos fluidos incluso en paginas de error", () => {
-    for (const selector of ["h1", "h2", "h3", ".cabecera-pagina h1", ".pagina-error h1"])
-      expect(reglas(estilos, selector)).toMatch(/font-size:\s*clamp\(/);
+  test("C6 usa escala compacta incluso en paginas de error", () => {
+    for (const selector of ["h1", ".cabecera-pagina h1", ".pagina-error h1"])
+      expect(reglas(estilos, selector)).toMatch(/font-size:\s*1\.75rem/);
+    expect(reglas(estilos, "h2")).toMatch(/font-size:\s*1\.25rem/);
+    expect(reglas(estilos, "h3")).toMatch(/font-size:\s*1rem/);
   });
 });

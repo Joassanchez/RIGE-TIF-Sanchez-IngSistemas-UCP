@@ -2,7 +2,7 @@ import { comandoCli } from "../comando-cli";
 import type { DeclaracionUbicada, RespuestaValores } from "../../../aplicacion/respuestas/valores";
 import type { SobreAlmacen } from "../../../aplicacion/respuestas/sobre";
 import { selectorAgente, type ContextoPanel } from "../panel";
-import { concordar } from "../textos";
+import { concordar, nombreAnalisis, fechaLocal } from "../textos";
 import { datosRespuesta, html, type HtmlSeguro } from "../plantillas";
 import { declaraciones, diseno, insignia } from "../diseno";
 import { presentarRuta } from "../rutas";
@@ -35,15 +35,15 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
   const cubiertas = new Set([...(precedencia === undefined ? [] : ["orden-de-aplicacion"]), ...implicitas]);
   const detalleRegla = (codigo: string): HtmlSeguro => cubiertas.has(codigo) ? html``
     : html`<details class="regla-detalle"><summary>Regla aplicada: <code>${codigo}</code></summary><p>${Object.hasOwn(respuesta.reglas, codigo) ? respuesta.reglas[codigo] : codigo}</p></details>`;
-  return responderHtml(200, diseno(`Resolución ${sobre.id}`, html`
-<section id="resumen-resolucion" class="cabecera-pagina"><p class="ceja">Configuración efectiva · ${respuesta.valores.length} ${concordar(respuesta.valores.length, "valor", "valores")}</p>
-<h1>Resolución ${sobre.id}</h1>
-<p>Foto guardada el ${sobre.instante}</p>
-<p>Página armada con la resolución leída del almacén de RIGE.</p>
+  return responderHtml(200, diseno(nombreAnalisis(respuesta.proyecto, sobre.instante), html`
+<section id="resumen-resolucion" class="cabecera-pagina">
+<h1>${nombreAnalisis(respuesta.proyecto, sobre.instante)}</h1>
+<p>¿Qué configuración rige en este agente?</p>
+<details><summary>¿Qué significa?</summary><p>Página armada con la resolución leída del almacén de RIGE. Configuración efectiva: ${respuesta.valores.length} ${concordar(respuesta.valores.length, "valor", "valores")}.</p>
 <dl class="resumen"><div><dt>Proyecto</dt><dd>${presentarRuta(respuesta.proyecto)}</dd></div>
 <div><dt>Agente</dt><dd><code>${respuesta.agente}</code></dd></div>
 <div><dt>Herramienta</dt><dd>${respuesta.herramienta} ${respuesta.versionHerramienta}</dd></div>
-<div><dt>Clave</dt><dd><code>${respuesta.ruta?.join(".") ?? "todas"}</code></dd></div></dl></section>
+<div><dt>Clave</dt><dd><code>${respuesta.ruta?.join(".") ?? "todas"}</code></dd></div></dl></details></section>
 ${selectorAgente({ ...contexto, idResolucion: sobre.id, agente: respuesta.agente, ...(clave ? { clave } : {}) }, "Valores", respuesta.proyecto)}
 <div class="rejilla filtros">
 <form id="filtrar-claves" action="${`/resoluciones/${sobre.id}`}" method="get">
@@ -79,11 +79,11 @@ ${respuesta.noResueltas.length ? html`<details id="claves-no-incorporadas"><summ
 <dl><dt>Resumen de las entradas leídas</dt><dd>${respuesta.resumenEntradas}</dd></dl>
 <div class="tabla-contenedor" role="region" aria-label="Entradas leídas" tabindex="0">
 <table class="tabla-tarjetas"><thead><tr><th>Orden</th><th>Vía</th><th>Referencia</th><th>Condición</th><th>Resumen SHA-256</th></tr></thead>
-<tbody>${respuesta.entradas.map(entrada => html`<tr id="${`entrada-leida-${entrada.orden}`}"><td data-etiqueta="Orden">${entrada.orden}</td><td data-etiqueta="Vía">${entrada.via}</td><td data-etiqueta="Referencia">${presentarRuta(entrada.referencia)}</td><td data-etiqueta="Condición">${insignia(entrada.condicion, entrada.condicion === "no_observada" ? "neutra" : "permitida")}</td><td data-etiqueta="Resumen SHA-256"><code>${entrada.resumen ?? "—"}</code></td></tr>`)}</tbody></table></div></details>
+<tbody>${respuesta.entradas.map(entrada => html`<tr id="${`entrada-leida-${entrada.orden}`}"><td data-etiqueta="Orden">${entrada.orden}</td><td data-etiqueta="Vía">${entrada.via}</td><td data-etiqueta="Referencia">${presentarRuta(entrada.referencia)}</td><td data-etiqueta="Condición">${insignia(entrada.condicion, "neutra")}</td><td data-etiqueta="Resumen SHA-256"><code>${entrada.resumen ?? "—"}</code></td></tr>`)}</tbody></table></div></details>
 <section id="historia"><h2>Resoluciones de este proyecto</h2>
 <ul class="historia">${sobre.anteriores.map(anterior => html`<li>${anterior.id === sobre.id
-    ? html`<a href="${`/resoluciones/${anterior.id}${consulta}`}" aria-current="page">Resolución ${anterior.id}</a>`
-    : html`<a href="${`/resoluciones/${anterior.id}${consulta}`}">Resolución ${anterior.id}</a>`} <time>${anterior.instante}</time>${anterior.id === sobre.id ? html`<span class="insignia insignia--neutra">(esta)</span>` : html``}${indiceActual >= 0 && sobre.anteriores.findIndex(foto => foto.id === anterior.id) > indiceActual ? html`<a href="${enlaceComparar(anterior.id)}">comparar con esta</a>` : html``}</li>`)}</ul></section>
+    ? html`<a href="${`/resoluciones/${anterior.id}${consulta}`}" aria-current="page">Análisis del ${fechaLocal(anterior.instante)}</a>`
+    : html`<a href="${`/resoluciones/${anterior.id}${consulta}`}">Análisis del ${fechaLocal(anterior.instante)}</a>`}${anterior.id === sobre.id ? html`<span class="insignia insignia--neutra">(esta)</span>` : html``}${indiceActual >= 0 && sobre.anteriores.findIndex(foto => foto.id === anterior.id) > indiceActual ? html`<a href="${enlaceComparar(anterior.id)}">comparar con esta</a>` : html``}</li>`)}</ul></section>
 ${comandoCli("valores", { proyecto: respuesta.proyecto, agente: respuesta.agente, ...(clave ? { clave } : {}) })}
 ${datosRespuesta(respuesta)}`, { ...contexto, proyecto: respuesta.proyecto, idResolucion: sobre.id, agente: respuesta.agente, ...(clave ? { clave } : {}), activa: "Valores" }));
 }

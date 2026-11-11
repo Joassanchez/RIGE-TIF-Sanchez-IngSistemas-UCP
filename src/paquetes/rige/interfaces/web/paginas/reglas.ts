@@ -1,3 +1,4 @@
+import { rotuloFoto } from "../textos";
 import type { RespuestaReglas } from "../../../aplicacion/respuestas/reglas";
 import { html, datosRespuesta } from "../plantillas";
 import { declaraciones, diseno, efectoVisual, insignia } from "../diseno";
@@ -17,8 +18,10 @@ export function paginaReglas(respuesta: RespuestaReglas, id: string, contexto: C
   const filasLimitadas = matriz.filas.filter(f => f.error !== null || f.ejesParciales.length || f.declaraciones.length || f.advertencias.length || motivosFila(f).length);
   const ejesParciales = matriz.sujetos.filter(s => matriz.filas.some(f => f.celdas.some(c => c.sujeto === s && c.motivo === "eje-parcialmente-observado")));
   return responderHtml(200, diseno(`Reglas de ${agente}`, html`<div class="cabecera-pagina"><h1>Reglas de ${agente}</h1>
-<p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p><p>Foto guardada · resolución ${id}</p>
-${lanzadoPor === undefined ? html`` : html`<p>Lanzado por: <code>${lanzadoPor}</code></p>`}</div>
+<p>¿Qué reglas rigen en este agente?</p>
+<details><summary>¿Qué significa?</summary>
+<p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>${rotuloFoto(respuesta.proyecto, contexto.instante, contexto.fechaNoDisponible)}
+${lanzadoPor === undefined ? html`` : html`<p>Lanzado por: <code>${lanzadoPor}</code></p>`}</details></div>
 ${selectorAgente(panel, "Permisos", respuesta.proyecto)}
 <section id="cadena-completa"><h2>Cadena completa</h2><p>Orden de evaluación, con índices desde 1. Prevalece indica el efecto general por sujeto, sin evaluar objetivos.</p>
 <div class="tabla-contenedor" role="region" aria-label="Cadena completa" tabindex="0">

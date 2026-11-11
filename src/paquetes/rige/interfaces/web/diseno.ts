@@ -1,6 +1,7 @@
 import { versionRige } from "../../aplicacion/respuestas/estado";
 import { html, type HtmlSeguro } from "./plantillas";
 import { consultaPanel, type ContextoPanel } from "./panel";
+import { nombreProyecto } from "./textos";
 
 interface ContextoDiseno extends ContextoPanel {
   readonly proyecto?: string;
@@ -11,12 +12,6 @@ interface ContextoDiseno extends ContextoPanel {
 
 // Composición de presentación: no consulta ni modifica respuestas de aplicación.
 export function diseno(titulo: string, contenido: HtmlSeguro, contexto: ContextoDiseno = {}): HtmlSeguro {
-  const enlaces: { texto: string; ruta: string }[] = [{ texto: "Inicio", ruta: "/" }];
-  if (!contexto.minimo && contexto.proyecto !== undefined && contexto.idResolucion === undefined) {
-    const proyecto = encodeURIComponent(contexto.proyecto);
-    enlaces.push({ texto: "Entradas", ruta: `/entradas?proyecto=${proyecto}` },
-      { texto: "Hallazgos", ruta: `/hallazgos?proyecto=${proyecto}` });
-  }
   const id = contexto.idResolucion === undefined ? undefined : encodeURIComponent(contexto.idResolucion);
   const consulta = consultaPanel(contexto);
   const pestanas = id === undefined || contexto.minimo ? [] : [
@@ -33,16 +28,15 @@ export function diseno(titulo: string, contenido: HtmlSeguro, contexto: Contexto
 <title>${titulo} · RIGE</title><link rel="stylesheet" href="/estilos.css"></head>
 <body><a class="saltar" href="#contenido">Saltar al contenido</a>
 <header class="cabecera"><div class="cabecera__interior">
-<a class="marca" href="/" aria-label="RIGE · Inicio"><span class="marca__simbolo" aria-hidden="true">r.</span><span>RIGE${contexto.minimo ? html`` : html` <span class="version">${versionRige}</span>`}</span></a>
-${contexto.minimo ? html`` : html`<p class="subtitulo">Configuración efectiva de OpenCode 1.18.25</p>`}
-<nav aria-label="Principal">${enlaces.map(enlace => contexto.activa === enlace.texto
-    ? html`<a href="${enlace.ruta}" aria-current="page">${enlace.texto}</a>`
-    : html`<a href="${enlace.ruta}">${enlace.texto}</a>`)}</nav></div></header>
+<a class="marca" href="/" aria-label="RIGE · Inicio">RIGE</a>
+${contexto.minimo ? html`` : html`<nav class="migas" aria-label="Migas de pan">
+${contexto.proyecto === undefined ? html`<span aria-current="page">${titulo}</span>` : html`
+<span aria-hidden="true">›</span>${id === undefined ? html`<span>${nombreProyecto(contexto.proyecto)}</span>` : html`<a href="${`/resoluciones/${id}`}">${nombreProyecto(contexto.proyecto)}</a>`}
+${contexto.agente === undefined ? html`` : html`<span aria-hidden="true">›</span><span>${contexto.agente}</span>`}
+<span aria-hidden="true">›</span><span aria-current="page">${contexto.activa ?? titulo}</span>`}</nav>`}</div></header>
 <main id="contenido" tabindex="-1">${pestanas.length ? html`<nav class="pestanas" aria-label="Panel del proyecto">${pestanas.map(enlace => contexto.activa === enlace.texto
     ? html`<a href="${enlace.ruta}" aria-current="page">${enlace.texto}</a>` : html`<a href="${enlace.ruta}">${enlace.texto}</a>`)}</nav>` : html``}${contenido}</main>
-<footer class="pie"><p><span class="punto" aria-hidden="true"></span>Local · solo lectura · sin red</p>
-${contexto.almacen && !contexto.minimo ? html`<div class="pie__almacen"><p>Almacén: <code>${contexto.almacen.ruta}</code></p><p>Esquema del almacén: ${contexto.almacen.versionEsquema}</p></div>` : html``}
-</footer></body></html>`;
+<footer class="pie"><p>Local · solo lectura · sin red${contexto.minimo ? html`` : html` · RIGE ${versionRige}`}</p></footer></body></html>`;
 }
 
 export function insignia(texto: unknown, tipo = "neutra"): HtmlSeguro {
@@ -66,7 +60,11 @@ export function declaraciones(codigos: readonly string[], reglas: Readonly<Recor
 export function contenidoError(estado: number, mensaje: string, codigo: string): HtmlSeguro {
   const titulos: Readonly<Record<number, string>> = { 400: "Revisá la consulta", 404: "Página no encontrada",
     422: "No se pudo completar la consulta", 500: "Ocurrió un problema", 503: "Almacén no disponible" };
-  return html`<section class="tarjeta pagina-error"><p class="ceja">Error ${estado}</p>
-<h1>${titulos[estado] ?? "No se pudo completar la consulta"}</h1><p>${mensaje}</p>
-<p><code class="ficha-codigo">${codigo}</code></p><a class="boton" href="/">Volver a Inicio</a></section>`;
+  const proyectoInexistente = codigo === "proyecto-inexistente";
+  const titulo = proyectoInexistente ? "No encontramos el proyecto" : titulos[estado] ?? "No se pudo completar la consulta";
+  // También los errores de uso clasificados como 500 conservan el mensaje fijo.
+  return html`<section class="tarjeta pagina-error"><h1>${titulo}</h1><p>${estado === 500 ? "Falla interna de RIGE."
+    : codigo === "resolucion-inexistente" ? mensaje.replace(/^No existe la resolución [0-9]+ en el almacén\.$/, "No encontramos ese análisis en el almacén.") : mensaje}</p>
+${proyectoInexistente ? html`<p>Revisá la ruta y comprobá que la carpeta exista en esta máquina.</p>` : html``}
+<p><a class="boton" href="/">Volver al inicio</a></p><small class="codigo-error">${estado === 500 ? "interno" : codigo}</small></section>`;
 }

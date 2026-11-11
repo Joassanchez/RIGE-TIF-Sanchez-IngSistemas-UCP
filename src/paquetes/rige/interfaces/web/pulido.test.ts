@@ -1,3 +1,4 @@
+import { fechaLocal, fechaRelativa, nombreAnalisis } from "./textos";
 import { describe, expect, test } from "bun:test";
 import type { RespuestaComparacion, RespuestaReglas, RespuestaValores } from "../../aplicacion/respuestas/contrato-generado";
 import { versionRige } from "../../aplicacion/respuestas/estado";
@@ -76,8 +77,8 @@ describe("T5-15 Z-2 orden del panel", () => {
 describe("T5-15 Z-3 instante unico", () => {
   test("no repite instante en metadatos", async () => {
     const resumen = seccionHtml(await paginaResolucion(valores, sobre).text(), "resumen-resolucion");
-    expect(resumen).toContain(`Foto guardada el ${sobre.instante}`);
-    expect(resumen.split(sobre.instante)).toHaveLength(2);
+    expect(resumen).toContain(nombreAnalisis(base.proyecto, sobre.instante));
+    expect(resumen.split(fechaLocal(sobre.instante))).toHaveLength(2);
     expect(resumen).not.toMatch(/<dt>Instante/);
   });
 });
@@ -152,7 +153,7 @@ describe("T5-15 Z-7 coherencia de vistas", () => {
     expect(css(".filtros > *")).toMatch(/width:\s*100%/);
     expect(css(".cabecera-pagina")).toMatch(/margin-bottom:\s*2rem/);
     for (const selector of ["h1", ".cabecera-pagina h1", ".pagina-error h1"])
-      expect(css(selector)).toMatch(/font-size:\s*clamp\(2rem,\s*4vw,\s*2\.7rem\)/);
+      expect(css(selector)).toMatch(/font-size:\s*1\.75rem/);
     expect(estilos).toContain("@media (max-width: 640px)");
     expect(css(".tabla-tarjetas td[data-etiqueta]::before")).toContain("attr(data-etiqueta)");
   });
@@ -163,7 +164,7 @@ describe("T5-15 Z-8 documentacion", () => {
     for (const archivo of ["README.md", "MANUAL.md"]) {
       const documento = await Bun.file(archivo).text();
       const ejecucion = documento.split("## 6.")[1]!.split("## 7.")[0]!;
-      for (const texto of ["Buscar clave", "Consulta exacta (avanzada)", "Límites", "Presentes", "Ausentes", "No observadas", "Abrir la última foto", "Sin cambios:"]) expect(ejecucion).toContain(texto);
+      for (const texto of ["Buscar clave", "Consulta exacta (avanzada)", "Límites", "Presentes", "Ausentes", "No observadas", "tarjeta abre", "Sin cambios:"]) expect(ejecucion).toContain(texto);
     }
     const verificacion = (await Bun.file("MANUAL.md").text()).split("## 8.")[1]!;
     expect(verificacion).toContain("Consulta exacta (avanzada)");
@@ -183,7 +184,7 @@ describe("T5-15 Z-9 comparar", () => {
     const resumen = seccionHtml(cuerpo, "resumen-comparacion");
     expect(resumen.match(/class="insignia /g)?.length).toBeGreaterThanOrEqual(3);
     expect(resumen).toContain("Antes"); expect(resumen).toContain("Después");
-    expect(resumen).toContain("10/11/2026"); expect(resumen).toContain(sobre.instante);
+    expect(resumen).toContain(fechaLocal(sobre.instante));
     expect(json(cuerpo)).toEqual(comparacion);
     expect(css(".tabla-tarjetas .comparacion-flecha")).toMatch(/display:\s*none/);
   });
@@ -217,7 +218,7 @@ describe("T5-15 Z-10 plurales", () => {
     for (const fragmento of ["1 cambio", "1 clave nueva", "1 quitada", "1 clave sin cambio"]) expect(texto).toContain(fragmento);
     for (const cantidad of [0, 1, 2]) {
       const inicio = textoHtml(await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: "/p", id: 7, instante: sobre.instante, cantidad }] }).text());
-      expect(inicio).toContain(`${cantidad} ${cantidad === 1 ? "foto guardada" : "fotos guardadas"}`);
+      expect(inicio).toContain(`${cantidad} ${cantidad === 1 ? "análisis guardado" : "análisis guardados"}`);
     }
   });
 });
@@ -228,10 +229,10 @@ describe("T5-15 Z-11 inicio", () => {
     expect(cuerpo).toContain('id="ayuda-analizar"');
     expect(css("#ayuda-analizar")).toMatch(/margin-top:\s*1rem/);
     const recientes = seccionHtml(cuerpo, "proyectos-recientes");
-    expect(recientes).toContain("10/11/2026");
+    expect(recientes).toContain(fechaRelativa(sobre.instante, new Date()));
     expect(recientes).toContain(`datetime="${sobre.instante}"`);
-    expect(recientes).toContain('class="boton" href="/resoluciones/7">Abrir la última foto</a>');
-    expect(recientes).toContain('class="boton boton--secundario"');
+    expect(recientes).toContain('class="reciente__foto" href="/resoluciones/7"');
+    expect(recientes).toContain('class="reciente__reanalizar"');
     expect(recientes).toContain("/p &amp; &quot;&lt;x&gt;");
     expect(css(".recientes li")).toMatch(/flex-direction:\s*column/);
     expect(css(".recientes li")).toMatch(/align-items:\s*stretch/);

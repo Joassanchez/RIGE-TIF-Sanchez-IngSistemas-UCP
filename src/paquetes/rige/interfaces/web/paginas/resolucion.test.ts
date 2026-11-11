@@ -1,3 +1,5 @@
+import { fechaLocal, nombreAnalisis } from "../textos";
+import { html } from "../plantillas";
 import { describe, expect, test } from "bun:test";
 import type { RespuestaValores, DeclaracionUbicada } from "../../../aplicacion/respuestas/valores";
 import { versionRige } from "../../../aplicacion/respuestas/estado";
@@ -42,7 +44,7 @@ describe("W-13", () => {
     const cuerpo = await recibida.text();
     const contenido = cuerpo.split('<main id="contenido" tabindex="-1">')[1]!;
     expect(contenido).toBeDefined();
-    const partes = ["<h1>Resolución 7</h1>", "Página armada con la resolución leída del almacén de RIGE.",
+    const partes = [html`<h1>${nombreAnalisis(respuesta().proyecto, sobre.instante)}</h1>`.texto, "Página armada con la resolución leída del almacén de RIGE.",
       "Proyecto", "Valores efectivos", "Cómo se decide", "Claves no incorporadas por RIGE",
       "Entradas leídas", "Resoluciones de este proyecto"];
     let posicion = -1;
@@ -52,14 +54,14 @@ describe("W-13", () => {
       expect(siguiente).toBeGreaterThan(posicion);
       posicion = siguiente;
     }
-    for (const dato of ["/proyecto/&lt;ejemplo&gt;", "Foto guardada el 2026-10-05T12:00:00.000Z",
+    for (const dato of ["/proyecto/&lt;ejemplo&gt;", fechaLocal("2026-10-05T12:00:00.000Z"),
       "Herramienta", "opencode 1.18.25", "Agente", "a &amp; b", "Clave", "todas",
       "Resumen de las entradas leídas", "a".repeat(64), "Clave", "Valor efectivo",
       "Declaración determinante", "Declaraciones desplazadas", '<td data-etiqueta="Clave">description</td>', '<td data-etiqueta="Clave">steps</td>',
       "&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;", "ninguna",
       "Prevalece la ultima &lt;declaracion&gt; (RD-01).", "Sin resolver &lt;permiso&gt;.",
       "permission: Sin resolver &lt;permiso&gt;.", "Orden", "Vía", "Referencia", "Condición", "Resumen SHA-256",
-      "remota-wellknown", "no_observada", "observada", "b".repeat(64), "—", "(esta)", "2026-10-04T12:00:00.000Z"]) {
+      "remota-wellknown", "no_observada", "observada", "b".repeat(64), "—", "(esta)", fechaLocal("2026-10-04T12:00:00.000Z")]) {
       expect(cuerpo).toContain(dato);
     }
     expect(cuerpo).toMatch(/<ol>.*0\.1.*0\.2.*<\/ol>/s);

@@ -1,3 +1,4 @@
+import { rotuloFoto } from "../textos";
 import { comandoCli } from "../comando-cli";
 import { selectorAgente, type ContextoPanel } from "../panel";
 import type { RespuestaAgentes } from "../../../aplicacion/respuestas/agentes";
@@ -8,8 +9,10 @@ import { presentarRuta } from "../rutas";
 
 export function paginaAgentes(respuesta: RespuestaAgentes, idResolucion?: string, clave?: string, contexto: ContextoPanel = {}): Response {
   return responderHtml(200, diseno("Agentes", html`
-<div class="cabecera-pagina"><p class="ceja">Inventario de agentes</p><h1>Agentes</h1><p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
-${idResolucion === undefined ? html`` : html`<p>Foto guardada · resolución ${idResolucion}</p>`}</div>
+<div class="cabecera-pagina"><h1>Agentes</h1>
+<p>¿Qué agentes tiene este proyecto?</p>
+<details><summary>¿Qué significa?</summary><p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
+${idResolucion === undefined ? html`` : html`${rotuloFoto(respuesta.proyecto, contexto.instante, contexto.fechaNoDisponible)}`}</details></div>
 ${selectorAgente({ ...contexto, ...(idResolucion === undefined ? {} : { idResolucion }), ...(clave ? { clave } : {}) }, "Agentes", respuesta.proyecto)}
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 ${respuesta.incompleta ? html`<div class="aviso aviso--advertencia"><p>Listado incompleto.</p>${respuesta.motivos.map(codigo => html`<p>${respuesta.reglas[codigo]}</p>`)}</div>` : html``}

@@ -15,8 +15,10 @@ const nombresHallazgos: Readonly<Record<string, readonly [string, string]>> = {
 
 export function paginaHallazgos(respuesta: RespuestaHallazgos, contexto: ContextoPanel = {}): Response {
   return responderHtml(200, diseno("Hallazgos", html`
-<div class="cabecera-pagina"><p class="ceja">Diagnóstico del proyecto</p><h1>Hallazgos</h1><p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
-<p>Estado actual de las entradas de configuración (no es la foto guardada)</p></div>
+<div class="cabecera-pagina"><h1>Hallazgos</h1>
+<p>¿Qué problemas se observan ahora?</p>
+<details><summary>¿Qué significa?</summary><p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
+<p>Estado actual de las entradas de configuración (no es la foto guardada)</p></details></div>
 ${selectorAgente(contexto, "Hallazgos", respuesta.proyecto)}
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="resumen-hallazgos"><h2>Resumen</h2>

@@ -21,7 +21,8 @@ describe("T5-12 M-4 PC-07 PC-08", () => {
     expect(cuerpo.indexOf('id="mapa-vias"')).toBeGreaterThan(0);
     expect(cuerpo.indexOf('id="mapa-vias"')).toBeLessThan(cuerpo.indexOf('id="tabla-entradas"'));
     expect(cuerpo).toContain('data-etiqueta="Cantidad">7<');
-    for (const tipo of ["permitida", "neutra", "no-observada"]) expect(cuerpo).toContain(`insignia--${tipo}`);
+    for (const tipo of ["neutra", "no-observada"]) expect(cuerpo).toContain(`insignia--${tipo}`);
+    expect(cuerpo).not.toContain("insignia--permitida");
     expect(cuerpo).toContain("<details>");
     expect(cuerpo).toContain("<summary>Lugares revisados</summary>");
     expect(cuerpo).toContain("&amp;&quot;");

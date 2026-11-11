@@ -1,3 +1,4 @@
+import { rotuloFoto } from "../textos";
 import { comandoCli } from "../comando-cli";
 import { selectorAgente, type ContextoPanel } from "../panel";
 import type { RespuestaPermiso } from "../../../aplicacion/respuestas/permiso";
@@ -9,11 +10,13 @@ import { presentarRuta } from "../rutas";
 export function paginaPermiso(respuesta: RespuestaPermiso, idResolucion?: string, contexto: ContextoPanel = {}): Response {
   const lanzadoPor = "lanzadoPor" in respuesta && typeof respuesta.lanzadoPor === "string" ? respuesta.lanzadoPor : undefined;
   return responderHtml(200, diseno(`Permiso de ${respuesta.agente}`, html`
-<div class="cabecera-pagina"><p class="ceja">Consulta de permiso</p><h1>Permiso de ${respuesta.agente}</h1>
+<div class="cabecera-pagina"><h1>Permiso de ${respuesta.agente}</h1>
+<p>¿Puede este agente realizar esta acción?</p>
+<details><summary>¿Qué significa?</summary>
 <p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
 ${lanzadoPor ? html`<p>Lanzado por: <code>${lanzadoPor}</code></p>` : html``}
 <p><code class="ficha-codigo">${respuesta.consulta.sujeto}: ${respuesta.consulta.objetivo}</code></p>
-${idResolucion === undefined ? html`` : html`<p>Foto guardada · resolución ${idResolucion}</p>`}</div>
+${idResolucion === undefined ? html`` : html`${rotuloFoto(respuesta.proyecto, contexto.instante, contexto.fechaNoDisponible)}`}</details></div>
 ${selectorAgente({ ...contexto, agente: respuesta.agente, ...(idResolucion === undefined ? {} : { idResolucion }) }, "Permisos", respuesta.proyecto)}
 <section id="resultado-permiso" class="tarjeta decision-principal"><h2>Decisión</h2>${efectoVisual(respuesta.decision)}
 ${respuesta.decision === null ? html`<p>Motivo: <code>${respuesta.motivoSinDecision}</code></p>` : html``}

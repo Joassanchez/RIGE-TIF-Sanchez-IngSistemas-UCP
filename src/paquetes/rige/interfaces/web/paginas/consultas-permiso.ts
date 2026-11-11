@@ -1,3 +1,4 @@
+import { rotuloFoto } from "../textos";
 import type { RespuestaAgentes } from "../../../aplicacion/respuestas/agentes";
 import { html } from "../plantillas";
 import { diseno, insignia } from "../diseno";
@@ -7,7 +8,9 @@ import { presentarRuta } from "../rutas";
 
 export function paginaConsultasPermiso(respuesta: RespuestaAgentes, contexto: ContextoPanel): Response {
   return responderHtml(200, diseno("Permisos", html`<div class="cabecera-pagina"><h1>Permisos</h1>
-<p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p><p>Foto guardada · resolución ${contexto.idResolucion}</p></div>
+<p>¿Qué permiso querés consultar?</p>
+<details><summary>¿Qué significa?</summary>
+<p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>${rotuloFoto(respuesta.proyecto, contexto.instante, contexto.fechaNoDisponible)}</details></div>
 ${selectorAgente(contexto, "Permisos", respuesta.proyecto)}
 <p><a href="${`/reglas?id=${encodeURIComponent(contexto.idResolucion!)}&agente=${encodeURIComponent(contexto.agente ?? "")}${contexto.lanzadoPor === undefined ? "" : `&lanzadoPor=${encodeURIComponent(contexto.lanzadoPor)}`}${contexto.clave ? `&clave=${encodeURIComponent(contexto.clave)}` : ""}${contexto.q ? `&q=${encodeURIComponent(contexto.q)}` : ""}`}">Ver cadena completa y matriz de permisos</a></p>
 ${consultasPermiso(contexto, contexto.lanzadoPor)}`, { ...contexto, proyecto: respuesta.proyecto, activa: "Permisos" }));

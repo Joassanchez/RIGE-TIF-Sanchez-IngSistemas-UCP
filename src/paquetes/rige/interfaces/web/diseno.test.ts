@@ -43,6 +43,23 @@ const manejar = crearManejador(12345, casos);
 const solicitar = (ruta: string, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET") =>
   manejar(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
 
+describe("T5-17 G-3 cabeceras concisas", () => {
+  test("cada vista formula una pregunta y pliega su explicacion sin perder metadatos", async () => {
+    for (const pagina of [paginaResolucion(valores, sobre), paginaPermiso(permiso), paginaAgentes(agentes), paginaEntradas(entradas), paginaHallazgos(hallazgos)]) {
+      const cuerpo = await pagina.text();
+      const cabecera = cuerpo.includes('id="resumen-resolucion"') ? seccion(cuerpo, "resumen-resolucion")
+        : cuerpo.match(/<div class="cabecera-pagina">([^]*?)<\/div>/)![1]!;
+      const sinDetalles = cabecera.replace(/<details[^]*?<\/details>/g, "");
+      expect(sinDetalles).not.toContain('class="ceja"');
+      expect(sinDetalles.match(/<p>/g)).toHaveLength(1);
+      expect(sinDetalles).toMatch(/<p>¿[^<]+\?<\/p>/);
+      expect(cabecera).toContain("¿Qué significa?");
+      expect(cabecera).not.toMatch(/<details[^>]*\bopen\b/);
+      expect(cabecera).toContain('class="ruta"');
+    }
+  });
+});
+
 function seccion(cuerpo: string, id: string): string {
   const hallada = new RegExp(`<section[^>]*id="${id}"[^>]*>(.*?)</section>`, "s").exec(cuerpo);
   expect(hallada).not.toBeNull();
@@ -116,9 +133,10 @@ describe("T5-08 U-2 U-10 U-11 P-1 P-2 P-3 P-6", () => {
   test("codifica navegacion y marca la pagina activa sin agregar contexto al JSON", async () => {
     for (const [ruta, activo] of [["/entradas?proyecto=p", "Entradas"], ["/hallazgos?proyecto=p", "Hallazgos"], ["/agentes?id=7", "Agentes"]]) {
       const cuerpo = await solicitar(ruta!).text();
-      expect(cuerpo).toContain(`href="/entradas?proyecto=${encodeURIComponent(base.proyecto)}${activo === "Agentes" ? "&amp;id=7&amp;agente=" + encodeURIComponent(ataque) : ""}"`);
-      expect(cuerpo).toContain(`href="/hallazgos?proyecto=${encodeURIComponent(base.proyecto)}${activo === "Agentes" ? "&amp;id=7&amp;agente=" + encodeURIComponent(ataque) : ""}"`);
-      expect(cuerpo).toMatch(new RegExp(`aria-current="page">${activo}</a>`));
+      if (activo === "Agentes") expect(cuerpo).toContain(`href="/entradas?proyecto=${encodeURIComponent(base.proyecto)}&amp;id=7&amp;agente=${encodeURIComponent(ataque)}"`);
+      else expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
+      if (activo === "Agentes") expect(cuerpo).toContain(`href="/hallazgos?proyecto=${encodeURIComponent(base.proyecto)}&amp;id=7&amp;agente=${encodeURIComponent(ataque)}"`);
+      expect(cuerpo).toMatch(new RegExp(`aria-current="page">${activo}</(?:a|span)>`));
       expect(cuerpo.includes('href="/agentes?id=7&amp;agente=')).toBe(activo === "Agentes");
       expect(cuerpo).not.toContain(estado.almacen.ruta);
     }
@@ -142,7 +160,7 @@ describe("T5-08 U-3 U-4 tema y componentes", () => {
 describe("T5-08 U-5 U-6", () => {
   test("inicio ofrece analizar; resolucion pone resumen primero y pliega detalles", async () => {
     const inicio = await paginaInicio(estado).text();
-    expect(inicio).toContain("¿Qué configuración rige de verdad?");
+    expect(inicio).toContain("¿Qué configuración rige en este proyecto?");
     expect(inicio).toContain('>Analizar</button>');
     expect(inicio.match(/<form\b/g)).toHaveLength(1);
     const cuerpo = await paginaResolucion(valores, sobre).text();
@@ -208,7 +226,7 @@ describe("T5-08 U-8 P-9", () => {
 describe("T5-08 U-9", () => {
   test("entradas y agentes distinguen estados y avisos", async () => {
     const cuerpo = await paginaEntradas(entradas).text();
-    expect(cuerpo).toContain('class="insignia insignia--denegada">ilegible');
+    expect(cuerpo).toContain('class="insignia insignia--entrada-ilegible">ilegible');
     expect(cuerpo).toContain('class="aviso aviso--advertencia">3:5 (falla)');
     const listado = await paginaAgentes(agentes).text();
     expect(listado).toContain('class="insignia insignia--neutra">primary');
@@ -261,8 +279,8 @@ describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
       expect(resumen).toContain(`<small>${tipo}</small>`);
     }
     const css = await solicitar("/estilos.css").text();
-    expect(css).toMatch(/\.estadistica--aviso\s*\{[^}]*border-color: var\(--aviso\)/);
-    expect(css).toMatch(/\.estadistica--aviso strong\s*\{[^}]*color: var\(--aviso\)/);
+    expect(css).toMatch(/\.estadistica--aviso\s*\{[^}]*border-color: var\(--borde\)/);
+    expect(css).toMatch(/\.estadistica--aviso strong\s*\{[^}]*color: var\(--texto\)/);
     expect(css).toMatch(/\.insignia--referencia-no-resuelta[^}]*color: var\(--peligro\)/);
     expect(css).toMatch(/\.insignia--regla-sin-efecto[^}]*color: var\(--aviso\)/);
     expect(css).toMatch(/\.insignia--entrada-descartada[^}]*color: var\(--neutro\)/);

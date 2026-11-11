@@ -85,12 +85,14 @@ describe("W-12", () => {
     for (const ruta of ["/resoluciones/abc", "/resoluciones/7/otra", "/resoluciones/-1", "/resoluciones/7a", "/otra"]) {
       const recibida = solicitar(ruta);
       expect(recibida.status).toBe(404);
-      expect(await recibida.text()).toContain("Página no encontrada");
+      const cuerpo = await recibida.text();
+      expect(cuerpo).toContain("Página no encontrada");
+      expect(cuerpo).toContain(`Ruta consultada: ${ruta}`);
     }
     expect(consultas).toEqual([]);
     const inexistente = solicitar("/resoluciones/7?agente=a%20%26%20b&clave=c%20%26%20d");
     expect(inexistente.status).toBe(404);
-    expect(await inexistente.text()).toContain("No existe la resolución 7 en el almacén.");
+    expect(await inexistente.text()).toContain("No encontramos ese análisis en el almacén.");
     expect(consultas).toEqual([["7", "a & b", "c & d"]]);
   });
 });

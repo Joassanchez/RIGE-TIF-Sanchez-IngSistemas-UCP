@@ -6,6 +6,7 @@ import { estilos } from "./estilos";
 import { paginaResolucion } from "./paginas/resolucion";
 import { paginaPermiso } from "./paginas/permiso";
 import { textoHtml } from "../../../../pruebas/utilidades/html";
+import { nombreAnalisis } from "./textos";
 
 const base = { esquema: 2 as const, proyecto: "/proyecto", entradas: [], resumenEntradas: "a".repeat(64), declaraciones: [], reglas: {} };
 const agentes: RespuestaAgentes = { ...base, agentes: ["explore", "build"].map(nombre => ({ nombre, origen: "nativo" as const, modo: "primary", oculto: false })), eliminados: [], incompleta: false, motivos: [] };
@@ -25,6 +26,27 @@ const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: { esquem
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }), consultarPermiso: () => ({ exito: true, valor: permiso }) };
 const solicitar = (ruta: string, cambios: Partial<CasosWeb> = {}, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET") => crearManejador(12345, { ...casos, ...cambios })(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
 const dato = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
+
+describe("T5-17 G-5 nombres de las fotos guardadas", () => {
+  test("todas las vistas guardadas usan proyecto y fecha absoluta, sin ids visibles", async () => {
+    for (const ruta of ["/resoluciones/7?agente=build", "/resoluciones/7/permisos?agente=build", "/agentes?id=7&agente=build",
+      "/permiso?id=7&agente=build&herramienta=read&objetivo=.env"]) {
+      const cuerpo = await solicitar(ruta).text();
+      expect(textoHtml(cuerpo)).toContain(nombreAnalisis(base.proyecto, sobre.instante));
+      expect(cuerpo.replace(/<script[^]*?<\/script>/g, "")).not.toMatch(/(?:Resolución|resolución|Foto) 7/);
+      expect(cuerpo).not.toMatch(/hoy \d|ayer \d/);
+    }
+  });
+  test("la fecha no condiciona consultas disponibles con valores sin resolver", async () => {
+    const recibida = solicitar("/agentes?id=7", { consultarResolucion: () => ({ exito: false,
+      error: { codigo: "clave-no-resuelta", mensaje: "Valores no disponibles" } }) });
+    expect(recibida.status).toBe(200);
+    const cuerpo = await recibida.text();
+    expect(dato(cuerpo)).toEqual(agentes);
+    expect(cuerpo).toContain("Fecha no disponible (clave-no-resuelta)");
+    expect(cuerpo).not.toMatch(/Resolución 7|hoy \d|ayer \d/);
+  });
+});
 
 describe("T5-15 Z-1 estado entre pestanas", () => {
   test("cada ruta recibe y devuelve q y clave escapadas en pestanas y selector sin tocar el dato", async () => {
@@ -253,7 +275,10 @@ describe("T5-11 P-3 panel y contexto", () => {
     ] as const;
     for (const [ruta, activa, respuesta] of rutas) {
       const recibida = solicitar(ruta, respuesta === null ? {
-        consultarResolucion: () => { throw new Error("El formulario no consulta valores"); },
+        consultarResolucion: (id, agente, clave) => {
+          expect([id, agente, clave]).toEqual(["7", "build", ""]);
+          return { exito: true, valor: { respuesta: valores, sobre } };
+        },
         consultarPermiso: () => { throw new Error("El formulario no ejecuta permisos"); },
       } : {});
       expect(recibida.status).toBe(200);
@@ -270,9 +295,9 @@ describe("T5-11 P-3 panel y contexto", () => {
         expect(destino.startsWith("/resoluciones/7") || destino.includes("&id=7") || destino.startsWith("/agentes?id=7")).toBe(true);
         expect(solicitar(destino).status).toBe(200);
       }
-      if (activa === "Valores") expect(cuerpo).toContain(`Foto guardada el ${sobre.instante}`);
+      if (activa === "Valores") expect(cuerpo).toContain(nombreAnalisis(base.proyecto, sobre.instante));
       else if (["Entradas", "Hallazgos"].includes(activa)) expect(cuerpo).toContain("Estado actual de las entradas de configuración (no es la foto guardada)");
-      else expect(cuerpo).toContain("Foto guardada · resolución 7");
+      else expect(cuerpo).toContain(`Foto guardada · ${nombreAnalisis(base.proyecto, sobre.instante)}`);
       if (respuesta === null) {
         expect(cuerpo).not.toContain('<script');
         expect(cuerpo).toContain('id="consultar-permiso"');

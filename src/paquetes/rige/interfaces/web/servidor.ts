@@ -41,6 +41,17 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
     const url = new URL(solicitud.url);
     const contextoSolicitud = { clave: url.searchParams.get("clave") ?? "", q: url.searchParams.get("q") ?? "", agente: url.searchParams.get("agente") ?? undefined,
       ...(url.searchParams.has("lanzadoPor") ? { lanzadoPor: url.searchParams.get("lanzadoPor")! } : {}) };
+    const contextoFoto = (id: string, agente: string | undefined): Resultado<ContextoPanel, ErrorUso> => {
+      if (agente === undefined) return { exito: true, valor: {} };
+      // El sobre público aporta los metadatos; nunca se los agrega al JSON de la consulta.
+      const consulta = casos.consultarResolucion(id, agente, "");
+      // El sobre depende de la proyección de valores. Su ausencia no invalida
+      // una consulta de agentes/permisos/reglas que ya tuvo éxito (ADR-113).
+      if (!consulta.exito && ["clave-no-resuelta", "agente-sin-declaraciones"].includes(consulta.error.codigo)) {
+        return { exito: true, valor: { fechaNoDisponible: consulta.error.codigo } };
+      }
+      return consulta.exito ? { exito: true, valor: { instante: consulta.valor.sobre.instante } } : consulta;
+    };
     const contextoActual = (proyecto: string): Resultado<ContextoPanel, ErrorUso> => {
       const id = url.searchParams.get("id");
       if (id === null) return { exito: true, valor: {} };
@@ -61,7 +72,9 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       const id = url.searchParams.get("id") ?? "";
       const resultado = casos.consultarReglas(id, { agente: url.searchParams.get("agente") ?? "",
         ...(url.searchParams.has("lanzadoPor") ? { lanzadoPor: url.searchParams.get("lanzadoPor")! } : {}) });
-      return resultado.exito ? paginaReglas(resultado.valor, id, contextoSolicitud) : paginaErrorUso(resultado.error);
+      if (!resultado.exito) return paginaErrorUso(resultado.error);
+      const foto = contextoFoto(id, resultado.valor.agente);
+      return foto.exito ? paginaReglas(resultado.valor, id, { ...contextoSolicitud, ...foto.valor }) : paginaErrorUso(foto.error);
     }
     if (url.pathname === "/hallazgos") {
       const resultado = casos.consultarHallazgos(url.searchParams.get("proyecto") ?? "", { explicar: true });
@@ -90,16 +103,22 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       const id = parametros.get("id") ?? "";
       if (!resultado.exito) return paginaErrorUso(resultado.error);
       const listado = casos.consultarAgentes(id);
+      const foto = contextoFoto(id, resultado.valor.agente);
+      if (!foto.exito) return paginaErrorUso(foto.error);
       return paginaPermiso(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, {
-        ...contextoSolicitud, ...(listado.exito ? { agentes: listado.valor.agentes } : {}),
+        ...contextoSolicitud, ...foto.valor, ...(listado.exito ? { agentes: listado.valor.agentes } : {}),
       });
     }
     if (url.pathname === "/agentes") {
       const resultado = casos.consultarAgentes(url.searchParams.get("id") ?? "");
       const id = url.searchParams.get("id") ?? "";
-      return resultado.exito ? paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, contextoSolicitud.clave, {
+      if (!resultado.exito) return paginaErrorUso(resultado.error);
+      const foto = contextoFoto(id, agenteInicial(resultado.valor.agentes));
+      if (!foto.exito) return paginaErrorUso(foto.error);
+      return paginaAgentes(resultado.valor, /^[0-9]+$/.test(id) ? id : undefined, contextoSolicitud.clave, {
+        ...foto.valor,
         ...contextoSolicitud, agente: contextoSolicitud.agente ?? agenteInicial(resultado.valor.agentes), agentes: resultado.valor.agentes,
-      }) : paginaErrorUso(resultado.error);
+      });
     }
     if (url.pathname === "/resolver") {
       const agente = url.searchParams.get("agente");
@@ -124,7 +143,8 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
         const agente = contextoSolicitud.agente ?? agenteInicial(agentes.valor.agentes);
         if (agente === undefined) return redirigir(`/agentes?id=${encodeURIComponent(id)}`);
         if (!agente.trim()) return paginaErrorUso(errorSolicitudInvalida("el agente está vacío"));
-        return paginaConsultasPermiso(agentes.valor, { ...contextoSolicitud, agente, idResolucion: id, agentes: agentes.valor.agentes });
+        const foto = contextoFoto(id, agente);
+        return foto.exito ? paginaConsultasPermiso(agentes.valor, { ...contextoSolicitud, ...foto.valor, agente, idResolucion: id, agentes: agentes.valor.agentes }) : paginaErrorUso(foto.error);
       }
       const clave = url.searchParams.get("clave") ?? "";
       let agente = url.searchParams.get("agente");
@@ -142,7 +162,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       });
     }
     if (url.pathname !== "/") {
-      const pagina = diseno("Error 404", contenidoError(404, "Página no encontrada.", "pagina-inexistente"));
+      const pagina = diseno("Error 404", contenidoError(404, `Página no encontrada. Ruta consultada: ${url.pathname}`, "pagina-inexistente"));
       return responderHtml(404, pagina);
     }
     const resultado = casos.consultarEstado();

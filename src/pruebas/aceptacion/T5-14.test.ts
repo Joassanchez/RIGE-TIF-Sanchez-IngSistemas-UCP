@@ -88,7 +88,7 @@ describe("T5-14 K-2", () => {
       expect(r.comparaciones.find(a => a.agente === "build")!.cambios).toContainEqual(expect.objectContaining({
         ruta: ["temperature"], tipo: "cambiada", motivos: ["valor"], antes: expect.objectContaining({ valor: 0.3 }), despues: expect.objectContaining({ valor: 0.7 }),
       }));
-      for (const texto of ["Agentes agregados", "nuevo", "Antes", "Después", "temperature", "insignia--pregunta"]) expect(pagina.cuerpo).toContain(texto);
+      for (const texto of ["Agentes agregados", "nuevo", "Antes", "Después", "temperature", "insignia--neutra"]) expect(pagina.cuerpo).toContain(texto);
       const filtrada = await pedir(ruta + "&agente=build");
       expect(datos(filtrada.cuerpo)).toEqual(r);
       const cliFiltro = e.cli(["comparar", "--desde", desde, "--hasta", hasta, "--agente", "build"]);
@@ -119,7 +119,8 @@ describe("T5-14 K-3", () => {
     await conWeb(async (e, pedir, guardar) => {
       const vacio = await pedir("/");
       expect(vacio.estado).toBe(200);
-      expect(vacio.cuerpo).not.toContain("Proyectos recientes");
+      expect(vacio.cuerpo).toContain("Ingresá la carpeta de un proyecto y pulsá Analizar");
+      expect(vacio.cuerpo).not.toContain('<ul class="recientes">');
       expect(e.cli(["recientes"])).toMatchObject({ codigo: 0, error: "", salida: '{"esquema":2,"proyectos":[]}\n' });
       await guardar(); const id = await guardar();
       const pagina = await pedir("/");

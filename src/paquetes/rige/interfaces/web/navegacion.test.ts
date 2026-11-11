@@ -221,7 +221,10 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
       [paginaDiagnostico, diagnostico], [paginaConsulta, consulta], [await paginaEntradas({ ...entradas, proyecto }).text(), { ...entradas, proyecto }]];
     for (const [cuerpo, dato] of paginas) {
       const enlace = [...cuerpo.matchAll(/href="([^"]+)"/g)].map(m => m[1]!).find(url => url.startsWith(`/entradas?proyecto=${encodeURIComponent(proyecto)}`));
-      expect(enlace).toBeDefined();
+      if (cuerpo.includes('id="tabla-entradas"')) {
+        expect(enlace).toBeUndefined(); // Ya no hay enlaces sueltos en la cabecera.
+        expect(cuerpo).toContain(`title="/p/${escapado}"`);
+      } else expect(enlace).toBeDefined();
       if ([paginaListado, paginaValores, paginaConsulta].includes(cuerpo)) expect(enlace).toContain("&amp;id=7");
       expect(cuerpo).not.toMatch(/\sstyle\s*=|<style\b/i);
       const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];

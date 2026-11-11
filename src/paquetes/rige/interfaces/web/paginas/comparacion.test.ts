@@ -10,7 +10,7 @@ describe("T5-14 K-5 plantillas", () => {
     const ataque = ' & "# espacio </script><script>', nombre = "agente" + ataque;
     const lado = (referencia: string) => ({ valor: ataque, determinante: { origen: { tipo: "declarado" as const, orden: 0, posicion: { linea: 2, columna: 3 } },
       via: ataque, referencia, localizacion: referencia + ":2:3", valor: ataque, regla: "regla" } });
-    const foto = { id: 1, instante: "antes", entradas: [], resumenEntradas: "", noComparables: [], motivosAgentes: [], reglas: {} };
+    const foto = { id: 1, instante: "2026-11-01T12:00:00Z", entradas: [], resumenEntradas: "", noComparables: [], motivosAgentes: [], reglas: {} };
     const r: RespuestaComparacion = { esquema: 2, proyecto: "/proyecto" + ataque, desde: foto, hasta: { ...foto, id: 2 },
       agentes: { agregados: [], quitados: [], comunes: [nombre, "otro"], inciertos: [] }, parcial: false, sustituciones: "solo-representacion-protegida",
       resumen: { cambiadas: 1, agregadas: 1, quitadas: 1, sinCambio: 0 }, comparaciones: [{ agente: nombre,
@@ -21,6 +21,8 @@ describe("T5-14 K-5 plantillas", () => {
         ] }, { agente: "otro", resumen: { cambiadas: 0, agregadas: 0, quitadas: 0, sinCambio: 2 }, cambios: [] }] };
     const pagina = await paginaComparacion(r, nombre).text();
     const texto = textoHtml(pagina);
+    expect(pagina).toContain("¿Qué cambió entre estos análisis?");
+    expect(pagina).not.toContain('class="ceja"');
     const escapar = (s: string) => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
     for (const referencia of ["/anterior/", "/nueva/", "/alta/", "/baja/"]) expect(texto).toContain(escapar(referencia + ataque + ":2:3"));
     expect(pagina).not.toContain("</script><script>");
@@ -29,11 +31,12 @@ describe("T5-14 K-5 plantillas", () => {
     expect(JSON.parse(json)).toEqual(r);
     expect(json).not.toContain("<");
     expect(pagina).toContain(`/comparar?desde=1&amp;hasta=2&amp;agente=${encodeURIComponent(nombre)}`);
-    for (const clase of ["permitida", "denegada", "pregunta"]) expect(pagina).toContain(`insignia--${clase}`);
+    expect(pagina).toContain("insignia--neutra");
+    expect(pagina).not.toMatch(/insignia--(?:permitida|denegada|pregunta)/);
     for (const conteo of ["1 cambio", "1 clave nueva", "1 quitada"]) expect(pagina).toContain(`>${conteo}</span>`);
     expect(pagina).not.toContain("<h2>Agente otro</h2>");
     const inicio = await paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/privado", versionEsquema: 2 } },
-      { esquema: 2, proyectos: [{ proyecto: r.proyecto, id: 2, instante: "foto", cantidad: 2 }] }).text();
+      { esquema: 2, proyectos: [{ proyecto: r.proyecto, id: 2, instante: "2026-11-01T12:00:00Z", cantidad: 2 }] }).text();
     expect(inicio).toContain(`/resolver?proyecto=${encodeURIComponent(r.proyecto)}`);
     expect(textoHtml(inicio)).toContain(escapar(r.proyecto));
     expect(inicio).not.toContain("<script");

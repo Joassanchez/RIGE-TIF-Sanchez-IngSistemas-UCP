@@ -130,8 +130,9 @@ describe("RF-01 CA-1 · recorrido del README (guía, paso 8)", () => {
     expect(pagina.estado).toBe(200);
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const cabecera = seccionHtml(pagina.cuerpo, "resumen-resolucion");
-    expect(cabecera).toMatch(/Foto guardada el \d{4}-\d{2}-\d{2}T[^<]+Z<\/p>/);
-    expect(cabecera.match(/\d{4}-\d{2}-\d{2}T[^<]+Z/g)).toHaveLength(1);
+    expect(cabecera).toMatch(/<h1>proyecto · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}<\/h1>/);
+    expect(cabecera.match(/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/g)).toHaveLength(1);
+    expect(cabecera).not.toMatch(/hoy \d|ayer \d|Resolución \d/);
     resumen(pagina.cuerpo);
   });
 });
@@ -251,7 +252,8 @@ describe("RF-17", () => {
         expect(comparaciones).toEqual(guardadas.slice(1, -1).reverse().map(id => [id, guardadas.at(-1)!]));
       const retirada = await recorrido.solicitar(ruta(guardadas[0]!));
       expect(retirada.estado).toBe(404);
-      expect(retirada.cuerpo).toContain(`No existe la resolución ${guardadas[0]} en el almacén.`);
+      expect(retirada.cuerpo).toContain("No encontramos ese análisis en el almacén.");
+      expect(retirada.cuerpo).toContain("resolucion-inexistente");
       expect((await recorrido.solicitar(ruta(guardadas[1]!))).estado).toBe(200);
     });
   });

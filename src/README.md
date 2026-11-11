@@ -131,6 +131,11 @@ La prelación es: variable de entorno → `rige.env` → valor por defecto. El a
 
 ## 6. Ejecución y verificación
 
+La web usa superficies blancas sobre fondo neutro claro, tema oscuro carbón automático y un acento índigo. La tipografía del sistema parte de 16 px; las tablas se adaptan a tarjetas donde corresponde en móvil. El encabezado muestra **RIGE** (enlace a Inicio) y migas de pan de proyecto, agente y vista; las pestañas del contenido siguen disponibles en esta entrega. El pie ocupa una línea: «Local · solo lectura · sin red · RIGE 1.0.0».
+
+Inicio pregunta «¿Qué configuración rige en este proyecto?», pide **Carpeta del proyecto** y ofrece **Analizar**. Toda la tarjeta de **Proyectos recientes** abre la última foto; **Analizar de nuevo** relee las entradas. Las fotos se nombran «proyecto · fecha», con fecha local absoluta `dd/mm/aaaa hh:mm` en las vistas guardadas para que el HTML siga estable al reiniciar. Si una consulta de Agentes, Permisos o Reglas no puede obtener el sobre por valores pendientes o sin declaraciones, conserva su respuesta y avisa **Fecha no disponible** con el código técnico; no inventa metadatos. Solo Inicio usa «hoy hh:mm» o «ayer hh:mm»; para otras fechas usa la absoluta. Los identificadores quedan en las direcciones y en el JSON. La ayuda larga está en **¿Qué significa?**, cerrado. Un proyecto inexistente sugiere revisar que la ruta corresponda a esta máquina. Los rechazos de origen o método no muestran migas, ruta ni versión; los errores internos mantienen un mensaje fijo.
+
+
 Todos los comandos se ejecutan desde `src/`. Para las verificaciones se aísla el almacén en un directorio temporal nuevo y se conserva esa variable en la misma terminal durante el recorrido y el reinicio del servidor.
 
 **PowerShell:**
@@ -177,13 +182,20 @@ Los marcadores entre `<…>` se reemplazan por valores propios; los corchetes in
 
 `comparar` y `recientes` leen solo el almacén indicado por `RIGE_ALMACEN`; no lo crean ni releen las entradas. Requieren `bun run esquema`. `/comparar?desde=<id1>&hasta=<id2>[&agente=<nombre>]` comparte el JSON íntegro con la CLI (`esquema: 2`). `--agente <nombre>` conserva ese objeto en CLI; en web filtra la presentación y sus conteos. Desde Valores, **Comparar con la anterior** y **comparar con esta** fijan la dirección temporal. Inicio lista hasta diez proyectos con su última foto, cantidad retenida y **Analizar de nuevo**, que usa el recorrido existente de resolver y guardar. Las rutas no resueltas producen comparación parcial; sustituciones solo por representación protegida, sin afirmar igualdad de contenido. Cadenas de permisos fuera de alcance. Detalles y errores en MANUAL §6 y §8.
 
-En **Comparar**, el resumen destaca las cantidades con insignias y las fotos **Antes** y **Después** muestran hora local legible e ISO. Los agentes sin diferencias se reúnen en **Sin cambios:**; los demás mantienen su sección. El filtro de agente usa pestañas con desplazamiento propio. Las columnas **Antes → Después** se apilan en móvil. La clave se lee como `a › b`; el arreglo literal queda en su `title`.
+En **Comparar**, el resumen destaca las cantidades con insignias y las fotos **Antes** y **Después** muestran fecha local absoluta. Los agentes sin diferencias se reúnen en **Sin cambios:**; los demás mantienen su sección. El filtro de agente usa pestañas con desplazamiento propio. Las columnas **Antes → Después** se apilan en móvil. La clave se lee como `a › b`; el arreglo literal queda en su `title`.
 
-En **Proyectos recientes**, **Abrir la última foto** es la acción principal; **Analizar de nuevo**, la secundaria. El instante es legible y cada fila se apila como tarjeta en móvil. La ayuda del panel queda separada debajo de **Analizar**.
+En **Proyectos recientes**, toda la tarjeta abre la última foto; **Analizar de nuevo** es el enlace secundario. El nombre destacado es el último segmento de la ruta, que aparece debajo. «Último análisis: hoy 10:42 · 3 análisis guardados» resume la actividad. Sin proyectos, una línea invita a ingresar la carpeta y pulsar Analizar. La ayuda está en el plegable cerrado **¿Qué significa?**.
 
 ```bash
 bun test pruebas/aceptacion/T5-14.test.ts paquetes/rige/aplicacion/casos-uso/comparar-resoluciones.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts
+bun test ./paquetes/rige/interfaces/web/sistema-visual.test.ts
+bun test ./paquetes/rige/interfaces/web/panel.test.ts ./paquetes/rige/interfaces/web/diseno.test.ts
+bun test pruebas/aceptacion/recorrido-v1.test.ts pruebas/aceptacion/T5-13-web.test.ts
+bun test
+bun run verificar
 ```
+
+Durante TDD, `bun test ./paquetes/rige/interfaces/web/` corre solo las pruebas web; `bun test ./paquetes/rige/interfaces/web/panel.test.ts -t T5-17` filtra las de nombres y fechas. Las pruebas de aceptación que leen el HTML conservan las comprobaciones de paridad y seguridad.
 
 Comprobación de Windows con unidad alternativa y TEMP/TMP en nombre corto 8.3 (PowerShell, desde `src/`; `R:` debe estar libre):
 
@@ -247,15 +259,15 @@ bun run servir
 
 El proceso informa `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y queda escuchando. Se usa el puerto de `RIGE_PUERTO` si está configurado. La interfaz solo acepta GET local, verifica Host y rechaza `Sec-Fetch-Site: cross-site` y `same-site`, sin CORS ni JavaScript ejecutable en el cliente.
 
-1. Abrir `http://127.0.0.1:4747/`. Se muestra «RIGE 1.0.0» y «¿Qué configuración rige de verdad?». El inicio pide solo **Proyecto** y ofrece **Analizar**; el almacén y su esquema 2 aparecen al pie.
-2. Completar **Proyecto** con `pruebas/escenarios/v1-precedencia/proyecto` y pulsar **Analizar**. Se guarda el proyecto entero y se abre `/resoluciones/<id>`. Se elige `build` si está activo o el primer agente activo en el orden del listado; si no hay agentes, se abre **Agentes**.
+1. Abrir `http://127.0.0.1:4747/`. Se muestra «RIGE» y «¿Qué configuración rige en este proyecto?». El inicio pide solo **Carpeta del proyecto** y ofrece **Analizar**; el pie dice «Local · solo lectura · sin red» y muestra la versión.
+2. Completar **Carpeta del proyecto** con `pruebas/escenarios/v1-precedencia/proyecto` y pulsar **Analizar**. Se guarda el proyecto entero y se abre `/resoluciones/<id>`. Se elige `build` si está activo o el primer agente activo en el orden del listado; si no hay agentes, se abre **Agentes**.
 3. En **Valores**, abrir **Consulta exacta (avanzada)**, escribir `temperature` en **Clave** y pulsar **Consultar clave**. En un almacén nuevo, la URL es `/resoluciones/1?agente=build&clave=temperature`. Se ve `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`. Las desplazadas son `0.1` en `…/v1-precedencia/opencode.json:5:7` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7`, en ese orden. **Cómo se decide** presenta RD-01 sobre la tabla; los implícitos explican RD-04. Las entradas leídas mantienen su SHA-256 y las vías remotas figuran no observadas.
 4. Guardar la URL, detener con Ctrl+C, ejecutar otra vez `bun run servir` y abrirla: recupera la foto del almacén. **Resoluciones de este proyecto** marca la actual y conserva la historia.
 5. En **Valores**, abrir **Consulta exacta (avanzada)**, dejar **Clave** vacía y pulsar **Consultar clave** para ver todas las claves. Se aceptan puntos o puntero JSON (`/options/a.b`). El único campo visible inicialmente es **Buscar clave** (`q`): **Filtrar** busca subcadenas en las claves ya consultadas, sin distinguir mayúsculas; solo oculta filas, conserva el JSON completo y muestra N de M claves. **Quitar filtro** conserva agente y clave. Ambas consultas conservan su estado entre pestañas.
 
-El orden del panel es pestañas, título y metadatos del proyecto, selector de agente, filtros y contenido. **Foto guardada el …** aparece una sola vez en el resumen de Valores. En **Permisos**, la matriz muestra **parcial** o **incompleta** junto al agente con límites; su detalle se reúne debajo en **Límites**. Una columna parcial lleva insignias **parcial** en sus celdas y una sola leyenda debajo de la matriz. **Mapa de vías**, en Entradas, agrupa **Presentes**, **Ausentes** y **No observadas**, manteniendo el orden de revisión dentro de cada grupo.
+El orden del panel es pestañas, título y metadatos del proyecto, selector de agente, filtros y contenido. El nombre «proyecto · fecha» aparece una sola vez en el título de Valores; los metadatos y la explicación quedan en **¿Qué significa?**. En **Permisos**, la matriz muestra **parcial** o **incompleta** junto al agente con límites; su detalle se reúne debajo en **Límites**. Una columna parcial lleva insignias **parcial** en sus celdas y una sola leyenda debajo de la matriz. **Mapa de vías**, en Entradas, agrupa **Presentes**, **Ausentes** y **No observadas**, manteniendo el orden de revisión dentro de cada grupo.
 
-El panel tiene cinco pestañas: **Valores**, **Permisos**, **Agentes**, **Entradas** y **Hallazgos**. Las tres primeras consultan la foto con su contexto original; Valores muestra su instante y las otras el id. Entradas y Hallazgos muestran «Estado actual de las entradas de configuración (no es la foto guardada)» y releen las entradas actuales, incluso con un id de panel. Sin id siguen disponibles como consultas independientes. La navegación conserva resolución, proyecto, agente y clave; cada hallazgo enlaza a su entrada.
+El panel tiene cinco pestañas: **Valores**, **Permisos**, **Agentes**, **Entradas** y **Hallazgos**. Las tres primeras consultan la foto con su contexto original; las fotos guardadas se identifican por proyecto y fecha local absoluta. Entradas y Hallazgos muestran «Estado actual de las entradas de configuración (no es la foto guardada)» y releen las entradas actuales, incluso con un id de panel. Sin id siguen disponibles como consultas independientes. La navegación conserva resolución, proyecto, agente y clave; cada hallazgo enlaza a su entrada.
 
 **Permisos** abre `/resoluciones/<id>/permisos?agente=…`, reúne formularios y consultas rápidas, y no inventa JSON de una consulta. El selector cambia de agente dentro de la pestaña; en un resultado de permiso vuelve al formulario sin repetir herramienta, objetivo o lanzador. Los resultados siguen en `/permiso` con Permisos activa, decisión destacada y toda la **Cadena efectiva**. **Entradas leídas** y **Claves no incorporadas por RIGE** siguen plegables en Valores.
 
