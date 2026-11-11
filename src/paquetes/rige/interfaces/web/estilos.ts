@@ -120,6 +120,17 @@ dd { margin: .25rem 0 1.25rem; overflow-wrap: anywhere; }
 .regla-detalle { margin: 0; padding: .75rem; min-width: 150px; }
 .regla-detalle p { margin: .75rem 0 0; }
 .tabla-contenedor { width: 100%; min-width: 0; max-width: 100%; overflow-x: auto; border: 1px solid var(--borde); border-radius: .75rem; background: var(--superficie); }
+.tabla-matriz { width: max-content; min-width: 100%; }
+.tabla-matriz td { min-width: 16rem; }
+.tabla-matriz th[scope="row"] { min-width: 12rem; max-width: 20rem; white-space: normal; }
+.tabla-matriz .insignia { white-space: nowrap; }
+.matriz__efectos, .matriz__estados { display: inline-flex; align-items: center; flex-wrap: wrap; gap: .4rem; }
+.matriz__estados { display: flex; margin-top: .4rem; }
+.tabla-valores { table-layout: fixed; }
+.tabla-valores td { overflow-wrap: anywhere; word-break: normal; }
+.tabla-cadena td[data-etiqueta="Sujeto"] { min-width: 12rem; overflow-wrap: normal; }
+.tabla-cadena td[data-etiqueta="Sujeto"] code { overflow-wrap: normal; }
+.tabla-cadena td[data-etiqueta="Patrón"] code { overflow-wrap: anywhere; }
 table { width: 100%; border-collapse: collapse; text-align: left; font-size: .83rem; }
 th { background: var(--superficie-suave); color: var(--secundario); font-size: .875rem; white-space: nowrap; position: sticky; top: 0; }
 td, th { padding: 1rem; vertical-align: top; border-bottom: 1px solid var(--borde); }
@@ -203,6 +214,8 @@ details[open] > summary { margin-bottom: 1.25rem; }
   .tabla-tarjetas, .tabla-tarjetas tbody, .tabla-tarjetas tr, .tabla-tarjetas td { display: block; width: 100%; min-width: 0; max-width: 100%; }
   /* Conserva los encabezados para tecnologías de asistencia. */
   .tabla-tarjetas thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+  .tabla-tarjetas thead th { position: static; }
+  .grupo-vias th { display: block; width: 100%; white-space: normal; }
   .tabla-tarjetas tr { padding: .75rem; border-bottom: 1px solid var(--borde); }
   .tabla-tarjetas td { padding: .5rem; border: 0; }
   .tabla-tarjetas td[data-etiqueta]::before { content: attr(data-etiqueta); display: block; font: 600 .75rem system-ui; color: var(--secundario); margin-bottom: .4rem; }
@@ -218,16 +231,16 @@ details[open] > summary { margin-bottom: 1.25rem; }
 .migas span { overflow-wrap: anywhere; }
 .recientes { list-style: none; padding: 0; display: grid; gap: .35rem; }
 .recientes li { display: flex; flex-direction: row; align-items: center; padding: .25rem .85rem; gap: 1rem; position: relative; border-radius: .5rem; line-height: 1.35; }
-.reciente__foto { display: grid; grid-template-columns: minmax(0, 1fr) auto; flex: 1; min-width: 0; overflow-wrap: anywhere; gap: 0 1rem; text-decoration: none; color: var(--texto); }
+.reciente__foto { display: grid; grid-template-columns: minmax(0, 1fr) auto; flex: 1 1 0; min-width: 0; overflow-wrap: anywhere; gap: 0 1rem; text-decoration: none; color: var(--texto); }
 .reciente__foto::after { content: ""; position: absolute; inset: 0; border-radius: 1rem; }
 .reciente__foto strong { font-size: 1rem; font-weight: 600; }
 .reciente__foto code, .reciente__foto span { font-size: .875rem; color: var(--secundario); }
 .reciente__foto code { grid-column: 1 / -1; grid-row: 2; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .reciente__foto span { text-align: right; }
 .reciente__foto:focus-visible { outline-offset: -3px; }
-.reciente__reanalizar { position: relative; z-index: 1; font-size: .8rem; }
-.formulario-permiso { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 1rem; align-items: end; margin: 1.5rem 0; }
-.formulario-permiso label { margin: 0; }
+.reciente__reanalizar { position: relative; z-index: 1; flex-shrink: 0; font-size: .8rem; }
+.formulario-permiso { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: 1rem; align-items: end; margin: 1.5rem 0; }
+.formulario-permiso label { display: flex; flex-direction: column; overflow-wrap: normal; margin: 0; }
 .formulario-permiso button { align-self: end; }
 .fila--desplazada { color: var(--secundario); }
 .hallazgo { margin: 1rem 0; }
@@ -254,6 +267,7 @@ details[open] > summary { margin-bottom: 1.25rem; }
 }
 .codigo-error { display: block; color: var(--secundario); }
 .metadatos-proyecto { font-size: .875rem; }
+.metadatos-acciones p { flex: 1; margin-bottom: 0; }
 .procedencia { display: inline-block; font-size: .875rem; font-weight: 400; letter-spacing: normal; margin-left: .5rem; }
 .estadisticas--resumen { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr); align-items: stretch; margin-top: 2rem; }
 .estadisticas--resumen .estadistica { padding: .65rem .85rem; }
@@ -294,5 +308,17 @@ details[open] > summary { margin-bottom: 1.25rem; }
   .cifras-actuales { margin-top: 1.25rem; }
   .hallazgo-resumen { grid-template-columns: minmax(0, 1fr) auto; }
   .hallazgo-resumen > span:nth-child(2) { grid-row: 2; grid-column: 1 / -1; }
+}
+@media (max-width: 699px) {
+  /* Una fila por agente; los sujetos siguen asociados a sus efectos. */
+  .tabla-matriz, .tabla-matriz tbody, .tabla-matriz tr, .tabla-matriz td, .tabla-matriz th[scope="row"] { display: block; width: 100%; min-width: 0; max-width: 100%; }
+  .tabla-matriz thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+  .tabla-matriz thead th { position: static; }
+  .tabla-matriz tbody { padding: .5rem; }
+  .tabla-matriz tr { padding: .75rem; border: 1px solid var(--borde); border-radius: .6rem; margin-bottom: .75rem; }
+  .tabla-matriz tr:last-child { margin-bottom: 0; }
+  .tabla-matriz th[scope="row"] { position: static; padding: .5rem; border: 0; }
+  .tabla-matriz td { padding: .5rem; border: 0; }
+  .tabla-matriz td[data-etiqueta]::before { content: attr(data-etiqueta); display: block; font: 600 .875rem ui-monospace, monospace; color: var(--secundario); margin-bottom: .4rem; }
 }
 `;

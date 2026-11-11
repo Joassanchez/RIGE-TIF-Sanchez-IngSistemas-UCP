@@ -250,6 +250,14 @@ try {
 
 Para reproducir un temporal 8.3 concreto, asignar a `$rigeCorto` la ruta corta del temporal que se quiera reproducir antes de `subst`. Las rutas esperadas de pruebas se construyen con `realpathSync.native`, porque la ruta recibida puede usar nombres cortos.
 
+Regresión de textos y maquetación (T5-22, B-1 a B-6 y M-1 a M-6), con `RIGE_ALMACEN` temporal:
+
+```bash
+bun test paquetes/rige/interfaces/web/textos-maquetacion.test.ts
+```
+
+La prueba comprueba el HTML y las reglas CSS; la medición geométrica a 360–1920 px queda a cargo del ingeniero con Chrome.
+
 Pruebas del pulido de presentación (Z-1 a Z-11), con `RIGE_ALMACEN` temporal:
 
 ```bash
@@ -274,6 +282,10 @@ bun --silent run rige -- valores --proyecto pruebas/escenarios/v1-precedencia/pr
 Con `--tiempos`, stdout conserva sus bytes y stderr agrega como última línea el JSON de `esquemas/salida/tiempos.json`: `arranqueMs` (ensamblado), `lecturaMs` (contexto, descubrimiento y lectura), `resolucionMs` (combinación y consulta), `salidaMs` (serialización y escritura) y `totalMs` (desde `ejecutarCli` hasta antes de emitir tiempos, incluidas advertencias). No incluye cargar Bun ni módulos. `esquema` y `servir` rechazan esa opción con código 2.
 
 **Servidor web y recorrido del Instrumento 35:**
+
+En **Todas las reglas**, por debajo de 700 px la matriz muestra una tarjeta por agente con sus sujetos e insignias sin partir; en escritorio mantiene columnas con ancho mínimo y desplazamiento dentro del contenedor. **Regla N** queda en la ayuda de la insignia. La cadena reserva espacio para el sujeto y corta patrones de ruta largos. Las procedencias nativas se abrevian **OpenCode · general**, **OpenCode · agente** y **OpenCode · final**; su explicación completa queda en la ayuda. Los ejes parciales comunes se indican una vez como **Todos los agentes:** y cada agente conserva sus diferencias y errores.
+
+El resumen ofrece **Analizar de nuevo** junto a los metadatos: un enlace GET a `/resolver?proyecto=…`. En recientes, la ruta con elipsis ocupa el espacio libre y la acción tiene su lugar. Los valores de texto largo se cortan dentro de su celda; el mapa de vías separa los encabezados de grupo en móvil y **Herramienta** queda encima del campo.
 
 ```bash
 bun run servir

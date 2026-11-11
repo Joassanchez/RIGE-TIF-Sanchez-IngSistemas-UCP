@@ -19,7 +19,11 @@ export function paginaReglas(respuesta: RespuestaReglas, id: string, contexto: C
   const comunes = [...new Set([...respuesta.declaraciones, ...respuesta.advertencias, ...matriz.motivos,
     ...matriz.filas.flatMap(codigosFila).filter(c => matriz.filas.filter(f => codigosFila(f).includes(c)).length > 1)])];
   const filasLimitadas = matriz.filas.filter(f => f.error !== null || f.ejesParciales.length || f.declaraciones.length || f.advertencias.length || motivosFila(f).length);
+  const ejesComunes = [...new Set(matriz.filas[0]?.ejesParciales ?? [])].filter(eje => matriz.filas.every(f => f.ejesParciales.includes(eje)));
+  const ejesPropios = (fila: typeof matriz.filas[number]) => fila.ejesParciales.filter(eje => !ejesComunes.includes(eje));
+  const filasPropias = filasLimitadas.filter(f => f.error !== null || ejesPropios(f).length || codigosFila(f).some(c => !comunes.includes(c)));
   const ejesParciales = matriz.sujetos.filter(s => matriz.filas.some(f => f.celdas.some(c => c.sujeto === s && c.motivo === "eje-parcialmente-observado")));
+  const origenesNativos: Readonly<Record<string, string>> = { "nativa-general": "general", "nativa-agente": "agente", "denegacion-subagente": "final" };
   return responderHtml(200, diseno(`Reglas de ${agente}`, html`<div class="cabecera-pagina"><div class="barra-agente"><h1>Reglas de ${agente}</h1>${selectorAgente(panel, "Todas las reglas", respuesta.proyecto)}</div>
 <p>¿Qué reglas rigen en este agente?</p>
 <details><summary>¿Qué significa?</summary>
@@ -29,26 +33,30 @@ ${lanzadoPor === undefined ? html`` : html`<p>Lanzado por: <code>${lanzadoPor}</
 <section id="matriz-permisos"><h2>Matriz de permisos</h2>
 <p>Efecto general por sujeto de permiso; las reglas por patrón pueden cambiarlo para objetivos concretos. <a href="#acciones-resolucion">Consultar permiso para una acción concreta</a>.</p>
 <div class="tabla-contenedor" role="region" aria-label="Matriz de permisos" tabindex="0">
-<table><thead><tr><th>Agente</th>${matriz.sujetos.map(s => html`<th scope="col">${s}</th>`)}</tr></thead><tbody>
-${matriz.filas.map(f => html`<tr><th scope="row"><a href="${`/reglas?${consulta(f.agente)}#cadena-completa`}">${f.agente}</a>${f.oculto ? insignia("oculto") : html``}
-${filasLimitadas.includes(f) ? html`<a href="#limites-matriz">${insignia(f.error ? "incompleta" : "parcial", "aviso")}</a>` : html``}</th>
-${f.celdas.map(c => html`<td><a href="${`/resoluciones/${encodeURIComponent(id)}/permisos?${consulta(f.agente)}&sujeto=${encodeURIComponent(c.sujeto)}`}">${efectoVisual(c.efecto)}${c.motivo === "eje-parcialmente-observado" ? insignia("parcial", "aviso") : html``}</a>
-${c.prevalece === null ? html`` : html`<p class="ayuda">Regla ${c.prevalece}</p>`}
+<table class="tabla-matriz"><thead><tr><th>Agente</th>${matriz.sujetos.map(s => html`<th scope="col">${s}</th>`)}</tr></thead><tbody>
+${matriz.filas.map(f => html`<tr><th scope="row"><a href="${`/reglas?${consulta(f.agente)}#cadena-completa`}">${f.agente}</a><span class="matriz__estados">${f.oculto ? insignia("oculto") : html``}
+${filasLimitadas.includes(f) ? html`<a href="#limites-matriz">${insignia(f.error ? "incompleta" : "parcial", "aviso")}</a>` : html``}</span></th>
+${f.celdas.map(c => html`<td data-etiqueta="${c.sujeto}"><a class="matriz__efectos" href="${`/resoluciones/${encodeURIComponent(id)}/permisos?${consulta(f.agente)}&sujeto=${encodeURIComponent(c.sujeto)}`}">${efectoVisual(c.efecto, c.prevalece === null ? undefined : `Regla ${c.prevalece}`)}${c.motivo === "eje-parcialmente-observado" ? insignia("parcial", "aviso") : html``}</a>
 </td>`)}</tr>`)}</tbody></table></div>
 ${ejesParciales.length ? html`<p class="aviso">${insignia("parcial", "aviso")} <code>${ejesParciales.join(", ")}</code>: ${respuesta.reglas["eje-parcialmente-observado"] ?? "Eje parcialmente observado; sin decisión general."}</p>` : html``}
 ${matriz.noObservados.map(a => html`<p>Agente no observado: <code>${a.nombre}</code> (${a.motivo})</p>`)}</section>
-${filasLimitadas.length ? html`<section id="limites-matriz"><h2>Límites</h2><ul>${filasLimitadas.map(f => html`<li><strong>${f.agente}</strong>
+${filasLimitadas.length ? html`<section id="limites-matriz"><h2>Límites</h2>
+${ejesComunes.length ? html`<p>Todos los agentes: <code>${ejesComunes.join(", ")}</code></p>` : html``}
+${filasPropias.length ? html`<ul>${filasPropias.map(f => html`<li><strong>${f.agente}</strong>
 ${f.error ? html`<p>${f.error.codigo}: ${f.error.mensaje}</p>` : html``}
-${f.ejesParciales.length ? html`<p>Ejes parciales: <code>${f.ejesParciales.join(", ")}</code></p>` : html``}
-${codigosFila(f).filter(c => !comunes.includes(c)).map(c => html`<p>${respuesta.reglas[c] ?? c}</p>`)}</li>`)}</ul></section>` : html``}
+${ejesPropios(f).length ? html`<p>Ejes parciales: <code>${ejesPropios(f).join(", ")}</code></p>` : html``}
+${codigosFila(f).filter(c => !comunes.includes(c)).map(c => html`<p>${respuesta.reglas[c] ?? c}</p>`)}</li>`)}</ul>` : html``}
+</section>` : html``}
 ${comunes.length ? html`<section id="limites-comunes"><h2>Límites comunes</h2><ul>${comunes.map(c => html`<li>${respuesta.reglas[c] ?? c}</li>`)}</ul></section>` : html``}
 <section id="cadena-completa"><h2>Cadena completa</h2><p>Orden de evaluación, con índices desde 1. Prevalece indica el efecto general por sujeto, sin evaluar objetivos.</p>
 <div class="tabla-contenedor" role="region" aria-label="Cadena completa" tabindex="0">
-<table class="tabla-tarjetas"><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalece para *</th></tr></thead>
+<table class="tabla-tarjetas tabla-cadena"><thead><tr><th>Índice</th><th>Sujeto</th><th>Patrón</th><th>Efecto</th><th>Procedencia</th><th>Prevalece para *</th></tr></thead>
 <tbody>${respuesta.cadena.map(r => html`<tr><td data-etiqueta="Índice">${r.indice}</td><td data-etiqueta="Sujeto"><code>${r.sujeto}</code></td>
 <td data-etiqueta="Patrón"><code>${r.patron}</code></td><td data-etiqueta="Efecto">${efectoVisual(r.efecto)}</td>
-<td data-etiqueta="Procedencia">${insignia(r.origen.tipo)} ${r.origen.tipo === "declarado" && r.declaracion
-    ? html`${r.declaracion.via} · ${presentarUbicacion(r.declaracion.referencia, r.origen.posicion, r.declaracion.via)}` : html`<code>${r.origen.tipo === "declarado" ? "Declaración sin ubicación" : `${r.origen.regla}: ${respuesta.reglas[r.origen.regla]}`}</code>`}</td>
+<td data-etiqueta="Procedencia">${r.origen.tipo === "nativo"
+    ? html`<span title="${`nativo · ${r.origen.regla}: ${respuesta.reglas[r.origen.regla] ?? "Explicación no disponible."}`}">${origenesNativos[r.origen.regla] ? `OpenCode · ${origenesNativos[r.origen.regla]}` : "OpenCode"}</span>`
+    : html`${insignia(r.origen.tipo)} ${r.origen.tipo === "declarado" && r.declaracion
+      ? html`${r.declaracion.via} · ${presentarUbicacion(r.declaracion.referencia, r.origen.posicion, r.declaracion.via)}` : html`<code>${r.origen.tipo === "declarado" ? "Declaración sin ubicación" : `${r.origen.regla}: ${respuesta.reglas[r.origen.regla]}`}</code>`}`}</td>
 <td data-etiqueta="Prevalece para *">${r.prevalece.map(s => insignia(s))}</td></tr>`)}</tbody></table></div></section>
 ${consultasPermiso(panel, lanzadoPor)}
 ${comandoCli("reglas", { proyecto: respuesta.proyecto, agente, ...(lanzadoPor === undefined ? {} : { "lanzado-por": lanzadoPor }) })}

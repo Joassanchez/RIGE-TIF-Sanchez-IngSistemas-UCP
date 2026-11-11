@@ -43,7 +43,7 @@ export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmace
   const reglasFabrica = [...new Set(respuesta.valores.filter(v => v.rastro.determinante.origen.tipo !== "declarado")
     .map(v => v.rastro.determinante.regla))].filter(c => !cubiertas.has(c));
   const tablaValores = (filas: typeof visibles): HtmlSeguro => html`<div class="tabla-contenedor" role="region" aria-label="Valores efectivos" tabindex="0">
-<table class="tabla-tarjetas"><thead><tr><th>Clave</th><th>Valor</th><th>Lo determina</th><th>Desplazadas</th></tr></thead>
+<table class="tabla-tarjetas tabla-valores"><thead><tr><th>Clave</th><th>Valor</th><th>Lo determina</th><th>Desplazadas</th></tr></thead>
 <tbody>${filas.map(({ clave, rastro }) => html`<tr><td data-etiqueta="Clave">${clave}</td><td data-etiqueta="Valor">${JSON.stringify(rastro.valor)}</td>
 <td data-etiqueta="Lo determina">${presentarOrigen(rastro.determinante)}${rastro.determinante.origen.tipo === "declarado" ? detalleRegla(rastro.determinante.regla) : html``}</td><td data-etiqueta="Desplazadas">${rastro.desplazadas.length
     ? rastro.desplazadas.map(presentarDesplazada) : "ninguna"}</td></tr>`)}</tbody></table></div>`;

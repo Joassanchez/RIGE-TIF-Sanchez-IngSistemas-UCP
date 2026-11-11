@@ -248,7 +248,7 @@ describe("T5-11 P-7 D-5 responsive", () => {
         for (const texto of ["Entrada ilegible", "Ubicación:", "Causa:", "detalle", "#entrada-0"]) expect(tarjeta).toContain(texto);
         continue;
       }
-      const tabla = cuerpo.match(/<table class="tabla-tarjetas">[^]*?<\/table>/)?.[0];
+      const tabla = cuerpo.match(/<table class="tabla-tarjetas(?: [^"]*)?">[^]*?<\/table>/)?.[0];
       expect(tabla).toBeDefined();
       const titulos = [...tabla!.matchAll(/<th>(.*?)<\/th>/g)].map(m => m[1]);
       const etiquetas = [...tabla!.matchAll(/<td data-etiqueta="([^"]+)"/g)].map(m => m[1]);
