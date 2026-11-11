@@ -139,7 +139,9 @@ En **Permiso**, elegí agente, herramienta y **Acción u objetivo**, y pulsá **
 
 En **Entradas**, el mapa agrupa **Presentes**, **Ausentes** y **No observadas**, conservando el orden de revisión dentro de cada grupo. Los límites de la matriz completa se consultan en **Reglas**.
 
-El encabezado del resumen reúne ruta, fecha y versión en una línea. Las cifras distinguen la foto guardada del **Estado actual**; **Foto guardada** y **Estado actual de los archivos** rotulan sus bloques. En el agente, el selector queda junto al título y **Buscar clave** forma una barra con **Filtrar**. Primero aparecen las claves declaradas, en orden de clave; **Valores de fábrica (n)** agrupa al final los valores implícitos y nativos, cerrado. **¿Qué significa?** reúne las explicaciones de precedencia e implícitos. Las **Desplazadas** muestran valor tachado y ubicación en una línea, sin numeración. Los **Sujetos de permiso** forman una cuadrícula con efecto, índice de regla en la ayuda y una leyenda común para **parcial**. **Límites del análisis** reúne las restricciones. **Ver todas las reglas de <agente>**, **Consultar permiso**, **Ver entradas actuales** y **Ver hallazgos** son botones secundarios al pie de su bloque.
+El encabezado del resumen reúne ruta, fecha y versión en una línea. Las cifras distinguen la foto guardada del **Estado actual**; **Foto guardada** y **Estado actual de los archivos** rotulan sus bloques. En el agente y en permiso, hallazgos, reglas y entradas, el selector compacto queda junto al título. En el agente, **Buscar clave** forma una barra con **Filtrar**. Primero aparecen las claves declaradas, en orden de clave; **Valores de fábrica (n)** agrupa al final los valores implícitos y nativos, cerrado. **¿Qué significa?** reúne las explicaciones de precedencia e implícitos. Las **Desplazadas** muestran valor tachado y ubicación en una línea, sin numeración. Los **Sujetos de permiso** forman una cuadrícula con efecto, índice de regla en la ayuda y una leyenda común para **parcial**. **Límites del análisis** reúne las restricciones. **Ver todas las reglas de <agente>**, **Consultar permiso** y **Ver hallazgos** son botones secundarios de tamaño menor que **Analizar** o **Consultar**. **Ver entradas actuales** queda en el resumen del proyecto, accesible por la miga. En el agente, el detalle de **Entradas leídas** de la foto se conserva dentro de **Ver en la consola**.
+
+El aviso de agentes dice «Este proyecto no define agentes nuevos: usa los de OpenCode» solo con una lista completa, no vacía y sin agentes declarados. Hallazgos muestra cifras solo para tipos presentes; los demás van en una línea «Sin hallazgos de: …». Agentes, comandos y entradas se cuentan en una línea; un conteo desconocido dice «sin dato». En permiso, la frase de decisión enlaza al editor con el nombre corto del archivo y la ruta completa en la ayuda. La advertencia de protección nativa aparece destacada una vez; su texto equivalente se conserva en **Notas del análisis**, y las demás advertencias siguen visibles. **Ver la cadena completa en Todas las reglas** es un botón secundario junto a **Ver reglas coincidentes**.
 
 **Lo determina** muestra vía y ubicación; los archivos locales con posición enlazan a **VS Code**, con la ruta completa en la ayuda. Variables, referencias remotas y rutas relativas quedan como texto.
 
@@ -215,6 +217,8 @@ Para el pulido T5-20, `bun test ./paquetes/rige/interfaces/web/recorrido-pulido.
 
 Durante TDD, `bun test ./paquetes/rige/interfaces/web/` corre solo las pruebas web; `bun test ./paquetes/rige/interfaces/web/panel.test.ts -t T5-17` filtra las de nombres y fechas. Las pruebas de aceptación que leen el HTML conservan las comprobaciones de paridad y seguridad.
 
+Pruebas de T5-21 (F-1 a F-7), con `RIGE_ALMACEN` temporal: `bun test ./paquetes/rige/interfaces/web/ajustes-finales.test.ts`.
+
 Comprobación de Windows con unidad alternativa y TEMP/TMP en nombre corto 8.3 (PowerShell, desde `src/`; `R:` debe estar libre):
 
 ```powershell
@@ -228,7 +232,7 @@ subst R: $rigeRaiz
 try {
   $env:TEMP = $rigeCorto.Trim()
   $env:TMP = $rigeCorto.Trim()
-  $env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-prueba-t520'
+  $env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-prueba-t521'
   Push-Location R:\src
   try {
     bun test
@@ -287,7 +291,7 @@ La página del agente conserva selector y contexto de búsqueda. Debajo de sus v
 
 El **Resumen del proyecto** (`/resoluciones/<id>`) presenta cifras, agentes de la foto, hallazgos actuales y **Archivos y cambios**. **Archivos leídos** y **Historial** son plegables cerrados. Los archivos se ordenan por precedencia: la de abajo prevalece. El mapa permanece dentro del plegable. Archivos y hallazgos indican «Estado actual de los archivos»: pueden cambiar aunque la foto sea la misma. Las variables y las vías no observadas quedan fuera del conteo de archivos; una legibilidad desconocida dice «sin dato».
 
-**Permisos** abre `/resoluciones/<id>/permisos?agente=…`, reúne formularios y consultas rápidas, y no inventa JSON de una consulta. El selector cambia de agente dentro del formulario; en un resultado de permiso vuelve al formulario sin repetir herramienta, objetivo o lanzador. Los resultados siguen en `/permiso` con sus migas de pan y decisión destacada y toda la **Cadena efectiva**. **Entradas leídas** y **Claves no incorporadas por RIGE** siguen plegables en Valores.
+**Permisos** abre `/resoluciones/<id>/permisos?agente=…`, reúne formularios y consultas rápidas, y no inventa JSON de una consulta. El selector cambia de agente dentro del formulario; en un resultado de permiso vuelve al formulario sin repetir herramienta, objetivo o lanzador. Los resultados siguen en `/permiso` con sus migas de pan y decisión destacada y toda la **Cadena efectiva**. **Claves no incorporadas por RIGE** sigue plegable en Valores; **Entradas leídas** queda dentro de **Ver en la consola**.
 
 Cada resultado ofrece **Ver en la consola**, plegable, con comandos citados para Bash y PowerShell 7.3+ y esta aclaración: «No recupera esta foto; coincide si las entradas y el contexto no cambiaron». Permiso siempre incluye `--explicar`; `q` solo afecta la presentación web. Los comandos largos desplazan dentro de sus contenedores. Hasta 640 px, las tablas de valores, detalle de hallazgos, cadena de permiso y entradas pasan a tarjetas con etiquetas, conservando contenido y orden. El tema sigue al sistema, sin JavaScript ni recursos externos.
 

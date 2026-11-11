@@ -20,12 +20,12 @@ export function paginaReglas(respuesta: RespuestaReglas, id: string, contexto: C
     ...matriz.filas.flatMap(codigosFila).filter(c => matriz.filas.filter(f => codigosFila(f).includes(c)).length > 1)])];
   const filasLimitadas = matriz.filas.filter(f => f.error !== null || f.ejesParciales.length || f.declaraciones.length || f.advertencias.length || motivosFila(f).length);
   const ejesParciales = matriz.sujetos.filter(s => matriz.filas.some(f => f.celdas.some(c => c.sujeto === s && c.motivo === "eje-parcialmente-observado")));
-  return responderHtml(200, diseno(`Reglas de ${agente}`, html`<div class="cabecera-pagina"><h1>Reglas de ${agente}</h1>
+  return responderHtml(200, diseno(`Reglas de ${agente}`, html`<div class="cabecera-pagina"><div class="barra-agente"><h1>Reglas de ${agente}</h1>${selectorAgente(panel, "Todas las reglas", respuesta.proyecto)}</div>
 <p>¿Qué reglas rigen en este agente?</p>
 <details><summary>¿Qué significa?</summary>
 <p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>${rotuloFoto(respuesta.proyecto, contexto.instante, contexto.fechaNoDisponible)}
 ${lanzadoPor === undefined ? html`` : html`<p>Lanzado por: <code>${lanzadoPor}</code></p>`}</details></div>
-${selectorAgente(panel, "Todas las reglas", respuesta.proyecto)}
+
 <section id="matriz-permisos"><h2>Matriz de permisos</h2>
 <p>Efecto general por sujeto de permiso; las reglas por patrón pueden cambiarlo para objetivos concretos. <a href="#acciones-resolucion">Consultar permiso para una acción concreta</a>.</p>
 <div class="tabla-contenedor" role="region" aria-label="Matriz de permisos" tabindex="0">

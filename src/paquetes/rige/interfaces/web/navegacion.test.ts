@@ -254,8 +254,13 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
       if (cuerpo.includes('id="tabla-entradas"')) {
         expect(enlace).toBeUndefined(); // Ya no hay enlaces sueltos en la cabecera.
         expect(cuerpo).toContain(`title="/p/${escapado}"`);
-      } else if ([paginaListado, paginaValores].includes(cuerpo)) expect(enlace).toBeDefined();
-      if ([paginaListado, paginaValores].includes(cuerpo)) expect(enlace).toContain("&amp;id=7");
+      } else if (cuerpo === paginaListado) expect(enlace).toBeDefined();
+      if (cuerpo === paginaListado) expect(enlace).toContain("&amp;id=7");
+      if (cuerpo === paginaValores) {
+        expect(enlace).toBeUndefined();
+        expect(cuerpo).toContain(`title="/p/${escapado}"`);
+        expect(cuerpo.split('<details id="comando-cli">')[1]).toContain('id="entradas-leidas"');
+      }
       expect(cuerpo).not.toMatch(/\sstyle\s*=|<style\b/i);
       const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
       expect(bloques).toHaveLength(1);

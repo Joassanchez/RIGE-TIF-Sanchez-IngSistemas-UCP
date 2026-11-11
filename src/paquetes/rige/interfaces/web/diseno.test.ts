@@ -52,7 +52,7 @@ describe("T5-17 G-3 cabeceras concisas", () => {
     for (const pagina of [paginaResolucion(valores, sobre), paginaPermiso(permiso), paginaAgentes(agentes), paginaEntradas(entradas), paginaHallazgos(hallazgos)]) {
       const cuerpo = await pagina.text();
       const cabecera = cuerpo.includes('id="resumen-resolucion"') ? seccion(cuerpo, "resumen-resolucion")
-        : cuerpo.match(/<div class="cabecera-pagina">([^]*?)<\/div>/)![1]!;
+        : cuerpo.match(/<div class="cabecera-pagina">([^]*?<\/details>)<\/div>/)![1]!;
       const sinDetalles = cabecera.replace(/<details[^]*?<\/details>/g, "");
       expect(sinDetalles).not.toContain('class="ceja"');
       expect(sinDetalles.match(/<p>/g)).toHaveLength(1);
@@ -206,16 +206,17 @@ describe("T5-08 U-8 P-9", () => {
     const cuerpo = await paginaHallazgos(dato).text();
     expect(cuerpo).toContain(incompleta ? "Sin hallazgos observados; análisis parcial" : "Sin hallazgos en este proyecto");
     const resumen = seccion(cuerpo, "resumen-hallazgos");
-    expect(resumen.match(/class="estadistica estadistica--cero"/g)).toHaveLength(6);
+    expect(resumen).not.toContain("estadistica--cero");
+    expect(resumen).toContain("Sin hallazgos de:");
     for (const tipo of Object.keys(hallazgos.resumen.hallazgos)) expect(resumen).toContain(tipo);
     if (incompleta) {
-      expect(cuerpo).toContain("Conteos de elementos no disponibles: resolución incompleta");
+      expect(cuerpo).toContain("sin dato: agentes · sin dato: comandos · sin dato: entradas (resolución incompleta)");
       expect(resumen).not.toContain("Agentes: 0");
       expect(cuerpo).toContain("&lt;script&gt;&quot;&amp;");
     } else {
-      expect(resumen).toContain('<strong>2</strong><span>Agentes</span>');
-      expect(resumen).toContain('<strong>3</strong><span>Comandos</span>');
-      expect(resumen).toContain('<strong>4</strong><span>Entradas</span>');
+      expect(resumen).toContain('2 agentes');
+      expect(resumen).toContain('3 comandos');
+      expect(resumen).toContain('4 entradas');
     }
   });
   test("completo presenta el tipo, la localizacion y la explicacion asociados", async () => {
@@ -279,9 +280,9 @@ describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
     for (const nombre of ["Entrada ilegible", "Entradas descartadas", "Sustituciones sin valor", "Referencias no resueltas", "Reglas sin efecto", "Elementos sin uso"])
       expect(resumen).toContain(nombre);
     expect(resumen.match(/class="estadistica estadistica--aviso"/g)).toHaveLength(6);
-    expect(resumen).toContain('<strong>2</strong><span>Agentes</span>');
-    expect(resumen).toContain('<strong>3</strong><span>Comandos</span>');
-    expect(resumen).toContain('<strong>4</strong><span>Entradas</span>');
+    expect(resumen).toContain('2 agentes');
+    expect(resumen).toContain('3 comandos');
+    expect(resumen).toContain('4 entradas');
     for (const [tipo, cantidad] of Object.entries(cantidades)) {
       expect(resumen).toContain(`<strong>${cantidad}</strong>`);
       expect(resumen).toContain(`<small>${tipo}</small>`);

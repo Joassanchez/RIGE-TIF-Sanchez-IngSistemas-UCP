@@ -1,5 +1,14 @@
 import { html, type HtmlSeguro } from "./plantillas";
 
+// Conserva la frase y reemplaza solo la ubicación exacta de la referencia estructurada.
+export function presentarTextoUbicado(texto: string, referencia: string | null, posicion: { readonly linea: number; readonly columna: number }, via?: string | null): HtmlSeguro {
+  if (referencia === null) return html`${texto}`;
+  const localizacion = `${referencia}:${posicion.linea}:${posicion.columna}`;
+  const inicio = texto.indexOf(localizacion);
+  return inicio < 0 ? html`${texto}`
+    : html`${texto.slice(0, inicio)}${presentarUbicacion(referencia, posicion, via)}${texto.slice(inicio + localizacion.length)}`;
+}
+
 export function esArchivoLocal(referencia: string, via?: string | null): boolean {
   return via !== "variable-contenido" && via !== "variable-permiso" && !via?.startsWith("remota-")
     && (/^\//.test(referencia) || /^[a-z]:[\\/]/i.test(referencia) || /^\\\\[^\\]+\\/.test(referencia));

@@ -305,7 +305,7 @@ describe("T5-11 P-3 panel y contexto", () => {
         expect(cuerpo).not.toContain("Consultar por CLI");
       } else expect(dato(cuerpo)).toEqual(respuesta);
       const selector = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)?.[0];
-      expect(selector === undefined).toBe(activa === "Agentes" || respuesta === null);
+      expect(selector === undefined).toBe(activa === "Agentes");
       if (respuesta === null) {
         const formulario = cuerpo.match(/<form id="consultar-permiso"[^]*?<\/form>/)![0];
         expect(formulario).toContain('<select name="agente" required>');

@@ -18,18 +18,16 @@ export function paginaHallazgos(respuesta: RespuestaHallazgos, contexto: Context
     "sustitucion-sin-valor": "Revisá que el origen de la sustitución esté disponible.",
   };
   return responderHtml(200, diseno("Hallazgos", html`
-<div class="cabecera-pagina"><h1>Hallazgos <small class="procedencia">Estado actual de los archivos</small></h1>
+<div class="cabecera-pagina"><div class="barra-agente"><h1>Hallazgos <small class="procedencia">Estado actual de los archivos</small></h1>${selectorAgente(contexto, "Hallazgos", respuesta.proyecto)}</div>
 <p>¿Qué problemas se observan ahora?</p>
 <details><summary>¿Qué significa?</summary><p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
 <p>Estado actual de las entradas de configuración (no es la foto guardada)</p></details></div>
-${selectorAgente(contexto, "Hallazgos", respuesta.proyecto)}
+
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="resumen-hallazgos"><h2>Resumen</h2>
-${respuesta.resumen.elementos === null ? html`<p class="aviso aviso--advertencia">Conteos de elementos no disponibles: resolución incompleta.</p>` : html`<div class="estadisticas estadisticas--elementos" aria-label="Elementos del proyecto">
-<div class="estadistica estadistica--mini"><strong>${respuesta.resumen.elementos.agentes}</strong><span>${concordar(respuesta.resumen.elementos.agentes, "Agente", "Agentes")}</span></div>
-<div class="estadistica estadistica--mini"><strong>${respuesta.resumen.elementos.comandos}</strong><span>${concordar(respuesta.resumen.elementos.comandos, "Comando", "Comandos")}</span></div>
-<div class="estadistica estadistica--mini"><strong>${respuesta.resumen.elementos.entradas}</strong><span>${concordar(respuesta.resumen.elementos.entradas, "Entrada", "Entradas")}</span></div></div>`}
-<div class="estadisticas">${Object.entries(respuesta.resumen.hallazgos).map(([tipo, cantidad]) => html`<div class="${cantidad === 0 ? "estadistica estadistica--cero" : "estadistica estadistica--aviso"}"><span class="estadistica__nombre">${concordar(cantidad, ...nombresHallazgos[tipo]!)}</span><strong>${cantidad}</strong><small>${tipo}</small></div>`)}</div></section>
+<p class="atenuado">${respuesta.resumen.elementos === null ? "sin dato: agentes · sin dato: comandos · sin dato: entradas (resolución incompleta)" : `${respuesta.resumen.elementos.agentes} ${concordar(respuesta.resumen.elementos.agentes, "agente", "agentes")} · ${respuesta.resumen.elementos.comandos} ${concordar(respuesta.resumen.elementos.comandos, "comando", "comandos")} · ${respuesta.resumen.elementos.entradas} ${concordar(respuesta.resumen.elementos.entradas, "entrada", "entradas")}`}</p>
+<div class="estadisticas">${Object.entries(respuesta.resumen.hallazgos).filter(([, cantidad]) => cantidad > 0).map(([tipo, cantidad]) => html`<div class="estadistica estadistica--aviso"><span class="estadistica__nombre">${concordar(cantidad, ...nombresHallazgos[tipo]!)}</span><strong>${cantidad}</strong><small>${tipo}</small></div>`)}</div>
+${Object.values(respuesta.resumen.hallazgos).includes(0) ? html`<p class="atenuado">Sin hallazgos de: ${Object.entries(respuesta.resumen.hallazgos).filter(([, cantidad]) => cantidad === 0).map(([tipo]) => html`<span title="${tipo}">${nombresHallazgos[tipo]![1].toLowerCase()}</span>`).map((nombre, i) => html`${i ? ", " : ""}${nombre}`)}</p>` : html``}</section>
 ${respuesta.incompleta ? html`<div class="aviso aviso--advertencia"><p>Hallazgos parciales; análisis parcial.</p>${respuesta.motivos.map(motivo => html`<p>${respuesta.reglas[motivo] ?? motivo}</p>`)}</div>` : html``}
 <section id="tabla-hallazgos"><h2>Detalle de hallazgos</h2>
 ${respuesta.hallazgos.length ? html`${tipos.map(tipo => html`<div class="grupo-hallazgos" role="group" aria-label="${nombresHallazgos[tipo]![1]}">

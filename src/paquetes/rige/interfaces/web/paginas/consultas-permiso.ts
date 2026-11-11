@@ -3,11 +3,11 @@ import type { RespuestaAgentes } from "../../../aplicacion/respuestas/agentes";
 import { html } from "../plantillas";
 import { diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
-import { camposContexto, type ContextoPanel } from "../panel";
+import { camposContexto, selectorAgente, type ContextoPanel } from "../panel";
 import { presentarRuta } from "../rutas";
 
 export function paginaConsultasPermiso(respuesta: RespuestaAgentes, contexto: ContextoPanel): Response {
-  return responderHtml(200, diseno("Permisos", html`<div class="cabecera-pagina"><h1>Permisos</h1>
+  return responderHtml(200, diseno("Permisos", html`<div class="cabecera-pagina"><div class="barra-agente"><h1>Permisos</h1>${selectorAgente(contexto, "Permisos", respuesta.proyecto)}</div>
 <p>¿Qué permiso querés consultar?</p>
 <details><summary>¿Qué significa?</summary>
 <p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>${rotuloFoto(respuesta.proyecto, contexto.instante, contexto.fechaNoDisponible)}</details></div>

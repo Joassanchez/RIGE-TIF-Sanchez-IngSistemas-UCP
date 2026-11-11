@@ -107,7 +107,7 @@ describe("T5-18 R-3 agentes", () => {
     for (const incompleta of [false, true]) {
       const soloNativos = { ...agentes, agentes: agentes.agentes.filter(a => a.origen === "nativo"), incompleta, motivos: incompleta ? ["limite"] : [], reglas: { limite: "Listado parcial." } };
       const html = await pedir("/resoluciones/7", { consultarAgentes: () => ({ exito: true, valor: soloNativos }) }).text();
-      expect(html.includes("Este proyecto no declara agentes propios")).toBe(!incompleta);
+      expect(html.includes("Este proyecto no define agentes nuevos: usa los de OpenCode")).toBe(!incompleta);
       if (incompleta) expect(html).toContain("Listado parcial.");
     }
     const vacia = await pedir("/resoluciones/7", { consultarAgentes: () => ({ exito: true, valor: { ...agentes, agentes: [], eliminados: [{ nombre: "quitado", declaracion }] } }), consultarResolucion: no }).text();

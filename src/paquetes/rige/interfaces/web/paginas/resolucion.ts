@@ -78,12 +78,11 @@ ${datos.reglas ? filaPermisos(datos.reglas, String(sobre.id), { ...contexto, age
 ${datos.reglas ? html`` : html`<div class="acciones acciones--pie"><a class="boton boton--secundario" href="${`/resoluciones/${sobre.id}/permisos${consulta}${contexto.lanzadoPor === undefined ? "" : `&lanzadoPor=${encodeURIComponent(contexto.lanzadoPor)}`}`}">Consultar permiso</a></div>`}
 ${respuesta.noResueltas.length ? html`<details id="claves-no-incorporadas"><summary>Claves no incorporadas por RIGE</summary>
 <ul>${respuesta.noResueltas.map(clave => html`<li>${clave.ruta.join(".")}: ${respuesta.reglas[clave.regla]}</li>`)}</ul></details>` : html``}
-<details id="entradas-leidas"><summary>Entradas leídas</summary>
+${comandoCli("valores", { proyecto: respuesta.proyecto, agente: respuesta.agente, ...(clave ? { clave } : {}) }, html`<details id="entradas-leidas"><summary>Entradas leídas</summary>
 <dl><dt>Resumen de las entradas leídas</dt><dd>${respuesta.resumenEntradas}</dd></dl>
 <div class="tabla-contenedor" role="region" aria-label="Entradas leídas" tabindex="0">
 <table class="tabla-tarjetas"><thead><tr><th>Orden</th><th>Vía</th><th>Referencia</th><th>Condición</th><th>Resumen SHA-256</th></tr></thead>
 <tbody>${respuesta.entradas.map(entrada => html`<tr id="${`entrada-leida-${entrada.orden}`}"><td data-etiqueta="Orden">${entrada.orden}</td><td data-etiqueta="Vía">${entrada.via}</td><td data-etiqueta="Referencia">${presentarRuta(entrada.referencia)}</td><td data-etiqueta="Condición">${insignia(entrada.condicion, "neutra")}</td><td data-etiqueta="Resumen SHA-256"><code>${entrada.resumen ?? "—"}</code></td></tr>`)}</tbody></table></div></details>
-<div class="acciones acciones--pie"><a class="boton boton--secundario" href="${`/entradas?proyecto=${encodeURIComponent(respuesta.proyecto)}&id=${sobre.id}&agente=${encodeURIComponent(respuesta.agente)}${clave ? `&clave=${encodeURIComponent(clave)}` : ""}${q ? `&q=${encodeURIComponent(q)}` : ""}${contexto.lanzadoPor === undefined ? "" : `&lanzadoPor=${encodeURIComponent(contexto.lanzadoPor)}`}`}">Ver entradas actuales</a></div>
-${comandoCli("valores", { proyecto: respuesta.proyecto, agente: respuesta.agente, ...(clave ? { clave } : {}) })}
+`)}
 ${datosRespuesta(respuesta)}`, { ...contexto, proyecto: respuesta.proyecto, idResolucion: sobre.id, agente: respuesta.agente, ...(clave ? { clave } : {}), activa: "Valores" }));
 }

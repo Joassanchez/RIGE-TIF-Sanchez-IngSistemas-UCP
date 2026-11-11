@@ -123,7 +123,7 @@ describe("T5-15 Z-6 mapa agrupado", () => {
 });
 
 describe("T5-15 Z-7 coherencia de vistas", () => {
-  test("cabeceras y selector despues de metadatos en cada vista del panel; CSS comun y tarjetas", async () => {
+  test("cabeceras y selector junto al titulo salvo listado antiguo en cada vista del panel; CSS comun y tarjetas", async () => {
     const paginas = [paginaAgentes(agentes, "7", contexto.clave, contexto), paginaEntradas(base, contexto),
       paginaHallazgos({ ...base, hallazgos: [], incompleta: false, motivos: [], resumen: { elementos: null, hallazgos: conteosHallazgos } }, contexto),
       paginaConsultasPermiso(agentes, contexto), paginaReglas(reglas, "7", contexto),
@@ -131,12 +131,13 @@ describe("T5-15 Z-7 coherencia de vistas", () => {
         motivoSinDecision: "ninguna", determinante: null, desplazadas: [], nativaAnulada: null, advertencias: [], cadena: [], explicacion: [], porDefecto: true }, "7", contexto)];
     for (const pagina of paginas) {
       const cuerpo = await pagina.text();
-      const cabecera = cuerpo.match(/<(?:section|div)[^>]*class="cabecera-pagina"[^>]*>([^]*?)<\/(?:section|div)>/);
+      const cabecera = cuerpo.match(/<(?:section|div)[^>]*class="cabecera-pagina"[^>]*>([^]*?<\/details>)<\/(?:section|div)>/);
       expect(cabecera).not.toBeNull();
       expect(cabecera![1]).toContain("<h1>");
       expect(cabecera![1]).toContain("proyecto");
       const selector = cuerpo.includes('id="seleccionar-agente"') ? 'id="seleccionar-agente"' : 'id="consultar-permiso"';
-      expect(cuerpo.indexOf(selector)).toBeGreaterThan(cuerpo.indexOf(cabecera![0]) + cabecera![0].length - 1);
+      if (cuerpo.includes('<h1>Agentes</h1>')) expect(cuerpo.indexOf(selector)).toBeGreaterThan(cuerpo.indexOf(cabecera![0]));
+      else expect(cabecera![1]).toContain(selector);
       expect(cuerpo).not.toMatch(/style=|<style\b|<script(?! type="application\/json")/);
     }
     for (const pagina of [paginaInicio(estado), paginaComparacion(comparacion), paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "No existe" })]) {
@@ -195,9 +196,12 @@ describe("T5-15 Z-10 plurales", () => {
       const resumen = seccionHtml(cuerpo, "resumen-hallazgos");
       const nombres = cantidad === 1 ? ["Entrada ilegible", "Entrada descartada", "Sustitución sin valor", "Referencia no resuelta", "Regla sin efecto", "Elemento sin uso"]
         : ["Entradas ilegibles", "Entradas descartadas", "Sustituciones sin valor", "Referencias no resueltas", "Reglas sin efecto", "Elementos sin uso"];
-      for (const nombre of nombres) expect(resumen).toContain(`>${nombre}</span><strong>${cantidad}</strong>`);
+      for (const nombre of nombres) {
+        if (cantidad === 0) expect(resumen).toContain(`>${nombre.toLowerCase()}</span>`);
+        else expect(resumen).toContain(`>${nombre}</span><strong>${cantidad}</strong>`);
+      }
       for (const nombre of cantidad === 1 ? ["Agente", "Comando", "Entrada"] : ["Agentes", "Comandos", "Entradas"])
-        expect(resumen).toContain(`<strong>${cantidad}</strong><span>${nombre}</span>`);
+        expect(resumen).toContain(`${cantidad} ${nombre.toLowerCase()}`);
       expect(json(cuerpo)).toEqual(respuesta);
     }
   });

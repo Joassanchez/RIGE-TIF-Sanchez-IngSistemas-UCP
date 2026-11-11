@@ -77,7 +77,7 @@ input[type="hidden"] { display: none; }
 .acciones { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; }
 button, .boton { display: inline-flex; align-items: center; justify-content: center; min-width: 0; max-width: 100%; white-space: normal; padding: .8rem 1.2rem; min-height: 44px; font: 600 1rem/1.5 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; color: var(--boton-texto); background: var(--acento); border: 1px solid transparent; border-radius: .55rem; cursor: pointer; text-decoration: none; transition: background .15s, transform .15s; }
 button:hover, .boton:hover { background: var(--acento-fuerte); color: var(--boton-texto); }
-.boton--secundario { background: var(--superficie); color: var(--acento); border-color: var(--borde-control); }
+.boton--secundario { min-height: 36px; padding: .4rem .7rem; font-size: .875rem; background: var(--superficie); color: var(--acento); border-color: var(--borde-control); }
 .boton--secundario:hover { color: var(--acento-fuerte); background: var(--acento-suave); }
 .cabecera-pagina { margin-bottom: 2rem; }
 .cabecera-pagina h1 { font-size: 1.75rem; }
@@ -254,7 +254,7 @@ details[open] > summary { margin-bottom: 1.25rem; }
 }
 .codigo-error { display: block; color: var(--secundario); }
 .metadatos-proyecto { font-size: .875rem; }
-.procedencia { display: inline-block; font-size: .75rem; font-weight: 400; margin-left: .5rem; }
+.procedencia { display: inline-block; font-size: .875rem; font-weight: 400; letter-spacing: normal; margin-left: .5rem; }
 .estadisticas--resumen { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr); align-items: stretch; margin-top: 2rem; }
 .estadisticas--resumen .estadistica { padding: .65rem .85rem; }
 .estadisticas--resumen .estadistica strong { margin-bottom: .1rem; }

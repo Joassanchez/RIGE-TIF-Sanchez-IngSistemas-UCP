@@ -10,13 +10,13 @@ import { presentarRuta, presentarUbicacion } from "../rutas";
 export function paginaEntradas(respuesta: RespuestaEntradas, contexto: ContextoPanel = {}): Response {
   const entradas = [...respuesta.entradas].sort((a, b) => a.orden - b.orden);
   return responderHtml(200, diseno("Entradas", html`
-<div class="cabecera-pagina"><h1>Entradas</h1>
+<div class="cabecera-pagina"><div class="barra-agente"><h1>Entradas</h1>${selectorAgente(contexto, "Entradas", respuesta.proyecto)}</div>
 <p>¿Qué entradas se observan ahora?</p>
 <details><summary>¿Qué significa?</summary>
 <p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
 <p>Estado actual de las entradas de configuración (no es la foto guardada)</p></details></div>
 <p class="atenuado">Estado actual de los archivos · la de abajo prevalece</p>
-${selectorAgente(contexto, "Entradas", respuesta.proyecto)}
+
 ${mapaVias(respuesta)}
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="tabla-entradas"><h2>Vías y legibilidad</h2>
