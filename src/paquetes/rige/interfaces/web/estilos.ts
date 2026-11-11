@@ -111,7 +111,8 @@ dd { margin: .25rem 0 1.25rem; overflow-wrap: anywhere; }
 .ruta__segmento, .ruta__archivo { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
 .ruta__archivo { order: -1; color: var(--texto); font-weight: 650; }
 .motivo-origen { display: block; margin-top: .4rem; color: var(--secundario); }
-.valor-desplazado { display: block; font-family: ui-monospace, monospace; margin-bottom: .25rem; }
+.valor-desplazado { font-family: ui-monospace, monospace; }
+.declaracion-desplazada + .declaracion-desplazada { margin-top: .4rem; }
 .leyenda-reglas { margin-top: 1.5rem; padding: 1.25rem; background: var(--superficie); border: 1px solid var(--borde); border-radius: .75rem; font-size: .85rem; }
 .leyenda-reglas dl { margin: 0; }
 .leyenda-reglas dt { text-transform: none; letter-spacing: 0; }
@@ -252,4 +253,46 @@ details[open] > summary { margin-bottom: 1.25rem; }
   .insignia { white-space: normal; overflow-wrap: anywhere; }
 }
 .codigo-error { display: block; color: var(--secundario); }
+.metadatos-proyecto { font-size: .875rem; }
+.procedencia { display: inline-block; font-size: .75rem; font-weight: 400; margin-left: .5rem; }
+.estadisticas--resumen { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr); align-items: stretch; margin-top: 2rem; }
+.estadisticas--resumen .estadistica { padding: .65rem .85rem; }
+.estadisticas--resumen .estadistica strong { margin-bottom: .1rem; }
+.cifras-actuales { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; position: relative; min-width: 0; }
+.cifras-actuales__rotulo { position: absolute; bottom: calc(100% + .25rem); font-size: .75rem; }
+.fila-agente { position: relative; }
+.agente-enlace { color: var(--texto); font-weight: 600; text-decoration: none; }
+.agente-enlace::after { content: ""; position: absolute; inset: 0; }
+.agente-enlace:hover { text-decoration: underline; }
+.fila-agente:focus-within { outline: 2px solid var(--acento); outline-offset: -2px; background: var(--acento-suave); }
+.hallazgos-resumen { display: grid; gap: .5rem; }
+.hallazgo-resumen { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: baseline; gap: .75rem; padding: .75rem 1rem; border: 1px solid var(--borde); border-radius: .5rem; background: var(--superficie); }
+.hallazgo-resumen > * { min-width: 0; }
+.barra-agente { display: flex; justify-content: space-between; gap: 1rem; align-items: center; min-width: 0; }
+.identidad-agente { display: flex; align-items: baseline; flex-wrap: wrap; gap: .6rem; min-width: 0; }
+.identidad-agente h1 { margin-bottom: 0; }
+.barra-agente .selector-agente { margin: 0; padding: 0; border: 0; background: transparent; gap: .5rem; flex-shrink: 0; max-width: 100%; }
+.barra-agente .selector-agente select { max-width: 10rem; }
+.barra-agente .selector-agente select, .barra-agente .selector-agente button { padding: .4rem .6rem; font-size: .875rem; }
+.barra-agente + p { margin-top: .75rem; }
+.barra-busqueda { display: flex; align-items: end; gap: .5rem; margin-bottom: 1rem; max-width: 35rem; }
+.barra-busqueda label { flex: 1; margin: 0; }
+.barra-busqueda button { width: auto; }
+.sujetos-permiso { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: .75rem; }
+.sujetos-permiso > div { padding: .75rem; border: 1px solid var(--borde); border-radius: .5rem; min-width: 0; background: var(--superficie); }
+.sujetos-permiso dt { font-size: .875rem; letter-spacing: 0; overflow-wrap: anywhere; }
+.sujetos-permiso dd { margin-bottom: 0; }
+.sujetos-permiso a { text-decoration: none; }
+.leyenda-parcial { color: var(--secundario); font-size: .875rem; }
+.acciones--pie { margin-top: 1rem; }
+@media (max-width: 900px) {
+  .barra-agente { flex-direction: column; align-items: stretch; }
+  .barra-agente .selector-agente { align-self: flex-start; flex-direction: row; align-items: center; flex-wrap: wrap; }
+}
+@media (max-width: 640px) {
+  .estadisticas--resumen { grid-template-columns: minmax(0, 1fr); }
+  .cifras-actuales { margin-top: 1.25rem; }
+  .hallazgo-resumen { grid-template-columns: minmax(0, 1fr) auto; }
+  .hallazgo-resumen > span:nth-child(2) { grid-row: 2; grid-column: 1 / -1; }
+}
 `;

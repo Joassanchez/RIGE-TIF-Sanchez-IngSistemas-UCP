@@ -139,6 +139,8 @@ En **Permiso**, elegí agente, herramienta y **Acción u objetivo**, y pulsá **
 
 En **Entradas**, el mapa agrupa **Presentes**, **Ausentes** y **No observadas**, conservando el orden de revisión dentro de cada grupo. Los límites de la matriz completa se consultan en **Reglas**.
 
+El encabezado del resumen reúne ruta, fecha y versión en una línea. Las cifras distinguen la foto guardada del **Estado actual**; **Foto guardada** y **Estado actual de los archivos** rotulan sus bloques. En el agente, el selector queda junto al título y **Buscar clave** forma una barra con **Filtrar**. Primero aparecen las claves declaradas, en orden de clave; **Valores de fábrica (n)** agrupa al final los valores implícitos y nativos, cerrado. **¿Qué significa?** reúne las explicaciones de precedencia e implícitos. Las **Desplazadas** muestran valor tachado y ubicación en una línea, sin numeración. Los **Sujetos de permiso** forman una cuadrícula con efecto, índice de regla en la ayuda y una leyenda común para **parcial**. **Límites del análisis** reúne las restricciones. **Ver todas las reglas de <agente>**, **Consultar permiso**, **Ver entradas actuales** y **Ver hallazgos** son botones secundarios al pie de su bloque.
+
 **Lo determina** muestra vía y ubicación; los archivos locales con posición enlazan a **VS Code**, con la ruta completa en la ayuda. Variables, referencias remotas y rutas relativas quedan como texto.
 
 El resumen usa el nombre del proyecto y fecha local absoluta. Si no se puede obtener el sobre porque no hay agentes o sus valores no son consultables, abre los demás bloques con «Fecha no disponible» y «Historial no disponible para este análisis» atenuados; la cifra de análisis dice «sin dato» y se omiten enlaces de historial y comparación. Una lista vacía dice «Sin agentes activos» y conserva los eliminados. El aviso sobre agentes de fábrica solo aparece con lista completa, no vacía y sin declarados. «Sin hallazgos» verde requiere análisis completo; en caso parcial se muestran los motivos.
@@ -209,6 +211,8 @@ bun test
 bun run verificar
 ```
 
+Para el pulido T5-20, `bun test ./paquetes/rige/interfaces/web/recorrido-pulido.test.ts` comprueba U-1 a U-12; agregar `-t U-7`, por ejemplo, selecciona una regla. Para revisar la presentación en navegador, recorrer Inicio, resumen, agente, formulario y resultado de permiso, hallazgos, reglas, comparar, entradas y errores: emular `prefers-color-scheme: light` y `dark`, a 1440 y 360 px, con los plegables cerrados y abiertos. Comprobar contraste AA, foco y ausencia de desbordamiento.
+
 Durante TDD, `bun test ./paquetes/rige/interfaces/web/` corre solo las pruebas web; `bun test ./paquetes/rige/interfaces/web/panel.test.ts -t T5-17` filtra las de nombres y fechas. Las pruebas de aceptación que leen el HTML conservan las comprobaciones de paridad y seguridad.
 
 Comprobación de Windows con unidad alternativa y TEMP/TMP en nombre corto 8.3 (PowerShell, desde `src/`; `R:` debe estar libre):
@@ -224,7 +228,7 @@ subst R: $rigeRaiz
 try {
   $env:TEMP = $rigeCorto.Trim()
   $env:TMP = $rigeCorto.Trim()
-  $env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-prueba-t515'
+  $env:RIGE_ALMACEN = Join-Path $env:TEMP 'rige-prueba-t520'
   Push-Location R:\src
   try {
     bun test
@@ -275,7 +279,7 @@ El proceso informa `{"esquema":2,"direccion":"http://127.0.0.1:4747"}` y queda e
 
 1. Abrir `http://127.0.0.1:4747/`. Se muestra «RIGE» y «¿Qué configuración rige en este proyecto?». El inicio pide solo **Carpeta del proyecto** y ofrece **Analizar**; el pie dice «Local · solo lectura · sin red» y muestra la versión.
 2. Completar **Carpeta del proyecto** con `pruebas/escenarios/v1-precedencia/proyecto` y pulsar **Analizar**. Se guarda el proyecto entero y se abre `/resoluciones/<id>`. Se abre el **Resumen del proyecto**, incluso sin agentes activos; elegir un nombre abre su página.
-3. En el **Resumen del proyecto**, abrir **build**, escribir `temperature` en **Buscar clave** y pulsar **Filtrar**. En un almacén nuevo, la URL es `/resoluciones/1/agentes/build?q=temperature`. Se ve `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`. Las desplazadas son `0.1` en `…/v1-precedencia/opencode.json:5:7` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7`, en ese orden. **Cómo se decide** presenta RD-01 sobre la tabla; los implícitos explican RD-04. Las entradas leídas mantienen su SHA-256 y las vías remotas figuran no observadas.
+3. En el **Resumen del proyecto**, abrir **build**, escribir `temperature` en **Buscar clave** y pulsar **Filtrar**. En un almacén nuevo, la URL es `/resoluciones/1/agentes/build?q=temperature`. Se ve `0.3`, declarado en `…/v1-precedencia/proyecto/opencode.jsonc:6:7 (proyecto)`. Las desplazadas son `0.1` en `…/v1-precedencia/opencode.json:5:7` y `0.2` en `…/v1-precedencia/proyecto/opencode.json:5:7`, en ese orden. **¿Qué significa?** presenta RD-01 sobre la tabla; los implícitos explican RD-04. Las entradas leídas mantienen su SHA-256 y las vías remotas figuran no observadas.
 4. Guardar la URL, detener con Ctrl+C, ejecutar otra vez `bun run servir` y abrirla: recupera la foto del almacén. En el resumen, **Historial** marca la foto consultada y conserva las veinte últimas.
 5. **Quitar filtro** muestra todas las claves. El selector permite cambiar de agente conservando el contexto. La consulta exacta sigue en CLI, mediante `--clave`; las URL anteriores redirigen a la vista equivalente.
 

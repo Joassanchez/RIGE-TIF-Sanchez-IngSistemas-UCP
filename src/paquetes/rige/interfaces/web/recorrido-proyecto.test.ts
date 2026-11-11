@@ -88,12 +88,12 @@ describe("T5-18 R-1 resumen", () => {
 describe("T5-18 R-2 cifras", () => {
   test("cuenta agentes de foto, archivos observados y hallazgos actuales; legibilidad desconocida no es cero", async () => {
     const cuerpo = await pedir("/resoluciones/7").text();
-    expect(cuerpo).toContain("3</strong><span>Agentes");
+    expect(cuerpo).toContain("3</strong><span>agentes");
     expect(cuerpo).toContain("1 declarado");
-    expect(cuerpo).toContain("2</strong><span>Archivos leídos");
+    expect(cuerpo).toContain("2</strong><span>archivos leídos");
     expect(cuerpo).toContain("ilegibles: sin dato");
-    expect(cuerpo).toContain("1</strong><span>Hallazgos");
-    expect(cuerpo).toContain("20</strong><span>Análisis guardados");
+    expect(cuerpo).toContain("1</strong><span>hallazgos");
+    expect(cuerpo).toContain("20</strong><span>análisis");
   });
 });
 describe("T5-18 R-3 agentes", () => {

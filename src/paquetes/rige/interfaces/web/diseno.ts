@@ -30,16 +30,17 @@ ${contexto.activa === undefined || contexto.activa === "Valores" ? html`` : html
 <footer class="pie"><p>Local · solo lectura · sin red${contexto.minimo ? html`` : html` · RIGE ${versionRige}`}</p></footer></body></html>`;
 }
 
-export function insignia(texto: unknown, tipo = "neutra"): HtmlSeguro {
-  return html`<span class="${`insignia insignia--${tipo}`}">${texto}</span>`;
+export function insignia(texto: unknown, tipo = "neutra", titulo?: string): HtmlSeguro {
+  return titulo === undefined ? html`<span class="${`insignia insignia--${tipo}`}">${texto}</span>`
+    : html`<span class="${`insignia insignia--${tipo}`}" title="${titulo}">${texto}</span>`;
 }
 
-export function efectoVisual(efecto: string | null): HtmlSeguro {
+export function efectoVisual(efecto: string | null, titulo?: string): HtmlSeguro {
   switch (efecto) {
-    case "allow": return insignia("permitida", "permitida");
-    case "deny": return insignia("denegada", "denegada");
-    case "ask": return insignia("sujeta a confirmación", "pregunta");
-    default: return insignia(efecto ?? "sin decisión");
+    case "allow": return insignia("permitida", "permitida", titulo);
+    case "deny": return insignia("denegada", "denegada", titulo);
+    case "ask": return insignia("sujeta a confirmación", "pregunta", titulo);
+    default: return insignia(efecto ?? "sin decisión", "neutra", titulo);
   }
 }
 

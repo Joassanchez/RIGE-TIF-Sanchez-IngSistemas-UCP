@@ -76,8 +76,8 @@ function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
   expect(celdas).toHaveLength(4);
   expect(textoHtml(celdas[2]!)).toBe("Proyecto · opencode.jsonc:6:7");
   expect(celdas[2]).toContain(`title="Abrir en VS Code: ${ruta}/proyecto/opencode.jsonc"`);
-  const desplazadas = [...celdas[3]!.matchAll(/<li>(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
-  expect(desplazadas).toEqual(["0.1 Proyecto · opencode.json:5:7", "0.2 Proyecto · opencode.json:5:7"]);
+  const desplazadas = [...celdas[3]!.matchAll(/<div class="declaracion-desplazada">(.*?)<\/div>/gs)].map(li => textoHtml(li[1]!));
+  expect(desplazadas).toEqual(["0.1 · Proyecto · opencode.json:5:7", "0.2 · Proyecto · opencode.json:5:7"]);
   expect(cuerpo).toContain(regla);
   expect(cuerpo).toContain("Página armada con la resolución leída del almacén de RIGE.");
 }
@@ -167,7 +167,7 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
     const referencia = await Bun.file(new URL("../escenarios/v1-precedencia/REFERENCIA.json", import.meta.url)).json() as {
       valores: Record<string, string | number>;
     };
-    const tabla = seccionHtml(pagina.cuerpo, "valores").split("<tbody>")[1]!.split("</tbody>")[0]!;
+    const tabla = seccionHtml(pagina.cuerpo, "valores"); // Declaradas y fábrica: se comprueban todas las filas.
     const claves = [...tabla.matchAll(/<tr><td[^>]*>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
     expect(claves.filter(clave => Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["description", "steps", "temperature"]);
     expect(claves.filter(clave => !Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["mode", "name", "native", "options"]);

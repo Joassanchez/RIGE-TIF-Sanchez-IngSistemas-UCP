@@ -18,11 +18,10 @@ export function paginaHallazgos(respuesta: RespuestaHallazgos, contexto: Context
     "sustitucion-sin-valor": "Revisá que el origen de la sustitución esté disponible.",
   };
   return responderHtml(200, diseno("Hallazgos", html`
-<div class="cabecera-pagina"><h1>Hallazgos</h1>
+<div class="cabecera-pagina"><h1>Hallazgos <small class="procedencia">Estado actual de los archivos</small></h1>
 <p>¿Qué problemas se observan ahora?</p>
 <details><summary>¿Qué significa?</summary><p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
 <p>Estado actual de las entradas de configuración (no es la foto guardada)</p></details></div>
-<p class="atenuado">Estado actual de los archivos</p>
 ${selectorAgente(contexto, "Hallazgos", respuesta.proyecto)}
 ${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="resumen-hallazgos"><h2>Resumen</h2>

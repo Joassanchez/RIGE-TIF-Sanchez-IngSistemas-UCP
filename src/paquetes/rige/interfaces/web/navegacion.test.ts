@@ -227,7 +227,7 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
     const paginaListado = await solicitar(conAtaque, `/agentes?id=7&clave=${codificado}`).text();
     expect(paginaListado).toContain('href="/resoluciones/7"');
     expect(paginaListado).toContain(`href="/resoluciones/7/agentes/${codificado}?clave=${codificado}"`);
-    expect(paginaListado).toContain(`<code>${escapado}</code></a>`);
+    expect(paginaListado).toContain(`>${escapado}</a>`);
     const paginaValores = await solicitar(conAtaque, `/resoluciones/7?agente=${codificado}&clave=${codificado}`).text();
     expect(paginaValores).toContain(`<option value="${escapado}" selected>${escapado}</option>`);
     expect(paginaValores).toContain(`<input type="hidden" name="clave" value="${escapado}">`);

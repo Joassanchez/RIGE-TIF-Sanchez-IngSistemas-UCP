@@ -23,10 +23,10 @@ export const nombresHallazgos: Readonly<Record<string, readonly [string, string]
 
 export function agentesProyecto(respuesta: RespuestaAgentes, id: string, contexto: ContextoPanel): HtmlSeguro {
   const agentes = [...respuesta.agentes.filter(a => !a.oculto), ...respuesta.agentes.filter(a => a.oculto)];
-  return html`<section id="tabla-agentes"><h2>Agentes</h2><p class="atenuado">Foto guardada</p>
+  return html`<section id="tabla-agentes"><h2>Agentes <small class="procedencia">Foto guardada</small></h2>
 ${respuesta.incompleta ? html`<div class="aviso">Listado incompleto. ${respuesta.motivos.map(m => html`<p>${respuesta.reglas[m] ?? m}</p>`)}</div>` : agentes.length && agentes.every(a => a.origen === "nativo") ? html`<p>Este proyecto no declara agentes propios: OpenCode usa sus agentes de fábrica</p>` : html``}
 ${agentes.length ? html`<div class="tabla-contenedor" role="region" aria-label="Agentes" tabindex="0"><table class="tabla-tarjetas"><thead><tr><th>Nombre</th><th>Modo</th><th>Origen</th></tr></thead><tbody>
-${agentes.map(a => html`<tr class="${a.oculto ? "atenuado" : "agente"}"><td data-etiqueta="Nombre"><a href="${`/resoluciones/${id}/agentes/${encodeURIComponent(a.nombre)}${consultaPanel({ ...contexto, agente: undefined }).replace(/^&/, "?")}`}"><code>${a.nombre}</code></a>${a.oculto ? insignia("oculto") : html``}</td><td data-etiqueta="Modo">${modoAgente(a.modo)}</td><td data-etiqueta="Origen">${insignia(a.origen)}</td></tr>`)}</tbody></table></div>` : html`<p class="estado-vacio">Sin agentes activos</p>`}
+${agentes.map(a => html`<tr class="${a.oculto ? "fila-agente atenuado" : "fila-agente"}"><td data-etiqueta="Nombre"><a class="agente-enlace" href="${`/resoluciones/${id}/agentes/${encodeURIComponent(a.nombre)}${consultaPanel({ ...contexto, agente: undefined }).replace(/^&/, "?")}`}">${a.nombre}</a>${a.oculto ? html` <span class="atenuado">oculto</span>` : html``}</td><td class="atenuado" data-etiqueta="Modo">${modoAgente(a.modo)}</td><td data-etiqueta="Origen">${insignia(a.origen)}</td></tr>`)}</tbody></table></div>` : html`<p class="estado-vacio">Sin agentes activos</p>`}
 ${respuesta.eliminados.length ? html`<div id="agentes-eliminados"><h3>Agentes eliminados</h3>${respuesta.eliminados.map(a => html`<p><code>${a.nombre}</code> ${insignia("eliminado / deshabilitado", "aviso")} ${presentarUbicacion(a.declaracion.referencia, a.declaracion.origen.tipo === "declarado" ? a.declaracion.origen.posicion : null, a.declaracion.via)}</p>`)}</div>` : html``}</section>`;
 }
 
@@ -57,31 +57,37 @@ ${sobre.anteriores[indice + 1] ? html`<a href="${`/comparar?desde=${sobre.anteri
 export function filaPermisos(respuesta: RespuestaReglas, id: string, contexto: ContextoPanel): HtmlSeguro {
   const fila = respuesta.matriz.filas.find(f => f.agente === contexto.agente);
   const consulta = consultaPanel(contexto);
+  const motivosParciales = fila?.celdas.some(c => c.motivo === "eje-parcialmente-observado") ?? false;
+  const motivos = [...new Set([...(fila?.declaraciones ?? []), ...(fila?.advertencias ?? []), ...respuesta.matriz.motivos,
+    ...(fila?.celdas.flatMap(c => c.motivo && c.motivo !== "eje-parcialmente-observado" ? [c.motivo] : []) ?? [])])];
   return html`<section id="permisos-agente"><h2>Sujetos de permiso</h2><p>Efecto general; consultá un objetivo concreto para conocer la decisión.</p>
 ${fila === undefined ? html`<p class="aviso">Fila no disponible.</p>` : html`
-<dl class="resumen">${fila.celdas.map(c => html`<div><dt>${c.sujeto}</dt><dd><a href="${`/resoluciones/${id}/permisos?${consulta.slice(1)}&sujeto=${encodeURIComponent(c.sujeto)}`}">${efectoVisual(c.efecto)}${c.motivo === "eje-parcialmente-observado" ? insignia("parcial") : html``}</a>${c.prevalece === null ? html`` : html`<p class="ayuda">Regla ${c.prevalece}</p>`}${c.motivo ? html`<p>${respuesta.reglas[c.motivo] ?? c.motivo}</p>` : html``}</dd></div>`)}</dl>
+<dl class="sujetos-permiso">${fila.celdas.map(c => html`<div><dt>${c.sujeto}</dt><dd><a href="${`/resoluciones/${id}/permisos?${consulta.slice(1)}&sujeto=${encodeURIComponent(c.sujeto)}`}">${efectoVisual(c.efecto, c.prevalece === null ? undefined : `Regla ${c.prevalece}`)}${c.motivo === "eje-parcialmente-observado" ? html` ${insignia("parcial")}` : html``}</a></dd></div>`)}</dl>
+${motivosParciales ? html`<p class="leyenda-parcial">${insignia("parcial")} ${respuesta.reglas["eje-parcialmente-observado"] ?? "eje-parcialmente-observado"}</p>` : html``}
 ${fila.error ? html`<p class="aviso">${fila.error.codigo}: ${fila.error.mensaje}</p>` : html``}
-${fila.ejesParciales.length ? html`<p>Parcial: ${fila.ejesParciales.join(", ")}</p>` : html``}
-${[...fila.declaraciones, ...fila.advertencias].map(c => html`<p class="aviso">${respuesta.reglas[c] ?? c}</p>`)}`}
-${respuesta.matriz.motivos.map(c => html`<p>${respuesta.reglas[c] ?? c}</p>`)}
-${respuesta.matriz.noObservados.map(a => html`<p>Agente no observado: ${a.nombre} (${a.motivo})</p>`)}
-<p><a href="${`/reglas?id=${id}${consulta}`}">Ver todas las reglas de ${contexto.agente}</a></p></section>`;
+`}
+<details><summary>Límites del análisis</summary>
+${fila?.ejesParciales.length ? html`<p>Parcial: ${fila.ejesParciales.join(", ")}</p>` : html``}
+${motivos.map(c => html`<p>${respuesta.reglas[c] ?? c}</p>`)}
+${respuesta.matriz.noObservados.map(a => html`<p>Agente no observado: ${a.nombre} (${a.motivo})</p>`)}</details>
+<div class="acciones acciones--pie"><a class="boton boton--secundario" href="${`/reglas?id=${id}${consulta}`}">Ver todas las reglas de ${contexto.agente}</a>
+<a class="boton boton--secundario" href="${`/resoluciones/${id}/permisos?${consulta.slice(1)}`}">Consultar permiso</a></div></section>`;
 }
 
 export function archivosActuales(respuesta: RespuestaEntradas): HtmlSeguro {
   const archivos = [...archivosObservados(respuesta)].sort((a, b) => a.orden - b.orden);
-  return html`<details id="archivos-leidos"><summary>Archivos leídos (${archivos.length})</summary><p>Estado actual de los archivos · la de abajo prevalece</p><ol>${archivos.map(e => html`<li>${e.via} · ${presentarRuta(e.referencia)} ${insignia(e.legibilidad ?? "sin dato")}</li>`)}</ol>${mapaVias(respuesta)}</details>`;
+  return html`<details id="archivos-leidos"><summary>Archivos leídos (${archivos.length})</summary><p>Orden de precedencia: la de abajo prevalece</p><ol>${archivos.map(e => html`<li>${e.via} · ${presentarRuta(e.referencia)} ${insignia(e.legibilidad ?? "sin dato")}</li>`)}</ol>${mapaVias(respuesta)}</details>`;
 }
 
 export function hallazgosActuales(respuesta: RespuestaHallazgos, id: string, contexto: ContextoPanel): HtmlSeguro {
   const enlace = `/hallazgos?proyecto=${encodeURIComponent(respuesta.proyecto)}&id=${id}${consultaPanel(contexto)}`;
   const tipos = [...new Set(respuesta.hallazgos.map(h => h.tipo))];
-  return html`<section id="hallazgos-actuales"><h2>Hallazgos</h2><p>Estado actual de los archivos</p>
+  return html`<section id="hallazgos-actuales"><h2>Hallazgos <small class="procedencia">Estado actual de los archivos</small></h2>
 ${respuesta.incompleta ? html`<div class="aviso">Hallazgos observados; análisis parcial.${respuesta.motivos.map(m => html`<p>${respuesta.reglas[m] ?? m}</p>`)}</div>` : html``}
-${tipos.length ? html`<ul>${tipos.map(tipo => {
+${tipos.length ? html`<div class="hallazgos-resumen">${tipos.map(tipo => {
     const indice = respuesta.hallazgos.findIndex(h => h.tipo === tipo);
     const primero = respuesta.hallazgos[indice]!;
-    return html`<li><a href="${`${enlace}#${anclaHallazgo(indice)}`}">${nombresHallazgos[tipo]?.[0] ?? tipo} · ${respuesta.resumen.hallazgos[tipo]}</a> · ${primero.posicion && esArchivoLocal(primero.entrada.referencia, primero.entrada.via) ? presentarUbicacion(primero.entrada.referencia, primero.posicion, primero.entrada.via) : html`<a href="${`/entradas?proyecto=${encodeURIComponent(respuesta.proyecto)}&id=${id}${consultaPanel(contexto)}#entrada-${primero.entrada.orden}`}">${primero.localizacion}</a>`}</li>`;
-  })}</ul>` : respuesta.incompleta ? html`<p>Sin hallazgos observados; análisis parcial</p>` : insignia("Sin hallazgos", "permitida")}
-<p><a href="${enlace}">Ver hallazgos</a></p></section>`;
+    return html`<div class="hallazgo-resumen"><span>${nombresHallazgos[tipo]?.[0] ?? tipo} ${insignia(respuesta.resumen.hallazgos[tipo])}</span><span>${primero.posicion && esArchivoLocal(primero.entrada.referencia, primero.entrada.via) ? presentarUbicacion(primero.entrada.referencia, primero.posicion, primero.entrada.via) : html`<a href="${`/entradas?proyecto=${encodeURIComponent(respuesta.proyecto)}&id=${id}${consultaPanel(contexto)}#entrada-${primero.entrada.orden}`}">${primero.localizacion}</a>`}</span><a href="${`${enlace}#${anclaHallazgo(indice)}`}">Ver</a></div>`;
+  })}</div>` : respuesta.incompleta ? html`<p>Sin hallazgos observados; análisis parcial</p>` : insignia("Sin hallazgos", "permitida")}
+<div class="acciones acciones--pie"><a class="boton boton--secundario" href="${enlace}">Ver hallazgos</a></div></section>`;
 }

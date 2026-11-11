@@ -60,7 +60,7 @@ describe("T5-15 Z-1 un campo visible y estado", () => {
 describe("T5-15 Z-2 orden del panel", () => {
   test("pestanas, titulo y metadatos, agente, filtros y valores", async () => {
     const cuerpo = await paginaResolucion({ ...valores, declaraciones: ["nota"], reglas: { nota: "Nota del análisis" } }, sobre, contexto).text();
-    const posiciones = ['id="resumen-resolucion"', 'id="seleccionar-agente"', 'id="filtrar-claves"', 'id="declaraciones"', 'id="valores"'].map(s => cuerpo.indexOf(s));
+    const posiciones = ['id="resumen-resolucion"', 'id="seleccionar-agente"', 'id="declaraciones"', 'id="valores"', 'id="filtrar-claves"'].map(s => cuerpo.indexOf(s));
     expect(posiciones.every(p => p >= 0)).toBe(true);
     expect(posiciones).toEqual([...posiciones].sort((a, b) => a - b));
   });

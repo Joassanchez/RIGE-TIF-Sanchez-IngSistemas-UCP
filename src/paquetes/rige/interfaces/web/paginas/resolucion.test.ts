@@ -44,8 +44,8 @@ describe("W-13", () => {
     const cuerpo = await recibida.text();
     const contenido = cuerpo.split('<main id="contenido" tabindex="-1">')[1]!;
     expect(contenido).toBeDefined();
-    const partes = [html`<h1>${respuesta().agente}</h1>`.texto, "Página armada con la resolución leída del almacén de RIGE.",
-      "Proyecto", "Valores efectivos", "Cómo se decide", "Claves no incorporadas por RIGE",
+    const partes = [html`<h1>${respuesta().agente}</h1>`.texto, "¿Qué significa?", "Página armada con la resolución leída del almacén de RIGE.",
+      "Proyecto", "Valores efectivos", "Claves no incorporadas por RIGE",
       "Entradas leídas"];
     let posicion = -1;
     for (const parte of partes) {
@@ -64,14 +64,14 @@ describe("W-13", () => {
       "remota-wellknown", "no_observada", "observada", "b".repeat(64), "—"]) {
       expect(cuerpo).toContain(dato);
     }
-    expect(cuerpo).toMatch(/<ol>.*0\.1.*0\.2.*<\/ol>/s);
+    expect(cuerpo).toMatch(/class="declaracion-desplazada".*0\.1.*class="declaracion-desplazada".*0\.2/s);
     const fila = seccionHtml(cuerpo, "valores").match(/<tr><td[^>]*>description<\/td>.*?<\/tr>/s)![0];
     const celdas = fila.match(/<td\b[^>]*>.*?<\/td>/gs)!;
     expect(celdas).toHaveLength(4);
     expect(celdas[1]).toContain("&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;");
     expect(textoHtml(celdas[2]!)).toContain("Proyecto · &lt;entrada3&gt;.jsonc:6:7");
-    const desplazadas = [...celdas[3]!.matchAll(/<li>(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
-    expect(desplazadas).toEqual(["0.1 Proyecto · &lt;entrada1&gt;.jsonc:6:7", "0.2 Proyecto · &lt;entrada2&gt;.jsonc:6:7"]);
+    const desplazadas = [...celdas[3]!.matchAll(/<div class="declaracion-desplazada">(.*?)<\/div>/gs)].map(li => textoHtml(li[1]!));
+    expect(desplazadas).toEqual(["0.1 · Proyecto · &lt;entrada1&gt;.jsonc:6:7", "0.2 · Proyecto · &lt;entrada2&gt;.jsonc:6:7"]);
     expect(cuerpo).toContain('href="/resoluciones/7"');
     expect(cuerpo).not.toContain("agent.a &amp; b.description");
     const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
@@ -134,7 +134,7 @@ describe("W-14", () => {
 });
 
 describe("W-15", () => {
-  test("sin valores presenta una sola fila informativa y la lista de claves no resueltas", async () => {
+  test("sin valores presenta un estado informativo y la lista de claves no resueltas", async () => {
     const { paginaResolucion: presentar } = await import("./resolucion");
     const paginaResolucion = (respuesta: RespuestaValores) => presentar(respuesta, sobre);
     const recibida = paginaResolucion({ ...respuesta(), valores: [], noResueltas: [
@@ -143,9 +143,9 @@ describe("W-15", () => {
     ] });
     expect(recibida.status).toBe(200);
     const cuerpo = await recibida.text();
-    const tabla = seccionHtml(cuerpo, "valores").split("<tbody>")[1]!.split("</tbody>")[0]!;
-    expect(tabla.match(/<tr>/g)).toHaveLength(1);
-    expect(tabla).toContain('<td colspan="4">RIGE no incorpora claves resueltas para este agente.</td>');
+    const tabla = seccionHtml(cuerpo, "valores");
+    expect(tabla).not.toContain("<tbody>");
+    expect(tabla).toContain('<p class="estado-vacio">RIGE no incorpora claves resueltas para este agente.</p>');
     expect(cuerpo).toContain("Claves no incorporadas por RIGE");
     expect(cuerpo).toContain("<li>steps: Sin resolver &lt;permiso&gt;.</li>");
     expect(cuerpo).toContain("<li>maxSteps: Sin resolver &lt;permiso&gt;.</li>");
@@ -169,9 +169,9 @@ describe("T5-08-c1 C3 C4 determinante y leyenda", () => {
     expect(celdas[2]).not.toContain("alert(1)");
     expect(celdas[2]).toContain("Proyecto ·");
     expect(celdas[2]).toContain('title="Abrir en VS Code: /proyecto/&lt;entrada3&gt;.jsonc"');
-    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![1]).toContain("implícito");
+    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain("implícito");
     expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain("valor-implicito");
-    const comunes = valores.split('<table')[0]!;
+    const comunes = cuerpo.match(/<details><summary>¿Qué significa\?<\/summary>[^]*?<\/details>/)![0];
     expect(comunes.match(/Prevalece la ultima &lt;declaracion&gt; \(RD-01\)\./g)).toHaveLength(1);
     expect(comunes.match(/Texto &lt;implícito&gt; completo \(RD-04\)\./g)).toHaveLength(1);
     expect(valores).not.toContain('id="leyenda-reglas"');

@@ -130,7 +130,7 @@ describe("T5-11 P-4 filtro visual y consulta por clave", () => {
       const tabla = cuerpo.match(/<section id="valores">[^]*?<\/section>/)![0];
       expect(tabla.match(/<td[^>]*data-etiqueta="Clave"/g) ?? []).toHaveLength(cantidad);
       expect([...tabla.matchAll(/<td data-etiqueta="Clave">([^<]*)<\/td>/g)].map(m => m[1])).toEqual(
-        valores.valores.filter(v => !q || v.clave.toLowerCase().includes(q.toLowerCase())).map(v => v.clave));
+        valores.valores.filter(v => !q || v.clave.toLowerCase().includes(q.toLowerCase())).map(v => v.clave).sort());
       if (q) expect(textoHtml(cuerpo)).toContain(`Filtrado por "${q === '<script>"&' ? '&lt;script&gt;&quot;&amp;' : q}" · ${cantidad} de 3 claves`);
       if (cantidad === 0) expect(tabla).toContain("Ninguna clave coincide con el filtro");
       if (q) expect(cuerpo).toContain(`name="q" value="${q === '<script>"&' ? '&lt;script&gt;&quot;&amp;' : q}"`);
@@ -158,7 +158,9 @@ describe("T5-11 P-4 filtro visual y consulta por clave", () => {
 
 describe("T5-11 P-5 reglas fuera de la tabla", () => {
   test("usa plantillas exactas, conserva reglas opacas por fila y cuatro columnas", async () => {
-    const original = valores.valores[0]!;
+    const primero = valores.valores[0]!;
+    const original = { ...primero, rastro: { ...primero.rastro, determinante: { ...primero.rastro.determinante,
+      origen: { tipo: "declarado" as const, orden: 1, posicion: { linea: 1, columna: 1 } } } } };
     const datoValores = { ...valores, reglas: { "orden-de-aplicacion": "Precedencia <RD-01> completa.", implicita: "Valor & implícito RD-04.", "": "Regla sin código.", otra: "Otra <regla>." }, valores: [
       { ...original, rastro: { ...original.rastro, determinante: { ...original.rastro.determinante, regla: "orden-de-aplicacion" } } },
       { ...original, clave: "native", rastro: { ...original.rastro, determinante: { ...original.rastro.determinante, regla: "implicita", origen: { tipo: "implicito" as const, regla: "implicita" } } } },
@@ -167,10 +169,11 @@ describe("T5-11 P-5 reglas fuera de la tabla", () => {
     const cuerpo = await paginaResolucion(datoValores, sobre).text();
     const tabla = cuerpo.match(/<section id="valores">[^]*?<\/section>/)![0];
     expect(tabla).not.toContain("<th>Regla aplicada</th>");
-    expect(tabla.match(/<th>/g)).toHaveLength(4);
-    expect(tabla).toContain("Precedencia &lt;RD-01&gt; completa.");
-    expect(tabla).toContain("Valor &amp; implícito RD-04.");
-    expect(tabla.indexOf("Cómo se decide")).toBeLessThan(tabla.indexOf("<table"));
+    expect(tabla.match(/<th>/g)).toHaveLength(8); // Declaradas y fábrica conservan las cuatro columnas.
+    const ayuda = cuerpo.match(/<details><summary>¿Qué significa\?<\/summary>[^]*?<\/details>/)![0];
+    expect(ayuda).toContain("Precedencia &lt;RD-01&gt; completa.");
+    expect(ayuda).toContain("Valor &amp; implícito RD-04.");
+    expect(cuerpo.indexOf(ayuda)).toBeLessThan(cuerpo.indexOf("<table"));
     expect(tabla.match(/<details class="regla-detalle">/g)).toHaveLength(2);
     expect(tabla).toContain("Regla sin código.");
     expect(tabla).toContain("Otra &lt;regla&gt;.");
