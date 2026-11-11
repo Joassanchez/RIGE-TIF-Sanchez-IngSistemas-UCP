@@ -34,6 +34,39 @@ test("T5-23 L-4 valores: respuesta filtrada, encabezado, origen y fabrica; X-11 
 const permiso: RespuestaPermiso = { ...base, agente: "build", consulta: { sujeto: "read", objetivo: ".env", objetivoEvaluado: ".env", forma: "sujeto" },
   decision: "allow", motivoSinDecision: null, determinante: 2, desplazadas: [0, 1], nativaAnulada: { regla: 0, por: 2 },
   advertencias: ["proteccion-anulada"], cadena: [0, 1, 2].map(indice => ({ indice, sujeto: "read", patron: indice === 0 ? "*.env" : "*", efecto: indice === 2 ? "allow" : "deny", origen: declaracion.origen, declaracion })), explicacion: ["Explicación completa"], porDefecto: false };
+
+test("T5-24-c1 Y-1 procedencias y decisiones indivisibles en cada punto de ajuste", () => {
+  for (const ancho of [40, 100]) {
+    for (const [origen, etiqueta] of [["nativa-general", "OpenCode · general"], ["nativa-agente", "OpenCode · agente"], ["nativa-final", "OpenCode · final"]] as const) {
+      for (let largo = 1; largo <= ancho; largo++) {
+        const cadena = [{ ...permiso.cadena[2]!, patron: "x".repeat(largo), declaracion: null, origen: { tipo: "nativo" as const, regla: origen } }];
+        const t = renderizarPermiso({ ...permiso, cadena, desplazadas: [] }, { ...contexto, ancho });
+        expect(t).toContain(etiqueta);
+        expect(t).toContain("→ allow");
+      }
+    }
+    for (let largo = 1; largo <= ancho; largo++) {
+      const d = { ...declaracion, referencia: "/temporal/" + "x".repeat(largo) + ".jsonc" };
+      const cadena = [{ ...permiso.cadena[2]!, declaracion: d, patron: "*" }];
+      const t = renderizarPermiso({ ...permiso, cadena, desplazadas: [] }, { ...contexto, ancho });
+      expect(t).toContain("x".repeat(largo) + ".jsonc:3:7 (proyecto)");
+      expect(t).toContain("✓ PERMITIDO");
+    }
+  }
+});
+
+test("T5-24-c1 Y-2 ruta larga estilo Linux entera con ancho 100 y 40", () => {
+  const patron = "/tmp/rige-escenario-XXXXXX/hogar/opencode/tool-output/*";
+  const cadena = [{ ...permiso.cadena[2]!, indice: 16, sujeto: "external_directory", patron, efecto: "deny" as const, prevalece: [],
+    declaracion: null, origen: { tipo: "nativo" as const, regla: "nativa-final" } }];
+  for (const ancho of [100, 40]) {
+    const t = renderizarReglas({ ...base, agente: "build", cadena, ejesParciales: [], advertencias: [],
+      matriz: { sujetos: [], filas: [], noObservados: [], motivos: [] } }, { ...contexto, ancho, todo: true });
+    expect(t).toContain("OpenCode · final");
+    expect(t).toContain("→ deny");
+    expect(t.split("\n").filter(l => l.includes(patron))).toHaveLength(1);
+  }
+});
 test("T5-23 L-4 permiso: decision, desplazada principal, nativa anulada, explicar y ausencia", () => {
   const t = renderizarPermiso(permiso, contexto);
   for (const s of ["✓ PERMITIDO", "Decide:", "Desplaza:", "#1", "Protección nativa anulada", "proteccion-anulada"]) expect(t).toContain(s);

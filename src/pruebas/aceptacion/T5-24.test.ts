@@ -129,6 +129,8 @@ test("T5-24 X-8 ejes comunes agrupados en lenguaje llano", () => escenario(e => 
 }));
 
 test("T5-24 X-9 procedencia breve nativa y declarada", () => escenario(e => {
+  // Y-3: fuerza el ajuste de la procedencia final incluso con un TEMP corto.
+  e.variables.XDG_DATA_HOME = join(e.raiz, "datos-" + "largos".repeat(12));
   const t = texto(e, "reglas", ["--agente", "build", "--todo"]);
   for (const origen of ["general", "final"]) expect(t).toContain(`OpenCode · ${origen}`);
   expect(texto(e, "reglas", ["--agente", "plan", "--todo"])).toContain("OpenCode · agente");

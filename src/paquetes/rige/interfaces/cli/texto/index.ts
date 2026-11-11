@@ -53,10 +53,13 @@ function tabla(cabecera: string[], filas: string[][], c: ContextoPresentacion, v
 }
 function terminar(lineas: readonly Linea[], c: ContextoPresentacion, indivisibles: readonly string[] = []): string {
   const color = c.esConsola && c.colorHabilitado;
-  const protegidos = [...new Set(indivisibles)].filter(s => s.includes(" "));
+  const protegidos = [...new Set([...indivisibles,
+    "OpenCode · general", "OpenCode · agente", "OpenCode · final",
+    ...["allow", "ask", "deny"].flatMap(e => [efecto(e), `→ ${e}`]), efecto(null),
+  ])].filter(s => s.includes(" "));
   function envolver(linea: string): string[] {
     if (longitud(linea) <= ancho(c)) return [linea];
-    // Los espacios interiores de una ruta conocida también pertenecen a la ruta.
+    // Los espacios interiores de rutas, procedencias y decisiones no son puntos de ajuste.
     const rangos: { inicio: number; fin: number }[] = [];
     for (const texto of protegidos) {
       for (let inicio = linea.indexOf(texto); inicio !== -1; inicio = linea.indexOf(texto, inicio + texto.length)) {
@@ -91,7 +94,8 @@ function proyecto(r: { readonly proyecto: string; readonly agente?: string }, c:
 }
 type Declaracion = RespuestaValores["valores"][number]["rastro"]["determinante"];
 function referencias(declaraciones: readonly (Declaracion | null)[]): string[] {
-  return declaraciones.flatMap(d => d?.referencia ? [seguro(d.referencia), seguro(nombre(d.referencia))] : []);
+  return declaraciones.flatMap(d => d === null ? [] : [ubicacion(d),
+    ...(d.referencia ? [seguro(d.referencia), seguro(nombre(d.referencia))] : [])]);
 }
 function ubicacion(d: Declaracion | null, origen?: RespuestaPermiso["cadena"][number]["origen"]): string {
   const o = d?.origen ?? origen;
