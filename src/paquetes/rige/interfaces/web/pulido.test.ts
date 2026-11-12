@@ -45,7 +45,7 @@ const css = (selector: string) => [...estilos.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
   .filter(([, selectores]) => selectores!.split(",").some(s => s.trim() === selector)).map(m => m[2]).join("\n");
 
 describe("T5-15 Z-1 un campo visible y estado", () => {
-  test("buscar queda visible; la consulta exacta cerrada conserva ayuda y ambos estados", async () => {
+  test("buscar queda visible sin consulta exacta ni panel; conserva q y clave oculta", async () => {
     const cuerpo = await paginaResolucion(valores, sobre, contexto).text();
     expect(cuerpo).not.toContain("Consulta exacta (avanzada)");
     expect(cuerpo).not.toContain('id="consultar-clave"');
@@ -57,8 +57,8 @@ describe("T5-15 Z-1 un campo visible y estado", () => {
   });
 });
 
-describe("T5-15 Z-2 orden del panel", () => {
-  test("pestanas, titulo y metadatos, agente, filtros y valores", async () => {
+describe("T5-15 Z-2 orden de la pagina del agente", () => {
+  test("resumen y selector de agente, declaraciones, valores y filtro de claves", async () => {
     const cuerpo = await paginaResolucion({ ...valores, declaraciones: ["nota"], reglas: { nota: "Nota del análisis" } }, sobre, contexto).text();
     const posiciones = ['id="resumen-resolucion"', 'id="seleccionar-agente"', 'id="declaraciones"', 'id="valores"', 'id="filtrar-claves"'].map(s => cuerpo.indexOf(s));
     expect(posiciones.every(p => p >= 0)).toBe(true);
@@ -123,7 +123,7 @@ describe("T5-15 Z-6 mapa agrupado", () => {
 });
 
 describe("T5-15 Z-7 coherencia de vistas", () => {
-  test("cabeceras y selector junto al titulo en cada vista del panel; CSS comun y tarjetas", async () => {
+  test("cabeceras y selector junto al titulo en cada vista con agente; CSS comun y tarjetas", async () => {
     const paginas = [paginaEntradas(base, contexto),
       paginaHallazgos({ ...base, hallazgos: [], incompleta: false, motivos: [], resumen: { elementos: null, hallazgos: conteosHallazgos } }, contexto),
       paginaConsultasPermiso(agentes, contexto), paginaReglas(reglas, "7", contexto),
@@ -136,8 +136,7 @@ describe("T5-15 Z-7 coherencia de vistas", () => {
       expect(cabecera![1]).toContain("<h1>");
       expect(cabecera![1]).toContain("proyecto");
       const selector = cuerpo.includes('id="seleccionar-agente"') ? 'id="seleccionar-agente"' : 'id="consultar-permiso"';
-      if (cuerpo.includes('<h1>Agentes</h1>')) expect(cuerpo.indexOf(selector)).toBeGreaterThan(cuerpo.indexOf(cabecera![0]));
-      else expect(cabecera![1]).toContain(selector);
+      expect(cabecera![1]).toContain(selector);
       expect(cuerpo).not.toMatch(/style=|<style\b|<script(?! type="application\/json")/);
     }
     for (const pagina of [paginaInicio(estado, undefined, new Date("2026-11-11T12:00:00Z")), paginaComparacion(comparacion), paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "No existe" })]) {

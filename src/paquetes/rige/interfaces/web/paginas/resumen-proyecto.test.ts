@@ -3,7 +3,7 @@ import type { RespuestaAgentes } from "../../../aplicacion/respuestas/agentes";
 import { paginaResumenProyecto } from "./resumen-proyecto";
 import { seccionHtml } from "../../../../../pruebas/utilidades/html";
 
-describe("T3-01 R-11 declaraciones en agentes", () => {
+describe("T3-01 R-11 declaraciones en resumen del proyecto", () => {
   test("presenta las plantillas escapadas y conserva el objeto embebido", async () => {
     const respuesta: RespuestaAgentes = { esquema: 2, proyecto: "/p", entradas: [], resumenEntradas: "a".repeat(64),
       agentes: [], eliminados: [], incompleta: false, motivos: [],

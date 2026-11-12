@@ -152,7 +152,7 @@ describe("W-15", () => {
   });
 });
 
-describe("T5-08-c1 C3 C4 determinante y leyenda", () => {
+describe("T5-08-c1 C3 C4 determinante y plantillas de reglas", () => {
   test("no repite el valor determinante y presenta plantillas comunes antes de la tabla", async () => {
     const { paginaResolucion } = await import("./resolucion");
     const original = respuesta();

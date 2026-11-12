@@ -143,11 +143,8 @@ describe("T5-08 U-2 U-10 U-11 P-1 P-2 P-3 P-6", () => {
       if (activo === "Agentes") expect(cuerpo).toContain(`href="/hallazgos?proyecto=${encodeURIComponent(base.proyecto)}&amp;id=7"`);
       if (activo !== "Agentes") expect(cuerpo).toMatch(new RegExp(`aria-current="page">${activo}</(?:a|span)>`));
       else expect(cuerpo).toContain("<h1>&lt;script&gt;&quot;&amp;</h1>");
-      expect(cuerpo).not.toContain('href="/agentes?id=7&amp;agente=');
       expect(cuerpo).not.toContain(estado.almacen.ruta);
     }
-    const invalida = await solicitar("/agentes?id=%22%3E%3Cscript%3E").text();
-    expect(invalida).not.toContain('href="/agentes?id=');
   });
 });
 
@@ -233,7 +230,7 @@ describe("T5-08 U-8 P-9", () => {
 });
 
 describe("T5-08 U-9", () => {
-  test("entradas y agentes distinguen estados y avisos", async () => {
+  test("entradas y resumen del proyecto distinguen estados y avisos", async () => {
     const cuerpo = await paginaEntradas(entradas).text();
     expect(cuerpo).toContain('class="insignia insignia--entrada-ilegible">ilegible');
     expect(cuerpo).toContain('class="aviso aviso--advertencia"><code>&lt;script&gt;&quot;&amp;:3:5</code> (falla)');

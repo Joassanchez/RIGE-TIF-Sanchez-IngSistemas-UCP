@@ -53,21 +53,18 @@ describe("T5-17 G-5 nombres de las fotos guardadas", () => {
   });
 });
 
-describe("T5-15 Z-1 estado entre pestanas", () => {
-  test("cada ruta recibe y devuelve q y clave escapadas en pestanas y selector sin tocar el dato", async () => {
+describe("T5-15 Z-1 estado entre vistas", () => {
+  test("cada vista con selector recibe y devuelve q y clave escapadas sin panel ni cambios en el dato", async () => {
     const q = 'TEMP & "<#', clave = "/options/a.b";
     const estado = `agente=build&clave=${encodeURIComponent(clave)}&q=${encodeURIComponent(q)}`;
-    for (const ruta of [`/resoluciones/7?${estado}`, `/resoluciones/7/permisos?${estado}`, `/agentes?id=7&${estado}`,
+    for (const ruta of [`/resoluciones/7?${estado}`, `/resoluciones/7/permisos?${estado}`,
       `/entradas?proyecto=%2Fproyecto&id=7&${estado}`, `/hallazgos?proyecto=%2Fproyecto&id=7&${estado}`]) {
       const cuerpo = await solicitar(ruta).text();
       expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
-      if (!ruta.startsWith("/agentes")) {
-        const selector = cuerpo.match(/<form id="(?:seleccionar-agente|consultar-permiso)"[^]*?<\/form>/)![0];
-        expect(selector).toContain('name="clave" value="/options/a.b"');
-        expect(selector).toContain('name="q" value="TEMP &amp; &quot;&lt;#"');
-      }
-      if (!ruta.includes("/permisos")) expect(dato(cuerpo)).toEqual(ruta.startsWith("/agentes") ? agentes
-        : ruta.startsWith("/entradas") ? entradas : ruta.startsWith("/hallazgos") ? hallazgos : valores);
+      const selector = cuerpo.match(/<form id="(?:seleccionar-agente|consultar-permiso)"[^]*?<\/form>/)![0];
+      expect(selector).toContain('name="clave" value="/options/a.b"');
+      expect(selector).toContain('name="q" value="TEMP &amp; &quot;&lt;#"');
+      if (!ruta.includes("/permisos")) expect(dato(cuerpo)).toEqual(ruta.startsWith("/entradas") ? entradas : ruta.startsWith("/hallazgos") ? hallazgos : valores);
     }
   });
 });
@@ -89,8 +86,8 @@ describe("T5-11 P-1 inicio", () => {
   });
 });
 
-describe("T5-11 P-2 agente predeterminado", () => {
-  test("elige build o el primero en orden; no reintenta y es determinista", async () => {
+describe("T5-11 P-2 consulta del primero en orden en el resumen", () => {
+  test("consulta el primero en orden para el sobre del resumen, tolera agentes sin declaraciones y es determinista", async () => {
     for (const nombres of [["explore", "build"], ["z", "a"]]) {
       const consultas: string[][] = [];
       const cambios: Partial<CasosWeb> = { consultarAgentes: () => ({ exito: true, valor: { ...agentes, agentes: nombres.map(nombre => ({ ...agentes.agentes[0]!, nombre })) } }),
@@ -259,7 +256,7 @@ describe("T5-11 P-7 D-5 responsive", () => {
 });
 
 describe("T5-11 P-8 documentacion", () => {
-  test("recorrido Analizar, clave diferenciada, pestanas y RD-01 en manual y README", async () => {
+  test("recorrido Analizar, resumen del proyecto, buscar clave, historial y RD-01 en manual y README", async () => {
     for (const archivo of ["MANUAL.md", "README.md"]) {
       const documento = await Bun.file(archivo).text();
       const seccion = documento.split("## 6.")[1]!.split("## 7.")[0]!;
@@ -272,8 +269,8 @@ describe("T5-11 P-8 documentacion", () => {
   });
 });
 
-describe("T5-11 P-3 panel y contexto", () => {
-  test("cinco pestanas activas, foto o estado actual, contexto separado del JSON", async () => {
+describe("T5-11 P-3 migas de pan y contexto", () => {
+  test("vistas sin panel con migas de pan, foto o estado actual y contexto separado del JSON", async () => {
     const rutas = [
       ["/resoluciones/7?agente=build&clave=temperature", "Valores", valores],
       ["/resoluciones/7/permisos?agente=build&clave=temperature", "Permisos", null],
@@ -327,7 +324,7 @@ describe("T5-11 P-3 panel y contexto", () => {
       expect(cuerpo).not.toContain('/resoluciones/');
     }
   });
-  test("el enlace de hallazgo a entrada conserva panel, clave y orden cero", async () => {
+  test("el enlace de hallazgo a entrada conserva contexto, clave y orden cero", async () => {
     const entrada = { orden: 0, via: "variable-contenido", referencia: "VARIABLE", condicion: "observada" as const };
     const cuerpo = await solicitar("/hallazgos?proyecto=p&id=7&agente=build&clave=temperature", { consultarHallazgos: () => ({ exito: true, valor: { ...hallazgos, hallazgos: [{ tipo: "entrada-ilegible", causa: "x", entrada, posicion: { linea: 1, columna: 1 }, clave: null, parametros: {}, localizacion: "/p:1:1", explicacion: "x" }] } }) }).text();
     expect(cuerpo).toContain('href="/entradas?proyecto=%2Fproyecto&amp;id=7&amp;agente=build&amp;clave=temperature#entrada-0"');

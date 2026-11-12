@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync, cpSync, rmSync, symlinkSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync, cpSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createHash } from "node:crypto";
@@ -14,10 +14,13 @@ import { resolverProyecto } from "../../paquetes/rige/aplicacion/casos-uso/resol
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { versionRige } from "../../paquetes/rige/aplicacion/respuestas/estado";
 
-// Árbol completo, nunca módulos del candidato en la referencia. Sin normalizar bytes.
-const referencia = "f085d3d";
+// Referencia única: ejecutable congelado cli-f085d3d.bun.txt del commit f085d3d5b999a82300c7d5724703beb4f16f7d30 (T5-22),
+// regenerado desde git archive en un directorio temporal con jsonc-parser 3.3.1 y enlaces de workspace mediante
+// `bun build ./paquetes/rige/arranque/rige.ts --target=bun --outfile <temporal>/cli.js` (Bun 1.3.14) y avisos MIT;
+// incluye el evaluador del proveedor bajo licencia MIT, ya declarado en paquetes/opencode/vendor/ (véase pruebas/datos/T5-23.md).
+// Sin normalizar bytes.
 const raiz = resolve(import.meta.dir, "../..");
-async function probarReferencia(consultarHistoria: boolean): Promise<void> {
+test("T5-23 L-2 buffers heredados y --json contra ejecutable congelado f085d3d, Bun 1.3.14", async () => {
   const temporal = realpathSync.native(mkdtempSync(join(tmpdir(), "rige-t523-ref-")));
   const e = prepararConsultas("v1-precedencia");
   const env: Record<string, string> = { ...crearEntornoAislado(e.raiz, process.env), ...e.variables,
@@ -25,35 +28,15 @@ async function probarReferencia(consultarHistoria: boolean): Promise<void> {
   const ejecutar = (programa: string, args: string[], extra = {}, precarga = false) => Bun.spawnSync([
     process.execPath, ...(precarga ? ["--preload", join(temporal, "fallar.ts")] : []), programa, ...args,
   ], { cwd: e.proyecto, env: { ...env, ...extra }, stdout: "pipe", stderr: "pipe", timeout: 10000 });
-  const archivo = join(temporal, "referencia.tar");
-  const copia = join(temporal, "arbol");
-  mkdirSync(copia);
   try {
     const congelada = readFileSync(join(raiz, "pruebas/datos/cli-f085d3d.bun.txt"));
     const procedencia = JSON.parse(readFileSync(join(raiz, "pruebas/datos/cli-f085d3d.json"), "utf8"));
     expect(procedencia.commit).toBe("f085d3d5b999a82300c7d5724703beb4f16f7d30");
     expect(createHash("sha256").update(congelada).digest("hex")).toBe(procedencia.sha256);
-    const programaCongelado = join(temporal, "congelada/paquetes/rige/arranque/rige.js");
-    mkdirSync(resolve(programaCongelado, ".."), { recursive: true });
-    writeFileSync(programaCongelado, congelada);
+    const anterior = join(temporal, "congelada/paquetes/rige/arranque/rige.js");
+    mkdirSync(resolve(anterior, ".."), { recursive: true });
+    writeFileSync(anterior, congelada);
     expect(Bun.spawnSync([process.execPath, "--version"]).stdout.toString().trim()).toBe("1.3.14");
-    const opcionesGit = ["-c", `safe.directory=${realpathSync.native(resolve(raiz, "..")).replaceAll("\\", "/")}`];
-    const historia = consultarHistoria && Bun.spawnSync(["git", ...opcionesGit, "cat-file", "-e", `${referencia}^{commit}`], { cwd: resolve(raiz, ".."), env, stderr: "pipe" }).exitCode === 0;
-    if (historia) {
-      const archivado = Bun.spawnSync(["git", ...opcionesGit, "archive", "--format=tar", referencia], { cwd: resolve(raiz, ".."), stdout: "pipe", stderr: "pipe", env });
-      expect(archivado.exitCode, archivado.stderr.toString()).toBe(0);
-      writeFileSync(archivo, archivado.stdout);
-      const extraido = Bun.spawnSync([process.platform === "win32" ? `${process.env.SystemRoot}\\System32\\tar.exe` : "tar", "-xf", archivo, "-C", copia], { env, stderr: "pipe" });
-      expect(extraido.exitCode, extraido.stderr.toString()).toBe(0);
-      // Dependencia de ejecución exacta ya instalada; sin red ni enlaces al código candidato.
-      const modulos = join(copia, "src/node_modules");
-      mkdirSync(join(modulos, "@rige"), { recursive: true });
-      const biblioteca = realpathSync.native(join(raiz, "paquetes/opencode/node_modules/jsonc-parser"));
-      expect(JSON.parse(readFileSync(join(biblioteca, "package.json"), "utf8")).version).toBe("3.3.1");
-      cpSync(biblioteca, join(modulos, "jsonc-parser"), { recursive: true });
-      for (const nombre of ["nucleo", "opencode", "rige"]) symlinkSync(join(copia, "src/paquetes", nombre), join(modulos, "@rige", nombre), process.platform === "win32" ? "junction" : "dir");
-    }
-    const anterior = historia ? join(copia, "src/paquetes/rige/arranque/rige.ts") : programaCongelado;
     const actual = join(raiz, "paquetes/rige/arranque/rige.ts");
     const almacen = env.RIGE_ALMACEN!;
     expect(new AlmacenSqlite(almacen, { existe: existsSync }).preparar().exito).toBe(true);
@@ -95,12 +78,6 @@ async function probarReferencia(consultarHistoria: boolean): Promise<void> {
     expect(JSON.parse(capturas[2]!.stdout.toString()).decision).toBeNull();
     expect(JSON.parse(capturas[3]!.stdout.toString()).explicacion).not.toBeNull();
     expect(capturas[14]!.stderr.length).toBeGreaterThan(0);
-    if (historia) for (const [i, c] of casos.entries()) {
-      restaurar();
-      const captura = ejecutar(programaCongelado, c.args, "extra" in c ? c.extra : {}, "precarga" in c && c.precarga);
-      expect({ codigo: captura.exitCode, salida: captura.stdout, error: captura.stderr }, "Referencia congelada: " + c.args.join(" "))
-        .toEqual({ codigo: capturas[i]!.exitCode, salida: capturas[i]!.stdout, error: capturas[i]!.stderr });
-    }
     for (const [i, c] of casos.entries()) {
       const previo = capturas[i]!;
       expect(previo.exitCode).toBe("codigo" in c ? c.codigo : 0);
@@ -126,9 +103,6 @@ async function probarReferencia(consultarHistoria: boolean): Promise<void> {
       finally { clearTimeout(limite); lector.releaseLock(); p.kill(); await p.exited; expect(await new Response(p.stderr).text()).toBe(""); }
     };
     const servidorReferencia = await iniciar(anterior);
-    if (historia) expect(await iniciar(programaCongelado)).toEqual(servidorReferencia);
     expect(await iniciar(actual)).toEqual(servidorReferencia);
   } finally { e.borrar(); borrarTemporal(temporal); }
-}
-test("T5-23 L-2 buffers heredados y --json contra git archive f085d3d, Bun 1.3.14", () => probarReferencia(true), 120000);
-test("T5-23 L-2 referencia independiente en checkout sin historial", () => probarReferencia(false), 30000);
+}, 30000);

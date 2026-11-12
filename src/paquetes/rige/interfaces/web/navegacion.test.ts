@@ -102,7 +102,7 @@ describe("T5-09 N-2 selector de agente", () => {
 });
 
 describe("T5-09-c1 C-1 selector compacto", () => {
-  test("presenta etiqueta, selector acotado y boton en una banda separada que se apila en movil", async () => {
+  test("presenta etiqueta, selector acotado y boton que se apila en movil", async () => {
     const cuerpo = await solicitar(casos, "/resoluciones/7?agente=build").text();
     const formulario = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)![0];
     expect(formulario).toContain('class="selector-agente"');

@@ -88,7 +88,7 @@ function resumen(cuerpo: string): string {
   return encontrado[1]!;
 }
 
-describe("T5-11 P-1 P-3 panel con foto y entradas actuales", () => {
+describe("T5-11 P-1 P-3 resumen del proyecto, foto de agente y entradas actuales", () => {
   const preparar = prepararRecorrido();
   test("Analizar sin agente guarda la foto; editar entradas solo cambia las vistas actuales", async () => {
     const recorrido = preparar();
