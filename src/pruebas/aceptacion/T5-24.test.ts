@@ -173,3 +173,27 @@ test("T5-24 X-12 documentacion con ejemplos de salida actualizados", () => {
     for (const ejemplo of ["ANTES", "LO DETERMINA", "Decide: #", "OpenCode · general", "Sin cambios en:", "external_directory: parcial en todos los agentes", "reglas --agente build --explicar"]) expect(t.includes(ejemplo), `${archivo}: ${ejemplo}`).toBe(true);
   }
 });
+
+test("T5-25 C-1 reglas muestra una sola vez el motivo del agente tambien en Markdown", () => escenario(e => {
+  writeFileSync(join(e.proyecto, "opencode.json"), JSON.stringify({ agent: { documentador: { description: "Documentación" } } }));
+  const carpeta = join(e.proyecto, ".opencode", "agent");
+  mkdirSync(carpeta, { recursive: true });
+  writeFileSync(join(carpeta, "documentador.md"), "---\ndescription: Documentación\n---\nInstrucciones\n");
+  for (const opciones of [[], ["--explicar"], ["--todo"]]) {
+    const t = texto(e, "reglas", ["--agente", "build", ...opciones]);
+    expect(t).toContain("No observado: documentador: Agente declarado también en Markdown");
+    expect(t.match(/Agente declarado también en Markdown/g)).toHaveLength(1);
+  }
+}));
+
+test("T5-25 C-2 ayuda general y por subcomando alinea todas las descripciones", () => escenario(e => {
+  for (const comando of [[], ...["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos", "recientes", "comparar", "estado", "esquema", "servir"].map(c => [c])]) {
+    const r = lanzar(e.raiz, [...comando, "--help"], e.variables);
+    expect(r.codigo).toBe(0);
+    const filas = r.salida.split("\n").filter(l => l.startsWith("  --"));
+    const opciones = filas.map(l => l.match(/^  (.+?) {2,}(.+)$/)!);
+    expect(opciones.every(Boolean)).toBe(true);
+    const columna = 2 + Math.max(...opciones.map(m => m[1]!.length)) + 2;
+    for (const [i, m] of opciones.entries()) expect(filas[i]!.indexOf(m[2]!, 2 + m[1]!.length)).toBe(columna);
+  }
+}));

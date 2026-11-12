@@ -161,7 +161,8 @@ export function renderizarReglas(r: RespuestaReglas, c: ContextoPresentacion): s
       ...f.ejesParciales.filter(s => !ejesComunes.includes(s)).map(s => `${seguro(f.agente)}/${seguro(s)}: ${motivo("parcial")}`),
       ...f.celdas.filter(celda => celda.motivo !== null && !f.ejesParciales.includes(celda.sujeto)).map(celda => `${seguro(f.agente)}/${seguro(celda.sujeto)}: ${motivo(celda.motivo!)}`),
       ...[...new Set([...f.declaraciones, ...f.advertencias])].filter(a => visible(a) && !avisosComunes.includes(a)).map(a => `${seguro(f.agente)}: ${explicarCodigo(a)}`)]),
-    ...r.matriz.noObservados.map(a => `No observado: ${seguro(a.nombre)}: ${explicarCodigo(a.motivo ?? "sin dato")}`), ...r.matriz.motivos.map(explicarCodigo),
+    ...r.matriz.noObservados.map(a => `No observado: ${seguro(a.nombre)}: ${explicarCodigo(a.motivo ?? "sin dato")}`),
+    ...r.matriz.motivos.filter(m => !r.matriz.noObservados.some(a => a.motivo === m)).map(explicarCodigo),
     ...(c.todo ? ["Cadena completa:", ...r.cadena.map(regla)] : []),
     ...[...new Set([...r.declaraciones, ...r.advertencias])].filter(a => visible(a)
       && !r.matriz.filas.some(f => f.declaraciones.includes(a) || f.advertencias.includes(a))).map(a => `Aviso: ${explicarCodigo(a)}`)], c,
