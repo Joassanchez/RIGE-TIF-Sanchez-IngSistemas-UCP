@@ -36,7 +36,7 @@ describe("T5-14 K-5 plantillas", () => {
     for (const conteo of ["1 cambio", "1 clave nueva", "1 quitada"]) expect(pagina).toContain(`>${conteo}</span>`);
     expect(pagina).not.toContain("<h2>Agente otro</h2>");
     const inicio = await paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/privado", versionEsquema: 2 } },
-      { esquema: 2, proyectos: [{ proyecto: r.proyecto, id: 2, instante: "2026-11-01T12:00:00Z", cantidad: 2 }] }).text();
+      { esquema: 2, proyectos: [{ proyecto: r.proyecto, id: 2, instante: "2026-11-01T12:00:00Z", cantidad: 2 }] }, new Date("2026-11-11T12:00:00Z")).text();
     expect(inicio).toContain(`/resolver?proyecto=${encodeURIComponent(r.proyecto)}`);
     expect(textoHtml(inicio)).toContain(escapar(r.proyecto));
     expect(inicio).not.toContain("<script");

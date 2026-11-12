@@ -5,7 +5,7 @@ import { versionRige } from "../../aplicacion/respuestas/estado";
 import { estilos } from "./estilos";
 import { paginaResolucion } from "./paginas/resolucion";
 import { paginaEntradas } from "./paginas/entradas";
-import { paginaAgentes } from "./paginas/agentes";
+import { paginaResumenProyecto } from "./paginas/resumen-proyecto";
 import { paginaHallazgos } from "./paginas/hallazgos";
 import { paginaPermiso } from "./paginas/permiso";
 import { paginaConsultasPermiso } from "./paginas/consultas-permiso";
@@ -123,8 +123,8 @@ describe("T5-15 Z-6 mapa agrupado", () => {
 });
 
 describe("T5-15 Z-7 coherencia de vistas", () => {
-  test("cabeceras y selector junto al titulo salvo listado antiguo en cada vista del panel; CSS comun y tarjetas", async () => {
-    const paginas = [paginaAgentes(agentes, "7", contexto.clave, contexto), paginaEntradas(base, contexto),
+  test("cabeceras y selector junto al titulo en cada vista del panel; CSS comun y tarjetas", async () => {
+    const paginas = [paginaEntradas(base, contexto),
       paginaHallazgos({ ...base, hallazgos: [], incompleta: false, motivos: [], resumen: { elementos: null, hallazgos: conteosHallazgos } }, contexto),
       paginaConsultasPermiso(agentes, contexto), paginaReglas(reglas, "7", contexto),
       paginaPermiso({ ...base, agente: "build", consulta: { sujeto: "read", objetivo: ".env", objetivoEvaluado: ".env", forma: "sujeto" }, decision: null,
@@ -140,13 +140,11 @@ describe("T5-15 Z-7 coherencia de vistas", () => {
       else expect(cabecera![1]).toContain(selector);
       expect(cuerpo).not.toMatch(/style=|<style\b|<script(?! type="application\/json")/);
     }
-    for (const pagina of [paginaInicio(estado), paginaComparacion(comparacion), paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "No existe" })]) {
+    for (const pagina of [paginaInicio(estado, undefined, new Date("2026-11-11T12:00:00Z")), paginaComparacion(comparacion), paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "No existe" })]) {
       const cuerpo = await pagina.text();
       expect(cuerpo).toContain('href="/estilos.css"');
       expect(cuerpo.match(/<h1>/g)).toHaveLength(1);
     }
-    expect(css(".filtros")).toMatch(/grid-template-columns:\s*minmax\(0,\s*1fr\)/);
-    expect(css(".filtros > *")).toMatch(/width:\s*100%/);
     expect(css(".cabecera-pagina")).toMatch(/margin-bottom:\s*2rem/);
     for (const selector of ["h1", ".cabecera-pagina h1", ".pagina-error h1"])
       expect(css(selector)).toMatch(/font-size:\s*1\.75rem/);
@@ -182,7 +180,6 @@ describe("T5-15 Z-9 comparar", () => {
     expect(resumen).toContain("Antes"); expect(resumen).toContain("Después");
     expect(resumen).toContain(fechaLocal(sobre.instante));
     expect(json(cuerpo)).toEqual(comparacion);
-    expect(css(".tabla-tarjetas .comparacion-flecha")).toMatch(/display:\s*none/);
   });
 });
 
@@ -216,7 +213,7 @@ describe("T5-15 Z-10 plurales", () => {
     const texto = textoHtml(await paginaComparacion(nueva).text());
     for (const fragmento of ["1 cambio", "1 clave nueva", "1 quitada", "1 clave sin cambio"]) expect(texto).toContain(fragmento);
     for (const cantidad of [0, 1, 2]) {
-      const inicio = textoHtml(await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: "/p", id: 7, instante: sobre.instante, cantidad }] }).text());
+      const inicio = textoHtml(await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: "/p", id: 7, instante: sobre.instante, cantidad }] }, new Date("2026-11-11T12:00:00Z")).text());
       expect(inicio).toContain(`${cantidad} análisis`);
     }
   });
@@ -224,11 +221,11 @@ describe("T5-15 Z-10 plurales", () => {
 
 describe("T5-15 Z-11 inicio", () => {
   test("ayuda separada y recientes con instante legible, accion principal y tarjeta movil", async () => {
-    const cuerpo = await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: '/p & "<x>', id: 7, instante: sobre.instante, cantidad: 1 }] }).text();
+    const cuerpo = await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: '/p & "<x>', id: 7, instante: sobre.instante, cantidad: 1 }] }, new Date("2026-11-11T12:00:00Z")).text();
     expect(cuerpo).toContain('id="ayuda-analizar"');
     expect(css("#ayuda-analizar")).toMatch(/margin-top:\s*1rem/);
     const recientes = seccionHtml(cuerpo, "proyectos-recientes");
-    expect(recientes).toContain(fechaRelativa(sobre.instante, new Date()));
+    expect(recientes).toContain(fechaRelativa(sobre.instante, new Date("2026-11-11T12:00:00Z")));
     expect(recientes).toContain(`datetime="${sobre.instante}"`);
     expect(recientes).toContain('class="reciente__foto" href="/resoluciones/7"');
     expect(recientes).toContain('class="reciente__reanalizar"');

@@ -7,7 +7,7 @@ describe("W-2", () => {
     const respuesta = paginaInicio({
       esquema: 2, versionRige,
       almacen: { ruta: "/temporal/<script>rige.db", versionEsquema: 7 },
-    });
+    }, undefined, new Date("2026-11-11T12:00:00Z"));
     expect(respuesta.status).toBe(200);
     expect(respuesta.headers.get("Content-Type")).toBe("text/html; charset=utf-8");
     const cuerpo = await respuesta.text();
@@ -22,7 +22,7 @@ describe("W-2", () => {
 describe("W-10", () => {
   test("ofrece el formulario GET y conserva version sin ruta privada", async () => {
     const cuerpo = await paginaInicio({ esquema: 2, versionRige,
-      almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 } }).text();
+      almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 } }, undefined, new Date("2026-11-11T12:00:00Z")).text();
     expect(cuerpo).toContain('<form method="get" action="/resolver">');
     expect(cuerpo).toMatch(/<input[^>]*name="proyecto"[^>]*required/);
     expect(cuerpo.match(/<form\b/g)).toHaveLength(1);

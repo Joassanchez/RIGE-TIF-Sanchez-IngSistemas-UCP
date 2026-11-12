@@ -31,7 +31,7 @@ const manejarEstado = (puerto: number, consultarEstado: ConsultarEstado) => crea
   consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },
   consultarAgentes: () => { throw new Error("No consultar agentes"); },
   consultarResolucion: () => { throw new Error("No consultar"); },
-});
+}, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
 
 describe("W-7", () => {
   test("incluye las cinco cabeceras de defensa y conserva las adicionales sin CORS", async () => {

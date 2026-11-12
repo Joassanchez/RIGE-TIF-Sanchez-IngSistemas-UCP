@@ -1,5 +1,5 @@
 import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
-import type { ResolverProyecto } from "../../aplicacion/casos-uso/resolver-proyecto";
+import type { ResolverProyecto, DependenciasResolver } from "../../aplicacion/casos-uso/resolver-proyecto";
 import type { ConsultarResolucion } from "../../aplicacion/casos-uso/consultar-resolucion";
 import type { CompararResoluciones } from "../../aplicacion/casos-uso/comparar-resoluciones";
 import type { ConsultarProyectosRecientes } from "../../aplicacion/casos-uso/consultar-proyectos-recientes";
@@ -37,10 +37,13 @@ export interface CasosWeb {
   readonly consultarAgentes: (id: string) => ReturnType<typeof consultarAgentesGuardados>;
 }
 
-export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Request) => Response {
+interface PresentacionWeb { readonly versionHerramienta: string; readonly reloj: DependenciasResolver["reloj"] }
+const erroresSinFoto = ["clave-no-resuelta", "agente-sin-declaraciones"];
+
+export function crearManejador(puerto: number, casos: CasosWeb, presentacion: PresentacionWeb): (solicitud: Request) => Response {
   const enrutar = (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
-    const contextoSolicitud = { ...(url.searchParams.has("sujeto") ? { sujeto: url.searchParams.get("sujeto")! } : {}), clave: url.searchParams.get("clave") ?? "", q: url.searchParams.get("q") ?? "", agente: url.searchParams.get("agente") ?? undefined,
+    const contextoSolicitud = { versionHerramienta: presentacion.versionHerramienta, ...(url.searchParams.has("sujeto") ? { sujeto: url.searchParams.get("sujeto")! } : {}), clave: url.searchParams.get("clave") ?? "", q: url.searchParams.get("q") ?? "", agente: url.searchParams.get("agente") ?? undefined,
       ...(url.searchParams.has("lanzadoPor") ? { lanzadoPor: url.searchParams.get("lanzadoPor")! } : {}) };
     const contextoFoto = (id: string, agente: string | undefined): Resultado<ContextoPanel, ErrorUso> => {
       if (agente === undefined) return { exito: true, valor: {} };
@@ -48,7 +51,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       const consulta = casos.consultarResolucion(id, agente, "");
       // El sobre depende de la proyección de valores. Su ausencia no invalida
       // una consulta de agentes/permisos/reglas que ya tuvo éxito (ADR-113).
-      if (!consulta.exito && ["clave-no-resuelta", "agente-sin-declaraciones"].includes(consulta.error.codigo)) {
+      if (!consulta.exito && erroresSinFoto.includes(consulta.error.codigo)) {
         return { exito: true, valor: { fechaNoDisponible: consulta.error.codigo } };
       }
       return consulta.exito ? { exito: true, valor: { instante: consulta.valor.sobre.instante } } : consulta;
@@ -179,7 +182,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
       for (const agente of agentes.valor.agentes) {
         const foto = casos.consultarResolucion(id, agente.nombre, "");
         if (foto.exito) { sobre = foto.valor.sobre; break; }
-        if (!["clave-no-resuelta", "agente-sin-declaraciones"].includes(foto.error.codigo)) return paginaErrorUso(foto.error);
+        if (!erroresSinFoto.includes(foto.error.codigo)) return paginaErrorUso(foto.error);
       }
       return paginaResumenProyecto(agentes.valor, entradas, hallazgos, id, sobre, contextoSolicitud);
     }
@@ -190,7 +193,7 @@ export function crearManejador(puerto: number, casos: CasosWeb): (solicitud: Req
     const resultado = casos.consultarEstado();
     if (!resultado.exito) return paginaErrorUso(resultado.error);
     const recientes = casos.consultarProyectosRecientes();
-    return recientes.exito ? paginaInicio(resultado.valor, recientes.valor) : paginaErrorUso(recientes.error);
+    return recientes.exito ? paginaInicio(resultado.valor, recientes.valor, new Date(presentacion.reloj.ahora())) : paginaErrorUso(recientes.error);
   };
   return conErrores(conVerificacionDeOrigen(puerto, enrutar));
 }
@@ -200,9 +203,9 @@ export interface ServidorIniciado {
   detener(): void;
 }
 
-export function iniciarServidor(puerto: number, casos: CasosWeb): Resultado<ServidorIniciado, ErrorUso> {
+export function iniciarServidor(puerto: number, casos: CasosWeb, presentacion: PresentacionWeb): Resultado<ServidorIniciado, ErrorUso> {
   try {
-    const servidor = Bun.serve({ hostname: "127.0.0.1", port: puerto, fetch: crearManejador(puerto, casos) });
+    const servidor = Bun.serve({ hostname: "127.0.0.1", port: puerto, fetch: crearManejador(puerto, casos, presentacion) });
     return {
       exito: true,
       valor: { direccion: `http://127.0.0.1:${puerto}`, detener: () => { servidor.stop(true); } },

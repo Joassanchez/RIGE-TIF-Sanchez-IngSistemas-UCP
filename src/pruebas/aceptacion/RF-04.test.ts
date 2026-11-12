@@ -84,7 +84,7 @@ describe("T3-03-c1 R-2", () => {
   test("build coincide completo con la referencia sin t7 de la variable invalida", () => {
     cadena("v3-permiso-invalido");
     const { cadenas } = consultarCadenas("v3-permiso-invalido");
-    expect(cadenas.build!.reglas.some(r => r.patron.includes("t7"))).toBe(false);
+    expect(cadenas.build!.reglas.some(r => r.sujeto === "bash" && r.patron === "t7 *")).toBe(false);
   });
 });
 

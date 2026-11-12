@@ -5,8 +5,7 @@ import { diseno } from "../diseno";
 import { responderHtml } from "../respuesta";
 import { fechaRelativa, nombreProyecto } from "../textos";
 
-export function paginaInicio(respuesta: RespuestaEstado, recientes: RespuestaProyectosRecientes = { esquema: 2, proyectos: [] }): Response {
-  const ahora = new Date();
+export function paginaInicio(respuesta: RespuestaEstado, recientes: RespuestaProyectosRecientes = { esquema: 2, proyectos: [] }, ahora: Date): Response {
   return responderHtml(200, diseno("Inicio", html`
 <div class="hero"><h1>¿Qué configuración rige en este proyecto?</h1></div>
 <section id="analizar-proyecto" class="tarjeta tarjeta--principal" aria-labelledby="titulo-resolver">
@@ -21,5 +20,5 @@ ${recientes.proyectos.length ? html`<ul class="recientes">${recientes.proyectos.
 <a class="reciente__foto" href="${`/resoluciones/${encodeURIComponent(p.id)}`}"><strong>${nombreProyecto(p.proyecto)}</strong>
 <code title="${p.proyecto}">${p.proyecto}</code><span><time datetime="${p.instante}">${fechaRelativa(p.instante, ahora)}</time> · ${p.cantidad} análisis</span></a>
 <a class="reciente__reanalizar" href="${`/resolver?proyecto=${encodeURIComponent(p.proyecto)}`}">Analizar de nuevo</a></li>`)}</ul>`
-    : html`<p>Ingresá la carpeta de un proyecto y pulsá Analizar para ver su configuración.</p>`}</section>`, { activa: "Inicio", almacen: respuesta.almacen }));
+    : html`<p>Ingresá la carpeta de un proyecto y pulsá Analizar para ver su configuración.</p>`}</section>`, { activa: "Inicio" }));
 }

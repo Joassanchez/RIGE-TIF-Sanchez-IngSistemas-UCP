@@ -37,7 +37,7 @@ const casos: CasosWeb = { consultarEstado: no, consultarProyectosRecientes: no, 
   consultarAgentes: () => ({ exito: true, valor: agentes }), consultarResolucion: () => ({ exito: true, valor: { respuesta: valores, sobre } }),
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }), consultarReglas: () => ({ exito: true, valor: reglas }) };
 function pedir(ruta: string, cambios: Partial<CasosWeb> = {}) {
-  return crearManejador(12345, { ...casos, ...cambios })(new Request(`http://localhost${ruta}`, { headers: { Host: "localhost:12345" } }));
+  return crearManejador(12345, { ...casos, ...cambios }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } })(new Request(`http://localhost${ruta}`, { headers: { Host: "localhost:12345" } }));
 }
 const dato = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
 
@@ -218,7 +218,7 @@ describe("T5-18 R-8 enlace al editor", () => {
 describe("T5-18 R-9 sujetos de permiso", () => {
   test("efectos y límites de fila sin consultas; sujeto precargado y objetivo vacío", async () => {
     const cuerpo = await pedir("/resoluciones/7/agentes/build").text();
-    for (const texto of ["Sujetos de permiso", "personalizado", "sujeta a confirmación", "parcial", "Cadena incompleta.", "Límite de la fila.", "Observación parcial.", "Ver todas las reglas de build"]) expect(cuerpo).toContain(texto);
+    for (const texto of ["Sujetos de permiso", "personalizado", "pregunta", "parcial", "Cadena incompleta.", "Límite de la fila.", "Observación parcial.", "Ver todas las reglas de build"]) expect(cuerpo).toContain(texto);
     const enlace = cuerpo.match(/href="([^"]+sujeto=personalizado[^"]*)"/)![1]!.replaceAll("&amp;", "&");
     expect(enlace).toBe("/resoluciones/7/permisos?agente=build&sujeto=personalizado");
     const formulario = pedir(enlace);

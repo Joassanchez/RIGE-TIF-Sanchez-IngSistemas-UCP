@@ -10,6 +10,7 @@ import { datosRespuesta, html, type HtmlSeguro } from "../plantillas";
 import { declaraciones, diseno, insignia } from "../diseno";
 import { presentarRuta, presentarUbicacion } from "../rutas";
 import { responderHtml } from "../respuesta";
+import { textoDesdeRuta } from "../../../aplicacion/casos-uso/claves";
 
 export function presentarOrigen(declaracion: DeclaracionUbicada): HtmlSeguro {
   const { origen } = declaracion;
@@ -24,9 +25,7 @@ function presentarDesplazada(declaracion: DeclaracionUbicada): HtmlSeguro {
 
 export function paginaResolucion(respuesta: RespuestaValores, sobre: SobreAlmacen,
   contexto: ContextoPanel = {}, datos: { readonly agente?: RespuestaAgentes["agentes"][number]; readonly reglas?: RespuestaReglas; readonly errorReglas?: ErrorUso; readonly cantidadDeclaradas?: number | null } = {}): Response {
-  const clave = contexto.clave ?? (respuesta.ruta === null ? null : respuesta.ruta.every(segmento => !/[./~]/.test(segmento))
-    ? respuesta.ruta.join(".")
-    : "/" + respuesta.ruta.map(segmento => segmento.replaceAll("~", "~0").replaceAll("/", "~1")).join("/"));
+  const clave = contexto.clave ?? (respuesta.ruta === null ? null : textoDesdeRuta(respuesta.ruta));
   const consulta = `?agente=${encodeURIComponent(respuesta.agente)}${clave ? `&clave=${encodeURIComponent(clave)}` : ""}`;
   const q = contexto.q ?? "";
   const declaradas = datos.cantidadDeclaradas === undefined ? respuesta.valores.filter(v => v.rastro.determinante.origen.tipo === "declarado").length : datos.cantidadDeclaradas;

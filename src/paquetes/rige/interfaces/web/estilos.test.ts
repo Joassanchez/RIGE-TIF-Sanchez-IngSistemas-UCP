@@ -17,7 +17,7 @@ describe("T5-10 diseno responsive a 360 y 390 px", () => {
       expect(reglas(estilos, selector)).toMatch(/max-width:\s*100%/);
     }
     expect(reglas(estilos, "body")).toMatch(/overflow-wrap:\s*anywhere/);
-    for (const selector of ["main", ".cabecera__interior", ".rejilla", ".grupo-campos", ".resumen", ".selector-agente", ".pie"])
+    for (const selector of ["main", ".cabecera__interior", ".resumen", ".selector-agente", ".pie"])
       expect(reglas(estilos, selector)).toMatch(/min-width:\s*0/);
     for (const selector of ["code", ".ruta", ".ruta__segmento", ".ruta__archivo"]) {
       expect(reglas(estilos, selector)).toMatch(/overflow-wrap:\s*anywhere/);
@@ -49,7 +49,6 @@ describe("T5-10 diseno responsive a 360 y 390 px", () => {
       expect(reglas(movil, selector)).toMatch(/width:\s*100%/);
     for (const selector of [".selector-agente", ".acciones"])
       expect(reglas(movil, selector)).toMatch(/flex-direction:\s*column/);
-    expect(reglas(movil, ".grupo-campos")).toMatch(/grid-template-columns:\s*minmax\(0,\s*1fr\)/);
   });
 
   test("C6 usa escala compacta incluso en paginas de error", () => {

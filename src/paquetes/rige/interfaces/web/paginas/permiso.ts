@@ -6,24 +6,23 @@ import { datosRespuesta, html } from "../plantillas";
 import { declaraciones, diseno, efectoVisual, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
 import { presentarRuta, presentarUbicacion, presentarTextoUbicado } from "../rutas";
+import { efectoDecision, origenNativo, motivoSinDecision } from "../../presentacion/vocabulario";
 
 export function paginaPermiso(respuesta: RespuestaPermiso, idResolucion?: string, contexto: ContextoPanel = {}): Response {
   const lanzadoPor = "lanzadoPor" in respuesta && typeof respuesta.lanzadoPor === "string" ? respuesta.lanzadoPor : undefined;
   const determinante = respuesta.determinante === null ? undefined : respuesta.cadena.find(r => r.indice === respuesta.determinante);
   const caracter = (regla: RespuestaPermiso["cadena"][number]) => regla.origen.tipo === "declarado" ? "Declarada" : regla.origen.tipo === "implicito" ? "Implícita"
-    : ({ "nativa-general": "Nativa general", "nativa-agente": "Nativa del agente", "denegacion-subagente": "Denegación de subagente" } as Record<string, string>)[regla.origen.regla] ?? "Nativa";
+    : origenNativo(regla.origen.regla);
   const procedencia = (regla: RespuestaPermiso["cadena"][number]) => regla.origen.tipo === "declarado" && regla.declaracion
     ? html`${regla.declaracion.via} · ${presentarUbicacion(regla.declaracion.referencia, regla.origen.posicion, regla.declaracion.via)}`
     : html`${caracter(regla)}${regla.origen.tipo === "declarado" ? html` · Declaración sin ubicación` : html` · ${respuesta.reglas[regla.origen.regla] ?? regla.origen.regla}`}`;
-  const motivo = respuesta.motivoSinDecision === "comando-compuesto" ? "El comando contiene varias operaciones; consultá cada una por separado."
-    : respuesta.motivoSinDecision === "fuera-del-arbol" ? "El objetivo está fuera del árbol observado."
-    : respuesta.motivoSinDecision === "eje-parcialmente-observado" ? "Este sujeto de permiso solo se observa parcialmente."
-    : respuesta.reglas[respuesta.motivoSinDecision ?? ""] ?? "No se pudo determinar el permiso para este objetivo.";
-  const decision = respuesta.decision === "allow" ? insignia("Permitido", "permitida") : respuesta.decision === "ask" ? insignia("Pregunta antes", "pregunta")
-    : respuesta.decision === "deny" ? insignia("Denegado", "denegada") : respuesta.decision === null ? html`<p>${motivo}</p>` : efectoVisual(respuesta.decision);
+  const motivo = motivoSinDecision(respuesta.motivoSinDecision, respuesta.reglas);
+  // La primera oración sin decisión es su motivo (contrato del explicador).
+  const explicacion = respuesta.explicacion?.map((texto, i) => i === 0 && respuesta.decision === null ? motivo : texto);
+  const decision = insignia(efectoDecision(respuesta.decision), respuesta.decision === "allow" ? "permitida" : respuesta.decision === "deny" ? "denegada" : respuesta.decision === "ask" ? "pregunta" : "neutra");
   const advertenciasPlegadas: readonly string[] = respuesta.nativaAnulada ? respuesta.advertencias.filter(c => c === "proteccion-nativa-anulada") : [];
   const advertenciasVisibles = respuesta.advertencias.filter(c => !advertenciasPlegadas.includes(c));
-  const frase = respuesta.explicacion?.[0];
+  const frase = respuesta.decision === null ? undefined : explicacion?.[0];
   const fraseDecision = frase && determinante?.origen.tipo === "declarado" && determinante.declaracion
     ? presentarTextoUbicado(frase, determinante.declaracion.referencia, determinante.origen.posicion, determinante.declaracion.via) : html`${frase ?? ""}`;
   return responderHtml(200, diseno(`Permiso de ${respuesta.agente}`, html`
@@ -35,14 +34,14 @@ ${lanzadoPor ? html`<p>Lanzado por: <code>${lanzadoPor}</code></p>` : html``}
 <p><code class="ficha-codigo">${respuesta.consulta.sujeto}: ${respuesta.consulta.objetivo}</code></p>
 ${idResolucion === undefined ? html`` : html`${rotuloFoto(respuesta.proyecto, contexto.instante, contexto.fechaNoDisponible)}`}</details></div>
 
-<section id="resultado-permiso" class="tarjeta decision-principal"><h2>Decisión</h2>${decision}
-${respuesta.explicacion?.[0] ? html`<p>${fraseDecision}</p>` : html``}
+<section id="resultado-permiso" class="tarjeta decision-principal"><h2>Decisión</h2>${decision}${respuesta.decision === null ? html`<p>${motivo}</p>` : html``}
+${frase ? html`<p>${fraseDecision}</p>` : html``}
 ${respuesta.herramienta ? html`<p>Herramienta: ${respuesta.herramienta.nombre}, ${respuesta.herramienta.ofrecida ? "ofrecida" : "retirada"}.</p>` : html``}
 </section>
 <section id="regla-determinante"><h2>Regla que decide</h2>${determinante === undefined ? html`<p>No hay una regla determinante${respuesta.porDefecto ? "; se aplica la decisión por defecto" : " para esta consulta"}.</p>`
     : html`<div class="tarjeta"><p><code>${determinante.patron}</code> · ${efectoVisual(determinante.efecto)} · ${caracter(determinante)}</p><p>${procedencia(determinante)}</p></div>`}</section>
 ${respuesta.nativaAnulada ? html`<div class="aviso aviso--advertencia bloque"><p><strong>Esta declaración anula una protección nativa de OpenCode</strong> (regla ${respuesta.nativaAnulada.regla + 1}, por ${respuesta.nativaAnulada.por + 1}).</p></div>` : html``}
-${respuesta.explicacion?.length ? html`<details><summary>Explicación completa</summary>${respuesta.explicacion.map(oracion => html`<p>${oracion}</p>`)}</details>` : html``}
+${explicacion?.length ? html`<details><summary>Explicación completa</summary>${explicacion.map(oracion => html`<p>${oracion}</p>`)}</details>` : html``}
 ${(respuesta.explicacion?.length && respuesta.declaraciones.length) || advertenciasPlegadas.length
     ? html`<details id="notas-analisis"><summary>Notas del análisis (${respuesta.declaraciones.length + advertenciasPlegadas.length})</summary>${declaraciones(respuesta.declaraciones, respuesta.reglas)}${advertenciasPlegadas.map(codigo => html`<p>${respuesta.reglas[codigo]}</p>`)}</details>`
     : declaraciones(respuesta.declaraciones, respuesta.reglas)}

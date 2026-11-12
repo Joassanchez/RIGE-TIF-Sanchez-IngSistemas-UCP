@@ -139,6 +139,19 @@ Las consultas de la CLI no escriben la base. Para cargar resoluciones de demostr
 
 ## 6. Ejecución
 
+`reglas --todo` comienza en el índice 1, igual que su JSON. Extracto de la cadena:
+
+```text
+Cadena completa:
+#1 * * → permitida · OpenCode · general
+```
+
+Un límite o eje es común solo si aparece en todas las filas de la matriz. `comparar --agente` muestra el resumen de lo filtrado en CLI y web; su JSON permanece completo. La procedencia nativa distingue también «OpenCode · denegación de subagente».
+
+`entradas --todo --texto` muestra los lugares revisados de cada vía; los estados son presente, ausente, no observada y no soportada. Los modos se leen Principal, Subagente y Principal y subagente.
+
+`estado --texto` informa la ruta aunque falte la base: `Existe: no`, `Versión de esquema: sin esquema`, `Probá: bun run rige -- esquema` y código 0. Si existe sin esquema, dice `Existe: sí`; en ambos casos el JSON devuelve `versionEsquema: null`. Una base correcta muestra versión 2 sin la sugerencia.
+
 La CLI muestra **texto breve con tablas** cuando stdout es una consola; conserva **JSON completo** al redirigir o usar una **tubería**. `--json` y `--texto` fuerzan la elección y no pueden combinarse. Para comparar objetos con la web, pedir siempre `--json`. Las consultas aceptan `--proyecto` optativo: se usa la **carpeta actual** si falta y se indica en el encabezado textual. Un valor vacío sigue siendo inválido.
 
 Para instalar el comando desde `src/`, ejecutar `bun link` y mantener el directorio de binarios de Bun en `PATH` (`~/.bun/bin` o `%USERPROFILE%\.bun\bin`). Después se puede ejecutar `rige valores --agente build` desde cualquier carpeta del proyecto. Se lee el `rige.env` de la instalación; `bun run rige -- …` sigue funcionando desde `src/`.
@@ -176,22 +189,22 @@ Respuesta completa: --json
 LO DETERMINA muestra solo la determinante; ANTES, el valor breve de la última desplazada. `--todo` agrega el detalle completo. El permiso de lectura de `.env` del mismo escenario muestra:
 
 ```text
-? PREGUNTA
+? PREGUNTA ANTES
 Agente: build
 Proyecto: proyecto
 Consulta: read · .env
-Decide: #10 read *.env → ask · OpenCode · general
-Desplaza: #9 read * → allow · OpenCode · general
+Decide: #10 read *.env → pregunta · OpenCode · general
+Desplaza: #9 read * → permitida · OpenCode · general
 Respuesta completa: --json
 ```
 
-La procedencia declarada usa `archivo:línea:columna (vía)`; la nativa, «OpenCode · general», «OpenCode · agente» u «OpenCode · final». Agentes muestra Principal, Subagente o Ambos y una marca «oculto» atenuada si corresponde. Recientes y comparación usan fechas locales legibles, como `03/01/2020 18:05`; `estado` no trae instante. Comparar encabeza «Cambios entre 02/01/2020 11:14 y 03/01/2020 18:05» y los ids atenuados entre paréntesis, con cifras en una línea. Agrupa «Sin cambios en: compaction, explore, …» y muestra las diferencias por agente en CLAVE / ANTES / DESPUÉS / LO DETERMINA, con el proyecto de la respuesta.
+La procedencia declarada usa `archivo:línea:columna (vía)`; la nativa, «OpenCode · general», «OpenCode · agente» u «OpenCode · final». Agentes muestra Principal, Subagente o Principal y subagente y una marca «oculto» atenuada si corresponde. Recientes y comparación usan fechas locales legibles, como `03/01/2020 18:05`; `estado` no trae instante. Comparar encabeza «Cambios entre 02/01/2020 11:14 y 03/01/2020 18:05» y los ids atenuados entre paréntesis, con cifras en una línea. Agrupa «Sin cambios en: compaction, explore, …» y muestra las diferencias por agente en CLAVE / ANTES / DESPUÉS / LO DETERMINA, con el proyecto de la respuesta.
 
-`--help`, `-h` y `--version` no leen configuración ni almacén. La ayuda siempre es texto; sin subcomando, el texto de ayuda va a stderr y termina en 2; en JSON se conserva el error único. La versión es texto incluso por tubería, salvo `--json`. `rige estado` informa la ruta configurada, existencia y versión de esquema; sin almacén o sin esquema termina en 1 y sugiere `bun run rige -- esquema`. No crea directorio ni base ni modifica esquema o datos; admite auxiliares SQLite `-wal`/`-shm`. Su JSON propio, esquema 2, se publica en `esquemas/salida/estado.json` y omite la procedencia de la configuración.
+`--help`, `-h` y `--version` no leen configuración ni almacén. La ayuda siempre es texto; sin subcomando, el texto de ayuda va a stderr y termina en 2; en JSON se conserva el error único. La versión es texto incluso por tubería, salvo `--json`. `rige estado` informa la ruta configurada, existencia y versión de esquema; sin almacén o sin esquema termina en 0 y sugiere `bun run rige -- esquema`. No crea directorio ni base ni modifica esquema o datos; admite auxiliares SQLite `-wal`/`-shm`. Su JSON propio, esquema 2, se publica en `esquemas/salida/estado.json` y omite la procedencia de la configuración.
 
 Recorrido final: **Inicio → resumen → agente → permiso / hallazgos**. Los recientes ocupan filas compactas en escritorio: nombre, fecha y cantidad, ruta con elipsis (completa en la ayuda) y **Analizar de nuevo**. En móvil se apilan. El marcador atenuado de **Carpeta del proyecto** usa `C:\proyectos\mi-app` como ejemplo.
 
-**Permiso** ofrece agente, herramienta (sugerencias no exhaustivas), **Acción u objetivo** y **Consultar**. **Opciones avanzadas** agrupa los formularios independientes **Como subagente de…** y **Por sujeto**. Cada envío contiene solo herramienta o sujeto; solo el formulario de subagente envía lanzador. Las consultas rápidas quedan debajo. El resultado destaca **Permitido**, **Pregunta antes** o **Denegado**, una oración de explicación y **Regla que decide** con patrón, efecto, carácter y ubicación enlazada al editor. **Explicación completa** conserva todas las oraciones. **Ver reglas coincidentes (n)** muestra solo las coincidentes de esa consulta, con determinante y desplazadas e índices desde 1; la cadena completa se enlaza en **Todas las reglas**. Se conservan herramienta ofrecida/retirada y advertencias; la anulación de protección nativa se destaca. Sin decisión se muestra el motivo llano sin insignia de efecto; una cadena incompleta mantiene el error 422.
+**Permiso** ofrece agente, herramienta (sugerencias no exhaustivas), **Acción u objetivo** y **Consultar**. **Opciones avanzadas** agrupa los formularios independientes **Como subagente de…** y **Por sujeto**. Cada envío contiene solo herramienta o sujeto; solo el formulario de subagente envía lanzador. Las consultas rápidas quedan debajo. El resultado destaca **Permitido**, **Pregunta antes** o **Denegado**, una oración de explicación y **Regla que decide** con patrón, efecto, carácter y ubicación enlazada al editor. **Explicación completa** conserva todas las oraciones. **Ver reglas coincidentes (n)** muestra solo las coincidentes de esa consulta, con determinante y desplazadas e índices desde 1; la cadena completa se enlaza en **Todas las reglas**. Se conservan herramienta ofrecida/retirada y advertencias; la anulación de protección nativa se destaca. Sin decisión se muestra «Sin decisión» y el motivo llano; una cadena incompleta mantiene el error 422.
 
 **Hallazgos** muestra tarjetas agrupadas por tipo con **Causa**, clave o agente afectado, ubicación enlazada a VS Code y regla relacionada. **Qué hacer** aparece solo para tipos con una acción deducible. Conserva **Estado actual de los archivos**, parcialidad y motivos. Las anclas se asignan antes de agrupar y solo valen dentro del diagnóstico actual. **Todas las reglas** muestra primero la matriz, después la cadena; los límites comunes aparecen una sola vez y cada agente conserva sus límites propios. Los sujetos personalizados y `external_directory` parcial se presentan tal como los informa el caso de uso.
 
@@ -238,7 +251,7 @@ bun run rige -- reglas --proyecto <ruta> --agente <nombre> [--lanzado-por <agent
 bun herramientas/demostracion.ts v2-decision -- reglas --agente build
 ```
 
-Desde **Permisos**, abrir **Ver cadena completa y matriz de permisos** (`/reglas?id=<id>&agente=<nombre>[&lanzadoPor=<agente>]`). La cadena muestra todas las reglas en orden, índices desde 1, efecto, procedencia y localización. La matriz incluye agentes activos y ocultos y el efecto general de cada sujeto de permiso, con enlace al formulario por sujeto y objetivo vacío; conserva el lanzador. Solo considera patrones literales `*`, con la coincidencia de sujetos del evaluador. Las reglas específicas pueden cambiar el resultado: consultar `permiso` para la acción concreta. `external_directory` es parcial, sin decisión general: muestra **parcial** y una sola leyenda explicativa debajo de la matriz. Una cadena incompleta conserva su error y celdas sin efecto; los agentes Markdown no observados y los motivos del listado incompleto se declaran aparte. La CLI resuelve una vez en memoria sin abrir el almacén; la web conserva la foto guardada aunque cambien archivos, entorno o worktree. `--explicar` se rechaza con código 2; `--tiempos` mide por stderr sin cambiar el JSON. Esquema de salida 2 propio, `esquemas/salida/reglas.json`.
+Desde **Permisos**, abrir **Ver cadena completa y matriz de permisos** (`/reglas?id=<id>&agente=<nombre>[&lanzadoPor=<agente>]`). La cadena muestra todas las reglas en orden, índices desde 1, efecto, procedencia y localización. La matriz incluye agentes activos y ocultos y el efecto general de cada sujeto de permiso, con enlace al formulario por sujeto y objetivo vacío; conserva el lanzador. Solo considera patrones literales `*`, con la coincidencia de sujetos del evaluador. Las reglas específicas pueden cambiar el resultado: consultar `permiso` para la acción concreta. `external_directory` es parcial, sin decisión general: muestra **parcial** y una sola leyenda explicativa debajo de la matriz. Una cadena incompleta conserva su error y celdas sin efecto; los agentes Markdown no observados y los motivos del listado incompleto se declaran aparte. La CLI resuelve una vez en memoria sin abrir el almacén; la web conserva la foto guardada aunque cambien archivos, entorno o worktree. `--explicar` amplía el texto y se ignora en JSON; `--tiempos` mide por stderr sin cambiar el JSON. Esquema de salida 2 propio, `esquemas/salida/reglas.json`.
 
 Para el uso local con la configuración de §4 y el almacén de §5:
 

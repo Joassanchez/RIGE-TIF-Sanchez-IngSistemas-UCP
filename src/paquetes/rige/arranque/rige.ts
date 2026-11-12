@@ -1,13 +1,14 @@
 #!/usr/bin/env bun
-import { resolve } from "node:path";
+import { resolve, join } from "node:path";
 import { ConfiguracionSistema } from "../adaptadores/sistema/configuracion";
 import { ExistenciaSistema } from "../adaptadores/sistema/existencia";
 import { EntornoLecturaSistema } from "../adaptadores/sistema/entorno-lectura";
 import { RelojSistema } from "../adaptadores/sistema/reloj";
-import { AlmacenSqlite } from "../adaptadores/almacen-sqlite/esquema";
+import { AlmacenSqlite, archivoAlmacen } from "../adaptadores/almacen-sqlite/esquema";
 import { RepositorioResolucionesSqlite } from "../adaptadores/almacen-sqlite/resoluciones";
 import { adaptadorOpenCode } from "@rige/opencode/adaptador";
 import { advertidas } from "@rige/opencode/reglas";
+import { versionSoportada } from "@rige/opencode/descriptor";
 import { prepararAlmacen } from "../aplicacion/casos-uso/preparar-almacen";
 import { consultarEstado } from "../aplicacion/casos-uso/consultar-estado";
 import { resolverProyecto } from "../aplicacion/casos-uso/resolver-proyecto";
@@ -65,7 +66,10 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
       consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
       consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
       prepararAlmacen: () => prepararAlmacen(almacen),
-      consultarEstado: () => consultarEstado(almacen),
+      consultarEstado: () => comando === "estado" ? consultarEstado(almacen, {
+        ruta: join(resolve(resultado.valor.directorioAlmacen), archivoAlmacen).replaceAll("\\", "/"),
+        existe: ruta => new ExistenciaSistema().existe(ruta),
+      }) : consultarEstado(almacen),
       iniciarServidor: () => iniciarServidor(resultado.valor.puerto, {
         compararResoluciones: (desde, hasta) => compararResoluciones(dependencias, desde, hasta),
         consultarProyectosRecientes: () => consultarProyectosRecientes(resoluciones),
@@ -77,12 +81,13 @@ function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
         consultarAgentes: id => consultarAgentesGuardados(dependencias, id),
         consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
       consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
-      }),
+      }, { versionHerramienta: versionSoportada, reloj: dependencias.reloj }),
     },
   };
 }
 
 process.exitCode = ejecutarCli(process.argv.slice(2), ensamblar, {
+  versionHerramienta: versionSoportada,
   esConsola: process.stdout.isTTY === true,
   ancho: process.stdout.columns,
   colorHabilitado: process.stdout.isTTY === true && process.env.NO_COLOR === undefined,

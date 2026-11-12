@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { RespuestaAgentes, RespuestaEntradas, RespuestaHallazgos, RespuestaPermiso, RespuestaValores } from "../../aplicacion/respuestas/contrato-generado";
 import { versionRige } from "../../aplicacion/respuestas/estado";
-import { paginaAgentes } from "./paginas/agentes";
+import { paginaResumenProyecto } from "./paginas/resumen-proyecto";
 import { paginaResolucion } from "./paginas/resolucion";
 import { paginaPermiso } from "./paginas/permiso";
 import { paginaHallazgos } from "./paginas/hallazgos";
@@ -34,7 +34,7 @@ const casos: CasosWeb = { consultarEstado: noConsultar, consultarEntradas: () =>
   resolverProyecto: noConsultar, consultarPermiso: noConsultar, consultarResolucion: () => ({ exito: true, valor: { respuesta: valores, sobre } }),
   consultarAgentes: () => ({ exito: true, valor: agentes }) };
 const solicitar = (casos: CasosWeb, ruta: string): Response => {
-  const respuesta = crearManejador(12345, casos)(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
+  const respuesta = crearManejador(12345, casos, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } })(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
   if (respuesta.status !== 303 || ruta.startsWith("/resolver?")) return respuesta;
   expect(respuesta.status).toBe(303);
   return solicitar(casos, respuesta.headers.get("location")!);
@@ -48,7 +48,7 @@ const rutasAnteriores = [
 
 describe("T5-18 R-10 matriz de navegación", () => {
   test("prueba cada 303 y su destino 200, con el objeto íntegro de la consulta principal", async () => {
-    const manejar = crearManejador(12345, casos);
+    const manejar = crearManejador(12345, casos, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
     const pedir = (ruta: string) => manejar(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
     for (const [anterior, destino, json] of rutasAnteriores) {
       const redireccion = pedir(anterior);
@@ -63,14 +63,13 @@ describe("T5-18 R-10 matriz de navegación", () => {
 });
 
 describe("T5-09 N-1 agentes navegables", () => {
-  test("enlaza activos, conserva clave y distingue eliminados; sin id no enlaza", async () => {
+  test("enlaza activos, conserva clave y distingue eliminados", async () => {
     const cuerpo = await solicitar(casos, "/agentes?id=7&clave=temperature").text();
     for (const nombre of ["build", "explore"]) expect(cuerpo).toContain(`href="/resoluciones/7/agentes/${nombre}?clave=temperature"`);
     const eliminados = cuerpo.split('<div id="agentes-eliminados">')[1]!.split("</div>")[0]!;
     expect(eliminados).toContain('class="insignia insignia--aviso">eliminado / deshabilitado</span>');
     expect(eliminados).not.toContain('href="/resoluciones/');
     expect(eliminados).toContain("vscode://file/");
-    expect(await paginaAgentes(agentes).text()).not.toContain('href="/resoluciones/');
     expect(await solicitar(casos, "/agentes?id=7").text()).toContain('href="/resoluciones/7/agentes/build"');
   });
 });
@@ -120,15 +119,15 @@ describe("T5-09-c1 C-1 selector compacto", () => {
 });
 
 describe("T5-09-c1 C-2 visibilidad en castellano", () => {
-  test("muestra si y no por agente con sus insignias y mantiene los booleanos del JSON", async () => {
-    const cuerpo = await paginaAgentes(agentes, "7").text();
+  test("marca ocultos por agente y mantiene los booleanos del JSON", async () => {
+    const cuerpo = await paginaResumenProyecto(agentes, { exito: true, valor: { ...agentes, entradas: [] } }, { exito: false, error: { codigo: "prueba", mensaje: "No disponible" } }, "7").text();
     const tabla = cuerpo.match(/<section id="tabla-agentes">[^]*?<\/section>/)![0];
-    const filas = [...tabla.matchAll(/<tbody>([^]*?)<\/tbody>/g)][0]![1]!.match(/<tr>[^]*?<\/tr>/g)!;
+    const filas = [...tabla.matchAll(/<tbody>([^]*?)<\/tbody>/g)][0]![1]!.match(/<tr class="[^"]+">[^]*?<\/tr>/g)!;
     expect(filas).toHaveLength(2);
-    expect(filas[0]).toContain('<code>build</code>');
-    expect(filas[0]).toContain('<td><span class="insignia insignia--neutra">no</span></td>');
-    expect(filas[1]).toContain('<code>explore</code>');
-    expect(filas[1]).toContain('<td><span class="insignia insignia--aviso">sí</span></td>');
+    expect(filas[0]).toContain('>build</a>');
+    expect(filas[0]).not.toContain('>oculto</span>');
+    expect(filas[1]).toContain('>explore</a>');
+    expect(filas[1]).toContain('>oculto</span>');
     expect(tabla).not.toMatch(/>true<|>false</);
     const dato = JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
     expect(dato).toEqual(agentes);

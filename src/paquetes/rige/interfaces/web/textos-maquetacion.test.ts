@@ -37,7 +37,7 @@ function css(selector: string, texto = estilos): string {
 }
 async function inicio(): Promise<string> {
   return paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/almacen-privado", versionEsquema: 2 } },
-    { esquema: 2, proyectos: [{ proyecto: base.proyecto, id: 7, instante: foto.instante, cantidad: 2 }] }).text();
+    { esquema: 2, proyectos: [{ proyecto: base.proyecto, id: 7, instante: foto.instante, cantidad: 2 }] }, new Date("2026-11-11T12:00:00Z")).text();
 }
 
 test("T5-22 B-1 matriz con tarjetas por agente bajo 700 y columnas desplazables arriba", async () => {
@@ -99,7 +99,7 @@ test("T5-22 B-6 herramienta sobre el campo con ancho suficiente aun en avanzadas
 test("T5-22 M-1 procedencia nativa breve y explicacion integra escapada en title", async () => {
   const declarada = { ...reglas.cadena[0]!, origen, declaracion: { origen, via: "proyecto", referencia: "/p/opencode.json", valor: "allow", regla: "declarada" } };
   const s = sinJson(await paginaReglas({ ...reglas, cadena: [...reglas.cadena, declarada] }, "7").text());
-  for (const tipo of ["general", "agente", "final"]) expect(visible(s)).toContain(`OpenCode · ${tipo}`);
+  for (const tipo of ["general", "agente", "denegación de subagente"]) expect(visible(s)).toContain(`OpenCode · ${tipo}`);
   expect(s).toContain('title="nativo · nativa-general: Regla de permiso incorporada en los defaults &lt;general&gt; &amp; &quot;segura&quot;."');
   expect(visible(s)).not.toContain("incorporada en los defaults");
   expect(s).toContain('href="vscode://file/p/opencode.json:2:3"');

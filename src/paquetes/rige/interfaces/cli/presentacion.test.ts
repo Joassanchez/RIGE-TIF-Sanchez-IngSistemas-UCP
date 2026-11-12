@@ -7,10 +7,23 @@ const casos: CasosUsoCli = { compararResoluciones: no, consultarProyectosRecient
   consultarValores: no, consultarPermiso: no, consultarAgentes: no, consultarEntradas: no, consultarHallazgos: no,
   prepararAlmacen: () => ({ exito: true, valor: { esquema: 2, versionRige, almacen: { ruta: "/datos/rige.db", versionEsquema: 2 } } }),
   consultarEstado: no, iniciarServidor: no };
+
+test("T5-26 U-9 reglas JSON ignora explicar igual que todo", () => {
+  const solicitudes: unknown[] = [];
+  const dobles: CasosUsoCli = { ...casos, consultarReglas: solicitud => { solicitudes.push(solicitud); return { exito: true, valor: {
+    esquema: 2, proyecto: "/p", agente: "build", entradas: [], resumenEntradas: "", declaraciones: [], reglas: {}, cadena: [], ejesParciales: [], advertencias: [],
+    matriz: { sujetos: [], filas: [], noObservados: [], motivos: [] },
+  } }; } };
+  const args = ["reglas", "--agente", "build", "--json"];
+  const sin = ejecutar(args, {}, dobles);
+  for (const opciones of [["--explicar"], ["--todo"], ["--explicar", "--todo"]]) expect(ejecutar([...args, ...opciones], {}, dobles)).toEqual(sin);
+  expect(sin.codigo).toBe(0); expect(solicitudes).toHaveLength(4);
+  for (const solicitud of solicitudes) expect(solicitud).toEqual({ proyecto: "/carpeta actual/proyecto", agente: "build", lanzadoPor: undefined });
+});
 function ejecutar(args: string[], presentacion: Partial<CanalesCli> = {}, dobles = casos) {
   let salida = "", error = "", llamadas = 0;
   const codigo = ejecutarCli(args, () => { llamadas++; return { exito: true, valor: dobles }; }, {
-    esConsola: false, carpetaActual: "/carpeta actual/proyecto", ...presentacion,
+    versionHerramienta: "1.18.25", esConsola: false, carpetaActual: "/carpeta actual/proyecto", ...presentacion,
     escribirSalida: t => { salida += t; }, escribirError: t => { error += t; },
   });
   return { salida, error, codigo, llamadas };

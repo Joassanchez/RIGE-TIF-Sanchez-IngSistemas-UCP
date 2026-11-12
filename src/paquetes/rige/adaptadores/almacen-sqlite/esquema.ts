@@ -10,6 +10,8 @@ import type { Resultado } from "@rige/nucleo/resultado";
 
 type Estado = Resultado<EstadoAlmacen, typeof errorAlmacenSinEsquema>;
 
+export const archivoAlmacen = "rige.db";
+
 export function abrirConexion(ruta: string, soloLectura = false): Database {
   const base = new Database(ruta, soloLectura ? { readonly: true } : { create: true });
   let configurada = false;
@@ -49,7 +51,7 @@ export class AlmacenSqlite implements PuertoAlmacen {
 
   constructor(directorio: string, private readonly lectura: PuertoExistenciaAlmacen) {
     this.directorio = resolve(directorio);
-    this.ruta = join(this.directorio, "rige.db");
+    this.ruta = join(this.directorio, archivoAlmacen);
   }
 
   private estado(version: number): Estado {

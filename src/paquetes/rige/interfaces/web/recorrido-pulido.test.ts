@@ -37,7 +37,7 @@ const reglas: RespuestaReglas = { ...base, agente: "build", cadena: [], ejesParc
     ] }] } };
 const sobre = { id: 7, instante: "2026-11-11T12:00:00Z", anteriores: [{ id: 7, instante: "2026-11-11T12:00:00Z", resumenEntradas: base.resumenEntradas }] };
 const contexto = { agentes: agentes.agentes, agente: "build", q: "", lanzadoPor: "plan" };
-const resumen = () => paginaResumenProyecto(agentes, { exito: true, valor: entradas }, { exito: true, valor: hallazgos }, "7", sobre).text();
+const resumen = () => paginaResumenProyecto(agentes, { exito: true, valor: entradas }, { exito: true, valor: hallazgos }, "7", sobre, { versionHerramienta: "1.18.25" }).text();
 const agente = (q = "") => paginaResolucion(valores, sobre, { ...contexto, q }, { agente: agentes.agentes[0]!, reglas }).text();
 const bloque = (cuerpo: string, id: string) => cuerpo.split(`id="${id}"`)[1]!.split("</section>")[0]!;
 const sinJson = (cuerpo: string) => cuerpo.replace(/<script[^]*?<\/script>/g, "");

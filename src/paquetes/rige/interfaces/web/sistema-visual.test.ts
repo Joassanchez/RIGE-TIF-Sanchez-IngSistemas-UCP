@@ -57,14 +57,14 @@ describe("T5-17", () => {
   });
 
   test("G-3 inicio conciso y explicacion larga en detalle cerrado", async () => {
-    const cuerpo = await paginaInicio(estado).text();
+    const cuerpo = await paginaInicio(estado, undefined, new Date("2026-11-11T12:00:00Z")).text();
     expect(cuerpo).not.toContain("De la configuración a la certeza");
     expect(cuerpo).toMatch(/<details[^>]*><summary>¿Qué significa\?<\/summary>/);
     expect(cuerpo).not.toMatch(/<details[^>]*\bopen\b/);
   });
 
   test("G-4 marca, migas escapadas, ancho legible y pie de una linea", () => {
-    const cuerpo = diseno("Valores", html`<h1>Valores</h1>`, { proyecto: '/p/<x>', agente: 'a & b', idResolucion: 7, activa: "Valores", almacen: estado.almacen }).texto;
+    const cuerpo = diseno("Valores", html`<h1>Valores</h1>`, { proyecto: '/p/<x>', agente: 'a & b', idResolucion: 7, activa: "Valores" }).texto;
     const cabecera = cuerpo.match(/<header[^]*?<\/header>/)![0];
     expect(cabecera).toContain('aria-label="Migas de pan"');
     expect(cabecera).toContain("&lt;x&gt;"); expect(cabecera).toContain("a &amp; b");
@@ -88,12 +88,12 @@ describe("T5-17", () => {
   });
 
   test("G-6 inicio con carpeta, tarjetas enlazadas y estado sin proyectos", async () => {
-    const vacio = await paginaInicio(estado).text();
+    const vacio = await paginaInicio(estado, undefined, new Date("2026-11-11T12:00:00Z")).text();
     expect(vacio).toContain("¿Qué configuración rige en este proyecto?");
     expect(vacio).toContain("Carpeta del proyecto");
     expect(vacio).toContain("Ingresá la carpeta de un proyecto y pulsá Analizar");
-    const ahora = new Date(); ahora.setHours(10, 42, 0, 0);
-    const cuerpo = await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: '/p/<x>', id: 729, instante: ahora.toISOString(), cantidad: 3 }] }).text();
+    const ahora = new Date(2026, 10, 11, 10, 42);
+    const cuerpo = await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: '/p/<x>', id: 729, instante: ahora.toISOString(), cantidad: 3 }] }, ahora).text();
     expect(cuerpo).toMatch(/<a class="reciente__foto" href="\/resoluciones\/729">[^]*?<strong>&lt;x&gt;<\/strong>[^]*?<\/a>/);
     expect(cuerpo).toContain("hoy 10:42");
     expect(cuerpo).toContain("3 análisis");

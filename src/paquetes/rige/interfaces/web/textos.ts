@@ -21,7 +21,3 @@ export function rotuloFoto(proyecto: string, instante?: string, fechaNoDisponibl
     ? fechaNoDisponible === undefined ? html`` : html`<small>Fecha no disponible (${fechaNoDisponible})</small>`
     : html`<p>Foto guardada · ${nombreAnalisis(proyecto, instante)}</p>`;
 }
-
-export function presentarInstante(instante: string): HtmlSeguro {
-  return html`<time datetime="${instante}">${fechaLocal(instante)}</time>`;
-}

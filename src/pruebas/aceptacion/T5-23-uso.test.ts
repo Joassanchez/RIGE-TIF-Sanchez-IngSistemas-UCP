@@ -22,8 +22,8 @@ test("T5-23 L-8 estado no crea directorio/base ni modifica esquema o datos; esqu
   try {
     const antes = inventario(e.raiz);
     const falta = cli(["estado", "--texto"]);
-    expect(falta.codigo).toBe(1); expect(falta.salida).toBe("");
-    expect(falta.error).toContain("Probá: bun run rige -- esquema");
+    expect(falta.codigo).toBe(0); expect(falta.error).toBe("");
+    expect(falta.salida).toContain("Probá: bun run rige -- esquema");
     expect(existsSync(almacen)).toBe(false); expect(inventario(e.raiz)).toEqual(antes);
     expect(cli(["esquema"]).codigo).toBe(0);
     const datos = inventario(almacen);
@@ -38,7 +38,7 @@ test("T5-23 L-8 estado no crea directorio/base ni modifica esquema o datos; esqu
     base.exec("PRAGMA user_version = 0"); base.close();
     const incompatible = inventario(almacen);
     const r = cli(["estado", "--json"]);
-    expect(r.codigo).toBe(1); expect(r.salida).toBe(""); expect(JSON.parse(r.error).error.codigo).toBe("almacen-sin-esquema");
+    expect(r.codigo).toBe(0); expect(r.error).toBe(""); expect(JSON.parse(r.salida).almacen).toMatchObject({ existe: true, versionEsquema: null });
     expect(inventario(almacen)).toEqual(incompatible);
   } finally { e.borrar(); }
 });
@@ -117,7 +117,7 @@ test.skipIf(process.platform !== "win32")("T5-23 L-10 bun link aislado: PowerShe
       expect(texto.exitCode).toBe(0); expect(texto.stdout.toString()).toContain("Proyecto: mi proyecto (carpeta actual)");
       expect(ejecutar("desconocido").exitCode).toBe(2);
       const falta = ejecutar("estado --json");
-      expect(falta.exitCode).toBe(1); expect(JSON.parse(falta.stderr.toString()).error.codigo).toBe("almacen-sin-esquema");
+      expect(falta.exitCode).toBe(0); expect(JSON.parse(falta.stdout.toString()).almacen).toMatchObject({ existe: false, versionEsquema: null });
       writeFileSync(join(instalacion, "rige.env"), "RIGE_PUERTO=invalido\n");
       const config = ejecutar("estado --json");
       expect(config.exitCode).toBe(1); expect(JSON.parse(config.stderr.toString()).error.mensaje).toContain("RIGE_PUERTO");

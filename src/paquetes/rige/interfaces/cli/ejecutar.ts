@@ -1,4 +1,3 @@
-import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
 import type { ConsultarValores } from "../../aplicacion/casos-uso/consultar-valores";
 import type { consultarPermiso } from "../../aplicacion/casos-uso/consultar-permiso";
 import type { consultarReglas } from "../../aplicacion/casos-uso/consultar-reglas";
@@ -9,7 +8,7 @@ import type { CompararResoluciones } from "../../aplicacion/casos-uso/comparar-r
 import type { ConsultarProyectosRecientes } from "../../aplicacion/casos-uso/consultar-proyectos-recientes";
 import { versionEsquemaSalida } from "../../aplicacion/respuestas/valores";
 import type { ErrorUso } from "../../aplicacion/errores";
-import type { RespuestaEstado } from "../../aplicacion/respuestas/estado";
+import type { RespuestaEstado, RespuestaEstadoCli } from "../../aplicacion/respuestas/estado";
 import type { RespuestaAdvertencia, RespuestaTiempos } from "../../aplicacion/respuestas/contrato-generado";
 import type { MedicionAnalisis } from "../../aplicacion/casos-uso/analizar-proyecto";
 import type { Resultado } from "../../aplicacion/respuestas/resultado";
@@ -28,7 +27,7 @@ export interface CasosUsoCli {
   readonly consultarEntradas: ConsultarEntradas;
   readonly consultarHallazgos: ConsultarHallazgos;
   readonly prepararAlmacen: () => Resultado<RespuestaEstado, ErrorUso>;
-  readonly consultarEstado: ConsultarEstado;
+  readonly consultarEstado: () => Resultado<RespuestaEstado | RespuestaEstadoCli, ErrorUso>;
   readonly iniciarServidor: () => Resultado<{ readonly direccion: string }, ErrorUso>;
 }
 
@@ -47,8 +46,8 @@ const subcomandos = {
   estado: (casos) => {
     const resultado = casos.consultarEstado();
     if (!resultado.exito) return resultado;
-    return { exito: true, valor: { esquema: versionEsquemaSalida,
-      almacen: { ruta: resultado.valor.almacen.ruta, existe: true, versionEsquema: resultado.valor.almacen.versionEsquema } } };
+    if ("versionRige" in resultado.valor) throw new Error("Falta la ubicación inyectada en el caso de uso de estado.");
+    return resultado;
   },
   valores: (casos, opciones) => casos.consultarValores(opciones.proyecto, opciones.agente, opciones.clave),
   agentes: (casos, opciones) => casos.consultarAgentes(opciones.proyecto),
@@ -67,6 +66,7 @@ const subcomandos = {
 } satisfies Record<string, (casos: CasosUsoCli, opciones: OpcionesConsulta) => Resultado<object, ErrorUso>>;
 
 export interface CanalesCli {
+  readonly versionHerramienta?: string;
   readonly esConsola?: boolean;
   readonly ancho?: number | undefined;
   readonly colorHabilitado?: boolean;
@@ -104,8 +104,10 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
     canales.escribirSalida(ayuda(argumentos.find(a => Object.hasOwn(subcomandos, a)))); return 0;
   }
   if (argumentos.includes("--version")) {
-    canales.escribirSalida(json ? JSON.stringify({ esquema: versionEsquemaSalida, versionRige, versionHerramienta: "1.18.25" }) + "\n"
-      : `RIGE ${versionRige} · OpenCode 1.18.25\n`); return 0;
+    const versionHerramienta = canales.versionHerramienta;
+    if (versionHerramienta === undefined) throw new Error("Falta la versión soportada en el ensamblado de la CLI.");
+    canales.escribirSalida(json ? JSON.stringify({ esquema: versionEsquemaSalida, versionRige, versionHerramienta }) + "\n"
+      : `RIGE ${versionRige} · OpenCode ${versionHerramienta}\n`); return 0;
   }
   let opciones: ReturnType<typeof parseArgs>;
   try {
@@ -135,8 +137,8 @@ export function ejecutarCli(argumentos: readonly string[], ensamblar: (comando: 
   const comando = posicionales[0]!;
   const admitidas: Record<string, readonly string[]> = {
     comparar: ["desde", "hasta", "agente"], recientes: [],
-    reglas: ["proyecto", "agente", "lanzado-por", "todo", ...(contexto.formato === "texto" ? ["explicar"] : [])],
-    valores: ["proyecto", "agente", "clave", "todo"], agentes: ["proyecto", "explicar"], entradas: ["proyecto"], hallazgos: ["proyecto", "explicar"],
+    reglas: ["proyecto", "agente", "lanzado-por", "todo", "explicar"],
+    valores: ["proyecto", "agente", "clave", "todo"], agentes: ["proyecto", "explicar"], entradas: ["proyecto", "todo"], hallazgos: ["proyecto", "explicar"],
     permiso: ["proyecto", "agente", "herramienta", "sujeto", "objetivo", "lanzado-por", "explicar"], esquema: [], servir: [], estado: [],
   };
   for (const nombre of Object.keys(opciones.values)) {

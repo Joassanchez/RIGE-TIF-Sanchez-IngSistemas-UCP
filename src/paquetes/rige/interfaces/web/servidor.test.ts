@@ -5,6 +5,11 @@ import { versionRige, type RespuestaEstado } from "../../aplicacion/respuestas/e
 import { paginaInicio } from "./paginas/inicio";
 import { crearManejador, iniciarServidor, type CasosWeb } from "./servidor";
 
+test("T5-26 U-7 una sola lista de errores tolerados al recorrer agentes", async () => {
+  const codigo = await Bun.file(new URL("./servidor.ts", import.meta.url)).text();
+  expect(codigo.match(/"clave-no-resuelta", "agente-sin-declaraciones"/g)).toHaveLength(1);
+});
+
 const respuesta: RespuestaEstado = {
   esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };
@@ -19,14 +24,14 @@ function casosEstado(consultarEstado: ConsultarEstado): CasosWeb {
     consultarAgentes: () => { throw new Error("No consultar agentes en pruebas de estado"); },
     consultarResolucion: () => { throw new Error("No consultar resoluciones en pruebas de estado"); } };
 }
-const manejarEstado = (puerto: number, consultar: ConsultarEstado) => crearManejador(puerto, casosEstado(consultar));
-const iniciarEstado = (puerto: number, consultar: ConsultarEstado) => iniciarServidor(puerto, casosEstado(consultar));
+const manejarEstado = (puerto: number, consultar: ConsultarEstado) => crearManejador(puerto, casosEstado(consultar), { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
+const iniciarEstado = (puerto: number, consultar: ConsultarEstado) => iniciarServidor(puerto, casosEstado(consultar), { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
 
 describe("T5-13 R-4 borde", () => {
   test("/reglas rechaza Host ausente y sitios ajenos antes de llamar a aplicacion", async () => {
     let consultas = 0;
     const noConsultar = (): never => { consultas++; throw new Error("No consultar"); };
-    const manejar = crearManejador(12345, { ...casosEstado(noConsultar), consultarReglas: noConsultar });
+    const manejar = crearManejador(12345, { ...casosEstado(noConsultar), consultarReglas: noConsultar }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
     for (const headers of [{}, { Host: "ajeno" }, ...["cross-site", "same-site", "otro"].map(s => ({ Host: "localhost:12345", "Sec-Fetch-Site": s }))]) {
       const r = manejar(new Request("http://127.0.0.1/reglas?id=1&agente=build", { headers }));
       expect(r.status).toBe(403);
@@ -50,7 +55,7 @@ describe("W-11", () => {
       },
       consultarResolucion: () => { throw new Error("No consultar durante la redireccion"); },
     };
-    const manejar = crearManejador(12345, casos);
+    const manejar = crearManejador(12345, casos, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
     const solicitar = (ruta: string) => manejar(new Request(`http://127.0.0.1${ruta}`, {
       headers: { Host: "127.0.0.1:12345" },
     }));
@@ -78,7 +83,7 @@ describe("W-12", () => {
         consultas.push([id, agente, clave]);
         return { exito: false, error: { codigo: "resolucion-inexistente", mensaje: "No existe la resolución 7 en el almacén." } };
       },
-    });
+    }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
     const solicitar = (ruta: string) => manejar(new Request(`http://127.0.0.1${ruta}`, {
       headers: { Host: "127.0.0.1:12345" },
     }));
@@ -107,14 +112,14 @@ describe("W-4", () => {
     const casos = { ...casosEstado(() => { llamadas.push("estado"); return { exito: true, valor: respuesta }; }),
       consultarProyectosRecientes: () => { llamadas.push("recientes"); return { exito: true as const, valor: recientes }; } };
     const solicitar = (ruta = "/") => new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } });
-    const manejar = crearManejador(12345, casos);
-    expect(await manejar(solicitar()).text()).toBe(await paginaInicio(respuesta, recientes).text());
+    const manejar = crearManejador(12345, casos, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
+    expect(await manejar(solicitar()).text()).toBe(await paginaInicio(respuesta, recientes, new Date("2026-11-11T12:00:00Z")).text());
     expect(llamadas).toEqual(["estado", "recientes"]);
     manejar(solicitar("/otra")); expect(llamadas).toEqual(["estado", "recientes"]);
-    expect(crearManejador(12345, { ...casos, consultarProyectosRecientes: () => ({ exito: false, error: errorAlmacenSinEsquema }) })(solicitar()).status).toBe(503);
-    expect(crearManejador(12345, { ...casos, consultarProyectosRecientes: () => { throw new Error("Detalle privado"); } })(solicitar()).status).toBe(500);
+    expect(crearManejador(12345, { ...casos, consultarProyectosRecientes: () => ({ exito: false, error: errorAlmacenSinEsquema }) }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } })(solicitar()).status).toBe(503);
+    expect(crearManejador(12345, { ...casos, consultarProyectosRecientes: () => { throw new Error("Detalle privado"); } }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } })(solicitar()).status).toBe(500);
     const falloEstado = crearManejador(12345, { ...casos, consultarEstado: () => ({ exito: false, error: errorAlmacenSinEsquema }),
-      consultarProyectosRecientes: () => { throw new Error("No consultar tras error de estado"); } });
+      consultarProyectosRecientes: () => { throw new Error("No consultar tras error de estado"); } }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
     expect(falloEstado(solicitar()).status).toBe(503);
   });
   test("consulta en cada inicio, presenta errores y omite la consulta en otras rutas", async () => {
@@ -125,7 +130,7 @@ describe("W-4", () => {
     for (let indice = 0; indice < 2; indice++) {
       const inicio = manejar(solicitar());
       expect(inicio.status).toBe(200);
-      expect(await inicio.text()).toBe(await paginaInicio(respuesta).text());
+      expect(await inicio.text()).toBe(await paginaInicio(respuesta, undefined, new Date("2026-11-11T12:00:00Z")).text());
     }
     expect(llamadas).toBe(2);
     const otra = manejar(solicitar("/otra"));
@@ -144,7 +149,7 @@ describe("T5-14 K-5 borde", () => {
   test("origen y metodo se rechazan antes de comparar, listar recientes o consultar estado", async () => {
     let consultas = 0;
     const no = (): never => { consultas++; throw new Error("Consulta privada"); };
-    const manejar = crearManejador(12345, { ...casosEstado(no), compararResoluciones: no, consultarProyectosRecientes: no });
+    const manejar = crearManejador(12345, { ...casosEstado(no), compararResoluciones: no, consultarProyectosRecientes: no }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
     for (const ruta of ["/", "/comparar?desde=1&hasta=2"]) {
       for (const headers of [{}, { Host: "ajeno" }, ...["cross-site", "same-site"].map(s => ({ Host: "localhost:12345", "Sec-Fetch-Site": s }))]) {
         const r = manejar(new Request(`http://localhost${ruta}`, { headers }));

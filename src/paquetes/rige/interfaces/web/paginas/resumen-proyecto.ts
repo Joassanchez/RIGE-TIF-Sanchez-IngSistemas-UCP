@@ -17,7 +17,7 @@ export function paginaResumenProyecto(agentes: RespuestaAgentes, entradas: Resul
   const ilegibles = archivos === undefined || archivos.some(a => a.legibilidad === undefined || a.legibilidad === null) ? "sin dato" : archivos.filter(a => a.legibilidad === "ilegible").length;
   return responderHtml(200, diseno(nombreProyecto(agentes.proyecto), html`
 <section class="cabecera-pagina"><h1>${nombreProyecto(agentes.proyecto)}</h1>
-<div class="acciones metadatos-acciones"><p class="atenuado metadatos-proyecto"><span class="monoespaciado">${agentes.proyecto}</span> · ${sobre === undefined ? "Fecha no disponible" : `Análisis del ${fechaLocal(sobre.instante)}`} · OpenCode 1.18.25</p>
+<div class="acciones metadatos-acciones"><p class="atenuado metadatos-proyecto"><span class="monoespaciado">${agentes.proyecto}</span> · ${sobre === undefined ? "Fecha no disponible" : `Análisis del ${fechaLocal(sobre.instante)}`} · OpenCode${"versionHerramienta" in agentes ? html` ${agentes.versionHerramienta}` : contexto.versionHerramienta === undefined ? html`` : html` ${contexto.versionHerramienta}`}</p>
 <a class="boton boton--secundario" href="${`/resolver?proyecto=${encodeURIComponent(agentes.proyecto)}`}">Analizar de nuevo</a></div></section>
 <section id="cifras"><h2>Cifras</h2><div class="estadisticas estadisticas--resumen">
 <div class="estadistica" title="Foto guardada"><strong>${agentes.agentes.length}</strong><span>agentes</span><small>${declarados} ${concordar(declarados, "declarado", "declarados")}${agentes.incompleta ? " · listado incompleto" : ""}</small></div>

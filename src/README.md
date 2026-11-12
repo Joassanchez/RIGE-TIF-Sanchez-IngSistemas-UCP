@@ -139,13 +139,26 @@ La prelación es: variable de entorno → `rige.env` → valor por defecto. El a
 
 ## 6. Ejecución y verificación
 
+El texto de `reglas --todo` usa el mismo índice que su JSON, desde 1. Extracto de la cadena:
+
+```text
+Cadena completa:
+#1 * * → permitida · OpenCode · general
+```
+
+Los límites y ejes son comunes solo cuando aparecen en todas las filas de la matriz. `comparar --agente` muestra el resumen de lo filtrado, como la web; el JSON conserva todos los agentes. Los orígenes nativos incluyen «OpenCode · denegación de subagente».
+
+`entradas --todo --texto` agrega los lugares revisados de cada vía. Sus estados se leen como presente, ausente, no observada o no soportada. Los modos se presentan como Principal, Subagente y Principal y subagente.
+
+`estado --texto` muestra siempre la ruta en uso. Si la base no existe, incluye `Existe: no`, `Versión de esquema: sin esquema` y la sugerencia `bun run rige -- esquema`, con código 0. Si existe sin esquema, muestra `Existe: sí`; en ambos casos el JSON informa `versionEsquema: null`. Con esquema válido, informa versión 2 y omite la sugerencia.
+
 La CLI elige **texto breve con tablas** si stdout es una consola interactiva; en una **tubería** o redirección devuelve el **JSON completo** de siempre. `--json` y `--texto` fuerzan el formato y son excluyentes. Sin `--proyecto`, las consultas usan la **carpeta actual**, indicada en el encabezado textual; un argumento vacío sigue siendo inválido. `--todo` amplía `valores` (incluye valores de fábrica) y `reglas` (cadena completa); con JSON no cambia nada. `permiso --explicar` agrega la explicación y las reglas coincidentes. `comparar --agente` filtra solo el texto, conservando el JSON íntegro.
 
-`rige --help`, `rige -h` y `rige <subcomando> --help` muestran uso, opciones y ejemplos sin abrir configuración ni almacén. `rige --version` informa ambas versiones; con `--json` devuelve un objeto esquema 2. `rige estado` consulta ruta, existencia y versión del almacén sin crear directorio/base ni modificar datos o esquema (puede haber auxiliares SQLite). Si falta, termina con código 1 y sugiere crear el esquema. En texto, los errores conservan sus códigos y se muestran por stderr; `--depurar` conserva el stack de fallas internas.
+`rige --help`, `rige -h` y `rige <subcomando> --help` muestran uso, opciones y ejemplos sin abrir configuración ni almacén. `rige --version` informa ambas versiones; con `--json` devuelve un objeto esquema 2. `rige estado` consulta ruta, existencia y versión del almacén sin crear directorio/base ni modificar datos o esquema (puede haber auxiliares SQLite). Si falta o no tiene esquema, termina con código 0, muestra la ruta en uso y sugiere `bun run rige -- esquema`. En texto, los errores conservan sus códigos y se muestran por stderr; `--depurar` conserva el stack de fallas internas.
 
 El color ANSI solo se habilita en consola y si **NO_COLOR** no está definida; incluso `NO_COLOR=` lo deshabilita. Texto por tubería nunca lleva color. Las tablas separan columnas con espacios y subrayan sus encabezados atenuados. Solo la última columna variable se trunca con elipsis al ancho conocido (100 por defecto, mínimo 40); nombres y decisiones se conservan completos. Los párrafos se ajustan solo en espacios: una ruta o palabra larga va entera. Las ubicaciones se acortan a archivo y posición. El pie recuerda «Respuesta completa: --json».
 
-En `permiso` y `reglas`, los avisos generales (aprobaciones permanentes, sesión no interactiva e índices de directorios externos) se leen con `--explicar`; las advertencias propias, rutas no resueltas y análisis incompletos siguen visibles. Para pedirlos por tubería: `rige reglas --agente build --explicar --texto`. La matriz agrupa, una sola vez: «external_directory: parcial en todos los agentes; no hay decisión sin un objetivo concreto». Los modos de agente son Principal, Subagente y Ambos; «oculto» es una marca atenuada en la fila.
+En `permiso` y `reglas`, los avisos generales (aprobaciones permanentes, sesión no interactiva e índices de directorios externos) se leen con `--explicar`; las advertencias propias, rutas no resueltas y análisis incompletos siguen visibles. Para pedirlos por tubería: `rige reglas --agente build --explicar --texto`. La matriz agrupa, una sola vez: «external_directory: parcial en todos los agentes; no hay decisión sin un objetivo concreto». Los modos de agente son Principal, Subagente y Principal y subagente; «oculto» es una marca atenuada en la fila.
 
 Ejemplo de `valores --agente build --clave temperature --texto` sobre `v1-precedencia` (desde otra carpeta, con proyecto explícito):
 
@@ -161,12 +174,12 @@ Respuesta completa: --json
 ANTES contiene el valor breve de la última desplazada; `--todo` lista todas las desplazadas con su procedencia. LO DETERMINA contiene solo la determinante. En el mismo escenario, `permiso --agente build --sujeto read --objetivo .env --texto` muestra:
 
 ```text
-? PREGUNTA
+? PREGUNTA ANTES
 Agente: build
 Proyecto: proyecto
 Consulta: read · .env
-Decide: #10 read *.env → ask · OpenCode · general
-Desplaza: #9 read * → allow · OpenCode · general
+Decide: #10 read *.env → pregunta · OpenCode · general
+Desplaza: #9 read * → permitida · OpenCode · general
 Respuesta completa: --json
 ```
 
@@ -204,7 +217,7 @@ try {
 
 Recorrido final: **Inicio → resumen → agente → permiso / hallazgos**. En Inicio, los recientes son filas compactas con fecha y cantidad a la derecha, ruta con elipsis (completa en la ayuda) y **Analizar de nuevo**; en móvil se apilan. El campo muestra el ejemplo `C:\proyectos\mi-app` como marcador atenuado.
 
-En **Permiso**, elegí agente, herramienta y **Acción u objetivo**, y pulsá **Consultar**. Las sugerencias de herramienta no son exhaustivas. **Opciones avanzadas** reúne los formularios independientes **Como subagente de…** y **Por sujeto**; cada envío usa solo herramienta o sujeto y solo el de subagente envía lanzador. Debajo quedan las consultas rápidas. El resultado destaca **Permitido**, **Pregunta antes** o **Denegado** y **Regla que decide**, con patrón, carácter y procedencia enlazada a VS Code. **Explicación completa** conserva todas las oraciones; **Ver reglas coincidentes (n)** pliega la cadena de esa consulta, con índices desde 1. La cadena completa está en **Todas las reglas**, después de la matriz, con límites comunes una sola vez. Un comando compuesto informa el motivo sin insignia de efecto; una cadena incompleta conserva el error 422.
+En **Permiso**, elegí agente, herramienta y **Acción u objetivo**, y pulsá **Consultar**. Las sugerencias de herramienta no son exhaustivas. **Opciones avanzadas** reúne los formularios independientes **Como subagente de…** y **Por sujeto**; cada envío usa solo herramienta o sujeto y solo el de subagente envía lanzador. Debajo quedan las consultas rápidas. El resultado destaca **Permitido**, **Pregunta antes** o **Denegado** y **Regla que decide**, con patrón, carácter y procedencia enlazada a VS Code. **Explicación completa** conserva todas las oraciones; **Ver reglas coincidentes (n)** pliega la cadena de esa consulta, con índices desde 1. La cadena completa está en **Todas las reglas**, después de la matriz, con límites comunes una sola vez. Un comando compuesto muestra Sin decisión y su motivo; una cadena incompleta conserva el error 422.
 
 **Hallazgos** muestra **Estado actual de los archivos**, parcialidad y motivos, y tarjetas agrupadas por tipo con causa, ubicación enlazada y acción solo cuando se desprende del tipo. Las anclas del resumen corresponden al orden original del diagnóstico, no identifican un hallazgo entre análisis. **Comparar** titula con ambas fechas locales y muestra **Clave / Antes / Después**, con procedencias enlazadas y agentes sin cambios en una línea. **Entradas** ordena por precedencia (**la de abajo prevalece**) y agrupa el mapa en **Presentes**, **Ausentes** y **No observadas**, con lugares revisados plegados.
 
@@ -260,7 +273,7 @@ Los marcadores entre `<…>` se reemplazan por valores propios; los corchetes in
 
 `agentes` incluye los ocultos, ordena nativos primero y luego por nombre; informa los eliminados por `disable` y la condición de listado incompleto por Markdown. `entradas` identifica vías, orden, legibilidad y consecuencias de errores, aun cuando una entrada impida resolver. `hallazgos` incluye resumen del ecosistema y seis tipos de hallazgo, con localización sobre el texto original (línea y columna desde 1, columna UTF-16).
 
-`reglas` es una **capacidad adicional (ADR-111, T5-13)**, fuera de los 18 Must: publica la cadena completa y la matriz de agentes activos en `esquemas/salida/reglas.json`. Considera solo patrones literales `*` para el efecto general por sujeto y conserva los comodines de sujeto del evaluador. Las reglas por patrón pueden cambiar ese efecto para una acción concreta: usar `permiso`. `external_directory` es parcial, sin decisión general: muestra **parcial** con su leyenda debajo de la matriz; una cadena incompleta conserva su error. No admite `--explicar` (código 2). La web ofrece `/reglas?id=<id>&agente=<nombre>[&lanzadoPor=<agente>]` desde **Permisos**, sobre la foto guardada; la CLI consulta las entradas actuales sin abrir el almacén.
+`reglas` es una **capacidad adicional (ADR-111, T5-13)**, fuera de los 18 Must: publica la cadena completa y la matriz de agentes activos en `esquemas/salida/reglas.json`. Considera solo patrones literales `*` para el efecto general por sujeto y conserva los comodines de sujeto del evaluador. Las reglas por patrón pueden cambiar ese efecto para una acción concreta: usar `permiso`. `external_directory` es parcial, sin decisión general: muestra **parcial** con su leyenda debajo de la matriz; una cadena incompleta conserva su error. `--explicar` amplía el texto y se ignora en JSON. La web ofrece `/reglas?id=<id>&agente=<nombre>[&lanzadoPor=<agente>]` desde **Permisos**, sobre la foto guardada; la CLI consulta las entradas actuales sin abrir el almacén.
 
 | Verificación | Ejecución | Resultado |
 |---|---|---|

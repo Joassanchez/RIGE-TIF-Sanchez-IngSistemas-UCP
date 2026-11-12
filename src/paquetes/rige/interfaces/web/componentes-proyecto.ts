@@ -5,15 +5,9 @@ import { efectoVisual, insignia } from "./diseno";
 import { fechaLocal } from "./textos";
 import { consultaPanel, type ContextoPanel } from "./panel";
 import { esArchivoLocal, presentarRuta, presentarUbicacion } from "./rutas";
+import { modoAgente, estadoVia } from "../presentacion/vocabulario";
+export { modoAgente } from "../presentacion/vocabulario";
 
-export function modoAgente(modo: string): string {
-  switch (modo) {
-    case "primary": return "Principal";
-    case "subagent": return "Subagente";
-    case "all": return "Principal y subagente";
-    default: return modo;
-  }
-}
 export const anclaHallazgo = (indice: number): string => `h-${indice}`;
 export const nombresHallazgos: Readonly<Record<string, readonly [string, string]>> = {
   "entrada-ilegible": ["Entrada ilegible", "Entradas ilegibles"], "entrada-descartada": ["Entrada descartada", "Entradas descartadas"],
@@ -35,10 +29,10 @@ export function mapaVias(respuesta: RespuestaEntradas): HtmlSeguro {
 <section id="mapa-vias" class="mapa-vias"><h2>Mapa de vías</h2>
 <div class="tabla-contenedor" role="region" aria-label="Mapa de vías" tabindex="0">
 <table class="tabla-tarjetas"><thead><tr><th>Vía</th><th>Estado</th><th>Cantidad</th><th>Lugares revisados</th></tr></thead>
-${([ ["presente", "Presentes"], ["ausente", "Ausentes"], ["no_observada", "No observadas"] ] as const).map(([estado, titulo]) => {
+${([ ["presente", "Presentes"], ["ausente", "Ausentes"], ["no_observada", "No observadas"], ["no_soportada", "No soportadas"] ] as const).map(([estado, titulo]) => {
   const vias = respuesta.vias!.filter(via => via.estado === estado);
   return vias.length ? html`<tbody><tr class="grupo-vias"><th colspan="4" scope="rowgroup">${titulo}</th></tr>${vias.map(via => html`<tr><td data-etiqueta="Vía">${via.via}</td>
-<td data-etiqueta="Estado">${insignia(via.estado === "no_observada" ? "no observada" : via.estado,
+<td data-etiqueta="Estado">${insignia(estadoVia(via.estado),
   via.estado === "no_observada" ? "no-observada" : "neutra")}</td>
 <td data-etiqueta="Cantidad">${via.cantidad}</td><td data-etiqueta="Lugares revisados">${via.revisados.length ? html`<details><summary>Lugares revisados</summary>
 <ul>${via.revisados.map(revisado => html`<li><code>${revisado}</code></li>`)}</ul></details>` : "—"}</td></tr>`)}</tbody>` : html``;

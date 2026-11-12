@@ -2,11 +2,11 @@ import { versionRige } from "../../aplicacion/respuestas/estado";
 import { html, type HtmlSeguro } from "./plantillas";
 import { type ContextoPanel } from "./panel";
 import { nombreProyecto } from "./textos";
+import { efectoRegla } from "../presentacion/vocabulario";
 
 interface ContextoDiseno extends ContextoPanel {
   readonly proyecto?: string;
-  readonly activa?: "Inicio" | "Valores" | "Permisos" | "Permiso" | "Todas las reglas" | "Comparar" | "Entradas" | "Hallazgos" | "Agentes";
-  readonly almacen?: { readonly ruta: string; readonly versionEsquema: number };
+  readonly activa?: "Inicio" | "Valores" | "Permisos" | "Permiso" | "Todas las reglas" | "Comparar" | "Entradas" | "Hallazgos";
   readonly minimo?: boolean;
 }
 
@@ -37,10 +37,10 @@ export function insignia(texto: unknown, tipo = "neutra", titulo?: string): Html
 
 export function efectoVisual(efecto: string | null, titulo?: string): HtmlSeguro {
   switch (efecto) {
-    case "allow": return insignia("permitida", "permitida", titulo);
-    case "deny": return insignia("denegada", "denegada", titulo);
-    case "ask": return insignia("sujeta a confirmación", "pregunta", titulo);
-    default: return insignia(efecto ?? "sin decisión", "neutra", titulo);
+    case "allow": return insignia(efectoRegla(efecto), "permitida", titulo);
+    case "deny": return insignia(efectoRegla(efecto), "denegada", titulo);
+    case "ask": return insignia(efectoRegla(efecto), "pregunta", titulo);
+    default: return insignia(efectoRegla(efecto), "neutra", titulo);
   }
 }
 

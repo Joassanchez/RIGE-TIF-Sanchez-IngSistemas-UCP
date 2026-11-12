@@ -60,9 +60,10 @@ describe("T5-13 R-3", () => {
     expect(validarEsquema(esquema, JSON.parse(medido.error))).toEqual([]);
     expect(existsSync(almacen)).toBe(false);
   });
-  test("errores 1 y 2 solo por stderr, --explicar rechazado; version indeterminada advertida", () => {
+  test("errores 1 y 2 solo por stderr, --explicar ignorado en JSON; version indeterminada advertida", () => {
     const e = preparar();
-    for (const opciones of [["--agente", "build", "--explicar"], [], ["--agente", " "], ["--agente", "build", "--lanzado-por", " "]]) {
+    expect(e.consultar("reglas", ["--agente", "build", "--explicar"])).toEqual(e.consultar("reglas", ["--agente", "build"]));
+    for (const opciones of [[], ["--agente", " "], ["--agente", "build", "--lanzado-por", " "]]) {
       const r = e.consultar("reglas", opciones);
       expect(r.codigo).toBe(2);
       expect(r.salida).toBe("");

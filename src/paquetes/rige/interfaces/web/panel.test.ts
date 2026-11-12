@@ -25,7 +25,7 @@ const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: { esquem
   consultarResolucion: (_id, agente) => ({ exito: true, valor: { respuesta: { ...valores, agente }, sobre } }),
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }), consultarPermiso: () => ({ exito: true, valor: permiso }) };
 const solicitar = (ruta: string, cambios: Partial<CasosWeb> = {}, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET"): Response => {
-  const respuesta = crearManejador(12345, { ...casos, ...cambios })(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
+  const respuesta = crearManejador(12345, { ...casos, ...cambios }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } })(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
   if (respuesta.status !== 303 || ruta.startsWith("/resolver?")) return respuesta;
   expect(respuesta.status).toBe(303);
   return solicitar(respuesta.headers.get("location")!, cambios, headers, method);

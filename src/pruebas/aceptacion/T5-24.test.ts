@@ -96,8 +96,8 @@ test("T5-24 X-5 modos en español y oculto como marca de fila", () => escenario(
   writeFileSync(join(e.proyecto, "opencode.json"), JSON.stringify({ agent: {
     principal: { mode: "primary" }, auxiliar: { mode: "subagent", hidden: true }, ambos: { mode: "all" } } }));
   const t = texto(e, "agentes");
-  for (const modo of ["Principal", "Subagente", "Ambos", "oculto"]) expect(t).toContain(modo);
-  expect(t).not.toMatch(/OCULTO|primary|subagent|\s+sí\s*/);
+  for (const modo of ["Principal", "Subagente", "Principal y subagente", "oculto"]) expect(t).toContain(modo);
+  expect(t).not.toMatch(/OCULTO|\b(?:primary|subagent)\b|\s+sí\s*/);
 }));
 
 test("T5-24 X-6 fechas locales legibles en recientes y comparar", () => escenario(e => {

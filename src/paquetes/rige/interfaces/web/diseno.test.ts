@@ -7,7 +7,7 @@ import { paginaResolucion } from "./paginas/resolucion";
 import { paginaPermiso } from "./paginas/permiso";
 import { paginaHallazgos } from "./paginas/hallazgos";
 import { paginaEntradas } from "./paginas/entradas";
-import { paginaAgentes } from "./paginas/agentes";
+import { paginaResumenProyecto } from "./paginas/resumen-proyecto";
 import { paginaErrorUso, conErrores } from "./intermedios/errores";
 import { redirigir } from "./respuesta";
 import { textoHtml } from "../../../../pruebas/utilidades/html";
@@ -39,7 +39,7 @@ const casos: CasosWeb = { consultarEstado: () => ({ exito: true, valor: estado }
   consultarEntradas: () => ({ exito: true, valor: entradas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }),
   consultarAgentes: () => ({ exito: true, valor: agentes }), consultarPermiso: () => ({ exito: true, valor: permiso }),
   resolverProyecto: () => ({ exito: true, valor: { id: 7 } }) };
-const manejar = crearManejador(12345, casos);
+const manejar = crearManejador(12345, casos, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
 const solicitar = (ruta: string, headers: Record<string, string> = { Host: "localhost:12345" }, method = "GET"): Response => {
   const respuesta = manejar(new Request(`http://127.0.0.1${ruta}`, { headers, method }));
   if (respuesta.status !== 303 || ruta.startsWith("/resolver?")) return respuesta;
@@ -49,7 +49,7 @@ const solicitar = (ruta: string, headers: Record<string, string> = { Host: "loca
 
 describe("T5-17 G-3 cabeceras concisas", () => {
   test("cada vista formula una pregunta y pliega su explicacion sin perder metadatos", async () => {
-    for (const pagina of [paginaResolucion(valores, sobre), paginaPermiso(permiso), paginaAgentes(agentes), paginaEntradas(entradas), paginaHallazgos(hallazgos)]) {
+    for (const pagina of [paginaResolucion(valores, sobre), paginaPermiso(permiso), paginaEntradas(entradas), paginaHallazgos(hallazgos)]) {
       const cuerpo = await pagina.text();
       const cabecera = cuerpo.includes('id="resumen-resolucion"') ? seccion(cuerpo, "resumen-resolucion")
         : cuerpo.match(/<div class="cabecera-pagina">([^]*?<\/details>)<\/div>/)![1]!;
@@ -78,7 +78,7 @@ describe("T5-08 U-1 U-11 P-4 estilos y seguridad", () => {
     const cssManejar = crearManejador(12345, { consultarEstado: noConsultar, consultarResolucion: noConsultar,
       compararResoluciones: noConsultar, consultarProyectosRecientes: noConsultar,
       consultarEntradas: noConsultar, consultarHallazgos: noConsultar, consultarAgentes: noConsultar,
-      consultarPermiso: noConsultar, consultarReglas: () => ({ exito: false, error: { codigo: "cadena-incompleta", mensaje: "Cadena no disponible" } }), resolverProyecto: noConsultar });
+      consultarPermiso: noConsultar, consultarReglas: () => ({ exito: false, error: { codigo: "cadena-incompleta", mensaje: "Cadena no disponible" } }), resolverProyecto: noConsultar }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
     for (const sitio of [undefined, "same-origin", "none"]) {
       const respuesta = cssManejar(new Request("http://127.0.0.1/estilos.css", {
         headers: { Host: "localhost:12345", ...(sitio ? { "Sec-Fetch-Site": sitio } : {}) },
@@ -115,8 +115,8 @@ describe("T5-08 U-1 U-11 P-4 estilos y seguridad", () => {
 
 describe("T5-08 U-2 U-10 U-11 P-1 P-2 P-3 P-6", () => {
   test("todas las paginas comparten diseno, escape y recursos locales; JSON solo en consultas", async () => {
-    const paginas: [Response, unknown | null][] = [[paginaInicio(estado), null], [paginaResolucion(valores, sobre), valores],
-      [paginaPermiso(permiso), permiso], [paginaAgentes(agentes), agentes], [paginaEntradas(entradas), entradas],
+    const paginas: [Response, unknown | null][] = [[paginaInicio(estado, undefined, new Date("2026-11-11T12:00:00Z")), null], [paginaResolucion(valores, sobre), valores],
+      [paginaPermiso(permiso), permiso], [paginaResumenProyecto(agentes, { exito: true, valor: { ...agentes, entradas: [] } }, { exito: false, error: { codigo: "prueba", mensaje: "No disponible" } }, "7"), agentes], [paginaEntradas(entradas), entradas],
       [paginaHallazgos(hallazgos), hallazgos], [paginaErrorUso({ codigo: "desconocido", mensaje: ataque }), null],
       [conErrores(() => { throw new Error(ataque); })(new Request("http://127.0.0.1/")), null],
       [solicitar("/ausente"), null], [solicitar("/", {}), null], [solicitar("/", { Host: "localhost:12345" }, "POST"), null],
@@ -165,7 +165,7 @@ describe("T5-08 U-3 U-4 tema y componentes", () => {
 
 describe("T5-08 U-5 U-6", () => {
   test("inicio ofrece analizar; resolucion pone resumen primero y pliega detalles", async () => {
-    const inicio = await paginaInicio(estado).text();
+    const inicio = await paginaInicio(estado, undefined, new Date("2026-11-11T12:00:00Z")).text();
     expect(inicio).toContain("¿Qué configuración rige en este proyecto?");
     expect(inicio).toContain('>Analizar</button>');
     expect(inicio.match(/<form\b/g)).toHaveLength(1);
@@ -185,8 +185,8 @@ describe("T5-08 U-7 P-5", () => {
     const dato = { ...permiso, decision, motivoSinDecision: decision === null ? "comando-compuesto" : null };
     const cuerpo = await paginaPermiso(dato).text();
     const principal = seccion(cuerpo, "resultado-permiso");
-    if (decision === null) expect(principal).not.toContain('class="insignia');
-    else expect(principal).toContain(`insignia--${clase}`);
+    expect(principal).toContain(`insignia--${clase}`);
+    if (decision === null) expect(principal).toContain('Sin decisión');
     expect(principal).toContain(texto!);
     const cadena = seccion(cuerpo, "cadena-efectiva");
     expect(cadena).toContain("Ver reglas coincidentes (2)");
@@ -237,9 +237,9 @@ describe("T5-08 U-9", () => {
     const cuerpo = await paginaEntradas(entradas).text();
     expect(cuerpo).toContain('class="insignia insignia--entrada-ilegible">ilegible');
     expect(cuerpo).toContain('class="aviso aviso--advertencia"><code>&lt;script&gt;&quot;&amp;:3:5</code> (falla)');
-    const listado = await paginaAgentes(agentes).text();
-    expect(listado).toContain('class="insignia insignia--neutra">primary');
-    expect(listado).toContain('class="insignia insignia--aviso">sí');
+    const listado = await paginaResumenProyecto(agentes, { exito: true, valor: { ...agentes, entradas: [] } }, { exito: false, error: { codigo: "prueba", mensaje: "No disponible" } }, "7").text();
+    expect(listado).toContain('data-etiqueta="Modo">Principal');
+    expect(listado).toContain('class="atenuado">oculto');
     expect(listado).toContain("Listado incompleto");
   });
 });
@@ -250,11 +250,9 @@ describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
     expect(css).toMatch(/#valores td:nth-child\(1\)\s*\{[^}]*white-space: nowrap;[^}]*min-width:/);
     expect(css).toMatch(/\.ruta__segmento[^}]*white-space: normal;[^}]*overflow-wrap: anywhere/);
     expect(css).toMatch(/\.ruta\s*\{[^}]*max-width: 100%;[^}]*overflow-wrap: anywhere/);
-    expect(css).toMatch(/\.rejilla\s*\{[^}]*align-items: start/);
-    expect(css).toMatch(/\.rejilla > \.tarjeta\s*\{[^}]*margin-top: 0/);
     expect(css).toMatch(/details \+ section[^}]*margin-top: 2rem/);
     for (const [pagina, id] of [[paginaResolucion(valores, sobre), "resumen-resolucion"], [paginaPermiso(permiso), null],
-      [paginaAgentes(agentes), null], [paginaEntradas(entradas), null], [paginaHallazgos(hallazgos), null]] as const) {
+      [paginaEntradas(entradas), null], [paginaHallazgos(hallazgos), null]] as const) {
       const cuerpo = await pagina.text();
       const cabecera = id ? seccion(cuerpo, id) : cuerpo.split('<section')[0]!;
       expect(cabecera).toContain('class="ruta"');

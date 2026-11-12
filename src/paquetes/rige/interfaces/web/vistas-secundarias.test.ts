@@ -51,7 +51,7 @@ const casos: CasosWeb = { consultarEstado: noConsultar, consultarProyectosRecien
   consultarAgentes: () => ({ exito: true, valor: agentes }), consultarPermiso: () => ({ exito: true, valor: permiso }),
   consultarReglas: () => ({ exito: true, valor: reglas }), consultarHallazgos: () => ({ exito: true, valor: hallazgos }),
   consultarEntradas: () => ({ exito: true, valor: entradas }), compararResoluciones: () => ({ exito: true, valor: comparacion }) };
-const pedir = (ruta: string, servicios = casos) => crearManejador(12345, servicios)(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
+const pedir = (ruta: string, servicios = casos) => crearManejador(12345, servicios, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } })(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
 
 describe("T5-19", () => {
   test("P-1 formularios independientes, selector, sugerencias no exhaustivas y discriminantes GET", async () => {
@@ -81,7 +81,7 @@ describe("T5-19", () => {
     for (const nombre of ["%ZZ", "%E0%A4"]) expect(pedir(`/resoluciones/7/agentes/${nombre}`).status).toBe(400);
   });
 
-  test("P-2 decisión grande, explicación destacada y motivo sin insignia cuando no hay decisión", async () => {
+  test("P-2 decisión grande, explicación destacada y motivo cuando no hay decisión", async () => {
     for (const [decision, texto] of [["allow", "Permitido"], ["ask", "Pregunta antes"], ["deny", "Denegado"]]) {
       const cuerpo = await paginaPermiso({ ...permiso, decision: decision! }, "7", contexto).text();
       expect(cuerpo).toContain(`>${texto}</span>`);
@@ -90,7 +90,7 @@ describe("T5-19", () => {
     const sin = await paginaPermiso({ ...permiso, decision: null, determinante: null, cadena: [], motivoSinDecision: "comando-compuesto" }, "7").text();
     const resultado = sin.match(/id="resultado-permiso"[^]*?<\/section>/)![0];
     expect(resultado).toContain("El comando contiene varias operaciones");
-    expect(resultado).not.toContain('class="insignia');
+    expect(resultado).toContain('>Sin decisión</span>');
     expect(pedir("/permiso?id=7&agente=a%2Fb&herramienta=read&objetivo=.env", { ...casos, consultarPermiso: () => ({ exito: false, error: { codigo: "cadena-incompleta", mensaje: "No observable" } }) }).status).toBe(422);
   });
 
@@ -106,7 +106,7 @@ describe("T5-19", () => {
     expect(cuerpo).toMatch(/<details[^>]*><summary>Explicación completa<\/summary>[^]*?Segunda oración &lt;completa&gt;\./);
     expect(cuerpo).toContain("read, retirada"); expect(cuerpo).toContain("Advertencia conservada");
     expect(json(cuerpo)).toEqual(permiso);
-    for (const [regla, caracter] of [["nativa-general", "Nativa general"], ["nativa-agente", "Nativa del agente"], ["denegacion-subagente", "Denegación de subagente"]]) {
+    for (const [regla, caracter] of [["nativa-general", "OpenCode · general"], ["nativa-agente", "OpenCode · agente"], ["denegacion-subagente", "OpenCode · denegación de subagente"]]) {
       const cero = await paginaPermiso({ ...permiso, determinante: 0, cadena: [{ ...permiso.cadena[0]!, origen: { tipo: "nativo", regla: regla! } }] }).text();
       expect(cero.match(/id="regla-determinante"[^]*?<\/section>/)![0]).toContain(caracter!);
     }
@@ -159,7 +159,7 @@ describe("T5-19", () => {
   });
 
   test("P-8 recorrido secundario, compacto en Inicio, marcador tenue y errores con miga Error", async () => {
-    const inicio = await paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/privado", versionEsquema: 2 } }, { esquema: 2, proyectos: Array.from({ length: 10 }, (_, id) => ({ proyecto: `/proyecto/${id}`, id, cantidad: 2, instante: foto.instante })) }).text();
+    const inicio = await paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/privado", versionEsquema: 2 } }, { esquema: 2, proyectos: Array.from({ length: 10 }, (_, id) => ({ proyecto: `/proyecto/${id}`, id, cantidad: 2, instante: foto.instante })) }, new Date("2026-11-11T12:00:00Z")).text();
     expect(inicio).toContain('placeholder="C:\\proyectos\\mi-app"');
     expect(inicio).toContain('<code title="/proyecto/0">/proyecto/0</code>');
     expect(estilos).toMatch(/\.reciente__foto\s*\{[^}]*grid-template-columns:/);
