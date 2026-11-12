@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
+import { seccionHtml, textoHtml } from "../utilidades/html";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, posix, win32 } from "node:path";
 import { copiarEscenario, type OpcionesEscenario } from "../utilidades/escenario";
@@ -6,6 +7,7 @@ import { entornoDeReferencia } from "../utilidades/entorno-referencia";
 import { crearEntornoMemoria } from "../utilidades/entorno-memoria";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { decisionNativa } from "../utilidades/decision-nativa";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
@@ -13,6 +15,7 @@ import { abarca } from "../../paquetes/opencode/hallazgos";
 import { consultarEntradas } from "../../paquetes/rige/aplicacion/casos-uso/consultar-entradas";
 import { consultarHallazgos } from "../../paquetes/rige/aplicacion/casos-uso/consultar-hallazgos";
 import type { RespuestaHallazgos } from "../../paquetes/rige/aplicacion/respuestas/hallazgos";
+import { nombresHallazgos } from "../../paquetes/rige/interfaces/web/componentes-proyecto";
 import type { TipoHallazgo } from "../../paquetes/nucleo/hallazgos/tipos";
 import { explicarHallazgo } from "../../paquetes/nucleo/hallazgos/explicar";
 import { plantillasExplicacion, plantillasHallazgo } from "../../paquetes/opencode/reglas";
@@ -39,6 +42,11 @@ function prepararSinReferencia(nombre: string, opciones: OpcionesEscenario = { g
     entorno: new EntornoLecturaSistema({ plataforma: process.platform, entorno: env }),
     rutas: { canonica: (ruta: string) => ruta === copia.proyecto ? ruta : null } }) };
 }
+function prepararDisponible(nombre: string) {
+  return existsSync(join(raiz, nombre, "REFERENCIA.json")) ? preparar(nombre) : prepararSinReferencia(nombre);
+}
+const manifiestoParidad = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8")) as Manifiesto;
+const escenariosParidad = [...new Set(manifiestoParidad.defectosSembrados.map(d => d.escenario)), "v5-ruta-relativa-no-confirma"];
 function obtener(d: Parameters<typeof consultarHallazgos>[0], proyecto: string): RespuestaHallazgos {
   const r = consultarHallazgos(d, proyecto);
   if (!r.exito) throw new Error(r.error.mensaje);
@@ -51,35 +59,23 @@ function memoria(archivos: Record<string, string>, variables: Record<string, str
 }
 
 describe("T3-05 R-9 completitud", () => {
-  test("todas las causas de los detectores tienen plantilla completa derivadas del adaptador y ejecucion", () => {
+  test("V-7 todas las causas de los detectores tienen plantilla completa derivadas del adaptador y ejecucion", () => {
     const manifiesto = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8")) as Manifiesto;
     const causasEmitidas = new Set<string>();
 
     for (const esc of manifiesto.escenarios) {
-      try {
-        const e = preparar(esc.id);
-        const r = consultarHallazgos(e.dependencias(), e.proyecto);
-        if (r.exito) {
-          for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
-        }
-      } catch {
-        try {
-          const eSin = prepararSinReferencia(esc.id);
-          const r = consultarHallazgos(eSin.dependencias(), eSin.proyecto);
-          if (r.exito) {
-            for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
-          }
-        } catch {
-          // Escenario no disponible
-        }
-      }
+      const e = prepararDisponible(esc.id);
+      const r = consultarHallazgos(e.dependencias(), e.proyecto);
+      expect(r.exito).toBe(true);
+      if (!r.exito) throw new Error(`${esc.id}: ${r.error.codigo}: ${r.error.mensaje}`);
+      for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
     }
 
     const dInexistente = memoria({ "/p/opencode.json": '{"model":"{file:./no-existe.txt}"}' });
     const rInexistente = consultarHallazgos(dInexistente, "/p");
-    if (rInexistente.exito) {
-      for (const h of rInexistente.valor.hallazgos) causasEmitidas.add(h.causa);
-    }
+    expect(rInexistente.exito).toBe(true);
+    if (!rInexistente.exito) throw new Error(rInexistente.error.mensaje);
+    for (const h of rInexistente.valor.hallazgos) causasEmitidas.add(h.causa);
 
     const causas = new Set<string>([
       ...(adaptadorOpenCode.referencias ?? []).map((r: { causa: string }) => r.causa),
@@ -941,12 +937,6 @@ describe("T3-06 R-8", () => {
   });
 });
 
-describe("T3-06 R-9", () => {
-  test("reemplazado por RF-07 CA-1 T3-08 R-1", () => {
-    expect(true).toBe(true);
-  });
-});
-
 function cliHallazgos(e: { raiz: string; proyecto: string; env: Record<string, string> }, opciones: readonly string[] = []) {
   return lanzar(e.raiz, ["hallazgos", "--proyecto", e.proyecto, ...opciones], e.env);
 }
@@ -958,7 +948,7 @@ function datosWeb(cuerpo: string) {
 const escaparHtml = (texto: string) => texto.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
   .replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
 
-describe("T3-07 R-1", () => {
+describe("C-1 RF-03 CA-1 T3-07 R-1", () => {
   test("CLI hallazgos: esquema, codigo 0 con y sin hallazgos, --explicar, errores de opciones y proyecto, determinismo y sin crear almacen", async () => {
     const rutaEsquema = join(import.meta.dir, "../../esquemas/salida/hallazgos.json");
     expect(existsSync(rutaEsquema)).toBe(true);
@@ -1006,7 +996,8 @@ describe("T3-07 R-1", () => {
       expect(inv.salida).toBe("");
       expect(JSON.parse(inv.error).error.codigo).toBe("argumentos-invalidos");
     }
-    const sinProyectoArg = lanzar(conHallazgos.raiz, ["hallazgos"], conHallazgos.env);
+    expect(lanzar(conHallazgos.raiz, ["hallazgos"], conHallazgos.env, conHallazgos.proyecto)).toEqual(cliHallazgos(conHallazgos));
+    const sinProyectoArg = lanzar(conHallazgos.raiz, ["hallazgos", "--proyecto", ""], conHallazgos.env);
     expect(sinProyectoArg.codigo).toBe(2);
     expect(JSON.parse(sinProyectoArg.error).error.codigo).toBe("argumentos-invalidos");
 
@@ -1018,10 +1009,13 @@ describe("T3-07 R-1", () => {
 });
 
 describe("RF-07 CA-3 T3-07 R-2", () => {
-  test("el conjunto de hallazgos de la CLI sin explicacion es igual al de la web quitando explicacion en los cinco escenarios", async () => {
-    const nombres = ["v3-entradas-ilegible", "v3-permiso-invalido", "v3-sustituciones", "v3-referencias", "v3-sin-efecto"] as const;
+  test("V-3 el conjunto de hallazgos de la CLI y web coincide para todo el inventario", async () => {
+    const nombres = escenariosParidad;
+    expect(nombres.length).toBeGreaterThan(0);
+    expect(manifiestoParidad.defectosSembrados.some(d => nombres.includes(d.escenario) && d.tipo === "elemento-sin-uso")).toBe(true);
+    expect(manifiestoParidad.defectosSembrados.some(d => nombres.includes(d.escenario) && d.causa === "ruta-absoluta-con-forma")).toBe(true);
     for (const nombre of nombres) {
-      const e = nombre === "v3-sin-efecto" ? prepararSinReferencia(nombre) : preparar(nombre);
+      const e = prepararDisponible(nombre);
       expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
       const cli = cliHallazgos(e);
       expect(cli.codigo).toBe(0);
@@ -1051,10 +1045,13 @@ describe("RF-07 CA-3 T3-07 R-2", () => {
 });
 
 describe("RF-07 CA-4 T3-07 R-3", () => {
-  test("con --explicar la explicacion de cada hallazgo de la CLI es identica a la de la web y al texto visible escapado en la tabla", async () => {
-    const nombres = ["v3-entradas-ilegible", "v3-permiso-invalido", "v3-sustituciones", "v3-referencias", "v3-sin-efecto"] as const;
+  test("V-3 con --explicar la explicacion de cada hallazgo de la CLI es identica a la de la web y al texto visible escapado en la tabla", async () => {
+    const nombres = escenariosParidad;
+    expect(nombres.length).toBeGreaterThan(0);
+    expect(manifiestoParidad.defectosSembrados.some(d => nombres.includes(d.escenario) && d.tipo === "elemento-sin-uso")).toBe(true);
+    expect(manifiestoParidad.defectosSembrados.some(d => nombres.includes(d.escenario) && d.causa === "ruta-absoluta-con-forma")).toBe(true);
     for (const nombre of nombres) {
-      const e = nombre === "v3-sin-efecto" ? prepararSinReferencia(nombre) : preparar(nombre);
+      const e = prepararDisponible(nombre);
       expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
       const cli = cliHallazgos(e, ["--explicar"]);
       expect(cli.codigo).toBe(0);
@@ -1071,10 +1068,25 @@ describe("RF-07 CA-4 T3-07 R-3", () => {
         expect(pagina.estado).toBe(200);
         const rWeb = datosWeb(pagina.cuerpo);
         expect(rCli).toEqual(rWeb);
-        for (const h of rCli.hallazgos) {
+        const filas = [...seccionHtml(pagina.cuerpo, "tabla-hallazgos").matchAll(/<article id="h-(\d+)"[^>]*>(.*?)<\/article>/gs)]
+          .sort((a, b) => Number(a[1]) - Number(b[1]));
+        expect(filas).toHaveLength(rCli.hallazgos.length);
+        expect(filas.map(f => [f[2]!.match(/<h3>(.*?)<\/h3>/s)![1]!, f[2]!.match(/<p>Ubicación: (.*?)<\/p>/s)![1]!, f[2]!.match(/<p><strong>Causa:<\/strong> (.*?)<\/p>/s)![1]!].map(celda => textoHtml(celda)))).toEqual(rCli.hallazgos.map((h: RespuestaHallazgos["hallazgos"][number]) => [
+          escaparHtml(nombresHallazgos[h.tipo]![0]), escaparHtml(h.entrada.condicion === "observada" && (posix.isAbsolute(h.entrada.referencia) || win32.isAbsolute(h.entrada.referencia))
+            ? h.entrada.referencia.replaceAll("\\", "/").split("/").at(-1) + `:${h.posicion.linea}:${h.posicion.columna}` : h.localizacion), escaparHtml(h.explicacion ?? ""),
+        ]));
+        for (const [indice, h] of rCli.hallazgos.entries()) {
           expect(typeof h.explicacion).toBe("string");
           expect(h.explicacion.length).toBeGreaterThan(0);
-          expect(pagina.cuerpo).toContain(`<td>${escaparHtml(h.tipo)}</td><td>${escaparHtml(h.localizacion)}</td><td>${escaparHtml(h.explicacion)}</td>`);
+          const tarjeta = filas[indice]![2]!;
+          expect(tarjeta).toContain(`<span class="insignia insignia--${h.tipo}">${escaparHtml(nombresHallazgos[h.tipo]![0])}</span>`);
+          if (h.entrada.condicion === "observada" && (posix.isAbsolute(h.entrada.referencia) || win32.isAbsolute(h.entrada.referencia))) {
+            expect(tarjeta).toContain(`title="Abrir en VS Code: ${escaparHtml(h.entrada.referencia)}"`);
+            expect(tarjeta).toContain('href="vscode://file/');
+          } else {
+            expect(tarjeta).toContain(`class="ruta" title="${escaparHtml(h.localizacion)}"`);
+            expect(tarjeta).toContain(`#entrada-${h.entrada.orden}`);
+          }
         }
       } finally {
         await servidor.detener();
@@ -1124,4 +1136,90 @@ describe("T3-07 R-4", () => {
       await servidor.detener();
     }
   });
+});
+
+
+describe("C-4 RF-07 CA-5", () => {
+  test("la cadena completa de build no confirma el allow global: diagnostico sin forma y sustitucion denegada", () => {
+    const original = prepararSinReferencia("v5-ruta-relativa-no-confirma");
+    const resultado = cliHallazgos(original);
+    expect(resultado.codigo).toBe(0);
+    expect(resultado.error).toBe("");
+    const hallazgos = JSON.parse(resultado.salida).hallazgos as RespuestaHallazgos["hallazgos"];
+    const globales = hallazgos.filter(h => h.clave?.[0] === "permission");
+    expect(globales).toHaveLength(1);
+    expect(globales[0]).toMatchObject({ causa: "ruta-absoluta", parametros: { efecto: "permitida" } });
+    expect(globales[0]!.parametros).not.toHaveProperty("formaRelativa");
+    expect(globales[0]!.parametros).not.toHaveProperty("decision");
+
+    const relativa = prepararSinReferencia("v5-ruta-relativa-no-confirma");
+    const ruta = join(relativa.proyecto, "opencode.json");
+    const texto = readFileSync(ruta, "utf8");
+    const absoluto = `${relativa.proyecto.replaceAll("\\", "/")}/src/a.js`;
+    expect(texto.split(absoluto)).toHaveLength(2);
+    writeFileSync(ruta, texto.replace(absoluto, "src/a.js"));
+    const permiso = lanzar(relativa.raiz, ["permiso", "--proyecto", relativa.proyecto,
+      "--agente", "build", "--sujeto", "read", "--objetivo", "src/a.js"], relativa.env);
+    expect(permiso.codigo).toBe(0);
+    expect(permiso.error).toBe("");
+    expect(JSON.parse(permiso.salida).decision).toBe("deny");
+  });
+});
+
+describe("C-5 RF-07 CA-5", () => {
+  test("CLI bloqueo a propone src/productos.js con decision permitida", () => {
+    const e = preparar("v2-ruta-bloqueo");
+    const resultado = cliHallazgos(e);
+    expect(resultado.codigo).toBe(0);
+    expect(resultado.error).toBe("");
+    const hallazgos = JSON.parse(resultado.salida).hallazgos as RespuestaHallazgos["hallazgos"];
+    expect(hallazgos.find(h => h.clave?.[1] === "a")).toMatchObject({
+      causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: "src/productos.js", decision: "permitida" },
+    });
+  });
+  const manifiesto = JSON.parse(readFileSync(join(raiz, "MANIFIESTO.json"), "utf8"));
+  const formas = manifiesto.defectosSembrados.filter((d: DefectoSembrado) =>
+    ["v2-ruta-bloqueo", "v2-ruta-env", "v2-ruta-exposicion"].includes(d.escenario)
+    && d.causa === "ruta-absoluta-con-forma");
+  expect(formas).toHaveLength(6);
+  for (const defecto of formas) {
+    const referencia = JSON.parse(readFileSync(join(raiz, defecto.escenario, "REFERENCIA.json"), "utf8"));
+    const sujeto = defecto.clave[3];
+    const objetivo = defecto.parametros.formaRelativa;
+    const consulta = { agente: defecto.control.agente, sujeto, objetivo };
+    // decisionNativa arroja si existe una captura incompleta: nunca se convierte en pendiente.
+    const nativa = decisionNativa(referencia, consulta, objetivo);
+    const titulo = `${defecto.escenario} ${defecto.clave[1]} -> ${consulta.agente} ${sujeto} ${objetivo}`;
+    if (nativa === null) {
+      const registro = referencia.decisionesNativas?.find((d: { agente: string; sujeto: string; objetivo: string }) =>
+        d.agente === consulta.agente && d.sujeto === sujeto && d.objetivo === objetivo);
+      const motivo = !registro ? "captura ausente" : registro.procedencia
+        && registro.procedencia.plataforma !== `${process.platform}-${process.arch}` ? "plataforma distinta" : "herramienta no ofrecida";
+      describe("C-6 pendientes legitimos", () => { test.todo(`${titulo}: ${motivo}`, () => {}); });
+      continue;
+    }
+    test(`${titulo}: captura nativa, orden y efectos conservados`, () => {
+      const e = preparar(defecto.escenario);
+      const resultado = cliHallazgos(e);
+      expect(resultado.codigo).toBe(0);
+      expect(resultado.error).toBe("");
+      const hallazgos = JSON.parse(resultado.salida).hallazgos as RespuestaHallazgos["hallazgos"];
+      const h = hallazgos.find(h => h.clave?.[1] === defecto.clave[1] && h.parametros.formaRelativa === objetivo);
+      const decision = plantillasExplicacion.efectos[nativa.decision]!;
+      expect(h).toMatchObject({ causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: objetivo, decision, efecto: decision } });
+      expect(decision).toBe(defecto.parametros.decision);
+      const permiso = lanzar(e.raiz, ["permiso", "--proyecto", e.proyecto, "--agente", consulta.agente,
+        "--sujeto", sujeto, "--objetivo", objetivo], e.env);
+      expect(permiso.codigo).toBe(0);
+      expect(permiso.error).toBe("");
+      expect(JSON.parse(permiso.salida).decision).toBe(nativa.decision);
+      // Los controles difieren solo en la forma de las rutas: comparar listas conserva el orden.
+      const config = JSON.parse(readFileSync(join(e.proyecto, "opencode.jsonc"), "utf8"));
+      const reglas = (agente: string, sustituir: boolean) => Object.entries(config.agent[agente].permission)
+        .flatMap(([sujeto, patrones]) => typeof patrones === "string" ? [[sujeto, "*", patrones]]
+          : Object.entries(patrones as Record<string, string>).map(([patron, efecto]) => [sujeto,
+            sustituir ? patron.replace(`${e.proyecto.replaceAll("\\", "/")}/`, "") : patron, efecto]));
+      expect(reglas(defecto.clave[1], true)).toEqual(reglas(consulta.agente, false));
+    });
+  }
 });

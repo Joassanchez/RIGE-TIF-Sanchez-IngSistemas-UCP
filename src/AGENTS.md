@@ -94,20 +94,22 @@ Workspaces de Bun 1.3.14 con instalación aislada: `paquetes/nucleo`, `paquetes/
   - se calculan sobre el texto **original**, nunca sobre el texto con las sustituciones aplicadas.
 - **Contrato de salida de la CLI:**
 
-  | Situación | Salida | Error | Código |
+  | Situación | JSON por tubería o con `--json` (salida / error) | Consola interactiva (salida / error) | Código |
   |---|---|---|---|
-  | Respuesta válida, con o sin hallazgos | JSON | — | 0 |
-  | Agente existente sin la clave consultada (RF-03 CA-5) | JSON con `valores: []` y `motivo: "clave-inexistente"` | — | 0 |
-  | Comando compuesto (RF-08) | JSON con `decision: null` | — | 0 |
-  | Versión de OpenCode no determinable (ADR-102) | JSON con la declaración `version-no-determinada` | advertencia | 0 |
-  | Proyecto o agente inexistente, agente sin declaraciones | vacío | JSON de error | 1 |
-  | Versión distinta de 1.18.25 (RF-05 CA-2, ADR-102) | vacío | JSON de error `version-no-soportada` con la versión esperada y la detectada | 1 |
-  | Argumentos inválidos | vacío | JSON de error | 2 |
-  | Falla interna | vacío | JSON `interno` (stack solo con `--depurar`) | 70 |
+  | Respuesta válida, con o sin hallazgos | JSON / — | texto / — | 0 |
+  | Agente existente sin la clave consultada (RF-03 CA-5) | JSON con `valores: []` y `motivo: "clave-inexistente"` / — | texto con clave inexistente / — | 0 |
+  | Comando compuesto (RF-08) | JSON con `decision: null` / — | texto sin decisión y su motivo / — | 0 |
+  | Versión de OpenCode no determinable (ADR-102) | JSON con la declaración `version-no-determinada` / advertencia JSON | texto / advertencia en texto | 0 |
+  | Proyecto o agente inexistente, agente sin declaraciones | vacío / JSON de error | vacío / `Error: …` | 1 |
+  | Versión distinta de 1.18.25 (RF-05 CA-2, ADR-102) | vacío / JSON `version-no-soportada` con las versiones esperada y detectada | vacío / `Error: …` con las versiones | 1 |
+  | Argumentos inválidos | vacío / JSON de error | vacío / `Error: …` (sin subcomando: ayuda) | 2 |
+  | Falla interna | vacío / JSON `interno` | vacío / `Error: …` | 70 |
+
+  `--texto` fuerza texto también por tubería; `--json` fuerza JSON también en consola. El stack solo se emite con `--depurar`.
 
   Códigos estables de error de uso (código 1): `almacen-sin-esquema` (ADR-061; el mensaje nombra `bun run esquema`), `via-no-soportada` (ADR-062 y ADR-101; el mensaje nombra la variable) y `version-no-soportada` (ADR-102). Toda respuesta y todo error declaran `esquema: 2` (`versionEsquemaSalida`); el esquema publicado está en `esquemas/salida/` y un campo opcional nuevo no cambia el entero (ADR-062, precisión de C5). Las filas de ADR-102 rigen desde la iteración 3 (T3-01).
 
-- **Paridad:** la CLI y la web presentan el mismo objeto de respuesta del caso de uso; la web nunca calcula nada propio.
+- **Paridad:** la CLI y la web presentan el mismo objeto de respuesta del caso de uso; la web no crea datos: solo presenta, filtra, cuenta o agrega lo que traen las respuestas de los casos de uso.
 - **Web:**
   - solo `127.0.0.1`, solo GET, verificación de `Host` y sin CORS (RNF-09);
   - se rechazan las solicitudes con `Sec-Fetch-Site: cross-site` o `same-site`, en todas las rutas (ADR-062);
@@ -154,4 +156,3 @@ Workspaces de Bun 1.3.14 con instalación aislada: `paquetes/nucleo`, `paquetes/
 - **Commits solo en la rama del incremento**, uno por tarea (salvo que la ficha pida otro), con Conventional Commits en español. Agregá solo rutas explícitas dentro de `src/`; nunca `git add -A` ni `git add .`. **Nunca** subir, unir con `main` ni crear etiquetas: eso lo hace el autor después de la revisión.
 - **Todo comando** necesario para instalar, configurar, ejecutar o probar figura en `src/README.md`.
 - **No se escriben archivos del repositorio fuera de `src/`.** Los datos de ejecución van a temporales del sistema; en toda ejecución del agente, `RIGE_ALMACEN` apunta a un temporal (ADR-066).
-

@@ -7,7 +7,7 @@ describe("T3-03-c1 R-5", () => {
     const raiz = join(import.meta.dir, "../../esquemas/salida");
     const entradas = readdirSync(raiz).filter(n => n.endsWith(".json"))
       .map(n => JSON.parse(readFileSync(join(raiz, n), "utf8")).$defs?.Entrada).filter(Boolean);
-    expect(entradas).toHaveLength(5);
+    expect(entradas).toHaveLength(7);
     for (const entrada of entradas) {
       expect(entrada).toEqual(entradas[0]);
       expect(entrada.properties.error.properties.linea.minimum).toBe(1);

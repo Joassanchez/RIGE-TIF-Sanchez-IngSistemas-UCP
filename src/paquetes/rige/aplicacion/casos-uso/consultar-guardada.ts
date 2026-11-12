@@ -5,6 +5,7 @@ import type { PuertoResoluciones } from "../puertos/resoluciones";
 import type { DependenciasAnalisis } from "./analizar-proyecto";
 import { consultarPermiso } from "./consultar-permiso";
 import { consultarAgentes } from "./consultar-agentes";
+import { consultarReglas } from "./consultar-reglas";
 
 function sobreGuardada<T>(dependencias: DependenciasAnalisis & { readonly resoluciones: PuertoResoluciones }, id: string,
   consultar: (dependencias: DependenciasAnalisis, proyecto: string) => Resultado<T, ErrorUso>): Resultado<T, ErrorUso> {
@@ -25,4 +26,9 @@ export function consultarPermisoGuardado(dependencias: DependenciasAnalisis & { 
 
 export function consultarAgentesGuardados(dependencias: DependenciasAnalisis & { readonly resoluciones: PuertoResoluciones }, id: string) {
   return sobreGuardada(dependencias, id, consultarAgentes);
+}
+
+export function consultarReglasGuardadas(dependencias: DependenciasAnalisis & { readonly resoluciones: PuertoResoluciones },
+  id: string, solicitud: { readonly agente: string; readonly lanzadoPor?: string | undefined }) {
+  return sobreGuardada(dependencias, id, (analisis, proyecto) => consultarReglas(analisis, { ...solicitud, proyecto }));
 }

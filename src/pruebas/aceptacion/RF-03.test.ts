@@ -7,7 +7,7 @@ import { isAbsolute, join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
 import type { RespuestaValores } from "../../paquetes/rige/aplicacion/respuestas/valores";
 import { prepararConsultas } from "../utilidades/consultas-cli";
 import { validarEsquema } from "../utilidades/validar-esquema";
@@ -21,8 +21,8 @@ const consultas = [
   ...["ls", "ls && rm x"].flatMap(objetivo => [[], ["--explicar"]].map(opciones =>
     ["permiso", ["--agente", "build", "--herramienta", "bash", "--objetivo", objetivo, ...opciones]])),
 ] as [string, string[]][];
-function prepararCli() {
-  const escenario = prepararConsultas();
+function prepararCli(nombre?: string) {
+  const escenario = prepararConsultas(nombre);
   limpiezas.push(escenario.borrar);
   return escenario;
 }
@@ -102,52 +102,76 @@ describe("RF-03 CA-3 (permiso CLI)", () => {
   });
 });
 
-describe("RF-03 CA-5 (CLI v2)", () => {
-  for (const [comando, opciones] of consultas.filter(([, opciones]) => !opciones.includes("--explicar")).slice(0, 3)) {
-    test(`${comando} codigo 0`, () => {
-      const escenario = prepararCli();
-      expect(escenario.consultar(comando, opciones).codigo).toBe(0);
-    });
-    test(`${comando} codigo 1: proyecto`, () => {
-      const escenario = prepararCli();
-      for (const resultado of [lanzar(escenario.raiz, [comando, "--proyecto", join(escenario.raiz, "ausente"), ...opciones], escenario.variables)]) {
-        expect(resultado.codigo).toBe(1);
-        expect(resultado.salida).toBe("");
-        expect(JSON.parse(resultado.error).esquema).toBe(2);
-      }
-    });
-    test(`${comando} codigo 2: argumentos`, () => {
-      const escenario = prepararCli();
-      const resultado = escenario.consultar(comando, [...opciones, "--desconocido"]);
-      expect(resultado.codigo).toBe(2);
-      expect(resultado.salida).toBe("");
-      expect(JSON.parse(resultado.error).error.codigo).toBe("argumentos-invalidos");
-    });
-    test(`${comando} codigo 70: falla interna`, async () => {
-      const escenario = prepararCli();
-      const precarga = join(escenario.raiz, "falla.ts");
-      writeFileSync(precarga, `import { mock } from "bun:test";
-        const fs = await import("node:fs");
-        mock.module("node:fs", () => ({ ...fs, readFileSync: (...args) => {
-          if (String(args[0]).endsWith("opencode.json")) throw new Error("Falla de lectura simulada");
-          return fs.readFileSync(...args);
-        } }));`);
-      const proceso = Bun.spawnSync([process.execPath, "--preload", precarga, "paquetes/rige/arranque/rige.ts",
-        comando, "--proyecto", escenario.proyecto, ...opciones], { env: { ...crearEntornoAislado(escenario.raiz, process.env),
-          ...escenario.variables }, stdout: "pipe", stderr: "pipe" });
-      expect(proceso.exitCode).toBe(70);
-      expect(proceso.stdout.toString()).toBe("");
-      expect(JSON.parse(proceso.stderr.toString())).toMatchObject({ esquema: 2, error: { codigo: "interno" } });
-      await validarRespuesta("error", JSON.parse(proceso.stderr.toString()));
-    });
+describe("C-2 RF-03 CA-5 (CLI v2)", () => {
+  const casos: [string, string[]][] = [
+    ["valores", ["--agente", "revisor"]],
+    ["permiso", ["--agente", "build", "--herramienta", "bash", "--objetivo", "ls"]],
+    ["agentes", []], ["hallazgos", []],
+  ];
+  async function errorUnico(resultado: { codigo: number | null; salida: string; error: string }, codigo: number, error: string) {
+    expect(resultado.codigo).toBe(codigo);
+    expect(resultado.salida).toBe("");
+    expect(resultado.error.trim().split(/\r?\n/)).toHaveLength(1);
+    expect(JSON.parse(resultado.error).error.codigo).toBe(error);
+    await validarRespuesta("error", JSON.parse(resultado.error));
   }
-  test("rechaza explicar en valores y exige herramienta o sujeto excluyentes", () => {
+  test.each(casos)("%s codigo 0 con resultado", (comando, opciones) => {
+    const escenario = prepararCli(comando === "hallazgos" ? "v5-ruta-relativa-no-confirma" : undefined);
+    const resultado = escenario.consultar(comando, opciones);
+    expect(resultado.codigo).toBe(0);
+    expect(resultado.error).toBe("");
+    const respuesta = JSON.parse(resultado.salida);
+    if (comando === "valores") expect(respuesta.valores.length).toBeGreaterThan(0);
+    if (comando === "permiso") expect(respuesta.decision).not.toBeNull();
+    if (comando === "agentes") expect(respuesta.agentes.length).toBeGreaterThan(0);
+    if (comando === "hallazgos") expect(respuesta.hallazgos.length).toBeGreaterThan(0);
+  });
+  test.each([
+    ["valores", ["--agente", "revisor", "--clave", "inexistente"], { valores: [], motivo: "clave-inexistente" }],
+    ["permiso", ["--agente", "build", "--herramienta", "bash", "--objetivo", "ls && rm x"], { decision: null, motivoSinDecision: "comando-compuesto" }],
+    ["hallazgos", [], { hallazgos: [] }],
+  ] as [string, string[], object][])("%s codigo 0 sin resultado", (comando, opciones, esperado) => {
     const escenario = prepararCli();
-    for (const [comando, opciones] of [["valores", ["--agente", "revisor", "--explicar"]],
-      ["permiso", ["--agente", "build", "--objetivo", "a"]],
-      ["permiso", ["--agente", "build", "--objetivo", "a", "--sujeto", "read", "--herramienta", "read"]]] as [string, string[]][]) {
-      expect(escenario.consultar(comando, opciones).codigo).toBe(2);
-    }
+    writeFileSync(join(escenario.proyecto, "opencode.json"), '{"agent":{"revisor":{"description":"Revisor"}}}');
+    const resultado = escenario.consultar(comando, opciones);
+    expect(resultado.codigo).toBe(0);
+    expect(resultado.error).toBe("");
+    expect(JSON.parse(resultado.salida)).toMatchObject(esperado);
+  });
+  test.each(casos)("%s codigo 1: proyecto", async (comando, opciones) => {
+    const escenario = prepararCli();
+    await errorUnico(lanzar(escenario.raiz, [comando, "--proyecto", join(escenario.raiz, "ausente"), ...opciones], escenario.variables), 1, "proyecto-inexistente");
+  });
+  test.each(casos)("%s codigo 2: argumentos", async (comando, opciones) => {
+    const escenario = prepararCli();
+    await errorUnico(escenario.consultar(comando, [...opciones, "--desconocido"]), 2, "argumentos-invalidos");
+  });
+  test.each(casos)("%s codigo 70: falla interna", async (comando, opciones) => {
+    const escenario = prepararCli();
+    const precarga = join(escenario.raiz, "falla.ts");
+    writeFileSync(precarga, `import { mock } from "bun:test";
+      const fs = await import("node:fs");
+      mock.module("node:fs", () => ({ ...fs, readFileSync: (...args) => {
+        if (String(args[0]).endsWith("opencode.json")) throw new Error("Falla de lectura simulada");
+        return fs.readFileSync(...args);
+      } }));`);
+    const proceso = Bun.spawnSync([process.execPath, "--preload", precarga, "paquetes/rige/arranque/rige.ts",
+      comando, "--proyecto", escenario.proyecto, ...opciones], { env: { ...crearEntornoAislado(escenario.raiz, process.env),
+        ...escenario.variables }, stdout: "pipe", stderr: "pipe" });
+    await errorUnico({ codigo: proceso.exitCode, salida: proceso.stdout.toString(), error: proceso.stderr.toString() }, 70, "interno");
+  });
+  test.each(casos)("%s codigo 1: configuracion-invalida", async (comando) => {
+    const escenario = prepararCli();
+    writeFileSync(join(escenario.proyecto, "opencode.json"), JSON.stringify({ agent: { x: { mode: "foo" } } }, null, 2));
+    const opciones = ["agentes", "hallazgos"].includes(comando) ? [] : ["--agente", "x", ...(comando === "permiso" ? ["--sujeto", "read", "--objetivo", "a"] : [])];
+    await errorUnico(escenario.consultar(comando, opciones), 1, "configuracion-invalida");
+  });
+  test.each([
+    ["valores", ["--agente", "revisor", "--explicar"]],
+    ["permiso", ["--agente", "build", "--objetivo", "a"]],
+    ["permiso", ["--agente", "build", "--objetivo", "a", "--sujeto", "read", "--herramienta", "read"]],
+  ] as [string, string[]][])("%s rechaza opciones incompatibles %j", async (comando, opciones) => {
+    await errorUnico(prepararCli().consultar(comando, opciones), 2, "argumentos-invalidos");
   });
   test("permiso informa fuera-del-arbol y agente inexistente", () => {
     const escenario = prepararCli();
@@ -304,7 +328,7 @@ describe("S-1", () => {
       const web = JSON.parse(proceso.stdout.toString());
       expect(web.exito).toBe(true);
       expect(web.valor.respuesta).toEqual(JSON.parse(escenario.consultar(...(clave ? ["--clave", clave] : [])).salida));
-      if (clave === "temperature") expect(puntual.cuerpo).toContain(`<td>${web.valor.respuesta.valores[0].rastro.valor}</td>`);
+      if (clave === "temperature") expect(puntual.cuerpo).toContain(`<td data-etiqueta="Valor">${web.valor.respuesta.valores[0].rastro.valor}</td>`);
       if (clave === "inexistente") expect(puntual.cuerpo).toContain("clave-inexistente");
       expect(web.valor.sobre).toMatchObject({ id: 1, instante: expect.any(String), anteriores: [expect.objectContaining({ id: 1 })] });
       }

@@ -46,3 +46,27 @@ describe("RNF-03 CA-3", () => {
     expect(conReemplazo.valor.valores[0]?.valor).not.toBe(consulta.valor.valores[0]?.rastro.valor);
   });
 });
+
+describe("T5-12 M-1 M-5 RNF-03 PC-02", () => {
+  test("entradas acepta observacion con nombres ajenos y adaptadores anteriores sin mapa", async () => {
+    const { adaptadorFicticio } = await import("../utilidades/adaptador-ficticio");
+    const { consultarEntradas } = await import("../../paquetes/rige/aplicacion/casos-uso/consultar-entradas");
+    const entorno = crearEntornoMemoria({ archivos: { "/p/capa-a.json": "{}", "/p/capa-b.json": "{}" }, directorios: ["/p"] });
+    const deps = { adaptador: adaptadorFicticio, entorno, rutas: { canonica: (ruta: string) => ruta } };
+    const anterior = consultarEntradas(deps, "/p");
+    expect(anterior.exito).toBe(true);
+    if (!anterior.exito) throw new Error(anterior.error.mensaje);
+    expect(anterior.valor.vias).toBeUndefined();
+    const nuevo = consultarEntradas({ ...deps, adaptador: { ...adaptadorFicticio,
+      ubicar(proyecto, entorno, contexto, observar) {
+        observar?.([{ via: "capa-b", estado: "presente", revisados: ["/p/capa-b.json"] },
+          { via: "otra", estado: "ausente", revisados: ["/otra"] }]);
+        return adaptadorFicticio.ubicar(proyecto, entorno, contexto);
+      },
+    } }, "/p");
+    expect(nuevo).toMatchObject({ exito: true, valor: { ...anterior.valor, vias: [
+      { via: "capa-b", estado: "presente", revisados: ["/p/capa-b.json"], cantidad: 1 },
+      { via: "otra", estado: "ausente", revisados: ["/otra"], cantidad: 0 },
+    ] } });
+  });
+});

@@ -16,6 +16,7 @@ function dobles() {
   const guardadas: { resolucion: Resolucion; instante: string }[] = [];
   const llamadas: string[] = [];
   const resoluciones: PuertoResoluciones = {
+    listarProyectosRecientes: () => { throw new Error("No listar recientes en este doble"); },
     guardar(resolucion, instante) {
       guardadas.push({ resolucion, instante });
       return { exito: true, valor: guardadas.length };

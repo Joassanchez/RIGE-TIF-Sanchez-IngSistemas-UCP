@@ -49,9 +49,9 @@ describe("A-5", () => {
       expect(servidor.direccion).toBe(`http://127.0.0.1:${puerto}`);
       const inicio = await solicitarLocal({ host: "127.0.0.1", puerto, ruta: "/" });
       expect(inicio.estado).toBe(200);
-      expect(inicio.cuerpo).toContain(`RIGE ${estado.versionRige}`);
-      expect(inicio.cuerpo).toContain(estado.almacen.ruta);
-      expect(inicio.cuerpo).toContain(`Esquema del almacén: ${estado.almacen.versionEsquema}`);
+      expect(inicio.cuerpo).toContain(`Local · solo lectura · sin red · RIGE ${estado.versionRige}`);
+      expect(inicio.cuerpo).not.toContain(estado.almacen.ruta);
+      expect(inicio.cuerpo).not.toContain("Esquema del almacén");
       expect((await solicitarLocal({ host: "127.0.0.1", puerto, ruta: "/otra" })).estado).toBe(404);
     } finally { await servidor.detener(); }
   });

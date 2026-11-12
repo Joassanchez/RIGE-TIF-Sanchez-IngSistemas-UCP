@@ -101,11 +101,15 @@ describe("C7-1", () => {
 
 describe("C2-1", () => {
   const estado = prepararServidor("a&b'c");
-  test("escapa la ruta de un almacen real con ampersand y comilla", async () => {
-    const { puerto } = estado();
+  test("no expone el almacen y escapa la ruta consultada con ampersand y comilla", async () => {
+    const { puerto, almacen } = estado();
     const respuesta = await solicitar(puerto, { ruta: "/" });
     expect(respuesta.estado).toBe(200);
-    expect(respuesta.cuerpo).toContain("a&amp;b&#39;c");
+    expect(respuesta.cuerpo).not.toContain("a&amp;b&#39;c");
     expect(respuesta.cuerpo).not.toContain("a&b'c");
+    const error = await solicitar(puerto, { ruta: `/resolver?proyecto=${encodeURIComponent(`${almacen}/proyecto-inexistente`)}` });
+    expect(error.estado).toBe(404);
+    expect(error.cuerpo).toContain("a&amp;b&#39;c");
+    expect(error.cuerpo).not.toContain("a&b'c");
   });
 });

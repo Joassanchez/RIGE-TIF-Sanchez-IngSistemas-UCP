@@ -1,4 +1,5 @@
 import { borrarTemporal } from "../utilidades/borrar-temporal";
+import { seccionHtml } from "../utilidades/html";
 import { afterEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import { mkdtempSync } from "node:fs";
@@ -7,7 +8,7 @@ import { join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { crearInstalacionOpenCode } from "../utilidades/instalacion-opencode";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { crearResolucionGuardadaAnterior } from "../utilidades/resolucion-guardada";
 
@@ -26,7 +27,7 @@ function preparar(version: string | null) {
 const consultas = [
   ["valores", ["--agente", "build"]],
   ["permiso", ["--agente", "build", "--sujeto", "bash", "--objetivo", "ls"]],
-  ["agentes", []],
+  ["agentes", []], ["hallazgos", []],
 ] as const;
 async function validar(nombre: string, valor: unknown) {
   const esquema = await Bun.file(new URL(`../../esquemas/salida/${nombre}.json`, import.meta.url)).json();
@@ -43,8 +44,8 @@ function contar(base: string): number {
   finally { db.close(); }
 }
 
-describe("RF-05 CA-1 T3-01 R-9", () => {
-  test("las tres consultas muestran la esperada y la detectada sin resultados", () => {
+describe("C-3 RF-05 CA-1 T3-01 R-9", () => {
+  test("las cuatro consultas muestran la esperada y la detectada sin resultados", () => {
     const escenario = preparar("1.18.24");
     for (const [comando, opciones] of consultas) {
       const recibida = lanzar(escenario.temporal, [comando, "--proyecto", escenario.proyecto, ...opciones], escenario.variables);
@@ -57,7 +58,7 @@ describe("RF-05 CA-1 T3-01 R-9", () => {
     }
   });
 });
-describe("RF-05 CA-2 T3-01 R-9", () => {
+describe("C-3 RF-05 CA-2 T3-01 R-9", () => {
   test("CLI devuelve codigo 1 y una linea del esquema error sin salida estandar", async () => {
     const escenario = preparar("1.18.24");
     for (const [comando, opciones] of consultas) {
@@ -89,7 +90,7 @@ describe("T3-01 R-10", () => {
     } finally { await servidor.detener(); }
   });
 });
-describe("T3-01 R-11", () => {
+describe("C-3 T3-01 R-11", () => {
   test("version ausente conserva resultados, advierte en CLI y presenta declaraciones y paridad web", async () => {
     const escenario = preparar(null);
     let valores: unknown;
@@ -119,9 +120,11 @@ describe("T3-01 R-11", () => {
         const pagina = await solicitar(ruta);
         expect(pagina.estado).toBe(200);
         const respuesta = datos(pagina.cuerpo);
-        const resultados = ruta === "/agentes?id=1" ? "<table>" : "<h2>Valores efectivos</h2>";
-        expect(pagina.cuerpo.indexOf("<h2>Declaraciones</h2>")).toBeLessThan(pagina.cuerpo.indexOf(resultados));
-        const declaraciones = pagina.cuerpo.split("<h2>Declaraciones</h2>")[1]!.split("</ul>")[0]!;
+        const resultados = ruta === "/agentes?id=1" ? "tabla-agentes" : "valores";
+        seccionHtml(pagina.cuerpo, resultados);
+        const declaraciones = seccionHtml(pagina.cuerpo, "declaraciones");
+        if (resultados === "valores") expect(pagina.cuerpo.indexOf('id="declaraciones"')).toBeLessThan(pagina.cuerpo.indexOf(`id="${resultados}"`));
+        else expect(pagina.cuerpo).toContain("Estado actual de los archivos");
         for (const codigo of ["version-no-determinada", "ejecutable-no-encontrado"]) {
           expect(declaraciones).toContain(respuesta.reglas[codigo]);
         }
@@ -130,7 +133,7 @@ describe("T3-01 R-11", () => {
     } finally { await servidor.detener(); }
   });
 });
-describe("T3-01 R-12", () => {
+describe("C-3 T3-01 R-12", () => {
   test("el PATH heredado soportado no agrega declaraciones de version ni advertencias", () => {
     const escenario = preparar(null);
     const { PATH: _, ...variables } = escenario.variables;

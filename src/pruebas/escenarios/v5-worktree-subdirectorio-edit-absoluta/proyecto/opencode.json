@@ -1,0 +1,8 @@
+{
+  "permission": {
+    "edit": {
+      "*": "deny",
+      "<RAIZ>/proyecto/sub/a.txt": "allow"
+    }
+  }
+}

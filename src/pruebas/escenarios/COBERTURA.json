@@ -4,289 +4,946 @@
       "id": "RF-01 CA-1",
       "objetivo": "OE-1",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-01 CA-2",
       "objetivo": "OE-1",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-1",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-2",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-3",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-4",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-5",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-6",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-7",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-8",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-02 CA-9",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 CA-2",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 CA-3",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 CA-4",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 CA-5",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RE-02",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RE-03",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 referencia-no-resuelta",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 regla-sin-efecto",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 elemento-sin-uso",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 sustitucion-sin-valor",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 entrada-ilegible",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-07 entrada-descartada",
       "objetivo": "OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-02",
       "objetivo": "OE-1 y OE-2",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-03",
       "objetivo": "arquitectura",
       "iteracion": 2,
-      "obligatorioV2": true
+      "obligatorioV2": true,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-08 CA-1",
       "objetivo": "frontera de OE-2",
       "iteracion": 2,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-08 CA-2",
       "objetivo": "frontera de OE-2",
       "iteracion": 2,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-08 CA-3",
       "objetivo": "frontera de OE-2",
       "iteracion": 2,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-09 CA-2",
       "objetivo": "OE-2",
       "iteracion": 2,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-09 CA-3",
       "objetivo": "OE-2",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-04 CA-1",
       "objetivo": "OE-1",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-04 CA-2",
       "objetivo": "OE-1",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-04 CA-1",
       "objetivo": "seguridad y fidelidad de sustituciones",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-04 CA-2",
       "objetivo": "seguridad y fidelidad de sustituciones",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-04 CA-3",
       "objetivo": "seguridad y fidelidad de sustituciones",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-02 CA-1",
       "objetivo": "seguridad y fidelidad de sustituciones",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "limite": "W-3 publica valores comparados, exclusiones y escenarios descartados; no acredita el conjunto excluido."
     },
     {
       "id": "RF-12 CA-1",
       "objetivo": "OE-1, OE-2 y OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-12 CA-2",
       "objetivo": "OE-1, OE-2 y OE-3",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-05 CA-1",
       "objetivo": "calidad",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "contenedor",
+      "procedimiento": "En Ubuntu 26.04 de referencia ejecutar bun run sin-red --strace --escenario v2-decision --escenario v3-sustituciones --escenario v3-sin-efecto y registrar cero connect AF_INET/AF_INET6.",
+      "limite": "La prueba con strace se omite si no esta disponible; la inspeccion estatica no sustituye el monitor."
     },
     {
       "id": "RNF-05 CA-2",
       "objetivo": "calidad",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "contenedor",
+      "procedimiento": "En Ubuntu 26.04 ejecutar bun run sin-red --salida <archivo-temporal>; deshabilitar la red del contenedor y ejecutar bun run sin-red --comparar <archivo-temporal>, conservando la evidencia.",
+      "limite": "La intercepcion automatica de clientes no acredita por si sola una interfaz fisicamente deshabilitada."
     },
     {
       "id": "RF-10 CA-1",
       "objetivo": "OE-1 y OE-2",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-10 CA-2",
       "objetivo": "OE-1 y OE-2",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-10 CA-3",
       "objetivo": "OE-1 y OE-2",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-11 CA-1",
       "objetivo": "OE-1 y OE-2",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-08 CA-1",
       "objetivo": "calidad",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RNF-08 CA-2",
       "objetivo": "calidad",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-05 CA-1",
       "objetivo": "OE-1",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
     },
     {
       "id": "RF-05 CA-2",
       "objetivo": "OE-1",
       "iteracion": 3,
-      "obligatorioV2": false
+      "obligatorioV2": false,
+      "verificacion": "automatica"
+    },
+    {
+      "id": "RF-03 CA-1",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-03.test.ts",
+          "describe": "RF-03 CA-1 (valores)"
+        }
+      ]
+    },
+    {
+      "id": "RF-03 CA-2",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-03.test.ts",
+          "describe": "RF-03 CA-2"
+        }
+      ]
+    },
+    {
+      "id": "RF-03 CA-3",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-03.test.ts",
+          "describe": "RF-03 CA-3 (valores)"
+        }
+      ]
+    },
+    {
+      "id": "RF-03 CA-4",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T2-12.test.ts",
+          "describe": "RF-02 CA-6 / RF-03 CA-4"
+        }
+      ]
+    },
+    {
+      "id": "RF-03 CA-5",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-03.test.ts",
+          "describe": "RF-03 CA-5"
+        }
+      ]
+    },
+    {
+      "id": "RF-06 CA-1",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-06.test.ts",
+          "describe": "RF-06 CA-1"
+        }
+      ]
+    },
+    {
+      "id": "RF-06 CA-2",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-06.test.ts",
+          "describe": "A5-4 RF-06 CA-2"
+        }
+      ]
+    },
+    {
+      "id": "RF-07 CA-1",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1"
+        }
+      ]
+    },
+    {
+      "id": "RF-09 CA-1",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-09.test.ts",
+          "describe": "RF-09 CA-1"
+        }
+      ]
+    },
+    {
+      "id": "RF-16 CA-1",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-16.test.ts",
+          "describe": "RF-16 CA-1"
+        }
+      ]
+    },
+    {
+      "id": "RF-16 CA-2",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RF-16.test.ts",
+          "describe": "RF-16 CA-2"
+        }
+      ]
+    },
+    {
+      "id": "RF-16 CA-3",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T2-12.test.ts",
+          "describe": "RF-16 CA-3"
+        }
+      ]
+    },
+    {
+      "id": "RF-17 CA-1",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/recorrido-v1.test.ts",
+          "describe": "RF-17 CA-1"
+        }
+      ]
+    },
+    {
+      "id": "RF-17 CA-2",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/recorrido-v1.test.ts",
+          "describe": "RF-17 CA-2"
+        }
+      ]
+    },
+    {
+      "id": "RF-17 CA-3",
+      "objetivo": "OE-1 y OE-2",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/recorrido-v1.test.ts",
+          "describe": "RF-17 CA-3"
+        }
+      ]
+    },
+    {
+      "id": "RNF-01 CA-1",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-01.test.ts",
+          "describe": "RNF-01 CA-1 CA-2 CA-3 T5-04 W-6"
+        }
+      ]
+    },
+    {
+      "id": "RNF-01 CA-2",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-01.test.ts",
+          "describe": "RNF-01 CA-1 CA-2 CA-3 T5-04 W-6"
+        }
+      ]
+    },
+    {
+      "id": "RNF-01 CA-3",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-01.test.ts",
+          "describe": "RNF-01 CA-1 CA-2 CA-3 T5-04 W-6"
+        }
+      ]
+    },
+    {
+      "id": "RNF-02 CA-2",
+      "objetivo": "calidad",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "limite": "La acreditacion nativa depende de consulta y plataforma; W-2 publica comparados, coincidentes, derivados, pendientes y herramientas no ofrecidas."
+    },
+    {
+      "id": "RNF-03 CA-1",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-03.test.ts",
+          "describe": "RNF-03 CA-1"
+        }
+      ]
+    },
+    {
+      "id": "RNF-03 CA-2",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-03.test.ts",
+          "describe": "RNF-03 CA-2"
+        }
+      ]
+    },
+    {
+      "id": "RNF-03 CA-3",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-03.test.ts",
+          "describe": "RNF-03 CA-3"
+        }
+      ]
+    },
+    {
+      "id": "RNF-06 CA-1",
+      "objetivo": "calidad",
+      "iteracion": 4,
+      "obligatorioV2": false,
+      "verificacion": "manual",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-06.test.ts",
+          "describe": "RNF-06 CA-1"
+        }
+      ],
+      "procedimiento": "Ejecutar bun test pruebas/aceptacion/RNF-06.test.ts en Ubuntu 26.04 y Windows 11; contrastar las entradas y valores normalizados de los mismos escenarios y conservar ambas corridas.",
+      "limite": "El doble de plataforma en memoria no sustituye las dos ejecuciones reales."
+    },
+    {
+      "id": "RNF-06 CA-2",
+      "objetivo": "calidad",
+      "iteracion": 4,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-06.test.ts",
+          "describe": "RNF-06 CA-2 T5-04 W-3"
+        }
+      ],
+      "limite": "Comparacion de capturas Windows 1.18.25 sobre dos escenarios; W-3 declara steps excluido y tres formas de separadores."
+    },
+    {
+      "id": "RNF-06 CA-3",
+      "objetivo": "calidad",
+      "iteracion": 4,
+      "obligatorioV2": false,
+      "verificacion": "manual",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-06.test.ts",
+          "describe": "RNF-06 CA-3"
+        }
+      ],
+      "procedimiento": "En Ubuntu 26.04 y Windows 11, con cuentas sin privilegios administrativos, seguir la instalacion del README y conservar salidas y contexto de ambas sesiones.",
+      "limite": "La prueba estatica de scripts y rutas de usuario es apoyo; no instala en ambas plataformas."
+    },
+    {
+      "id": "RNF-07 CA-1",
+      "objetivo": "calidad",
+      "iteracion": 4,
+      "obligatorioV2": false,
+      "verificacion": "contenedor",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-07.test.ts",
+          "describe": "RNF-07 CA-1.1"
+        },
+        {
+          "archivo": "pruebas/aceptacion/RNF-07.test.ts",
+          "describe": "RNF-07 CA-1.2"
+        },
+        {
+          "archivo": "pruebas/aceptacion/RNF-07.test.ts",
+          "describe": "RNF-07 CA-1.3"
+        },
+        {
+          "archivo": "pruebas/aceptacion/RNF-07.test.ts",
+          "describe": "RNF-07 CA-1.4"
+        },
+        {
+          "archivo": "pruebas/aceptacion/RNF-07.test.ts",
+          "describe": "RNF-07 CA-1.5"
+        }
+      ],
+      "procedimiento": "En el contenedor Ubuntu 26.04 de referencia (ADR-054/055), con red deshabilitada, ejecutar bun run medir:rnf07 --estricto: diez corridas de valores y diez de permiso, peor caso menor que 2000 ms; conservar el informe.",
+      "limite": "Las pruebas RNF-07 CA-1.1 a CA-1.5 verifican el arnes; no acreditan el umbral en el equipo de referencia."
+    },
+    {
+      "id": "RNF-09 CA-1",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-09.test.ts",
+          "describe": "RNF-09 CA-1"
+        }
+      ]
+    },
+    {
+      "id": "RNF-09 CA-2",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-09.test.ts",
+          "describe": "RNF-09 CA-2"
+        }
+      ]
+    },
+    {
+      "id": "RNF-09 CA-3",
+      "objetivo": "calidad",
+      "iteracion": 1,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-09.test.ts",
+          "describe": "RNF-09 CA-3"
+        }
+      ]
+    },
+    {
+      "id": "RNF-10 CA-1",
+      "objetivo": "calidad",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-10.test.ts",
+          "describe": "RNF-10 CA-1"
+        }
+      ]
+    },
+    {
+      "id": "RNF-10 CA-2",
+      "objetivo": "calidad",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-10.test.ts",
+          "describe": "RNF-10 CA-2"
+        }
+      ]
+    },
+    {
+      "id": "RNF-10 CA-3",
+      "objetivo": "calidad",
+      "iteracion": 2,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/RNF-10.test.ts",
+          "describe": "RNF-10 CA-3"
+        }
+      ],
+      "limite": "Integridad respecto de PROCEDENCIA.md; autenticar el origen queda fuera."
+    },
+    {
+      "id": "T5-13 R-1",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-13.test.ts",
+          "describe": "T5-13 R-1"
+        }
+      ]
+    },
+    {
+      "id": "T5-13 R-2",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-13.test.ts",
+          "describe": "T5-13 R-2"
+        }
+      ]
+    },
+    {
+      "id": "T5-13 R-3",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-13-cli.test.ts",
+          "describe": "T5-13 R-3"
+        }
+      ]
+    },
+    {
+      "id": "T5-13 R-4",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-13-web.test.ts",
+          "describe": "T5-13 R-4"
+        }
+      ]
+    },
+    {
+      "id": "T5-13 R-5",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-13.test.ts",
+          "describe": "T5-13 R-5"
+        }
+      ]
+    },
+    {
+      "id": "T5-13 regresion",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-13-cli.test.ts",
+          "describe": "T5-13 R-5 regresion CLI"
+        }
+      ]
+    },
+    {
+      "id": "T5-13 R-6",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-13-cli.test.ts",
+          "describe": "T5-13 R-6"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-1",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-1"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-2",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-2"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-3",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-3"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-4",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-4"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-5",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-5"
+        }
+      ]
+    },
+    {
+      "id": "T5-14 K-6",
+      "objetivo": "auxiliar",
+      "iteracion": 3,
+      "obligatorioV2": false,
+      "verificacion": "automatica",
+      "comprobaciones": [
+        {
+          "archivo": "pruebas/aceptacion/T5-14.test.ts",
+          "describe": "T5-14 K-6"
+        }
+      ]
     }
   ]
 }

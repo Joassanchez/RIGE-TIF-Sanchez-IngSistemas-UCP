@@ -1,0 +1,1 @@
+{"permission":{"read":{"*":"deny","<RAIZ>/proyecto/src/a.js":"allow"}},"agent":{"build":{"permission":{"read":{"src/a.js":"deny"}}}}}

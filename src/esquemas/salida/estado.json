@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Estado del almacén de RIGE (CLI) v2",
+  "type": "object",
+  "properties": {
+    "esquema": { "const": 2 },
+    "almacen": {
+      "type": "object",
+      "properties": {
+        "ruta": { "type": "string" },
+        "existe": { "type": "boolean" },
+        "versionEsquema": { "type": ["integer", "null"] }
+      },
+      "required": ["ruta", "existe", "versionEsquema"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["esquema", "almacen"],
+  "additionalProperties": false
+}

@@ -4,7 +4,9 @@ import { join } from "node:path";
 import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas/permiso";
 import { prepararConsultas } from "../utilidades/consultas-cli";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
+import { type SolicitudLocal } from "../utilidades/cliente-http-local";
+import { seccionHtml } from "../utilidades/html";
 
 function incrustada(cuerpo: string): unknown {
   const dato = /<script type="application\/json" id="respuesta">([^]*?)<\/script>/.exec(cuerpo);
@@ -80,7 +82,12 @@ describe("RF-02 CA-7", () => {
       const pagina = await solicitar(`/permiso?id=${id}&agente=plan&sujeto=edit&objetivo=src/a.js`);
       expect(pagina.estado).toBe(200);
       const respuesta = incrustada(pagina.cuerpo) as RespuestaPermiso;
-      for (const regla of respuesta.cadena) expect(pagina.cuerpo).toContain(`<tr><td>${regla.indice + 1}</td>`);
+      const cadena = seccionHtml(pagina.cuerpo, "cadena-efectiva", "details");
+      const filas = [...cadena.matchAll(/<tr class="([^"]+)"><td data-etiqueta="Índice">(\d+)<\/td>/g)];
+      expect(filas.map(fila => Number(fila[2]))).toEqual(respuesta.cadena.map(regla => regla.indice + 1));
+      for (const [indice, regla] of respuesta.cadena.entries()) {
+        expect(filas[indice]![1]).toBe(regla.indice === respuesta.determinante ? "fila--determinante" : respuesta.desplazadas.includes(regla.indice) ? "fila--desplazada" : "fila");
+      }
       expect(respuesta.nativaAnulada).not.toBeNull();
       expect(pagina.cuerpo).toContain(`(regla ${respuesta.nativaAnulada!.regla + 1}, por ${respuesta.nativaAnulada!.por + 1})`);
     }, proyecto => writeFileSync(join(proyecto, "opencode.jsonc"), '{"permission":{"edit":"allow"}}'));
@@ -95,8 +102,12 @@ describe("RF-02 CA-7", () => {
       expect(respuesta.explicacion!.length).toBeGreaterThan(0);
       for (const oracion of respuesta.explicacion!) expect(pagina.cuerpo).toContain(`<p>${escapar(oracion)}</p>`);
       const resolucion = await solicitar(`/resoluciones/${id}?agente=build`);
-      expect(resolucion.cuerpo).toContain('action="/permiso"');
-      expect(resolucion.cuerpo).toContain(`href="/agentes?id=${id}"`);
+      expect(resolucion.cuerpo).toContain(`href="/resoluciones/${id}/permisos?agente=build"`);
+      expect(resolucion.cuerpo).toContain(`href="/resoluciones/${id}"`);
+      const formularios = await solicitar(`/resoluciones/${id}/permisos?agente=build`);
+      expect(formularios.estado).toBe(200);
+      expect(formularios.cuerpo).toContain('action="/permiso"');
+      expect(formularios.cuerpo).not.toContain('id="respuesta"');
     }, proyecto => writeFileSync(join(proyecto, "opencode.json"), '{"agent":{"build":{"temperature":0.2}}}'));
   });
 });
@@ -109,7 +120,7 @@ describe("RF-16 CA-3", () => {
       const pagina = await solicitar(`/agentes?id=${id}`);
       expect(pagina.estado).toBe(200);
       expect(incrustada(pagina.cuerpo)).toEqual(JSON.parse(cli.salida));
-      expect(pagina.cuerpo).toContain("<th>Origen</th><th>Modo</th><th>Oculto</th>");
+      expect(pagina.cuerpo).toContain("<th>Nombre</th><th>Modo</th><th>Origen</th>");
       writeFileSync(join(escenario.proyecto, "opencode.jsonc"), '{"agent":{"nuevo":{}}}');
       expect(incrustada((await solicitar(`/agentes?id=${id}`)).cuerpo)).toEqual(JSON.parse(cli.salida));
     });

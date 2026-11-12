@@ -6,6 +6,7 @@ import { copiarEscenario, type OpcionesEscenario } from "../pruebas/utilidades/e
 import { entornoDeReferencia, type ReferenciaEntorno } from "../pruebas/utilidades/entorno-referencia";
 import type { Manifiesto } from "./cobertura";
 import { crearProveedor } from "./decisiones-nativas/proveedor";
+import { prepararGitReferencia } from "./referencias-nativas/git";
 import { extraerEvaluaciones, normalizarEvaluaciones, type DecisionNativa } from "./decisiones-nativas/registro";
 
 const hashes: Readonly<Record<string, readonly string[]>> = {
@@ -30,16 +31,22 @@ function rutaFisica(ruta: string): string {
 }
 async function ejecutar(): Promise<number> {
   const argumentos = process.argv.slice(2);
-  const uso = "Uso: bun run decisiones --raiz <npm root> [--cache <directorio externo>] [--regenerar]";
+  const uso = "Uso: bun run decisiones --raiz <npm root> [--cache <directorio externo>] [--regenerar] [--escenario <id>] (repetible)";
   if (argumentos[0] !== "--raiz" || !argumentos[1]?.trim() || argumentos[1].startsWith("--")) throw new Error(uso);
   let regenerar = false;
   let cache: string | undefined;
+  const seleccion = new Set<string>();
   for (let i = 2; i < argumentos.length; i++) {
     if (argumentos[i] === "--regenerar" && !regenerar) regenerar = true;
     else if (argumentos[i] === "--cache" && !cache && argumentos[i + 1]?.trim() && !argumentos[i + 1]!.startsWith("--")) cache = resolve(argumentos[++i]!);
+    else if (argumentos[i] === "--escenario" && argumentos[i + 1]?.trim() && !argumentos[i + 1]!.startsWith("--")) seleccion.add(argumentos[++i]!);
     else throw new Error(uso);
   }
   const raiz = resolve(import.meta.dir, "..");
+  const directorio = join(raiz, "pruebas/escenarios");
+  const manifiesto = JSON.parse(readFileSync(join(directorio, "MANIFIESTO.json"), "utf8")) as Manifiesto;
+  const escenarios = manifiesto.escenarios.filter(e => (!seleccion.size || seleccion.has(e.id)) && e.consultas.some(c => c.nativa));
+  if ([...seleccion].some(id => !escenarios.some(e => e.id === id))) throw new Error("Escenario sin consultas nativas.");
   if (cache) {
     const relativa = relative(rutaFisica(resolve(raiz, "..")), rutaFisica(cache));
     if (!relativa || (relativa !== ".." && !relativa.startsWith(".." + sep) && !isAbsolute(relativa))) throw new Error("El cache debe estar fuera del repositorio");
@@ -54,11 +61,9 @@ async function ejecutar(): Promise<number> {
     if (version.exitCode !== 0 || version.stdout.toString().trim() !== "1.18.25") throw new Error(`Version no verificada; SHA-256: ${hash}`);
   } finally { rmSync(hogarVersion, { recursive: true, force: true }); }
   if (cache) mkdirSync(cache, { recursive: true });
-  const directorio = join(raiz, "pruebas/escenarios");
-  const manifiesto = JSON.parse(readFileSync(join(directorio, "MANIFIESTO.json"), "utf8")) as Manifiesto;
   const pendientes: { archivo: string; referencia: Record<string, unknown>; decisiones: DecisionNativa[] }[] = [];
   let codigo = 0;
-  for (const escenario of manifiesto.escenarios) {
+  for (const escenario of escenarios) {
     const consultas = escenario.consultas.filter(c => c.nativa);
     if (!consultas.length) continue;
     const archivo = join(directorio, escenario.id, "REFERENCIA.json");
@@ -77,22 +82,16 @@ async function ejecutar(): Promise<number> {
         const env = entornoDeReferencia(referencia, copia);
         if (cache) env.XDG_CACHE_HOME = cache;
         const cwd = join(copia.raiz, referencia.procedencia.directorio);
-        if (!["sintetico", "ninguno"].includes(referencia.procedencia.git ?? "raiz")) {
-          const git = Bun.spawnSync(["git", "init", "--quiet", "--initial-branch=main"], {
-            cwd: referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz, env, stdout: "pipe", stderr: "pipe", timeout: 30000,
-          });
-          if (git.exitCode !== 0) throw new Error(`git init fallo en ${escenario.id}/${consulta.id} (estado ${git.exitCode}): ${git.stderr.toString().trim()}`);
-          const verificacion = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"], { cwd, env, stdout: "pipe", stderr: "pipe", timeout: 10000 });
-          const esperada = referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz;
-          if (verificacion.exitCode !== 0 || resolve(verificacion.stdout.toString().trim()).toLowerCase() !== resolve(esperada).toLowerCase()) throw new Error("Worktree nativo no aislado");
-        }
+        const controlGit = prepararGitReferencia(copia, referencia.procedencia.git ?? "raiz", cwd, env, `${escenario.id}/${consulta.id}`);
         const argumentosHerramienta = JSON.parse(JSON.stringify(consulta.argumentos).replaceAll("<PROYECTO>", JSON.stringify(copia.proyecto).slice(1, -1)).replaceAll("<RAIZ>", JSON.stringify(copia.raiz).slice(1, -1))) as Record<string, unknown>;
-        proveedor = crearProveedor(consulta.herramienta, argumentosHerramienta);
+        // registry.ts v1.18.25: gpt- salvo gpt-4 y oss ofrece apply_patch en lugar de edit/write.
+        const modelo = consulta.modelo ?? (consulta.herramienta === "apply_patch" ? "gpt-5" : "permisos");
+        proveedor = crearProveedor(consulta.herramienta, argumentosHerramienta, modelo);
         // Si habia una via externa, conserva su contenido antes de agregar solo provider/model.
         const externa = referencia.procedencia.OPENCODE_CONFIG ? JSON.parse(readFileSync(join(copia.raiz, referencia.procedencia.OPENCODE_CONFIG), "utf8")) as Record<string, unknown> : {};
         const auxiliar = join(hogar, "proveedor-config.json");
         writeFileSync(auxiliar, JSON.stringify({ ...externa, provider: { simulado: { npm: "@ai-sdk/openai-compatible", name: "Simulado local",
-          options: { baseURL: `http://127.0.0.1:${proveedor.servidor.port}/v1` }, models: { permisos: { name: "Permisos simulado", limit: { context: 32000, output: 2048 } } } } }, model: "simulado/permisos" }));
+          options: { baseURL: `http://127.0.0.1:${proveedor.servidor.port}/v1` }, models: { [modelo]: { name: "Permisos simulado", limit: { context: 32000, output: 2048 } } } } }, model: `simulado/${modelo}` }));
         env.OPENCODE_CONFIG = auxiliar;
         const comando = [binario, "--print-logs", "run", "--agent", consulta.agente, "Ejecuta la accion local fija del proveedor y devuelve el resultado."];
         const proceso = Bun.spawn(comando, { cwd, env, stdout: "pipe", stderr: "pipe", timeout: 120000 });
@@ -101,15 +100,19 @@ async function ejecutar(): Promise<number> {
         const evaluaciones = normalizarEvaluaciones(extraerEvaluaciones(salida + "\n" + error), copia.raiz);
         decisiones.push({ consulta: consulta.id, agente: consulta.agente, sujeto: consulta.sujeto, objetivo: consulta.objetivo, herramienta: consulta.herramienta, evaluaciones,
           ...(evaluaciones.some(e => e.sujeto === consulta.sujeto) ? {} : { herramientaNoOfrecida: true }),
-          procedencia: { comando: ["opencode", ...comando.slice(1)], sha256Binario: hash, version: "1.18.25", fecha: new Date().toISOString(), plataforma } });
+          procedencia: { comando: ["opencode", ...comando.slice(1)], sha256Binario: hash, version: "1.18.25", fecha: new Date().toISOString(), plataforma,
+            ...(controlGit ? { controlGit } : {}) } });
       } finally { proveedor?.servidor.stop(true); copia.borrar(); }
     }
-    if (regenerar) pendientes.push({ archivo, referencia, decisiones });
+    if (regenerar) pendientes.push({ archivo, referencia, decisiones: [
+      ...(referencia.decisionesNativas ?? []).filter(d => d.procedencia && d.procedencia.plataforma !== plataforma), ...decisiones,
+    ] });
     else {
       const limpiar = (ds: DecisionNativa[]) => ds.map(({ consulta, agente, sujeto, objetivo, herramienta, evaluaciones, herramientaNoOfrecida }) => ({ consulta, agente, sujeto, objetivo, herramienta, evaluaciones, ...(herramientaNoOfrecida ? { herramientaNoOfrecida } : {}) }));
       // La plataforma integra la procedencia, no se comparan resultados Windows con Linux.
-      const diferentes = referencia.decisionesNativas?.some(d => d.procedencia && (d.procedencia.plataforma !== plataforma || d.procedencia.sha256Binario !== hash))
-        || JSON.stringify(limpiar(referencia.decisionesNativas ?? [])) !== JSON.stringify(limpiar(decisiones));
+      const compatibles = (referencia.decisionesNativas ?? []).filter(d => !d.procedencia || d.procedencia.plataforma === plataforma);
+      const diferentes = compatibles.some(d => d.procedencia && d.procedencia.sha256Binario !== hash)
+        || JSON.stringify(limpiar(compatibles)) !== JSON.stringify(limpiar(decisiones));
       console.log(`${escenario.id}: ${diferentes ? "diferencias o referencia nativa ausente" : "ok"}`);
       if (diferentes) codigo = 1;
     }

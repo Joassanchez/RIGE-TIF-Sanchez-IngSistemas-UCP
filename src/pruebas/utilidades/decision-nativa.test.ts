@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { decisionNativa, oraculoDecision } from "./decision-nativa";
+import { decisionNativa, oraculoDecision, evidenciaDecision } from "./decision-nativa";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";
@@ -24,6 +24,20 @@ describe("T2-14 preferencia del oraculo", () => {
     expect(oraculoDecision(referencia, consulta, "linux-x64")).toBe("derivada");
     expect(oraculoDecision(referencia, consulta, "win32-x64")).toBe("nativa win32-x64");
     expect(decisionNativa(referencia, consulta, "a", undefined, "win32-x64")).toMatchObject({ decision: "allow" });
+  });
+});
+
+describe("T5-06a A-a2 selector por plataforma antes de consulta", () => {
+  test("obtiene cada decision aunque Windows figure primero y Linux decida distinto", () => {
+    const consulta = { agente: "build", sujeto: "read", herramienta: "read", objetivo: "a" };
+    const referencia = { decisionesNativas: ["win32-x64", "linux-x64"].map(plataforma => ({ ...consulta,
+      procedencia: { plataforma }, evaluaciones: [{ sujeto: "read", patronEvaluado: "a",
+        regla: { permission: "read", pattern: "*", action: plataforma === "win32-x64" ? "deny" : "allow" } }],
+    })) };
+    expect(decisionNativa(referencia, consulta, "a", undefined, "linux-x64")?.decision).toBe("allow");
+    expect(decisionNativa(referencia, consulta, "a", undefined, "win32-x64")?.decision).toBe("deny");
+    expect(oraculoDecision(referencia, consulta, "linux-x64")).toBe("nativa linux-x64");
+    expect(evidenciaDecision(referencia, consulta, undefined, "linux-x64").tipo).toBe("captura-nativa");
   });
 });
 
@@ -53,4 +67,18 @@ describe("X-1 derivadas validadas contra nativa win32-x64", () => {
       });
     }
   }
+});
+
+describe("T5-04 W-2 evidencia por consulta y plataforma", () => {
+  const consulta = { agente: "plan", sujeto: "edit", objetivo: "a" };
+  const captura = { ...consulta, evaluaciones: [{ sujeto: "edit", patronEvaluado: "a", regla: { permission: "edit", pattern: "*", action: "allow" } }],
+    procedencia: { plataforma: "win32-x64" } };
+  test("captura compatible, derivacion documentada, pendiente y herramienta no ofrecida son distintos", () => {
+    expect(evidenciaDecision({ decisionesNativas: [captura] }, consulta, undefined, "win32-x64").tipo).toBe("captura-nativa");
+    expect(evidenciaDecision({ decisionesNativas: [captura] }, consulta, undefined, "linux-x64").tipo).toBe("sin-evidencia");
+    expect(evidenciaDecision({}, consulta, "DERIVACION.md", "linux-x64").tipo).toBe("derivacion-documentada");
+    expect(evidenciaDecision({ decisionesNativas: [{ ...captura, evaluaciones: [], herramientaNoOfrecida: true }] }, consulta, undefined, "win32-x64").tipo)
+      .toBe("herramienta-no-ofrecida");
+    expect(evidenciaDecision({ decisionesNativas: [{ ...captura, evaluaciones: [] }] }, consulta, undefined, "win32-x64").tipo).toBe("sin-evidencia");
+  });
 });

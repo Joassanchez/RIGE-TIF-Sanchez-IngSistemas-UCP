@@ -9,6 +9,7 @@ import { consultarValores } from "../../paquetes/rige/aplicacion/casos-uso/consu
 import { consultarPermiso } from "../../paquetes/rige/aplicacion/casos-uso/consultar-permiso";
 import { consultarAgentes } from "../../paquetes/rige/aplicacion/casos-uso/consultar-agentes";
 import { validarEsquema } from "../utilidades/validar-esquema";
+import { capturarRegresionT512 } from "../utilidades/regresion-t5-12";
 
 const raizEscenarios = join(import.meta.dir, "../escenarios");
 const dirEsquemasV2 = join(import.meta.dir, "../esquemas-v2");
@@ -77,6 +78,11 @@ function comprobarSubesquema(
     }
   }
 
+  for (const r of subActual.required ?? []) {
+    if (!(subV2.required ?? []).includes(r) && versionActual < 3)
+      return { compatible: false, motivo: `${ruta}/${r}: propiedad obligatoria nueva con esquema < 3` };
+  }
+
   if (subV2.type && subActual.type && subV2.type !== subActual.type) {
     if (versionActual < 3) return { compatible: false, motivo: `${ruta}: tipo cambiado de ${subV2.type} a ${subActual.type} con esquema < 3` };
   }
@@ -127,7 +133,53 @@ function comprobarCompatibilidadEsquema(
   return comprobarSubesquema(esquemaV2, esquemaActual, versionActual, "$");
 }
 
+describe("T5-12 M-2 RNF-08 PC-04 PC-05", () => {
+  const anterior = JSON.parse(readFileSync(join(import.meta.dir, "../datos/entradas-esquema-4118a09.json"), "utf8"));
+  const congeladas = JSON.parse(readFileSync(join(import.meta.dir, "../datos/salidas-4118a09-t5-12.json"), "utf8"));
+  test("contrato opcional compatible, respuesta anterior y nueva validas y controles negativos", () => {
+    const actual = JSON.parse(readFileSync(join(dirEsquemasV3, "entradas.json"), "utf8"));
+    expect(congeladas.procedencia.commit).toBe("4118a09");
+    const vieja = JSON.parse(congeladas.casos[0].salida);
+    expect(vieja.vias).toBeUndefined();
+    expect(validarEsquema(anterior, vieja)).toEqual([]);
+    expect(comprobarCompatibilidadEsquema(anterior, actual)).toEqual({ compatible: true });
+    expect(actual.additionalProperties).toBe(false);
+    expect(actual.required).not.toContain("vias");
+    expect(actual.properties.vias).toBeDefined();
+    expect(validarEsquema(actual, vieja)).toEqual([]);
+    const nueva = { ...vieja, vias: [{ via: "capa", estado: "ausente", cantidad: 0, revisados: ["/x"] }] };
+    expect(validarEsquema(actual, nueva)).toEqual([]);
+    const obligatorio = structuredClone(actual);
+    obligatorio.required.push("vias");
+    expect(comprobarCompatibilidadEsquema(anterior, obligatorio).compatible).toBe(false);
+    for (const cambio of [{ estado: "inventado" }, { cantidad: "0" }, { revisados: [7] }]) {
+      expect(validarEsquema(actual, { ...nueva, vias: [{ ...nueva.vias[0], ...cambio }] }).length).toBeGreaterThan(0);
+    }
+  });
+  test("CLI conserva valores, permiso, errores y campos anteriores de entradas byte a byte", () => {
+    const { casos } = capturarRegresionT512();
+    expect(casos).toHaveLength(congeladas.casos.length);
+    for (const [i, caso] of casos.entries()) {
+      if (i === 0) {
+        const { vias, ...resto } = JSON.parse(caso.salida);
+        expect(vias).toHaveLength(11);
+        expect({ ...caso, salida: JSON.stringify(resto) + "\n" }).toEqual(congeladas.casos[i]);
+      } else expect(caso).toEqual(congeladas.casos[i]);
+    }
+  });
+});
+
 describe("T3-10 R-4 RNF-08 CA-1 CA-2", () => {
+  const historicas = JSON.parse(readFileSync(join(import.meta.dir, "../datos/salidas-ee7cbf5.json"), "utf8"));
+  test("V-1 CA-1: el 100% de las diez salidas congeladas de ee7cbf5 valida contra el contrato vigente", () => {
+    expect(historicas.procedencia.commit).toBe("ee7cbf5");
+    expect(historicas.casos).toHaveLength(10);
+    for (const caso of historicas.casos) {
+      const esquema = JSON.parse(readFileSync(join(dirEsquemasV3, `${caso.codigo === 0 ? caso.comando : "error"}.json`), "utf8"));
+      expect(validarEsquema(esquema, JSON.parse(caso.codigo === 0 ? caso.salida : caso.error))).toEqual([]);
+    }
+    // entradas y hallazgos nacieron en iteracion 3: sus contratos se ejercen en T3-07 R-7.
+  });
   const esquemaV2Valores = JSON.parse(readFileSync(join(dirEsquemasV2, "valores.json"), "utf8"));
   const esquemaV2Permiso = JSON.parse(readFileSync(join(dirEsquemasV2, "permiso.json"), "utf8"));
   const esquemaV2Agentes = JSON.parse(readFileSync(join(dirEsquemasV2, "agentes.json"), "utf8"));
@@ -154,6 +206,7 @@ describe("T3-10 R-4 RNF-08 CA-1 CA-2", () => {
 
       // Valores
       const rVal = consultarValores(deps, e.proyecto, "build", undefined);
+      expect(rVal.exito).toBe(true);
       if (rVal.exito) {
         // Valida contra esquema v3 actual
         expect(validarEsquema(esquemaV3Valores, rVal.valor)).toEqual([]);
@@ -169,6 +222,7 @@ describe("T3-10 R-4 RNF-08 CA-1 CA-2", () => {
         sujeto: "read",
         objetivo: "src/a.js",
       });
+      expect(rPerm.exito).toBe(true);
       if (rPerm.exito) {
         expect(validarEsquema(esquemaV3Permiso, rPerm.valor)).toEqual([]);
         const projPerm = proyectarContratoV2(rPerm.valor);
@@ -177,6 +231,7 @@ describe("T3-10 R-4 RNF-08 CA-1 CA-2", () => {
 
       // Agentes
       const rAg = consultarAgentes(deps, e.proyecto);
+      expect(rAg.exito).toBe(true);
       if (rAg.exito) {
         expect(validarEsquema(esquemaV3Agentes, rAg.valor)).toEqual([]);
         const projAg = proyectarContratoV2(rAg.valor);
@@ -185,12 +240,19 @@ describe("T3-10 R-4 RNF-08 CA-1 CA-2", () => {
     }
   });
 
-  test("CA-2: verificador de compatibilidad de esquemas entre v2 y actual", () => {
+  test("V-1 CA-2: verificador de compatibilidad de esquemas entre v2 y actual", () => {
     // Todos los esquemas actuales son compatibles con v2 declarando esquema 2
     expect(comprobarCompatibilidadEsquema(esquemaV2Valores, esquemaV3Valores)).toEqual({ compatible: true });
     expect(comprobarCompatibilidadEsquema(esquemaV2Permiso, esquemaV3Permiso)).toEqual({ compatible: true });
     expect(comprobarCompatibilidadEsquema(esquemaV2Agentes, esquemaV3Agentes)).toEqual({ compatible: true });
     expect(comprobarCompatibilidadEsquema(esquemaV2Error, esquemaV3Error)).toEqual({ compatible: true });
+
+    const obligatorioNuevo = structuredClone(esquemaV3Valores);
+    obligatorioNuevo.properties.nuevo = { type: "string" };
+    obligatorioNuevo.required.push("nuevo");
+    expect(comprobarCompatibilidadEsquema(esquemaV2Valores, obligatorioNuevo).compatible).toBe(false);
+    obligatorioNuevo.properties.esquema = { const: 3 };
+    expect(comprobarCompatibilidadEsquema(esquemaV2Valores, obligatorioNuevo).compatible).toBe(true);
 
     // Modificación de prueba: quitar propiedad obligatoria manteniendo esquema 2 -> rechaza
     const modificadoIncompatible = structuredClone(esquemaV3Valores);

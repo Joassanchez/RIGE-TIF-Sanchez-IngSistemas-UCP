@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proyectos recientes de RIGE v2",
+  "type": "object",
+  "properties": {
+    "esquema": {
+      "const": 2
+    },
+    "proyectos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "proyecto": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "instante": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "proyecto",
+          "id",
+          "instante",
+          "cantidad"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "esquema",
+    "proyectos"
+  ],
+  "additionalProperties": false
+}

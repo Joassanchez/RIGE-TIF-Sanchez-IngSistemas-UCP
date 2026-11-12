@@ -17,6 +17,7 @@ describe("M-5 tokenizador compartido", () => {
 
 function analizarRed(archivo: string, codigo: string): HallazgoDependencia[] {
   archivo = posix.normalize(archivo.replaceAll("\\", "/"));
+  codigo = codigo.replace(/^#![^\r\n]*/, "");
   // La matriz compartida ya recupera imports de tipos y rechaza cargadores no analizables.
   const hallazgos = analizarFuente(archivo.replace(/\.test(?=\.)/, ""), codigo).filter((hallazgo) => {
     const destino = hallazgo.motivo.split(" -> ").at(-1)!;
@@ -55,6 +56,10 @@ async function comprobarRed(): Promise<HallazgoDependencia[]> {
 }
 
 describe("T0-07 sin clientes de red", () => {
+  test("T5-23 L-10 shebang permite analizar y conserva la deteccion de clientes", () => {
+    expect(analizarRed("paquetes/rige/arranque/rige.ts", '#!/usr/bin/env bun\nconst dato = 1;')).toEqual([]);
+    expect(analizarRed("paquetes/rige/arranque/rige.ts", '#!/usr/bin/env bun\nfetch("url");').length).toBeGreaterThan(0);
+  });
   const modulos = ["node:http", "node:https", "node:net", "node:tls", "node:dgram", "undici"];
   const imports = modulos.flatMap(modulo => [`import "${modulo}";`, `import type { Cliente } from "${modulo}";`,
     `export type { Cliente } from "${modulo}";`, `type T = import("${modulo}").Cliente;`,

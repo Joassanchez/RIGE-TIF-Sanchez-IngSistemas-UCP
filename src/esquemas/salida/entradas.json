@@ -24,6 +24,10 @@
         "type": "string"
       }
     },
+    "vias": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Via" }
+    },
     "entradas": {
       "type": "array",
       "items": {
@@ -41,6 +45,17 @@
   ],
   "additionalProperties": false,
   "$defs": {
+    "Via": {
+      "type": "object",
+      "properties": {
+        "via": { "type": "string" },
+        "estado": { "enum": ["presente", "ausente", "no_observada"] },
+        "cantidad": { "type": "integer", "minimum": 0 },
+        "revisados": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["via", "estado", "cantidad", "revisados"],
+      "additionalProperties": false
+    },
     "Entrada": {
       "type": "object",
       "properties": {

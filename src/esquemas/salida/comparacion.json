@@ -1,0 +1,587 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Comparación de resoluciones guardadas de RIGE v2",
+  "type": "object",
+  "properties": {
+    "esquema": {
+      "const": 2
+    },
+    "proyecto": {
+      "type": "string"
+    },
+    "desde": {
+      "$ref": "#/$defs/Foto"
+    },
+    "hasta": {
+      "$ref": "#/$defs/Foto"
+    },
+    "agentes": {
+      "type": "object",
+      "properties": {
+        "agregados": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quitados": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "comunes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inciertos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "agregados",
+        "quitados",
+        "comunes",
+        "inciertos"
+      ],
+      "additionalProperties": false
+    },
+    "comparaciones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "agente": {
+            "type": "string"
+          },
+          "cambios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Cambio"
+            }
+          },
+          "resumen": {
+            "$ref": "#/$defs/Resumen"
+          }
+        },
+        "required": [
+          "agente",
+          "cambios",
+          "resumen"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "resumen": {
+      "$ref": "#/$defs/Resumen"
+    },
+    "parcial": {
+      "type": "boolean"
+    },
+    "sustituciones": {
+      "const": "solo-representacion-protegida"
+    }
+  },
+  "required": [
+    "esquema",
+    "proyecto",
+    "desde",
+    "hasta",
+    "agentes",
+    "comparaciones",
+    "resumen",
+    "parcial",
+    "sustituciones"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Valor": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Valor"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Valor"
+          }
+        }
+      ]
+    },
+    "Origen": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "const": "declarado"
+            },
+            "orden": {
+              "type": "integer"
+            },
+            "posicion": {
+              "type": "object",
+              "properties": {
+                "linea": {
+                  "type": "integer"
+                },
+                "columna": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "linea",
+                "columna"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "tipo",
+            "orden",
+            "posicion"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "enum": [
+                "implicito",
+                "nativo"
+              ]
+            },
+            "regla": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tipo",
+            "regla"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Declaracion": {
+      "type": "object",
+      "properties": {
+        "origen": {
+          "$ref": "#/$defs/Origen"
+        },
+        "via": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "referencia": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valor": {
+          "$ref": "#/$defs/Valor"
+        },
+        "regla": {
+          "type": "string"
+        },
+        "sustituciones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValorSustituido"
+          }
+        },
+        "localizacion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "origen",
+        "via",
+        "referencia",
+        "valor",
+        "regla"
+      ],
+      "additionalProperties": false
+    },
+    "Entrada": {
+      "type": "object",
+      "properties": {
+        "orden": {
+          "type": "integer"
+        },
+        "via": {
+          "type": "string"
+        },
+        "referencia": {
+          "type": "string"
+        },
+        "condicion": {
+          "enum": [
+            "observada",
+            "no_observada",
+            "definida"
+          ]
+        },
+        "resumen": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "legibilidad": {
+          "enum": [
+            "legible",
+            "ilegible",
+            null
+          ]
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "columna": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "consecuencia": {
+              "enum": [
+                "falla",
+                "descartada"
+              ]
+            }
+          },
+          "required": [
+            "linea",
+            "columna",
+            "consecuencia"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "orden",
+        "via",
+        "referencia",
+        "condicion",
+        "resumen"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "legibilidad": {
+                "const": "ilegible"
+              }
+            },
+            "required": [
+              "legibilidad"
+            ]
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        }
+      ]
+    },
+    "ValorSustituido": {
+      "type": "object",
+      "properties": {
+        "tipo": {
+          "enum": [
+            "variable",
+            "archivo"
+          ]
+        },
+        "origen": {
+          "type": "string"
+        },
+        "definido": {
+          "type": "boolean"
+        },
+        "posicion": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer"
+            },
+            "columna": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "linea",
+            "columna"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "tipo",
+        "origen",
+        "definido",
+        "posicion"
+      ],
+      "additionalProperties": false
+    },
+    "ValorSustituidoUbicado": {
+      "type": "object",
+      "properties": {
+        "tipo": {
+          "enum": [
+            "variable",
+            "archivo"
+          ]
+        },
+        "origen": {
+          "type": "string"
+        },
+        "definido": {
+          "type": "boolean"
+        },
+        "posicion": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer"
+            },
+            "columna": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "linea",
+            "columna"
+          ],
+          "additionalProperties": false
+        },
+        "orden": {
+          "type": "integer"
+        },
+        "referencia": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "origen",
+        "definido",
+        "posicion",
+        "orden",
+        "referencia"
+      ],
+      "additionalProperties": false
+    },
+    "Resumen": {
+      "type": "object",
+      "properties": {
+        "cambiadas": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "agregadas": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quitadas": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sinCambio": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "cambiadas",
+        "agregadas",
+        "quitadas",
+        "sinCambio"
+      ],
+      "additionalProperties": false
+    },
+    "Foto": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "instante": {
+          "type": "string"
+        },
+        "entradas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Entrada"
+          }
+        },
+        "resumenEntradas": {
+          "type": "string"
+        },
+        "noComparables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ruta": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "regla": {
+                "type": "string"
+              },
+              "sustituciones": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ValorSustituidoUbicado"
+                }
+              }
+            },
+            "required": [
+              "ruta",
+              "regla"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "motivosAgentes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reglas": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "instante",
+        "entradas",
+        "resumenEntradas",
+        "noComparables",
+        "motivosAgentes",
+        "reglas"
+      ],
+      "additionalProperties": false
+    },
+    "Lado": {
+      "type": "object",
+      "properties": {
+        "valor": {
+          "$ref": "#/$defs/Valor"
+        },
+        "determinante": {
+          "$ref": "#/$defs/Declaracion"
+        }
+      },
+      "required": [
+        "valor",
+        "determinante"
+      ],
+      "additionalProperties": false
+    },
+    "Cambio": {
+      "type": "object",
+      "properties": {
+        "ruta": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tipo": {
+          "enum": [
+            "agregada",
+            "quitada",
+            "cambiada"
+          ]
+        },
+        "motivos": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "valor",
+              "procedencia"
+            ]
+          }
+        },
+        "antes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Lado"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "despues": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Lado"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "ruta",
+        "tipo",
+        "motivos",
+        "antes",
+        "despues"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

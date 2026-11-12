@@ -16,10 +16,18 @@ export interface ResolucionGuardada {
   readonly resolucion: Resolucion;
 }
 
+export interface ProyectoReciente {
+  readonly proyecto: string;
+  readonly id: number;
+  readonly instante: string;
+  readonly cantidad: number;
+}
+
 export interface PuertoResoluciones {
   guardar(resolucion: Resolucion, instante: string): Resultado<number, ErrorUso>;
   leer(id: number): Resultado<ResolucionGuardada, ErrorUso>;
   listar(proyecto: string): Resultado<readonly ResumenResolucion[], ErrorUso>;
+  listarProyectosRecientes(): Resultado<readonly ProyectoReciente[], ErrorUso>;
 }
 
 export interface PuertoReloj { ahora(): string }

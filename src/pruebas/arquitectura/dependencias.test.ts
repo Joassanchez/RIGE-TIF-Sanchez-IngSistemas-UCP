@@ -4,6 +4,13 @@ import type { PuertoConfiguracion } from "../../paquetes/rige/aplicacion/puertos
 import type { PuertoAlmacen } from "../../paquetes/rige/aplicacion/puertos/almacen";
 import { analizarFuente, analizarGlobales, analizarManifiesto, comprobarGlobales } from "../utilidades/analisis-arquitectura";
 
+test("T5-23 L-10 el shebang inicial no oculta imports prohibidos al scanner", () => {
+  const codigo = 'import "node:fs";';
+  const archivo = "paquetes/nucleo/sonda.ts";
+  expect(analizarFuente(archivo, "#!/usr/bin/env bun\n" + codigo)).toEqual(analizarFuente(archivo, codigo));
+  expect(analizarFuente(archivo, "#!/usr/bin/env bun\n" + codigo).length).toBeGreaterThan(0);
+});
+
 describe("M-1 imports entre paquetes por workspace", () => {
   test("rechaza rutas relativas y admite subpaths declarados", () => {
     expect(analizarFuente("paquetes/opencode/sonda.ts", 'import "../nucleo/resultado";').length).toBeGreaterThan(0);
@@ -192,7 +199,7 @@ describe("T0-05 analisis de dependencias", () => {
     expect(analizarManifiesto("nucleo", { dependencies: { "@rige/opencode": "workspace:*" } }).length).toBeGreaterThan(0);
     expect(analizarManifiesto("opencode", { dependencies: { "jsonc-parser": "^3.3.1" } }).length).toBeGreaterThan(0);
     expect(analizarManifiesto("opencode", { dependencies: { "jsonc-parser": "3.3.1" } })).toEqual([]);
-    expect(analizarManifiesto("rige", { devDependencies: { ajena: "1.0.0" } }).length).toBeGreaterThan(0);
+    expect(analizarManifiesto("rige", { devDependencies: { ajena: "2.3.4" } }).length).toBeGreaterThan(0);
     expect(analizarFuente("paquetes/nucleo/resultado.test.ts", 'import {test} from "bun:test";')).toEqual([]);
     expect(analizarFuente("paquetes/nucleo/resultado.ts", 'import {test} from "bun:test";').length).toBeGreaterThan(0);
     expect(analizarFuente("paquetes/nucleo/resultado.ts", 'import "./resultado.test";').length).toBeGreaterThan(0);

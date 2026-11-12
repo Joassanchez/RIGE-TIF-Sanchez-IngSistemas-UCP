@@ -1,0 +1,8 @@
+{
+  "permission": {
+    "edit": {
+      "*": "deny",
+      "proyecto/sub/a.txt": "allow"
+    }
+  }
+}

@@ -11,11 +11,11 @@
     },
     "paquetes/nucleo": {
       "name": "@rige/nucleo",
-      "version": "0.1.0",
+      "version": "1.0.0",
     },
     "paquetes/opencode": {
       "name": "@rige/opencode",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "dependencies": {
         "@rige/nucleo": "workspace:*",
         "jsonc-parser": "3.3.1",
@@ -23,7 +23,7 @@
     },
     "paquetes/rige": {
       "name": "@rige/rige",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "dependencies": {
         "@rige/nucleo": "workspace:*",
         "@rige/opencode": "workspace:*",

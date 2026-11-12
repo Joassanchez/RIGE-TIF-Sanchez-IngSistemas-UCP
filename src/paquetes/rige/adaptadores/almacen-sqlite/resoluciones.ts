@@ -3,7 +3,7 @@ import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
 import type { Resultado } from "@rige/nucleo/resultado";
 import { errorAlmacenSinEsquema, type PuertoExistenciaAlmacen } from "../../aplicacion/puertos/almacen";
 import { errorResolucionInexistente } from "../../aplicacion/puertos/resoluciones";
-import type { PuertoResoluciones, ResolucionGuardada, ResumenResolucion } from "../../aplicacion/puertos/resoluciones";
+import type { PuertoResoluciones, ResolucionGuardada, ResumenResolucion, ProyectoReciente } from "../../aplicacion/puertos/resoluciones";
 import { AlmacenSqlite, abrirConexion } from "./esquema";
 
 type ErrorRepositorio = ReturnType<typeof errorResolucionInexistente>;
@@ -69,5 +69,18 @@ export class RepositorioResolucionesSqlite implements PuertoResoluciones {
       `SELECT r.id, r.instante, r.resumen_entradas AS resumenEntradas FROM resolucion r
         JOIN proyecto p ON p.id = r.proyecto_id WHERE p.ruta = ? ORDER BY r.instante DESC, r.id DESC`,
     ).all(proyecto) }));
+  }
+
+  listarProyectosRecientes(): Resultado<readonly ProyectoReciente[], ErrorRepositorio> {
+    return this.conBase(true, base => ({ exito: true, valor: base.query<ProyectoReciente, []>(`
+      WITH fotos AS (
+        SELECT p.ruta AS proyecto, r.id, r.instante,
+          COUNT(*) OVER (PARTITION BY r.proyecto_id) AS cantidad,
+          ROW_NUMBER() OVER (PARTITION BY r.proyecto_id ORDER BY r.instante DESC, r.id DESC) AS fila
+        FROM resolucion r JOIN proyecto p ON p.id = r.proyecto_id
+      )
+      SELECT proyecto, id, instante, cantidad FROM fotos WHERE fila = 1
+      ORDER BY instante DESC, id DESC LIMIT 10
+    `).all() }));
   }
 }

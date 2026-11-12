@@ -255,7 +255,11 @@
           "efecto": "allow"
         }
       ],
-      "determinante": 0
+      "determinante": 0,
+      "oraculo": {
+        "tipo": "derivada",
+        "documento": "v2-subagente/DERIVACION.md"
+      }
     },
     {
       "variante": "b",
@@ -278,7 +282,11 @@
           "efecto": "deny"
         }
       ],
-      "determinante": 14
+      "determinante": 14,
+      "oraculo": {
+        "tipo": "derivada",
+        "documento": "v2-subagente/DERIVACION.md"
+      }
     },
     {
       "variante": "c",
@@ -308,7 +316,11 @@
           "efecto": "deny"
         }
       ],
-      "determinante": 15
+      "determinante": 15,
+      "oraculo": {
+        "tipo": "derivada",
+        "documento": "v2-subagente/DERIVACION.md"
+      }
     },
     {
       "variante": "d",
@@ -332,7 +344,11 @@
           "efecto": "ask"
         }
       ],
-      "determinante": 13
+      "determinante": 13,
+      "oraculo": {
+        "tipo": "derivada",
+        "documento": "v2-subagente/DERIVACION.md"
+      }
     }
   ],
   "procedenciaDecisiones": "derivada del código del tag (subagent-permissions.ts:14-27) y de la ejecución del 13/10/2026 (ADR-081, C-3f)",
@@ -401,5 +417,6 @@
         "sha256": "307314eb41cc38a90881ae9f26e0402ceeed04e71046014486a9908ad4520233"
       }
     }
-  }
+  },
+  "oraculoCadenas": "referencia-binario"
 }

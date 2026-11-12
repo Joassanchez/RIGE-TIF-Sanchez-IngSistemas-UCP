@@ -6,7 +6,7 @@ import { entornoDeReferencia } from "../utilidades/entorno-referencia";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { consultarHallazgos } from "../../paquetes/rige/aplicacion/casos-uso/consultar-hallazgos";
-import { consultarAgentes } from "../../paquetes/rige/aplicacion/casos-uso/consultar-agentes";
+import type { Manifiesto } from "../../herramientas/cobertura";
 import type { TipoHallazgo } from "../../paquetes/nucleo/hallazgos/tipos";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal } from "../utilidades/cliente-http-local";
@@ -23,6 +23,26 @@ const seisTipos: readonly TipoHallazgo[] = [
   "regla-sin-efecto",
   "elemento-sin-uso",
 ];
+const manifiesto = JSON.parse(readFileSync(join(raizEscenarios, "MANIFIESTO.json"), "utf8")) as Manifiesto;
+function conteosInventariados(nombre: string) {
+  return Object.fromEntries(seisTipos.map(tipo => [tipo,
+    manifiesto.defectosSembrados.filter(d => d.escenario === nombre && d.tipo === tipo).length])) as Record<TipoHallazgo, number>;
+}
+// Inventario manual de archivos/variables y elementos, contrastado con REFERENCIA.json:
+// entradas: global, externa, proyecto, .opencode, dir-variable, contenido y permiso
+// mas cinco Markdown (agents/revisor, modes/m, command/c, command/hola, commands/sub/x);
+// siete nativos mas revisor/m de Markdown; comandos c, hola y sub/x (referencia.comandos).
+// referencias: proyecto y agents/revisor.md, siete nativos mas revisor Markdown;
+// inactivo tiene disable:true y no se cuenta;
+// cuatro comandos ok/saludo/vacio/x, conservados en la referencia.
+// sustituciones: global + proyecto + contenido; siete nativos mas revisor; ningun command.
+// sin-efecto: un archivo de permisos, siete nativos y ningun command.
+const elementosEsperados = {
+  "v3-entradas": { entradas: 12, agentes: 9, comandos: 3 },
+  "v3-referencias": { entradas: 2, agentes: 8, comandos: 4 },
+  "v3-sustituciones": { entradas: 3, agentes: 8, comandos: 0 },
+  "v3-sin-efecto": { entradas: 1, agentes: 7, comandos: 0 },
+} as const;
 
 function preparar(nombre: string, opciones: OpcionesEscenario = {}) {
   const rutaRef = join(raizEscenarios, nombre, "REFERENCIA.json");
@@ -54,7 +74,7 @@ describe("T3-10 R-3 RF-11 CA-1", () => {
   const escenariosCompletos = ["v3-entradas", "v3-referencias", "v3-sustituciones", "v3-sin-efecto"] as const;
 
   for (const nombre of escenariosCompletos) {
-    test(`${nombre}: resumen.elementos coincide con entradas, agentes y comandos de referencia; resumen.hallazgos coincide por tipo`, () => {
+    test(`V-5 ${nombre}: resumen coincide con el inventario independiente de elementos y defectos`, () => {
       const e = preparar(nombre);
       const deps = e.dependencias();
 
@@ -66,33 +86,13 @@ describe("T3-10 R-3 RF-11 CA-1", () => {
       const resumen = rHall.valor.resumen!;
       expect(resumen.elementos).not.toBeNull();
 
-      // Entradas: cantidad observadas o definidas
-      const entradasValidas = rHall.valor.entradas.filter(
-        ent => ent.condicion === "observada" || ent.condicion === "definida",
-      );
-      expect(resumen.elementos!.entradas).toBe(entradasValidas.length);
-
-      // Agentes: cantidad de activos o no observados de listarAgentes
-      const rAg = consultarAgentes(deps, e.proyecto);
-      expect(rAg.exito).toBe(true);
-      if (!rAg.exito) throw new Error(rAg.error.mensaje);
-      const agentesActivos = rAg.valor.agentes.length;
-      expect(resumen.elementos!.agentes).toBe(agentesActivos);
-
-      // Comandos: cantidad que coincide con referencia.comandos?.length ?? 0
-      const comandosEsperados = (e.referencia.comandos as string[] | undefined)?.length ?? 0;
-      expect(resumen.elementos!.comandos).toBe(comandosEsperados);
-
-      // Hallazgos: las seis claves presentes con el conteo correspondiente
-      for (const tipo of seisTipos) {
-        expect(resumen.hallazgos[tipo]).toBeDefined();
-        const conteoEsperado = rHall.valor.hallazgos.filter(h => h.tipo === tipo).length;
-        expect(resumen.hallazgos[tipo]).toBe(conteoEsperado);
-      }
+      expect(resumen.elementos).toEqual(elementosEsperados[nombre]);
+      expect(Object.keys(resumen.hallazgos).sort()).toEqual([...seisTipos].sort());
+      expect(resumen.hallazgos).toEqual(conteosInventariados(nombre));
     });
   }
 
-  test("v3-entradas-ilegible: incompleta produce resumen.elementos null y cuenta hallazgos por tipo", () => {
+  test("V-5 v3-entradas-ilegible: incompleta produce resumen.elementos null y cuenta hallazgos inventariados", () => {
     const e = preparar("v3-entradas-ilegible");
     const deps = e.dependencias();
 
@@ -105,11 +105,8 @@ describe("T3-10 R-3 RF-11 CA-1", () => {
     const resumen = rHall.valor.resumen!;
     expect(resumen.elementos).toBeNull();
 
-    for (const tipo of seisTipos) {
-      expect(resumen.hallazgos[tipo]).toBeDefined();
-      const conteoEsperado = rHall.valor.hallazgos.filter(h => h.tipo === tipo).length;
-      expect(resumen.hallazgos[tipo]).toBe(conteoEsperado);
-    }
+    expect(Object.keys(resumen.hallazgos).sort()).toEqual([...seisTipos].sort());
+    expect(resumen.hallazgos).toEqual(conteosInventariados("v3-entradas-ilegible"));
     expect(resumen.hallazgos["entrada-ilegible"]).toBe(1);
   });
 

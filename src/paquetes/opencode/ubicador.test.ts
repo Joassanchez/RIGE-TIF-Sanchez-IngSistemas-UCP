@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { posix } from "node:path";
 import type { EntornoLectura } from "@rige/nucleo/contrato/entorno";
 import type { ViaUbicada } from "@rige/nucleo/contrato/adaptador";
+import type { ObservacionVia } from "@rige/nucleo/contrato/adaptador";
 import { resolver } from "../../pruebas/utilidades/resolver";
 import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 
@@ -40,6 +41,44 @@ async function error(proyecto: string, lectura: EntornoLectura, codigo: string, 
 }
 const observada = (via: string, referencia: string): ViaUbicada => ({ via, referencia, condicion: "observada" });
 const noObservada = (via: string, referencia = via): ViaUbicada => ({ via, referencia, condicion: "no_observada" });
+
+describe("T5-12 M-1 M-5 PC-01 PC-02 PC-06", () => {
+  test("observa el mismo recorrido, orden de comprobacion y retorno intacto, con administrada presente y ausente", async () => {
+    const { ubicar } = await import("./ubicador");
+    const { contextoOpenCode } = await import("./contexto");
+    for (const presente of [true, false]) {
+      const lectura = entorno({ archivos: { "/p/opencode.json": "{}", "/opencode.json": "{}",
+        "/p/.opencode/agents/z.md": "z", "/p/.opencode/agents/a.md": "a",
+        ...(presente ? { "/etc/opencode/opencode.json": "{}" } : {}) } });
+      const contexto = contextoOpenCode("/p", lectura);
+      if (!contexto.exito) throw new Error(contexto.error.mensaje);
+      const revisiones: string[] = [];
+      const instrumentado = { ...lectura, tipo(ruta: string) { revisiones.push(ruta); return lectura.tipo(ruta); },
+        listar(ruta: string) { return [...lectura.listar(ruta)].reverse(); } };
+      let mapa: readonly ObservacionVia[] = [];
+      const resultado = ubicar("/p", instrumentado, contexto.valor, vias => { mapa = vias; });
+      expect(resultado).toEqual(ubicar("/p", lectura, contexto.valor));
+      expect(mapa).toHaveLength(11);
+      const porVia = (via: string) => mapa.find(v => v.via === via)!;
+      expect(porVia("administrada")).toEqual({ via: "administrada", estado: presente ? "presente" : "ausente",
+        revisados: ["/etc/opencode/opencode.json", "/etc/opencode/opencode.jsonc"] });
+      expect(porVia("proyecto").revisados).toEqual(["/p/opencode.jsonc", "/p/opencode.json", "/opencode.jsonc", "/opencode.json"]);
+      expect(porVia("markdown").revisados.filter(r => r.endsWith(".md"))).toEqual(["/p/.opencode/agents/z.md", "/p/.opencode/agents/a.md"]);
+      expect(porVia("directorio-opencode").revisados).toContain("/.opencode");
+      expect(porVia("directorio-opencode").revisados).not.toContain("/.opencode/opencode.json");
+      for (const via of mapa) {
+        expect(new Set(via.revisados).size).toBe(via.revisados.length);
+        if (via.estado === "no_observada") expect(via.revisados).toEqual([]);
+        else if (!via.via.startsWith("variable-")) {
+          expect(via.revisados).toEqual([...new Set(revisiones.filter(r => via.revisados.includes(r)))]);
+        }
+      }
+      for (const [via, variable] of [["variable-config", "OPENCODE_CONFIG"], ["variable-contenido", "OPENCODE_CONFIG_CONTENT"], ["variable-permiso", "OPENCODE_PERMISSION"]] as const) {
+        expect(porVia(via)).toEqual({ via, estado: "ausente", revisados: [variable] });
+      }
+    }
+  });
+});
 
 describe("T3-03-c1 R-1", () => {
   test("relee el global despues del proyecto y antes del .opencode del proyecto", async () => {

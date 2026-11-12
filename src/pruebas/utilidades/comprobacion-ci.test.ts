@@ -5,6 +5,21 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { crearEntornoAislado } from "./entorno-aislado";
 
+describe("T5-05 N-5 strace obligatorio en Ubuntu", () => {
+  test("verificar instala strace solo en Linux antes de bun test", () => {
+    const flujo = readFileSync(resolve(import.meta.dir, "../../../.github/workflows/ci.yml"), "utf8");
+    const trabajo = flujo.split(/^  (?=[\w-]+:)/m).find(bloque => bloque.startsWith("verificar:"));
+    expect(trabajo).toBeDefined();
+    const pasos = trabajo!.split(/^      - /m).slice(1);
+    const instalaciones = pasos.filter(paso => paso.includes("sudo apt-get update && sudo apt-get install -y strace"));
+    expect(instalaciones).toHaveLength(1);
+    expect(instalaciones[0]).toMatch(/^if: runner\.os == 'Linux'\r?\n        run: sudo apt-get update && sudo apt-get install -y strace\s*$/);
+    const pruebas = pasos.findIndex(paso => /^run: bun test\s*$/.test(paso));
+    expect(pruebas).toBeGreaterThan(-1);
+    expect(pasos.indexOf(instalaciones[0]!)).toBeLessThan(pruebas);
+  });
+});
+
 function codigoComprobacion(): string {
   const flujo = readFileSync(resolve(import.meta.dir, "../../../.github/workflows/ci.yml"), "utf8");
   const paso = flujo.match(/- name: Comprobar version instalada sin advertencias\r?\n\s+run: \|\r?\n\s+bun -e '\r?\n([^]*?)\r?\n\s+'(?:\r?\n|$)/);

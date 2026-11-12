@@ -1,14 +1,29 @@
+import { mapaVias } from "../componentes-proyecto";
+import { comandoCli } from "../comando-cli";
+import { selectorAgente, type ContextoPanel } from "../panel";
 import type { RespuestaEntradas } from "../../../aplicacion/respuestas/entradas";
 import { datosRespuesta, html } from "../plantillas";
+import { declaraciones, diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";
+import { presentarRuta, presentarUbicacion } from "../rutas";
 
-export function paginaEntradas(respuesta: RespuestaEntradas): Response {
-  return responderHtml(200, html`<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><title>Entradas</title></head><body>
-<h1>Entradas</h1><p>Proyecto: ${respuesta.proyecto}</p>
-<h2>Declaraciones</h2><ul>${respuesta.declaraciones.map(codigo => html`<li>${respuesta.reglas[codigo]}</li>`)}</ul>
-<table><thead><tr><th>Orden</th><th>Vía</th><th>Referencia</th><th>Condición</th><th>Legibilidad</th><th>Error</th></tr></thead>
-<tbody>${respuesta.entradas.map(entrada => html`<tr><td>${entrada.orden}</td><td>${entrada.via}</td><td>${entrada.referencia}</td><td>${entrada.condicion}</td><td>${entrada.legibilidad ?? "no observada"}</td><td>${entrada.error ? `${entrada.error.linea}:${entrada.error.columna} (${entrada.error.consecuencia})` : ""}</td></tr>`)}</tbody></table>
-<p>Resumen del conjunto: ${respuesta.resumenEntradas}</p>
-${datosRespuesta(respuesta)}</body></html>`);
+export function paginaEntradas(respuesta: RespuestaEntradas, contexto: ContextoPanel = {}): Response {
+  const entradas = [...respuesta.entradas].sort((a, b) => a.orden - b.orden);
+  return responderHtml(200, diseno("Entradas", html`
+<div class="cabecera-pagina"><div class="barra-agente"><h1>Entradas</h1>${selectorAgente(contexto, "Entradas", respuesta.proyecto)}</div>
+<p>¿Qué entradas se observan ahora?</p>
+<details><summary>¿Qué significa?</summary>
+<p>Proyecto: ${presentarRuta(respuesta.proyecto)}</p>
+<p>Estado actual de las entradas de configuración (no es la foto guardada)</p></details></div>
+<p class="atenuado">Estado actual de los archivos · la de abajo prevalece</p>
+
+${mapaVias(respuesta)}
+${declaraciones(respuesta.declaraciones, respuesta.reglas)}
+<section id="tabla-entradas"><h2>Vías y legibilidad</h2>
+<div class="tabla-contenedor" role="region" aria-label="Entradas" tabindex="0">
+<table class="tabla-tarjetas"><thead><tr><th>Orden</th><th>Vía</th><th>Referencia</th><th>Condición</th><th>Legibilidad</th><th>Error</th></tr></thead>
+<tbody>${entradas.map(entrada => html`<tr id="${`entrada-${entrada.orden}`}"><td data-etiqueta="Orden">${entrada.orden}</td><td data-etiqueta="Vía">${entrada.via}</td><td data-etiqueta="Referencia">${presentarRuta(entrada.referencia)}</td><td data-etiqueta="Condición">${insignia(entrada.condicion, "neutra")}</td><td data-etiqueta="Legibilidad">${insignia(entrada.legibilidad ?? "no observada", entrada.legibilidad === "ilegible" ? "entrada-ilegible" : "neutra")}</td><td data-etiqueta="Error">${entrada.error ? html`<div class="aviso aviso--advertencia">${presentarUbicacion(entrada.referencia, entrada.error, entrada.via)} (${entrada.error.consecuencia})</div>` : "—"}</td></tr>`)}</tbody></table></div></section>
+<p class="bloque atenuado">Resumen del conjunto: <code>${respuesta.resumenEntradas}</code></p>
+${comandoCli("entradas", { proyecto: respuesta.proyecto })}
+${datosRespuesta(respuesta)}`, { ...contexto, proyecto: respuesta.proyecto, activa: "Entradas" }));
 }

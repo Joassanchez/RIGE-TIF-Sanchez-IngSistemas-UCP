@@ -43,7 +43,12 @@ describe("W-9", () => {
   ] satisfies [ErrorUso["codigo"], number][])("asigna a %s el estado %i y escapa su mensaje", async (codigo, estado) => {
     const respuesta = paginaErrorUso({ codigo, mensaje: '<script>"&' });
     expect(respuesta.status).toBe(estado);
-    expect(await respuesta.text()).toContain("&lt;script&gt;&quot;&amp;");
+    const cuerpo = await respuesta.text();
+    if (estado === 500) {
+      expect(cuerpo).toContain("Falla interna de RIGE.");
+      expect(cuerpo).not.toContain("&lt;script&gt;&quot;&amp;");
+      expect(cuerpo).not.toContain(codigo);
+    } else expect(cuerpo).toContain("&lt;script&gt;&quot;&amp;");
   });
 
   test("asigna el estado HTTP segun el codigo de error de uso", () => {

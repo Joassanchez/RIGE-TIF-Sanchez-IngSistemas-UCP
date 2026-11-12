@@ -205,3 +205,28 @@ regeneran con el binario; la regeneracion no recalcula las decisiones.
 
 M-3 corre fuera de bun test con `bun run prueba:lenta`, sobre una copia del
 proyecto. Comprueba el hash del fuente real durante el rojo y el verde.
+
+### Oráculos y cobertura de cierre (T5-04)
+
+`bun run cobertura` inventaría 24 requisitos y 70 CA (RF-01 a RF-12, RF-16,
+RF-17 y RNF-01 a RNF-10); RF-13 a RF-15 quedan excluidos. Los auxiliares del
+manifiesto no se cuentan como CA. El comando lee las definiciones de la fila
+«Criterio de aceptación» del catálogo externo; importar su módulo no lo lee.
+La vinculación de una prueba y la modalidad automática, manual o de contenedor
+no acreditan por sí solas un criterio. El informe no ejecuta pruebas; los
+procedimientos de las modalidades pendientes están en `escenarios/COBERTURA.json`.
+
+RNF-02 CA-2 publica por consulta y plataforma la captura compatible, la
+derivación documentada o la ausencia de evidencia, y cuenta aparte las
+herramientas no ofrecidas. Compara decisión, sujeto, patrón y efecto de la
+determinante nativa. Con cero comparaciones informa «sin acreditación nativa
+en esta plataforma». Las cuatro decisiones de subagente son derivadas de
+`escenarios/v2-subagente/DERIVACION.md`; sus cadenas base conservan el oráculo
+nativo. Las exclusiones efectivamente usadas por los comparadores de valores
+se registran en `utilidades/exclusiones-valores.ts`, con motivo y denominador.
+
+RNF-01 CA-1 a CA-3 inventaría toda la copia temporal de tres escenarios, incluidos
+los archivos incorporados por lectura, y contrasta SHA-256, mtime y altas/bajas
+tras el análisis por la CLI. El almacén queda en otro temporal. RF-16 CA-1 y
+RNF-10 CA-3 reutilizan sus pruebas existentes; esta última verifica integridad
+contra `PROCEDENCIA.md`, sin autenticar su origen.

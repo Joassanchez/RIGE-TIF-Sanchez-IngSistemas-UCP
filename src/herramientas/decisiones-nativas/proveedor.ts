@@ -1,5 +1,5 @@
 /** Proveedor fijo de desarrollo: no consulta modelos ni abre conexiones salientes. */
-export function crearProveedor(herramienta: string, argumentos: Record<string, unknown>) {
+export function crearProveedor(herramienta: string, argumentos: Record<string, unknown>, modelo = "permisos") {
   let enviada = false;
   async function responder(solicitud: Request): Promise<Response> {
     if (new URL(solicitud.url).pathname !== "/v1/chat/completions" || solicitud.method !== "POST") return new Response("Ruta inexistente", { status: 404 });
@@ -9,7 +9,7 @@ export function crearProveedor(herramienta: string, argumentos: Record<string, u
     const delta = ofrecer ? { tool_calls: [{ index: 0, id: "consulta_fija", type: "function", function: { name: herramienta, arguments: JSON.stringify(argumentos) } }] }
       : { content: titulo ? "Consulta de permisos" : "Consulta finalizada" };
     if (ofrecer) enviada = true;
-    const fragmento = (delta: unknown, fin: string | null) => `data: ${JSON.stringify({ id: "chatcmpl-fijo", object: "chat.completion.chunk", created: 0, model: "permisos",
+    const fragmento = (delta: unknown, fin: string | null) => `data: ${JSON.stringify({ id: "chatcmpl-fijo", object: "chat.completion.chunk", created: 0, model: modelo,
       choices: [{ index: 0, delta, finish_reason: fin }] })}\n\n`;
     return new Response(fragmento({ role: "assistant", ...delta }, null) + fragmento({}, ofrecer ? "tool_calls" : "stop") + "data: [DONE]\n\n",
       { headers: { "content-type": "text/event-stream; charset=utf-8" } });

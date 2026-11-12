@@ -1,0 +1,18 @@
+{
+  "commit": "f085d3d5b999a82300c7d5724703beb4f16f7d30",
+  "bun": "1.3.14",
+  "jsoncParser": "3.3.1",
+  "plataformaCaptura": "win32-x64",
+  "sha256": "b447635e99704ddc676154fee91b65281d98c3d91a6326b9e7ef4cbb9dd91d40",
+  "archivoFuenteSha256": "d82d826208c7b0d408a6d26508efc5a20319edf1fb032daad3d7b55b6418304a",
+  "entradaSha256": "a03ffc1f9be7f2eaf5809f9d66b05dd207e7d65a4dc0d2a4b63cf7a096cb0566",
+  "cliSha256": "ab6fc2b58c5f2ca244975b8fc413001a7dd6b32c53aa70ccee15dfa10ad1c71b",
+  "comando": "bun build ./paquetes/rige/arranque/rige.ts --target=bun --outfile <temporal>/cli.js",
+  "cambios": [
+    "Sin cambios en el arbol fuente extraido",
+    "Biblioteca jsonc-parser 3.3.1 copiada de la instalacion local",
+    "Se anteponen las licencias MIT del evaluador y jsonc-parser al bundle",
+    "Extension .txt de dato; la prueba copia los bytes a un .js temporal antes de ejecutar",
+    "Dato congelado con finales LF, conforme a .gitattributes; no se normalizan salidas"
+  ]
+}

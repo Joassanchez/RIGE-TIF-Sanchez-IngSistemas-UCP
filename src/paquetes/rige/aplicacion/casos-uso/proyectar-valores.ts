@@ -1,7 +1,8 @@
 import { localizarDeclaracion } from "../respuestas/localizacion";
 import type { Resultado } from "@rige/nucleo/resultado";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
-import { consultarAgente, rutaDesdeTexto } from "@rige/nucleo/resolucion/proyectar";
+import { consultarAgente } from "@rige/nucleo/resolucion/proyectar";
+import { rutaDesdeTexto } from "./claves";
 import { errorDesdeAnalisis, errorSolicitudInvalida, type ErrorUso } from "../errores";
 import { versionRige } from "../respuestas/estado";
 import { versionEsquemaSalida, type RespuestaValores } from "../respuestas/valores";

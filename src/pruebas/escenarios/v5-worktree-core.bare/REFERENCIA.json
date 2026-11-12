@@ -1,0 +1,100 @@
+{
+  "procedencia": {
+    "version": "1.18.25",
+    "directorio": "proyecto",
+    "hogar": "hogar",
+    "git": "core.bare",
+    "alcance": "T5-06c: caracterizacion de decisiones y deteccion aproximada; sin referencia de valores ni cadenas.",
+    "soloDecisiones": true,
+    "skillsExternosExcluidos": true
+  },
+  "valoresAgentes": {},
+  "decisionesNativas": [
+    {
+      "consulta": "read-a",
+      "agente": "build",
+      "sujeto": "read",
+      "objetivo": "sub/a.txt",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "<RAIZ>\\proyecto\\sub\\a.txt",
+          "regla": {
+            "permission": "read",
+            "pattern": "*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "ef06e41a35795066e95acde276a42fbbf85d7a683c2787f6a19ed20bcde9b6ff",
+        "version": "1.18.25",
+        "fecha": "2026-11-09T19:30:31.585Z",
+        "plataforma": "win32-x64",
+        "controlGit": {
+          "modo": "core.bare",
+          "comando": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "codigo": 128,
+          "salida": "",
+          "error": "fatal: this operation must be run in a work tree"
+        }
+      }
+    },
+    {
+      "consulta": "read-a",
+      "agente": "build",
+      "sujeto": "read",
+      "objetivo": "sub/a.txt",
+      "herramienta": "read",
+      "evaluaciones": [
+        {
+          "sujeto": "read",
+          "patronEvaluado": "<RAIZ>/proyecto/sub/a.txt",
+          "regla": {
+            "permission": "read",
+            "pattern": "*",
+            "action": "deny"
+          }
+        }
+      ],
+      "procedencia": {
+        "comando": [
+          "opencode",
+          "--print-logs",
+          "run",
+          "--agent",
+          "build",
+          "Ejecuta la accion local fija del proveedor y devuelve el resultado."
+        ],
+        "sha256Binario": "d91e0d33676d0839f7cde87924cd4127ea88c9d6784eea9f009a7d08bdc60eeb",
+        "version": "1.18.25",
+        "fecha": "2026-11-09T19:43:42.330Z",
+        "plataforma": "linux-x64",
+        "controlGit": {
+          "modo": "core.bare",
+          "comando": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "codigo": 128,
+          "salida": "",
+          "error": "fatal: this operation must be run in a work tree"
+        }
+      }
+    }
+  ]
+}

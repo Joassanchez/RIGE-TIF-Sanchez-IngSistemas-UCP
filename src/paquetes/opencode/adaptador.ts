@@ -6,6 +6,7 @@ import { secuenciar } from "./secuenciador";
 import { ubicar } from "./ubicador";
 import { cadena } from "./cadena";
 import { permisos } from "./permisos";
+import { resumirPermisos } from "./resumen-permisos";
 import { prepararConsulta } from "./objetivo";
 import { listarAgentes } from "./agentes";
 import { contextoOpenCode, type ContextoOpenCode } from "./contexto";
@@ -22,6 +23,7 @@ export const adaptadorOpenCode: Adaptador<ContextoOpenCode> = {
   elementosSinUso,
   contexto: contextoOpenCode,
   listarAgentes,
+  resumirPermisos,
   permisos,
   prepararConsulta,
   identidad: { herramienta: "opencode", version: versionSoportada },

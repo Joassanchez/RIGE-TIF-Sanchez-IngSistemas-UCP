@@ -25,6 +25,14 @@ export interface ViaUbicada {
   readonly elemento?: readonly string[];
 }
 
+/** Observacion opcional del descubrimiento; no forma parte de la resolucion. */
+export interface ObservacionVia {
+  readonly via: string;
+  readonly estado: "presente" | "ausente" | "no_observada";
+  readonly revisados: readonly string[];
+}
+export type ObservarVias = (vias: readonly ObservacionVia[]) => void;
+
 export interface Declaracion {
   readonly ruta: readonly string[];
   readonly valor: ValorJson;
@@ -121,6 +129,18 @@ export interface ResultadoElementosSinUso {
   readonly motivos: readonly string[];
 }
 
+/** Resumen independiente del objetivo. Los indices conservan la base interna de la cadena. */
+export interface CeldaPermisoGeneral {
+  readonly sujeto: string;
+  readonly efecto: string | null;
+  readonly prevalece: number | null;
+  readonly motivo: string | null;
+}
+export interface ResumenPermisos {
+  readonly sujetos: readonly string[];
+  readonly filas: readonly { readonly agente: string; readonly celdas: readonly CeldaPermisoGeneral[] }[];
+}
+
 export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   readonly referencias: readonly ReferenciaElemento[];
   readonly plantillasHallazgo: Readonly<Record<string, string>>;
@@ -130,12 +150,13 @@ export interface Adaptador<C extends ContextoConsulta = ContextoConsulta> {
   readonly reglas: Readonly<Record<string, string>>;
   readonly estrategias: Readonly<Record<string, Estrategia>>;
   contexto(proyecto: string, entorno: EntornoLectura): Resultado<C, ErrorAnalisis>;
-  ubicar(proyecto: string, entorno: EntornoLectura, contexto: C): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
+  ubicar(proyecto: string, entorno: EntornoLectura, contexto: C, observar?: ObservarVias): Resultado<readonly ViaUbicada[], ErrorAnalisis>;
   leer(via: ViaUbicada, texto: string, entorno: EntornoLectura, contexto: C): Resultado<readonly Declaracion[], ErrorAnalisis>;
   secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secuencia, ErrorAnalisis>;
   cadena(resolucion: Resolucion, agente: string, contexto: C, lanzadoPor?: string): Resultado<Cadena, ErrorAnalisis>;
   prepararConsulta(contexto: C, solicitud: SolicitudPermiso): Resultado<ObjetivoPermiso, ErrorAnalisis>;
   listarAgentes(resolucion: Resolucion, contexto: C): ListadoAgentes;
+  resumirPermisos(cadenas: readonly Cadena[], contexto: C): ResumenPermisos;
   abarca?(posterior: string, anterior: string): boolean;
   causaRutaRegla?(resolucion: Resolucion, contexto: C, regla: ReglaDeclarada): CausaRutaRegla | null;
   elementosSinUso?(resolucion: Resolucion, contexto: C): ResultadoElementosSinUso;

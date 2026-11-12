@@ -5,10 +5,22 @@ import { join, resolve } from "node:path";
 import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { copiarEscenario } from "../utilidades/escenario";
 import { entornoDeReferencia, type ReferenciaEntorno } from "../utilidades/entorno-referencia";
+import { politicaStrace } from "../utilidades/politica-strace";
 
 const raiz = resolve(import.meta.dir, "../..");
 const rutaRige = "paquetes/rige/arranque/rige.ts";
 const rutaPreload = "./pruebas/utilidades/sin-red-preload.ts";
+
+function comprobarCodigo(proc: Bun.SyncSubprocess<"pipe", "pipe">, esperado: number): void {
+  if (proc.exitCode !== esperado) {
+    const ultimasLineas = (salida: Uint8Array) => Buffer.from(salida).toString().trimEnd().split(/\r?\n/).slice(-20).join("\n");
+    throw new Error([
+      `Subproceso: exitCode=${proc.exitCode}, signalCode=${proc.signalCode}; esperado=${esperado}`,
+      `stdout (ultimas 20 lineas):\n${ultimasLineas(proc.stdout)}`,
+      `stderr (ultimas 20 lineas):\n${ultimasLineas(proc.stderr)}`,
+    ].join("\n"));
+  }
+}
 
 interface ConsultaManifiesto {
   readonly id: string;
@@ -65,7 +77,7 @@ function comandosEscenario(escenario: EscenarioManifiesto, dirProyecto: string, 
 }
 
 describe("T3-09 R-1", () => {
-  test("RNF-05 CA-2 (en proceso, todas las plataformas): con red interceptada, el análisis completo de los tres escenarios da salidas y códigos idénticos a los de la corrida normal", () => {
+  test("RNF-05 CA-2 (apoyo): intercepta la red en el proceso mediante precarga; la acreditacion con interfaz deshabilitada corresponde al contenedor", () => {
     const manifiesto = JSON.parse(readFileSync(join(raiz, "pruebas/escenarios/MANIFIESTO.json"), "utf8")) as Manifiesto;
     const escenarios = ["v2-decision", "v3-sustituciones", "v3-sin-efecto"];
 
@@ -103,6 +115,10 @@ describe("T3-09 R-1", () => {
             timeout: 30000,
           });
 
+          comprobarCodigo(normal, 0);
+          expect(normal.stdout.toString().trim()).not.toBe("");
+          comprobarCodigo(sinRed, 0);
+          expect(sinRed.stdout.toString().trim()).not.toBe("");
           expect(sinRed.exitCode).toBe(normal.exitCode);
           expect(sinRed.stdout.toString()).toBe(normal.stdout.toString());
           expect(sinRed.stderr.toString()).toBe(normal.stderr.toString());
@@ -161,10 +177,11 @@ describe("T3-09 R-2", () => {
 });
 
 describe("T3-09 R-3", () => {
-  const tieneStrace = process.platform === "linux" && Bun.which("strace") !== null;
-  const pruebaStrace = tieneStrace ? test : test.skip;
+  const politica = politicaStrace({ plataforma: process.platform, tieneStrace: Bun.which("strace") !== null, ci: process.env.CI });
+  const pruebaStrace = politica.accion === "omitir" ? test.skip : test;
 
-  pruebaStrace("RNF-05 CA-1 (Linux con strace): sin-red --strace sobre los tres escenarios cuenta cero connect AF_INET/AF_INET6", () => {
+  pruebaStrace(`RNF-05 CA-1: tres escenarios sin intentos externos; ${politica.motivo}`, () => {
+    if (politica.accion === "fallar") throw new Error(politica.motivo);
     const proc = Bun.spawnSync([
       process.execPath,
       "herramientas/sin-red.ts",
@@ -178,11 +195,15 @@ describe("T3-09 R-3", () => {
       stderr: "pipe",
       timeout: 120000,
     });
-    expect(proc.exitCode).toBe(0);
+    comprobarCodigo(proc, 0);
     const salida = proc.stdout.toString();
-    expect(salida).toContain("AF_INET: 0");
-    expect(salida).toContain("AF_INET6: 0");
-  });
+    expect(salida.trim()).not.toBe("");
+    for (const llamada of ["connect", "sendto", "sendmsg"]) {
+      const linea = salida.split(/\r?\n/).find(l => l.startsWith(`${llamada}: `));
+      expect(linea).toBeDefined();
+      expect(JSON.parse(linea!.slice(llamada.length + 2))).toMatchObject({ externoIPv4: 0, externoIPv6: 0, indeterminados: 0 });
+    }
+  }, 180000);
 });
 
 describe("T3-09 R-4", () => {
@@ -200,7 +221,7 @@ describe("T3-09 R-4", () => {
         stderr: "pipe",
         timeout: 30000,
       });
-      expect(procSalida.exitCode).toBe(0);
+      comprobarCodigo(procSalida, 0);
 
       const procComparar = Bun.spawnSync([
         process.execPath,
@@ -213,11 +234,11 @@ describe("T3-09 R-4", () => {
         stderr: "pipe",
         timeout: 30000,
       });
-      expect(procComparar.exitCode).toBe(0);
+      comprobarCodigo(procComparar, 0);
     } finally {
       borrarTemporal(temporal);
     }
-  });
+  }, 90000);
 
   test("sin-red --comparar: una salida alterada en el archivo de referencia da código 1 y nombra el escenario y el subcomando", () => {
     const temporal = join(tmpdir(), `rige-sin-red-alterado-${Date.now()}.json`);
@@ -242,12 +263,12 @@ describe("T3-09 R-4", () => {
         stderr: "pipe",
         timeout: 30000,
       });
-      expect(proc.exitCode).toBe(1);
+      comprobarCodigo(proc, 1);
       const salidaTotal = proc.stdout.toString() + "\n" + proc.stderr.toString();
       expect(salidaTotal).toContain("v2-decision");
       expect(salidaTotal).toContain("valores");
     } finally {
       borrarTemporal(temporal);
     }
-  });
+  }, 45000);
 });

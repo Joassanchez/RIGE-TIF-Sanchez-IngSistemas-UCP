@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Respuesta entradas de RIGE v2",
+  "type": "object",
+  "properties": {
+    "esquema": {
+      "const": 2
+    },
+    "proyecto": {
+      "type": "string"
+    },
+    "resumenEntradas": {
+      "type": "string"
+    },
+    "declaraciones": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reglas": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "entradas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Entrada"
+      }
+    }
+  },
+  "required": [
+    "esquema",
+    "proyecto",
+    "resumenEntradas",
+    "declaraciones",
+    "reglas",
+    "entradas"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Entrada": {
+      "type": "object",
+      "properties": {
+        "orden": {
+          "type": "integer"
+        },
+        "via": {
+          "type": "string"
+        },
+        "referencia": {
+          "type": "string"
+        },
+        "condicion": {
+          "enum": [
+            "observada",
+            "no_observada",
+            "definida"
+          ]
+        },
+        "resumen": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "legibilidad": {
+          "enum": [
+            "legible",
+            "ilegible",
+            null
+          ]
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "linea": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "columna": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "consecuencia": {
+              "enum": [
+                "falla",
+                "descartada"
+              ]
+            }
+          },
+          "required": [
+            "linea",
+            "columna",
+            "consecuencia"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "orden",
+        "via",
+        "referencia",
+        "condicion",
+        "resumen"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "legibilidad": {
+                "const": "ilegible"
+              }
+            },
+            "required": [
+              "legibilidad"
+            ]
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

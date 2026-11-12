@@ -22,13 +22,16 @@ describe("W-11 redireccion", () => {
 });
 
 const manejarEstado = (puerto: number, consultarEstado: ConsultarEstado) => crearManejador(puerto, {
+  compararResoluciones: () => { throw new Error("No comparar en este doble"); },
+  consultarProyectosRecientes: () => ({ exito: true, valor: { esquema: 2, proyectos: [] } }),
+  consultarReglas: () => { throw new Error("No consultar reglas en este doble"); },
   consultarHallazgos: () => { throw new Error("No consultar hallazgos en este doble"); },
   consultarEstado, resolverProyecto: () => { throw new Error("No resolver"); },
   consultarPermiso: () => { throw new Error("No consultar permisos"); },
   consultarEntradas: () => { throw new Error("No consultar entradas en este doble"); },
   consultarAgentes: () => { throw new Error("No consultar agentes"); },
   consultarResolucion: () => { throw new Error("No consultar"); },
-});
+}, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
 
 describe("W-7", () => {
   test("incluye las cinco cabeceras de defensa y conserva las adicionales sin CORS", async () => {
@@ -44,7 +47,7 @@ describe("W-7", () => {
       expect(await respuesta.text()).toBe(pagina.texto);
       expect(respuesta.headers.get("content-type")).toBe("text/html; charset=utf-8");
       expect(respuesta.headers.get("content-security-policy"))
-        .toBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+        .toBe("default-src 'none'; style-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
       expect(respuesta.headers.get("x-content-type-options")).toBe("nosniff");
       expect(respuesta.headers.get("cache-control")).toBe("no-store");
       expect(respuesta.headers.get("referrer-policy")).toBe("no-referrer");
@@ -79,7 +82,7 @@ describe("W-8", () => {
     for (const [respuesta, codigo] of respuestas) {
       expect(respuesta.status).toBe(codigo);
       expect(respuesta.headers.get("content-security-policy"))
-        .toBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+        .toBe("default-src 'none'; style-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
       expect(respuesta.headers.get("x-content-type-options")).toBe("nosniff");
     }
   });

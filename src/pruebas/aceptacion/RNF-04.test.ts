@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { copiarEscenario } from "../utilidades/escenario";
 import { entornoDeReferencia } from "../utilidades/entorno-referencia";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarLocal } from "../utilidades/cliente-http-local";
+import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { consultarCadenas } from "../utilidades/cadenas";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
@@ -28,6 +28,7 @@ function preparar() {
   return { ...copia, env, referencia, marcas };
 }
 function sinContenido(texto: string | Buffer, marcas: readonly string[]) {
+  expect(marcas.length).toBeGreaterThan(0);
   // El fallo tampoco imprime el contenido de una salida que lo filtre.
   expect(marcas.some(m => typeof texto === "string" ? texto.includes(m) : texto.includes(Buffer.from(m)))).toBe(false);
 }
@@ -39,27 +40,40 @@ function datos(cuerpo: string) {
 const consultas = [
   ["valores", ["--agente", "revisor"]], ["agentes", []],
   ["permiso", ["--agente", "build", "--sujeto", "bash", "--objetivo", "t1 x"]], ["entradas", []],
+  ["hallazgos", []],
 ] as const;
 
+function validar(comando: string, cuerpo: unknown) {
+  expect(cuerpo).toMatchObject({ esquema: 2 });
+  const esquema = JSON.parse(readFileSync(join(import.meta.dir, `../../esquemas/salida/${comando}.json`), "utf8"));
+  expect(validarEsquema(esquema, cuerpo)).toEqual([]);
+}
+const escapar = (s: string) => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+
 describe("RNF-04 CA-1 y CA-2 T3-04 R-8", () => {
-  test("cero marcadores en CLI, diagnostico, todas las paginas y archivos del almacen", async () => {
+  test("V-2 cero marcadores en CLI, diagnostico, todas las paginas y archivos del almacen", async () => {
     const e = preparar();
     for (const depurar of [[], ["--depurar"]]) for (const [comando, opciones] of consultas) {
       const r = lanzar(e.raiz, [comando, "--proyecto", e.proyecto, ...opciones, ...depurar], e.env);
       expect(r.codigo).toBe(0);
-      sinContenido(r.salida + r.error, e.marcas);
       const esquema = await Bun.file(join(import.meta.dir, `../../esquemas/salida/${comando}.json`)).json();
       expect(validarEsquema(esquema, JSON.parse(r.salida))).toEqual([]);
+      expect(JSON.parse(r.salida).esquema).toBe(2);
+      expect(r.error).toBe("");
+      sinContenido(r.salida + r.error, e.marcas);
     }
     expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
     const servidor = await lanzarServidor(e.raiz, e.env);
     try {
       const rutas = [`/resolver?proyecto=${encodeURIComponent(e.proyecto)}&agente=revisor`,
         "/resoluciones/1?agente=revisor", "/agentes?id=1", "/permiso?id=1&agente=build&sujeto=bash&objetivo=t1%20x",
-        `/entradas?proyecto=${encodeURIComponent(e.proyecto)}`];
+        `/entradas?proyecto=${encodeURIComponent(e.proyecto)}`, `/hallazgos?proyecto=${encodeURIComponent(e.proyecto)}`];
       for (const ruta of rutas) {
         const r = await solicitarLocal({ host: "127.0.0.1", puerto: servidor.puerto, ruta });
-        expect([200, 303]).toContain(r.estado);
+        expect(r.estado).toBe(ruta.startsWith("/resolver?") ? 303 : 200);
+        if (r.estado === 303) expect(r.cabeceras.location).toBe("/resoluciones/1?agente=revisor");
+        else validar(ruta.startsWith("/resoluciones") ? "valores" : ruta.split("?")[0]!.slice(1), datos(r.cuerpo));
         sinContenido(r.cuerpo, e.marcas);
       }
       for (const ruta of new Bun.Glob("**/*").scanSync({ cwd: e.env.RIGE_ALMACEN!, onlyFiles: true, dot: true }))
@@ -69,7 +83,7 @@ describe("RNF-04 CA-1 y CA-2 T3-04 R-8", () => {
       sinContenido(readFileSync(join(e.env.RIGE_ALMACEN!, ruta)), e.marcas);
   });
   describe("T3-04-c1 R-2 R-3 R-9", () => {
-    test("errores de expansion no filtran ni con --depurar, tampoco en paginas ni almacen", async () => {
+    test("V-2 errores de expansion no filtran ni con --depurar, tampoco en paginas ni almacen", async () => {
       const e = preparar();
       expect(lanzar(e.raiz, ["esquema"], e.env).codigo).toBe(0);
       const entrada = join(e.proyecto, "opencode.json");
@@ -92,23 +106,53 @@ describe("RNF-04 CA-1 y CA-2 T3-04 R-8", () => {
         writeFileSync(entrada, texto);
         e.env.RIGE_PRUEBA_CLAVE = valor;
         const marcas = [...e.marcas, "MARCA-CONTENIDO-22", "MARCA-CONTENIDO-23", ...valor.matchAll(/MARCA-[\w-]+/g)].map(m => typeof m === "string" ? m : m[0]);
+        const erroresPorConsulta = new Map<string, { error: { codigo: string; mensaje: string } }>();
         for (const depurar of [[], ["--depurar"]]) for (const [comando, opciones] of consultas) {
           const r = lanzar(e.raiz, [comando, "--proyecto", e.proyecto, ...opciones, ...depurar], e.env);
-          if (comando === "entradas" && legibilidad !== null) {
+          if ((comando === "entradas" || comando === "hallazgos") && legibilidad !== null) {
             expect(r.codigo).toBe(0);
+            expect(r.error).toBe("");
             const respuesta = JSON.parse(r.salida);
+            validar(comando, respuesta);
             expect(respuesta.entradas.find((v: any) => v.referencia === entrada.replaceAll("\\", "/"))?.legibilidad).toBe(legibilidad);
+            if (comando === "hallazgos") {
+              expect(respuesta.incompleta).toBe(true);
+              expect(respuesta.motivos).toEqual(["hallazgos-parciales"]);
+              expect(respuesta.hallazgos).toContainEqual(expect.objectContaining({ tipo: "entrada-ilegible" }));
+            }
           } else {
             expect(r.codigo).toBe(codigo);
+            expect(r.salida).toBe("");
+            validar("error", JSON.parse(r.error));
             expect(JSON.parse(r.error).error.codigo).toBe(errorEsperado);
+            erroresPorConsulta.set(comando, JSON.parse(r.error));
           }
           sinContenido(r.salida + r.error, marcas);
         }
         const servidor = await lanzarServidor(e.raiz, e.env);
         try {
-          for (const ruta of [`/resolver?proyecto=${encodeURIComponent(e.proyecto)}&agente=revisor`, `/entradas?proyecto=${encodeURIComponent(e.proyecto)}`]) {
+          for (const ruta of [`/resolver?proyecto=${encodeURIComponent(e.proyecto)}&agente=revisor`, `/entradas?proyecto=${encodeURIComponent(e.proyecto)}`, `/hallazgos?proyecto=${encodeURIComponent(e.proyecto)}`]) {
             const r = await solicitarLocal({ host: "127.0.0.1", puerto: servidor.puerto, ruta });
-            expect(errorEsperado === "configuracion-invalida" ? [500] : [200, 422]).toContain(r.estado);
+            const parcial = !ruta.startsWith("/resolver?") && legibilidad !== null;
+            expect(r.estado).toBe(parcial ? 200 : errorEsperado === "configuracion-invalida" ? 500 : 422);
+            if (parcial) {
+              const comando = ruta.split("?")[0]!.slice(1);
+              const cuerpo = datos(r.cuerpo);
+              validar(comando, cuerpo);
+              if (comando === "hallazgos") expect(cuerpo.incompleta).toBe(true);
+            } else {
+              const error = erroresPorConsulta.get(ruta.startsWith("/resolver?") ? "valores" : ruta.split("?")[0]!.slice(1));
+              expect(error).toBeDefined();
+              validar("error", error);
+              expect(error!.error.codigo).toBe(errorEsperado);
+              expect(r.cuerpo).toContain(`<title>Error ${r.estado} · RIGE</title>`);
+              expect(r.cuerpo).toContain('<main id="contenido"');
+              if (r.estado === 500) {
+                expect(r.cuerpo).toContain("<p>Falla interna de RIGE.</p>");
+                expect(r.cuerpo).toContain('<small class="codigo-error">interno</small>');
+                expect(r.cuerpo).not.toContain(escapar(error!.error.mensaje));
+              } else expect(r.cuerpo).toContain(`<p>${escapar(error!.error.mensaje)}</p>`);
+            }
             sinContenido(r.cuerpo, marcas);
           }
         } finally { await servidor.detener(); }

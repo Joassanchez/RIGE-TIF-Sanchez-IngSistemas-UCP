@@ -12,6 +12,7 @@ import { crearEntornoMemoria } from "../utilidades/entorno-memoria";
 import { copiarEscenario } from "../utilidades/escenario";
 import { instalacionEnMemoria } from "../utilidades/instalacion-opencode";
 import { resolver } from "../utilidades/resolver";
+import { exclusionValor } from "../utilidades/exclusiones-valores";
 
 const limpiezas: (() => void)[] = [];
 afterEach(() => { for (const limpiar of limpiezas.splice(0).reverse()) limpiar(); });
@@ -114,8 +115,9 @@ describe("RNF-06 CA-1", () => {
   });
 });
 
-describe("RNF-06 CA-2", () => {
+describe("RNF-06 CA-2 T5-04 W-3", () => {
   test("los valores resueltos capturados coinciden con OpenCode 1.18.25 Windows con ambas barras y combinaciones", () => {
+    let comparados = 0, excluidos = 0;
     for (const nombre of ["v1-vias", "v1-precedencia"]) {
       const referencia = leerReferencia(nombre);
       expect(referencia.procedencia.version).toBe("1.18.25");
@@ -126,11 +128,13 @@ describe("RNF-06 CA-2", () => {
         const { resolucion, raiz } = resolverEscenario(nombre, "win32", separadores);
         const obtenidos: Record<string, Record<string, unknown>> = {};
         const comparables = structuredClone(esperados);
-        // maxSteps sigue fuera del alcance del adaptador: no es un valor resuelto.
-        if (nombre === "v1-vias") {
-          expect(resolucion.noResueltas).toContainEqual({ ruta: ["agent", "build", "steps"], regla: "fuera-del-v1" });
-          expect(resolucion.valores.some(v => v.ruta.join(".") === "agent.build.steps")).toBe(false);
-          delete comparables.build!.steps;
+        for (const [agente, claves] of Object.entries(comparables)) for (const clave of Object.keys(claves)) {
+          const motivo = exclusionValor("RNF-06", nombre, agente, clave);
+          if (!motivo) continue;
+          expect(resolucion.noResueltas).toContainEqual({ ruta: ["agent", agente, clave], regla: "fuera-del-v1" });
+          expect(resolucion.valores.some(v => v.ruta.join(".") === `agent.${agente}.${clave}`)).toBe(false);
+          delete claves[clave];
+          excluidos++;
         }
         for (const [agente, claves] of Object.entries(comparables)) {
           obtenidos[agente] = {};
@@ -142,6 +146,7 @@ describe("RNF-06 CA-2", () => {
             if (!consulta.exito) throw new Error(consulta.error.mensaje);
             expect(consulta.valor.valores).toHaveLength(1);
             obtenidos[agente]![clave] = consulta.valor.valores[0]!.rastro.valor;
+            comparados++;
           }
         }
         const normalizar = (valor: typeof obtenidos) => normalizarRutas(valor, { data: raiz, tmp: raiz, hogar: raiz });
@@ -149,6 +154,7 @@ describe("RNF-06 CA-2", () => {
         expect(normalizar(obtenidos)).toEqual(normalizar(comparables));
       }
     }
+    console.info(`W-3 RNF-06 valores comparados=${comparados}, excluidos=${excluidos} (tres formas de separadores); descartados=[]`);
   });
 });
 

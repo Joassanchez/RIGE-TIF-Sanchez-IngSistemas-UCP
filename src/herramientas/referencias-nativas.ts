@@ -5,7 +5,8 @@ import { join, relative, resolve } from "node:path";
 import { entornoDeReferencia, type ReferenciaEntorno } from "../pruebas/utilidades/entorno-referencia";
 import { copiarEscenario, type OpcionesEscenario } from "../pruebas/utilidades/escenario";
 import { comparar, marcadorRelativoRaiz, normalizar, normalizarRutas } from "./referencias-nativas/comparar";
-import { comprobarAislamiento, esFalloGitfile } from "./referencias-nativas/aislamiento";
+import { comprobarAislamiento } from "./referencias-nativas/aislamiento";
+import { prepararGitReferencia } from "./referencias-nativas/git";
 
 type Referencia = {
   readonly procedencia: ReferenciaEntorno["procedencia"] & { readonly version: string; readonly directorio: string; readonly hogar: string;
@@ -78,7 +79,9 @@ function ejecutar(): number {
     .filter(entrada => !seleccion.size || seleccion.has(entrada.name))
     .map(entrada => entrada.name).sort().map(nombre => ({ nombre,
       referencia: JSON.parse(readFileSync(join(escenarios, nombre, "REFERENCIA.json"), "utf8")) as Referencia,
-    }));
+    }))
+    // Las decisiones de herramienta se capturan y comparan con bun run decisiones.
+    .filter(({ referencia }) => referencia.procedencia.soloDecisiones !== true);
   if (!referencias.length) throw new Error("No se encontraron referencias nativas.");
   if ([...seleccion].some(nombre => !referencias.some(r => r.nombre === nombre))) throw new Error("Escenario sin referencia nativa.");
   for (const { nombre, referencia } of referencias) {
@@ -117,23 +120,8 @@ function ejecutar(): number {
       const hogar = join(copia.raiz, referencia.procedencia.hogar);
       const env = entornoDeReferencia(referencia, copia);
       comprobarProteccion(referencia, referencia, env);
-      // Un HEAD sintetico no es un repositorio: el binario requiere git rev-parse.
-      if (referencia.procedencia.git !== "sintetico" && referencia.procedencia.git !== "ninguno") {
-        const raizRepositorio = referencia.procedencia.git === "proyecto" ? copia.proyecto : copia.raiz;
-        const inicializacion = Bun.spawnSync(["git", "init", "--quiet", "--initial-branch=main"], {
-          cwd: raizRepositorio, env, stdout: "pipe", stderr: "pipe", timeout: 10000,
-        });
-        if (inicializacion.exitCode !== 0) throw new Error(`git init fallo: ${inicializacion.stderr.toString().trim()}`);
-        const raizGit = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"], {
-          cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 10000,
-        });
-        if (referencia.procedencia.git === "gitfile-roto"
-          ? !esFalloGitfile(raizGit.exitCode, raizGit.stderr.toString(),
-            readFileSync(join(copia.proyecto, ".git"), "utf8"), copia.proyecto)
-          : raizGit.exitCode !== 0 || resolve(raizGit.stdout.toString().trim()).toLowerCase() !== resolve(raizRepositorio).toLowerCase()) {
-          throw new Error("El directorio consultado no pertenece al worktree aislado.");
-        }
-      }
+      const controlGit = prepararGitReferencia(copia, referencia.procedencia.git ?? "raiz",
+        join(copia.raiz, referencia.procedencia.directorio), env, nombre);
       if (referencia.procedencia.fallaEsperada) {
         const proceso = Bun.spawnSync([binario, "debug", "agent", referencia.agente], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
@@ -145,7 +133,7 @@ function ejecutar(): number {
           ...(posicion ? { linea: Number(posicion[1]), columna: Number(posicion[2]) } : {}) };
         const capturada = { ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
-            fecha: new Date().toISOString().slice(0, 10), comando: "opencode debug agent <agente>" }, falla,
+            fecha: new Date().toISOString().slice(0, 10), comando: "opencode debug agent <agente>", ...(controlGit ? { controlGit } : {}) }, falla,
         };
         comprobarProteccion(capturada, referencia, env);
         if (regenerar) writeFileSync(join(escenarios, nombre, "REFERENCIA.json"), JSON.stringify(capturada, null, 2) + "\n");
@@ -237,6 +225,7 @@ function ejecutar(): number {
         }));
         const capturada = { ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
+            ...(controlGit ? { controlGit } : {}),
             fecha: new Date().toISOString().slice(0, 10), criterio: "Comparacion profunda de todas las reglas de cadenas, en orden y con rutas normalizadas; valores conserva las claves seleccionadas del escenario.",
             comando: agentes === undefined ? "opencode debug agent <agente>" : "opencode debug agent <agente>; opencode agent list", aislamiento: `Modo Git: ${referencia.procedencia.git ?? "raiz"}; git init y rev-parse en raiz/proyecto y repositorios exteriores de casos anidados; gitfile-roto exige el fallo de rev-parse. HOME, USERPROFILE, APPDATA, LOCALAPPDATA, datos XDG y ProgramData=hogar; XDG_CONFIG_HOME=hogar/.config; TEMP/TMP/TMPDIR=hogar/tmp; solo PATH y SystemRoot heredados. ${referencia.procedencia.skillsExternosExcluidos ? "OPENCODE_DISABLE_EXTERNAL_SKILLS=true evita la subida al HOME real fuera de VCS." : "Sin flags que deshabiliten skills."} Comprobacion de HOME real sobre todas las reglas normalizadas; external_directory sigue parcialmente observado en RIGE.` },
           ...(herramientas === undefined ? {} : { herramientas }),
