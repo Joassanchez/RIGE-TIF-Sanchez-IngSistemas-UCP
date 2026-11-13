@@ -2,7 +2,9 @@ import { describe, expect, spyOn, test } from "bun:test";
 import { errorAlmacenSinEsquema } from "../../aplicacion/errores";
 import type { ConsultarEstado } from "../../aplicacion/casos-uso/consultar-estado";
 import { versionRige, type RespuestaEstado } from "../../aplicacion/respuestas/estado";
+import { normalizarVolver } from "./diseno";
 import { paginaInicio } from "./paginas/inicio";
+import { leerTemaDeCookie } from "./rutas-web";
 import { crearManejador, iniciarServidor, type CasosWeb } from "./servidor";
 
 const respuesta: RespuestaEstado = {
@@ -218,5 +220,154 @@ describe("O-4", () => {
     for (const recibida of [...respuestas, uso, falla]) {
       expect([...recibida.headers.keys()].filter((nombre) => nombre.startsWith("access-control-"))).toEqual([]);
     }
+  });
+});
+
+describe("T6-21 A-2 A-3 A-4 A-5 tema y selector", () => {
+  const puerto = 12345;
+  const host = `127.0.0.1:${puerto}`;
+  const req = (ruta: string, headers: Record<string, string> = {}, method = "GET") =>
+    new Request(`http://127.0.0.1${ruta}`, { method, headers: { Host: host, ...headers } });
+
+  function extraerSelector(html: string): string {
+    const coincidencia = html.match(/<div class="selector-tema" role="group" aria-label="Tema">([\s\S]*?)<\/div>/);
+    expect(coincidencia).not.toBeNull();
+    return coincidencia![1]!;
+  }
+
+  test("A-2 normaliza volver, valida cookies y atiende /tema sin abrir origen ajeno", async () => {
+    expect(normalizarVolver("/resoluciones/1?a=2")).toBe("/resoluciones/1?a=2");
+    for (const inseguro of ["//evil.com", "https://evil.com/x", "/\\evil.com", "", null, undefined, "/ruta\n"]) {
+      expect(normalizarVolver(inseguro)).toBe("/");
+    }
+    expect(leerTemaDeCookie(req("/", { Cookie: "rige_tema=oscuro" }))).toBe("oscuro");
+    expect(leerTemaDeCookie(req("/", { Cookie: "a=1; rige_tema=claro; b=2" }))).toBe("claro");
+    expect(leerTemaDeCookie(req("/", { Cookie: "rige_tema=sistema" }))).toBe("sistema");
+    expect(leerTemaDeCookie(req("/", { Cookie: "rige_tema=rojo" }))).toBe("sistema");
+    expect(leerTemaDeCookie(req("/"))).toBe("sistema");
+
+    let consultas = 0;
+    const no = (): never => { consultas++; throw new Error("No consultar almacen en /tema"); };
+    const manejar = crearManejador(puerto, {
+      consultarEstado: no, consultarProyectosRecientes: no, resolverProyecto: no, consultarResolucion: no,
+      consultarAgentes: no, consultarPermiso: no, consultarReglas: no, consultarEntradas: no,
+      consultarHallazgos: no, compararResoluciones: no,
+    }, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
+
+    const rOscuro = manejar(req("/tema?valor=oscuro&volver=/resoluciones/1"));
+    expect(rOscuro.status).toBe(303);
+    expect(rOscuro.headers.get("Location")).toBe("/resoluciones/1");
+    expect(rOscuro.headers.get("Set-Cookie")).toBe("rige_tema=oscuro; Path=/; SameSite=Strict; HttpOnly; Max-Age=31536000");
+
+    const rClaro = manejar(req("/tema?valor=claro&volver=%2Fentradas%3Fproyecto%3Dp"));
+    expect(rClaro.status).toBe(303);
+    expect(rClaro.headers.get("Location")).toBe("/entradas?proyecto=p");
+    expect(rClaro.headers.get("Set-Cookie")).toBe("rige_tema=claro; Path=/; SameSite=Strict; HttpOnly; Max-Age=31536000");
+
+    const rSistema = manejar(req("/tema?valor=sistema&volver=/reglas"));
+    expect(rSistema.status).toBe(303);
+    expect(rSistema.headers.get("Location")).toBe("/reglas");
+    expect(rSistema.headers.get("Set-Cookie")).toBe("rige_tema=; Path=/; SameSite=Strict; HttpOnly; Max-Age=0");
+
+    for (const volverInseguro of ["//evil.com", "https://evil.com/x"]) {
+      const rRedir = manejar(req(`/tema?valor=oscuro&volver=${encodeURIComponent(volverInseguro)}`));
+      expect(rRedir.status).toBe(303);
+      expect(rRedir.headers.get("Location")).toBe("/");
+    }
+
+    for (const rutaInvalida of ["/tema?valor=rojo", "/tema"]) {
+      const rBad = manejar(req(rutaInvalida));
+      expect(rBad.status).toBe(400);
+    }
+
+    expect(manejar(new Request("http://127.0.0.1/tema?valor=oscuro&volver=/", { headers: { Host: "ajeno:12345" } })).status).toBe(403);
+    expect(manejar(req("/tema?valor=oscuro&volver=/", { "Sec-Fetch-Site": "cross-site" })).status).toBe(403);
+    expect(manejar(req("/tema?valor=oscuro&volver=/", { "Sec-Fetch-Site": "same-site" })).status).toBe(403);
+    expect(manejar(req("/tema?valor=oscuro&volver=/", {}, "POST")).status).toBe(405);
+    expect(consultas).toBe(0);
+  });
+
+  test("A-3 A-4 A-5 emite data-tema segun cookie, selector unico en cada pagina e invariantes intactas", async () => {
+    const manejar = manejarEstado(puerto, () => ({ exito: true, valor: respuesta }));
+    const manejar503 = manejarEstado(puerto, () => ({ exito: false, error: errorAlmacenSinEsquema }));
+    const manejar500 = manejarEstado(puerto, () => { throw new Error("Falla interna"); });
+
+    const rSinCookie = manejar(req("/"));
+    const rSistema = manejar(req("/", { Cookie: "rige_tema=sistema" }));
+    const rClaro = manejar(req("/", { Cookie: "rige_tema=claro" }));
+    const rOscuro = manejar(req("/", { Cookie: "rige_tema=oscuro" }));
+    const [htmlSin, htmlSis, htmlCla, htmlOsc] = await Promise.all([
+      rSinCookie.text(), rSistema.text(), rClaro.text(), rOscuro.text(),
+    ]);
+
+    expect(htmlSin.startsWith('<!doctype html>\n<html lang="es">')).toBe(true);
+    expect(htmlSin).not.toContain("data-tema=");
+    expect(htmlSis.startsWith('<!doctype html>\n<html lang="es">')).toBe(true);
+    expect(htmlSis).not.toContain("data-tema=");
+    expect(htmlCla.startsWith('<!doctype html>\n<html lang="es" data-tema="claro">')).toBe(true);
+    expect(htmlOsc.startsWith('<!doctype html>\n<html lang="es" data-tema="oscuro">')).toBe(true);
+
+    const paginas: Array<{ nombre: string; res: Response; activo: string }> = [
+      { nombre: "inicio", res: manejar(req("/")), activo: "sistema" },
+      { nombre: "inicio-oscuro", res: manejar(req("/", { Cookie: "rige_tema=oscuro" })), activo: "oscuro" },
+      { nombre: "404", res: manejar(req("/otra", { Cookie: "rige_tema=claro" })), activo: "claro" },
+      { nombre: "400", res: manejar(req("/tema?valor=rojo", { Cookie: "rige_tema=oscuro" })), activo: "oscuro" },
+      { nombre: "503", res: manejar503(req("/", { Cookie: "rige_tema=claro" })), activo: "claro" },
+      { nombre: "500", res: manejar500(req("/")), activo: "sistema" },
+      { nombre: "403", res: manejar(new Request("http://127.0.0.1/", { headers: { Host: "ajeno" } })), activo: "sistema" },
+      { nombre: "405", res: manejar(req("/", {}, "POST")), activo: "sistema" },
+    ];
+
+    for (const pagina of paginas) {
+      const html = await pagina.res.text();
+      const selector = extraerSelector(html);
+      expect(selector).toContain("/tema?valor=sistema&amp;volver=");
+      expect(selector).toContain("/tema?valor=claro&amp;volver=");
+      expect(selector).toContain("/tema?valor=oscuro&amp;volver=");
+      const activos = selector.match(/aria-current="true"/g) ?? [];
+      expect(activos).toHaveLength(1);
+      expect(selector).toMatch(new RegExp(`href="/tema\\?valor=${pagina.activo}&amp;volver=[^"]*" aria-current="true"`));
+      expect(html).not.toMatch(/\sstyle=/i);
+      const scripts = html.match(/<script\b[^>]*>/gi) ?? [];
+      for (const etiqueta of scripts) {
+        expect(etiqueta).toBe('<script type="application/json" id="respuesta">');
+      }
+      const csp = pagina.res.headers.get("Content-Security-Policy") ?? "";
+      expect(csp).toContain("default-src 'none'");
+      expect(csp).toContain("style-src 'self'");
+      expect([...pagina.res.headers.keys()].filter((k) => k.startsWith("access-control-"))).toEqual([]);
+    }
+
+    const manejarEntradas = crearManejador(
+      puerto,
+      {
+        ...casosEstado(() => ({ exito: true, valor: respuesta })),
+        consultarEntradas: () => ({
+          exito: true,
+          valor: {
+            esquema: 2,
+            proyecto: "/p",
+            resumenEntradas: "sha256:0000",
+            declaraciones: [],
+            reglas: {},
+            entradas: [],
+          },
+        }),
+      },
+      { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } },
+    );
+    const [htmlEntradasSin, htmlEntradasCla, htmlEntradasOsc] = await Promise.all([
+      manejarEntradas(req("/entradas?proyecto=/p")).text(),
+      manejarEntradas(req("/entradas?proyecto=/p", { Cookie: "rige_tema=claro" })).text(),
+      manejarEntradas(req("/entradas?proyecto=/p", { Cookie: "rige_tema=oscuro" })).text(),
+    ]);
+
+    const extraerJson = (html: string) => {
+      const m = html.match(/<script type="application\/json" id="respuesta">([\s\S]*?)<\/script>/);
+      expect(m).not.toBeNull();
+      return m![1]!;
+    };
+    expect(extraerJson(htmlEntradasCla)).toBe(extraerJson(htmlEntradasSin));
+    expect(extraerJson(htmlEntradasOsc)).toBe(extraerJson(htmlEntradasSin));
   });
 });

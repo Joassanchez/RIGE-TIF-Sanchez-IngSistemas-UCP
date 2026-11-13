@@ -1,7 +1,7 @@
 import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { errorSolicitudInvalida, type ErrorUso } from "../../aplicacion/errores";
 import type { SobreAlmacen } from "../../aplicacion/respuestas/sobre";
-import { contenidoError, diseno, enlace } from "./diseno";
+import { conTemaWeb, contenidoError, diseno, enlace, normalizarVolver, type TemaWeb } from "./diseno";
 import { paginaErrorUso } from "./intermedios/errores";
 import { paginaComparacion } from "./paginas/comparacion";
 import { paginaConsultasPermiso } from "./paginas/consultas-permiso";
@@ -12,8 +12,8 @@ import { paginaPermiso } from "./paginas/permiso";
 import { paginaReglas } from "./paginas/reglas";
 import { paginaResolucion } from "./paginas/resolucion";
 import { paginaResumenProyecto } from "./paginas/resumen-proyecto";
-import { agenteInicial, parametrosPanel, type ContextoPanel } from "./panel";
-import { redirigir, responderEstilos, responderHtml } from "./respuesta";
+import { agenteInicial, comparacionAnterior, parametrosPanel, type ContextoPanel } from "./panel";
+import { redirigir, redirigirTema, responderEstilos, responderHtml } from "./respuesta";
 import type { CasosWeb, PresentacionWeb } from "./servidor";
 
 const erroresSinFoto = ["clave-no-resuelta", "agente-sin-declaraciones"];
@@ -57,11 +57,13 @@ function contextoFoto(casos: CasosWeb, id: string, agente: string | undefined): 
   if (!consulta.exito) return consulta;
   const { sobre } = consulta.valor;
   const ultimo = sobre.anteriores[0];
+  const anteriorAnalisis = comparacionAnterior(sobre);
   return {
     exito: true,
     valor: {
       instante: sobre.instante,
       ...(ultimo !== undefined && ultimo.id !== sobre.id ? { ultimoAnalisis: { id: ultimo.id, instante: ultimo.instante } } : {}),
+      ...(anteriorAnalisis === undefined ? {} : { anteriorAnalisis }),
     },
   };
 }
@@ -253,8 +255,30 @@ function manejarNoEncontrada(url: URL): Response {
   return responderHtml(404, pagina);
 }
 
+export function leerTemaDeCookie(solicitud: Request): TemaWeb {
+  const cabecera = solicitud.headers.get("Cookie");
+  if (!cabecera) return "sistema";
+  for (const parte of cabecera.split(";")) {
+    const indice = parte.indexOf("=");
+    if (indice < 0) continue;
+    if (parte.slice(0, indice).trim() !== "rige_tema") continue;
+    const valor = parte.slice(indice + 1).trim();
+    if (valor === "claro" || valor === "oscuro") return valor;
+  }
+  return "sistema";
+}
+
+function manejarTema(url: URL): Response {
+  const valor = url.searchParams.get("valor");
+  if (valor !== "sistema" && valor !== "claro" && valor !== "oscuro") {
+    return paginaErrorUso(errorSolicitudInvalida("el tema debe ser sistema, claro u oscuro"));
+  }
+  return redirigirTema(normalizarVolver(url.searchParams.get("volver")), valor);
+}
+
 const rutasExactas: Record<string, ManejadorRuta> = {
   "/estilos.css": manejarEstilos,
+  "/tema": manejarTema,
   "/comparar": manejarComparar,
   "/reglas": manejarReglas,
   "/hallazgos": manejarHallazgos,
@@ -270,17 +294,19 @@ const patronResolucion = /^\/resoluciones\/([0-9]+)(\/permisos|\/agentes\/([^/]+
 export function crearEnrutador(casos: CasosWeb, presentacion: PresentacionWeb): (solicitud: Request) => Response {
   return (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
-    const contexto: ContextoRuta = {
-      casos,
-      presentacion,
-      solicitud: construirContextoSolicitud(url, presentacion),
-    };
-    const exacto = Object.hasOwn(rutasExactas, url.pathname) ? rutasExactas[url.pathname] : undefined;
-    if (exacto) return exacto(url, contexto);
-    const rutaResolucion = patronResolucion.exec(url.pathname);
-    if (rutaResolucion?.[1] !== undefined) {
-      return manejarResolucion(rutaResolucion[1], rutaResolucion[2], rutaResolucion[3], url, contexto);
-    }
-    return manejarNoEncontrada(url);
+    return conTemaWeb(leerTemaDeCookie(solicitud), `${url.pathname}${url.search}`, () => {
+      const contexto: ContextoRuta = {
+        casos,
+        presentacion,
+        solicitud: construirContextoSolicitud(url, presentacion),
+      };
+      const exacto = Object.hasOwn(rutasExactas, url.pathname) ? rutasExactas[url.pathname] : undefined;
+      if (exacto) return exacto(url, contexto);
+      const rutaResolucion = patronResolucion.exec(url.pathname);
+      if (rutaResolucion?.[1] !== undefined) {
+        return manejarResolucion(rutaResolucion[1], rutaResolucion[2], rutaResolucion[3], url, contexto);
+      }
+      return manejarNoEncontrada(url);
+    });
   };
 }

@@ -94,7 +94,7 @@ describe("Comparación de resoluciones", () => {
     expect(cuerpo).toContain("<h1>Análisis n.º 7 → n.º 8</h1>");
     expect(cuerpo).toContain(`${fechaLocal(conSegundos.instante)}:09`);
     expect(cuerpo).toContain(`${fechaLocal(hastaSegundos.instante)}:45`);
-    expect(cuerpo).not.toContain("Rutas no comparables y motivos");
+    expect(cuerpo).not.toContain('id="limites-analisis"');
     const cli = cuerpo.match(/<details id="comando-cli"[^]*?<\/details>/)?.[0] ?? "";
     expect(cli).toContain("Consultar por CLI sobre las mismas fotos");
     expect(cli).not.toContain("No recupera esta foto; coincide si las entradas y el contexto no cambiaron");
@@ -108,7 +108,8 @@ describe("Comparación de resoluciones", () => {
       desde: { ...conSegundos, motivosAgentes: ["motivo"], reglas: { motivo: "Agente con motivo" } },
     };
     const cuerpoConMotivos = await paginaComparacion(conMotivos).text();
-    expect(cuerpoConMotivos).toContain("<details><summary>Rutas no comparables y motivos (desde)</summary>");
-    expect(cuerpoConMotivos).not.toContain("Rutas no comparables y motivos (hasta)");
+    expect(cuerpoConMotivos).toContain('id="limites-analisis"');
+    expect(cuerpoConMotivos).toContain("Qué no cubre este análisis");
+    expect(cuerpoConMotivos).not.toContain("<details><summary>Rutas no comparables");
   });
 });

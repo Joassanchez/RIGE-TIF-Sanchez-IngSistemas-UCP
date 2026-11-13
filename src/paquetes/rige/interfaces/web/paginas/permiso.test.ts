@@ -110,6 +110,17 @@ describe("Página permiso y consultas", () => {
     expect(pedir("/permiso?id=7&agente=a%2Fb&herramienta=read&objetivo=.env", { ...casos, consultarPermiso: () => ({ exito: false, error: { codigo: "cadena-incompleta", mensaje: "No observable" } }) }).status).toBe(422);
   });
 
+  test("T6-23 tarjeta de decision lleva rol semantico y regla determinante borde de marca", async () => {
+    for (const [decision, rol] of [["allow", "permitida"], ["ask", "pregunta"], ["deny", "denegada"], [null, "pista"]] as const) {
+      const cuerpo = sinJson(await paginaPermiso({ ...permiso, decision }, "7", contexto).text());
+      expect(cuerpo).toContain(`id="resultado-permiso" class="tarjeta decision-principal rol--${rol}"`);
+    }
+    const cuerpo = sinJson(await paginaPermiso(permiso, "7", contexto).text());
+    const determinante = cuerpo.match(/id="regla-determinante"[^]*?<\/section>/)![0];
+    expect(determinante).toContain('class="tarjeta tarjeta--marca"');
+    expect(cuerpo).not.toContain("ninguna");
+  });
+
   test("P-3 determinante cero o null, carácter, protección anulada e índices desde uno", async () => {
     const cuerpo = await paginaPermiso(permiso, "7", contexto).text();
     expect(cuerpo).toContain("Regla que decide");

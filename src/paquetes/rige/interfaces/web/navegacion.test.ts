@@ -138,9 +138,9 @@ describe("T5-09 N-3 permiso como subagente", () => {
     expect(solicitudes[1]!.lanzadoPor).toBe("plan");
     const conLanzador = { ...permiso, lanzadoPor: "plan <principal>" };
     const pagina = await paginaPermiso(conLanzador).text();
-    expect(pagina).toContain('Lanzado por: <code>plan &lt;principal&gt;</code>');
+    expect(pagina).toContain('<dt>Lanzado por</dt><dd><code>plan &lt;principal&gt;</code></dd>');
     expect(JSON.parse(pagina.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(conLanzador);
-    expect(await paginaPermiso(permiso).text()).not.toContain("Lanzado por:");
+    expect(await paginaPermiso(permiso).text()).not.toContain("<dt>Lanzado por</dt>");
   });
 });
 
@@ -226,7 +226,7 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
     } }, `/permiso?id=7&agente=${codificado}&herramienta=read&objetivo=${codificado}&lanzadoPor=${codificado}`).text();
     expect(recibida).toEqual({ agente: ataque, herramienta: "read", objetivo: ataque, lanzadoPor: ataque });
     expect(paginaConsulta).toContain(`<code class="ficha-codigo">read: ${escapado}</code>`);
-    expect(paginaConsulta).toContain(`Lanzado por: <code>${escapado}</code>`);
+    expect(paginaConsulta).toContain(`<dt>Lanzado por</dt><dd><code>${escapado}</code></dd>`);
     const paginas: [string, unknown][] = [[paginaListado, listado], [paginaValores, { ...valores, proyecto, agente: ataque }],
       [paginaDiagnostico, diagnostico], [paginaConsulta, consulta], [await paginaEntradas({ ...entradas, proyecto }).text(), { ...entradas, proyecto }]];
     for (const [cuerpo, dato] of paginas) {

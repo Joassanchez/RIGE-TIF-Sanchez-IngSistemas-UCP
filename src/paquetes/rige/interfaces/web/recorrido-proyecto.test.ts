@@ -60,7 +60,7 @@ describe("T5-18 R-10 migración y JSON", () => {
       const cuerpo = await llegada.text();
       expect(dato(cuerpo)).toEqual(esperado);
       expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
-      expect(cuerpo).toContain("Ver en la consola");
+      expect(cuerpo).toContain("comando equivalente");
     }
     const nombre = 'a/b & "<script>';
     const redireccion = pedir(`/resoluciones/7?agente=${encodeURIComponent(nombre)}`);
@@ -77,7 +77,7 @@ describe("T5-18 R-1 resumen", () => {
   test("abre con proyecto, ruta, fecha y versión; cuatro bloques en orden", async () => {
     const cuerpo = await pedir("/resoluciones/7").text();
     expect(cuerpo).toContain("<h1>proyecto</h1>");
-    expect(cuerpo).toContain(`Análisis del ${fechaLocal(sobre.instante)}`);
+    expect(cuerpo).toContain(`n.º ${sobre.id}, ${fechaLocal(sobre.instante)}`);
     expect(cuerpo).toContain("OpenCode 1.18.25");
     expect(dato(cuerpo)).toEqual(agentes);
     const posiciones = ["cifras", "tabla-agentes", "hallazgos-actuales", "archivos-cambios", "historia"].map(id => cuerpo.indexOf(`id="${id}"`));
@@ -111,7 +111,7 @@ describe("T5-18 R-3 agentes", () => {
       if (incompleta) expect(html).toContain("Listado parcial.");
     }
     const vacia = await pedir("/resoluciones/7", { consultarAgentes: () => ({ exito: true, valor: { ...agentes, agentes: [], eliminados: [{ nombre: "quitado", declaracion }] } }), consultarResolucion: no }).text();
-    for (const texto of ["Sin agentes activos", "quitado", "eliminado / deshabilitado", "Fecha no disponible", "Historial no disponible para este análisis", "sin dato"]) expect(vacia).toContain(texto);
+    for (const texto of ["Sin agentes activos", "quitado", "eliminado / deshabilitado", "fecha no disponible", "Historial no disponible para este análisis", "sin dato"]) expect(vacia).toContain(texto);
     expect(vacia).not.toContain("agentes de fábrica");
     expect(vacia).not.toContain("/comparar?");
     expect(vacia).not.toContain('id="historia"');

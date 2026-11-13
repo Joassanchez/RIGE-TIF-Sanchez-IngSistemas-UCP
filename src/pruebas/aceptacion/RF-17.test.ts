@@ -65,21 +65,26 @@ function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
   const valores = seccionHtml(cuerpo, "valores");
   const ruta = raiz.replaceAll("\\", "/");
   expect(valores).toContain(`<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor">${temperatura}</td>`);
-  const fila = /<tr><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(valores);
+  const fila = /<tr\b[^>]*><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(valores);
   expect(fila).not.toBeNull();
+  expect(fila![0]).toContain('class="fila--declarado"');
   const celdas = fila![0].match(/<td\b[^>]*>.*?<\/td>/gs)!;
   expect(celdas).toHaveLength(4);
-  expect(textoHtml(celdas[2]!)).toBe("Proyecto · ./opencode.jsonc:6:7");
+  expect(celdas[2]).toContain("procedencia-chip--declarado");
+  expect(celdas[2]).not.toContain("<details");
+  expect(textoHtml(celdas[2]!)).toBe("Proyecto · esta carpeta · ./opencode.jsonc:6:7");
   expect(celdas[2]).toContain(`title="Abrir en VS Code: ${ruta}/proyecto/opencode.jsonc"`);
   expect(celdas[3]).toContain('<ol class="cadena-desplazadas">');
   expect(celdas[3]).not.toContain("<del");
-  expect(textoHtml(celdas[3]!)).toContain(`rige ${temperatura}`);
+  expect(celdas[3]).not.toContain("insignia--rige");
+  expect(textoHtml(celdas[3]!)).not.toContain("rige");
+  expect(celdas[3]).not.toContain(`>${temperatura}<`);
   const desplazadas = [...celdas[3]!.matchAll(/<li class="declaracion-desplazada">(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
   expect(desplazadas).toEqual([
-    "← desplazado 0.2 (Proyecto · ./opencode.json:5:7)",
-    "← desplazado 0.1 (Proyecto · ../opencode.json:5:7)",
+    "0.2 Proyecto · esta carpeta · ./opencode.json:5:7",
+    "0.1 Proyecto · carpeta superior · ../opencode.json:5:7",
   ]);
-  expect(cuerpo).toContain(regla);
+  expect(valores.split(regla).length - 1).toBe(1);
   expect(cuerpo).toContain("Página armada con la resolución leída del almacén de RIGE.");
 }
 
@@ -194,7 +199,7 @@ describe("RF-17", () => {
       const pagina = await recorrido.solicitar(ubicacion(primera));
       expect(pagina.estado).toBe(200);
       const script = pagina.cuerpo.match(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/)?.[1];
-      const visible = pagina.cuerpo.match(/<details id="ver-json"><summary>Ver JSON<\/summary><pre><code>([^]*?)<\/code><\/pre><\/details>/)?.[1];
+      const visible = pagina.cuerpo.match(/<details id="ver-json"><summary>JSON<\/summary><pre><code>([^]*?)<\/code><\/pre><\/details>/)?.[1];
       expect(script).toBeDefined();
       expect(visible).toBeDefined();
       const desescapar = (s: string) => s.replace(/&(amp|lt|gt|quot|#39);/g, m => ({ "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'" })[m]!);

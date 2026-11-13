@@ -33,6 +33,14 @@ export function rolEfecto(codigo: string | null | undefined): RolPresentacion {
   return (rolesSignificado.efectos as Readonly<Record<string, RolPresentacion>>)[codigo] ?? "pista";
 }
 
+export function rolCeldaMatriz(
+  efecto: string | null | undefined,
+  motivo: string | null | undefined,
+): RolPresentacion {
+  if (!efecto && motivo === "eje-parcialmente-observado") return "parcial";
+  return rolEfecto(efecto);
+}
+
 export function rolOrigen(
   origen: string | { readonly tipo: string } | null | undefined
 ): RolPresentacion {

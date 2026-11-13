@@ -3,10 +3,20 @@ import { parametrosPanel, type ContextoPanel } from "../panel";
 import { concordar } from "../textos";
 import type { RespuestaHallazgos } from "../../../aplicacion/respuestas/contrato-generado";
 import { datosRespuesta, html, type HtmlSeguro } from "../plantillas";
-import { cabeceraPagina, declaraciones, diseno, enlace, insignia } from "../diseno";
+import {
+  cabeceraPagina,
+  datoProyecto,
+  datosDeclaraciones,
+  diseno,
+  enlace,
+  huellasEntradas,
+  insignia,
+  pieDesarrolladores,
+  seccionLimites,
+} from "../diseno";
 import { responderHtml } from "../respuesta";
 import { anclaHallazgo, nombresHallazgos } from "../componentes-proyecto";
-import { causaHallazgo, motivoNoResolucion } from "../../presentacion/vocabulario";
+import { causaHallazgo, explicarLimite } from "../../presentacion/vocabulario";
 import { presentarRuta, presentarUbicacion, esArchivoLocal } from "../rutas";
 
 const acciones: Readonly<Record<string, string>> = {
@@ -52,15 +62,31 @@ export function paginaHallazgos(respuesta: RespuestaHallazgos, contexto: Context
   // Los índices se asignan en el orden del contrato antes de agrupar (igual que el resumen).
   const indexados = respuesta.hallazgos.map((hallazgo, indice) => ({ hallazgo, indice }));
   const tipos = [...new Set(respuesta.hallazgos.map(h => h.tipo))];
+  const limitesBrutos = [
+    ...datosDeclaraciones(respuesta.declaraciones, respuesta.reglas),
+    ...(respuesta.incompleta ? [
+      html`Análisis parcial: no se evaluaron todos los hallazgos.`,
+      ...respuesta.motivos.map(motivo => html`${explicarLimite(motivo, respuesta.reglas)}`),
+    ] : []),
+  ];
+  const vistos = new Set<string>();
+  const limites = limitesBrutos.filter(item => {
+    if (vistos.has(item.texto)) return false;
+    vistos.add(item.texto);
+    return true;
+  });
   return responderHtml(200, diseno("Hallazgos", html`
 ${cabeceraPagina({
     titulo: html`<h1>Hallazgos <small class="procedencia">Estado actual de los archivos</small></h1>`,
     pregunta: "¿Qué problemas se observan ahora?",
-    contexto: html`${presentarRuta(respuesta.proyecto)}${contexto.idResolucion === undefined ? html`` : html` · Análisis n.º ${contexto.idResolucion}`} · Estado actual de las entradas de configuración (no es la foto guardada)`,
+    contexto: [
+      datoProyecto(respuesta.proyecto),
+      ...(contexto.idResolucion === undefined ? [] : [{ rotulo: "Análisis de origen", valor: `n.º ${contexto.idResolucion}` }]),
+      { rotulo: "Estado", valor: "Estado actual de las entradas de configuración (no es la foto guardada)" },
+    ],
     detalle: html`<p>Problemas detectados al inspeccionar las entradas vigentes en disco.</p>`,
   })}
 
-${declaraciones(respuesta.declaraciones, respuesta.reglas)}
 <section id="resumen-hallazgos"><h2>Resumen</h2>
 <p class="atenuado">${resumenElementos(respuesta.resumen.elementos)}</p>
 <div class="estadisticas">${Object.entries(respuesta.resumen.hallazgos).filter(([, cantidad]) => cantidad > 0)
@@ -69,11 +95,15 @@ ${Object.values(respuesta.resumen.hallazgos).includes(0) ? html`<p class="atenua
     .filter(([, cantidad]) => cantidad === 0)
     .map(([tipo]) => html`<span title="${tipo}">${nombresHallazgos[tipo]![1].toLowerCase()}</span>`)
     .map((nombre, i) => html`${i ? ", " : ""}${nombre}`)}</p>` : html``}</section>
-${respuesta.incompleta ? html`<div class="aviso aviso--advertencia"><p>Hallazgos parciales; análisis parcial.</p>${respuesta.motivos.map(motivo => html`<p>${motivoNoResolucion(motivo, respuesta.reglas)}</p>`)}</div>` : html``}
 <section id="tabla-hallazgos"><h2>Detalle de hallazgos</h2>
 ${respuesta.hallazgos.length ? html`${tipos.map(tipo => html`<div role="group" aria-label="${nombresHallazgos[tipo]![1]}">
 ${indexados.filter(h => h.hallazgo.tipo === tipo).map(({ hallazgo, indice }) => tarjetaHallazgo(hallazgo, indice, respuesta, contexto))}</div>`)}`
     : html`<p class="estado-vacio">${respuesta.incompleta ? "Sin hallazgos observados; análisis parcial" : "Sin hallazgos en este proyecto"}</p>`}</section>
-${comandoCli("hallazgos", { proyecto: respuesta.proyecto, explicar: true })}
-${datosRespuesta(respuesta)}`, { ...contexto, proyecto: respuesta.proyecto, activa: "Hallazgos" }));
+${seccionLimites(limites)}
+${pieDesarrolladores(
+    respuesta.proyecto,
+    comandoCli("hallazgos", { proyecto: respuesta.proyecto, explicar: true }),
+    datosRespuesta(respuesta),
+    huellasEntradas(respuesta.entradas, respuesta.resumenEntradas, respuesta.proyecto),
+  )}`, { ...contexto, proyecto: respuesta.proyecto, activa: "Hallazgos" }));
 }

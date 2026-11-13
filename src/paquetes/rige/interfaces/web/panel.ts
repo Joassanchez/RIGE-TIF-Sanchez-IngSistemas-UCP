@@ -1,5 +1,11 @@
 import type { RespuestaAgentes } from "../../aplicacion/respuestas/contrato-generado";
+import type { SobreAlmacen } from "../../aplicacion/respuestas/sobre";
 import { html, type HtmlSeguro } from "./plantillas";
+
+export interface CambioAnterior {
+  readonly id: number;
+  readonly cambio: boolean;
+}
 
 export interface ContextoPanel {
   readonly versionHerramienta?: string;
@@ -14,6 +20,16 @@ export interface ContextoPanel {
   readonly sujeto?: string;
   readonly hogar?: string | undefined;
   readonly ultimoAnalisis?: { readonly id: number; readonly instante: string } | undefined;
+  readonly anteriorAnalisis?: CambioAnterior | undefined;
+}
+
+export function comparacionAnterior(sobre?: SobreAlmacen): CambioAnterior | undefined {
+  if (sobre === undefined) return undefined;
+  const indice = sobre.anteriores.findIndex(foto => foto.id === sobre.id);
+  const anterior = indice >= 0 ? sobre.anteriores[indice + 1] : undefined;
+  if (anterior === undefined) return undefined;
+  const actual = sobre.anteriores[indice]!;
+  return { id: anterior.id, cambio: actual.resumenEntradas !== anterior.resumenEntradas };
 }
 
 export function agenteInicial(agentes: RespuestaAgentes["agentes"]): string | undefined {

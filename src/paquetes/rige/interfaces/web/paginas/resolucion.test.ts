@@ -1,4 +1,4 @@
-import { fechaLocal, nombreAnalisis } from "../textos";
+import { fechaLocal } from "../textos";
 import { html } from "../plantillas";
 import { describe, expect, test } from "bun:test";
 import { estilos } from "../estilos";
@@ -45,9 +45,10 @@ describe("W-13", () => {
     const cuerpo = await recibida.text();
     const contenido = cuerpo.split('<main id="contenido" tabindex="-1">')[1]!;
     expect(contenido).toBeDefined();
-    const partes = [html`<h1>${respuesta().agente}</h1>`.texto, "¿Qué significa?", "Página armada con la resolución leída del almacén de RIGE.",
-      "Proyecto", "Valores efectivos", "Claves no incorporadas por RIGE",
-      "Entradas leídas"];
+    const partes = [html`<h1>${respuesta().agente}</h1>`.texto, "Proyecto", "¿Qué significa?",
+      "Página armada con la resolución leída del almacén de RIGE.",
+      "Valores efectivos", "Qué no cubre este análisis",
+      "Huellas de las entradas"];
     let posicion = -1;
     for (const parte of partes) {
       const siguiente = contenido.indexOf(parte);
@@ -59,26 +60,33 @@ describe("W-13", () => {
       "Herramienta", "opencode 1.18.25", "Agente", "a &amp; b", "Clave", "todas",
       "Resumen de las entradas leídas", "a".repeat(64), "Clave", "Valor",
       "Lo determina", "Desplazadas", '<td data-etiqueta="Clave">description</td>', '<td data-etiqueta="Clave">steps</td>',
-      "&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;", "ninguna",
-      "Prevalece la ultima &lt;declaracion&gt; (RD-01).", "Sin resolver &lt;permiso&gt;.",
-      "permission: Sin resolver &lt;permiso&gt;.", "Orden", "Vía", "Referencia", "Condición", "Resumen SHA-256",
+      "&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;", "Prevalece la ultima &lt;declaracion&gt; (RD-01).", "Qué no cubre este análisis",
+      "Clave no incorporada (", "permission", "Orden", "Vía", "Referencia", "Condición", "Resumen SHA-256",
       "remota-wellknown", "no_observada", "observada", "b".repeat(64), "—"]) {
       expect(cuerpo).toContain(dato);
     }
+    expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")).not.toContain("ninguna");
     expect(cuerpo).toMatch(/class="declaracion-desplazada".*0\.2.*class="declaracion-desplazada".*0\.1/s);
-    const fila = seccionHtml(cuerpo, "valores").match(/<tr><td[^>]*>description<\/td>.*?<\/tr>/s)![0];
+    const fila = seccionHtml(cuerpo, "valores").match(/<tr\b[^>]*><td[^>]*>description<\/td>.*?<\/tr>/s)![0];
+    expect(fila).toContain('class="fila--declarado"');
     const celdas = fila.match(/<td\b[^>]*>.*?<\/td>/gs)!;
     expect(celdas).toHaveLength(4);
     expect(celdas[1]).toContain("&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;");
-    expect(textoHtml(celdas[2]!)).toContain("Proyecto · ../&lt;entrada3&gt;.jsonc:6:7");
+    expect(celdas[2]).toContain("procedencia-chip--declarado");
+    expect(celdas[2]).not.toContain("<details");
+    expect(textoHtml(celdas[2]!)).toContain("Proyecto · carpeta superior · ../&lt;entrada3&gt;.jsonc:6:7");
     expect(celdas[3]).toContain('<ol class="cadena-desplazadas">');
     expect(celdas[3]).not.toContain("<del");
-    expect(textoHtml(celdas[3]!)).toContain("rige &quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;");
+    expect(celdas[3]).not.toContain("rige");
+    expect(celdas[3]).not.toContain("alert(1)");
     const desplazadas = [...celdas[3]!.matchAll(/<li class="declaracion-desplazada">(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
     expect(desplazadas).toEqual([
-      "← desplazado 0.2 (Proyecto · ../&lt;entrada2&gt;.jsonc:6:7)",
-      "← desplazado 0.1 (Proyecto · ../&lt;entrada1&gt;.jsonc:6:7)",
+      "0.2 Proyecto · carpeta superior · ../&lt;entrada2&gt;.jsonc:6:7",
+      "0.1 Proyecto · carpeta superior · ../&lt;entrada1&gt;.jsonc:6:7",
     ]);
+    const filaSteps = seccionHtml(cuerpo, "valores").match(/<tr\b[^>]*><td[^>]*>steps<\/td>.*?<\/tr>/s)![0];
+    expect(filaSteps.match(/<td\b[^>]*>.*?<\/td>/gs)![3]).toContain(">—<");
+    expect(seccionHtml(cuerpo, "valores").split("Prevalece la ultima &lt;declaracion&gt; (RD-01).").length - 1).toBe(1);
     expect(cuerpo).toContain('href="/resoluciones/7"');
     expect(cuerpo).not.toContain("agent.a &amp; b.description");
     const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
@@ -101,14 +109,18 @@ describe("W-13", () => {
 describe("T3-01 R-11 declaraciones en resolucion", () => {
   test("presenta las declaraciones escapadas junto al JSON de paridad", async () => {
     const { paginaResolucion } = await import("./resolucion");
-    const dato = { ...respuesta(), declaraciones: ["version-no-determinada", "ejecutable-no-encontrado"],
-      reglas: { ...respuesta().reglas, "version-no-determinada": "Version <no determinada>.", "ejecutable-no-encontrado": "No hay ejecutable & paquete." } };
+    const dato = { ...respuesta(), declaraciones: ["version-no-determinada", "ejecutable-no-encontrado", "declaracion-opaca"],
+      reglas: { ...respuesta().reglas, "version-no-determinada": "Version <no determinada>.", "ejecutable-no-encontrado": "No hay ejecutable & paquete.",
+        "declaracion-opaca": "Aviso <opaco> & escapado." } };
     const cuerpo = await paginaResolucion(dato, sobre).text();
-    const declaraciones = seccionHtml(cuerpo, "declaraciones");
-    expect(declaraciones).toContain("<p>Version &lt;no determinada&gt;.</p>");
-    expect(declaraciones).toContain("<p>No hay ejecutable &amp; paquete.</p>");
+    const limites = seccionHtml(cuerpo, "limites-analisis");
+    expect(limites).toContain("Qué no cubre este análisis");
+    expect(limites).toContain("Versión instalada de OpenCode no determinada");
+    expect(limites).toContain("Ejecutable de OpenCode no encontrado en PATH");
+    expect(limites).toContain("<li>Aviso &lt;opaco&gt; &amp; escapado.</li>");
     seccionHtml(cuerpo, "valores");
-    expect(cuerpo.indexOf('id="declaraciones"')).toBeLessThan(cuerpo.indexOf('id="valores"'));
+    expect(cuerpo.indexOf('id="valores"')).toBeLessThan(cuerpo.indexOf('id="limites-analisis"'));
+    expect(cuerpo.indexOf('id="limites-analisis"')).toBeLessThan(cuerpo.indexOf('class="pie-desarrolladores"'));
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(dato);
   });
 });
@@ -126,15 +138,17 @@ describe("W-14", () => {
       primera: "Conservar la primera <declaracion>.", ultima: "Conservar la ultima & su orden.",
       "fuera-del-v1": "No se resuelve <permiso>.",
     } }).text();
-    const filas = [...seccionHtml(cuerpo, "valores").matchAll(/<tr><td[^>]*>(description|steps)<\/td>.*?<\/tr>/gs)].map((fila) => fila[0]);
+    const seccionValores = seccionHtml(cuerpo, "valores");
+    const filas = [...seccionValores.matchAll(/<tr\b[^>]*><td[^>]*>(description|steps)<\/td>.*?<\/tr>/gs)].map((fila) => fila[0]);
     expect(filas).toHaveLength(2);
     const procedencias = filas.map(fila => fila.match(/<td\b[^>]*>.*?<\/td>/gs)![2]!);
-    expect(procedencias[0]).toContain('<summary>Regla aplicada</summary>');
-    expect(procedencias[0]).toContain('<p>Conservar la primera &lt;declaracion&gt;.</p>');
-    expect(procedencias[1]).toContain('<summary>Regla aplicada</summary>');
-    expect(procedencias[1]).toContain('<p>Conservar la ultima &amp; su orden.</p>');
+    expect(procedencias[0]).not.toContain("<details");
+    expect(procedencias[1]).not.toContain("<details");
+    expect(seccionValores).toContain('<ul class="notas-reglas">');
+    expect(seccionValores).toContain('<li>Conservar la primera &lt;declaracion&gt;.</li>');
+    expect(seccionValores).toContain('<li>Conservar la ultima &amp; su orden.</li>');
     expect(cuerpo).not.toContain('id="leyenda-reglas"');
-    expect(cuerpo).toContain("permission: No se resuelve &lt;permiso&gt;.");
+    expect(seccionHtml(cuerpo, "limites-analisis")).toContain("Clave no incorporada (<code>permission</code>): Claves combinadas o derivadas fuera del alcance actual: RIGE todavía no las resuelve");
     expect(cuerpo).not.toContain("grupo.a &amp; b");
     expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")
       .replace(/<details id="ver-json">[^]*?<\/details>/, "")).not.toContain("orden-de-aplicacion");
@@ -154,14 +168,15 @@ describe("W-15", () => {
     const tabla = seccionHtml(cuerpo, "valores");
     expect(tabla).not.toContain("<tbody>");
     expect(tabla).toContain('<p class="estado-vacio">RIGE no incorpora claves resueltas para este agente.</p>');
-    expect(cuerpo).toContain("Claves no incorporadas por RIGE");
-    expect(cuerpo).toContain("<li>steps: Sin resolver &lt;permiso&gt;.</li>");
-    expect(cuerpo).toContain("<li>maxSteps: Sin resolver &lt;permiso&gt;.</li>");
+    const limites = seccionHtml(cuerpo, "limites-analisis");
+    expect(limites).toContain("Qué no cubre este análisis");
+    expect(limites).toContain("<li>Clave no incorporada (<code>steps</code>): Claves combinadas o derivadas fuera del alcance actual: RIGE todavía no las resuelve</li>");
+    expect(limites).toContain("<li>Clave no incorporada (<code>maxSteps</code>): Claves combinadas o derivadas fuera del alcance actual: RIGE todavía no las resuelve</li>");
   });
 });
 
 describe("T5-08-c1 C3 C4 determinante y plantillas de reglas", () => {
-  test("no repite el valor determinante y presenta plantillas comunes antes de la tabla", async () => {
+  test("no repite el valor determinante y presenta cada regla usada una sola vez al pie de su tabla", async () => {
     const { paginaResolucion } = await import("./resolucion");
     const original = respuesta();
     const implicito = { ...original.valores[1]!, clave: "native", rastro: { ...original.valores[1]!.rastro,
@@ -171,29 +186,36 @@ describe("T5-08-c1 C3 C4 determinante y plantillas de reglas", () => {
       ...original.reglas, "valor-implicito": "Texto <implícito> completo (RD-04)." } };
     const cuerpo = await paginaResolucion(dato, sobre).text();
     const valores = seccionHtml(cuerpo, "valores");
-    const filas = [...valores.matchAll(/<tr><td[^>]*>.*?<\/tr>/gs)].map(f => f[0]);
+    const filas = [...valores.matchAll(/<tr\b[^>]*><td[^>]*>.*?<\/tr>/gs)].map(f => f[0]);
     expect(filas).toHaveLength(3);
     const celdas = filas[0]!.match(/<td\b[^>]*>.*?<\/td>/gs)!;
     expect(celdas[2]).not.toContain("alert(1)");
-    expect(celdas[2]).toContain("Proyecto ·");
+    expect(celdas[2]).not.toContain("<details");
+    expect(celdas[2]).toContain("Proyecto · carpeta superior ·");
     expect(celdas[2]).toContain('title="Abrir en VS Code: /proyecto/&lt;entrada3&gt;.jsonc"');
-    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain("OpenCode · valor de fábrica");
-    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain('title="valor implicito"');
+    const fabrica = valores.split('<details id="valores-fabrica">')[1]!;
+    expect(fabrica).toContain("Estos valores los fija OpenCode 1.18.25 cuando nadie los declara");
+    expect(filas[2]).toContain('class="fila--nativo"');
+    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)).toHaveLength(2);
+    expect(valores).not.toContain("valor implicito");
+    expect(valores.match(/Prevalece la ultima &lt;declaracion&gt; \(RD-01\)\./g)).toHaveLength(1);
+    expect(valores.match(/Texto &lt;implícito&gt; completo \(RD-04\)\./g)).toHaveLength(1);
     const comunes = cuerpo.match(/<details><summary>¿Qué significa\?<\/summary>[^]*?<\/details>/)![0];
-    expect(comunes.match(/Prevalece la ultima &lt;declaracion&gt; \(RD-01\)\./g)).toHaveLength(1);
-    expect(comunes.match(/Texto &lt;implícito&gt; completo \(RD-04\)\./g)).toHaveLength(1);
+    expect(comunes).not.toContain("Prevalece la ultima &lt;declaracion&gt; (RD-01).");
+    expect(comunes).not.toContain("Texto &lt;implícito&gt; completo (RD-04).");
     expect(valores).not.toContain('id="leyenda-reglas"');
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(dato);
   });
-  test("sin identificador legible conserva el texto completo en un details por fila", async () => {
+  test("regla con clave vacía se lista una sola vez al pie de la tabla y nunca dentro de celdas", async () => {
     const { paginaResolucion } = await import("./resolucion");
     const original = respuesta();
     const dato = { ...original, valores: original.valores.map(v => ({ ...v,
       rastro: { ...v.rastro, determinante: { ...v.rastro.determinante, regla: "" } } })),
       reglas: { "": "Regla <sin código>." } };
     const tabla = seccionHtml(await paginaResolucion(dato, sobre).text(), "valores");
-    expect(tabla.match(/<details class="regla-detalle">/g)).toHaveLength(2);
-    expect(tabla.match(/<p>Regla &lt;sin código&gt;\.<\/p>/g)).toHaveLength(2);
+    expect(tabla).not.toContain("<details");
+    expect(tabla.match(/<ul class="notas-reglas">/g)).toHaveLength(1);
+    expect(tabla.match(/<li>Regla &lt;sin código&gt;\.<\/li>/g)).toHaveLength(1);
     expect(tabla).not.toContain('id="leyenda-reglas"');
   });
 });
@@ -238,9 +260,10 @@ describe("Resolución del agente: pulido visual, orden y controles", () => {
     const sobreZ2 = { id: 7, instante: "2026-11-10T12:00:00Z", anteriores: [] };
     const contextoZ2 = { idResolucion: 7, agente: "build", agentes: [{ nombre: "build" }], clave: "temperature", q: "TEMP" };
     const cuerpo = await paginaResolucion(valoresZ2, sobreZ2, contextoZ2).text();
-    const posiciones = ['id="resumen-resolucion"', 'id="seleccionar-agente"', 'id="declaraciones"', 'id="valores"', 'id="filtrar-claves"'].map(s => cuerpo.indexOf(s));
+    const posiciones = ['id="resumen-resolucion"', 'id="seleccionar-agente"', 'id="valores"', 'id="filtrar-claves"', 'id="limites-analisis"', 'class="pie-desarrolladores"'].map(s => cuerpo.indexOf(s));
     expect(posiciones.every(p => p >= 0)).toBe(true);
     expect(posiciones).toEqual([...posiciones].sort((a, b) => a - b));
+    expect(seccionHtml(cuerpo, "limites-analisis")).toContain("Nota del análisis");
   });
 
   test("T5-15 Z-3 instante unico", async () => {
@@ -248,7 +271,8 @@ describe("Resolución del agente: pulido visual, orden y controles", () => {
     const valoresZ3 = { ...respuesta(), proyecto: "/proyecto" };
     const sobreZ3 = { id: 7, instante: "2026-11-10T12:00:00Z", anteriores: [] };
     const resumen = seccionHtml(await paginaResolucion(valoresZ3, sobreZ3).text(), "resumen-resolucion");
-    expect(resumen).toContain(nombreAnalisis(valoresZ3.proyecto, sobreZ3.instante));
+    expect(resumen).toContain('<dt>Proyecto</dt><dd><code title="/proyecto">proyecto</code></dd>');
+    expect(resumen).toContain(`n.º ${sobreZ3.id}, ${fechaLocal(sobreZ3.instante)}`);
     expect(resumen.split(fechaLocal(sobreZ3.instante))).toHaveLength(2);
     expect(resumen).not.toMatch(/<dt>Instante/);
   });
@@ -269,14 +293,14 @@ describe("Resolución del agente: pulido visual, orden y controles", () => {
   });
 
   describe("U-6 a U-9", () => {
-    const determinanteU = { valor: 0.3, referencia: "/mi-proyecto/opencode.json", via: "proyecto", regla: "ultima",
+    const determinanteU = { valor: 0.3, referencia: "/repo/mi-proyecto/opencode.json", via: "proyecto", regla: "ultima",
       origen: { tipo: "declarado" as const, orden: 1, posicion: { linea: 5, columna: 7 } } };
     const valorU = (clave: string, tipo: "declarado" | "implicito" | "nativo") => ({ clave, rastro: {
-      ruta: [clave], indiceFusion: 0, valor: 0.3, motivo: "ultima", desplazadas: tipo === "declarado" ? [{ ...determinanteU, valor: 0.1, referencia: "/opencode.json" }, { ...determinanteU, valor: 0.2 }] : [],
+      ruta: [clave], indiceFusion: 0, valor: 0.3, motivo: "ultima", desplazadas: tipo === "declarado" ? [{ ...determinanteU, valor: 0.1, referencia: "/repo/opencode.json" }, { ...determinanteU, valor: 0.2 }] : [],
       determinante: tipo === "declarado" ? determinanteU : { ...determinanteU, referencia: null, via: null,
         origen: { tipo, regla: tipo === "implicito" ? "valor-implicito-del-agente" : "nativa" } },
     } });
-    const valoresU: RespuestaValores = { ...respuesta(), proyecto: "/mi-proyecto", agente: "build", ruta: null, motivo: null, noResueltas: [],
+    const valoresU: RespuestaValores = { ...respuesta(), proyecto: "/repo/mi-proyecto", agente: "build", ruta: null, motivo: null, noResueltas: [],
       valores: [valorU("zeta", "declarado"), valorU("beta", "nativo"), valorU("alfa", "declarado"), valorU("delta", "implicito")],
       reglas: { "orden-de-aplicacion": "La última declaración prevalece.", "valor-implicito-del-agente": "Explicación implícita.", ultima: "Regla última." } };
     const sobreU = { id: 7, instante: "2026-11-11T12:00:00Z", anteriores: [{ id: 7, instante: "2026-11-11T12:00:00Z", resumenEntradas: "a".repeat(64) }] };
@@ -303,7 +327,7 @@ describe("Resolución del agente: pulido visual, orden y controles", () => {
       expect(css(".barra-agente")).toContain("flex-direction: column");
     });
 
-    test("U-7 declaradas ordenadas primero; fábrica cerrada, una insignia y una explicación común", async () => {
+    test("U-7 declaradas ordenadas primero; fábrica cerrada en dos columnas y regla única al pie", async () => {
       const { paginaResolucion } = await import("./resolucion");
       const cuerpo = await agenteFn();
       const visibles = bloque(sinJson(cuerpo), "valores");
@@ -311,41 +335,104 @@ describe("Resolución del agente: pulido visual, orden y controles", () => {
       expect(fabrica).toHaveLength(2);
       expect(fabrica[0]!.indexOf('data-etiqueta="Clave">alfa')).toBeLessThan(fabrica[0]!.indexOf('data-etiqueta="Clave">zeta'));
       expect(fabrica[0]).not.toContain('data-etiqueta="Clave">beta');
+      expect(fabrica[0]).toContain('class="fila--declarado"');
+      expect(fabrica[1]).toContain("Estos valores los fija OpenCode 1.18.25 cuando nadie los declara");
       expect(fabrica[1]!.indexOf('data-etiqueta="Clave">beta')).toBeLessThan(fabrica[1]!.indexOf('data-etiqueta="Clave">delta'));
 
-      const fila = fabrica[1]!.match(/<tr>[^]*?data-etiqueta="Clave">delta[^]*?<\/tr>/)![0]!;
-      expect(fila.match(/>OpenCode · valor de fábrica<\/span>/g)).toHaveLength(1);
-      expect(fila).toContain('title="valor implicito del agente"');
-      expect(fila).not.toContain("Valor implícito");
+      const fila = fabrica[1]!.match(/<tr\b[^>]*><td data-etiqueta="Clave">delta<\/td>.*?<\/tr>/s)![0]!;
+      expect(fila).toContain('class="fila--nativo"');
+      expect(fila.match(/<td\b[^>]*>.*?<\/td>/gs)).toHaveLength(2);
+      expect(fabrica[1]).not.toContain("OpenCode · valor de fábrica");
+      expect(visibles).not.toContain("valor implicito del agente");
+      expect(visibles.match(/Explicación implícita\./g)).toHaveLength(1);
+      expect(visibles.match(/Regla última\./g)).toHaveLength(1);
       expect(cuerpo.match(/<summary>¿Qué significa\?<\/summary>/g)).toHaveLength(1);
       expect(cuerpo).not.toContain("<summary>Cómo se decide</summary>");
-      expect(cuerpo).toContain("Explicación implícita.");
       const filtrado = await agenteFn("DELTA");
       expect(filtrado).toContain("Valores de fábrica (1)");
       expect(JSON.parse(filtrado.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(valoresU);
       const sinPlantillas = sinJson(await paginaResolucion({ ...valoresU, reglas: {}, valores: [valorU("delta", "implicito")] }, sobreU).text());
-      expect(sinPlantillas.replace(/title="[^"]*"/g, "")).not.toContain("ultima");
+      expect(sinPlantillas).not.toContain("ultima");
+      expect(sinPlantillas).not.toContain("valor implicito del agente");
     });
 
-    test("U-8 cadena de desplazadas ordenada por precedencia sin tachado y con roles rige y desplazado", async () => {
+    test("U-8 cadena de desplazadas ordenada por precedencia sin tachado, rige ni flechas", async () => {
       const desplazadas = (await agenteFn()).match(/data-etiqueta="Desplazadas">([^]*?)<\/td>/)![1]!;
       expect(desplazadas).toContain('<ol class="cadena-desplazadas">');
       expect(desplazadas).not.toContain("<del");
-      expect(desplazadas).toContain('insignia--rige rol--rige">rige</span>');
-      expect(desplazadas).toContain('insignia--desplazado rol--desplazado">desplazado</span>');
-      expect(textoHtml(desplazadas)).toMatch(/rige 0\.3.*← desplazado 0\.2 \(Proyecto ·.*← desplazado 0\.1 \(Proyecto ·/);
+      expect(desplazadas).not.toContain("insignia--rige");
+      expect(desplazadas).not.toContain("insignia--desplazado");
+      expect(desplazadas).not.toContain("←");
+      expect(textoHtml(desplazadas)).toMatch(/0\.2 Proyecto · esta carpeta · \.\/opencode\.json:5:7.*0\.1 Proyecto · carpeta superior · \.\.\/opencode\.json:5:7/);
       expect(css(".valor-desplazado")).not.toContain("display: block");
     });
 
     test("U-9 sujetos en cuadrícula, índice en title, leyenda parcial y límites unificados", async () => {
-      const permisos = bloque(await agenteFn(), "permisos-agente");
+      const cuerpo = await agenteFn();
+      const permisos = bloque(cuerpo, "permisos-agente");
       const celdas = permisos.split('class="sujetos-permiso"')[1]!.split("</dl>")[0]!;
       expect(celdas).toContain('title="Regla 1"');
       expect(celdas).not.toContain("<p");
       expect(celdas).toContain(">parcial</span>");
       expect(permisos).toContain('class="leyenda-parcial"');
-      expect(permisos).toContain('<details><summary>Límites del análisis</summary>');
-      for (const texto of ["Aprobaciones permanentes", "Índices desde 1", "opencode run"]) expect(permisos.split("Límites del análisis")[1]).toContain(texto);
+      expect(permisos).not.toContain("<details");
+      const limites = bloque(cuerpo, "limites-analisis");
+      expect(limites).toContain("Qué no cubre este análisis");
+      for (const texto of ["opencode run", "external_directory"]) expect(limites).toContain(texto);
+    });
+
+    test("T6-22 estilos, procedencia en chip y criterios de diseño sin códigos internos ni 'ninguna'", async () => {
+      const { paginaResolucion } = await import("./resolucion");
+      expect(css('#valores td[data-etiqueta="Valor"]')).toContain("color: var(--rige)");
+      expect(css('#valores td[data-etiqueta="Valor"]')).toContain("font-weight: 700");
+      expect(css(".procedencia-chip--declarado")).toContain("border-left-color: var(--declarado)");
+      expect(css(".procedencia-chip--nativo")).toContain("border-left-color: var(--neutro)");
+      expect(css(".fila--declarado td:first-child")).toContain("border-left: 3px solid var(--declarado)");
+      expect(css(".fila--nativo td:first-child")).toContain("border-left: 3px solid var(--neutro)");
+      expect(css("details")).toContain("border: 0");
+      expect(estilos).not.toMatch(/border-radius:(?!\s*\.5rem\s*[;\}])/);
+
+      const sinReglaLegible: RespuestaValores = {
+        ...valoresU,
+        reglas: {},
+        valores: [valorU("alfa", "declarado"), valorU("delta", "implicito")],
+      };
+      const visible = sinJson(await paginaResolucion(sinReglaLegible, sobreU, { agentes: agentesU, agente: "build" }).text());
+      expect(visible).not.toContain("ninguna");
+      expect(visible).not.toContain("valor implicito del agente");
+      expect(bloque(visible, "valores")).not.toContain("<details class");
+    });
+
+    test("T6-24 X-1, X-2, X-8 y X-9 barra de contexto, límites antes del pie, huellas y comparación anterior", async () => {
+      const { paginaResolucion } = await import("./resolucion");
+      const baseContexto = { id: 10, instante: sobreU.instante, resumenEntradas: "b".repeat(64) };
+      const igual = await paginaResolucion(
+        { ...valoresU, resumenEntradas: "b".repeat(64), declaraciones: ["fuera-del-v1", "regla-propia"], reglas: { ...valoresU.reglas, "regla-propia": "Aviso <propio>." } },
+        { id: 10, instante: sobreU.instante, anteriores: [baseContexto, { id: 9, instante: sobreU.instante, resumenEntradas: "b".repeat(64) }] },
+        { agentes: agentesU, agente: "build" },
+      ).text();
+      const cabecera = bloque(igual, "resumen-resolucion");
+      expect(cabecera).toContain('<dl class="contexto">');
+      expect(cabecera).not.toContain(" · n.º");
+      expect(cabecera).toContain("Configuración sin cambios desde el análisis n.º 9");
+      expect(igual.split('class="pie-desarrolladores"')[0]).not.toMatch(/\b[0-9a-f]{64}\b/);
+      const pie = igual.split('class="pie-desarrolladores"')[1]!;
+      for (const fragmento of ['id="comando-cli"', "comando equivalente", 'id="ver-json"', "JSON", 'id="entradas-leidas"', "Huellas de las entradas"]) {
+        expect(pie).toContain(fragmento);
+      }
+      expect(igual.indexOf('id="limites-analisis"')).toBeLessThan(igual.indexOf('class="pie-desarrolladores"'));
+      expect(bloque(igual, "limites-analisis")).toContain("Aviso &lt;propio&gt;.");
+
+      const cambiado = await paginaResolucion(
+        { ...valoresU, resumenEntradas: "c".repeat(64) },
+        { id: 10, instante: sobreU.instante, anteriores: [{ ...baseContexto, resumenEntradas: "c".repeat(64) }, { id: 8, instante: sobreU.instante, resumenEntradas: "b".repeat(64) }] },
+        { agentes: agentesU, agente: "build" },
+      ).text();
+      expect(cambiado).toContain("La configuración cambió desde el análisis n.º 8");
+      expect(cambiado).toContain('href="/comparar?desde=8&amp;hasta=10"');
+
+      const unico = await paginaResolucion(valoresU, sobreU, { agentes: agentesU, agente: "build" }).text();
+      expect(unico).not.toContain("<dt>Cambios</dt>");
     });
   });
 });

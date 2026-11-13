@@ -1,10 +1,11 @@
 import { versionRige } from "../../aplicacion/respuestas/estado";
 import { html, type HtmlSeguro } from "./plantillas";
-import { type ContextoPanel } from "./panel";
-import { dosSegmentos } from "./textos";
-import { efectoConGlifo } from "../presentacion/vocabulario";
+import { type CambioAnterior, type ContextoPanel } from "./panel";
+import { dosSegmentos, fechaLocal } from "./textos";
+import { condicionEntrada, efectoConGlifo, explicarLimite } from "../presentacion/vocabulario";
 import { rolEfecto } from "../presentacion/roles";
-import { presentarUbicacion, type ContextoRutaVisible } from "./rutas";
+import { rotuloVia } from "../presentacion/rutas";
+import { presentarRuta, presentarUbicacion, type ContextoRutaVisible } from "./rutas";
 
 export function enlace(
   ruta: string,
@@ -22,11 +23,54 @@ export function enlace(
   return `${ruta}${consulta ? `?${consulta}` : ""}${fragmento ? `#${fragmento}` : ""}`;
 }
 
+export type TemaWeb = "sistema" | "claro" | "oscuro";
+
+interface TemaActivo {
+  readonly tema: TemaWeb;
+  readonly rutaActual: string;
+}
+
+let temaActivo: TemaActivo | undefined;
+
+export function conTemaWeb<T>(tema: TemaWeb, rutaActual: string, ejecutar: () => T): T {
+  const anterior = temaActivo;
+  temaActivo = { tema, rutaActual };
+  try {
+    return ejecutar();
+  } finally {
+    temaActivo = anterior;
+  }
+}
+
+export function normalizarVolver(volver: string | null | undefined): string {
+  if (!volver || !volver.startsWith("/") || volver.startsWith("//") || volver.startsWith("/\\") || /[\x00-\x1f\x7f]/.test(volver)) {
+    return "/";
+  }
+  return volver;
+}
+
+const opcionesTema: readonly (readonly [TemaWeb, string])[] = [
+  ["sistema", "Sistema"],
+  ["claro", "Claro"],
+  ["oscuro", "Oscuro"],
+];
+
+function selectorTema(temaActual: TemaWeb, volver: string): HtmlSeguro {
+  return html`<div class="selector-tema" role="group" aria-label="Tema">${opcionesTema.map(([valor, etiqueta]) => {
+    const href = enlace("/tema", { valor, volver });
+    return valor === temaActual
+      ? html`<a href="${href}" aria-current="true">${etiqueta}</a>`
+      : html`<a href="${href}">${etiqueta}</a>`;
+  })}</div>`;
+}
+
 interface ContextoDiseno extends ContextoPanel {
   readonly proyecto?: string;
   readonly activa?: "Inicio" | "Resumen" | "Valores" | "Permisos" | "Permiso" | "Todas las reglas" | "Comparar" | "Entradas" | "Hallazgos";
   readonly minimo?: boolean;
   readonly agenteDestino?: string;
+  readonly tema?: TemaWeb;
+  readonly rutaActual?: string;
 }
 
 function barraAnalisis(contexto: ContextoDiseno): HtmlSeguro {
@@ -41,10 +85,47 @@ function barraAnalisis(contexto: ContextoDiseno): HtmlSeguro {
     ["Reglas", enlace("/reglas", { id: contexto.idResolucion, agente, lanzadoPor: contexto.lanzadoPor }), actual === "Todas las reglas"],
     ["Entradas", enlace("/entradas", { proyecto: contexto.proyecto, id: contexto.idResolucion }), actual === "Entradas"],
     ["Hallazgos", enlace("/hallazgos", { proyecto: contexto.proyecto, id: contexto.idResolucion }), actual === "Hallazgos"],
-    ["Historial", `/resoluciones/${id}#historia`, false],
   ];
   return html`<nav class="pestanas barra-analisis" aria-label="Vistas del análisis">${enlaces.map(([texto, href, activo]) =>
     activo ? html`<a href="${href}" aria-current="page">${texto}</a>` : html`<a href="${href}">${texto}</a>`)}</nav>`;
+}
+
+export interface DatoContexto {
+  readonly rotulo: string;
+  readonly valor: HtmlSeguro | string;
+  readonly clase?: string;
+}
+
+export function datoProyecto(proyecto: string): DatoContexto {
+  return { rotulo: "Proyecto", valor: html`<code title="${proyecto}">${dosSegmentos(proyecto)}</code>` };
+}
+
+export function datosAnalisis(
+  id: string | number | undefined,
+  instante?: string,
+  fechaNoDisponible?: string,
+): readonly DatoContexto[] {
+  if (id === undefined && instante === undefined && fechaNoDisponible === undefined) return [];
+  const partes: string[] = [];
+  if (id !== undefined) partes.push(`n.º ${id}`);
+  if (instante !== undefined) partes.push(fechaLocal(instante));
+  else if (fechaNoDisponible !== undefined) partes.push(`fecha no disponible (${fechaNoDisponible})`);
+  return [{ rotulo: "Análisis", valor: partes.join(", ") }];
+}
+
+export function datoCambioAnterior(
+  idActual: string | number | undefined,
+  anterior?: CambioAnterior,
+): readonly DatoContexto[] {
+  if (idActual === undefined || anterior === undefined) return [];
+  if (!anterior.cambio) {
+    return [{ rotulo: "Cambios", valor: `Configuración sin cambios desde el análisis n.º ${anterior.id}`, clase: "contexto__cambio" }];
+  }
+  return [{
+    rotulo: "Cambios",
+    valor: html`La configuración cambió desde el análisis n.º ${anterior.id} · <a href="${enlace("/comparar", { desde: anterior.id, hasta: idActual })}">Comparar</a>`,
+    clase: "contexto__cambio",
+  }];
 }
 
 export interface OpcionesCabecera {
@@ -52,7 +133,7 @@ export interface OpcionesCabecera {
   readonly etiqueta?: "div" | "section";
   readonly titulo: HtmlSeguro | string;
   readonly pregunta: string;
-  readonly contexto: HtmlSeguro;
+  readonly contexto: readonly DatoContexto[];
   readonly lateral?: HtmlSeguro;
   readonly detalle?: HtmlSeguro;
   readonly extra?: HtmlSeguro;
@@ -63,7 +144,9 @@ export function cabeceraPagina(opciones: OpcionesCabecera): HtmlSeguro {
   const superior = opciones.lateral === undefined ? encabezado : html`<div class="barra-agente">${encabezado}${opciones.lateral}</div>`;
   const cuerpo = html`${superior}
 <p>${opciones.pregunta}</p>
-<div class="contexto">${opciones.contexto}</div>${opciones.extra ?? html``}${opciones.detalle === undefined
+<dl class="contexto">${opciones.contexto.map(d => d.clase === "contexto__cambio"
+  ? html`<div class="contexto__cambio"><dt>${d.rotulo}</dt><dd>${d.valor}</dd></div>`
+  : html`<div${d.clase ? html` class="${d.clase}"` : html``}><dt>${d.rotulo}</dt><dd>${d.valor}</dd></div>`)}</dl>${opciones.extra ?? html``}${opciones.detalle === undefined
     ? html`` : html`<details><summary>¿Qué significa?</summary>${opciones.detalle}</details>`}`;
   const atributoId = opciones.id === undefined ? html`` : html` id="${opciones.id}"`;
   return opciones.etiqueta === "section"
@@ -80,8 +163,11 @@ function avisoAnterior(contexto: ContextoDiseno): HtmlSeguro {
 // Composición de presentación: no consulta ni modifica respuestas de aplicación.
 export function diseno(titulo: string, contenido: HtmlSeguro, contexto: ContextoDiseno = {}): HtmlSeguro {
   const id = contexto.idResolucion === undefined ? undefined : encodeURIComponent(contexto.idResolucion);
+  const tema = contexto.tema ?? temaActivo?.tema ?? "sistema";
+  const volver = normalizarVolver(contexto.rutaActual ?? temaActivo?.rutaActual);
+  const atributoTema = tema === "sistema" ? html`` : html` data-tema="${tema}"`;
   return html`<!doctype html>
-<html lang="es"><head><meta charset="utf-8">
+<html lang="es"${atributoTema}><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>${titulo} · RIGE</title><link rel="stylesheet" href="/estilos.css"></head>
@@ -92,7 +178,7 @@ ${contexto.minimo ? html`` : html`<nav class="migas" aria-label="Migas de pan">
 ${contexto.proyecto === undefined ? html`<span aria-hidden="true">›</span><span aria-current="page">${titulo.startsWith("Error ") ? "Error" : titulo}</span>` : html`
 <span aria-hidden="true">›</span>${id === undefined ? html`<span class="migas__proyecto">${dosSegmentos(contexto.proyecto)}</span>` : html`<a class="migas__proyecto" href="${`/resoluciones/${id}`}">${dosSegmentos(contexto.proyecto)}</a>`}
 ${contexto.agente === undefined ? html`` : html`<span aria-hidden="true">›</span>${contexto.activa === "Valores" || id === undefined ? html`<span aria-current="page">${contexto.agente}</span>` : html`<a href="${`/resoluciones/${id}/agentes/${encodeURIComponent(contexto.agente)}`}">${contexto.agente}</a>`}`}
-${contexto.activa === undefined || contexto.activa === "Valores" || contexto.activa === "Resumen" ? html`` : html`<span aria-hidden="true">›</span><span aria-current="page">${contexto.activa}</span>`}`}</nav>`}</div></header>
+${contexto.activa === undefined || contexto.activa === "Valores" || contexto.activa === "Resumen" ? html`` : html`<span aria-hidden="true">›</span><span aria-current="page">${contexto.activa}</span>`}`}</nav>`}${selectorTema(tema, volver)}</div></header>
 <main id="contenido" tabindex="-1">${barraAnalisis(contexto)}${avisoAnterior(contexto)}${contenido}</main>
 <footer class="pie"><p>Local · solo lectura · sin red${contexto.minimo ? html`` : html` · RIGE ${versionRige}`}</p></footer></body></html>`;
 }
@@ -109,6 +195,48 @@ export function efectoVisual(efecto: string | null, titulo?: string): HtmlSeguro
 export function declaraciones(codigos: readonly string[], reglas: Readonly<Record<string, string>>): HtmlSeguro {
   return codigos.length ? html`<section id="declaraciones" aria-label="Declaraciones">
 <h2>Declaraciones</h2>${codigos.map(codigo => html`<div class="aviso"><p>${reglas[codigo]}</p></div>`)}</section>` : html``;
+}
+
+export function datosDeclaraciones(
+  codigos: readonly string[],
+  reglas: Readonly<Record<string, string>>,
+): readonly HtmlSeguro[] {
+  return codigos.map(codigo => html`${explicarLimite(codigo, reglas)}`);
+}
+
+export function seccionLimites(items: readonly (HtmlSeguro | string)[]): HtmlSeguro {
+  return items.length
+    ? html`<section id="limites-analisis" aria-label="Qué no cubre este análisis"><h2>Qué no cubre este análisis</h2><ul>${items.map(item => html`<li>${item}</li>`)}</ul></section>`
+    : html``;
+}
+
+export interface EntradaHuella {
+  readonly orden: number;
+  readonly via: string;
+  readonly referencia: string;
+  readonly condicion: string;
+  readonly resumen: string | null;
+}
+
+export function huellasEntradas(
+  entradas: readonly EntradaHuella[],
+  resumenEntradas: string,
+  proyecto: string,
+): HtmlSeguro {
+  return html`<details id="entradas-leidas"><summary>Huellas de las entradas</summary>
+<dl><dt>Resumen de las entradas leídas</dt><dd>${resumenEntradas}</dd></dl>
+<div class="tabla-contenedor" role="region" aria-label="Entradas leídas" tabindex="0">
+<table class="tabla-tarjetas" role="table"><caption class="oculto-visual">Entradas leídas</caption><thead><tr role="row"><th scope="col">Orden</th><th scope="col">Vía</th><th scope="col">Referencia</th><th scope="col">Condición</th><th scope="col">Resumen SHA-256</th></tr></thead>
+<tbody>${entradas.map(entrada => html`<tr id="${`entrada-leida-${entrada.orden}`}"><td data-etiqueta="Orden">${entrada.orden}</td><td data-etiqueta="Vía">${rotuloVia(entrada.via, entrada.referencia, proyecto)}</td><td data-etiqueta="Referencia">${presentarRuta(entrada.referencia)}</td><td data-etiqueta="Condición">${insignia(condicionEntrada(entrada.condicion), "neutra")}</td><td data-etiqueta="Resumen SHA-256"><code>${entrada.resumen ?? "—"}</code></td></tr>`)}</tbody></table></div></details>`;
+}
+
+export function pieDesarrolladores(
+  proyecto: string,
+  comando: HtmlSeguro,
+  datos: HtmlSeguro,
+  huellas: HtmlSeguro = html``,
+): HtmlSeguro {
+  return html`<div class="pie-desarrolladores" role="region" aria-label="Para desarrolladores"><span class="pie-desarrolladores__rotulo">Para desarrolladores:</span>${comando}${datos}${huellas}<span class="pie-desarrolladores__ruta">Proyecto: <code>${proyecto}</code></span></div>`;
 }
 
 function presentarMensajeError(mensaje: string, contexto?: ContextoRutaVisible): HtmlSeguro {

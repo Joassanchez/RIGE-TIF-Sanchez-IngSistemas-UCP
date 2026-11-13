@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { dosSegmentos, rutaVisible } from "./rutas";
+import { dosSegmentos, rotuloVia, rutaVisible } from "./rutas";
 
 describe("rutaVisible", () => {
   test("formatea rutas dentro del proyecto como relativas", () => {
@@ -53,5 +53,29 @@ describe("dosSegmentos", () => {
     expect(dosSegmentos("C:\\Users\\Joa\\b\\proyecto")).toBe("b/proyecto");
     expect(dosSegmentos("/proyecto")).toBe("proyecto");
     expect(dosSegmentos("/")).toBe("/");
+  });
+});
+
+describe("rotuloVia", () => {
+  test("distingue esta carpeta, carpeta superior y N carpetas arriba en la via proyecto", () => {
+    const proyecto = "/srv/dev/v1-precedencia/proyecto";
+    expect(rotuloVia("proyecto", "/srv/dev/v1-precedencia/proyecto/opencode.jsonc", proyecto, true)).toBe("Proyecto · esta carpeta");
+    expect(rotuloVia("proyecto", "/srv/dev/v1-precedencia/proyecto/.opencode/opencode.json", proyecto, true)).toBe("Proyecto · esta carpeta");
+    expect(rotuloVia("proyecto", "/srv/dev/v1-precedencia/opencode.json", proyecto, true)).toBe("Proyecto · carpeta superior");
+    expect(rotuloVia("proyecto", "/srv/dev/v1-precedencia/.opencode/opencode.json", proyecto, true)).toBe("Proyecto · carpeta superior");
+    expect(rotuloVia("proyecto", "/srv/dev/opencode.json", proyecto, true)).toBe("Proyecto · 2 carpetas arriba");
+    expect(rotuloVia("proyecto", "/srv/opencode.json", proyecto, true)).toBe("Proyecto · 3 carpetas arriba");
+    expect(rotuloVia("proyecto", "/srv/dev/v1-precedencia/opencode.json", proyecto)).toBe("proyecto · carpeta superior");
+  });
+
+  test("soporta rutas Windows y conserva otras vias o rutas sin relacion con el proyecto", () => {
+    const proyecto = "C:\\Users\\Joa\\repo\\sub\\app";
+    expect(rotuloVia("proyecto", "C:\\Users\\Joa\\repo\\sub\\app\\opencode.json", proyecto, true)).toBe("Proyecto · esta carpeta");
+    expect(rotuloVia("proyecto", "C:\\Users\\Joa\\repo\\sub\\opencode.json", proyecto, true)).toBe("Proyecto · carpeta superior");
+    expect(rotuloVia("proyecto", "C:\\Users\\Joa\\repo\\opencode.json", proyecto, true)).toBe("Proyecto · 2 carpetas arriba");
+    expect(rotuloVia("global", "C:\\Users\\Joa\\.config\\opencode\\opencode.json", proyecto, true)).toBe("Global");
+    expect(rotuloVia("proyecto", "/otro/lugar/opencode.json", "/proyecto", true)).toBe("Proyecto");
+    expect(rotuloVia("proyecto", null, proyecto, true)).toBe("Proyecto");
+    expect(rotuloVia("proyecto", "opencode.json", proyecto, true)).toBe("Proyecto");
   });
 });

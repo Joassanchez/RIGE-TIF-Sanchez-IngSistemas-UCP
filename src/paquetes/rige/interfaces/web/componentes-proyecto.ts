@@ -5,13 +5,15 @@ import { efectoVisual, enlace, insignia } from "./diseno";
 import { fechaLocal } from "./textos";
 import { parametrosPanel, type ContextoPanel } from "./panel";
 import { esArchivoLocal, presentarRuta, presentarUbicacion } from "./rutas";
+import { rotuloVia, rutaVisible } from "../presentacion/rutas";
 import {
   modoAgente,
-  estadoVia,
   nombresHallazgos,
   nombreVia,
   motivoNoResolucion,
-  legibilidadEntrada,
+  explicarLimite,
+  explicarSujetoParcial,
+  plural,
 } from "../presentacion/vocabulario";
 export { modoAgente, nombresHallazgos } from "../presentacion/vocabulario";
 import { rolOrigen } from "../presentacion/roles";
@@ -27,19 +29,67 @@ ${agentes.map(a => html`<tr role="row" class="${a.oculto ? "fila-agente atenuado
 ${respuesta.eliminados.length ? html`<div id="agentes-eliminados"><h3>Agentes eliminados</h3>${respuesta.eliminados.map(a => html`<p><code>${a.nombre}</code> ${insignia("eliminado / deshabilitado", "aviso")} ${presentarUbicacion(a.declaracion.referencia, a.declaracion.origen.tipo === "declarado" ? a.declaracion.origen.posicion : null, a.declaracion.via, { proyecto: respuesta.proyecto, hogar: contexto.hogar })}</p>`)}</div>` : html``}</section>`;
 }
 
-export function mapaVias(respuesta: RespuestaEntradas): HtmlSeguro {
-  return respuesta.vias === undefined ? html`<p>Mapa de vías no disponible</p>` : html`
-<section id="mapa-vias" class="mapa-vias"><h2>Mapa de vías</h2>
-<div class="tabla-contenedor" role="region" aria-label="Mapa de vías" tabindex="0">
-<table class="tabla-tarjetas" role="table"><caption class="oculto-visual">Mapa de vías</caption><thead><tr role="row"><th scope="col">Vía</th><th scope="col">Estado</th><th scope="col">Cantidad</th><th scope="col">Lugares revisados</th></tr></thead>
-${([ ["presente", "Presentes"], ["ausente", "Ausentes"], ["no_observada", "No observadas"], ["no_soportada", "No soportadas"] ] as const).map(([estado, titulo]) => {
-  const vias = respuesta.vias!.filter(via => via.estado === estado);
-  return vias.length ? html`<tbody><tr role="row" class="grupo-vias"><th colspan="4" scope="rowgroup">${titulo}</th></tr>${vias.map(via => html`<tr role="row"><td role="cell" data-etiqueta="Vía">${nombreVia(via.via)}</td>
-<td role="cell" data-etiqueta="Estado">${insignia(estadoVia(via.estado),
-  via.estado === "no_observada" ? "no-observada" : "neutra")}</td>
-<td role="cell" data-etiqueta="Cantidad">${via.cantidad}</td><td role="cell" data-etiqueta="Lugares revisados">${via.revisados.length ? html`<details><summary>Lugares revisados</summary>
-<ul>${via.revisados.map(revisado => html`<li><code>${revisado}</code></li>`)}</ul></details>` : "—"}</td></tr>`)}</tbody>` : html``;
-})}</table></div></section>`;
+function anclasVias(vias: NonNullable<RespuestaEntradas["vias"]>): readonly {
+  readonly via: NonNullable<RespuestaEntradas["vias"]>[number];
+  readonly ancla: string;
+}[] {
+  const usadas = new Set<string>();
+  return vias.map((via, indice) => {
+    const base = via.via.toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "") || `via-${indice}`;
+    let ancla = `revisados-${base}`;
+    let sufijo = 2;
+    while (usadas.has(ancla)) ancla = `revisados-${base}-${sufijo++}`;
+    usadas.add(ancla);
+    return { via, ancla };
+  });
+}
+
+function tablaGrupoVias(
+  titulo: string,
+  filas: readonly { readonly via: NonNullable<RespuestaEntradas["vias"]>[number]; readonly ancla: string }[],
+): HtmlSeguro {
+  return html`<div class="tabla-contenedor" role="region" aria-label="${titulo}" tabindex="0">
+<table class="tabla-tarjetas" role="table"><caption class="oculto-visual">${titulo}</caption>
+<thead><tr role="row"><th scope="col">Vía</th><th scope="col">Archivos</th><th scope="col">Lugares revisados</th></tr></thead>
+<tbody>${filas.map(({ via, ancla }) => html`<tr role="row"><td role="cell" data-etiqueta="Vía">${nombreVia(via.via)}</td>
+<td role="cell" data-etiqueta="Archivos">${via.cantidad}</td>
+<td role="cell" data-etiqueta="Lugares revisados">${via.revisados.length
+    ? html`<a href="#${ancla}">${via.revisados.length} ${plural(via.revisados.length, "lugar", "lugares")}</a>`
+    : "—"}</td></tr>`)}</tbody></table></div>`;
+}
+
+export function lugaresRevisados(respuesta: RespuestaEntradas, contexto: ContextoPanel = {}): HtmlSeguro {
+  if (respuesta.vias === undefined) return html``;
+  const conRevisados = anclasVias(respuesta.vias).filter(({ via }) => via.revisados.length > 0);
+  if (!conRevisados.length) return html``;
+  return html`<section id="lugares-revisados"><h2>Lugares revisados</h2>
+${conRevisados.map(({ via, ancla }) => html`<div id="${ancla}" class="revisados-via"><h3>${nombreVia(via.via, true)} (${via.revisados.length})</h3>
+<ul>${via.revisados.map(revisado => {
+    const visible = rutaVisible(revisado, respuesta.proyecto, contexto.hogar);
+    const rotulo = via.via === "proyecto" ? rotuloVia("proyecto", revisado, respuesta.proyecto) : undefined;
+    return html`<li>${rotulo && rotulo.includes("·")
+      ? html`<span class="atenuado">${rotulo}</span> · <code title="${revisado}">${visible}</code>`
+      : html`<code title="${revisado}">${visible}</code>`}</li>`;
+  })}</ul></div>`)}</section>`;
+}
+
+export function mapaVias(respuesta: RespuestaEntradas, contexto: ContextoPanel = {}, incluirRevisados = true): HtmlSeguro {
+  if (respuesta.vias === undefined) return html`<p>Mapa de vías no disponible</p>`;
+  const indexadas = anclasVias(respuesta.vias);
+  const presentes = indexadas.filter(({ via }) => via.estado === "presente");
+  const ausentes = indexadas.filter(({ via }) => via.estado === "ausente");
+  const noObservadas = indexadas.filter(({ via }) => via.estado === "no_observada");
+  return html`<section id="mapa-vias" class="mapa-vias"><h2>Mapa de vías</h2>
+<div class="grupos-entradas">
+<article class="grupo-entradas grupo-entradas--presente"><h3>Presentes (${presentes.length})</h3>
+${presentes.length ? tablaGrupoVias("Presentes", presentes) : html`<p class="atenuado">Sin vías presentes.</p>`}</article>
+<details class="grupo-entradas grupo-entradas--ausente"><summary>Ausentes (${ausentes.length})</summary>
+<p class="atenuado">OpenCode buscó en estas vías y no encontró archivo</p>
+${ausentes.length ? tablaGrupoVias("Ausentes", ausentes) : html`<p class="atenuado">Sin vías en este grupo.</p>`}</details>
+<details class="grupo-entradas grupo-entradas--no-observada"><summary>No observadas (${noObservadas.length})</summary>
+<p class="atenuado">RIGE no puede leer estas vías (remotas o propias de macOS)</p>
+${noObservadas.length ? tablaGrupoVias("No observadas", noObservadas) : html`<p class="atenuado">Sin vías en este grupo.</p>`}</details>
+</div>${incluirRevisados ? lugaresRevisados(respuesta, contexto) : html``}</section>`;
 }
 
 export const archivosObservados = (respuesta: RespuestaEntradas) => respuesta.entradas.filter(e => e.condicion === "observada" && esArchivoLocal(e.referencia, e.via));
@@ -51,29 +101,36 @@ ${foto.id === sobre.id ? html`<a href="${`/resoluciones/${foto.id}`}" aria-curre
 ${sobre.anteriores[indice + 1] ? html`<a href="${enlace("/comparar", { desde: sobre.anteriores[indice + 1]!.id, hasta: foto.id })}">Comparar con el anterior</a>` : html``}</li>`)}</ul></details>`;
 }
 
+export function limitesPermisosAgente(respuesta: RespuestaReglas, agente?: string): readonly HtmlSeguro[] {
+  const fila = agente === undefined ? undefined : respuesta.matriz.filas.find(f => f.agente === agente);
+  const motivos = [...new Set([...(fila?.declaraciones ?? []), ...(fila?.advertencias ?? []), ...respuesta.matriz.motivos,
+    ...(fila?.celdas.flatMap(c => c.motivo && c.motivo !== "eje-parcialmente-observado" ? [c.motivo] : []) ?? [])])];
+  return [
+    ...(fila?.error ? [html`${fila.error.mensaje}`] : []),
+    ...(fila?.ejesParciales.map(eje => html`${explicarSujetoParcial(eje)}`) ?? []),
+    ...motivos.map(c => html`${explicarLimite(c, respuesta.reglas)}`),
+    ...respuesta.matriz.noObservados.map(a =>
+      html`Agente no observado: <code>${a.nombre}</code> (${a.motivo ? explicarLimite(a.motivo, respuesta.reglas) : "sin dato"})`),
+  ];
+}
+
 export function filaPermisos(respuesta: RespuestaReglas, id: string, contexto: ContextoPanel): HtmlSeguro {
   const fila = respuesta.matriz.filas.find(f => f.agente === contexto.agente);
   const panel = parametrosPanel(contexto);
   const motivosParciales = fila?.celdas.some(c => c.motivo === "eje-parcialmente-observado") ?? false;
-  const motivos = [...new Set([...(fila?.declaraciones ?? []), ...(fila?.advertencias ?? []), ...respuesta.matriz.motivos,
-    ...(fila?.celdas.flatMap(c => c.motivo && c.motivo !== "eje-parcialmente-observado" ? [c.motivo] : []) ?? [])])];
   return html`<section id="permisos-agente"><h2>Sujetos de permiso</h2><p>Efecto general; consultá un objetivo concreto para conocer la decisión.</p>
 ${fila === undefined ? html`<p class="aviso">Fila no disponible.</p>` : html`
 <dl class="sujetos-permiso">${fila.celdas.map(c => html`<div><dt>${c.sujeto}</dt><dd><a href="${enlace(`/resoluciones/${id}/permisos`, { ...panel, sujeto: c.sujeto })}">${efectoVisual(c.efecto, c.prevalece === null ? undefined : `Regla ${c.prevalece}`)}${c.prevalece === null ? html`` : html` <span class="atenuado regla-prevalece">Regla ${c.prevalece}</span>`}${c.motivo === "eje-parcialmente-observado" ? html` ${insignia("parcial", "parcial")}` : html``}</a></dd></div>`)}</dl>
 ${motivosParciales ? html`<p class="leyenda-parcial">${insignia("parcial", "parcial")} ${motivoNoResolucion("eje-parcialmente-observado", respuesta.reglas)}</p>` : html``}
 ${fila.error ? html`<p class="aviso">${fila.error.mensaje}</p>` : html``}
 `}
-<details><summary>Límites del análisis</summary>
-${fila?.ejesParciales.length ? html`<p>Parcial: ${fila.ejesParciales.join(", ")}</p>` : html``}
-${motivos.map(c => html`<p>${motivoNoResolucion(c, respuesta.reglas)}</p>`)}
-${respuesta.matriz.noObservados.map(a => html`<p>Agente no observado: ${a.nombre} (${a.motivo ? motivoNoResolucion(a.motivo, respuesta.reglas) : "sin dato"})</p>`)}</details>
 <div class="acciones acciones--pie"><a class="boton boton--secundario" href="${enlace("/reglas", { id, ...panel })}">Ver todas las reglas de ${contexto.agente}</a>
 <a class="boton boton--secundario" href="${enlace(`/resoluciones/${id}/permisos`, panel)}">Consultar permiso</a></div></section>`;
 }
 
-export function archivosActuales(respuesta: RespuestaEntradas): HtmlSeguro {
+export function archivosActuales(respuesta: RespuestaEntradas, contexto: ContextoPanel = {}): HtmlSeguro {
   const archivos = [...archivosObservados(respuesta)].sort((a, b) => a.orden - b.orden);
-  return html`<details id="archivos-leidos"><summary>Archivos leídos (${archivos.length})</summary><p>Orden de precedencia: la de abajo prevalece</p><ol>${archivos.map(e => html`<li>${nombreVia(e.via)} · ${presentarRuta(e.referencia)} ${insignia(e.legibilidad ?? "sin dato")}</li>`)}</ol>${mapaVias(respuesta)}</details>`;
+  return html`<details id="archivos-leidos"><summary>Archivos leídos (${archivos.length})</summary><p>Orden de precedencia: la de abajo prevalece</p><ol>${archivos.map(e => html`<li>${rotuloVia(e.via, e.referencia, respuesta.proyecto)} · ${presentarRuta(e.referencia)} ${insignia(e.legibilidad ?? "sin dato")}</li>`)}</ol>${mapaVias(respuesta, contexto, true)}</details>`;
 }
 
 export function hallazgosActuales(respuesta: RespuestaHallazgos, id: string, contexto: ContextoPanel): HtmlSeguro {

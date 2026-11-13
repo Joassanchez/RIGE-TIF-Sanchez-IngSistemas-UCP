@@ -48,12 +48,15 @@ describe("T3-01 R-11 declaraciones en resumen del proyecto", () => {
   test("presenta las plantillas escapadas y conserva el objeto embebido", async () => {
     const respuesta: RespuestaAgentes = { esquema: 2, proyecto: "/p", entradas: [], resumenEntradas: "a".repeat(64),
       agentes: [], eliminados: [], incompleta: false, motivos: [],
-      declaraciones: ["version-no-determinada", "ejecutable-no-encontrado"],
-      reglas: { "version-no-determinada": "Version <no determinada>.", "ejecutable-no-encontrado": "No hay ejecutable & paquete." } };
+      declaraciones: ["version-no-determinada", "ejecutable-no-encontrado", "declaracion-opaca"],
+      reglas: { "version-no-determinada": "Version <no determinada>.", "ejecutable-no-encontrado": "No hay ejecutable & paquete.",
+        "declaracion-opaca": "Aviso <opaco> & escapado." } };
     const cuerpo = await paginaResumenProyecto(respuesta, { exito: true, valor: { ...respuesta, entradas: [] } }, { exito: false, error: { codigo: "prueba", mensaje: "No disponible" } }, "7").text();
-    const declaraciones = seccionHtml(cuerpo, "declaraciones");
-    expect(declaraciones).toContain("<p>Version &lt;no determinada&gt;.</p>");
-    expect(declaraciones).toContain("<p>No hay ejecutable &amp; paquete.</p>");
+    const limites = seccionHtml(cuerpo, "limites-analisis");
+    expect(limites).toContain("Qué no cubre este análisis");
+    expect(limites).toContain("Versión instalada de OpenCode no determinada");
+    expect(limites).toContain("Ejecutable de OpenCode no encontrado en PATH");
+    expect(limites).toContain("<li>Aviso &lt;opaco&gt; &amp; escapado.</li>");
     seccionHtml(cuerpo, "tabla-agentes");
     expect(JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(respuesta);
     expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")).not.toMatch(/<script/i);
@@ -72,8 +75,12 @@ describe("Resumen del proyecto: bloques, cifras y acciones", () => {
   });
 
   test("U-1 encabezados compactos con ruta, fecha, versión y una identidad de agente", async () => {
-    const cabecera = (await resumen()).match(/<section class="cabecera-pagina">([^]*?)<\/section>/)![1]!;
-    expect(cabecera).toContain(`<p class="atenuado metadatos-proyecto"><span class="monoespaciado">/mi-proyecto</span> · Análisis del ${fechaLocal(sobre.instante)} · n.º 7 · OpenCode 1.18.25</p>`);
+    const cuerpo = await resumen();
+    const cabecera = cuerpo.split('id="tabla-agentes"')[0]!;
+    expect(cabecera).toContain('class="contexto"');
+    expect(cabecera).toContain('title="/mi-proyecto"');
+    expect(cabecera).toContain(`n.º 7, ${fechaLocal(sobre.instante)}`);
+    expect(cabecera).toContain("OpenCode 1.18.25");
     expect(cabecera).not.toContain('class="ruta"');
     const identidad = (await agente()).match(/class="identidad-agente">([^]*?)<\/div>/)![1]!;
     for (const texto of ["<h1>build</h1>", ">nativo</span>", "Principal", "2 claves declaradas"]) expect(identidad).toContain(texto);
@@ -128,9 +135,33 @@ describe("Resumen del proyecto: bloques, cifras y acciones", () => {
     const fotoM4 = { id: 7, instante: "2026-11-11T12:00:00Z", anteriores: [] };
     const entradasM4 = { ...base, vias: [{ via: "proyecto", estado: "presente" as const, cantidad: 1, revisados: ["/p/opencode.json"] }] };
     const s = await paginaResumenProyecto(agentes, { exito: true, valor: entradasM4 }, { exito: true, valor: hallazgos }, "7", fotoM4).text();
-    const cabecera = s.split('class="cabecera-pagina"')[1]!.split("</section>")[0]!;
-    expect(cabecera).toContain('class="acciones metadatos-acciones"');
+    const cabecera = s.split('id="tabla-agentes"')[0]!;
+    expect(cabecera).toContain('class="barra-agente"');
     expect(cabecera).toContain(`class="boton boton--secundario" href="/resolver?proyecto=${encodeURIComponent(base.proyecto)}">Analizar de nuevo</a>`);
     expect(JSON.parse(s.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(agentes);
+  });
+
+  test("T6-23 I-2 tarjetas de cifras destacan hallazgos e ilegibles con rol y separan bandas", async () => {
+    const cifrasConHallazgos = bloque(await resumen(), "cifras");
+    expect(cifrasConHallazgos).toContain('class="estadistica rol--pregunta"><strong>2</strong><span>hallazgos</span>');
+    expect(cifrasConHallazgos).toContain('class="estadistica"><strong>1</strong><span>archivos leídos</span>');
+
+    const entradasIlegibles: RespuestaEntradas = { ...base, entradas: [{ ...entrada, legibilidad: "ilegible" }] };
+    const sinHallazgos: RespuestaHallazgos = {
+      ...hallazgos,
+      hallazgos: [],
+      resumen: { elementos: null, hallazgos: { "entrada-ilegible": 0, "entrada-descartada": 0, "sustitucion-sin-valor": 0, "referencia-no-resuelta": 0, "regla-sin-efecto": 0, "elemento-sin-uso": 0 } },
+    };
+    const cuerpoIlegibles = await paginaResumenProyecto(
+      agentes,
+      { exito: true, valor: entradasIlegibles },
+      { exito: true, valor: sinHallazgos },
+      "7",
+      sobre,
+    ).text();
+    const cifrasIlegibles = bloque(cuerpoIlegibles, "cifras");
+    expect(cifrasIlegibles).toContain('class="estadistica rol--denegada"><strong>1</strong><span>archivos leídos</span>');
+    expect(cifrasIlegibles).toContain('class="estadistica"><strong>0</strong><span>hallazgos</span>');
+    expect(css(".banda")).toMatch(/border-top:\s*3px solid var\(--marca\)/);
   });
 });

@@ -1,3 +1,5 @@
+import { nombreVia } from "./vocabulario";
+
 interface RutaDescompuesta {
   readonly raizComparar: string;
   readonly raizMostrar: string;
@@ -117,4 +119,34 @@ export function dosSegmentos(ruta: string): string {
   const partes = normal.split("/").filter(Boolean);
   if (partes.length === 0) return normal || "/";
   return partes.slice(-2).join("/");
+}
+
+function ubicacionRelativaProyecto(referencia: string, proyecto: string): string | null {
+  const ref = descomponerRuta(referencia);
+  const proy = descomponerRuta(proyecto);
+  if (!ref || !proy || ref.raizComparar !== proy.raizComparar) return null;
+  const comun = prefijoComun(ref.segmentos, proy.segmentos);
+  if (comun === proy.segmentos.length) return "esta carpeta";
+  if (comun >= ref.segmentos.length) return null;
+  const enRaizAncestro = ref.segmentos.length - 1 === comun;
+  const enCarpetaOpenCodeAncestro = ref.segmentos[comun] === ".opencode";
+  if (!enRaizAncestro && !enCarpetaOpenCodeAncestro) return null;
+  const niveles = proy.segmentos.length - comun;
+  return niveles === 1 ? "carpeta superior" : `${niveles} carpetas arriba`;
+}
+
+/**
+ * Formatea el rotulo visible de la via de una entrada; para la via `proyecto`
+ * distingue si el archivo esta en la carpeta analizada o N niveles arriba.
+ */
+export function rotuloVia(
+  via: string,
+  referencia?: string | null,
+  proyecto?: string | null,
+  capitalizada = false,
+): string {
+  const base = nombreVia(via, capitalizada);
+  if (via !== "proyecto" || !referencia || !proyecto) return base;
+  const ubicacion = ubicacionRelativaProyecto(referencia, proyecto);
+  return ubicacion ? `${base} · ${ubicacion}` : base;
 }

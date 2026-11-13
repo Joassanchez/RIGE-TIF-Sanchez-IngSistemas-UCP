@@ -35,6 +35,7 @@ import { consultarHallazgos } from "../../aplicacion/casos-uso/consultar-hallazg
 import { consultarReglas } from "../../aplicacion/casos-uso/consultar-reglas";
 import { consultarPermiso } from "../../aplicacion/casos-uso/consultar-permiso";
 import { compararResoluciones } from "../../aplicacion/casos-uso/comparar-resoluciones";
+import { explicarLimite, explicarSujetoParcial } from "./vocabulario";
 
 const base = { esquema: 2 as const, proyecto: "/p", entradas: [], resumenEntradas: "", declaraciones: [], reglas: {} };
 const contexto: ContextoPresentacion = { formato: "texto", ancho: 200, esConsola: false, colorHabilitado: false, todo: true, proyectoDesdeCarpetaActual: false, limitesGenerales: new Set() };
@@ -44,9 +45,15 @@ test("T5-26 U-3 solo son comunes los limites y ejes de todas las filas", async (
     matriz: { sujetos: [], motivos: [], noObservados: [], filas: ["a", "b", "c"].map(agente => ({ agente, oculto: false, error: null, celdas: [],
       ejesParciales: agente === "c" ? ["read"] : ["read", "bash"], declaraciones: agente === "c" ? ["comun"] : ["comun", "dos"], advertencias: [] })) } };
   const web = await paginaReglas(r, "1").text(), cli = renderizarReglas(r, contexto);
-  expect(seccionHtml(web, "limites-comunes")).toContain("Límite de todos");
-  expect(seccionHtml(web, "limites-comunes")).not.toContain("Límite de dos");
-  expect(seccionHtml(web, "limites-matriz")).toContain("Límite de dos");
+  const limites = seccionHtml(web, "limites-analisis");
+  const comunesWeb = limites.split("<strong>")[0]!;
+  expect(limites).toContain("Qué no cubre este análisis");
+  expect(comunesWeb).toContain("Todos los agentes: Lectura de archivos (read)");
+  expect(comunesWeb).toContain("<li>Límite de todos</li>");
+  expect(comunesWeb).not.toContain("bash");
+  expect(comunesWeb).not.toContain("Límite de dos");
+  expect(limites).toContain("Límite de dos");
+  expect(limites).not.toContain("<strong>c</strong>");
   expect(cli).toContain("Todos los agentes: Límite de todos");
   expect(cli).not.toContain("Todos los agentes: Límite de todos; Límite de dos");
   expect(cli).toContain("a: Límite de dos"); expect(cli).toContain("b: Límite de dos");
@@ -209,3 +216,14 @@ test("T6-07 L-1 ninguna salida de texto (CLI ni HTML visible) de los escenarios 
     }
   }
 }, 30000);
+
+test("T6-24 X-2 límites llanos con término técnico entre paréntesis", () => {
+  expect(explicarSujetoParcial("external_directory")).toContain("(external_directory)");
+  expect(explicarSujetoParcial("external_directory")).toMatch(/RIGE no puede decidirlo/);
+  expect(explicarSujetoParcial("question")).toContain("(question)");
+  const noInteractiva = explicarLimite("sesion-no-interactiva-excluida", {});
+  expect(noInteractiva).toContain("(opencode run)");
+  expect(noInteractiva).not.toContain("sesion-no-interactiva-excluida");
+  expect(explicarLimite("fuera-del-v1", {})).not.toContain("fuera-del-v1");
+  expect(explicarLimite("codigo-desconocido", { "codigo-desconocido": "Texto propio del adaptador." })).toBe("Texto propio del adaptador.");
+});

@@ -1,12 +1,21 @@
 import type { RespuestaComparacion } from "../../../aplicacion/respuestas/contrato-generado";
 import { datosRespuesta, html, type HtmlSeguro } from "../plantillas";
-import { cabeceraPagina, diseno, enlace, insignia } from "../diseno";
+import {
+  cabeceraPagina,
+  datoProyecto,
+  diseno,
+  enlace,
+  insignia,
+  pieDesarrolladores,
+  seccionLimites,
+} from "../diseno";
 import { responderHtml } from "../respuesta";
 import type { ContextoPanel } from "../panel";
 import type { ContextoRutaVisible } from "../rutas";
 import { presentarOrigen } from "./resolucion";
 import { concordar, fechaLocal, nombreProyecto } from "../textos";
 import { comandoCli } from "../comando-cli";
+import { explicarLimite } from "../../presentacion/vocabulario";
 import { rolCambio } from "../../presentacion/roles";
 
 function fechaLocalConSegundos(instante: string): string {
@@ -15,8 +24,12 @@ function fechaLocalConSegundos(instante: string): string {
   return `${fechaLocal(instante)}:${String(fecha.getSeconds()).padStart(2, "0")}`;
 }
 
-function presentarLado(lado: RespuestaComparacion["comparaciones"][number]["cambios"][number]["antes"], ruta?: ContextoRutaVisible): HtmlSeguro {
-  return lado === null ? html`<span>ausente</span>` : html`<code>${JSON.stringify(lado.valor)}</code><p>${presentarOrigen(lado.determinante, ruta)}</p>`;
+function presentarLado(
+  lado: RespuestaComparacion["comparaciones"][number]["cambios"][number]["antes"],
+  ruta?: ContextoRutaVisible,
+  reglas?: Readonly<Record<string, string>>,
+): HtmlSeguro {
+  return lado === null ? html`<span>ausente</span>` : html`<code>${JSON.stringify(lado.valor)}</code><p>${presentarOrigen(lado.determinante, ruta, reglas)}</p>`;
 }
 
 export function paginaComparacion(respuesta: RespuestaComparacion, agente?: string, contexto: Pick<ContextoPanel, "hogar"> = {}): Response {
@@ -29,13 +42,25 @@ export function paginaComparacion(respuesta: RespuestaComparacion, agente?: stri
   const hayCambios = resumen.cambiadas + resumen.agregadas + resumen.quitadas + agregados.length + quitados.length > 0;
   const enlaceAgente = (nombre?: string) => enlace("/comparar", { desde: respuesta.desde.id, hasta: respuesta.hasta.id, agente: nombre });
   const nombres = [...new Set([...respuesta.agentes.comunes, ...respuesta.agentes.agregados, ...respuesta.agentes.quitados, ...respuesta.agentes.inciertos])];
+  const limites = (["desde", "hasta"] as const).flatMap(lado => {
+    const etiqueta = lado === "desde" ? `Análisis n.º ${respuesta.desde.id}` : `Análisis n.º ${respuesta.hasta.id}`;
+    return [
+      ...respuesta[lado].noComparables.map(n => html`${etiqueta} · <code>${n.ruta.join(".")}</code>: ${explicarLimite(n.regla, respuesta[lado].reglas)}`),
+      ...respuesta[lado].motivosAgentes.map(m => html`${etiqueta}: ${explicarLimite(m, respuesta[lado].reglas)}`),
+    ];
+  });
   return responderHtml(200, diseno("Comparar resoluciones", html`
 ${cabeceraPagina({
     id: "resumen-comparacion",
     etiqueta: "section",
     titulo: `Análisis n.º ${respuesta.desde.id} → n.º ${respuesta.hasta.id}`,
     pregunta: "¿Qué cambió entre estos análisis?",
-    contexto: html`Proyecto: <code>${respuesta.proyecto}</code> · ${fechaLocalConSegundos(respuesta.desde.instante)} → ${fechaLocalConSegundos(respuesta.hasta.instante)}${agente === undefined ? html`` : html` · Agente: <code>${agente}</code>`}`,
+    contexto: [
+      datoProyecto(respuesta.proyecto),
+      { rotulo: "Análisis", valor: `n.º ${respuesta.desde.id} (${fechaLocalConSegundos(respuesta.desde.instante)}) → n.º ${respuesta.hasta.id} (${fechaLocalConSegundos(respuesta.hasta.instante)})` },
+      ...(agente === undefined ? [] : [{ rotulo: "Agente", valor: html`<code>${agente}</code>` }]),
+    ],
+    detalle: html`<p>Las sustituciones se comparan solo por su representación protegida; no se afirma igualdad del contenido incorporado. No se comparan cadenas ni decisiones de permisos.</p>`,
     extra: html`
 <div class="resumen-cambios" aria-label="Resumen de cambios">${insignia(`${resumen.cambiadas} ${concordar(resumen.cambiadas, "cambio", "cambios")}`, resumen.cambiadas ? rolCambio("cambiada") : "pista")}
 ${insignia(`${resumen.agregadas} ${concordar(resumen.agregadas, "clave nueva", "claves nuevas")}`, resumen.agregadas ? rolCambio("agregada") : "pista")}
@@ -52,18 +77,16 @@ ${quitados.length ? html`<p class="aviso">Agentes quitados: ${quitados.join(", "
 ${inciertos.length ? html`<p class="aviso">Presencia de agentes no comparable: ${inciertos.join(", ")}</p>` : html``}
 ${respuesta.parcial ? html`<p class="aviso">Comparación parcial: hay rutas o agentes no observados.</p>` : html``}
 ${hayCambios ? html`` : html`<p class="estado-vacio">${respuesta.parcial ? "Sin cambios en las claves comparables; comparación parcial" : "Sin cambios entre las dos fotos"}</p>`}
-<details><summary>¿Qué significa?</summary><p>Las sustituciones se comparan solo por su representación protegida; no se afirma igualdad del contenido incorporado. No se comparan cadenas ni decisiones de permisos.</p></details>
 ${visibles.some(c => !c.cambios.length) ? html`<p class="atenuado">Sin cambios: ${visibles.filter(c => !c.cambios.length).map(c => `${c.agente} (${c.resumen.sinCambio})`).join(", ")}</p>` : html``}
 ${visibles.filter(c => c.cambios.length).map(c => html`<section><h2>Agente ${c.agente}</h2><p>${c.resumen.sinCambio} ${concordar(c.resumen.sinCambio, "clave sin cambio", "claves sin cambio")}.</p>
 <div class="tabla-contenedor" role="region" aria-label="${`Cambios de ${c.agente}`}" tabindex="0">
 <table class="tabla-tarjetas tabla-comparacion" role="table"><caption class="oculto-visual">Cambios de ${c.agente}</caption><thead><tr role="row"><th scope="col">Clave</th><th scope="col">Antes</th><th scope="col">Después</th></tr></thead>
 <tbody>${c.cambios.map(cambio => html`<tr role="row"><td role="cell" data-etiqueta="Clave"><code title="${JSON.stringify(cambio.ruta)}">${cambio.ruta.join(" › ")}</code><p>${insignia(cambio.tipo, rolCambio(cambio.tipo))} ${cambio.motivos.join(", ")}</p></td>
-<td role="cell" data-etiqueta="Antes">${presentarLado(cambio.antes, rutaVisible)}</td><td role="cell" data-etiqueta="Después">${presentarLado(cambio.despues, rutaVisible)}</td></tr>`)}</tbody></table></div></section>`)}
-${(["desde", "hasta"] as const).map(lado => respuesta[lado].noComparables.length || respuesta[lado].motivosAgentes.length
-    ? html`<details><summary>Rutas no comparables y motivos (${lado})</summary>
-<ul>${respuesta[lado].noComparables.map(n => html`<li><code>${JSON.stringify(n.ruta)}</code>: ${respuesta[lado].reglas[n.regla] ?? n.regla}</li>`)}
-${respuesta[lado].motivosAgentes.map(m => html`<li>${respuesta[lado].reglas[m] ?? m}</li>`)}</ul></details>`
-    : html``)}
-${comandoCli("comparar", { desde: String(respuesta.desde.id), hasta: String(respuesta.hasta.id), ...(agente === undefined ? {} : { agente }) })}
-${datosRespuesta(respuesta)}`, { ...(contexto.hogar === undefined ? {} : { hogar: contexto.hogar }), proyecto: respuesta.proyecto, idResolucion: respuesta.hasta.id, activa: "Comparar" }));
+<td role="cell" data-etiqueta="Antes">${presentarLado(cambio.antes, rutaVisible, respuesta.desde.reglas)}</td><td role="cell" data-etiqueta="Después">${presentarLado(cambio.despues, rutaVisible, respuesta.hasta.reglas)}</td></tr>`)}</tbody></table></div></section>`)}
+${seccionLimites(limites)}
+${pieDesarrolladores(
+    respuesta.proyecto,
+    comandoCli("comparar", { desde: String(respuesta.desde.id), hasta: String(respuesta.hasta.id), ...(agente === undefined ? {} : { agente }) }),
+    datosRespuesta(respuesta),
+  )}`, { ...(contexto.hogar === undefined ? {} : { hogar: contexto.hogar }), proyecto: respuesta.proyecto, idResolucion: respuesta.hasta.id, activa: "Comparar" }));
 }

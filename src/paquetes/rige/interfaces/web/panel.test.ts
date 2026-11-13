@@ -47,7 +47,9 @@ describe("T5-17 G-5 nombres de las fotos guardadas", () => {
     for (const ruta of ["/resoluciones/7?agente=build", "/resoluciones/7/permisos?agente=build", "/agentes?id=7&agente=build",
       "/permiso?id=7&agente=build&herramienta=read&objetivo=.env"]) {
       const cuerpo = await solicitar(ruta).text();
-      expect(textoHtml(cuerpo)).toContain(ruta.startsWith("/agentes") ? "Análisis del " + nombreAnalisis(base.proyecto, sobre.instante).split(" · ")[1] : nombreAnalisis(base.proyecto, sobre.instante));
+      const fecha = nombreAnalisis(base.proyecto, sobre.instante).split(" · ")[1]!;
+      expect(textoHtml(cuerpo)).toContain("proyecto");
+      expect(textoHtml(cuerpo)).toContain(fecha);
       expect(cuerpo.replace(/<script[^]*?<\/script>/g, "")).not.toMatch(/(?:Resolución|resolución|Foto) 7/);
       expect(cuerpo).not.toMatch(/hoy \d|ayer \d/);
     }
@@ -58,7 +60,7 @@ describe("T5-17 G-5 nombres de las fotos guardadas", () => {
     expect(recibida.status).toBe(200);
     const cuerpo = await recibida.text();
     expect(dato(cuerpo)).toEqual(agentes);
-    expect(cuerpo).toContain("Fecha no disponible");
+    expect(cuerpo.toLowerCase()).toContain("fecha no disponible");
     expect(cuerpo).not.toMatch(/Resolución 7|hoy \d|ayer \d/);
   });
 });
@@ -181,14 +183,20 @@ describe("T5-11 P-5 reglas fuera de la tabla", () => {
     const cuerpo = await paginaResolucion(datoValores, sobre).text();
     const tabla = cuerpo.match(/<section id="valores">[^]*?<\/section>/)![0];
     expect(tabla).not.toContain('<th scope="col">Regla aplicada</th>');
-    expect(tabla.match(/<th scope="col">/g)).toHaveLength(8); // Declaradas y fábrica conservan las cuatro columnas.
+    const tablas = [...tabla.matchAll(/<table\b[^]*?<\/table>/g)].map(m => m[0]);
+    expect(tablas).toHaveLength(2);
+    expect(tablas[0]!.match(/<th scope="col">/g)).toHaveLength(4);
+    expect(tablas[1]!.match(/<th scope="col">/g)).toHaveLength(2);
+    expect(tabla.match(/<th scope="col">/g)).toHaveLength(6); // Cuatro columnas en declaradas y dos en fábrica.
+    for (const t of tablas) expect(t).not.toContain("<details");
     const ayuda = cuerpo.match(/<details><summary>¿Qué significa\?<\/summary>[^]*?<\/details>/)![0];
-    expect(ayuda).toContain("Precedencia &lt;RD-01&gt; completa.");
-    expect(ayuda).toContain("Valor &amp; implícito RD-04.");
     expect(cuerpo.indexOf(ayuda)).toBeLessThan(cuerpo.indexOf("<table"));
-    expect(tabla.match(/<details class="regla-detalle"><summary>Regla aplicada<\/summary>/g)).toHaveLength(2);
-    expect(tabla).toContain("Regla sin código.");
-    expect(tabla).toContain("Otra &lt;regla&gt;.");
+    const notas = [...tabla.matchAll(/<ul class="notas-reglas">([^]*?)<\/ul>/g)].map(m => m[1]!);
+    expect(notas).toHaveLength(2);
+    expect(notas[0]).toContain("<li>Precedencia &lt;RD-01&gt; completa.</li>");
+    expect(notas[0]).toContain("<li>Regla sin código.</li>");
+    expect(notas[0]).toContain("<li>Otra &lt;regla&gt;.</li>");
+    expect(notas[1]).toContain("<li>Valor &amp; implícito RD-04.</li>");
     expect(dato(cuerpo)).toEqual(datoValores);
     const sinPlantilla = await paginaResolucion(valores, sobre).text();
     expect(sinPlantilla).not.toContain("Cómo se decide:");
@@ -306,10 +314,10 @@ describe("T5-11 P-3 migas de pan y contexto", () => {
       const cuerpo = await recibida.text();
       expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
       expect(cuerpo).toContain('aria-label="Migas de pan"');
-      if (activa === "Valores") expect(cuerpo).toContain(nombreAnalisis(base.proyecto, sobre.instante));
-      else if (["Entradas", "Hallazgos"].includes(activa)) expect(cuerpo).toContain("Estado actual de las entradas de configuración (no es la foto guardada)");
-      else if (activa === "Agentes") expect(cuerpo).toContain("Análisis del");
-      else expect(cuerpo).toContain(`Foto guardada · ${nombreAnalisis(base.proyecto, sobre.instante)}`);
+      const fecha = nombreAnalisis(base.proyecto, sobre.instante).split(" · ")[1]!;
+      expect(cuerpo).toContain('class="contexto"');
+      if (["Entradas", "Hallazgos"].includes(activa)) expect(cuerpo).toMatch(/Estado actual[^<]*foto guardada/i);
+      else expect(cuerpo).toContain(fecha);
       if (respuesta === null) {
         expect(cuerpo).not.toContain('<script');
         expect(cuerpo).toContain('id="consultar-permiso"');
@@ -423,7 +431,7 @@ describe("Panel, diseño y coherencia visual", () => {
     for (const pagina of [paginaInicio(estadoZ7, undefined, new Date("2026-11-11T12:00:00Z")), paginaComparacion(comparacionZ7), paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "No existe" })]) {
       const cuerpo = await pagina.text();
       expect(cuerpo).toContain('href="/estilos.css"');
-      expect(cuerpo.match(/<h1>/g)).toHaveLength(1);
+      expect(cuerpo.match(/<h1\b[^>]*>/g)).toHaveLength(1);
     }
     expect(css(".cabecera-pagina")).toMatch(/margin-bottom:\s*2rem/);
     for (const selector of ["h1", ".cabecera-pagina h1", ".pagina-error h1"])
@@ -501,10 +509,11 @@ describe("T6-14 navegación por análisis, aviso anterior, selector y contexto",
       const cuerpo = await solicitar(ruta, casosConReglas).text();
       const barra = cuerpo.match(/<nav class="pestanas barra-analisis" aria-label="Vistas del análisis">([^]*?)<\/nav>/)?.[1];
       expect(barra).toBeDefined();
-      for (const destino of ["Resumen", "Agentes", "Permisos", "Reglas", "Entradas", "Hallazgos", "Historial"]) {
+      for (const destino of ["Resumen", "Agentes", "Permisos", "Reglas", "Entradas", "Hallazgos"]) {
         expect(barra).toContain(`>${destino}</a>`);
       }
-      expect(barra).toContain('href="/resoluciones/7#historia">Historial</a>');
+      expect(barra).not.toContain("Historial");
+      expect(barra).not.toContain("#historia");
       const actuales = [...barra!.matchAll(/aria-current="page">([^<]+)<\/a>/g)].map(m => m[1]);
       expect(actuales).toEqual([activa]);
     }

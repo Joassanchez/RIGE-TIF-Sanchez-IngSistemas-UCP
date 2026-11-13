@@ -1,17 +1,29 @@
-import { rotuloFoto } from "../textos";
 import type { RespuestaAgentes } from "../../../aplicacion/respuestas/contrato-generado";
 import { html } from "../plantillas";
-import { cabeceraPagina, diseno, enlace, insignia } from "../diseno";
+import {
+  cabeceraPagina,
+  datoCambioAnterior,
+  datoProyecto,
+  datosAnalisis,
+  diseno,
+  enlace,
+  insignia,
+} from "../diseno";
 import { responderHtml } from "../respuesta";
 import { camposContexto, selectorAgente, type ContextoPanel } from "../panel";
-import { presentarRuta } from "../rutas";
 
 export function paginaConsultasPermiso(respuesta: RespuestaAgentes, contexto: ContextoPanel): Response {
   return responderHtml(200, diseno("Permisos", html`${cabeceraPagina({
     titulo: "Permisos",
     lateral: selectorAgente(contexto, "Permisos", respuesta.proyecto),
     pregunta: "¿Qué permiso querés consultar?",
-    contexto: html`${presentarRuta(respuesta.proyecto)}${contexto.idResolucion === undefined ? html`` : html` · Análisis n.º ${contexto.idResolucion}`} · ${rotuloFoto(respuesta.proyecto, contexto.instante, contexto.fechaNoDisponible)}${contexto.agente === undefined ? html`` : html` · Agente: <code>${contexto.agente}</code>`}${contexto.lanzadoPor === undefined ? html`` : html` · Lanzado por: <code>${contexto.lanzadoPor}</code>`}`,
+    contexto: [
+      datoProyecto(respuesta.proyecto),
+      ...datosAnalisis(contexto.idResolucion, contexto.instante, contexto.fechaNoDisponible),
+      ...(contexto.agente === undefined ? [] : [{ rotulo: "Agente", valor: html`<code>${contexto.agente}</code>` }]),
+      ...(contexto.lanzadoPor === undefined ? [] : [{ rotulo: "Lanzado por", valor: html`<code>${contexto.lanzadoPor}</code>` }]),
+      ...datoCambioAnterior(contexto.idResolucion, contexto.anteriorAnalisis),
+    ],
     detalle: html`<p>Evaluá qué decisión efectiva aplica al agente seleccionado sobre una herramienta o sujeto de permiso en esta foto guardada.</p>`,
   })}
 <p><a href="${enlace("/reglas", { id: contexto.idResolucion, agente: contexto.agente ?? "", lanzadoPor: contexto.lanzadoPor, clave: contexto.clave || undefined, q: contexto.q || undefined })}">Ver cadena completa y matriz de permisos</a></p>

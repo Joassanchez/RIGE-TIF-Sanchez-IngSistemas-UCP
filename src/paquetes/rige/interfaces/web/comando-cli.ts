@@ -10,7 +10,7 @@ export function comandoCli(subcomando: "valores" | "permiso" | "reglas" | "agent
   const bash = comando(valor => "'" + valor.replaceAll("'", "'\"'\"'") + "'");
   const powershell = comando(valor => "'" + valor.replaceAll("'", "''") + "'");
   const comparacion = subcomando === "comparar";
-  return html`<details id="comando-cli"><summary>Ver en la consola</summary>
+  return html`<details id="comando-cli"><summary>comando equivalente</summary>
 <p>${comparacion ? "Consultar por CLI sobre las mismas fotos" : "Consultar por CLI con las entradas actuales"}</p>
 ${comparacion ? html`` : html`<p>No recupera esta foto; coincide si las entradas y el contexto no cambiaron</p>`}
 <h3>Bash</h3><pre><code>${bash}</code></pre>

@@ -59,7 +59,8 @@ describe("T5-17 G-3 cabeceras concisas", () => {
       expect(sinDetalles).toMatch(/<p>¿[^<]+\?<\/p>/);
       expect(cabecera).toContain("¿Qué significa?");
       expect(cabecera).not.toMatch(/<details[^>]*\bopen\b/);
-      expect(cabecera).toContain('class="ruta"');
+      expect(cabecera).toContain('class="contexto"');
+      expect(cabecera).toContain('title="/p/&lt;script&gt;&quot;&amp;"');
     }
   });
 });
@@ -163,14 +164,14 @@ describe("T5-08 U-3 U-4 tema y componentes", () => {
 describe("T5-08 U-5 U-6", () => {
   test("inicio ofrece analizar; resolucion pone resumen primero y pliega detalles", async () => {
     const inicio = await paginaInicio(estado, undefined, new Date("2026-11-11T12:00:00Z")).text();
-    expect(inicio).toContain("¿Qué configuración rige en este proyecto?");
+    expect(inicio).toContain("¿Qué configuración rige en tu proyecto?");
     expect(inicio).toContain('>Analizar</button>');
     expect(inicio.match(/<form\b/g)).toHaveLength(1);
     const cuerpo = await paginaResolucion(valores, sobre).text();
     expect(seccion(cuerpo, "resumen-resolucion")).toContain("0 valores");
     expect(cuerpo.indexOf('id="resumen-resolucion"')).toBeLessThan(cuerpo.indexOf('id="valores"'));
     expect(cuerpo).toContain('<details id="entradas-leidas"');
-    expect(cuerpo).toContain('<details id="claves-no-incorporadas"');
+    expect(cuerpo).toContain('id="limites-analisis"');
     const resumen = await solicitar("/resoluciones/7").text();
     expect(resumen).toContain('href="/resoluciones/7" aria-current="page"');
   });
@@ -252,19 +253,26 @@ describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
       [paginaEntradas(entradas), null], [paginaHallazgos(hallazgos), null]] as const) {
       const cuerpo = await pagina.text();
       const cabecera = id ? seccion(cuerpo, id) : cuerpo.split('<section')[0]!;
-      expect(cabecera).toContain('class="ruta"');
+      expect(cabecera).toContain('class="contexto"');
       expect(cabecera).toContain('title="/p/&lt;script&gt;&quot;&amp;"');
     }
   });
-  test("pliega las declaraciones solo cuando existe explicacion, sin perder sus textos", async () => {
+  test("mueve las declaraciones a limites y conserva las notas del analisis cuando existen", async () => {
     const cuerpo = await paginaPermiso(permiso).text();
-    const notas = /<details id="notas-analisis">(.*?)<\/details>/s.exec(cuerpo);
+    expect(seccion(cuerpo, "advertencias")).toContain("&lt;script&gt;&quot;&amp;");
+    const conNota = await paginaPermiso({
+      ...permiso,
+      nativaAnulada: { regla: 0, por: 1 },
+      advertencias: ["proteccion-nativa-anulada"],
+      reglas: { ...permiso.reglas, "proteccion-nativa-anulada": ataque },
+    }).text();
+    const notas = /<details id="notas-analisis">(.*?)<\/details>/s.exec(conNota);
     expect(notas).not.toBeNull();
     expect(notas![1]).toContain("Notas del análisis (1)");
     expect(notas![1]).toContain("&lt;script&gt;&quot;&amp;");
-    expect(cuerpo).not.toContain('<details id="notas-analisis" open');
-    expect(await paginaPermiso({ ...permiso, explicacion: [] }).text()).toContain('id="declaraciones"');
-    expect(await paginaPermiso({ ...permiso, explicacion: null }).text()).toContain('id="declaraciones"');
+    expect(conNota).not.toContain('<details id="notas-analisis" open');
+    expect(await paginaPermiso({ ...permiso, explicacion: [] }).text()).toContain('id="limites-analisis"');
+    expect(await paginaPermiso({ ...permiso, explicacion: null }).text()).toContain('id="limites-analisis"');
   });
   test("hallazgos ofrece nombres legibles, conteos de elementos separados y color por tipo", async () => {
     const cantidades = { "entrada-ilegible": 1, "entrada-descartada": 2, "sustitucion-sin-valor": 3,

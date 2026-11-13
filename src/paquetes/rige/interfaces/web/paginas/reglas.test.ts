@@ -79,15 +79,16 @@ describe("Matriz de permisos y todas las reglas", () => {
     expect(matriz).not.toContain("<details>");
     const filas = [...matriz.matchAll(/<tr[^>]*>(<th scope="row">[^]*?)<\/tr>/g)].map(m => m[1]!);
     expect(filas).toHaveLength(4);
-    for (const fila of filas.slice(0, 2)) expect(fila.split("</th>")[0]).toContain('>parcial</span>');
+    for (const fila of filas.slice(0, 2)) expect(fila.split("</th>")[0]).not.toContain('>parcial</span>');
     expect(filas[2]!.split("</th>")[0]).toContain('>incompleta</span>');
     expect(filas[3]!.split("</th>")[0]).not.toMatch(/>parcial<|>incompleta</);
     for (const [indice, fila] of filas.entries()) {
       expect(fila.split("</th>")[1]).toContain(indice === 2 ? '>sin decisión</span>' : '>parcial</span>');
     }
     expect(matriz.split("El eje externo no se observa por completo.")).toHaveLength(2);
-    const limites = seccionHtml(cuerpo, "limites-matriz");
-    expect(cuerpo.indexOf('id="limites-matriz"')).toBeGreaterThan(cuerpo.indexOf('aria-label="Matriz de permisos"'));
+    const limites = seccionHtml(cuerpo, "limites-analisis");
+    expect(cuerpo.indexOf('id="limites-analisis"')).toBeGreaterThan(cuerpo.indexOf('aria-label="Matriz de permisos"'));
+    expect(limites).toContain("Qué no cubre este análisis");
     expect(limites).toContain("Observación limitada &lt;fila&gt;");
     expect(limites).toContain("Sin cadena &lt;completa&gt;");
     expect(limites).not.toContain("cadena-incompleta");
@@ -119,21 +120,25 @@ describe("Matriz de permisos y todas las reglas", () => {
     expect(css('.tabla-cadena td[data-etiqueta="Patrón"] code')).toMatch(/overflow-wrap:\s*anywhere/);
   });
 
-  test("T5-22 M-1 procedencia nativa breve y explicacion integra escapada en title", async () => {
+  test("T5-22 M-1 procedencia breve sin details en celda y notas unicas bajo la cadena", async () => {
     const origen = { tipo: "declarado" as const, orden: 0, posicion: { linea: 2, columna: 3 } };
     const declarada = { ...reglasB.cadena[0]!, origen, declaracion: { origen, via: "proyecto", referencia: "/p/opencode.json", valor: "allow", regla: "declarada" } };
     const s = sinJson(await paginaReglas({ ...reglasB, cadena: [...reglasB.cadena, declarada] }, "7").text());
-    for (const tipo of ["general", "agente", "denegación de subagente"]) expect(visible(s)).toContain(`OpenCode · ${tipo}`);
-    expect(s).toContain('title="nativo · nativa-general: Regla de permiso incorporada en los defaults &lt;general&gt; &amp; &quot;segura&quot;."');
-    expect(s).toContain('<details class="regla-detalle">');
-    expect(visible(s)).toContain("incorporada en los defaults");
-    expect(s).toContain('href="vscode://file/p/opencode.json:2:3"');
+    const cadena = seccionHtml(s, "cadena-completa");
+    for (const tipo of ["general", "agente", "denegación de subagente"]) expect(visible(cadena)).toContain(`OpenCode · ${tipo}`);
+    expect(cadena).toContain('class="procedencia-chip procedencia-chip--nativo"');
+    expect(cadena).toContain('class="procedencia-chip procedencia-chip--declarado"');
+    expect(cadena).not.toContain("<details");
+    expect(cadena).not.toContain('title="nativa-');
+    expect(cadena).toContain('<ul class="notas-reglas">');
+    expect(visible(cadena).split("incorporada en los defaults").length - 1).toBe(1);
+    expect(cadena).toContain('href="vscode://file/p/opencode.json:2:3"');
   });
 
   test("T5-22 M-2 ejes comunes una vez y solo diferencias o errores por agente", async () => {
-    const limites = async (r: RespuestaReglas) => sinJson(await paginaReglas(r, "7").text()).split('id="limites-matriz"')[1]!.split("</section>")[0]!;
+    const limites = async (r: RespuestaReglas) => seccionHtml(sinJson(await paginaReglas(r, "7").text()), "limites-analisis");
     const iguales = await limites(reglasB);
-    expect(visible(iguales)).toContain("Todos los agentes: external_directory");
+    expect(visible(iguales)).toContain("Todos los agentes: Acceso a carpetas fuera del proyecto (external_directory)");
     expect(iguales.match(/external_directory/g)).toHaveLength(1);
     expect(iguales).not.toContain("<strong>build</strong>");
     const distintas = { ...reglasB, matriz: { ...reglasB.matriz, filas: reglasB.matriz.filas.map((f, i) => i ? { ...f, ejesParciales: [...f.ejesParciales, "otro_eje"], advertencias: ["propio"], error: { codigo: "cadena-incompleta", mensaje: "No observable" } } : f) } };
@@ -145,11 +150,33 @@ describe("Matriz de permisos y todas las reglas", () => {
     expect(sinJson(await paginaReglas({ ...reglasB, matriz: { ...reglasB.matriz, filas: [] } }, "7").text())).not.toContain("Todos los agentes:");
   });
 
-  test("T5-22 M-3 indice de matriz en title de insignia y texto visible", async () => {
+  test("T5-22 M-3 celda de matriz usa rol de color, glifo y texto oculto sin Regla N", async () => {
     const s = sinJson(await paginaReglas(reglasB, "7").text()).split('id="matriz-permisos"')[1]!.split("</section>")[0]!;
-    expect(s).toMatch(/class="insignia insignia--pregunta" title="Regla 1"/);
-    expect(visible(s)).toContain("Regla 1");
+    expect(s).toContain('class="celda-matriz rol--pregunta"');
+    expect(s).toContain('<span>?</span><span class="visualmente-oculto">pregunta</span>');
+    expect(s).toContain('href="/resoluciones/7/permisos?agente=build&amp;sujeto=');
+    expect(s).not.toContain('href="/resoluciones/7/permisos?id=7');
+    expect(s).not.toContain("Regla 1");
     expect(s).not.toContain("Regla null");
+  });
+
+  test("T6-23 I-1 leyenda de matriz, chips de prevalencia con rotulo y vacio como raya", async () => {
+    const s = sinJson(await paginaReglas({
+      ...reglasB,
+      cadena: [{ ...reglasB.cadena[0]!, prevalece: ["read", "edit"] }, ...reglasB.cadena.slice(1)],
+    }, "7").text());
+    const matriz = seccionHtml(s, "matriz-permisos");
+    expect(matriz).toContain('class="leyenda-matriz"');
+    expect(matriz).toContain('class="leyenda-chip rol--parcial">◐ parcial: RIGE no puede decidirlo sin conocer el objetivo concreto</li>');
+    const cadena = seccionHtml(s, "cadena-completa");
+    expect(cadena).toContain('class="lista-chips__rotulo">Sujetos donde prevalece</span>');
+    expect(cadena).toContain('class="chip"');
+    expect(cadena).not.toContain("ninguna");
+    const sinPrevalece = sinJson(await paginaReglas({
+      ...reglasB,
+      cadena: [{ ...reglasB.cadena[0]!, prevalece: [] }],
+    }, "7").text());
+    expect(seccionHtml(sinPrevalece, "cadena-completa")).toContain('data-etiqueta="Prevalece para *"><span class="atenuado">—</span></td>');
   });
 
   test("T6-15 X-2 fila del agente seleccionado primera con aria-current", async () => {
@@ -167,7 +194,7 @@ describe("Matriz de permisos y todas las reglas", () => {
     expect(cuerpo.match(/Límite común irrepetible/g)).toHaveLength(3); // HTML una vez, script JSON una vez y Ver JSON una vez.
     expect(cuerpo).toContain("Límite propio"); expect(cuerpo).toContain("No observable"); expect(sinJson(cuerpo)).not.toContain("cadena-incompleta");
     expect(cuerpo).toContain("sujeto=personalizado"); expect(cuerpo).toContain("sujeto=external_directory");
-    expect(cuerpo).toContain("parcial"); expect(cuerpo).toContain("sin decisión");
+    expect(cuerpo).toContain("parcial"); expect(cuerpo).toContain('<span>?</span><span class="visualmente-oculto">pregunta</span>'); expect(cuerpo).toContain('<span>◐</span><span class="visualmente-oculto">parcial</span>');
     expect(json(cuerpo)).toEqual(reglasP5);
   });
 });

@@ -81,7 +81,7 @@ describe("Inicio: ayuda, recientes y contratos visuales", () => {
 
   test("G-6 inicio con carpeta, tarjetas enlazadas y estado sin proyectos", async () => {
     const vacio = await paginaInicio(estado, undefined, new Date("2026-11-11T12:00:00Z")).text();
-    expect(vacio).toContain("¿Qué configuración rige en este proyecto?");
+    expect(vacio).toContain("¿Qué configuración rige en tu proyecto?");
     expect(vacio).toContain("Carpeta del proyecto");
     expect(vacio).toContain("Ingresá la carpeta de un proyecto y pulsá Analizar");
     const ahora = new Date(2026, 10, 11, 10, 42);
@@ -91,6 +91,25 @@ describe("Inicio: ayuda, recientes y contratos visuales", () => {
     expect(cuerpo).toContain("3 análisis");
     expect(cuerpo).toContain("Analizar de nuevo");
     expect(cuerpo).not.toMatch(/Resolución 729|<script/);
+  });
+
+  test("T6-23 I-3 hero destacado con formulario integrado y tarjetas recientes con acciones", async () => {
+    const cuerpo = await paginaInicio(
+      estado,
+      { esquema: 2, proyectos: [{ proyecto: "/repo/alfa/proyecto", id: 9, instante: sobre.instante, cantidad: 2 }] },
+      new Date("2026-11-11T12:00:00Z"),
+    ).text();
+    const hero = cuerpo.match(/<section class="hero"[^>]*>([^]*?)<\/section>/)![1]!;
+    expect(hero).toContain("¿Qué configuración rige en tu proyecto?");
+    expect(hero).toContain('id="analizar-proyecto"');
+    expect(hero).toContain('action="/resolver"');
+    const recientes = seccionHtml(cuerpo, "proyectos-recientes");
+    expect(recientes).toContain('class="reciente__acciones"');
+    expect(recientes).toContain('class="reciente__ver" href="/resoluciones/9">Ver análisis</a>');
+    expect(recientes).toContain('class="reciente__reanalizar" href="/resolver?proyecto=%2Frepo%2Falfa%2Fproyecto">Analizar de nuevo</a>');
+    expect(css(".hero")).toMatch(/background:\s*var\(--marca-suave\)/);
+    expect(css("#analizar-proyecto button")).toMatch(/background:\s*var\(--marca\)/);
+    expect(css(".recientes li")).toMatch(/border-top:\s*3px solid var\(--marca\)/);
   });
 
   test("T6-08 R-4 distingue tres proyectos homonimos con dos segmentos y trunca ruta por el inicio", async () => {

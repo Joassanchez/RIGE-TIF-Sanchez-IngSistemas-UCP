@@ -70,21 +70,26 @@ function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
   const valores = seccionHtml(cuerpo, "valores");
   const ruta = raiz.replaceAll("\\", "/");
   expect(valores).toContain(`<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor">${temperatura}</td>`);
-  const fila = /<tr><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(valores);
+  const fila = /<tr\b[^>]*><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(valores);
   expect(fila).not.toBeNull();
+  expect(fila![0]).toContain('class="fila--declarado"');
   const celdas = fila![0].match(/<td\b[^>]*>.*?<\/td>/gs)!;
   expect(celdas).toHaveLength(4);
-  expect(textoHtml(celdas[2]!)).toBe("Proyecto · ./opencode.jsonc:6:7");
+  expect(celdas[2]).toContain("procedencia-chip--declarado");
+  expect(celdas[2]).not.toContain("<details");
+  expect(textoHtml(celdas[2]!)).toBe("Proyecto · esta carpeta · ./opencode.jsonc:6:7");
   expect(celdas[2]).toContain(`title="Abrir en VS Code: ${ruta}/proyecto/opencode.jsonc"`);
   expect(celdas[3]).toContain('<ol class="cadena-desplazadas">');
   expect(celdas[3]).not.toContain("<del");
-  expect(textoHtml(celdas[3]!)).toContain(`rige ${temperatura}`);
+  expect(celdas[3]).not.toContain("insignia--rige");
+  expect(textoHtml(celdas[3]!)).not.toContain("rige");
+  expect(celdas[3]).not.toContain(`>${temperatura}<`);
   const desplazadas = [...celdas[3]!.matchAll(/<li class="declaracion-desplazada">(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
   expect(desplazadas).toEqual([
-    "← desplazado 0.2 (Proyecto · ./opencode.json:5:7)",
-    "← desplazado 0.1 (Proyecto · ../opencode.json:5:7)",
+    "0.2 Proyecto · esta carpeta · ./opencode.json:5:7",
+    "0.1 Proyecto · carpeta superior · ../opencode.json:5:7",
   ]);
-  expect(cuerpo).toContain(regla);
+  expect(valores.split(regla).length - 1).toBe(1);
   expect(cuerpo).toContain("Página armada con la resolución leída del almacén de RIGE.");
 }
 
@@ -146,7 +151,9 @@ describe("RF-01 CA-1 · recorrido del README (guía, paso 8)", () => {
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const cabecera = seccionHtml(pagina.cuerpo, "resumen-resolucion");
     expect(cabecera).toContain("<h1>build</h1>");
-    expect(cabecera).toMatch(/proyecto · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2} · Análisis n\.º 1/);
+    expect(cabecera).toContain('class="contexto"');
+    expect(cabecera).toMatch(/<dt>Proyecto<\/dt><dd><code[^>]*>[^<]*proyecto<\/code><\/dd>/);
+    expect(cabecera).toMatch(/<dt>Análisis<\/dt><dd>n\.º 1, \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}<\/dd>/);
     expect(cabecera.match(/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/g)).toHaveLength(1);
     expect(cabecera).not.toMatch(/hoy \d|ayer \d|Resolución \d/);
     resumen(pagina.cuerpo);
@@ -174,17 +181,24 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
       valores: Record<string, string | number>;
     };
     const tabla = seccionHtml(pagina.cuerpo, "valores"); // Declaradas y fábrica: se comprueban todas las filas.
-    const claves = [...tabla.matchAll(/<tr><td[^>]*>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
+    const claves = [...tabla.matchAll(/<tr\b[^>]*><td[^>]*>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
     expect(claves.filter(clave => Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["description", "steps", "temperature"]);
     expect(claves.filter(clave => !Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["mode", "name", "native", "options"]);
     for (const [clave, valor] of Object.entries(referencia.valores)) {
       expect(tabla).toContain(`<td data-etiqueta="Clave">${clave}</td><td data-etiqueta="Valor">${JSON.stringify(valor).replaceAll('"', "&quot;")}</td>`);
     }
+    const filaSteps = /<tr\b[^>]*><td[^>]*>steps<\/td>.*?<\/tr>/s.exec(tabla)![0];
+    expect(filaSteps.match(/<td\b[^>]*>.*?<\/td>/gs)![3]).toContain(">—<");
+    const filaDescripcion = /<tr\b[^>]*><td[^>]*>description<\/td>.*?<\/tr>/s.exec(tabla)![0];
+    expect(filaDescripcion.match(/<td\b[^>]*>.*?<\/td>/gs)![3]).toContain("OpenCode · valor de fábrica");
+    expect(tabla).toContain("Estos valores los fija OpenCode 1.18.25 cuando nadie los declara");
+    expect(pagina.cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")
+      .replace(/<details id="ver-json">[^]*?<\/details>/, "")).not.toContain("valor implicito del agente");
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const puntual = await recorrido.solicitar(paginaPrimera);
     expect(puntual.estado).toBe(200);
     const fila = (cuerpo: string) => {
-      const encontrada = /<tr><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(seccionHtml(cuerpo, "valores"));
+      const encontrada = /<tr\b[^>]*><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(seccionHtml(cuerpo, "valores"));
       expect(encontrada).not.toBeNull();
       return encontrada![0];
     };
@@ -296,12 +310,11 @@ describe("RF-03 / RF-05 errores de uso por la web", () => {
       const pagina = await recorrido.solicitar("/resoluciones/1?agente=build");
       expect(pagina.estado).toBe(200);
       expect(pagina.cuerpo).toContain('<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor">0.3</td>');
-      expect(pagina.cuerpo).toContain("Claves no incorporadas por RIGE");
-      expect(pagina.cuerpo).toContain("<li>permission:");
-      const pendientes = /<ul>(.*?)<\/ul>/s.exec(seccionHtml(pagina.cuerpo, "claves-no-incorporadas", "details"))?.[1];
-      expect(pendientes).toBeDefined();
-      expect(pendientes?.match(/<li>/g)).toHaveLength(2);
-      expect(pendientes).toContain("<li>tools:");
+      expect(pagina.cuerpo).toContain("Qué no cubre este análisis");
+      const limites = seccionHtml(pagina.cuerpo, "limites-analisis");
+      expect(limites).toContain("Clave no incorporada (<code>permission</code>):");
+      expect(limites).toContain("Clave no incorporada (<code>tools</code>):");
+      expect(limites.match(/Clave no incorporada \(<code>/g)).toHaveLength(2);
       expect(pagina.cuerpo).not.toContain("otro.permission");
       const recuperada = await recorrido.solicitar("/resoluciones/1?agente=build&clave=permission");
       expect(recuperada.estado).toBe(422);

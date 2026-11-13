@@ -37,7 +37,7 @@ describe("Página hallazgos", () => {
     expect(cuerpo).toContain("Regla relacionada");
     expect(cuerpo).toContain("vscode://file/p/proyecto/config%20%26%20%23.json:2:3");
     expect(cuerpo).toContain("#entrada-0"); expect(cuerpo).toContain("Faltan entradas por observar");
-    expect(cuerpo).toContain("Qué hacer"); expect(cuerpo).toContain("análisis parcial");
+    expect(cuerpo).toContain("Qué hacer"); expect(seccionHtml(cuerpo, "limites-analisis")).toContain("Análisis parcial: no se evaluaron todos los hallazgos.");
     expect(json(cuerpo)).toEqual(hallazgos);
     const vacio = await paginaHallazgos({ ...hallazgos, hallazgos: [] }).text();
     expect(vacio).toContain("Sin hallazgos observados; análisis parcial"); expect(vacio).not.toContain("insignia--permitida");
