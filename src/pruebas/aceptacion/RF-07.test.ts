@@ -14,7 +14,7 @@ import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { abarca } from "../../paquetes/opencode/hallazgos";
 import { consultarEntradas } from "../../paquetes/rige/aplicacion/casos-uso/consultar-entradas";
 import { consultarHallazgos } from "../../paquetes/rige/aplicacion/casos-uso/consultar-hallazgos";
-import type { RespuestaHallazgos } from "../../paquetes/rige/aplicacion/respuestas/hallazgos";
+import type { RespuestaHallazgos } from "../../paquetes/rige/aplicacion/respuestas/contrato-generado";
 import { nombresHallazgos } from "../../paquetes/rige/interfaces/web/componentes-proyecto";
 import type { TipoHallazgo } from "../../paquetes/nucleo/hallazgos/tipos";
 import { explicarHallazgo } from "../../paquetes/nucleo/hallazgos/explicar";
@@ -653,29 +653,26 @@ describe("T3-06 R-4", () => {
       const rExposicion = obtener(exposicion.dependencias(), exposicion.proyecto);
       const hallazgosG = rExposicion.hallazgos.filter(h => h.clave?.[1] === "g");
       expect(hallazgosG).toHaveLength(3);
-      for (const [idx, objetivo] of (["config/credenciales.json", "privado"] as const).entries()) {
-        const decisionH = exposicion.referencia.decisiones.find((d: { agente: string; objetivos: string[] }) => d.agente === "h" && d.objetivos.includes(objetivo));
+      const casosG = [
+        { forma: "config/credenciales.json", objetivo: "config/credenciales.json", linea: 6 },
+        { forma: "privado", objetivo: "privado", linea: 7 },
+        { forma: "privado/*", objetivo: "privado/LEEME.txt", linea: 8 },
+      ] as const;
+      for (const [idx, caso] of casosG.entries()) {
+        const decisionH = exposicion.referencia.decisiones.find((d: { agente: string; objetivos: string[] }) => d.agente === "h" && d.objetivos.includes(caso.objetivo));
         expect(decisionH.decision).toBe("deny");
         expect(hallazgosG[idx]).toMatchObject({
           tipo: "regla-sin-efecto",
           causa: "ruta-absoluta-con-forma",
-          posicion: { linea: idx === 0 ? 6 : 7, columna: 11 },
+          posicion: { linea: caso.linea, columna: 11 },
           parametros: {
             sujeto: "read",
             efecto: "denegada",
-            formaRelativa: objetivo,
+            formaRelativa: caso.forma,
             decision: plantillasExplicacion.efectos[decisionH.decision]!,
           },
         });
       }
-      expect(hallazgosG[2]).toMatchObject({
-        tipo: "regla-sin-efecto",
-        causa: "ruta-absoluta",
-        posicion: { linea: 8, columna: 11 },
-        parametros: { sujeto: "read", efecto: "denegada" },
-      });
-      expect(hallazgosG[2]!.parametros.formaRelativa).toBeUndefined();
-      expect(hallazgosG[2]!.parametros.decision).toBeUndefined();
     }
   });
 
@@ -1181,15 +1178,16 @@ describe("C-5 RF-07 CA-5", () => {
   const formas = manifiesto.defectosSembrados.filter((d: DefectoSembrado) =>
     ["v2-ruta-bloqueo", "v2-ruta-env", "v2-ruta-exposicion"].includes(d.escenario)
     && d.causa === "ruta-absoluta-con-forma");
-  expect(formas).toHaveLength(6);
+  expect(formas).toHaveLength(7);
   for (const defecto of formas) {
     const referencia = JSON.parse(readFileSync(join(raiz, defecto.escenario, "REFERENCIA.json"), "utf8"));
     const sujeto = defecto.clave[3];
-    const objetivo = defecto.parametros.formaRelativa;
+    const formaRelativa = defecto.parametros.formaRelativa;
+    const objetivo = defecto.objetivoComprobacion ?? formaRelativa;
     const consulta = { agente: defecto.control.agente, sujeto, objetivo };
     // decisionNativa arroja si existe una captura incompleta: nunca se convierte en pendiente.
     const nativa = decisionNativa(referencia, consulta, objetivo);
-    const titulo = `${defecto.escenario} ${defecto.clave[1]} -> ${consulta.agente} ${sujeto} ${objetivo}`;
+    const titulo = `${defecto.escenario} ${defecto.clave[1]} -> ${consulta.agente} ${sujeto} ${formaRelativa}`;
     if (nativa === null) {
       const registro = referencia.decisionesNativas?.find((d: { agente: string; sujeto: string; objetivo: string }) =>
         d.agente === consulta.agente && d.sujeto === sujeto && d.objetivo === objetivo);
@@ -1204,9 +1202,9 @@ describe("C-5 RF-07 CA-5", () => {
       expect(resultado.codigo).toBe(0);
       expect(resultado.error).toBe("");
       const hallazgos = JSON.parse(resultado.salida).hallazgos as RespuestaHallazgos["hallazgos"];
-      const h = hallazgos.find(h => h.clave?.[1] === defecto.clave[1] && h.parametros.formaRelativa === objetivo);
+      const h = hallazgos.find(h => h.clave?.[1] === defecto.clave[1] && h.parametros.formaRelativa === formaRelativa);
       const decision = plantillasExplicacion.efectos[nativa.decision]!;
-      expect(h).toMatchObject({ causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: objetivo, decision, efecto: decision } });
+      expect(h).toMatchObject({ causa: "ruta-absoluta-con-forma", parametros: { formaRelativa, decision, efecto: decision } });
       expect(decision).toBe(defecto.parametros.decision);
       const permiso = lanzar(e.raiz, ["permiso", "--proyecto", e.proyecto, "--agente", consulta.agente,
         "--sujeto", sujeto, "--objetivo", objetivo], e.env);
@@ -1221,5 +1219,47 @@ describe("C-5 RF-07 CA-5", () => {
             sustituir ? patron.replace(`${e.proyecto.replaceAll("\\", "/")}/`, "") : patron, efecto]));
       expect(reglas(defecto.clave[1], true)).toEqual(reglas(consulta.agente, false));
     });
+  }
+});
+
+describe("T5-28 R-8", () => {
+  if (process.platform === "win32") {
+    test("agente g de v2-ruta-exposicion informa forma privado/* y coincide con la decision nativa para privado/LEEME.txt", () => {
+      const e = preparar("v2-ruta-exposicion");
+      const r = obtener(e.dependencias(), e.proyecto);
+      const hallazgo = r.hallazgos.find(h => h.clave?.[1] === "g" && h.clave?.[4]?.endsWith("/privado/*"));
+      expect(hallazgo).toMatchObject({
+        tipo: "regla-sin-efecto",
+        causa: "ruta-absoluta-con-forma",
+        parametros: { sujeto: "read", efecto: "denegada", formaRelativa: "privado/*", decision: "denegada" },
+      });
+      const decisionH = e.referencia.decisiones.find((d: { agente: string; objetivos: string[] }) =>
+        d.agente === "h" && d.objetivos.includes("privado/LEEME.txt"));
+      const decisionControlG = e.referencia.decisiones.find((d: { agente: string; herramientas: string[]; objetivos: string[] }) =>
+        d.agente === "control_g" && d.herramientas.includes("read") && d.objetivos.includes("privado/LEEME.txt"));
+      expect(plantillasExplicacion.efectos[decisionH.decision]).toBe(hallazgo!.parametros.decision);
+      expect(plantillasExplicacion.efectos[decisionControlG.decision]).toBe(hallazgo!.parametros.decision);
+      const nativa = decisionNativa(e.referencia, { agente: "control_g", sujeto: "read", objetivo: "privado/LEEME.txt" }, "privado/LEEME.txt");
+      expect(nativa).not.toBeNull();
+      expect(plantillasExplicacion.efectos[nativa!.decision]).toBe(hallazgo!.parametros.decision);
+    });
+  } else {
+    test("agente g de v2-ruta-exposicion informa forma privado/* y coincide con las decisiones de referencia para privado/LEEME.txt", () => {
+      const e = preparar("v2-ruta-exposicion");
+      const r = obtener(e.dependencias(), e.proyecto);
+      const hallazgo = r.hallazgos.find(h => h.clave?.[1] === "g" && h.clave?.[4]?.endsWith("/privado/*"));
+      expect(hallazgo).toMatchObject({
+        tipo: "regla-sin-efecto",
+        causa: "ruta-absoluta-con-forma",
+        parametros: { sujeto: "read", efecto: "denegada", formaRelativa: "privado/*", decision: "denegada" },
+      });
+      const decisionH = e.referencia.decisiones.find((d: { agente: string; objetivos: string[] }) =>
+        d.agente === "h" && d.objetivos.includes("privado/LEEME.txt"));
+      const decisionControlG = e.referencia.decisiones.find((d: { agente: string; herramientas: string[]; objetivos: string[] }) =>
+        d.agente === "control_g" && d.herramientas.includes("read") && d.objetivos.includes("privado/LEEME.txt"));
+      expect(plantillasExplicacion.efectos[decisionH.decision]).toBe(hallazgo!.parametros.decision);
+      expect(plantillasExplicacion.efectos[decisionControlG.decision]).toBe(hallazgo!.parametros.decision);
+    });
+    test.todo("decision nativa de control_g para privado/LEEME.txt (captura win32-x64 en plataforma distinta)", () => {});
   }
 });

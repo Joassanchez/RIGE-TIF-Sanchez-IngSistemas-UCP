@@ -7,6 +7,7 @@ import { cadena } from "./cadena";
 import { listarAgentes } from "./agentes";
 import { permisos } from "./permisos";
 import { decidir } from "@rige/nucleo/permisos/decidir";
+import { match } from "./vendor/wildcard";
 
 // Cada rama conserva sus comodines literales: el sufijo opcional se expande
 // una sola vez, como en vendor/wildcard, incluso si hay otros " *" anteriores.
@@ -62,14 +63,23 @@ export function causaRutaRegla(
     ? entorno.unir(raizUnidad(contexto), patron) : entorno.unir(patron);
   const ultimoSeparador = absoluto.replaceAll("\\", "/").lastIndexOf("/");
   if (/[*?]/.test(absoluto.slice(0, ultimoSeparador))) return null;
-  const relativa = entorno.relativa(baseRelativa(contexto), absoluto);
+  const ultimoSegmento = absoluto.slice(ultimoSeparador + 1);
+  const testigoAbsoluto = absoluto.slice(0, ultimoSeparador + 1)
+    + ultimoSegmento.replaceAll("*", "__rige_testigo__").replaceAll("?", "x");
+  const base = baseRelativa(contexto);
+  const relativa = entorno.relativa(base, testigoAbsoluto);
   if (relativa === ".." || relativa.startsWith("../") || relativa.startsWith("..\\") || entorno.esAbsoluta(relativa)) return null;
   const diagnostico = { causa: "ruta-absoluta" };
-  if (/[*?]/.test(patron)) return diagnostico;
-  const consulta = prepararConsulta(contexto, { herramienta: regla.sujeto, objetivo: absoluto });
+  const consulta = prepararConsulta(contexto, { herramienta: regla.sujeto, objetivo: testigoAbsoluto });
   if (!consulta.exito) throw new Error(consulta.error.mensaje);
   if (consulta.valor.motivoSinDecision !== null) return diagnostico;
-  const formaRelativa = consulta.valor.objetivoEvaluado.replaceAll("\\", "/").replace(/\/+$/, "");
+  const testigoRelativo = consulta.valor.objetivoEvaluado.replaceAll("\\", "/").replace(/\/+$/, "");
+  const conComodin = /[*?]/.test(ultimoSegmento);
+  if (/[*?]/.test(regla.patron) && !conComodin) return diagnostico;
+  const corte = testigoRelativo.lastIndexOf("/");
+  if (conComodin && corte <= 0) return diagnostico;
+  const prefijo = conComodin ? testigoRelativo.slice(0, corte + 1) : "";
+  const formaRelativa = conComodin ? `${prefijo}${ultimoSegmento}` : testigoRelativo;
   const agentes = listarAgentes(resolucion, contexto).agentes.filter(a => a.estado === "activo"
     && (regla.agente === null || a.nombre === regla.agente));
   if (!agentes.length) return diagnostico;
@@ -90,8 +100,32 @@ export function causaRutaRegla(
       return { ...r, patron: formaRelativa };
     });
     if (reemplazos !== 1) return diagnostico;
-    const consultaRelativa = { sujeto: regla.sujeto, objetivo: formaRelativa };
-    const evaluacion = permisos.evaluar(reglas, regla.sujeto, formaRelativa, entorno.plataforma);
+    if (conComodin) {
+      let vistaDeterminante = false;
+      for (const r of original.valor.reglas) {
+        if (r.declaracion === rastro.determinante) {
+          vistaDeterminante = true;
+          continue;
+        }
+        // OpenCode evalua las reglas con findLast: la determinante prevalece
+        // sobre cualquier regla anterior, por lo que solo las posteriores
+        // a ella pueden entrar en conflicto con la forma propuesta.
+        if (!vistaDeterminante) continue;
+        if (!match(regla.sujeto, r.sujeto, entorno.plataforma) || r.efecto === regla.efecto) continue;
+        const pNorm = r.patron.replaceAll("\\", "/");
+        const pAbs = entorno.esAbsoluta(pNorm)
+          ? (entorno.plataforma === "win32" && /^\/(?!\/)/.test(pNorm) ? entorno.unir(raizUnidad(contexto), pNorm) : entorno.unir(pNorm))
+          : null;
+        const patronOtra = (pAbs !== null ? entorno.relativa(base, pAbs) : pNorm).replaceAll("\\", "/");
+        const compOtra = entorno.plataforma === "win32" ? patronOtra.toLowerCase() : patronOtra;
+        const compPrefijo = entorno.plataforma === "win32" ? prefijo.toLowerCase() : prefijo;
+        if (compOtra === compPrefijo.slice(0, -1) || compOtra.startsWith(compPrefijo) || /[*?]/.test(compOtra.slice(0, compPrefijo.length))) {
+          return diagnostico;
+        }
+      }
+    }
+    const consultaRelativa = { sujeto: regla.sujeto, objetivo: testigoRelativo };
+    const evaluacion = permisos.evaluar(reglas, regla.sujeto, testigoRelativo, entorno.plataforma);
     const decision = decidir({ ...original.valor, reglas }, consultaRelativa, { ...permisos, ...evaluacion });
     if (decision.decision !== regla.efecto) return diagnostico;
   }

@@ -1,0 +1,20 @@
+{
+  "agent": {
+    "k": {
+      "permission": {
+        "read": {
+          "<RAIZ>/proyecto/privado/*": "deny",
+          "privado/ok.md": "allow"
+        }
+      }
+    },
+    "control_k": {
+      "permission": {
+        "read": {
+          "privado/*": "deny",
+          "privado/ok.md": "allow"
+        }
+      }
+    }
+  }
+}

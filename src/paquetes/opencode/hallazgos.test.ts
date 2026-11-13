@@ -181,3 +181,272 @@ describe("T3-06 R-6 unidad causaRutaRegla", () => {
     void posix;
   });
 });
+
+function prepararPosixPermisos(permission: Record<string, unknown>) {
+  const entorno = crearEntornoMemoria({
+    archivos: {
+      "/proyecto/opencode.json": JSON.stringify({ permission }),
+      "/proyecto/.git/HEAD": "ref: refs/heads/main\n",
+      "/bin/git": "",
+    },
+    directorios: ["/proyecto", "/proyecto/.git", "/proyecto/.git/objects", "/proyecto/.git/refs", "/bin", "/hogar"],
+    variables: { HOME: "/hogar", PATH: "/bin" },
+    plataforma: "linux",
+  });
+  const ctx = adaptadorOpenCode.contexto("/proyecto", entorno);
+  const res = resolver(adaptadorOpenCode, "/proyecto", entorno);
+  if (!ctx.exito || !res.exito) throw new Error("Fallo en preparacion POSIX con git");
+  return { ctx: ctx.valor, res: res.valor };
+}
+
+function prepararPosixGit(read: Record<string, string>) {
+  return prepararPosixPermisos({ read });
+}
+
+function prepararWinPermisos(permission: Record<string, unknown>) {
+  const baseWin = crearEntornoMemoria({
+    archivos: {
+      "D:\\proyecto\\opencode.json": JSON.stringify({ permission }),
+      "D:\\proyecto\\.git\\HEAD": "ref: refs/heads/main\n",
+      "C:\\bin\\git.exe": "",
+    },
+    directorios: ["D:\\proyecto", "D:\\proyecto\\.git", "D:\\proyecto\\.git\\objects", "D:\\proyecto\\.git\\refs", "C:\\bin", "C:\\hogar"],
+    variables: { USERPROFILE: "C:\\hogar", HOME: "C:\\hogar", PATH: "C:\\bin" },
+    plataforma: "win32",
+    rutas: "win32",
+  });
+  const entornoWin = {
+    ...baseWin,
+    unir: win32.join,
+    padre: win32.dirname,
+    relativa: (d: string, h: string) => win32.relative(win32.resolve("C:\\", d), win32.resolve("C:\\", h)),
+  };
+  const ctxWin = adaptadorOpenCode.contexto("D:\\proyecto", entornoWin);
+  const resWin = resolver(adaptadorOpenCode, "D:\\proyecto", entornoWin);
+  if (!ctxWin.exito || !resWin.exito) throw new Error("Fallo en preparacion win32 con git");
+  return { ctx: ctxWin.valor, res: resWin.valor };
+}
+
+describe("T5-28 R-1", () => {
+  test("read * -> allow y /proyecto/privado/* -> deny en POSIX da ruta-absoluta-con-forma privado/* denegada", () => {
+    const { ctx, res } = prepararPosixGit({ "*": "allow", "/proyecto/privado/*": "deny" });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/privado/*"],
+      sujeto: "read", patron: "/proyecto/privado/*", efecto: "deny",
+    })).toEqual({
+      causa: "ruta-absoluta-con-forma",
+      parametros: { formaRelativa: "privado/*", decision: "denegada" },
+    });
+  });
+});
+
+describe("T5-28 R-2", () => {
+  test("mismo caso en win32 (\\proyecto\\privado\\*, unidad D:) da forma privado/*", () => {
+    const baseWin = crearEntornoMemoria({
+      archivos: {
+        "D:\\proyecto\\opencode.json": JSON.stringify({ permission: { read: { "*": "allow", "\\proyecto\\privado\\*": "deny" } } }),
+        "D:\\proyecto\\.git\\HEAD": "ref: refs/heads/main\n",
+        "C:\\bin\\git.exe": "",
+      },
+      directorios: ["D:\\proyecto", "D:\\proyecto\\.git", "D:\\proyecto\\.git\\objects", "D:\\proyecto\\.git\\refs", "C:\\bin", "C:\\hogar"],
+      variables: { USERPROFILE: "C:\\hogar", HOME: "C:\\hogar", PATH: "C:\\bin" },
+      plataforma: "win32",
+      rutas: "win32",
+    });
+    const entornoWin = {
+      ...baseWin,
+      unir: win32.join,
+      padre: win32.dirname,
+      relativa: (d: string, h: string) => win32.relative(win32.resolve("C:\\", d), win32.resolve("C:\\", h)),
+    };
+    const ctxWin = adaptadorOpenCode.contexto("D:\\proyecto", entornoWin);
+    const resWin = resolver(adaptadorOpenCode, "D:\\proyecto", entornoWin);
+    if (!ctxWin.exito || !resWin.exito) throw new Error("Fallo en preparacion win32 con git");
+    expect(causaRutaRegla(resWin.valor, ctxWin.valor, {
+      agente: null, clave: ["permission", "read", "\\proyecto\\privado\\*"],
+      sujeto: "read", patron: "\\proyecto\\privado\\*", efecto: "deny",
+    })).toEqual({
+      causa: "ruta-absoluta-con-forma",
+      parametros: { formaRelativa: "privado/*", decision: "denegada" },
+    });
+  });
+});
+
+describe("T5-28 R-3", () => {
+  test("/proyecto/*/a.js (comodin intermedio) devuelve null", () => {
+    const { ctx, res } = prepararPosixGit({ "/proyecto/*/a.js": "deny" });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/*/a.js"],
+      sujeto: "read", patron: "/proyecto/*/a.js", efecto: "deny",
+    })).toBeNull();
+  });
+});
+
+describe("T5-28 R-4", () => {
+  const sinForma = { causa: "ruta-absoluta" };
+  const conForma = { causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: "privado/*", decision: "denegada" } };
+
+  type CasoTabla = {
+    nombre: string;
+    posix?: Record<string, unknown>;
+    win32?: Record<string, unknown>;
+    esperadoPosix?: typeof sinForma | typeof conForma;
+    esperadoWin32?: typeof sinForma | typeof conForma;
+  };
+
+  const tabla: CasoTabla[] = [
+    {
+      nombre: "privado/ok.md allow -> sin forma",
+      posix: { read: { "/proyecto/privado/*": "deny", "privado/ok.md": "allow" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny", "privado/ok.md": "allow" } },
+      esperadoPosix: sinForma,
+      esperadoWin32: sinForma,
+    },
+    {
+      nombre: "su absoluta (/proyecto/privado/ok.md) allow -> sin forma",
+      posix: { read: { "/proyecto/privado/*": "deny", "/proyecto/privado/ok.md": "allow" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny", "\\proyecto\\privado\\ok.md": "allow" } },
+      esperadoPosix: sinForma,
+      esperadoWin32: sinForma,
+    },
+    {
+      nombre: "pri*/x allow -> sin forma",
+      posix: { read: { "/proyecto/privado/*": "deny", "pri*/x": "allow" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny", "pri*/x": "allow" } },
+      esperadoPosix: sinForma,
+      esperadoWin32: sinForma,
+    },
+    {
+      nombre: "*.md allow -> sin forma",
+      posix: { read: { "/proyecto/privado/*": "deny", "*.md": "allow" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny", "*.md": "allow" } },
+      esperadoPosix: sinForma,
+      esperadoWin32: sinForma,
+    },
+    {
+      nombre: "** allow -> sin forma",
+      posix: { read: { "/proyecto/privado/*": "deny", "**": "allow" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny", "**": "allow" } },
+      esperadoPosix: sinForma,
+      esperadoWin32: sinForma,
+    },
+    {
+      nombre: "regla con sujeto * y patron privado/ok.md allow -> sin forma",
+      posix: { read: { "/proyecto/privado/*": "deny" }, "*": { "privado/ok.md": "allow" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny" }, "*": { "privado/ok.md": "allow" } },
+      esperadoPosix: sinForma,
+      esperadoWin32: sinForma,
+    },
+    {
+      nombre: "sujeto re* y patron privado/ok.md allow -> sin forma",
+      posix: { read: { "/proyecto/privado/*": "deny" }, "re*": { "privado/ok.md": "allow" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny" }, "re*": { "privado/ok.md": "allow" } },
+      esperadoPosix: sinForma,
+      esperadoWin32: sinForma,
+    },
+    {
+      nombre: "win32 PRIVADO/ok.md allow -> sin forma",
+      win32: { read: { "\\proyecto\\privado\\*": "deny", "PRIVADO/ok.md": "allow" } },
+      esperadoWin32: sinForma,
+    },
+    {
+      nombre: "posterior con el mismo efecto (privado/x deny) -> con forma",
+      posix: { read: { "/proyecto/privado/*": "deny", "privado/x": "deny" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny", "privado/x": "deny" } },
+      esperadoPosix: conForma,
+      esperadoWin32: conForma,
+    },
+    {
+      nombre: "regla de otro sujeto (edit privado/ok.md allow) -> con forma",
+      posix: { read: { "/proyecto/privado/*": "deny" }, edit: { "privado/ok.md": "allow" } },
+      win32: { read: { "\\proyecto\\privado\\*": "deny" }, edit: { "privado/ok.md": "allow" } },
+      esperadoPosix: conForma,
+      esperadoWin32: conForma,
+    },
+  ];
+
+  test.each(tabla)("$nombre", (c) => {
+    if (c.posix && c.esperadoPosix) {
+      const { ctx, res } = prepararPosixPermisos(c.posix);
+      expect(causaRutaRegla(res, ctx, {
+        agente: null, clave: ["permission", "read", "/proyecto/privado/*"],
+        sujeto: "read", patron: "/proyecto/privado/*", efecto: "deny",
+      })).toEqual(c.esperadoPosix);
+    }
+    if (c.win32 && c.esperadoWin32) {
+      const { ctx: ctxWin, res: resWin } = prepararWinPermisos(c.win32);
+      expect(causaRutaRegla(resWin, ctxWin, {
+        agente: null, clave: ["permission", "read", "\\proyecto\\privado\\*"],
+        sujeto: "read", patron: "\\proyecto\\privado\\*", efecto: "deny",
+      })).toEqual(c.esperadoWin32);
+    }
+  });
+});
+
+describe("T5-28 R-5", () => {
+  test("<worktree>/* devuelve ruta-absoluta sin forma", () => {
+    const { ctx, res } = prepararPosixGit({ "/proyecto/*": "deny" });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/*"],
+      sujeto: "read", patron: "/proyecto/*", efecto: "deny",
+    })).toEqual({ causa: "ruta-absoluta" });
+  });
+});
+
+describe("T5-28 R-6", () => {
+  test("? en el ultimo segmento (/proyecto/privado/a?.txt) da forma privado/a?.txt", () => {
+    const { ctx, res } = prepararPosixGit({ "*": "allow", "/proyecto/privado/a?.txt": "deny" });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/privado/a?.txt"],
+      sujeto: "read", patron: "/proyecto/privado/a?.txt", efecto: "deny",
+    })).toEqual({
+      causa: "ruta-absoluta-con-forma",
+      parametros: { formaRelativa: "privado/a?.txt", decision: "denegada" },
+    });
+  });
+});
+
+describe("T5-28 R-7", () => {
+  test("casos sin comodin conservan la forma esperada", () => {
+    const { ctx, res } = prepararPosixGit({
+      "/proyecto/src/a.js": "allow",
+      "/proyecto/privado/": "deny",
+      "/proyecto/.env": "allow",
+    });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/src/a.js"],
+      sujeto: "read", patron: "/proyecto/src/a.js", efecto: "allow",
+    })).toEqual({ causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: "src/a.js", decision: "permitida" } });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/privado/"],
+      sujeto: "read", patron: "/proyecto/privado/", efecto: "deny",
+    })).toEqual({ causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: "privado", decision: "denegada" } });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/.env"],
+      sujeto: "read", patron: "/proyecto/.env", efecto: "allow",
+    })).toEqual({ causa: "ruta-absoluta-con-forma", parametros: { formaRelativa: ".env", decision: "permitida" } });
+  });
+});
+
+describe("T5-28 C1-2", () => {
+  test("/proyecto/privado/*/.. -> ruta-absoluta sin forma", () => {
+    const { ctx, res } = prepararPosixGit({ "/proyecto/privado/*/..": "deny" });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/privado/*/.."],
+      sujeto: "read", patron: "/proyecto/privado/*/..", efecto: "deny",
+    })).toEqual({ causa: "ruta-absoluta" });
+  });
+});
+
+describe("T5-28 C1-3", () => {
+  test("privado/ok.md allow antes de la regla absoluta -> con forma privado/*", () => {
+    const { ctx, res } = prepararPosixGit({ "privado/ok.md": "allow", "/proyecto/privado/*": "deny" });
+    expect(causaRutaRegla(res, ctx, {
+      agente: null, clave: ["permission", "read", "/proyecto/privado/*"],
+      sujeto: "read", patron: "/proyecto/privado/*", efecto: "deny",
+    })).toEqual({
+      causa: "ruta-absoluta-con-forma",
+      parametros: { formaRelativa: "privado/*", decision: "denegada" },
+    });
+  });
+});

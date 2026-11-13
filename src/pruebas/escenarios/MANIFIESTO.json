@@ -2357,19 +2357,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         },
         {
           "item": "RF-07 CA-4",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "describe": "RF-07 CA-5 patrones absolutos y formas relativas",
           "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
@@ -2401,19 +2401,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         },
         {
           "item": "RF-07 CA-4",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "describe": "RF-07 CA-5 patrones absolutos y formas relativas",
           "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
@@ -2445,19 +2445,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         },
         {
           "item": "RF-07 CA-4",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "describe": "RF-07 CA-5 patrones absolutos y formas relativas",
           "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
@@ -2489,19 +2489,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         },
         {
           "item": "RF-07 CA-4",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "describe": "RF-07 CA-5 patrones absolutos y formas relativas",
           "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
@@ -2533,19 +2533,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         },
         {
           "item": "RF-07 CA-4",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "describe": "RF-07 CA-5 patrones absolutos y formas relativas",
           "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
@@ -2577,19 +2577,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         },
         {
           "item": "RF-07 CA-4",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "describe": "RF-07 CA-5 patrones absolutos y formas relativas",
           "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
@@ -2648,19 +2648,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         },
         {
           "item": "RF-07 CA-4",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "describe": "RF-07 CA-5 patrones absolutos y formas relativas",
           "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
@@ -2719,19 +2719,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         },
         {
           "item": "RF-07 CA-4",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b1 A-b2 patrones absolutos y formas relativas",
+          "describe": "RF-07 CA-5 patrones absolutos y formas relativas",
           "fuente": "caso-de-uso; forma-exacta-y-control-independiente"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06b.test.ts",
-          "describe": "T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; sin-fallback"
         }
       ]
@@ -2763,19 +2763,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; coincidencia-estricta"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; coincidencia-estricta"
         },
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 declaracion estructurada independiente de la decision",
+          "describe": "RF-07 CA-5 declaracion estructurada independiente de la decision",
           "fuente": "caso-de-uso; declaracion-estructurada-no-acredita-coincidencia"
         }
       ]
@@ -2807,19 +2807,19 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "caracterizacion-limite-declarado-ADR-101-W-B; win32-x64: OpenCode allow, RIGE deny; linux-x64: test.todo"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "caracterizacion-limite-declarado-ADR-101-W-B; win32-x64: OpenCode allow, RIGE deny; linux-x64: test.todo"
         },
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 declaracion estructurada independiente de la decision",
+          "describe": "RF-07 CA-5 declaracion estructurada independiente de la decision",
           "fuente": "caso-de-uso; declaracion-estructurada-no-acredita-coincidencia"
         }
       ]
@@ -2851,20 +2851,98 @@
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; coincidencia-estricta"
         },
         {
           "item": "RNF-02 CA-2",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 A-c2 comparacion nativa sin fallback",
+          "describe": "RNF-02 CA-1 comparacion nativa sin fallback",
           "fuente": "captura-nativa-por-plataforma; ausente=test.todo; coincidencia-estricta"
         },
         {
           "item": "RF-02 CA-9",
           "archivo": "pruebas/aceptacion/T5-06c.test.ts",
-          "describe": "T5-06c A-c1 declaracion estructurada independiente de la decision",
+          "describe": "RF-07 CA-5 declaracion estructurada independiente de la decision",
           "fuente": "caso-de-uso; declaracion-estructurada-no-acredita-coincidencia"
+        }
+      ]
+    },
+    {
+      "id": "v5-ruta-absoluta-tapada",
+      "entradas": {
+        "DERIVACION.md": "7cba8be1b864cef52348bbae0687164a8d69a9703644179b134809853bc78115",
+        "proyecto/opencode.jsonc": "400ce2a5afe169e865f29288421c7882583f116a864dfc0400fec8cfa2ab937c",
+        "proyecto/privado/LEEME.txt": "99d76399ca99afb9a485e407ce173915be50370d793dccee289ce8d204d4cd18",
+        "proyecto/privado/ok.md": "10df24b37cd8129e6d5413cb93792b148b5ba71fb0a5e1d782f2b6f561cea485"
+      },
+      "referencia": "3bc6fc56b2373c455bdf645161e60b926774684febc02abf460aea57547137a4",
+      "agentes": [
+        "build",
+        "k",
+        "control_k"
+      ],
+      "claves": [],
+      "consultas": [
+        {
+          "id": "q0-read-privado/LEEME.txt",
+          "agente": "k",
+          "sujeto": "read",
+          "objetivo": "privado/LEEME.txt",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado/LEEME.txt"
+          },
+          "nativa": true
+        },
+        {
+          "id": "q1-read-privado/LEEME.txt",
+          "agente": "control_k",
+          "sujeto": "read",
+          "objetivo": "privado/LEEME.txt",
+          "herramienta": "read",
+          "argumentos": {
+            "filePath": "<PROYECTO>/privado/LEEME.txt"
+          },
+          "nativa": true
+        }
+      ],
+      "comprobaciones": [
+        {
+          "item": "RF-07 regla-sin-efecto",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RF-07 CA-5",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RE-02",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "RF-07 CA-1 T3-08 R-1",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-08 CA-1",
+          "archivo": "pruebas/aceptacion/RNF-08.test.ts",
+          "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
+          "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-08 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-08.test.ts",
+          "describe": "T3-10 R-4 RNF-08 CA-1 CA-2",
+          "fuente": "contrato-esquema"
+        },
+        {
+          "item": "RNF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-2 T5-04 W-2",
+          "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
     }
@@ -3238,7 +3316,7 @@
       "id": "v2-ruta-exposicion-g-privado/*",
       "escenario": "v2-ruta-exposicion",
       "tipo": "regla-sin-efecto",
-      "causa": "ruta-absoluta",
+      "causa": "ruta-absoluta-con-forma",
       "localizacion": {
         "archivo": "proyecto/opencode.jsonc",
         "linea": 8
@@ -3250,6 +3328,11 @@
         "read",
         "<RAIZ>/proyecto/privado/*"
       ],
+      "parametros": {
+        "formaRelativa": "privado/*",
+        "decision": "denegada"
+      },
+      "objetivoComprobacion": "privado/LEEME.txt",
       "control": {
         "escenario": "v2-ruta-exposicion",
         "agente": "control_g",
@@ -3423,6 +3506,36 @@
           "proyecto/opencode.json"
         ],
         "evidencia": "T5-06b: cambia solo el patron absoluto por la forma relativa en la misma posicion. Capturas win32-x64 y linux-x64 deny/allow; comparacion sin fallback en T5-06b.test.ts, ejecutada solo en su plataforma. Sin Git, la forma exacta depende del temporal y se comprueba desde la raiz efectiva de la unidad en esa prueba."
+      }
+    },
+    {
+      "id": "v5-ruta-absoluta-tapada-k-privado/*",
+      "escenario": "v5-ruta-absoluta-tapada",
+      "tipo": "regla-sin-efecto",
+      "causa": "ruta-absoluta",
+      "localizacion": {
+        "archivo": "proyecto/opencode.jsonc",
+        "linea": 6
+      },
+      "clave": [
+        "agent",
+        "k",
+        "permission",
+        "read",
+        "<RAIZ>/proyecto/privado/*"
+      ],
+      "control": {
+        "escenario": "v5-ruta-absoluta-tapada",
+        "agente": "control_k",
+        "clave": [
+          "agent",
+          "control_k",
+          "permission",
+          "read",
+          "privado/*"
+        ],
+        "cambios": [],
+        "evidencia": "REFERENCIA.decisionesNativas del control control_k: read privado/LEEME.txt conserva el efecto denegada"
       }
     }
   ],
