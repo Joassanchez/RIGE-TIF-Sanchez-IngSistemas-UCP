@@ -59,3 +59,18 @@ N-A, I-A, B-A, V-A, L-A, S-A y T-A.
 - **Fichas:** T5-17 (sistema visual, estructura e inicio), T5-18 (resumen del proyecto y agente) y T5-19 (permiso, hallazgos y vistas secundarias).
 - **Informe:** IX y XIII describen la interfaz final, a cargo del redactor.
 - **Precisión (revisión de cierre, 11/11/2026):** la web no crea datos. Puede filtrar, contar y agregar lo que traen las respuestas de los casos de uso (resumen del proyecto, conteos, agentes con su foto) y agregar orientación de uso («Qué hacer»), pero no calcula decisiones, valores ni procedencias propias. Las etiquetas de los códigos se toman de un vocabulario de presentación único compartido con la CLI (ADR-114), y el armado de claves vive en `aplicacion`, junto a su analizador. Fichas T5-26 y T5-27.
+
+### Modificación propuesta (13/11/2026)
+
+Origen: crítica externa de la web y de la CLI con Claude Fable 5.2, del 12/11/2026 (hallazgos WEB-03, WEB-04, WEB-06 y CLI-03). Fichas T6-07, T6-09, T6-10 y T6-14. Precisa el «sistema visual sobrio con color solo con significado»; no cambia los fondos neutros.
+
+1. **Colores por roles compartidos con la CLI.** Una tabla única en `interfaces/presentacion/roles.ts` asigna un significado a cada rol (permitida, pregunta, denegada, rige, declarado, nativo, desplazado, parcial, estructura, pista). La web lo traduce a variables CSS y la CLI a ANSI básico.
+   - Verde, ámbar y rojo quedan solo para el efecto de un permiso y la severidad, siempre con su glifo (✓ ? ✗).
+   - El azul marca solo el valor o la regla que rige.
+   - El naranja marca lo declarado por el usuario, frente al gris de lo nativo de OpenCode.
+   - El violeta marca solo el análisis parcial; el índigo, solo lo que se puede cliquear.
+   - Los fondos siguen grises y neutros.
+2. **La advertencia va en ámbar.** «Esta declaración anula una protección nativa de OpenCode» deja de ser gris neutro, que la confundía con una nota. Se revierte la prueba que lo prohibía.
+3. **Barra de navegación por análisis:** Resumen · Agentes · Permisos · Reglas · Entradas · Hallazgos · Historial, con `aria-current`. El Historial sale del plegado y pasa a sección propia.
+
+**Condición que la invalidaría:** que algún par de colores no alcance 4,5:1 de contraste en claro o en oscuro. Lo verifica `estilos.test.ts`.
