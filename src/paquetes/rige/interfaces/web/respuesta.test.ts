@@ -51,6 +51,8 @@ describe("W-7", () => {
       expect(respuesta.headers.get("x-content-type-options")).toBe("nosniff");
       expect(respuesta.headers.get("cache-control")).toBe("no-store");
       expect(respuesta.headers.get("referrer-policy")).toBe("no-referrer");
+      expect(respuesta.headers.get("cross-origin-resource-policy")).toBe("same-origin");
+      expect(respuesta.headers.get("cross-origin-opener-policy")).toBe("same-origin");
       if (adicionales) {
         expect(respuesta.headers.get("allow")).toBe("GET");
         expect(respuesta.headers.get("x-ejemplo")).toBe("valor");
@@ -84,6 +86,8 @@ describe("W-8", () => {
       expect(respuesta.headers.get("content-security-policy"))
         .toBe("default-src 'none'; style-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
       expect(respuesta.headers.get("x-content-type-options")).toBe("nosniff");
+      expect(respuesta.headers.get("cross-origin-resource-policy")).toBe("same-origin");
+      expect(respuesta.headers.get("cross-origin-opener-policy")).toBe("same-origin");
     }
   });
 });

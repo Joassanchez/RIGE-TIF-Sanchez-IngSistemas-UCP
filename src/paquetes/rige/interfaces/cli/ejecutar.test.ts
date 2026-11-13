@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
+import type { RespuestaHallazgos, RespuestaValores } from "../../aplicacion/respuestas/contrato-generado";
 import { versionRige, type RespuestaEstado } from "../../aplicacion/respuestas/estado";
 import { errorAlmacenSinEsquema, errorConfiguracionInvalida, errorPuertoOcupado } from "../../aplicacion/errores";
-import { ejecutarCli, type CasosUsoCli } from "./ejecutar";
+import { colorEnCanal, ejecutarCli, type CasosUsoCli } from "./ejecutar";
 import { analizarFuente, tokenizar } from "../../../../pruebas/utilidades/analisis-arquitectura";
 import { resolve } from "node:path";
 import { consultarValores } from "../../aplicacion/casos-uso/consultar-valores";
@@ -343,7 +344,7 @@ describe("T5-33 reglas U-1 a U-5", () => {
   test("U-1 subcomando desconocido con candidato cercano en texto sugiere correccion", () => {
     const res = ejecutar(["valroes", "--texto"]);
     expect(res.codigo).toBe(2);
-    expect(res.error).toBe("Error: Subcomando desconocido: valroes.\n¿Quisiste decir valores?\nUsá --help\n");
+    expect(res.error).toBe("Error: Subcomando desconocido: valroes.\n¿Quisiste decir valores?\nProbá: rige --help\n");
   });
 
   test("U-2 subcomando desconocido en JSON no emite sugerencia", () => {
@@ -358,13 +359,13 @@ describe("T5-33 reglas U-1 a U-5", () => {
   test("U-3 opcion desconocida en texto sugiere opcion valida del subcomando", () => {
     const res = ejecutar(["valores", "--agente", "build", "--clav", "temperature", "--texto"]);
     expect(res.codigo).toBe(2);
-    expect(res.error).toContain("¿Quisiste decir --clave?\nUsá --help\n");
+    expect(res.error).toContain("¿Quisiste decir --clave?\nProbá: rige valores --help\n");
   });
 
   test("U-4 subcomando sin candidato cercano en texto no emite linea de sugerencia", () => {
     const res = ejecutar(["xyz", "--texto"]);
     expect(res.codigo).toBe(2);
-    expect(res.error).toBe("Error: Subcomando desconocido: xyz.\nUsá --help\n");
+    expect(res.error).toBe("Error: Subcomando desconocido: xyz.\nProbá: rige --help\n");
   });
 
   test("no confunde el valor de una opcion de cadena con el subcomando al sugerir", () => {
@@ -376,10 +377,312 @@ describe("T5-33 reglas U-1 a U-5", () => {
   test("U-5 rige --help incluye codigos de salida y rige valores --help no cambia", () => {
     const ayudaGeneral = ejecutar(["--help"]);
     expect(ayudaGeneral.codigo).toBe(0);
-    expect(ayudaGeneral.salida).toContain("Códigos de salida:\n  0   respuesta válida, con o sin hallazgos\n  1   error de uso (proyecto o agente inexistente, almacén sin esquema, versión no soportada)\n  2   argumentos inválidos\n  70  falla interna\n");
+    expect(ayudaGeneral.salida).toContain("Códigos de salida:\n  0   respuesta válida, con o sin hallazgos\n  1   error de uso (proyecto o agente inexistente, almacén sin esquema, versión no soportada)\n  2   argumentos inválidos\n  3   hallazgos detectados con --estricto\n  70  falla interna\n");
 
     const ayudaValores = ejecutar(["valores", "--help"]);
     expect(ayudaValores.codigo).toBe(0);
     expect(ayudaValores.salida).not.toContain("Códigos de salida:");
+  });
+});
+
+describe("T6-08 R-2 consola inyectada 80 y 40 columnas", () => {
+  test("inyecta ancho y hogar en CanalesCli sin truncar procedencias", () => {
+    const proyecto = "/home/joa/dev/v1-precedencia/proyecto";
+    const declaracion = (valor: RespuestaValores["valores"][number]["rastro"]["valor"], referencia: string, linea: number, via: "proyecto" | "usuario") => ({
+      valor,
+      origen: { tipo: "declarado" as const, orden: linea, posicion: { linea, columna: 7 } },
+      via,
+      referencia,
+      regla: "RD-02",
+    });
+    const respuesta = {
+      esquema: 2 as const,
+      versionRige,
+      herramienta: "opencode",
+      versionHerramienta: "1.18.25",
+      proyecto,
+      entradas: [],
+      resumenEntradas: "a".repeat(64),
+      agente: "build",
+      ruta: null,
+      valores: [{
+        clave: "temperature",
+        rastro: {
+          ruta: ["temperature"],
+          indiceFusion: 0,
+          valor: 0.3,
+          determinante: declaracion(0.3, `${proyecto}/opencode.jsonc`, 6, "proyecto"),
+          motivo: "RD-02",
+          desplazadas: [
+            declaracion(0.05, "/home/joa/opencode.json", 2, "usuario"),
+            declaracion(0.1, "/home/joa/dev/v1-precedencia/opencode.json", 5, "proyecto"),
+            declaracion(0.2, `${proyecto}/opencode.json`, 5, "proyecto"),
+          ],
+        },
+      }],
+      noResueltas: [],
+      motivo: null,
+      declaraciones: [],
+      reglas: {},
+    };
+    for (const ancho of [80, 40]) {
+      let salida = "";
+      let error = "";
+      const codigo = ejecutarCli(
+        ["valores", "--agente", "build", "--todo"],
+        () => ({ ...noWeb, prepararAlmacen: noWeb.consultarEstado, consultarValores: () => ({ exito: true, valor: respuesta }) }),
+        {
+          esConsola: true,
+          ancho,
+          hogar: "/home/joa",
+          carpetaActual: proyecto,
+          escribirSalida: t => { salida += t; },
+          escribirError: t => { error += t; },
+        },
+      );
+      expect(codigo).toBe(0);
+      expect(error).toBe("");
+      for (const linea of salida.trimEnd().split("\n")) {
+        expect(Array.from(linea).length).toBeLessThanOrEqual(ancho);
+      }
+      expect(salida).toContain("./opencode.jsonc:6:7 (proyecto)");
+      expect(salida).toContain("./opencode.json:5:7 (proyecto)");
+      expect(salida).toContain("../opencode.json:5:7 (proyecto)");
+      expect(salida).toContain("~/opencode.json:2:7 (usuario)");
+    }
+  });
+});
+
+describe("T6-09 C-4, C-5, C-7 detección por canal y color en errores", () => {
+  test("C-4: NO_COLOR (incluso vacía) y TERM=dumb deshabilitan; FORCE_COLOR habilita fuera de TTY", () => {
+    expect(colorEnCanal(true, {})).toBe(true);
+    expect(colorEnCanal(false, {})).toBe(false);
+    expect(colorEnCanal(true, { NO_COLOR: "1" })).toBe(false);
+    expect(colorEnCanal(true, { NO_COLOR: "" })).toBe(false);
+    expect(colorEnCanal(false, { NO_COLOR: "1", FORCE_COLOR: "1" })).toBe(false);
+    expect(colorEnCanal(true, { TERM: "dumb" })).toBe(false);
+    expect(colorEnCanal(false, { TERM: "dumb", FORCE_COLOR: "1" })).toBe(false);
+    expect(colorEnCanal(false, { FORCE_COLOR: "1" })).toBe(true);
+    expect(colorEnCanal(false, { FORCE_COLOR: "0" })).toBe(false);
+    expect(colorEnCanal(false, { FORCE_COLOR: "" })).toBe(false);
+
+    let salida = "";
+    const codigo = ejecutarCli(["esquema", "--texto"], exitoso, {
+      esConsola: false,
+      colorHabilitado: true,
+      escribirSalida: t => { salida += t; },
+      escribirError() {},
+    });
+    expect(codigo).toBe(0);
+    expect(salida).toContain("\x1b[90mRespuesta completa: --json\x1b[0m");
+  });
+
+  test("C-5: Error: en rojo y negrita y Advertencia: en amarillo solo si stderr es TTY", () => {
+    const correrError = (colorErrorHabilitado: boolean, extraArgs: string[] = []) => {
+      let error = "";
+      const codigo = ejecutarCli(["valroes", "--texto", ...extraArgs], exitoso, {
+        esConsola: false,
+        colorHabilitado: false,
+        colorErrorHabilitado,
+        escribirSalida() {},
+        escribirError: t => { error += t; },
+      });
+      return { codigo, error };
+    };
+
+    const conColor = correrError(true);
+    expect(conColor.codigo).toBe(2);
+    expect(conColor.error).toContain("\x1b[1;31mError:\x1b[0m Subcomando desconocido: valroes.");
+    expect(conColor.error).toContain("¿Quisiste decir \x1b[1mvalores\x1b[0m?");
+
+    const sinColor = correrError(false);
+    expect(sinColor.codigo).toBe(2);
+    expect(sinColor.error).toBe("Error: Subcomando desconocido: valroes.\n¿Quisiste decir valores?\nProbá: rige --help\n");
+
+    let errorUso = "";
+    const codigoUso = ejecutarCli(["esquema", "--texto"], () => ({
+      ...noWeb,
+      prepararAlmacen: () => ({ exito: false, error: errorAlmacenSinEsquema }),
+    }), {
+      esConsola: false,
+      colorHabilitado: false,
+      colorErrorHabilitado: true,
+      escribirSalida() {},
+      escribirError: t => { errorUso += t; },
+    });
+    expect(codigoUso).toBe(1);
+    expect(errorUso).toContain("\x1b[1;31mError:\x1b[0m");
+    expect(errorUso).toContain("Probá: \x1b[1mbun run rige -- esquema\x1b[0m");
+
+    const deps = {
+      adaptador: adaptadorFicticio,
+      entorno: crearEntornoMemoria({ archivos: { "/p/capa-a.json": '{"dato":1}', "/p/capa-b.json": '{}' } }),
+      rutas: { canonica: () => "/p" },
+    };
+    const consulta = consultarValores(deps, "/p", "a", undefined);
+    if (!consulta.exito) throw new Error(consulta.error.mensaje);
+    const valor = { ...consulta.valor, declaraciones: ["aviso"], reglas: { aviso: "Mensaje" } };
+    let errorAdv = "";
+    const codAdv = ejecutarCli(["valores", "--proyecto", "/p", "--agente", "a", "--texto"], () => ({
+      ...noWeb,
+      prepararAlmacen: noWeb.consultarEstado,
+      consultarValores: () => ({ exito: true, valor }),
+    }), {
+      esConsola: false,
+      colorHabilitado: false,
+      colorErrorHabilitado: true,
+      escribirSalida() {},
+      escribirError: t => { errorAdv += t; },
+    }, ["aviso"]);
+    expect(codAdv).toBe(0);
+    expect(errorAdv).toBe("\x1b[33mAdvertencia:\x1b[0m Mensaje\n");
+  });
+
+  test("C-7: JSON byte a byte sin cambios aunque colorHabilitado y colorErrorHabilitado sean true", () => {
+    const correr = (color: boolean) => {
+      let salida = "";
+      let error = "";
+      const codigo = ejecutarCli(["esquema", "--json"], exitoso, {
+        esConsola: true,
+        colorHabilitado: color,
+        colorErrorHabilitado: color,
+        escribirSalida: t => { salida += t; },
+        escribirError: t => { error += t; },
+      });
+      return { codigo, salida, error };
+    };
+    expect(correr(true)).toEqual(correr(false));
+
+    let errorTuberia = "";
+    const codTub = ejecutarCli(["valroes"], exitoso, {
+      esConsola: false,
+      colorHabilitado: false,
+      colorErrorHabilitado: true,
+      escribirSalida() {},
+      escribirError: t => { errorTuberia += t; },
+    });
+    expect(codTub).toBe(2);
+    expect(errorTuberia).not.toContain("\x1b[");
+    expect(JSON.parse(errorTuberia).error.codigo).toBe("argumentos-invalidos");
+  });
+});
+
+describe("T6-19 hallazgos --estricto y CLI-08", () => {
+  test("H-1 H-5: hallazgos --estricto devuelve 3 solo si hay hallazgos; conserva salida y tiempos", () => {
+    const baseHallazgo: RespuestaHallazgos = {
+      esquema: 2,
+      proyecto: "/p",
+      entradas: [],
+      resumenEntradas: "abc",
+      declaraciones: [],
+      reglas: {},
+      incompleta: false,
+      motivos: [],
+      resumen: {
+        elementos: null,
+        hallazgos: {
+          "entrada-ilegible": 0,
+          "entrada-descartada": 0,
+          "sustitucion-sin-valor": 0,
+          "referencia-no-resuelta": 0,
+          "regla-sin-efecto": 0,
+          "elemento-sin-uso": 0,
+        },
+      },
+      hallazgos: [],
+    };
+    const conHallazgo: RespuestaHallazgos = {
+      ...baseHallazgo,
+      resumen: {
+        ...baseHallazgo.resumen,
+        hallazgos: { ...baseHallazgo.resumen.hallazgos, "sustitucion-sin-valor": 1 },
+      },
+      hallazgos: [{
+        tipo: "sustitucion-sin-valor",
+        causa: "sustitucion-env-vacia",
+        entrada: { orden: 1, via: "proyecto", referencia: "/p/opencode.jsonc", condicion: "observada" },
+        posicion: { linea: 1, columna: 1 },
+        clave: null,
+        parametros: { origen: "FOO" },
+        localizacion: "/p/opencode.jsonc:1:1",
+      }],
+    };
+    const sinHallazgos = (): CasosUsoCli => ({
+      ...noWeb,
+      prepararAlmacen: noWeb.consultarEstado,
+      consultarHallazgos: () => ({ exito: true, valor: baseHallazgo }),
+    });
+    const conHallazgos = (): CasosUsoCli => ({
+      ...noWeb,
+      prepararAlmacen: noWeb.consultarEstado,
+      consultarHallazgos: () => ({ exito: true, valor: conHallazgo }),
+    });
+
+    expect(ejecutar(["hallazgos", "--estricto"], sinHallazgos)).toEqual({
+      codigo: 0,
+      salida: JSON.stringify(baseHallazgo) + "\n",
+      error: "",
+    });
+
+    const normalCon = ejecutar(["hallazgos"], conHallazgos);
+    expect(normalCon.codigo).toBe(0);
+
+    const estrictoCon = ejecutar(["hallazgos", "--estricto"], conHallazgos);
+    expect(estrictoCon).toEqual({
+      codigo: 3,
+      salida: normalCon.salida,
+      error: "",
+    });
+
+    const estrictoTexto = ejecutar(["hallazgos", "--estricto", "--texto"], conHallazgos);
+    expect(estrictoTexto.codigo).toBe(3);
+    expect(estrictoTexto.salida).toBe(ejecutar(["hallazgos", "--texto"], conHallazgos).salida);
+    expect(estrictoTexto.error).toBe("");
+
+    let salidaT = "";
+    let errorT = "";
+    const codigoT = ejecutarCli(["hallazgos", "--estricto", "--tiempos"], (medicion) => ({
+      ...noWeb,
+      prepararAlmacen: noWeb.consultarEstado,
+      consultarHallazgos: () => {
+        medicion?.finalizarLectura();
+        return { exito: true, valor: conHallazgo };
+      },
+    }), {
+      carpetaActual: "/p",
+      escribirSalida: t => { salidaT += t; },
+      escribirError: t => { errorT += t; },
+    });
+    expect(codigoT).toBe(3);
+    expect(salidaT).toBe(normalCon.salida);
+    expect(JSON.parse(errorT)).toMatchObject({ esquema: 2, tiempos: { totalMs: expect.any(Number) } });
+  });
+
+  test("H-3 H-4: recientes --proyecto y comparar sin --desde/--hasta delegan al caso de uso y validan parciales", () => {
+    const llamadasRecientes: (string | undefined)[] = [];
+    const llamadasComparar: [string | undefined, string | undefined, string | undefined][] = [];
+    const dobles = (): CasosUsoCli => ({
+      ...noWeb,
+      prepararAlmacen: noWeb.consultarEstado,
+      consultarProyectosRecientes: (proyecto) => {
+        llamadasRecientes.push(proyecto);
+        return { exito: false, error: { codigo: "prueba", mensaje: "ok" } };
+      },
+      compararResoluciones: (desde, hasta, proyecto) => {
+        llamadasComparar.push([desde, hasta, proyecto]);
+        return { exito: false, error: { codigo: "prueba", mensaje: "ok" } };
+      },
+    });
+
+    expect(ejecutar(["recientes"], dobles).codigo).toBe(1);
+    expect(ejecutar(["recientes", "--proyecto", "/otro"], dobles).codigo).toBe(1);
+    expect(llamadasRecientes).toEqual([undefined, "/otro"]);
+    expect(ejecutar(["recientes", "--proyecto", ""], dobles).codigo).toBe(2);
+
+    expect(ejecutar(["comparar"], dobles).codigo).toBe(1);
+    expect(ejecutar(["comparar", "--desde", "1", "--hasta", "2"], dobles).codigo).toBe(1);
+    expect(llamadasComparar).toEqual([[undefined, undefined, "/p"], ["1", "2", undefined]]);
+    expect(ejecutar(["comparar", "--desde", "1"], dobles).codigo).toBe(2);
+    expect(ejecutar(["comparar", "--hasta", "2"], dobles).codigo).toBe(2);
   });
 });

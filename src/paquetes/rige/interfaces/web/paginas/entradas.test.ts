@@ -71,7 +71,7 @@ describe("Mapa de vías y presentación de entradas", () => {
       ...["segunda", "primera"].map(via => ({ via, estado: "presente" as const, cantidad: 1, revisados: [] })) ] };
     const cuerpo = await paginaEntradas(respuesta).text();
     const mapa = seccionHtml(cuerpo, "mapa-vias");
-    const posiciones = ["Presentes", ">segunda</td>", ">primera</td>", "Ausentes", ">vacia</td>", "No observadas", ">remota</td>"].map(s => mapa.indexOf(s));
+    const posiciones = ["Presentes", ">segunda</td>", ">primera</td>", "Ausentes", ">vacia</td>", "No observadas", ">configuración remota</td>"].map(s => mapa.indexOf(s));
     expect(posiciones.every(p => p >= 0)).toBe(true);
     expect(posiciones).toEqual([...posiciones].sort((a, b) => a - b));
     expect(json(cuerpo)).toEqual(respuesta);

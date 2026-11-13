@@ -1,10 +1,10 @@
 import { html, type HtmlSeguro } from "./plantillas";
 import { fechaLocal } from "../presentacion/fechas";
+import { plural } from "../presentacion/vocabulario";
 export { fechaLocal, fechaRelativa } from "../presentacion/fechas";
+export { dosSegmentos } from "../presentacion/rutas";
 
-export function concordar(cantidad: number, singular: string, plural: string): string {
-  return cantidad === 1 ? singular : plural;
-}
+export const concordar = plural;
 
 export function nombreProyecto(ruta: string): string {
   if (/^[a-z]:[\\/]*$/i.test(ruta)) return ruta;

@@ -48,9 +48,13 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
       motivos.push(...elementos.motivos);
     }
     const resolucion = resuelta.valor;
+    const comandoExcluido = resolucion.noResueltas.some(n =>
+      n.ruta.length === 0 || (n.ruta.length === 1 && n.ruta[0] === "command"));
     elementosResumen = {
       agentes: adaptador.listarAgentes(resolucion, contexto).agentes.filter(a => a.estado === "activo" || a.estado === "no-observado").length,
-      comandos: new Set([...resolucion.valores, ...resolucion.noResueltas].filter(v => v.ruta[0] === "command" && v.ruta.length >= 2).map(v => v.ruta[1]!)).size,
+      comandos: comandoExcluido
+        ? 0
+        : new Set([...resolucion.valores, ...resolucion.noResueltas].filter(v => v.ruta[0] === "command" && v.ruta.length >= 2).map(v => v.ruta[1]!)).size,
       entradas: entradas.filter(e => e.condicion === "observada" || e.condicion === "definida").length,
     };
     reglasResolucion = resolucion.reglas;

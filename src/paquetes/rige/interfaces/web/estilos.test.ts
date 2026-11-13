@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 import { estilos } from "./estilos";
 
@@ -59,7 +61,7 @@ describe("T5-10 diseno responsive a 360 y 390 px", () => {
   });
 });
 
-describe("Sistema visual y tokens", () => {
+describe("Sistema visual y tokens (D-3, modificacion de ADR-113)", () => {
   function contraste(a: string, b: string): number {
     const lineal = (c: number) => {
       const ajustado = c + .055;
@@ -86,12 +88,27 @@ describe("Sistema visual y tokens", () => {
         for (const texto of ["texto", "secundario", "acento"]) expect(contraste(tokens[texto]!, tokens[fondo]!)).toBeGreaterThanOrEqual(4.5);
         expect(contraste(tokens["borde-control"]!, tokens[fondo]!)).toBeGreaterThanOrEqual(3);
       }
-      for (const tipo of ["exito", "peligro", "aviso", "neutro"])
+      for (const tipo of ["exito", "peligro", "aviso", "neutro", "rige", "declarado", "desplazado", "parcial"])
         expect(contraste(tokens[tipo]!, tokens[`${tipo}-fondo`]!)).toBeGreaterThanOrEqual(4.5);
+      expect(contraste(tokens.parcial!, tokens.superficie!)).toBeGreaterThanOrEqual(3);
+      expect(contraste(tokens.neutro!, tokens.superficie!)).toBeGreaterThanOrEqual(3);
       expect(contraste(tokens["boton-texto"]!, tokens.acento!)).toBeGreaterThanOrEqual(4.5);
     }
-    expect(reglas(estilos, ".aviso--advertencia")).not.toMatch(/var\(--aviso/);
+    expect(reglas(estilos, ".aviso--advertencia")).toMatch(/var\(--aviso/);
     expect(reglas(estilos, ".estadistica--aviso strong")).not.toMatch(/var\(--aviso/);
+  });
+
+  test("T6-10 W-1 y W-4 roles semanticos exclusivos y fila declarada", () => {
+    expect(reglas(estilos, ".insignia--rige")).toMatch(/var\(--rige-fondo\)/);
+    expect(reglas(estilos, ".insignia--rige")).toMatch(/var\(--rige\)/);
+    expect(reglas(estilos, ".insignia--rige")).not.toMatch(/var\(--exito/);
+    expect(reglas(estilos, ".insignia--declarado")).toMatch(/var\(--declarado-fondo\)/);
+    expect(reglas(estilos, ".insignia--declarado")).toMatch(/var\(--declarado\)/);
+    expect(reglas(estilos, ".insignia--desplazado")).toMatch(/var\(--desplazado-fondo\)/);
+    expect(reglas(estilos, ".insignia--desplazado")).toMatch(/var\(--desplazado\)/);
+    expect(reglas(estilos, ".insignia--parcial")).toMatch(/var\(--parcial-fondo\)/);
+    expect(reglas(estilos, ".insignia--parcial")).toMatch(/dotted\s+var\(--parcial\)/);
+    expect(reglas(estilos, ".fila--declarado")).toMatch(/border-left:[^;]*var\(--declarado\)/);
   });
 
   test("G-2 tipografia del sistema, escala de tres niveles y tablas sin mayusculas", () => {
@@ -153,5 +170,78 @@ describe("Sistema visual y tokens", () => {
     expect(reglas(estilos, ".tabla-matriz .insignia")).toMatch(/white-space:\s*nowrap/);
     expect(reglas(estilos, ".reciente__foto")).toMatch(/min-width:\s*0/);
     expect(reglas(estilos, ".tabla-valores td")).toMatch(/overflow-wrap:\s*anywhere/);
+  });
+
+  test("T6-15 WEB-05 WEB-13 matriz compacta, sticky y objetivos tactiles", () => {
+    expect(reglas(estilos, ".tabla-matriz td")).toMatch(/min-width:\s*5\.5rem/);
+    expect(reglas(estilos, '.tabla-matriz th[scope="row"]')).toMatch(/position:\s*sticky/);
+    expect(reglas(estilos, '.tabla-matriz th[scope="row"]')).toMatch(/left:\s*0/);
+    for (const selector of [".marca", ".reciente__reanalizar", ".migas a", "summary"])
+      expect(reglas(estilos, selector)).toMatch(/min-height:\s*24px/);
+    expect(reglas(estilos, ".saltar")).toMatch(/border:/);
+    expect(reglas(estilos, ".saltar")).toMatch(/color:/);
+  });
+
+  test("T6-16 Y-3 clases emitidas en web coinciden con las definidas en estilos.ts", () => {
+    const sinComentarios = estilos.replace(/\/\*[^]*?\*\//g, "");
+    const definidas = new Set(
+      [...sinComentarios.matchAll(/([^{}@]+)\{[^{}]*\}/g)]
+        .flatMap(([, selectores]) => [...selectores!.matchAll(/\.([a-zA-Z_-][a-zA-Z0-9_-]*)/g)].map(m => m[1]!)),
+    );
+    const directorioWeb = import.meta.dir;
+    const archivos: string[] = [];
+    for (const entrada of readdirSync(directorioWeb, { withFileTypes: true })) {
+      if (entrada.isFile() && entrada.name.endsWith(".ts") && !entrada.name.endsWith(".test.ts")) {
+        archivos.push(join(directorioWeb, entrada.name));
+      } else if (entrada.isDirectory() && entrada.name === "paginas") {
+        for (const sub of readdirSync(join(directorioWeb, "paginas"))) {
+          if (sub.endsWith(".ts") && !sub.endsWith(".test.ts")) archivos.push(join(directorioWeb, "paginas", sub));
+        }
+      }
+    }
+    const extraerClasesHtml = (codigo: string): string[] => {
+      const resultado: string[] = [];
+      for (let i = 0; i < codigo.length; i++) {
+        if (!codigo.startsWith('class="', i)) continue;
+        i += 7;
+        let profundidad = 0;
+        let actual = "";
+        for (; i < codigo.length; i++) {
+          if (codigo[i] === "$" && codigo[i + 1] === "{") { profundidad++; i++; actual += " "; continue; }
+          if (profundidad > 0) {
+            if (codigo[i] === "{") profundidad++;
+            else if (codigo[i] === "}") profundidad--;
+            else if (codigo[i] === '"' || codigo[i] === "'") {
+              const comilla = codigo[i];
+              let contenido = "";
+              for (i++; i < codigo.length && codigo[i] !== comilla; i++) contenido += codigo[i];
+              actual += ` ${contenido} `;
+            }
+            continue;
+          }
+          if (codigo[i] === '"') break;
+          actual += codigo[i];
+        }
+        resultado.push(...actual.split(/\s+/).filter(Boolean));
+      }
+      return resultado;
+    };
+    const emitidas = new Set<string>();
+    const prefijosDinamicos: string[] = [];
+    for (const ruta of archivos) {
+      for (const token of extraerClasesHtml(readFileSync(ruta, "utf8"))) {
+        if (/^(?:insignia--|rol--|fila--)$/.test(token)) prefijosDinamicos.push(token);
+        else emitidas.add(token);
+      }
+    }
+    expect(prefijosDinamicos.length).toBeGreaterThan(0);
+    for (const clase of emitidas) {
+      expect(definidas.has(clase)).toBe(true);
+    }
+    const modificadoresDinamicos = /^(?:insignia--|rol--|fila--)/;
+    for (const clase of definidas) {
+      if (modificadoresDinamicos.test(clase)) continue;
+      expect(emitidas.has(clase), clase).toBe(true);
+    }
   });
 });

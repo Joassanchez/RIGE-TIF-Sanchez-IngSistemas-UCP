@@ -5,5 +5,5 @@ import {
 } from "./formato";
 
 export function renderizarServidor(r: { readonly direccion: string }, c: ContextoPresentacion): string {
-  return terminar([`RIGE: ${seguro(r.direccion)}`], c);
+  return terminar([`RIGE: ${seguro(r.direccion)}`], c, [], { pieJson: false });
 }

@@ -178,7 +178,7 @@ describe("T5-08 U-5 U-6", () => {
 
 describe("T5-08 U-7 P-5", () => {
   test.each([["allow", "permitida", "Permitido"], ["deny", "denegada", "Denegado"], ["ask", "pregunta", "Pregunta antes"],
-    [null, "neutra", "El comando contiene varias operaciones"], [ataque, "neutra", "&lt;script&gt;&quot;&amp;"]])("decision %s solo cambia su presentacion", async (decision, clase, texto) => {
+    [null, "pista", "El comando contiene varias operaciones"], [ataque, "pista", "&lt;script&gt;&quot;&amp;"]])("decision %s solo cambia su presentacion", async (decision, clase, texto) => {
     const dato = { ...permiso, decision, motivoSinDecision: decision === null ? "comando-compuesto" : null };
     const cuerpo = await paginaPermiso(dato).text();
     const principal = seccion(cuerpo, "resultado-permiso");
@@ -189,7 +189,7 @@ describe("T5-08 U-7 P-5", () => {
     expect(cadena).toContain("Ver reglas coincidentes (2)");
     expect(cadena.match(/<tr[ >]/g)).toHaveLength(3);
     expect(cadena.match(/<tr class=/g)).toHaveLength(2);
-    expect(cadena).toContain('<tr class="fila--determinante"><td data-etiqueta="Índice">1</td>');
+    expect(cadena).toContain('<tr class="fila--determinante fila--nativo"><td data-etiqueta="Índice">1</td>');
     expect(cadena.indexOf('<td data-etiqueta="Índice">1</td>')).toBeLessThan(cadena.indexOf('<td data-etiqueta="Índice">2</td>'));
     const sinDeterminante = await paginaPermiso({ ...dato, determinante: null }).text();
     expect(seccion(sinDeterminante, "cadena-efectiva")).not.toContain('class="fila--determinante"');
@@ -244,7 +244,7 @@ describe("T5-08 U-9", () => {
 describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
   test("protege claves, cortes de rutas, alineacion y separacion de details", async () => {
     const css = await solicitar("/estilos.css").text();
-    expect(css).toMatch(/#valores td:nth-child\(1\)\s*\{[^}]*white-space: nowrap;[^}]*min-width:/);
+    expect(css).toMatch(/#valores td\[data-etiqueta="Clave"\]\s*\{[^}]*white-space: nowrap;[^}]*min-width:/);
     expect(css).toMatch(/\.ruta__segmento[^}]*white-space: normal;[^}]*overflow-wrap: anywhere/);
     expect(css).toMatch(/\.ruta\s*\{[^}]*max-width: 100%;[^}]*overflow-wrap: anywhere/);
     expect(css).toMatch(/details \+ section[^}]*margin-top: 2rem/);
@@ -280,7 +280,7 @@ describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
     expect(resumen).toContain('4 entradas');
     for (const [tipo, cantidad] of Object.entries(cantidades)) {
       expect(resumen).toContain(`<strong>${cantidad}</strong>`);
-      expect(resumen).toContain(`<small>${tipo}</small>`);
+      expect(resumen).not.toContain(`<small>${tipo}</small>`);
     }
     const css = await solicitar("/estilos.css").text();
     expect(css).toMatch(/\.estadistica--aviso\s*\{[^}]*border-color: var\(--borde\)/);
@@ -288,5 +288,23 @@ describe("T5-08-c1 C1 C2 C5 C6 C7 C8 lectura", () => {
     expect(css).toMatch(/\.insignia--referencia-no-resuelta[^}]*color: var\(--peligro\)/);
     expect(css).toMatch(/\.insignia--regla-sin-efecto[^}]*color: var\(--aviso\)/);
     expect(css).toMatch(/\.insignia--entrada-descartada[^}]*color: var\(--neutro\)/);
+  });
+
+  test("T6-15 X-1 toda tabla emitida tiene caption y todo th tiene scope", async () => {
+    const paginas = [
+      paginaResolucion(valores, sobre),
+      paginaPermiso(permiso),
+      paginaResumenProyecto(agentes, { exito: true, valor: { ...agentes, entradas: [] } }, { exito: false, error: { codigo: "prueba", mensaje: "No disponible" } }, "7"),
+      paginaEntradas(entradas),
+    ];
+    for (const pagina of paginas) {
+      const cuerpo = (await pagina.text()).replace(/<script[^]*?<\/script>/g, "");
+      for (const [, tabla] of cuerpo.matchAll(/<table\b[^>]*>([^]*?)<\/table>/g)) {
+        expect(tabla).toMatch(/<caption\b/);
+        for (const [, attrs] of tabla!.matchAll(/<th\b([^>]*)>/g)) {
+          expect(attrs).toMatch(/\bscope="(?:col|row|rowgroup)"/);
+        }
+      }
+    }
   });
 });

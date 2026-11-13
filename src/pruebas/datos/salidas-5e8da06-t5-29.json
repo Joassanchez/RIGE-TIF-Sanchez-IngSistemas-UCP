@@ -95,11 +95,11 @@
       "codigo": 0,
       "sha256": {
         "win32": {
-          "stdout": "aee10653e995a58f5e9bffc555284bd39e60f91436bb0af22d4bba1613725270",
+          "stdout": "0b18d33b5bae9c867e7c9f1ef45a7801531af5b5f2bd90b81f66dd1e92e560e9",
           "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         "linux": {
-          "stdout": "aee10653e995a58f5e9bffc555284bd39e60f91436bb0af22d4bba1613725270",
+          "stdout": "0b18d33b5bae9c867e7c9f1ef45a7801531af5b5f2bd90b81f66dd1e92e560e9",
           "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         }
       }
@@ -113,11 +113,11 @@
       "codigo": 0,
       "sha256": {
         "win32": {
-          "stdout": "2ab92fb576800b449c75f2e281eae3b6489bb612ae35cecd85213a98e287ce9d",
+          "stdout": "9e2b1f46a4d238982c18d390d56c9216ddab66c6ac20c8340fe83ca9a897b406",
           "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         "linux": {
-          "stdout": "2ab92fb576800b449c75f2e281eae3b6489bb612ae35cecd85213a98e287ce9d",
+          "stdout": "9e2b1f46a4d238982c18d390d56c9216ddab66c6ac20c8340fe83ca9a897b406",
           "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         }
       }

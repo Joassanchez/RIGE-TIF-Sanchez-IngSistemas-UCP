@@ -51,12 +51,45 @@ describe("W-9", () => {
     } else expect(cuerpo).toContain("&lt;script&gt;&quot;&amp;");
   });
 
-  test("asigna el estado HTTP segun el codigo de error de uso", () => {
+  test("asigna el estado HTTP segun el codigo de error de uso", async () => {
     const casos = [
       [errorAlmacenSinEsquema, 503],
-      [errorConfiguracionInvalida("RIGE_PUERTO", "valor invalido"), 500],
+      [errorConfiguracionInvalida("RIGE_PUERTO", "valor invalido"), 422],
       [errorPuertoOcupado(12345), 500],
     ] as const;
     for (const [error, estado] of casos) expect(paginaErrorUso(error).status).toBe(estado);
+    const r = paginaErrorUso(errorConfiguracionInvalida("RIGE_PUERTO", "valor invalido"));
+    const cuerpo = await r.text();
+    expect(cuerpo).toContain("valor invalido");
+    expect(cuerpo).toContain('<small class="codigo-error">configuracion-invalida</small>');
+  });
+
+  test("T6-14 N-2 acciones utiles en 422 con ubicacion enlazada y formulario en 400/404", async () => {
+    const ilegible = paginaErrorUso(
+      { codigo: "entrada-ilegible", mensaje: "La entrada /tmp/p/opencode.json no se puede leer (2:4)." },
+      "/tmp/p",
+    );
+    expect(ilegible.status).toBe(422);
+    const cuerpo422 = await ilegible.text();
+    expect(cuerpo422).toContain('href="vscode://file/tmp/p/opencode.json:2:4"');
+    expect(cuerpo422).toContain(">./opencode.json:2:4</a>");
+    expect(cuerpo422).toContain('href="/hallazgos?proyecto=%2Ftmp%2Fp">Ver hallazgos</a>');
+    expect(cuerpo422).toContain('href="/entradas?proyecto=%2Ftmp%2Fp">Ver entradas</a>');
+    expect(cuerpo422).toContain('href="/resolver?proyecto=%2Ftmp%2Fp">Reintentar</a>');
+
+    const noSoportada = await paginaErrorUso(
+      { codigo: "contenido-no-soportado", mensaje: "RIGE no incorpora {env:SECRET} (/tmp/p/opencode.json:1:2)." },
+      "/tmp/p",
+    ).text();
+    expect(noSoportada).toContain('href="vscode://file/tmp/p/opencode.json:1:2"');
+    expect(noSoportada).toContain(">./opencode.json:1:2</a>");
+
+    for (const [codigo, estado] of [["proyecto-inexistente", 404], ["solicitud-invalida", 400]] as const) {
+      const respuesta = paginaErrorUso({ codigo, mensaje: "Ruta inválida" }, '/tmp/malo"<');
+      expect(respuesta.status).toBe(estado);
+      const html = await respuesta.text();
+      expect(html).toContain('<form method="get" action="/resolver">');
+      expect(html).toContain('name="proyecto" value="/tmp/malo&quot;&lt;"');
+    }
   });
 });

@@ -42,6 +42,7 @@ export interface CasosWeb {
 export interface PresentacionWeb {
   readonly versionHerramienta: string;
   readonly reloj: DependenciasResolver["reloj"];
+  readonly hogar?: string | undefined;
 }
 
 export function crearManejador(puerto: number, casos: CasosWeb, presentacion: PresentacionWeb): (solicitud: Request) => Response {

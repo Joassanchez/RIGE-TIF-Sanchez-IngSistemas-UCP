@@ -59,3 +59,5 @@ type ComparacionCambio = { readonly "ruta": readonly (string)[]; readonly "tipo"
 export type RespuestaComparacion = { readonly "esquema": 2; readonly "proyecto": string; readonly "desde": ComparacionFoto; readonly "hasta": ComparacionFoto; readonly "agentes": { readonly "agregados": readonly (string)[]; readonly "quitados": readonly (string)[]; readonly "comunes": readonly (string)[]; readonly "inciertos": readonly (string)[]; }; readonly "comparaciones": readonly ({ readonly "agente": string; readonly "cambios": readonly (ComparacionCambio)[]; readonly "resumen": ComparacionResumen; })[]; readonly "resumen": ComparacionResumen; readonly "parcial": boolean; readonly "sustituciones": "solo-representacion-protegida"; };
 
 export type RespuestaProyectosRecientes = { readonly "esquema": 2; readonly "proyectos": readonly ({ readonly "proyecto": string; readonly "id": number; readonly "instante": string; readonly "cantidad": number; })[]; };
+
+export type RespuestaHistorialProyecto = { readonly "esquema": 2; readonly "proyecto": string; readonly "analisis": readonly ({ readonly "id": number; readonly "instante": string; readonly "resumenEntradas": string; })[]; };

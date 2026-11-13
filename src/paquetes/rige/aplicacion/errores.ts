@@ -29,6 +29,17 @@ export function errorResolucionInexistente(id: number): ErrorUso {
   return { codigo: "resolucion-inexistente", mensaje: `No existe la resolución ${id} en el almacén.` };
 }
 
+export function errorProyectoInexistente(proyecto: string): ErrorUso {
+  return { codigo: "proyecto-inexistente", mensaje: `El proyecto ${proyecto} no existe o no es un directorio.` };
+}
+
+export function errorAnalisisInsuficientes(proyecto: string, cantidad: number): ErrorUso {
+  return {
+    codigo: "analisis-insuficientes",
+    mensaje: `El proyecto ${proyecto} tiene ${cantidad} análisis guardado${cantidad === 1 ? "" : "s"} y se necesitan al menos 2 para comparar.`,
+  };
+}
+
 export const errorResolucionesDeOtroProyecto: ErrorUso = Object.freeze({
   codigo: "resoluciones-de-otro-proyecto",
   mensaje: "Las resoluciones pertenecen a proyectos distintos.",

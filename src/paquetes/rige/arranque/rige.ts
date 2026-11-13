@@ -13,7 +13,7 @@ import { prepararAlmacen } from "../aplicacion/casos-uso/preparar-almacen";
 import { consultarEstado, describirAlmacen } from "../aplicacion/casos-uso/consultar-estado";
 import { resolverProyecto } from "../aplicacion/casos-uso/resolver-proyecto";
 import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucion";
-import { compararResoluciones } from "../aplicacion/casos-uso/comparar-resoluciones";
+import { compararResoluciones, compararUltimasResoluciones } from "../aplicacion/casos-uso/comparar-resoluciones";
 import { consultarProyectosRecientes } from "../aplicacion/casos-uso/consultar-proyectos-recientes";
 import { consultarValores } from "../aplicacion/casos-uso/consultar-valores";
 import { consultarPermiso } from "../aplicacion/casos-uso/consultar-permiso";
@@ -24,7 +24,7 @@ import { consultarEntradas } from "../aplicacion/casos-uso/consultar-entradas";
 import { consultarPermisoGuardado, consultarAgentesGuardados, consultarReglasGuardadas } from "../aplicacion/casos-uso/consultar-guardada";
 import { versionRige } from "../aplicacion/respuestas/estado";
 import { iniciarServidor } from "../interfaces/web/servidor";
-import { ejecutarCli, type CasosUsoCli } from "../interfaces/cli/ejecutar";
+import { colorEnCanal, ejecutarCli, type CasosUsoCli } from "../interfaces/cli/ejecutar";
 import type { MedicionAnalisis } from "../aplicacion/casos-uso/analizar-proyecto";
 import type { Resultado } from "@rige/nucleo/resultado";
 import type { ErrorUso } from "../aplicacion/errores";
@@ -43,6 +43,8 @@ interface AlmacenCargado {
   readonly directorioAlmacen: string;
   readonly puerto: number;
 }
+
+const hogar = (process.platform === "win32" ? process.env.USERPROFILE || process.env.HOME : process.env.HOME) || undefined;
 
 const configuracion = new ConfiguracionSistema({
   entorno: process.env,
@@ -93,8 +95,11 @@ function ensamblar(medicion?: MedicionAnalisis): CasosUsoCli {
     consultarAgentes: proyecto => consultarAgentes(consultas, proyecto),
     consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
     consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
-    compararResoluciones: (desde, hasta) => conAlmacen(a => compararResoluciones(a.dependencias, desde, hasta)),
-    consultarProyectosRecientes: () => conAlmacen(a => consultarProyectosRecientes(a.resoluciones)),
+    compararResoluciones: (desde, hasta, proyecto) => conAlmacen(a => desde === undefined && hasta === undefined
+      ? compararUltimasResoluciones(a.dependencias, proyecto ?? "")
+      : compararResoluciones(a.dependencias, desde ?? "", hasta ?? "")),
+    consultarProyectosRecientes: proyecto => conAlmacen(a =>
+      consultarProyectosRecientes(a.resoluciones, a.dependencias.rutas, proyecto)),
     prepararAlmacen: () => conAlmacen(a => prepararAlmacen(a.almacen)),
     consultarEstado: () => conAlmacen(a => consultarEstado(a.almacen)),
     describirAlmacen: () => conAlmacen(a => describirAlmacen(a.almacen, {
@@ -112,7 +117,7 @@ function ensamblar(medicion?: MedicionAnalisis): CasosUsoCli {
       consultarAgentes: id => consultarAgentesGuardados(dependencias, id),
       consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
       consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
-    }, { versionHerramienta: versionSoportada, reloj: dependencias.reloj })),
+    }, { versionHerramienta: versionSoportada, reloj: dependencias.reloj, hogar })),
   };
 }
 
@@ -120,8 +125,10 @@ process.exitCode = ejecutarCli(process.argv.slice(2), ensamblar, {
   versionHerramienta: versionSoportada,
   esConsola: process.stdout.isTTY === true,
   ancho: process.stdout.columns,
-  colorHabilitado: process.stdout.isTTY === true && process.env.NO_COLOR === undefined,
+  colorHabilitado: colorEnCanal(process.stdout.isTTY === true, process.env),
+  colorErrorHabilitado: colorEnCanal(process.stderr.isTTY === true, process.env),
   carpetaActual: process.cwd(),
+  ...(hogar !== undefined ? { hogar } : {}),
   escribirSalida: (texto) => { process.stdout.write(texto); },
   escribirError: (texto) => { process.stderr.write(texto); },
 }, advertidas, limitesGenerales);

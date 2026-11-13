@@ -73,18 +73,18 @@ describe("Resumen del proyecto: bloques, cifras y acciones", () => {
 
   test("U-1 encabezados compactos con ruta, fecha, versión y una identidad de agente", async () => {
     const cabecera = (await resumen()).match(/<section class="cabecera-pagina">([^]*?)<\/section>/)![1]!;
-    expect(cabecera).toContain(`<p class="atenuado metadatos-proyecto"><span class="monoespaciado">/mi-proyecto</span> · Análisis del ${fechaLocal(sobre.instante)} · OpenCode 1.18.25</p>`);
+    expect(cabecera).toContain(`<p class="atenuado metadatos-proyecto"><span class="monoespaciado">/mi-proyecto</span> · Análisis del ${fechaLocal(sobre.instante)} · n.º 7 · OpenCode 1.18.25</p>`);
     expect(cabecera).not.toContain('class="ruta"');
     const identidad = (await agente()).match(/class="identidad-agente">([^]*?)<\/div>/)![1]!;
     for (const texto of ["<h1>build</h1>", ">nativo</span>", "Principal", "2 claves declaradas"]) expect(identidad).toContain(texto);
   });
 
-  test("U-2 cifras breves y un solo rótulo sobre las dos cifras actuales", async () => {
+  test("U-2 cifras breves separadas en dos bandas: este análisis y ahora en disco", async () => {
     const cifras = bloque(await resumen(), "cifras");
     for (const etiqueta of ["agentes", "archivos leídos", "hallazgos", "análisis"]) expect(cifras).toContain(`<span>${etiqueta}</span>`);
     expect(cifras).toContain("0 ilegibles");
-    expect(cifras.match(/Estado actual/g)).toHaveLength(1);
-    expect(cifras).toMatch(/class="cifras-actuales">[^]*?Estado actual[^]*?archivos leídos[^]*?hallazgos[^]*?<\/div><\/div>/);
+    expect(cifras).not.toContain("Estado actual");
+    expect(cifras).toMatch(/Este análisis \(\d{2}\/\d{2} \d{2}:\d{2}\)[^]*?agentes[^]*?análisis[^]*?Ahora en disco[^]*?archivos leídos[^]*?hallazgos/);
   });
 
   test("U-3 procedencia como etiqueta junto al título de cada bloque", async () => {

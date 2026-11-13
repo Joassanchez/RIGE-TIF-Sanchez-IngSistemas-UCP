@@ -1,12 +1,12 @@
 import type { ListadoAgentes, ValorJson } from "@rige/nucleo/contrato/adaptador";
 import type { DeclaracionUbicada, Resolucion, RastroValor } from "@rige/nucleo/resolucion/tipos";
 import type { Resultado } from "../respuestas/resultado";
-import { errorResolucionesDeOtroProyecto, errorSolicitudInvalida, type ErrorUso } from "../errores";
+import { errorAnalisisInsuficientes, errorResolucionesDeOtroProyecto, errorSolicitudInvalida, type ErrorUso } from "../errores";
 import type { PuertoResoluciones, ResolucionGuardada } from "../puertos/resoluciones";
 import type { RespuestaComparacion } from "../respuestas/contrato-generado";
 import { localizarDeclaracion } from "../respuestas/localizacion";
 import { versionEsquemaSalida } from "../respuestas/valores";
-import { prepararAnalisis, type DependenciasAnalisis } from "./analizar-proyecto";
+import { prepararAnalisis, resolverRutaProyecto, type DependenciasAnalisis } from "./analizar-proyecto";
 import { esIdResolucion } from "./id-resolucion";
 
 export type CompararResoluciones = (desde: string, hasta: string) => Resultado<RespuestaComparacion, ErrorUso>;
@@ -99,20 +99,37 @@ export function compararResoluciones(dependencias: DependenciasAnalisis & { read
   const b = dependencias.resoluciones.leer(Number(hasta));
   if (!b.exito) return b;
   if (a.valor.resolucion.proyecto !== b.valor.resolucion.proyecto) return { exito: false, error: errorResolucionesDeOtroProyecto };
-  const listar = (resolucion: Resolucion) => {
+  const listar = (resolucion: Resolucion): Resultado<ListadoAgentes, ErrorUso> => {
     const preparado = prepararAnalisis({ ...dependencias, resolucion }, resolucion.proyecto);
-    if (!preparado.exito) throw new Error("No se pudo preparar el contexto guardado.");
-    return dependencias.adaptador.listarAgentes(resolucion, preparado.valor.contexto);
+    if (!preparado.exito) return preparado;
+    return { exito: true, valor: dependencias.adaptador.listarAgentes(resolucion, preparado.valor.contexto) };
   };
-  const listadoA = listar(a.valor.resolucion), listadoB = listar(b.valor.resolucion);
-  const agentes = compararAgentes(listadoA, listadoB);
+  const listadoA = listar(a.valor.resolucion);
+  if (!listadoA.exito) return listadoA;
+  const listadoB = listar(b.valor.resolucion);
+  if (!listadoB.exito) return listadoB;
+  const agentes = compararAgentes(listadoA.valor, listadoB.valor);
   const comparaciones = agentes.comunes.map(agente => compararAgente(a.valor.resolucion, b.valor.resolucion, agente));
   const resumen = comparaciones.reduce((total, c) => ({ cambiadas: total.cambiadas + c.resumen.cambiadas,
     agregadas: total.agregadas + c.resumen.agregadas, quitadas: total.quitadas + c.resumen.quitadas,
     sinCambio: total.sinCambio + c.resumen.sinCambio }), vacio());
-  const fotoA = foto(a.valor, listadoA), fotoB = foto(b.valor, listadoB);
+  const fotoA = foto(a.valor, listadoA.valor), fotoB = foto(b.valor, listadoB.valor);
   return { exito: true, valor: { esquema: versionEsquemaSalida, proyecto: a.valor.resolucion.proyecto,
     desde: fotoA, hasta: fotoB, agentes, comparaciones, resumen,
-    parcial: Boolean(fotoA.noComparables.length || fotoB.noComparables.length || listadoA.motivos.length || listadoB.motivos.length || agentes.inciertos.length),
+    parcial: Boolean(fotoA.noComparables.length || fotoB.noComparables.length || listadoA.valor.motivos.length || listadoB.valor.motivos.length || agentes.inciertos.length),
     sustituciones: "solo-representacion-protegida" } };
+}
+
+export function compararUltimasResoluciones(
+  dependencias: DependenciasAnalisis & { readonly resoluciones: PuertoResoluciones },
+  proyecto: string,
+): ReturnType<CompararResoluciones> {
+  const ruta = resolverRutaProyecto(dependencias.rutas, proyecto);
+  if (!ruta.exito) return ruta;
+  const lista = dependencias.resoluciones.listar(ruta.valor);
+  if (!lista.exito) return lista;
+  if (lista.valor.length < 2) {
+    return { exito: false, error: errorAnalisisInsuficientes(ruta.valor, lista.valor.length) };
+  }
+  return compararResoluciones(dependencias, String(lista.valor[1]!.id), String(lista.valor[0]!.id));
 }

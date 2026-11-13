@@ -17,7 +17,7 @@ const permiso: RespuestaPermiso = { ...base, agente: "a/b", consulta: { sujeto: 
   advertencias: ["aviso"], reglas: { aviso: "Advertencia conservada", declarada: "Permiso declarado" },
   explicacion: ["Primera oración.", "Segunda oración <completa>."], porDefecto: false, herramienta: { nombre: "read", ofrecida: false } };
 
-const sinJson = (s: string) => s.replace(/<script[^]*?<\/script>/g, "");
+const sinJson = (s: string) => s.replace(/<script[^]*?<\/script>/g, "").replace(/<details id="ver-json">[^]*?<\/details>/g, "");
 const json = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
 const noConsultar = () => { throw new Error("Consulta inesperada"); };
 const casos: CasosWeb = {
@@ -49,7 +49,7 @@ describe("Página permiso y consultas", () => {
       const s = sinJson(await paginaPermiso({ ...permisoF2, explicacion }, "7", contextoF2).text());
       if (explicacion) {
         const frase = s.split('id="resultado-permiso"')[1]!.split("</section>")[0]!;
-        expect(frase).toContain('title="Abrir en VS Code: /p/opencode.json">opencode.json:3:15</a>');
+        expect(frase).toContain('title="Abrir en VS Code: /p/opencode.json">../opencode.json:3:15</a>');
         expect(frase.replace(/(?:title|href)="[^"]*"/g, "")).not.toContain("/p/opencode.json");
         expect(frase).toContain("&lt;aquí&gt;");
       }
@@ -98,7 +98,7 @@ describe("Página permiso y consultas", () => {
   });
 
   test("P-2 decisión grande, explicación destacada y motivo cuando no hay decisión", async () => {
-    for (const [decision, texto] of [["allow", "Permitido"], ["ask", "Pregunta antes"], ["deny", "Denegado"]]) {
+    for (const [decision, texto] of [["allow", "✓ Permitido"], ["ask", "? Pregunta antes"], ["deny", "✗ Denegado"]]) {
       const cuerpo = await paginaPermiso({ ...permiso, decision: decision! }, "7", contexto).text();
       expect(cuerpo).toContain(`>${texto}</span>`);
       expect(cuerpo).toMatch(/id="resultado-permiso"[^]*?Primera oración\./);
@@ -113,10 +113,10 @@ describe("Página permiso y consultas", () => {
   test("P-3 determinante cero o null, carácter, protección anulada e índices desde uno", async () => {
     const cuerpo = await paginaPermiso(permiso, "7", contexto).text();
     expect(cuerpo).toContain("Regla que decide");
-    expect(cuerpo).toContain("Esta declaración anula una protección nativa de OpenCode");
+    expect(cuerpo).toContain("Advertencia: esta declaración anula una protección nativa de OpenCode");
     expect(cuerpo).toContain("regla 1, por 2");
     expect(cuerpo).toContain('<details id="cadena-efectiva"><summary>Ver reglas coincidentes (2)</summary>');
-    expect(cuerpo).toContain('class="fila--desplazada"');
+    expect(cuerpo).toContain('class="fila--desplazada fila--nativo"');
     expect(cuerpo).toContain("vscode://file/p/proyecto/config%20%26%20%23.json:2:3");
     expect(cuerpo).toContain('href="/reglas?id=7&amp;agente=a%2Fb"');
     expect(cuerpo).toMatch(/<details[^>]*><summary>Explicación completa<\/summary>[^]*?Segunda oración &lt;completa&gt;\./);

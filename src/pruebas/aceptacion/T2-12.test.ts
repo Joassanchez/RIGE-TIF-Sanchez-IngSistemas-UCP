@@ -86,7 +86,9 @@ describe("RF-02 CA-7", () => {
       const filas = [...cadena.matchAll(/<tr class="([^"]+)"><td data-etiqueta="Índice">(\d+)<\/td>/g)];
       expect(filas.map(fila => Number(fila[2]))).toEqual(respuesta.cadena.map(regla => regla.indice + 1));
       for (const [indice, regla] of respuesta.cadena.entries()) {
-        expect(filas[indice]![1]).toBe(regla.indice === respuesta.determinante ? "fila--determinante" : respuesta.desplazadas.includes(regla.indice) ? "fila--desplazada" : "fila");
+        const rol = regla.origen.tipo === "declarado" ? "declarado" : "nativo";
+        const estado = regla.indice === respuesta.determinante ? "fila--determinante " : respuesta.desplazadas.includes(regla.indice) ? "fila--desplazada " : "";
+        expect(filas[indice]![1]).toBe(`${estado}fila--${rol}`);
       }
       expect(respuesta.nativaAnulada).not.toBeNull();
       expect(pagina.cuerpo).toContain(`(regla ${respuesta.nativaAnulada!.regla + 1}, por ${respuesta.nativaAnulada!.por + 1})`);
@@ -120,7 +122,7 @@ describe("RF-16 CA-3", () => {
       const pagina = await solicitar(`/agentes?id=${id}`);
       expect(pagina.estado).toBe(200);
       expect(incrustada(pagina.cuerpo)).toEqual(JSON.parse(cli.salida));
-      expect(pagina.cuerpo).toContain("<th>Nombre</th><th>Modo</th><th>Origen</th>");
+      expect(pagina.cuerpo).toContain('<th scope="col">Nombre</th><th scope="col">Modo</th><th scope="col">Origen</th>');
       writeFileSync(join(escenario.proyecto, "opencode.jsonc"), '{"agent":{"nuevo":{}}}');
       expect(incrustada((await solicitar(`/agentes?id=${id}`)).cuerpo)).toEqual(JSON.parse(cli.salida));
     });

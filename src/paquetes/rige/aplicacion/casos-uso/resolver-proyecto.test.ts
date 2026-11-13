@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
-import type { PuertoResoluciones } from "../puertos/resoluciones";
+import { errorResolucionInexistente, type PuertoResoluciones } from "../puertos/resoluciones";
 import { resolver } from "../../../../pruebas/utilidades/resolver";
 import { adaptadorFicticio } from "../../../../pruebas/utilidades/adaptador-ficticio";
 import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memoria";
@@ -21,7 +21,12 @@ function dobles() {
       guardadas.push({ resolucion, instante });
       return { exito: true, valor: guardadas.length };
     },
-    leer: () => { throw new Error("No corresponde leer al resolver"); },
+    leer: (id) => {
+      const guardada = guardadas[id - 1];
+      return guardada
+        ? { exito: true, valor: { id, instante: guardada.instante, resolucion: JSON.parse(JSON.stringify(guardada.resolucion)) as Resolucion } }
+        : { exito: false, error: errorResolucionInexistente(id) };
+    },
     listar: (proyecto) => ({ exito: true, valor: guardadas.flatMap((guardada, indice) =>
       guardada.resolucion.proyecto === proyecto ? [{
         id: indice + 1, instante: guardada.instante, resumenEntradas: guardada.resolucion.resumenEntradas,
@@ -117,6 +122,41 @@ describe("C-3 RF-17 CA-2", () => {
     expect(lista.valor.map(({ id }) => id)).toEqual([2, 1]);
     expect(lista.valor[0]!.resumenEntradas).not.toBe(lista.valor[1]!.resumenEntradas);
     expect(lista.valor.every(({ resumenEntradas }) => /^[0-9a-f]{64}$/.test(resumenEntradas))).toBe(true);
+  });
+
+  test("Y-1 sin cambios en disco devuelve el ultimo id sin guardar de nuevo", async () => {
+    const { resolverProyecto } = await import("./resolver-proyecto");
+    const { dependencias, guardadas, llamadas } = dobles();
+    expect(resolverProyecto(dependencias, "pedido")).toEqual({ exito: true, valor: { id: 1 } });
+    expect(resolverProyecto(dependencias, "pedido")).toEqual({ exito: true, valor: { id: 1 } });
+    expect(guardadas).toHaveLength(1);
+    expect(llamadas).toEqual(["pedido", "reloj", "pedido"]);
+  });
+
+  test("mismas entradas con distinta declaracion de version guarda dos analisis", async () => {
+    const { resolverProyecto } = await import("./resolver-proyecto");
+    const { dependencias, guardadas } = dobles();
+    let declaraciones: string[] = [];
+    let ahora = instante;
+    const adaptador = {
+      ...adaptadorFicticio,
+      reglas: { ...adaptadorFicticio.reglas, "version-no-determinada": "Versión no determinada." },
+      contexto: (proyecto: string, entornoLectura: typeof dependencias.entorno) => ({
+        exito: true as const,
+        valor: { proyecto, entorno: entornoLectura, parametros: {}, declaraciones },
+      }),
+    };
+    const deps = { ...dependencias, adaptador, reloj: { ahora: () => ahora } };
+    expect(resolverProyecto(deps, "pedido")).toEqual({ exito: true, valor: { id: 1 } });
+    declaraciones = ["version-no-determinada"];
+    ahora = "2026-10-05T12:05:00.000Z";
+    expect(resolverProyecto(deps, "pedido")).toEqual({ exito: true, valor: { id: 2 } });
+    ahora = "2026-10-05T12:10:00.000Z";
+    expect(resolverProyecto(deps, "pedido")).toEqual({ exito: true, valor: { id: 2 } });
+    expect(guardadas).toHaveLength(2);
+    expect(guardadas[0]!.resolucion.resumenEntradas).toBe(guardadas[1]!.resolucion.resumenEntradas);
+    expect(guardadas[0]!.resolucion.declaraciones).toEqual([]);
+    expect(guardadas[1]!.resolucion.declaraciones).toEqual(["version-no-determinada"]);
   });
 });
 

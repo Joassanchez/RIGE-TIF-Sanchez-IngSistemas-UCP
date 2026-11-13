@@ -65,14 +65,20 @@ describe("W-13", () => {
       "remota-wellknown", "no_observada", "observada", "b".repeat(64), "—"]) {
       expect(cuerpo).toContain(dato);
     }
-    expect(cuerpo).toMatch(/class="declaracion-desplazada".*0\.1.*class="declaracion-desplazada".*0\.2/s);
+    expect(cuerpo).toMatch(/class="declaracion-desplazada".*0\.2.*class="declaracion-desplazada".*0\.1/s);
     const fila = seccionHtml(cuerpo, "valores").match(/<tr><td[^>]*>description<\/td>.*?<\/tr>/s)![0];
     const celdas = fila.match(/<td\b[^>]*>.*?<\/td>/gs)!;
     expect(celdas).toHaveLength(4);
     expect(celdas[1]).toContain("&quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;");
-    expect(textoHtml(celdas[2]!)).toContain("Proyecto · &lt;entrada3&gt;.jsonc:6:7");
-    const desplazadas = [...celdas[3]!.matchAll(/<div class="declaracion-desplazada">(.*?)<\/div>/gs)].map(li => textoHtml(li[1]!));
-    expect(desplazadas).toEqual(["0.1 · Proyecto · &lt;entrada1&gt;.jsonc:6:7", "0.2 · Proyecto · &lt;entrada2&gt;.jsonc:6:7"]);
+    expect(textoHtml(celdas[2]!)).toContain("Proyecto · ../&lt;entrada3&gt;.jsonc:6:7");
+    expect(celdas[3]).toContain('<ol class="cadena-desplazadas">');
+    expect(celdas[3]).not.toContain("<del");
+    expect(textoHtml(celdas[3]!)).toContain("rige &quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;");
+    const desplazadas = [...celdas[3]!.matchAll(/<li class="declaracion-desplazada">(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
+    expect(desplazadas).toEqual([
+      "← desplazado 0.2 (Proyecto · ../&lt;entrada2&gt;.jsonc:6:7)",
+      "← desplazado 0.1 (Proyecto · ../&lt;entrada1&gt;.jsonc:6:7)",
+    ]);
     expect(cuerpo).toContain('href="/resoluciones/7"');
     expect(cuerpo).not.toContain("agent.a &amp; b.description");
     const bloques = [...cuerpo.matchAll(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/g)];
@@ -123,14 +129,15 @@ describe("W-14", () => {
     const filas = [...seccionHtml(cuerpo, "valores").matchAll(/<tr><td[^>]*>(description|steps)<\/td>.*?<\/tr>/gs)].map((fila) => fila[0]);
     expect(filas).toHaveLength(2);
     const procedencias = filas.map(fila => fila.match(/<td\b[^>]*>.*?<\/td>/gs)![2]!);
-    expect(procedencias[0]).toContain('<code>primera</code>');
+    expect(procedencias[0]).toContain('<summary>Regla aplicada</summary>');
     expect(procedencias[0]).toContain('<p>Conservar la primera &lt;declaracion&gt;.</p>');
-    expect(procedencias[1]).toContain('<code>ultima</code>');
+    expect(procedencias[1]).toContain('<summary>Regla aplicada</summary>');
     expect(procedencias[1]).toContain('<p>Conservar la ultima &amp; su orden.</p>');
     expect(cuerpo).not.toContain('id="leyenda-reglas"');
     expect(cuerpo).toContain("permission: No se resuelve &lt;permiso&gt;.");
     expect(cuerpo).not.toContain("grupo.a &amp; b");
-    expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")).not.toContain("orden-de-aplicacion");
+    expect(cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")
+      .replace(/<details id="ver-json">[^]*?<\/details>/, "")).not.toContain("orden-de-aplicacion");
   });
 });
 
@@ -170,8 +177,8 @@ describe("T5-08-c1 C3 C4 determinante y plantillas de reglas", () => {
     expect(celdas[2]).not.toContain("alert(1)");
     expect(celdas[2]).toContain("Proyecto ·");
     expect(celdas[2]).toContain('title="Abrir en VS Code: /proyecto/&lt;entrada3&gt;.jsonc"');
-    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain("implícito");
-    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain("valor-implicito");
+    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain("OpenCode · valor de fábrica");
+    expect(filas[2]!.match(/<td\b[^>]*>.*?<\/td>/gs)![2]).toContain('title="valor implicito"');
     const comunes = cuerpo.match(/<details><summary>¿Qué significa\?<\/summary>[^]*?<\/details>/)![0];
     expect(comunes.match(/Prevalece la ultima &lt;declaracion&gt; \(RD-01\)\./g)).toHaveLength(1);
     expect(comunes.match(/Texto &lt;implícito&gt; completo \(RD-04\)\./g)).toHaveLength(1);
@@ -192,7 +199,7 @@ describe("T5-08-c1 C3 C4 determinante y plantillas de reglas", () => {
 });
 
 describe("Resolución del agente: pulido visual, orden y controles", () => {
-  const sinJson = (s: string) => s.replace(/<script[^]*?<\/script>/g, "");
+  const sinJson = (s: string) => s.replace(/<script[^]*?<\/script>/g, "").replace(/<details id="ver-json">[^]*?<\/details>/g, "");
   const json = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
   const bloque = (cuerpo: string, id: string) => cuerpo.split(`id="${id}"`)[1]!.split("</section>")[0]!;
   const css = (selector: string) => [...estilos.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
@@ -265,7 +272,7 @@ describe("Resolución del agente: pulido visual, orden y controles", () => {
     const determinanteU = { valor: 0.3, referencia: "/mi-proyecto/opencode.json", via: "proyecto", regla: "ultima",
       origen: { tipo: "declarado" as const, orden: 1, posicion: { linea: 5, columna: 7 } } };
     const valorU = (clave: string, tipo: "declarado" | "implicito" | "nativo") => ({ clave, rastro: {
-      ruta: [clave], indiceFusion: 0, valor: 0.3, motivo: "ultima", desplazadas: tipo === "declarado" ? [{ ...determinanteU, valor: 0.2 }] : [],
+      ruta: [clave], indiceFusion: 0, valor: 0.3, motivo: "ultima", desplazadas: tipo === "declarado" ? [{ ...determinanteU, valor: 0.1, referencia: "/opencode.json" }, { ...determinanteU, valor: 0.2 }] : [],
       determinante: tipo === "declarado" ? determinanteU : { ...determinanteU, referencia: null, via: null,
         origen: { tipo, regla: tipo === "implicito" ? "valor-implicito-del-agente" : "nativa" } },
     } });
@@ -307,8 +314,8 @@ describe("Resolución del agente: pulido visual, orden y controles", () => {
       expect(fabrica[1]!.indexOf('data-etiqueta="Clave">beta')).toBeLessThan(fabrica[1]!.indexOf('data-etiqueta="Clave">delta'));
 
       const fila = fabrica[1]!.match(/<tr>[^]*?data-etiqueta="Clave">delta[^]*?<\/tr>/)![0]!;
-      expect(fila.match(/>implícito<\/span>/g)).toHaveLength(1);
-      expect(fila).toContain('title="valor-implicito-del-agente"');
+      expect(fila.match(/>OpenCode · valor de fábrica<\/span>/g)).toHaveLength(1);
+      expect(fila).toContain('title="valor implicito del agente"');
       expect(fila).not.toContain("Valor implícito");
       expect(cuerpo.match(/<summary>¿Qué significa\?<\/summary>/g)).toHaveLength(1);
       expect(cuerpo).not.toContain("<summary>Cómo se decide</summary>");
@@ -320,10 +327,13 @@ describe("Resolución del agente: pulido visual, orden y controles", () => {
       expect(sinPlantillas.replace(/title="[^"]*"/g, "")).not.toContain("ultima");
     });
 
-    test("U-8 desplazadas en líneas sin numeración con valor y ubicación juntos", async () => {
+    test("U-8 cadena de desplazadas ordenada por precedencia sin tachado y con roles rige y desplazado", async () => {
       const desplazadas = (await agenteFn()).match(/data-etiqueta="Desplazadas">([^]*?)<\/td>/)![1]!;
-      expect(desplazadas).not.toMatch(/<ol|<li/);
-      expect(desplazadas).toContain('<del class="valor-desplazado">0.2</del> · Proyecto ·');
+      expect(desplazadas).toContain('<ol class="cadena-desplazadas">');
+      expect(desplazadas).not.toContain("<del");
+      expect(desplazadas).toContain('insignia--rige rol--rige">rige</span>');
+      expect(desplazadas).toContain('insignia--desplazado rol--desplazado">desplazado</span>');
+      expect(textoHtml(desplazadas)).toMatch(/rige 0\.3.*← desplazado 0\.2 \(Proyecto ·.*← desplazado 0\.1 \(Proyecto ·/);
       expect(css(".valor-desplazado")).not.toContain("display: block");
     });
 

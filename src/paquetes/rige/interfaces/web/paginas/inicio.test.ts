@@ -86,10 +86,31 @@ describe("Inicio: ayuda, recientes y contratos visuales", () => {
     expect(vacio).toContain("Ingresá la carpeta de un proyecto y pulsá Analizar");
     const ahora = new Date(2026, 10, 11, 10, 42);
     const cuerpo = await paginaInicio(estado, { esquema: 2, proyectos: [{ proyecto: '/p/<x>', id: 729, instante: ahora.toISOString(), cantidad: 3 }] }, ahora).text();
-    expect(cuerpo).toMatch(/<a class="reciente__foto" href="\/resoluciones\/729">[^]*?<strong>&lt;x&gt;<\/strong>[^]*?<\/a>/);
+    expect(cuerpo).toMatch(/<a class="reciente__foto" href="\/resoluciones\/729">[^]*?<strong>p\/&lt;x&gt;<\/strong>[^]*?<\/a>/);
     expect(cuerpo).toContain("hoy 10:42");
     expect(cuerpo).toContain("3 análisis");
     expect(cuerpo).toContain("Analizar de nuevo");
     expect(cuerpo).not.toMatch(/Resolución 729|<script/);
+  });
+
+  test("T6-08 R-4 distingue tres proyectos homonimos con dos segmentos y trunca ruta por el inicio", async () => {
+    const cuerpo = await paginaInicio(
+      estado,
+      {
+        esquema: 2,
+        proyectos: [
+          { proyecto: "/repo/alfa/proyecto", id: 1, instante: "2026-11-11T12:00:00Z", cantidad: 1 },
+          { proyecto: "/repo/beta/proyecto", id: 2, instante: "2026-11-11T11:00:00Z", cantidad: 1 },
+          { proyecto: "C:\\trabajo\\gamma\\proyecto", id: 3, instante: "2026-11-11T10:00:00Z", cantidad: 1 },
+        ],
+      },
+      new Date("2026-11-11T12:00:00Z"),
+    ).text();
+    const titulos = [...cuerpo.matchAll(/<a class="reciente__foto"[^>]*><strong>(.*?)<\/strong>/g)].map(m => m[1]);
+    expect(titulos).toEqual(["alfa/proyecto", "beta/proyecto", "gamma/proyecto"]);
+    expect(new Set(titulos).size).toBe(3);
+    expect(css(".reciente__foto code")).toMatch(/direction:\s*rtl/);
+    expect(css(".reciente__foto code")).toMatch(/unicode-bidi:\s*plaintext/);
+    expect(css(".reciente__foto code")).toMatch(/text-align:\s*left/);
   });
 });

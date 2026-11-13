@@ -104,7 +104,7 @@ test("T5-23 L-2 buffers heredados y --json contra ejecutable congelado f085d3d, 
       { args: consulta("valores", "--agente", "build", "--clave", "temperature") },
       { args: consulta("valores", "--agente", "build", "--clave", "inexistente") },
       { args: ["comparar", "--desde", "0", "--hasta", "1"], codigo: 2 },
-      { args: ["recientes", "--proyecto", "x"], codigo: 2 },
+      // Caso único retirado del congelado de T5-23 (D-2, ADR-116): recientes admite --proyecto; cubierto en T5-14.test.ts.
       { args: ["esquema", "--tiempos"], codigo: 2 },
       { args: [], codigo: 2 },
       { args: consulta("valores", "extra"), codigo: 2 },

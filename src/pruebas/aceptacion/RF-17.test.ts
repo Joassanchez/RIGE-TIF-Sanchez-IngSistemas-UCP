@@ -69,10 +69,16 @@ function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
   expect(fila).not.toBeNull();
   const celdas = fila![0].match(/<td\b[^>]*>.*?<\/td>/gs)!;
   expect(celdas).toHaveLength(4);
-  expect(textoHtml(celdas[2]!)).toBe("Proyecto · opencode.jsonc:6:7");
+  expect(textoHtml(celdas[2]!)).toBe("Proyecto · ./opencode.jsonc:6:7");
   expect(celdas[2]).toContain(`title="Abrir en VS Code: ${ruta}/proyecto/opencode.jsonc"`);
-  const desplazadas = [...celdas[3]!.matchAll(/<div class="declaracion-desplazada">(.*?)<\/div>/gs)].map(li => textoHtml(li[1]!));
-  expect(desplazadas).toEqual(["0.1 · Proyecto · opencode.json:5:7", "0.2 · Proyecto · opencode.json:5:7"]);
+  expect(celdas[3]).toContain('<ol class="cadena-desplazadas">');
+  expect(celdas[3]).not.toContain("<del");
+  expect(textoHtml(celdas[3]!)).toContain(`rige ${temperatura}`);
+  const desplazadas = [...celdas[3]!.matchAll(/<li class="declaracion-desplazada">(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
+  expect(desplazadas).toEqual([
+    "← desplazado 0.2 (Proyecto · ./opencode.json:5:7)",
+    "← desplazado 0.1 (Proyecto · ../opencode.json:5:7)",
+  ]);
   expect(cuerpo).toContain(regla);
   expect(cuerpo).toContain("Página armada con la resolución leída del almacén de RIGE.");
 }
@@ -133,8 +139,11 @@ describe("RF-17", () => {
   describe("RF-17 CA-3", () => {
     test("retiene las ultimas veinte y deja de recuperar la primera", async () => {
       const recorrido = preparar();
+      const entrada = join(recorrido.proyecto, "opencode.jsonc");
+      const original = readFileSync(entrada, "utf8");
       const guardadas: number[] = [];
       for (let indice = 0; indice < 21; indice++) {
+        writeFileSync(entrada, original.replace('"temperature": 0.3', `"temperature": ${(0.01 * (indice + 1)).toFixed(2)}`));
         const redireccion = await recorrido.resolver();
         expect(redireccion.estado).toBe(303);
         const ruta = ubicacion(redireccion);
@@ -144,7 +153,7 @@ describe("RF-17", () => {
       const ruta = (id: number) => `/resoluciones/${id}`;
       const ultima = await recorrido.solicitar(ruta(guardadas.at(-1)!));
       expect(ultima.estado).toBe(200);
-      const historia = seccionHtml(ultima.cuerpo, "historia", "details");
+      const historia = seccionHtml(ultima.cuerpo, "historia");
       const ids = [...historia.matchAll(/href="\/resoluciones\/(\d+)"/g)].map(enlace => Number(enlace[1]));
       expect(ids).toEqual(guardadas.slice(1).reverse());
       expect(ids).toHaveLength(20);
@@ -155,7 +164,7 @@ describe("RF-17", () => {
         .map(enlace => [Number(enlace[1]), Number(enlace[2])]);
       expect(comparaciones).toEqual(guardadas.slice(2).reverse().map(id => [id - 1, id]));
       const intermedia = await recorrido.solicitar(ruta(guardadas[10]!));
-      const historialIntermedio = seccionHtml(intermedia.cuerpo, "historia", "details");
+      const historialIntermedio = seccionHtml(intermedia.cuerpo, "historia");
       expect(historialIntermedio).toContain(`href="/resoluciones/${guardadas[10]}" aria-current="page"`);
       expect(historialIntermedio).toContain("más reciente");
       expect([...historialIntermedio.matchAll(/href="\/resoluciones\/(\d+)"/g)].map(e => Number(e[1]))).toEqual(ids);
@@ -164,6 +173,54 @@ describe("RF-17", () => {
       expect(retirada.cuerpo).toContain("No encontramos ese análisis en el almacén.");
       expect(retirada.cuerpo).toContain("resolucion-inexistente");
       expect((await recorrido.solicitar(ruta(guardadas[1]!))).estado).toBe(200);
+    });
+  });
+
+  describe("T6-16 Y-1 y Y-2", () => {
+    test("dos GET /resolver seguidos sin cambios redirigen al mismo analisis y las paginas exponen Ver JSON", async () => {
+      const recorrido = preparar();
+      const primera = await recorrido.resolver();
+      const segunda = await recorrido.resolver();
+      expect(primera.estado).toBe(303);
+      expect(segunda.estado).toBe(303);
+      expect(ubicacion(segunda)).toBe(ubicacion(primera));
+      const entrada = join(recorrido.proyecto, "opencode.jsonc");
+      const original = readFileSync(entrada, "utf8");
+      writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": 0.4'));
+      const tercera = await recorrido.resolver();
+      expect(tercera.estado).toBe(303);
+      expect(ubicacion(tercera)).not.toBe(ubicacion(primera));
+
+      const pagina = await recorrido.solicitar(ubicacion(primera));
+      expect(pagina.estado).toBe(200);
+      const script = pagina.cuerpo.match(/<script type="application\/json" id="respuesta">([^]*?)<\/script>/)?.[1];
+      const visible = pagina.cuerpo.match(/<details id="ver-json"><summary>Ver JSON<\/summary><pre><code>([^]*?)<\/code><\/pre><\/details>/)?.[1];
+      expect(script).toBeDefined();
+      expect(visible).toBeDefined();
+      const desescapar = (s: string) => s.replace(/&(amp|lt|gt|quot|#39);/g, m => ({ "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'" })[m]!);
+      expect(JSON.parse(desescapar(visible!))).toEqual(JSON.parse(script!));
+    });
+  });
+
+  describe("T6-14 N-2 error 422 con salida", () => {
+    test("resolver v3-entradas-ilegible devuelve 422 con enlaces funcionales a /hallazgos y /entradas", async () => {
+      const recorrido = preparar();
+      const ilegible = copiarEscenario("v3-entradas-ilegible");
+      try {
+        const error = await recorrido.solicitar(`/resolver?proyecto=${encodeURIComponent(ilegible.proyecto)}`);
+        expect(error.estado).toBe(422);
+        const enlaceHallazgos = error.cuerpo.match(/href="(\/hallazgos\?proyecto=[^"]+)"/)?.[1]?.replaceAll("&amp;", "&");
+        const enlaceEntradas = error.cuerpo.match(/href="(\/entradas\?proyecto=[^"]+)"/)?.[1]?.replaceAll("&amp;", "&");
+        expect(enlaceHallazgos).toBeDefined();
+        expect(enlaceEntradas).toBeDefined();
+        expect(error.cuerpo).toContain("Ver hallazgos");
+        expect(error.cuerpo).toContain("Ver entradas");
+        expect(error.cuerpo).toContain("Reintentar");
+        expect((await recorrido.solicitar(enlaceHallazgos!)).estado).toBe(200);
+        expect((await recorrido.solicitar(enlaceEntradas!)).estado).toBe(200);
+      } finally {
+        ilegible.borrar();
+      }
     });
   });
 });

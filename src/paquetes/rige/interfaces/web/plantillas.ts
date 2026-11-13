@@ -7,7 +7,8 @@ export type { HtmlSeguro };
 // Solo serializa datos JSON; nunca acepta HTML arbitrario sin escapar.
 export function datosRespuesta(respuesta: unknown): HtmlSeguro {
   const dato = JSON.stringify(respuesta).replaceAll("<", "\\u003c");
-  return new HtmlSeguro(`<script type="application/json" id="respuesta">${dato}</script>`);
+  const visible = presentar(JSON.stringify(respuesta, null, 2));
+  return new HtmlSeguro(`<script type="application/json" id="respuesta">${dato}</script><details id="ver-json"><summary>Ver JSON</summary><pre><code>${visible}</code></pre></details>`);
 }
 
 function presentar(valor: unknown): string {
