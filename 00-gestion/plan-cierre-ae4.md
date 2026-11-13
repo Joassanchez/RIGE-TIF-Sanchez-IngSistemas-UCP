@@ -62,11 +62,13 @@ Va sin agentes reales: no gasta cuota de medición. Da validez al resultado: la 
 - [x] Fichas del escritor: PIL-B, VER-04, VER-06 y VER-07; `package.json` alineado con la etiqueta (09/11/2026, rama `cierre-src`, T5-02 a T5-07; `.trabajo/fichas/cierre/INDICE.md`). Versión `1.0.0`.
 - [x] Manual de despliegue con las 11 secciones de la guía 07 (AE4-03): `src/MANUAL.md`, con la declaración de que RIGE no usa usuario de demostración. Prueba de humo seguida por el ingeniero sobre una copia limpia.
 - [~] `src/README.md` §8 coincidente con la bitácora (guía 07, paso 14): sincronizado hasta T5-07; quedan los `[AUTOR: …]` de las filas del 25/10 y del 03/11.
-- [ ] **Autor:** commit de los cambios de gestión y del catálogo del 09/11, y unión de `cierre-src` a `main` y push, para la corrida del CI.
+- [x] **Autor:** commit de los cambios de gestión y del catálogo del 09/11, y unión de `cierre-src` a `main` y push, para la corrida del CI.
 - [ ] **Autor:** aceptar o rechazar la precisión propuesta del 09/11 en ADR-101 (`core.worktree` como límite caracterizado).
 - [ ] Partición del catálogo de PIL-B (RF-02, RF-03 y RF-07), III.5 con R-12, R-13 y R-17 a R-19, I.6 Tabla 10 (credencial literal, D-76) y III.4 con `core.worktree` (redactor).
 - [ ] **Autor:** RNF-06 real, Windows 11 con cuenta común (VER-05).
 - [ ] **Autor:** prueba del manual en otra máquina, por otra persona (AE4-05). Va **antes** de la etiqueta: cada falla es un cambio del manual.
+
+- [x] Refactor de cierre de `src/` (T5-28 a T5-37, 12/11/2026, rama `refactor-src`; AE4-35). **Autor:** commits, unión a `main` y CI.
 
 ### B4 · Etiqueta
 
@@ -79,6 +81,7 @@ Va sin agentes reales: no gasta cuota de medición. Da validez al resultado: la 
 ### B5 · Medición final
 
 - [ ] Misma imagen de la línea de base, binario de la etiqueta y arnés con el preregistro de B1.
+- [x] Arnés corregido antes del ensayo (AE4-33, MED-20, 12/11/2026): envoltorio `rige` invocable desde `como-dev`, consulta anidada en el ensayo y comprobación del certificado del proveedor (escudo de Avast en pausa) antes de cada tanda.
 - [ ] Sobre la etiqueta: repetir el ensayo y el contraste de cobertura, registrar el corte en `MANIFIESTO.json` y acreditar el diagnóstico de la sección 11 del preregistro.
 - [ ] Tandas en el orden de la sección 3.
 - [ ] Análisis y veredicto con la regla de I.3.4.
