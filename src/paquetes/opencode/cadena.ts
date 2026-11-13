@@ -38,10 +38,10 @@ export function cadena(resolucion: Resolucion, agente: string, contexto: Context
     for (const rastro of resolucion.valores.filter(v => bajo(v.ruta, prefijo)).toSorted((a, b) => a.indiceFusion - b.indiceFusion)) {
       const ruta = rastro.ruta.slice(prefijo.length);
       if (rastro.valor !== null && typeof rastro.valor === "object" && !Array.isArray(rastro.valor) && !Object.keys(rastro.valor).length) continue;
-      if (typeof rastro.valor !== "string" || !["allow", "deny", "ask"].includes(rastro.valor) || ruta.length > 2) {
+      if (typeof rastro.valor !== "string" || !["allow", "deny", "ask"].includes(rastro.valor) || !ruta.length || ruta.length > 2) {
         return { exito: false, error: { categoria: "uso", codigo: "cadena-incompleta", mensaje: `La cadena de ${agente} contiene una declaración de permiso no soportada.` } };
       }
-      reglas.push({ indice: reglas.length, sujeto: ruta[0] ?? "*", patron: ruta.length === 2 ? expand(ruta[1]!, hogar) : "*",
+      reglas.push({ indice: reglas.length, sujeto: ruta[0]!, patron: ruta.length === 2 ? expand(ruta[1]!, hogar) : "*",
         efecto: rastro.valor, origen: rastro.determinante.origen, declaracion: rastro.determinante });
     }
   }

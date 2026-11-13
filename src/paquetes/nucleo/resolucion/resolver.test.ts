@@ -38,6 +38,7 @@ function escenario(capas: readonly (readonly Declaracion[])[], adicionales: read
     resumirPermisos: () => { throw new Error("No resumir permisos al resolver"); },
     referencias: [], plantillasHallazgo: {},
     contexto: adaptadorFicticio.contexto,
+    restaurarContexto: adaptadorFicticio.restaurarContexto,
     prepararConsulta: adaptadorFicticio.prepararConsulta,
     listarAgentes: adaptadorFicticio.listarAgentes,
     permisos: adaptadorFicticio.permisos,

@@ -70,6 +70,7 @@ describe("V1-03 S-4", () => {
       "markdown-no-observado": "Agente declarado también en Markdown, que RIGE no incorpora; sus claves no se informan para no presentar un valor incompleto.",
       "tools-legado-no-incorporado": "El alias legado tools aporta reglas a permission; RIGE no incorpora esa derivación y no informa los permisos de ese ámbito para evitar un resultado incompleto.",
       "sustitucion-no-incorporada": "RIGE no evalúa una regla de permiso ni un modo cuyo texto efectivo proviene de una sustitución; informa su origen y su condición",
+      "forma-v2-no-incorporada": "La configuración usa formas de esquema v2 (agents, commands o model como objeto) que OpenCode normaliza por archivo y RIGE no incorpora; la ruta afectada queda sin resolver para evitar un resultado incorrecto.",
     });
   });
 });
@@ -268,5 +269,82 @@ describe("V1-03 S-1", () => {
       ], noResueltas: [],
     } });
     expect(secuenciar([])).toEqual({ exito: true, valor: { aplicaciones: [], noResueltas: [] } });
+  });
+});
+
+describe("T6-04 — formas v2 no incorporadas", () => {
+  test("agents excluye agents y cada agent.<n> afectado sin tocar otros agentes", () => {
+    const resultado = secuenciar([
+      { orden: 0, via: { via: "usuario", referencia: "/h/.config/opencode/opencode.json", condicion: "observada" }, declaraciones: [
+        { ruta: ["agent", "rev", "temperature"], valor: 0.4, posicion: { linea: 1, columna: 1 } },
+        { ruta: ["agent", "plan", "temperature"], valor: 0.2, posicion: { linea: 1, columna: 40 } },
+      ] },
+      { orden: 1, via: { via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" }, declaraciones: [
+        { ruta: ["agents", "rev", "mode"], valor: "primary", posicion: { linea: 1, columna: 1 } },
+        { ruta: ["agents", "build", "disabled"], valor: true, posicion: { linea: 1, columna: 35 } },
+      ] },
+    ]);
+    expect(resultado.exito).toBe(true);
+    if (!resultado.exito) throw new Error(resultado.error.mensaje);
+    expect(resultado.valor.noResueltas).toEqual([
+      { ruta: ["agents"], regla: "forma-v2-no-incorporada" },
+      { ruta: ["agent", "rev"], regla: "forma-v2-no-incorporada" },
+      { ruta: ["agent", "build"], regla: "forma-v2-no-incorporada" },
+    ]);
+    expect(resultado.valor.aplicaciones.map(a => a.ruta.join("/"))).toEqual(["agent/plan/temperature"]);
+  });
+
+  test("commands excluye commands y command entero", () => {
+    const resultado = secuenciar([
+      { orden: 0, via: { via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" }, declaraciones: [
+        { ruta: ["commands", "deploy", "template"], valor: "go", posicion: { linea: 1, columna: 1 } },
+        { ruta: ["command", "otro", "template"], valor: "hi", posicion: { linea: 1, columna: 40 } },
+        { ruta: ["model"], valor: "a/b", posicion: { linea: 1, columna: 75 } },
+      ] },
+    ]);
+    expect(resultado.exito).toBe(true);
+    if (!resultado.exito) throw new Error(resultado.error.mensaje);
+    expect(resultado.valor.noResueltas).toEqual([
+      { ruta: ["commands"], regla: "forma-v2-no-incorporada" },
+      { ruta: ["command"], regla: "forma-v2-no-incorporada" },
+    ]);
+    expect(resultado.valor.aplicaciones.map(a => a.ruta.join("/"))).toEqual(["model"]);
+  });
+
+  test("model como objeto excluye model y deja model cadena sin cambios", () => {
+    const conObjeto = secuenciar([
+      { orden: 0, via: { via: "usuario", referencia: "/h/.config/opencode/opencode.json", condicion: "observada" }, declaraciones: [
+        { ruta: ["model"], valor: "a/b", posicion: { linea: 1, columna: 1 } },
+      ] },
+      { orden: 1, via: { via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" }, declaraciones: [
+        { ruta: ["model", "providerID"], valor: "a", posicion: { linea: 1, columna: 1 } },
+        { ruta: ["model", "model"], valor: "b", posicion: { linea: 1, columna: 25 } },
+      ] },
+    ]);
+    expect(conObjeto.exito).toBe(true);
+    if (!conObjeto.exito) throw new Error(conObjeto.error.mensaje);
+    expect(conObjeto.valor.noResueltas).toEqual([{ ruta: ["model"], regla: "forma-v2-no-incorporada" }]);
+    expect(conObjeto.valor.aplicaciones).toEqual([]);
+
+    const conObjetoVacio = secuenciar([
+      { orden: 0, via: { via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" }, declaraciones: [
+        { ruta: ["model"], valor: {}, posicion: { linea: 1, columna: 1 } },
+      ] },
+    ]);
+    expect(conObjetoVacio).toEqual({
+      exito: true,
+      valor: { aplicaciones: [], noResueltas: [{ ruta: ["model"], regla: "forma-v2-no-incorporada" }] },
+    });
+
+    const conCadena = secuenciar([
+      { orden: 0, via: { via: "proyecto", referencia: "/p/opencode.json", condicion: "observada" }, declaraciones: [
+        { ruta: ["model"], valor: "a/b", posicion: { linea: 1, columna: 1 } },
+      ] },
+    ]);
+    expect(conCadena.exito).toBe(true);
+    if (!conCadena.exito) throw new Error(conCadena.error.mensaje);
+    expect(conCadena.valor.noResueltas).toEqual([]);
+    expect(conCadena.valor.aplicaciones).toHaveLength(1);
+    expect(conCadena.valor.aplicaciones[0]).toMatchObject({ ruta: ["model"], valor: "a/b" });
   });
 });

@@ -1,0 +1,12 @@
+{
+  "permission": {
+    "bash": {
+      "rm *": "deny"
+    }
+  },
+  "permission": {
+    "bash": {
+      "ls *": "allow"
+    }
+  }
+}

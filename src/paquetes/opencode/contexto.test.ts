@@ -5,7 +5,7 @@ import { consultarAgentes } from "../rige/aplicacion/casos-uso/consultar-agentes
 import { consultarValores } from "../rige/aplicacion/casos-uso/consultar-valores";
 import { adaptadorOpenCode } from "./adaptador";
 import * as worktree from "./worktree";
-import { contextoOpenCode } from "./contexto";
+import { contextoOpenCode, restaurarContextoOpenCode } from "./contexto";
 import { analizarProyecto } from "../rige/aplicacion/casos-uso/analizar-proyecto";
 import { instalacionEnMemoria } from "../../pruebas/utilidades/instalacion-opencode";
 import { crearEntornoOpenCode } from "../../pruebas/utilidades/entorno-opencode";
@@ -124,5 +124,48 @@ describe("T2-11b contexto", () => {
         expect(resultado).toMatchObject({ exito: false, error: { codigo: "entorno-incompleto" } });
       }
     }
+  });
+});
+
+describe("T6-18 Q-1 Q-2 restaurarContextoOpenCode", () => {
+  const entorno = crearEntornoMemoria({ archivos: {}, plataforma: "linux" });
+  const base = {
+    proyecto: "/p",
+    declaraciones: ["git-no-encontrado"],
+    parametros: { hogar: "/hogar", config: "/hogar/.config/opencode", data: "/datos/opencode", tmp: "/tmp/opencode", worktree: "/" },
+  };
+
+  test("Q-2 restaura un contexto valido de formato 2 sin alterar sus datos", () => {
+    const restaurado = adaptadorOpenCode.restaurarContexto(base, entorno);
+    expect(restaurado).toEqual({
+      exito: true,
+      valor: { proyecto: "/p", entorno, declaraciones: ["git-no-encontrado"], parametros: base.parametros },
+    });
+  });
+
+  test("Q-1 rechaza parametros ausentes, vacios o con tipo invalido como almacen-sin-esquema", () => {
+    const { hogar: _, ...sinHogar } = base.parametros;
+    const { worktree: __, ...sinWorktree } = base.parametros;
+    for (const parametros of [
+      sinHogar,
+      sinWorktree,
+      { ...base.parametros, hogar: "" },
+      { ...base.parametros, data: 123 as unknown as string },
+      {} as Record<string, string>,
+      null as unknown as Record<string, string>,
+    ]) {
+      expect(restaurarContextoOpenCode({ ...base, parametros }, entorno)).toMatchObject({
+        exito: false,
+        error: { categoria: "uso", codigo: "almacen-sin-esquema" },
+      });
+    }
+    expect(restaurarContextoOpenCode({ ...base, proyecto: "" }, entorno)).toMatchObject({
+      exito: false,
+      error: { categoria: "uso", codigo: "almacen-sin-esquema" },
+    });
+    expect(restaurarContextoOpenCode({ ...base, declaraciones: [1 as unknown as string] }, entorno)).toMatchObject({
+      exito: false,
+      error: { categoria: "uso", codigo: "almacen-sin-esquema" },
+    });
   });
 });

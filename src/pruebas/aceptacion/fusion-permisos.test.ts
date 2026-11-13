@@ -1,9 +1,12 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { borrarTemporal } from "../utilidades/borrar-temporal";
 import { copiarEscenario } from "../utilidades/escenario";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
+import { consultarPermiso } from "../../paquetes/rige/aplicacion/casos-uso/consultar-permiso";
 import { consultarValores } from "../../paquetes/rige/aplicacion/casos-uso/consultar-valores";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
 import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
@@ -64,3 +67,196 @@ describe("K-5 RF-01", () => { describe("T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2", 
     expect(resumenes()).toEqual(antes);
   });
 }); });
+
+function prepararArchivos(capas: { global?: string; proyecto?: string }) {
+  const raiz = realpathSync.native(mkdtempSync(join(tmpdir(), "rige-t602-")));
+  limpiezas.push(() => borrarTemporal(raiz));
+  const hogar = join(raiz, "hogar");
+  const proyecto = join(raiz, "proyecto");
+  const globalJson = join(hogar, ".config/opencode/opencode.json");
+  const proyectoJson = join(proyecto, "opencode.json");
+  mkdirSync(join(hogar, ".config/opencode"), { recursive: true });
+  mkdirSync(join(proyecto, ".git/objects"), { recursive: true });
+  mkdirSync(join(proyecto, ".git/refs"), { recursive: true });
+  writeFileSync(join(proyecto, ".git/HEAD"), "ref: refs/heads/main\n", "utf8");
+  if (capas.global !== undefined) writeFileSync(globalJson, capas.global, "utf8");
+  if (capas.proyecto !== undefined) writeFileSync(proyectoJson, capas.proyecto, "utf8");
+  const variables = {
+    ...crearEntornoAislado(hogar, process.env),
+    XDG_CONFIG_HOME: join(hogar, ".config"),
+    RIGE_ALMACEN: join(raiz, "almacen"),
+    ProgramData: join(raiz, "administrada"),
+  };
+  const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: variables });
+  const dependencias = { adaptador: adaptadorOpenCode, entorno, rutas: entorno };
+  return {
+    globalJson,
+    proyectoJson,
+    globalRef: globalJson.replaceAll("\\", "/"),
+    proyectoRef: proyectoJson.replaceAll("\\", "/"),
+    permiso: (solicitud: { agente: string; sujeto: string; objetivo: string }) =>
+      consultarPermiso(dependencias, { proyecto, ...solicitud }),
+    valores: (agente: string, clave?: string) => consultarValores(dependencias, proyecto, agente, clave),
+  };
+}
+
+function sha256(rutas: readonly string[]) {
+  return rutas.map(ruta => createHash("sha256").update(readFileSync(ruta)).digest("hex"));
+}
+
+describe("T6-02 fusion entre archivos de permission como accion (P-1..P-4, P-6)", () => {
+  test("P-1: proyecto con permission string reemplaza * y conserva bash de global", () => {
+    const escenario = prepararArchivos({
+      global: '{"permission":{"*":"ask","bash":"deny"}}',
+      proyecto: '{"permission":"allow"}',
+    });
+    const antes = sha256([escenario.globalJson, escenario.proyectoJson]);
+
+    const resBash = escenario.permiso({ agente: "build", sujeto: "bash", objetivo: "ls" });
+    expect(resBash.exito).toBe(true);
+    if (!resBash.exito) throw new Error(resBash.error.mensaje);
+    expect(resBash.valor.decision).toBe("deny");
+    expect(resBash.valor.cadena.find(r => r.indice === resBash.valor.determinante)).toMatchObject({
+      sujeto: "bash",
+      patron: "*",
+      efecto: "deny",
+      declaracion: { via: "global", referencia: escenario.globalRef },
+    });
+
+    const resEdit = escenario.permiso({ agente: "build", sujeto: "edit", objetivo: "a.ts" });
+    expect(resEdit.exito).toBe(true);
+    if (!resEdit.exito) throw new Error(resEdit.error.mensaje);
+    expect(resEdit.valor.decision).toBe("allow");
+    expect(resEdit.valor.cadena.find(r => r.indice === resEdit.valor.determinante)).toMatchObject({
+      sujeto: "*",
+      patron: "*",
+      efecto: "allow",
+      declaracion: { via: "proyecto", referencia: escenario.proyectoRef },
+    });
+    expect(sha256([escenario.globalJson, escenario.proyectoJson])).toEqual(antes);
+  });
+
+  test("P-2: permission string en global anula la proteccion nativa de explore", () => {
+    const escenario = prepararArchivos({
+      global: '{"permission":"allow"}',
+      proyecto: '{"permission":{"bash":"deny"}}',
+    });
+    const resEdit = escenario.permiso({ agente: "explore", sujeto: "edit", objetivo: "a.ts" });
+    expect(resEdit.exito).toBe(true);
+    if (!resEdit.exito) throw new Error(resEdit.error.mensaje);
+    expect(resEdit.valor.decision).toBe("allow");
+    expect(resEdit.valor.advertencias).toContain("proteccion-nativa-anulada");
+    const determinante = resEdit.valor.determinante;
+    expect(determinante).not.toBeNull();
+    if (determinante === null) throw new Error("Se esperaba determinante");
+    expect(resEdit.valor.nativaAnulada).not.toBeNull();
+    expect(resEdit.valor.nativaAnulada!.por).toBe(determinante);
+    expect(resEdit.valor.cadena.find(r => r.indice === determinante)).toMatchObject({
+      sujeto: "*",
+      patron: "*",
+      efecto: "allow",
+      declaracion: { via: "global", referencia: escenario.globalRef },
+    });
+    expect(resEdit.valor.cadena.find(r => r.indice === resEdit.valor.nativaAnulada!.regla)).toMatchObject({
+      sujeto: "*",
+      patron: "*",
+      efecto: "deny",
+      origen: { tipo: "nativo" },
+    });
+
+    const resBash = escenario.permiso({ agente: "explore", sujeto: "bash", objetivo: "ls" });
+    expect(resBash.exito).toBe(true);
+    if (!resBash.exito) throw new Error(resBash.error.mensaje);
+    expect(resBash.valor.decision).toBe("deny");
+    expect(resBash.valor.cadena.find(r => r.indice === resBash.valor.determinante)).toMatchObject({
+      sujeto: "bash",
+      declaracion: { via: "proyecto", referencia: escenario.proyectoRef },
+    });
+  });
+
+  test("P-3: un solo archivo con permission string decide y localiza la clave", () => {
+    const escenario = prepararArchivos({
+      proyecto: '{\n  "permission": "ask"\n}',
+    });
+    const res = escenario.permiso({ agente: "build", sujeto: "edit", objetivo: "a.ts" });
+    expect(res.exito).toBe(true);
+    if (!res.exito) throw new Error(res.error.mensaje);
+    expect(res.valor.decision).toBe("ask");
+    expect(res.valor.cadena.find(r => r.indice === res.valor.determinante)).toMatchObject({
+      sujeto: "*",
+      patron: "*",
+      efecto: "ask",
+      origen: { tipo: "declarado", posicion: { linea: 2, columna: 3 } },
+      declaracion: {
+        via: "proyecto",
+        referencia: escenario.proyectoRef,
+        localizacion: `${escenario.proyectoRef}:2:3`,
+      },
+    });
+  });
+
+  test("P-4: fusiona permission string y objeto de agente entre archivos en orden de fusion", () => {
+    const escenario = prepararArchivos({
+      global: '{"agent":{"build":{"permission":"deny"}}}',
+      proyecto: '{"agent":{"build":{"permission":{"read":"allow"}}}}',
+    });
+    const resBash = escenario.permiso({ agente: "build", sujeto: "bash", objetivo: "ls" });
+    expect(resBash.exito).toBe(true);
+    if (!resBash.exito) throw new Error(resBash.error.mensaje);
+    expect(resBash.valor.decision).toBe("deny");
+    expect(resBash.valor.cadena.find(r => r.indice === resBash.valor.determinante)).toMatchObject({
+      sujeto: "*",
+      patron: "*",
+      efecto: "deny",
+      declaracion: { via: "global", referencia: escenario.globalRef },
+    });
+
+    const resRead = escenario.permiso({ agente: "build", sujeto: "read", objetivo: "a.ts" });
+    expect(resRead.exito).toBe(true);
+    if (!resRead.exito) throw new Error(resRead.error.mensaje);
+    expect(resRead.valor.decision).toBe("allow");
+    expect(resRead.valor.cadena.filter(r => r.origen.tipo === "declarado")).toMatchObject([
+      { sujeto: "*", patron: "*", efecto: "deny", declaracion: { via: "global", referencia: escenario.globalRef } },
+      { sujeto: "read", patron: "*", efecto: "allow", declaracion: { via: "proyecto", referencia: escenario.proyectoRef } },
+    ]);
+  });
+
+  test("P-6: consulta de valores proyecta permission.* y desplaza la posicion de global", () => {
+    const escenario = prepararArchivos({
+      global: '{"agent":{"build":{"permission":"ask"}}}',
+      proyecto: '{\n  "agent": {\n    "build": {\n      "permission": "deny"\n    }\n  }\n}',
+    });
+    const antes = sha256([escenario.globalJson, escenario.proyectoJson]);
+    const todos = escenario.valores("build");
+    expect(todos.exito).toBe(true);
+    if (!todos.exito) throw new Error(todos.error.mensaje);
+    const permiso = todos.valor.valores.find(v => v.clave === "permission.*");
+    expect(permiso).toMatchObject({
+      clave: "permission.*",
+      rastro: {
+        ruta: ["agent", "build", "permission", "*"],
+        valor: "deny",
+        determinante: {
+          via: "proyecto",
+          referencia: escenario.proyectoRef,
+          localizacion: `${escenario.proyectoRef}:4:7`,
+          origen: { tipo: "declarado", posicion: { linea: 4, columna: 7 } },
+          valor: "deny",
+        },
+        desplazadas: [{
+          via: "global",
+          referencia: escenario.globalRef,
+          localizacion: `${escenario.globalRef}:1:20`,
+          origen: { tipo: "declarado", posicion: { linea: 1, columna: 20 } },
+          valor: "ask",
+        }],
+      },
+    });
+
+    const puntual = escenario.valores("build", "permission.*");
+    expect(puntual.exito).toBe(true);
+    if (!puntual.exito) throw new Error(puntual.error.mensaje);
+    expect(puntual.valor.valores).toEqual([permiso!]);
+    expect(sha256([escenario.globalJson, escenario.proyectoJson])).toEqual(antes);
+  });
+});

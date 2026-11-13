@@ -2945,6 +2945,142 @@
           "fuente": "captura-compatible/derivacion-documentada/sin-evidencia"
         }
       ]
+    },
+    {
+      "id": "v6-permiso-cadena-fusion",
+      "entradas": {
+        "hogar/.config/opencode/opencode.json": "9eea29d957f22f9c51450b61114038fb14a63296712e79dd7295a25157d4f496",
+        "proyecto/opencode.json": "58aee6cf13f1f33319f0079021ae610d93080e68a9417183ab31f3911f73daa3"
+      },
+      "referencia": "ab646e843610f9befed9717748a174abcdc313c2cb68378dfa1644d607db9161",
+      "agentes": [
+        "build",
+        "plan",
+        "general",
+        "explore"
+      ],
+      "claves": [
+        "permission"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v6-clave-duplicada",
+      "entradas": {
+        "proyecto/opencode.json": "e80d4ab7f0eb685ed014958788ed228751cd7839a72d51a5c1701dcd0baaed82"
+      },
+      "referencia": "0b7e0f77079e8d91107a32835fec6707b5001ce55b0158a66ce0508c1cfe011a",
+      "agentes": [
+        "build",
+        "plan",
+        "general",
+        "explore"
+      ],
+      "claves": [
+        "permission"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-02 CA-2",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02",
+          "archivo": "pruebas/aceptacion/RF-02.test.ts",
+          "describe": "RF-02 CA-2 (cadena)",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v6-bom-vacio",
+      "entradas": {
+        "hogar/.config/opencode/opencode.json": "561053b8a09edd868dcd478fc782ab1882be3a854a3128b5e19252b0dbb4b9b4",
+        "proyecto/opencode.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "referencia": "868168d0cefa70a445bca0cebac66a9035f69bc1b95047a5fb24480f7996030b",
+      "agentes": [
+        "build"
+      ],
+      "claves": [
+        "temperature"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-06 CA-1",
+          "archivo": "pruebas/aceptacion/RF-06.test.ts",
+          "describe": "RF-06 CA-1",
+          "fuente": "referencia-binario"
+        },
+        {
+          "item": "RNF-02 CA-1",
+          "archivo": "pruebas/aceptacion/RNF-02.test.ts",
+          "describe": "RNF-02 CA-1 T3-04 R-10 T5-04 W-3",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v6-plurales-v2",
+      "entradas": {
+        "proyecto/opencode.json": "93896fbc41ed31749fc98c2847e0aee0c22bd700f674ce3128499a6d7a835bee"
+      },
+      "referencia": "b226a529e25684d3cbc027bf287744110d14fc73c20fd337f00abfe4af75f7bf",
+      "agentes": [
+        "plan",
+        "rev",
+        "build"
+      ],
+      "claves": [
+        "model"
+      ],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-16 CA-2",
+          "archivo": "pruebas/aceptacion/RF-16.test.ts",
+          "describe": "RF-16 CA-2",
+          "fuente": "referencia-binario"
+        }
+      ]
+    },
+    {
+      "id": "v6-config-invalida",
+      "entradas": {
+        "proyecto/opencode.json": "0df77a7158467733823be62f1ee787074838525cc273869469c94382cf89eaf2"
+      },
+      "referencia": "aee10c1f0a344b095859efa3d0efe1c5b5815c7e96a2982725f9ca00e1806224",
+      "agentes": [
+        "build"
+      ],
+      "claves": [],
+      "consultas": [],
+      "comprobaciones": [
+        {
+          "item": "RF-07 CA-1",
+          "archivo": "pruebas/aceptacion/RF-07.test.ts",
+          "describe": "T3-05 R-9 completitud",
+          "fuente": "referencia-binario"
+        }
+      ]
     }
   ],
   "defectosSembrados": [

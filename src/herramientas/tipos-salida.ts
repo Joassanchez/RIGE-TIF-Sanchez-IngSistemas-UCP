@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 
 type Esquema = { readonly [clave: string]: any };
-const nombres = ["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos", "error", "advertencia", "tiempos", "comparacion", "proyectos-recientes"] as const;
+const nombres = ["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos", "error", "advertencia", "tiempos", "comparacion", "proyectos-recientes", "historial-proyecto"] as const;
 
 export async function generarTiposSalida(): Promise<string> {
   let salida = "// Generado desde esquemas/salida/*.json; no editar.\n// Comando: bun herramientas/tipos-salida.ts\n\n";
