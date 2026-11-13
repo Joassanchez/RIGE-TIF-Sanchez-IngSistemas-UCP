@@ -6,13 +6,14 @@ import type { DependenciasAnalisis } from "./analizar-proyecto";
 import { consultarPermiso } from "./consultar-permiso";
 import { consultarAgentes } from "./consultar-agentes";
 import { consultarReglas } from "./consultar-reglas";
+import { esIdResolucion } from "./id-resolucion";
 
 function sobreGuardada<T>(dependencias: DependenciasAnalisis & { readonly resoluciones: PuertoResoluciones }, id: string,
   consultar: (dependencias: DependenciasAnalisis, proyecto: string) => Resultado<T, ErrorUso>): Resultado<T, ErrorUso> {
-  const numero = Number(id);
-  if (!id || /[^0-9]/.test(id) || !Number.isSafeInteger(numero) || numero <= 0) {
+  if (!esIdResolucion(id)) {
     return { exito: false, error: errorSolicitudInvalida("el id debe ser un entero positivo en decimal") };
   }
+  const numero = Number(id);
   const guardada = dependencias.resoluciones.leer(numero);
   if (!guardada.exito) return guardada;
   const { resolucion } = guardada.valor;

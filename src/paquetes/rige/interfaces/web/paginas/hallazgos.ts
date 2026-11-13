@@ -1,7 +1,7 @@
 import { comandoCli } from "../comando-cli";
 import { consultaPanel, selectorAgente, type ContextoPanel } from "../panel";
 import { concordar } from "../textos";
-import type { RespuestaHallazgos } from "../../../aplicacion/respuestas/hallazgos";
+import type { RespuestaHallazgos } from "../../../aplicacion/respuestas/contrato-generado";
 import { datosRespuesta, html } from "../plantillas";
 import { declaraciones, diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";

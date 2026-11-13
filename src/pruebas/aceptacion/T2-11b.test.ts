@@ -5,7 +5,7 @@ import { prepararConsultas } from "../utilidades/consultas-cli";
 import { consultarCadenas } from "../utilidades/cadenas";
 
 for (const [id, clave, valor] of [["B-1", "mode", "foo"], ["B-2", "hidden", "si"], ["B-2 disable", "disable", "si"]] as const) {
-  describe(`T2-11b ${id}`, () => {
+  describe(`RF-05 T2-11b ${id}`, () => {
     test("las tres consultas rechazan metadatos invalidos como error de uso ubicado", () => {
       const copia = prepararConsultas();
       try {
@@ -34,18 +34,20 @@ describe("RF-02 CA-9 (worktrees anidados)", () => {
   }
 });
 
-test("T2-11b N-1 numeracion declarada siempre; references/reference advierten", () => {
-  const copia = prepararConsultas();
-  try {
-    for (const clave of [undefined, "references", "reference"]) {
-      writeFileSync(join(copia.proyecto, "opencode.json"), JSON.stringify(clave ? { [clave]: [] } : {}));
-      const salida = copia.consultar("permiso", ["--agente", "build", "--sujeto", "read", "--objetivo", "a"]);
-      expect(salida.codigo).toBe(0);
-      const respuesta = JSON.parse(salida.salida);
-      expect(respuesta.declaraciones).toContain("numeracion-sin-directorios-externos");
-      expect(respuesta.reglas["numeracion-sin-directorios-externos"])
-        .toBe("Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.");
-      expect(respuesta.advertencias.includes("references-no-incorporado")).toBe(clave !== undefined);
-    }
-  } finally { copia.borrar(); }
+describe("RF-02 CA-5 / RF-05 (numeracion y references)", () => {
+  test("T2-11b N-1 numeracion declarada siempre; references/reference advierten", () => {
+    const copia = prepararConsultas();
+    try {
+      for (const clave of [undefined, "references", "reference"]) {
+        writeFileSync(join(copia.proyecto, "opencode.json"), JSON.stringify(clave ? { [clave]: [] } : {}));
+        const salida = copia.consultar("permiso", ["--agente", "build", "--sujeto", "read", "--objetivo", "a"]);
+        expect(salida.codigo).toBe(0);
+        const respuesta = JSON.parse(salida.salida);
+        expect(respuesta.declaraciones).toContain("numeracion-sin-directorios-externos");
+        expect(respuesta.reglas["numeracion-sin-directorios-externos"])
+          .toBe("Los índices no cuentan las reglas external_directory que OpenCode agrega por cada skill o referencia instalada.");
+        expect(respuesta.advertencias.includes("references-no-incorporado")).toBe(clave !== undefined);
+      }
+    } finally { copia.borrar(); }
+  });
 });

@@ -1,6 +1,7 @@
 import { fechaLocal, nombreAnalisis } from "../textos";
 import { html } from "../plantillas";
 import { describe, expect, test } from "bun:test";
+import { estilos } from "../estilos";
 import type { RespuestaValores, DeclaracionUbicada } from "../../../aplicacion/respuestas/valores";
 import { versionRige } from "../../../aplicacion/respuestas/estado";
 import { seccionHtml, textoHtml } from "../../../../../pruebas/utilidades/html";
@@ -187,5 +188,154 @@ describe("T5-08-c1 C3 C4 determinante y plantillas de reglas", () => {
     expect(tabla.match(/<details class="regla-detalle">/g)).toHaveLength(2);
     expect(tabla.match(/<p>Regla &lt;sin código&gt;\.<\/p>/g)).toHaveLength(2);
     expect(tabla).not.toContain('id="leyenda-reglas"');
+  });
+});
+
+describe("Resolución del agente: pulido visual, orden y controles", () => {
+  const sinJson = (s: string) => s.replace(/<script[^]*?<\/script>/g, "");
+  const json = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
+  const bloque = (cuerpo: string, id: string) => cuerpo.split(`id="${id}"`)[1]!.split("</section>")[0]!;
+  const css = (selector: string) => [...estilos.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    .filter(([, selectores]) => selectores!.split(",").some(s => s.trim() === selector)).map(m => m[2]).join("\n");
+
+  test("T5-21 F-6 entradas de la foto dentro de consola y sin accion repetida", async () => {
+    const { paginaResolucion } = await import("./resolucion");
+    const valoresF6: RespuestaValores = { ...respuesta(), valores: [] };
+    const fotoF6 = { id: 7, instante: "2026-11-11T12:00:00Z", anteriores: [] };
+    const s = sinJson(await paginaResolucion(valoresF6, fotoF6).text());
+    expect(s).not.toContain("Ver entradas actuales");
+    expect(s.split('<details id="comando-cli">')[0]).not.toContain('id="entradas-leidas"');
+    expect(s.split('<details id="comando-cli">')[1]).toContain('id="entradas-leidas"');
+  });
+
+  test("T5-15 Z-1 un campo visible y estado", async () => {
+    const { paginaResolucion } = await import("./resolucion");
+    const valoresZ1: RespuestaValores = { ...respuesta(), agente: "build", ruta: null, motivo: null, noResueltas: [],
+      valores: [{ clave: "temperature", rastro: { ruta: ["temperature"], indiceFusion: 0, valor: 0.3,
+        determinante: { valor: 0.3, origen: { tipo: "nativo", regla: "nativa" }, via: null, referencia: null, regla: "nativa" }, desplazadas: [], motivo: "nativo" } }] };
+    const sobreZ1 = { id: 7, instante: "2026-11-10T12:00:00Z", anteriores: [] };
+    const contextoZ1 = { idResolucion: 7, agente: "build", agentes: [{ nombre: "build" }], clave: "temperature", q: "TEMP" };
+    const cuerpo = await paginaResolucion(valoresZ1, sobreZ1, contextoZ1).text();
+    expect(cuerpo).not.toContain("Consulta exacta (avanzada)");
+    expect(cuerpo).not.toContain('id="consultar-clave"');
+    expect(cuerpo).toContain('name="q" value="TEMP"');
+    expect(cuerpo).toContain('type="hidden" name="clave" value="temperature"');
+    expect(cuerpo).not.toMatch(/<input(?![^>]*type="hidden")[^>]*name="clave"/);
+    expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
+    expect(json(cuerpo)).toEqual(valoresZ1);
+  });
+
+  test("T5-15 Z-2 orden de la pagina del agente", async () => {
+    const { paginaResolucion } = await import("./resolucion");
+    const valoresZ2: RespuestaValores = { ...respuesta(), agente: "build", declaraciones: ["nota"], reglas: { nota: "Nota del análisis" } };
+    const sobreZ2 = { id: 7, instante: "2026-11-10T12:00:00Z", anteriores: [] };
+    const contextoZ2 = { idResolucion: 7, agente: "build", agentes: [{ nombre: "build" }], clave: "temperature", q: "TEMP" };
+    const cuerpo = await paginaResolucion(valoresZ2, sobreZ2, contextoZ2).text();
+    const posiciones = ['id="resumen-resolucion"', 'id="seleccionar-agente"', 'id="declaraciones"', 'id="valores"', 'id="filtrar-claves"'].map(s => cuerpo.indexOf(s));
+    expect(posiciones.every(p => p >= 0)).toBe(true);
+    expect(posiciones).toEqual([...posiciones].sort((a, b) => a - b));
+  });
+
+  test("T5-15 Z-3 instante unico", async () => {
+    const { paginaResolucion } = await import("./resolucion");
+    const valoresZ3 = { ...respuesta(), proyecto: "/proyecto" };
+    const sobreZ3 = { id: 7, instante: "2026-11-10T12:00:00Z", anteriores: [] };
+    const resumen = seccionHtml(await paginaResolucion(valoresZ3, sobreZ3).text(), "resumen-resolucion");
+    expect(resumen).toContain(nombreAnalisis(valoresZ3.proyecto, sobreZ3.instante));
+    expect(resumen.split(fechaLocal(sobreZ3.instante))).toHaveLength(2);
+    expect(resumen).not.toMatch(/<dt>Instante/);
+  });
+
+  test("T5-22 B-2 valores largos contenidos en su celda sin perder contenido", async () => {
+    const { paginaResolucion } = await import("./resolucion");
+    const origenB2 = { tipo: "declarado" as const, orden: 0, posicion: { linea: 2, columna: 3 } };
+    const valoresB2: RespuestaValores = { ...respuesta(), agente: "build", ruta: null, motivo: null, noResueltas: [],
+      valores: [{ clave: "description", rastro: { ruta: ["description"], indiceFusion: 0, valor: "texto".repeat(150), motivo: "ultima", desplazadas: [],
+        determinante: { valor: "texto".repeat(150), referencia: "/p/opencode.json", via: "proyecto", regla: "ultima", origen: origenB2 } } }] };
+    const fotoB2 = { id: 7, instante: "2026-11-11T12:00:00Z", anteriores: [] };
+    const s = await paginaResolucion(valoresB2, fotoB2).text();
+    expect(s).toContain('class="tabla-tarjetas tabla-valores"');
+    expect(s).toContain("texto".repeat(150));
+    expect(css(".tabla-valores")).toMatch(/table-layout:\s*fixed/);
+    expect(css(".tabla-valores td")).toMatch(/overflow-wrap:\s*anywhere/);
+    for (const selector of ["code", ".ruta", ".ruta__segmento"]) expect(css(selector)).toMatch(/overflow-wrap:\s*anywhere/);
+  });
+
+  describe("U-6 a U-9", () => {
+    const determinanteU = { valor: 0.3, referencia: "/mi-proyecto/opencode.json", via: "proyecto", regla: "ultima",
+      origen: { tipo: "declarado" as const, orden: 1, posicion: { linea: 5, columna: 7 } } };
+    const valorU = (clave: string, tipo: "declarado" | "implicito" | "nativo") => ({ clave, rastro: {
+      ruta: [clave], indiceFusion: 0, valor: 0.3, motivo: "ultima", desplazadas: tipo === "declarado" ? [{ ...determinanteU, valor: 0.2 }] : [],
+      determinante: tipo === "declarado" ? determinanteU : { ...determinanteU, referencia: null, via: null,
+        origen: { tipo, regla: tipo === "implicito" ? "valor-implicito-del-agente" : "nativa" } },
+    } });
+    const valoresU: RespuestaValores = { ...respuesta(), proyecto: "/mi-proyecto", agente: "build", ruta: null, motivo: null, noResueltas: [],
+      valores: [valorU("zeta", "declarado"), valorU("beta", "nativo"), valorU("alfa", "declarado"), valorU("delta", "implicito")],
+      reglas: { "orden-de-aplicacion": "La última declaración prevalece.", "valor-implicito-del-agente": "Explicación implícita.", ultima: "Regla última." } };
+    const sobreU = { id: 7, instante: "2026-11-11T12:00:00Z", anteriores: [{ id: 7, instante: "2026-11-11T12:00:00Z", resumenEntradas: "a".repeat(64) }] };
+    const agentesU = [{ nombre: "build", modo: "primary", origen: "nativo" as const, oculto: false }];
+    const reglasU = { ...respuesta(), agente: "build", cadena: [], ejesParciales: [], advertencias: [],
+      reglas: { parcial: "Aprobaciones permanentes no observadas.", indices: "Índices desde 1.", ejecucion: "No reproduce opencode run.", "eje-parcialmente-observado": "El objetivo concreto requiere consulta." },
+      matriz: { sujetos: ["read", "external_directory"], motivos: ["indices"], noObservados: [], filas: [{ agente: "build", oculto: false, error: null,
+        ejesParciales: ["external_directory"], declaraciones: ["parcial"], advertencias: ["ejecucion"], celdas: [
+          { sujeto: "read", efecto: "allow", prevalece: 1, motivo: null },
+          { sujeto: "external_directory", efecto: null, prevalece: null, motivo: "eje-parcialmente-observado" },
+        ] }] } };
+    const agenteFn = async (q = "") => {
+      const { paginaResolucion } = await import("./resolucion");
+      return paginaResolucion(valoresU, sobreU, { agentes: agentesU, agente: "build", q, lanzadoPor: "plan" }, { agente: agentesU[0]!, reglas: reglasU }).text();
+    };
+
+    test("U-6 selector junto a identidad y buscador lineal sin tarjeta ni ayuda visible", async () => {
+      const cuerpo = await agenteFn();
+      expect(cuerpo).toMatch(/class="barra-agente">[^]*?class="identidad-agente"[^]*?id="seleccionar-agente"[^]*?<\/form>\s*<\/div>/);
+      expect(cuerpo).toMatch(/<form id="filtrar-claves" class="barra-busqueda"[^]*?title="Filtra solo las filas visibles; no cambia la consulta ni su JSON\."/);
+      expect(cuerpo).not.toContain('id="ayuda-filtro"');
+      expect(css(".barra-agente .selector-agente")).toContain("border: 0");
+      expect(css(".barra-busqueda")).toContain("display: flex");
+      expect(css(".barra-agente")).toContain("flex-direction: column");
+    });
+
+    test("U-7 declaradas ordenadas primero; fábrica cerrada, una insignia y una explicación común", async () => {
+      const { paginaResolucion } = await import("./resolucion");
+      const cuerpo = await agenteFn();
+      const visibles = bloque(sinJson(cuerpo), "valores");
+      const fabrica = visibles.split('<details id="valores-fabrica"><summary>Valores de fábrica (2)</summary>');
+      expect(fabrica).toHaveLength(2);
+      expect(fabrica[0]!.indexOf('data-etiqueta="Clave">alfa')).toBeLessThan(fabrica[0]!.indexOf('data-etiqueta="Clave">zeta'));
+      expect(fabrica[0]).not.toContain('data-etiqueta="Clave">beta');
+      expect(fabrica[1]!.indexOf('data-etiqueta="Clave">beta')).toBeLessThan(fabrica[1]!.indexOf('data-etiqueta="Clave">delta'));
+
+      const fila = fabrica[1]!.match(/<tr>[^]*?data-etiqueta="Clave">delta[^]*?<\/tr>/)![0]!;
+      expect(fila.match(/>implícito<\/span>/g)).toHaveLength(1);
+      expect(fila).toContain('title="valor-implicito-del-agente"');
+      expect(fila).not.toContain("Valor implícito");
+      expect(cuerpo.match(/<summary>¿Qué significa\?<\/summary>/g)).toHaveLength(1);
+      expect(cuerpo).not.toContain("<summary>Cómo se decide</summary>");
+      expect(cuerpo).toContain("Explicación implícita.");
+      const filtrado = await agenteFn("DELTA");
+      expect(filtrado).toContain("Valores de fábrica (1)");
+      expect(JSON.parse(filtrado.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(valoresU);
+      const sinPlantillas = sinJson(await paginaResolucion({ ...valoresU, reglas: {}, valores: [valorU("delta", "implicito")] }, sobreU).text());
+      expect(sinPlantillas.replace(/title="[^"]*"/g, "")).not.toContain("ultima");
+    });
+
+    test("U-8 desplazadas en líneas sin numeración con valor y ubicación juntos", async () => {
+      const desplazadas = (await agenteFn()).match(/data-etiqueta="Desplazadas">([^]*?)<\/td>/)![1]!;
+      expect(desplazadas).not.toMatch(/<ol|<li/);
+      expect(desplazadas).toContain('<del class="valor-desplazado">0.2</del> · Proyecto ·');
+      expect(css(".valor-desplazado")).not.toContain("display: block");
+    });
+
+    test("U-9 sujetos en cuadrícula, índice en title, leyenda parcial y límites unificados", async () => {
+      const permisos = bloque(await agenteFn(), "permisos-agente");
+      const celdas = permisos.split('class="sujetos-permiso"')[1]!.split("</dl>")[0]!;
+      expect(celdas).toContain('title="Regla 1"');
+      expect(celdas).not.toContain("<p");
+      expect(celdas).toContain(">parcial</span>");
+      expect(permisos).toContain('class="leyenda-parcial"');
+      expect(permisos).toContain('<details><summary>Límites del análisis</summary>');
+      for (const texto of ["Aprobaciones permanentes", "Índices desde 1", "opencode run"]) expect(permisos.split("Límites del análisis")[1]).toContain(texto);
+    });
   });
 });

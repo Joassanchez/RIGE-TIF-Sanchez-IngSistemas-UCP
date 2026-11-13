@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { PuertoAlmacen } from "../puertos/almacen";
-import { errorAlmacenSinEsquema } from "../errores";
-import { consultarEstado } from "./consultar-estado";
+import { errorAlmacenSinEsquema, errorConfiguracionInvalida } from "../errores";
+import { consultarEstado, describirAlmacen } from "./consultar-estado";
 import { prepararAlmacen } from "./preparar-almacen";
 import { versionRige } from "../respuestas/estado";
 
@@ -55,5 +55,49 @@ describe("E-4", () => {
       preparar: () => ({ exito: true, valor: estado }),
     };
     expect(consultarEstado(almacen)).toEqual(prepararAlmacen(almacen));
+  });
+});
+
+describe("S-7", () => {
+  test("describirAlmacen: inexistente -> existe false, sin esquema -> versionEsquema null, otro error se propaga", () => {
+    const ruta = "/temporal/rige.db";
+    const almacenNoLlamado: PuertoAlmacen = {
+      consultar: () => { throw new Error("No debe consultar si no existe"); },
+      preparar: () => { throw new Error("No debe preparar"); },
+    };
+    const inexistente = describirAlmacen(almacenNoLlamado, { ruta, existe: () => false });
+    expect(inexistente).toEqual({
+      exito: true,
+      valor: { esquema: 2, almacen: { ruta, existe: false, versionEsquema: null } },
+    });
+
+    const almacenSinEsquema: PuertoAlmacen = {
+      consultar: () => ({ exito: false, error: errorAlmacenSinEsquema }),
+      preparar: () => { throw new Error("No debe preparar"); },
+    };
+    const sinEsquema = describirAlmacen(almacenSinEsquema, { ruta, existe: () => true });
+    expect(sinEsquema).toEqual({
+      exito: true,
+      valor: { esquema: 2, almacen: { ruta, existe: true, versionEsquema: null } },
+    });
+
+    const otroError = errorConfiguracionInvalida("RIGE_PUERTO", "abc");
+    const almacenConOtroError: PuertoAlmacen = {
+      consultar: () => ({ exito: false, error: otroError }),
+      preparar: () => { throw new Error("No debe preparar"); },
+    };
+    expect(describirAlmacen(almacenConOtroError, { ruta, existe: () => true })).toEqual({
+      exito: false,
+      error: otroError,
+    });
+
+    const almacenOk: PuertoAlmacen = {
+      consultar: () => ({ exito: true, valor: { ruta, versionEsquema: 2 } }),
+      preparar: () => { throw new Error("No debe preparar"); },
+    };
+    expect(describirAlmacen(almacenOk, { ruta, existe: () => true })).toEqual({
+      exito: true,
+      valor: { esquema: 2, almacen: { ruta, existe: true, versionEsquema: 2 } },
+    });
   });
 });

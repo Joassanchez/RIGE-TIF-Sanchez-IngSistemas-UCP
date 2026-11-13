@@ -7,10 +7,10 @@ import { RelojSistema } from "../adaptadores/sistema/reloj";
 import { AlmacenSqlite, archivoAlmacen } from "../adaptadores/almacen-sqlite/esquema";
 import { RepositorioResolucionesSqlite } from "../adaptadores/almacen-sqlite/resoluciones";
 import { adaptadorOpenCode } from "@rige/opencode/adaptador";
-import { advertidas } from "@rige/opencode/reglas";
+import { advertidas, limitesGenerales } from "@rige/opencode/reglas";
 import { versionSoportada } from "@rige/opencode/descriptor";
 import { prepararAlmacen } from "../aplicacion/casos-uso/preparar-almacen";
-import { consultarEstado } from "../aplicacion/casos-uso/consultar-estado";
+import { consultarEstado, describirAlmacen } from "../aplicacion/casos-uso/consultar-estado";
 import { resolverProyecto } from "../aplicacion/casos-uso/resolver-proyecto";
 import { consultarResolucion } from "../aplicacion/casos-uso/consultar-resolucion";
 import { compararResoluciones } from "../aplicacion/casos-uso/comparar-resoluciones";
@@ -24,8 +24,25 @@ import { consultarEntradas } from "../aplicacion/casos-uso/consultar-entradas";
 import { consultarPermisoGuardado, consultarAgentesGuardados, consultarReglasGuardadas } from "../aplicacion/casos-uso/consultar-guardada";
 import { versionRige } from "../aplicacion/respuestas/estado";
 import { iniciarServidor } from "../interfaces/web/servidor";
-import { ejecutarCli, type Ensamblado } from "../interfaces/cli/ejecutar";
+import { ejecutarCli, type CasosUsoCli } from "../interfaces/cli/ejecutar";
 import type { MedicionAnalisis } from "../aplicacion/casos-uso/analizar-proyecto";
+import type { Resultado } from "@rige/nucleo/resultado";
+import type { ErrorUso } from "../aplicacion/errores";
+
+interface AlmacenCargado {
+  readonly almacen: AlmacenSqlite;
+  readonly resoluciones: RepositorioResolucionesSqlite;
+  readonly existencia: ExistenciaSistema;
+  readonly dependencias: {
+    readonly adaptador: typeof adaptadorOpenCode;
+    readonly entorno: EntornoLecturaSistema;
+    readonly rutas: EntornoLecturaSistema;
+    readonly resoluciones: RepositorioResolucionesSqlite;
+    readonly reloj: RelojSistema;
+  };
+  readonly directorioAlmacen: string;
+  readonly puerto: number;
+}
 
 const configuracion = new ConfiguracionSistema({
   entorno: process.env,
@@ -33,56 +50,69 @@ const configuracion = new ConfiguracionSistema({
   rutaArchivo: resolve(import.meta.dir, "../../../rige.env"),
 });
 
-function ensamblar(comando: string, medicion?: MedicionAnalisis): Ensamblado {
+function ensamblar(medicion?: MedicionAnalisis): CasosUsoCli {
   const entorno = new EntornoLecturaSistema({ entorno: process.env, plataforma: process.platform });
   const consultas = { adaptador: adaptadorOpenCode, entorno, rutas: entorno, medicion };
-  const casosConsulta = {
-    consultarReglas: (solicitud: Parameters<typeof consultarReglas>[1]) => consultarReglas(consultas, solicitud),
-    consultarValores: (proyecto: string, agente: string, clave: string | undefined) => consultarValores(consultas, proyecto, agente, clave),
-    consultarPermiso: (solicitud: Parameters<typeof consultarPermiso>[1]) => consultarPermiso(consultas, solicitud),
-    consultarAgentes: (proyecto: string) => consultarAgentes(consultas, proyecto),
-    consultarEntradas: (proyecto: string) => consultarEntradas(consultas, proyecto),
-    consultarHallazgos: (proyecto: string, opciones?: { readonly explicar?: boolean }) => consultarHallazgos(consultas, proyecto, opciones),
-  };
-  if (["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos"].includes(comando)) {
-    const noEnsamblado = (): never => { throw new Error("Caso ajeno a una consulta en memoria"); };
-    return { exito: true, valor: { ...casosConsulta, prepararAlmacen: noEnsamblado,
-      compararResoluciones: noEnsamblado, consultarProyectosRecientes: noEnsamblado,
-      consultarEstado: noEnsamblado, iniciarServidor: noEnsamblado } };
+
+  let almacenCargado: Resultado<AlmacenCargado, ErrorUso> | undefined;
+
+  function obtenerAlmacen(): Resultado<AlmacenCargado, ErrorUso> {
+    if (almacenCargado !== undefined) return almacenCargado;
+    const resultado = configuracion.leer();
+    if (!resultado.exito) {
+      almacenCargado = resultado;
+      return almacenCargado;
+    }
+    const existencia = new ExistenciaSistema();
+    const almacen = new AlmacenSqlite(resultado.valor.directorioAlmacen, existencia);
+    const resoluciones = new RepositorioResolucionesSqlite(resultado.valor.directorioAlmacen, existencia, versionRige);
+    const dependencias = { adaptador: adaptadorOpenCode, entorno, rutas: entorno, resoluciones, reloj: new RelojSistema() };
+    almacenCargado = {
+      exito: true,
+      valor: {
+        almacen,
+        resoluciones,
+        existencia,
+        dependencias,
+        directorioAlmacen: resultado.valor.directorioAlmacen,
+        puerto: resultado.valor.puerto,
+      },
+    };
+    return almacenCargado;
   }
-  const resultado = configuracion.leer();
-  if (!resultado.exito) return resultado;
-  const almacen = new AlmacenSqlite(resultado.valor.directorioAlmacen, new ExistenciaSistema());
-  const resoluciones = new RepositorioResolucionesSqlite(resultado.valor.directorioAlmacen, new ExistenciaSistema(), versionRige);
-  const dependencias = { adaptador: adaptadorOpenCode, entorno, rutas: entorno, resoluciones, reloj: new RelojSistema() };
+
+  function conAlmacen<T>(f: (a: AlmacenCargado) => Resultado<T, ErrorUso>): Resultado<T, ErrorUso> {
+    const a = obtenerAlmacen();
+    return a.exito ? f(a.valor) : a;
+  }
+
   return {
-    exito: true, valor: {
+    consultarReglas: solicitud => consultarReglas(consultas, solicitud),
+    consultarValores: (proyecto, agente, clave) => consultarValores(consultas, proyecto, agente, clave),
+    consultarPermiso: solicitud => consultarPermiso(consultas, solicitud),
+    consultarAgentes: proyecto => consultarAgentes(consultas, proyecto),
+    consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
+    consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
+    compararResoluciones: (desde, hasta) => conAlmacen(a => compararResoluciones(a.dependencias, desde, hasta)),
+    consultarProyectosRecientes: () => conAlmacen(a => consultarProyectosRecientes(a.resoluciones)),
+    prepararAlmacen: () => conAlmacen(a => prepararAlmacen(a.almacen)),
+    consultarEstado: () => conAlmacen(a => consultarEstado(a.almacen)),
+    describirAlmacen: () => conAlmacen(a => describirAlmacen(a.almacen, {
+      ruta: join(resolve(a.directorioAlmacen), archivoAlmacen).replaceAll("\\", "/"),
+      existe: ruta => a.existencia.existe(ruta),
+    })),
+    iniciarServidor: () => conAlmacen(({ dependencias, resoluciones, almacen, puerto }) => iniciarServidor(puerto, {
       compararResoluciones: (desde, hasta) => compararResoluciones(dependencias, desde, hasta),
       consultarProyectosRecientes: () => consultarProyectosRecientes(resoluciones),
-      consultarReglas: solicitud => consultarReglas(dependencias, solicitud),
-      consultarValores: (proyecto, agente, clave) => consultarValores(dependencias, proyecto, agente, clave),
-      consultarPermiso: solicitud => consultarPermiso(dependencias, solicitud),
-      consultarAgentes: (proyecto) => consultarAgentes(dependencias, proyecto),
+      consultarReglas: (id, solicitud) => consultarReglasGuardadas(dependencias, id, solicitud),
+      consultarEstado: () => consultarEstado(almacen),
+      resolverProyecto: (proyecto, agente) => resolverProyecto(dependencias, proyecto, agente),
+      consultarResolucion: (id, agente, clave) => consultarResolucion(resoluciones, id, agente, clave),
+      consultarPermiso: (id, solicitud) => consultarPermisoGuardado(dependencias, id, solicitud),
+      consultarAgentes: id => consultarAgentesGuardados(dependencias, id),
       consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
       consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
-      prepararAlmacen: () => prepararAlmacen(almacen),
-      consultarEstado: () => comando === "estado" ? consultarEstado(almacen, {
-        ruta: join(resolve(resultado.valor.directorioAlmacen), archivoAlmacen).replaceAll("\\", "/"),
-        existe: ruta => new ExistenciaSistema().existe(ruta),
-      }) : consultarEstado(almacen),
-      iniciarServidor: () => iniciarServidor(resultado.valor.puerto, {
-        compararResoluciones: (desde, hasta) => compararResoluciones(dependencias, desde, hasta),
-        consultarProyectosRecientes: () => consultarProyectosRecientes(resoluciones),
-        consultarReglas: (id, solicitud) => consultarReglasGuardadas(dependencias, id, solicitud),
-        consultarEstado: () => consultarEstado(almacen),
-        resolverProyecto: (proyecto, agente) => resolverProyecto(dependencias, proyecto, agente),
-        consultarResolucion: (id, agente, clave) => consultarResolucion(resoluciones, id, agente, clave),
-        consultarPermiso: (id, solicitud) => consultarPermisoGuardado(dependencias, id, solicitud),
-        consultarAgentes: id => consultarAgentesGuardados(dependencias, id),
-        consultarHallazgos: (proyecto, opciones) => consultarHallazgos(consultas, proyecto, opciones),
-      consultarEntradas: proyecto => consultarEntradas(consultas, proyecto),
-      }, { versionHerramienta: versionSoportada, reloj: dependencias.reloj }),
-    },
+    }, { versionHerramienta: versionSoportada, reloj: dependencias.reloj })),
   };
 }
 
@@ -94,4 +124,4 @@ process.exitCode = ejecutarCli(process.argv.slice(2), ensamblar, {
   carpetaActual: process.cwd(),
   escribirSalida: (texto) => { process.stdout.write(texto); },
   escribirError: (texto) => { process.stderr.write(texto); },
-}, advertidas);
+}, advertidas, limitesGenerales);

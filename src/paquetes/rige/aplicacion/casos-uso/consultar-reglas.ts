@@ -1,10 +1,11 @@
 import type { Cadena } from "@rige/nucleo/resolucion/tipos";
 import type { Resultado } from "@rige/nucleo/resultado";
 import { errorDesdeAnalisis, errorSolicitudInvalida, type ErrorUso } from "../errores";
-import type { RespuestaReglas } from "../respuestas/reglas";
+import type { RespuestaReglas } from "../respuestas/contrato-generado";
 import { versionEsquemaSalida } from "../respuestas/valores";
 import { localizarDeclaracion } from "../respuestas/localizacion";
 import { prepararAnalisis, type DependenciasAnalisis } from "./analizar-proyecto";
+import { plantillasDe } from "./plantillas";
 
 export interface SolicitudReglas { readonly proyecto: string; readonly agente: string; readonly lanzadoPor?: string | undefined }
 
@@ -46,10 +47,7 @@ export function consultarReglas(dependencias: DependenciasAnalisis, solicitud: S
     }
   }
   for (const f of filas) if (f.error === null) for (const c of f.celdas) if (c.motivo !== null) codigos.add(c.motivo);
-  const reglas = Object.fromEntries([...codigos].sort().map(codigo => {
-    if (!Object.hasOwn(adaptador.reglas, codigo)) throw new Error(`Regla sin plantilla: ${codigo}`);
-    return [codigo, adaptador.reglas[codigo]!];
-  }));
+  const reglas = plantillasDe(adaptador, codigos);
   return { exito: true, valor: { esquema: versionEsquemaSalida, proyecto: resolucion.proyecto,
     entradas: resolucion.entradas, resumenEntradas: resolucion.resumenEntradas, agente,
     ...(lanzadoPor === undefined ? {} : { lanzadoPor }), ejesParciales: seleccionada.valor.ejesParciales,

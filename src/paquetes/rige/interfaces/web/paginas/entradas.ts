@@ -1,7 +1,7 @@
 import { mapaVias } from "../componentes-proyecto";
 import { comandoCli } from "../comando-cli";
 import { selectorAgente, type ContextoPanel } from "../panel";
-import type { RespuestaEntradas } from "../../../aplicacion/respuestas/entradas";
+import type { RespuestaEntradas } from "../../../aplicacion/respuestas/contrato-generado";
 import { datosRespuesta, html } from "../plantillas";
 import { declaraciones, diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";

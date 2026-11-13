@@ -5,8 +5,9 @@ import { decidir } from "@rige/nucleo/permisos/decidir";
 import { explicar } from "@rige/nucleo/permisos/explicar";
 import { errorDesdeAnalisis, errorSolicitudInvalida, type ErrorUso } from "../errores";
 import { versionEsquemaSalida } from "../respuestas/valores";
-import type { RespuestaPermiso } from "../respuestas/permiso";
+import type { RespuestaPermiso } from "../respuestas/contrato-generado";
 import { prepararAnalisis, type DependenciasAnalisis } from "./analizar-proyecto";
+import { plantillasDe } from "./plantillas";
 
 export type SolicitudConsultaPermiso = SolicitudPermiso & { readonly proyecto: string; readonly agente: string; readonly explicar?: boolean | undefined };
 
@@ -45,10 +46,7 @@ export function consultarPermiso(dependencias: DependenciasAnalisis, solicitud: 
     if (regla.origen.tipo !== "declarado") codigos.add(regla.origen.regla);
     if (regla.declaracion) codigos.add(regla.declaracion.regla);
   }
-  const reglas = Object.fromEntries([...codigos].sort().map(codigo => {
-    if (!Object.hasOwn(adaptador.reglas, codigo)) throw new Error(`Regla sin plantilla: ${codigo}`);
-    return [codigo, adaptador.reglas[codigo]!];
-  }));
+  const reglas = plantillasDe(adaptador, codigos);
   return { exito: true, valor: {
     esquema: versionEsquemaSalida, proyecto: resolucion.proyecto,
     entradas: resolucion.entradas, resumenEntradas: resolucion.resumenEntradas,

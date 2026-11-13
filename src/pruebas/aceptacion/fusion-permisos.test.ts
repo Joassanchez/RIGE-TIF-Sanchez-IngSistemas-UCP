@@ -25,7 +25,7 @@ function preparar() {
   return { ...escenario, consultar, global, proyectoJson: join(escenario.proyecto, "opencode.json") };
 }
 
-describe("K-5", () => { describe("T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2", () => {
+describe("K-5 RF-01", () => { describe("T2-04 F-1 F-3 F-4 F-5 RF-01 CA-1 CA-2", () => {
   test("valores en memoria conserva fusion, orden, procedencia y entradas", () => {
     const escenario = preparar();
     const resumenes = () => [escenario.global, escenario.proyectoJson].map(r => createHash("sha256").update(readFileSync(r)).digest("hex"));

@@ -17,7 +17,7 @@ function resolver(caso: typeof casos[number]) {
     "ultima", "global", `v5-worktree-${caso.caso}`, { git: caso.git });
 }
 
-describe("T5-06c A-c1 declaracion estructurada independiente de la decision", () => {
+describe("RF-07 CA-5 declaracion estructurada independiente de la decision", () => {
   for (const caso of casos) test(`${caso.caso} / read: declaracion de deteccion aproximada`, () => {
     const { respuestas: [respuesta] } = resolver(caso);
     expect(respuesta).toBeDefined();
@@ -28,7 +28,7 @@ describe("T5-06c A-c1 declaracion estructurada independiente de la decision", ()
   });
 });
 
-describe("T5-06c A-c1 A-c2 comparacion nativa sin fallback", () => {
+describe("RNF-02 CA-1 comparacion nativa sin fallback", () => {
   const manifiesto = JSON.parse(readFileSync(join(escenarios, "MANIFIESTO.json"), "utf8")) as Manifiesto;
   for (const caso of casos) {
     const id = `v5-worktree-${caso.caso}`;

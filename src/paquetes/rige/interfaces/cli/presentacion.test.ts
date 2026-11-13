@@ -6,7 +6,7 @@ const no = (): never => { throw new Error("No consultar"); };
 const casos: CasosUsoCli = { compararResoluciones: no, consultarProyectosRecientes: no, consultarReglas: no,
   consultarValores: no, consultarPermiso: no, consultarAgentes: no, consultarEntradas: no, consultarHallazgos: no,
   prepararAlmacen: () => ({ exito: true, valor: { esquema: 2, versionRige, almacen: { ruta: "/datos/rige.db", versionEsquema: 2 } } }),
-  consultarEstado: no, iniciarServidor: no };
+  consultarEstado: no, describirAlmacen: no, iniciarServidor: no };
 
 test("T5-26 U-9 reglas JSON ignora explicar igual que todo", () => {
   const solicitudes: unknown[] = [];
@@ -22,7 +22,7 @@ test("T5-26 U-9 reglas JSON ignora explicar igual que todo", () => {
 });
 function ejecutar(args: string[], presentacion: Partial<CanalesCli> = {}, dobles = casos) {
   let salida = "", error = "", llamadas = 0;
-  const codigo = ejecutarCli(args, () => { llamadas++; return { exito: true, valor: dobles }; }, {
+  const codigo = ejecutarCli(args, () => { llamadas++; return dobles; }, {
     versionHerramienta: "1.18.25", esConsola: false, carpetaActual: "/carpeta actual/proyecto", ...presentacion,
     escribirSalida: t => { salida += t; }, escribirError: t => { error += t; },
   });
@@ -43,8 +43,6 @@ describe("T5-23 L-1 L-5 formato inyectado", () => {
   });
 });
 describe("T5-23 L-6 L-7 precedencia", () => {
-  // argv -> formato/canal/codigo/ensamblado; ayuda gana a opciones invalidas,
-  // salvo formatos excluyentes. Version sin --json siempre es texto, incluso pipe.
   const tabla = [
     { args: [], consola: false, canal: "error", texto: false, codigo: 2 },
     { args: [], consola: true, canal: "error", texto: true, codigo: 2 },
@@ -75,7 +73,7 @@ describe("T5-23 L-6 L-7 precedencia", () => {
     expect(ejecutar(["--version", "--json"]).salida).toBe(JSON.stringify({ esquema: 2, versionRige, versionHerramienta: "1.18.25" }) + "\n");
   });
   test("texto conserva codigo, sugerencia y stack solo con depurar", () => {
-    const almacen = { ...casos, consultarEstado: () => ({ exito: false as const,
+    const almacen = { ...casos, describirAlmacen: () => ({ exito: false as const,
       error: { categoria: "uso" as const, codigo: "almacen-sin-esquema", mensaje: "Falta el almacén." } }) };
     const r = ejecutar(["estado", "--texto"], {}, almacen);
     expect(r.codigo).toBe(1); expect(r.error).toContain("Error: Falta el almacén.");

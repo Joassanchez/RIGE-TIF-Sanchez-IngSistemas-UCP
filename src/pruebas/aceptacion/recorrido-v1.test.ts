@@ -88,7 +88,7 @@ function resumen(cuerpo: string): string {
   return encontrado[1]!;
 }
 
-describe("T5-11 P-1 P-3 resumen del proyecto, foto de agente y entradas actuales", () => {
+describe("RF-01 / RF-17 resumen del proyecto, foto de agente y entradas actuales", () => {
   const preparar = prepararRecorrido();
   test("Analizar sin agente guarda la foto; editar entradas solo cambia las vistas actuales", async () => {
     const recorrido = preparar();
@@ -188,91 +188,6 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
   });
 });
 
-describe("RF-17", () => {
-  const preparar = prepararRecorrido();
-  describe("RF-17 CA-1", () => {
-    test("recupera el mismo cuerpo despues de detener y relanzar el servidor", async () => {
-      const recorrido = preparar();
-      const guardada = await recorrido.resolver();
-      expect(guardada.estado).toBe(303);
-      const ruta = ubicacion(guardada);
-      const antes = await recorrido.solicitar(ruta);
-      expect(antes.estado).toBe(200);
-      await recorrido.reiniciar();
-      const despues = await recorrido.solicitar(ruta);
-      expect(despues.estado).toBe(200);
-      expect(despues.cuerpo).toBe(antes.cuerpo);
-    });
-  });
-
-  describe("RF-17 CA-2", () => {
-    test("una entrada modificada produce otra resolucion y otro resumen sin alterar la anterior", async () => {
-      const recorrido = preparar();
-      const guardada = await recorrido.resolver();
-      expect(guardada.estado).toBe(303);
-      const rutaPrimera = ubicacion(guardada);
-      const primera = await recorrido.solicitar(rutaPrimera);
-      expect(primera.estado).toBe(200);
-      const entrada = join(recorrido.proyecto, "opencode.jsonc");
-      const original = readFileSync(entrada, "utf8");
-      expect(original).toContain('"temperature": 0.3');
-      writeFileSync(entrada, original.replace('"temperature": 0.3', '"temperature": 0.4'));
-      const redireccion = await recorrido.resolver();
-      expect(redireccion.estado).toBe(303);
-      const rutaSegunda = ubicacion(redireccion);
-      expect(rutaSegunda).toMatch(/^\/resoluciones\/\d+\?agente=build&clave=temperature$/);
-      expect(rutaSegunda).not.toBe(rutaPrimera);
-      const segunda = await recorrido.solicitar(rutaSegunda);
-      expect(segunda.estado).toBe(200);
-      comprobarTemperatura(segunda.cuerpo, recorrido.raiz, 0.4);
-      expect(resumen(segunda.cuerpo)).not.toBe(resumen(primera.cuerpo));
-      const recuperada = await recorrido.solicitar(rutaPrimera);
-      expect(recuperada.estado).toBe(200);
-      comprobarTemperatura(recuperada.cuerpo, recorrido.raiz);
-      expect(resumen(recuperada.cuerpo)).toBe(resumen(primera.cuerpo));
-      const resumenProyecto = await recorrido.solicitar(rutaSegunda.split("?")[0]!);
-      for (const ruta of [rutaPrimera, rutaSegunda]) expect(resumenProyecto.cuerpo).toContain(`href="${ruta.split("?")[0]}"`);
-    });
-  });
-
-  describe("RF-17 CA-3", () => {
-    test("retiene las ultimas veinte y deja de recuperar la primera", async () => {
-      const recorrido = preparar();
-      const guardadas: number[] = [];
-      for (let indice = 0; indice < 21; indice++) {
-        const redireccion = await recorrido.resolver();
-        expect(redireccion.estado).toBe(303);
-        const ruta = ubicacion(redireccion);
-        expect(ruta).toMatch(/^\/resoluciones\/\d+\?agente=build&clave=temperature$/);
-        guardadas.push(Number(/^\/resoluciones\/(\d+)/.exec(ruta)![1]));
-      }
-      const ruta = (id: number) => `/resoluciones/${id}`;
-      const ultima = await recorrido.solicitar(ruta(guardadas.at(-1)!));
-      expect(ultima.estado).toBe(200);
-      const historia = seccionHtml(ultima.cuerpo, "historia", "details");
-      const ids = [...historia.matchAll(/href="\/resoluciones\/(\d+)"/g)].map(enlace => Number(enlace[1]));
-      expect(ids).toEqual(guardadas.slice(1).reverse());
-      expect(ids).toHaveLength(20);
-      expect(ids).not.toContain(guardadas[0]!);
-      expect(historia).toContain(`href="/resoluciones/${guardadas.at(-1)}" aria-current="page"`);
-        expect(historia.match(/aria-current="page"/g)).toHaveLength(1);
-        const comparaciones = [...historia.matchAll(/href="\/comparar\?desde=(\d+)&amp;hasta=(\d+)"/g)]
-          .map(enlace => [Number(enlace[1]), Number(enlace[2])]);
-        expect(comparaciones).toEqual(guardadas.slice(2).reverse().map(id => [id - 1, id]));
-      const intermedia = await recorrido.solicitar(ruta(guardadas[10]!));
-      const historialIntermedio = seccionHtml(intermedia.cuerpo, "historia", "details");
-      expect(historialIntermedio).toContain(`href="/resoluciones/${guardadas[10]}" aria-current="page"`);
-      expect(historialIntermedio).toContain("más reciente");
-      expect([...historialIntermedio.matchAll(/href="\/resoluciones\/(\d+)"/g)].map(e => Number(e[1]))).toEqual(ids);
-      const retirada = await recorrido.solicitar(ruta(guardadas[0]!));
-      expect(retirada.estado).toBe(404);
-      expect(retirada.cuerpo).toContain("No encontramos ese análisis en el almacén.");
-      expect(retirada.cuerpo).toContain("resolucion-inexistente");
-      expect((await recorrido.solicitar(ruta(guardadas[1]!))).estado).toBe(200);
-    });
-  });
-});
-
 function arbol(raiz: string, relativo = ""): string[] {
   return readdirSync(join(raiz, relativo), { withFileTypes: true }).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
     .flatMap(entrada => {
@@ -309,8 +224,8 @@ describe("V-7 RNF-09 ADR-062 C7", () => {
   });
 });
 
-describe("Errores de uso por la web", () => {
-  describe("Proyecto inexistente y contenido no soportado", () => {
+describe("RF-03 / RF-05 errores de uso por la web", () => {
+  describe("RF-05 proyecto inexistente y contenido no soportado", () => {
     const preparar = prepararRecorrido();
     test("informa proyecto inexistente y contenido no soportado sin guardar", async () => {
       const recorrido = preparar();
@@ -332,7 +247,7 @@ describe("Errores de uso por la web", () => {
     });
   });
 
-  describe("A2-6 Clave o agente inexistentes", () => {
+  describe("RF-03 CA-5 / RF-05 Clave o agente inexistentes", () => {
     const preparar = prepararRecorrido();
     test("guarda el proyecto y consulta una clave ausente con exito o un agente ausente con error", async () => {
       const recorrido = preparar();
@@ -354,7 +269,7 @@ describe("Errores de uso por la web", () => {
     });
   });
 
-  describe("Claves no resueltas", () => {
+  describe("RF-05 Claves no resueltas", () => {
     const preparar = prepararRecorrido();
     test("guarda sin consultar claves y presenta el error de la clave no resuelta al recuperar", async () => {
       const recorrido = preparar();

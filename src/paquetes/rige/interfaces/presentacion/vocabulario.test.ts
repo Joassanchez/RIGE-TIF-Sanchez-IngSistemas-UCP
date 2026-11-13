@@ -8,7 +8,7 @@ import { textoHtml } from "../../../../pruebas/utilidades/html";
 import { seccionHtml } from "../../../../pruebas/utilidades/html";
 
 const base = { esquema: 2 as const, proyecto: "/p", entradas: [], resumenEntradas: "", declaraciones: [], reglas: {} };
-const contexto: ContextoPresentacion = { formato: "texto", ancho: 200, esConsola: false, colorHabilitado: false, todo: true, proyectoDesdeCarpetaActual: false };
+const contexto: ContextoPresentacion = { formato: "texto", ancho: 200, esConsola: false, colorHabilitado: false, todo: true, proyectoDesdeCarpetaActual: false, limitesGenerales: new Set() };
 
 test("T5-26 U-3 solo son comunes los limites y ejes de todas las filas", async () => {
   const r: RespuestaReglas = { ...base, agente: "a", cadena: [], ejesParciales: [], advertencias: [], reglas: { comun: "Límite de todos", dos: "Límite de dos" },

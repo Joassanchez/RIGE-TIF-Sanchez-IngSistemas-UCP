@@ -1,14 +1,23 @@
 import { localizacion } from "../respuestas/localizacion";
 import type { Resultado } from "../respuestas/resultado";
 import { errorDesdeAnalisis, type ErrorUso } from "../errores";
-import type { RespuestaHallazgos } from "../respuestas/hallazgos";
+import { versionEsquemaSalida, type RespuestaHallazgos } from "../respuestas/contrato-generado";
 import { prepararProyecto, type DependenciasAnalisis } from "./analizar-proyecto";
-import type { LecturaEntrada } from "@rige/nucleo/contrato/adaptador";
-import { leerVia } from "@rige/nucleo/resolucion/leer-via";
 import { resolverDesdeLecturas } from "@rige/nucleo/resolucion/resolver";
 import { resumirEntradas } from "@rige/nucleo/resolucion/resumen-entradas";
-import { detectarEntradas, detectarReferencias, detectarReglasSinEfecto, ordenarHallazgos, type EntradaAnalizada } from "@rige/nucleo/hallazgos/detectar";
+import { detectarEntradas, detectarReferencias, detectarReglasSinEfecto, ordenarHallazgos } from "@rige/nucleo/hallazgos/detectar";
 import { explicarHallazgo } from "@rige/nucleo/hallazgos/explicar";
+import { leerEntradas } from "./leer-entradas";
+import { plantillasDe } from "./plantillas";
+
+const tiposHallazgo = [
+  "entrada-ilegible",
+  "entrada-descartada",
+  "sustitucion-sin-valor",
+  "referencia-no-resuelta",
+  "regla-sin-efecto",
+  "elemento-sin-uso",
+] as const;
 
 export type ConsultarHallazgos = (proyecto: string, opciones?: { readonly explicar?: boolean }) => Resultado<RespuestaHallazgos, ErrorUso>;
 
@@ -19,27 +28,9 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
   const { adaptador, entorno } = dependencias;
   const ubicacion = adaptador.ubicar(canonica, entorno, contexto);
   if (!ubicacion.exito) return { exito: false, error: errorDesdeAnalisis(ubicacion.error) };
-  const analizadas: EntradaAnalizada[] = [];
-  const lecturas: LecturaEntrada[] = [];
-  const huellas: (string | null)[] = [];
-  for (const [orden, via] of ubicacion.valor.entries()) {
-    const lectura = leerVia(adaptador, entorno, via, orden, contexto);
-    if (lectura.exito) {
-      analizadas.push({ entrada: { ...lectura.valor.entrada, legibilidad: via.condicion === "no_observada" ? null : "legible" },
-        declaraciones: lectura.valor.declaraciones });
-      huellas.push(lectura.valor.huella);
-      lecturas.push({ orden, via, declaraciones: lectura.valor.declaraciones });
-    } else {
-      if (!lectura.error.ilegible) return { exito: false, error: errorDesdeAnalisis(lectura.error) };
-      const { ilegible } = lectura.error;
-      analizadas.push({ entrada: { ...lectura.error.lectura!.entrada, legibilidad: "ilegible",
-        error: { ...ilegible.posicion, consecuencia: ilegible.consecuencia } }, declaraciones: [], ilegible });
-      huellas.push(lectura.error.lectura!.huella);
-      lecturas.push({ orden, via, declaraciones: [] });
-    }
-  }
-  dependencias.medicion?.finalizarLectura();
-  const entradas = analizadas.map(a => a.entrada);
+  const leidas = leerEntradas(adaptador, entorno, ubicacion.valor, contexto, dependencias.medicion);
+  if (!leidas.exito) return leidas;
+  const { entradas, huellas, analizadas, lecturas, sustituciones } = leidas.valor;
   const hallazgos = detectarEntradas(analizadas);
   const incompleta = analizadas.some(a => a.ilegible?.consecuencia === "falla");
   const motivos: string[] = incompleta ? ["hallazgos-parciales"] : [];
@@ -65,22 +56,22 @@ export function consultarHallazgos(dependencias: Omit<DependenciasAnalisis, "res
     reglasResolucion = resolucion.reglas;
   }
   const declaraciones = [...contexto.declaraciones];
-  const codigos = [...new Set([...Object.keys(reglasResolucion), ...declaraciones, ...motivos])].sort();
-  const reglas = Object.fromEntries(codigos.map(codigo => {
-    if (!Object.hasOwn(adaptador.reglas, codigo)) throw new Error(`Regla sin plantilla: ${codigo}`);
-    return [codigo, adaptador.reglas[codigo]!];
-  }));
-  return { exito: true, valor: { esquema: 2, proyecto: canonica.replaceAll("\\", "/"), entradas,
-    resumenEntradas: resumirEntradas(entradas, huellas, lecturas.flatMap(l => l.declaraciones.flatMap(d => d.sustituciones ?? [])), texto => entorno.resumir(texto)),
+  const reglas = plantillasDe(adaptador, [...Object.keys(reglasResolucion), ...declaraciones, ...motivos]);
+  const resumenHallazgos: { [K in (typeof tiposHallazgo)[number]]: number } = {
+    "entrada-ilegible": 0,
+    "entrada-descartada": 0,
+    "sustitucion-sin-valor": 0,
+    "referencia-no-resuelta": 0,
+    "regla-sin-efecto": 0,
+    "elemento-sin-uso": 0,
+  };
+  for (const tipo of tiposHallazgo) {
+    resumenHallazgos[tipo] = hallazgos.filter(h => h.tipo === tipo).length;
+  }
+  return { exito: true, valor: { esquema: versionEsquemaSalida, proyecto: canonica.replaceAll("\\", "/"), entradas,
+    resumenEntradas: resumirEntradas(entradas, huellas, sustituciones, texto => entorno.resumir(texto)),
     incompleta, motivos, declaraciones, reglas,
-    resumen: { elementos: elementosResumen, hallazgos: {
-      "entrada-ilegible": hallazgos.filter(h => h.tipo === "entrada-ilegible").length,
-      "entrada-descartada": hallazgos.filter(h => h.tipo === "entrada-descartada").length,
-      "sustitucion-sin-valor": hallazgos.filter(h => h.tipo === "sustitucion-sin-valor").length,
-      "referencia-no-resuelta": hallazgos.filter(h => h.tipo === "referencia-no-resuelta").length,
-      "regla-sin-efecto": hallazgos.filter(h => h.tipo === "regla-sin-efecto").length,
-      "elemento-sin-uso": hallazgos.filter(h => h.tipo === "elemento-sin-uso").length,
-    } },
+    resumen: { elementos: elementosResumen, hallazgos: resumenHallazgos },
     hallazgos: ordenarHallazgos(hallazgos).map(h => ({ ...h, localizacion: localizacion(h.entrada.referencia, h.posicion),
       ...((opciones?.explicar ?? true) ? { explicacion: explicarHallazgo(h, adaptador.plantillasHallazgo) } : {}) })) } };
 }

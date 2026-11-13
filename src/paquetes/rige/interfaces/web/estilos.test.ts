@@ -58,3 +58,100 @@ describe("T5-10 diseno responsive a 360 y 390 px", () => {
     expect(reglas(estilos, "h3")).toMatch(/font-size:\s*1rem/);
   });
 });
+
+describe("Sistema visual y tokens", () => {
+  function contraste(a: string, b: string): number {
+    const lineal = (c: number) => {
+      const ajustado = c + .055;
+      return c <= .04045 ? c / 12.92 : (ajustado / 1.055) ** 2.4;
+    };
+    const luminancia = (hex: string) => [1, 3, 5].map(i => {
+      const canal = parseInt(hex.slice(i, i + 2), 16);
+      return lineal(canal / 255);
+    }).reduce((s, c, i) => s + c * [.2126, .7152, .0722][i]!, 0);
+    const l = [luminancia(a), luminancia(b)].sort((x, y) => y - x);
+    const clara = l[0]! + .05, oscura = l[1]! + .05;
+    return clara / oscura;
+  }
+
+  test("G-1 tokens neutros, sin brillos y contraste AA en ambos temas", () => {
+    expect(estilos).not.toMatch(/gradient\(|box-shadow:/);
+    const temas = [...estilos.matchAll(/:root\s*\{([^}]+)\}/g)];
+    expect(temas).toHaveLength(2);
+    for (const [, tema] of temas) {
+      const tokens: Record<string, string> = Object.fromEntries([...tema!.matchAll(/--([\w-]+):\s*(#[\da-f]{6})/g)].map(m => [m[1], m[2]]));
+      for (const fondo of ["fondo", "superficie", "superficie-suave"]) {
+        const rgb = tokens[fondo]!.slice(1).match(/../g)!.map(v => parseInt(v, 16));
+        expect(Math.max(...rgb) - Math.min(...rgb)).toBeLessThanOrEqual(2);
+        for (const texto of ["texto", "secundario", "acento"]) expect(contraste(tokens[texto]!, tokens[fondo]!)).toBeGreaterThanOrEqual(4.5);
+        expect(contraste(tokens["borde-control"]!, tokens[fondo]!)).toBeGreaterThanOrEqual(3);
+      }
+      for (const tipo of ["exito", "peligro", "aviso", "neutro"])
+        expect(contraste(tokens[tipo]!, tokens[`${tipo}-fondo`]!)).toBeGreaterThanOrEqual(4.5);
+      expect(contraste(tokens["boton-texto"]!, tokens.acento!)).toBeGreaterThanOrEqual(4.5);
+    }
+    expect(reglas(estilos, ".aviso--advertencia")).not.toMatch(/var\(--aviso/);
+    expect(reglas(estilos, ".estadistica--aviso strong")).not.toMatch(/var\(--aviso/);
+  });
+
+  test("G-2 tipografia del sistema, escala de tres niveles y tablas sin mayusculas", () => {
+    expect(estilos).toContain('font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif');
+    expect(estilos).toContain("line-height: 1.5");
+    for (const [selector, tamano] of [["h1", "1.75rem"], ["h2", "1.25rem"], ["h3", "1rem"]])
+      expect(reglas(estilos, selector!)).toContain(`font-size: ${tamano}`);
+    expect(estilos).not.toContain("text-transform: uppercase");
+    expect(reglas(estilos, "th")).not.toMatch(/monospace/);
+  });
+
+  test("G-8 CSS permite contraer tarjetas y migas a 360px y conserva tablas moviles", () => {
+    expect(reglas(estilos, ".migas")).toMatch(/flex-wrap:\s*wrap/);
+    expect(reglas(estilos, ".reciente__foto")).toMatch(/min-width:\s*0/);
+    expect(reglas(estilos, ".reciente__foto")).toMatch(/overflow-wrap:\s*anywhere/);
+    expect(estilos).toContain("@media (max-width: 640px)");
+    expect(reglas(estilos, ".tabla-tarjetas")).toMatch(/display:\s*block/);
+    expect(reglas(estilos, ".tabla-contenedor")).toMatch(/overflow-x:\s*auto/);
+  });
+
+  test("T5-21 F-5 secundarios de cuerpo menores que el principal", () => {
+    expect(estilos).toMatch(/\.boton--secundario\s*\{[^}]*min-height: 36px;[^}]*padding: \.4rem \.7rem;[^}]*font-size: \.875rem/);
+    expect(estilos).toMatch(/button, \.boton\s*\{[^}]*min-height: 44px/);
+  });
+
+  test("T5-21 ajuste de procedencia: tamano legible y espaciado normal sin heredar el titulo", () => {
+    const regla = estilos.match(/\.procedencia\s*\{([^}]+)\}/)![1]!;
+    const tamano = Number(regla.match(/font-size:\s*([\d.]+)rem/)![1]);
+    expect(tamano).toBeGreaterThanOrEqual(0.8);
+    expect(regla).toMatch(/letter-spacing:\s*normal\s*;/);
+  });
+
+  test("T5-15 Z-4 insignias enteras", () => {
+    expect(reglas(estilos, ".insignia")).toMatch(/white-space:\s*nowrap/);
+    expect(reglas(estilos, ".insignia")).toMatch(/overflow-wrap:\s*normal/);
+    expect(reglas(estilos, ".tabla-contenedor")).toMatch(/overflow-x:\s*auto/);
+  });
+
+  test("U-11 componentes nuevos usan superficies del tema claro y contraste AA", () => {
+    for (const selector of [".sujetos-permiso > div", ".hallazgo-resumen"]) {
+      expect(reglas(estilos, selector)).toContain("background: var(--superficie)");
+      expect(reglas(estilos, selector)).not.toMatch(/#[\da-f]{3,8}/i);
+    }
+    const claro = estilos.match(/:root\s*\{([^}]+)\}/)![1]!;
+    const tokens = Object.fromEntries([...claro.matchAll(/--([\w-]+):\s*(#[\da-f]{6})/g)].map(m => [m[1]!, m[2]!]));
+    const luminancia = (hex: string) => [1, 3, 5].map(i => {
+      const canal = parseInt(hex.slice(i, i + 2), 16);
+      const c = canal / 255, ajustado = c + .055;
+      return c <= .04045 ? c / 12.92 : (ajustado / 1.055) ** 2.4;
+    }).reduce((s, c, i) => s + c * [.2126, .7152, .0722][i]!, 0);
+    for (const [texto, fondo] of [["texto", "superficie"], ["secundario", "fondo"], ["acento", "superficie"], ...["neutro", "exito", "peligro", "aviso"].map(t => [t, `${t}-fondo`])]) {
+      const a = luminancia(tokens[texto!]!), b = luminancia(tokens[fondo!]!);
+      const clara = Math.max(a, b) + .05, oscura = Math.min(a, b) + .05;
+      expect(clara / oscura).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  test("T5-22 M-5 regresion de CSS vinculada al HTML de matriz, valores y recientes", () => {
+    expect(reglas(estilos, ".tabla-matriz .insignia")).toMatch(/white-space:\s*nowrap/);
+    expect(reglas(estilos, ".reciente__foto")).toMatch(/min-width:\s*0/);
+    expect(reglas(estilos, ".tabla-valores td")).toMatch(/overflow-wrap:\s*anywhere/);
+  });
+});

@@ -2,6 +2,12 @@ import type { PlantillasExplicacion } from "@rige/nucleo/permisos/explicar";
 
 export const advertidas: readonly string[] = ["path-inaccesible", "version-no-determinada", "ejecutable-no-encontrado", "paquete-no-encontrado", "paquete-ilegible"];
 
+export const limitesGenerales: readonly string[] = [
+  "aprobaciones-permanentes-excluidas",
+  "sesion-no-interactiva-excluida",
+  "numeracion-sin-directorios-externos",
+];
+
 export const plantillasExplicacion: PlantillasExplicacion = {
   determinante: "La regla {indice} de {total}, {sujeto} {patron} → {efecto}, {origen}, es la última regla coincidente; OpenCode 1.18.25 aplica la última coincidencia.",
   defecto: "No hay reglas coincidentes; la decisión es {efecto} por defecto.",

@@ -1,5 +1,5 @@
 import type { RespuestaEstado } from "../../../aplicacion/respuestas/estado";
-import type { RespuestaProyectosRecientes } from "../../../aplicacion/respuestas/proyectos-recientes";
+import type { RespuestaProyectosRecientes } from "../../../aplicacion/respuestas/contrato-generado";
 import { html } from "../plantillas";
 import { diseno } from "../diseno";
 import { responderHtml } from "../respuesta";

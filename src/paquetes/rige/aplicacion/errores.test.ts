@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { errorDesdeAnalisis } from "./errores";
-import { ejecutarCli, type Ensamblado } from "../interfaces/cli/ejecutar";
+import { ejecutarCli, type CasosUsoCli } from "../interfaces/cli/ejecutar";
 
 describe("S-4 ADR-058", () => {
   test.each([
@@ -11,8 +11,22 @@ describe("S-4 ADR-058", () => {
     const error = { categoria, codigo, mensaje: "Error del adaptador" };
     let salida = "";
     let diagnostico = "";
-    const ensamblar = (): Ensamblado => ({ exito: false, error: errorDesdeAnalisis(error) });
-    const resultado = ejecutarCli(["esquema"], ensamblar, {
+    const fallo = () => ({ exito: false as const, error: errorDesdeAnalisis(error) });
+    const casos: CasosUsoCli = {
+      compararResoluciones: fallo,
+      consultarProyectosRecientes: fallo,
+      consultarReglas: fallo,
+      consultarValores: fallo,
+      consultarPermiso: fallo,
+      consultarAgentes: fallo,
+      consultarEntradas: fallo,
+      consultarHallazgos: fallo,
+      prepararAlmacen: fallo,
+      consultarEstado: fallo,
+      describirAlmacen: fallo,
+      iniciarServidor: fallo,
+    };
+    const resultado = ejecutarCli(["esquema"], () => casos, {
       escribirSalida: texto => { salida += texto; }, escribirError: texto => { diagnostico += texto; },
     });
     expect(resultado).toBe(esperado);

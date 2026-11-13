@@ -1,7 +1,7 @@
 import type { Resultado } from "../respuestas/resultado";
 import type { ErrorUso } from "../errores";
 import type { PuertoResoluciones } from "../puertos/resoluciones";
-import type { RespuestaProyectosRecientes } from "../respuestas/proyectos-recientes";
+import type { RespuestaProyectosRecientes } from "../respuestas/contrato-generado";
 import { versionEsquemaSalida } from "../respuestas/valores";
 
 export type ConsultarProyectosRecientes = () => Resultado<RespuestaProyectosRecientes, ErrorUso>;

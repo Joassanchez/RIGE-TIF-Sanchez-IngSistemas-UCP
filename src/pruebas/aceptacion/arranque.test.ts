@@ -18,7 +18,7 @@ afterEach(() => {
   for (const temporal of temporales.splice(0)) borrarTemporal(temporal);
 });
 
-describe("A-1", () => {
+describe("A-1 RF-03 / RNF-08", () => {
   test("prepara una carpeta nueva y repite la respuesta byte a byte", () => {
     const temporal = escenario();
     const directorio = join(temporal, "nuevo", "almacen");
@@ -37,7 +37,7 @@ describe("A-1", () => {
   });
 });
 
-describe("A-5", () => {
+describe("A-5 RNF-09", () => {
   test("sirve el estado preparado con paridad y una pagina 404 por subproceso", async () => {
     const temporal = escenario();
     const preparada = lanzar(temporal, ["esquema"]);
@@ -57,7 +57,7 @@ describe("A-5", () => {
   });
 });
 
-describe("A-6", () => {
+describe("A-6 RF-03 / RNF-08", () => {
   test("servir rechaza el almacen ausente o incompatible sin crearlo ni migrarlo", async () => {
     const temporal = escenario();
     const directorio = join(temporal, "inexistente", "almacen");
@@ -85,7 +85,7 @@ describe("A-6", () => {
   });
 });
 
-describe("A-7", () => {
+describe("A-7 RNF-09", () => {
   test("servir informa el puerto ocupado con codigo 1 y salida vacia", async () => {
     const temporal = escenario();
     expect(lanzar(temporal, ["esquema"]).codigo).toBe(0);
@@ -102,7 +102,7 @@ describe("A-7", () => {
   });
 });
 
-describe("A-2", () => {
+describe("A-2 RNF-08", () => {
   test("rechaza el puerto invalido y conserva la version de una base incompatible", () => {
     const temporal = escenario();
     const puertoInvalido = lanzar(temporal, ["esquema"], { RIGE_PUERTO: "abc" });
@@ -133,7 +133,7 @@ describe("A-2", () => {
   });
 });
 
-describe("A-3", () => {
+describe("A-3 RF-03", () => {
   test("rechaza el subcomando desconocido por el canal de error", () => {
     const temporal = escenario();
     const resultado = lanzar(temporal, ["otro"]);
@@ -148,7 +148,7 @@ describe("A-3", () => {
   });
 });
 
-describe("A-4", () => {
+describe("A-4 RF-03 / RNF-08", () => {
   test("una base que no es SQLite provoca falla interna sin crear archivos fuera del almacen", () => {
     const temporal = escenario();
     const directorio = join(temporal, "almacen");
@@ -175,7 +175,7 @@ describe("A-4", () => {
   });
 });
 
-describe("A-5", () => {
+describe("A-8 RNF-08", () => {
   test("un archivo como almacen es error de uso y no cambia el arbol del temporal", () => {
     const temporal = escenario();
     const archivo = join(temporal, "almacen");

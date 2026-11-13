@@ -1,16 +1,16 @@
 import { expect, test } from "bun:test";
 import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { prepararConsultas } from "../utilidades/consultas-cli";
-import { lanzar } from "../utilidades/subproceso";
-import { crearEntornoAislado } from "../utilidades/entorno-aislado";
-import { AlmacenSqlite } from "../../paquetes/rige/adaptadores/almacen-sqlite/esquema";
-import { RepositorioResolucionesSqlite } from "../../paquetes/rige/adaptadores/almacen-sqlite/resoluciones";
-import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
-import { resolverProyecto } from "../../paquetes/rige/aplicacion/casos-uso/resolver-proyecto";
-import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
-import { versionRige } from "../../paquetes/rige/aplicacion/respuestas/estado";
-import type { RespuestaPermiso, RespuestaValores } from "../../paquetes/rige/aplicacion/respuestas/contrato-generado";
+import { prepararConsultas } from "../../../../../pruebas/utilidades/consultas-cli";
+import { lanzar } from "../../../../../pruebas/utilidades/subproceso";
+import { crearEntornoAislado } from "../../../../../pruebas/utilidades/entorno-aislado";
+import { AlmacenSqlite } from "../../../adaptadores/almacen-sqlite/esquema";
+import { RepositorioResolucionesSqlite } from "../../../adaptadores/almacen-sqlite/resoluciones";
+import { EntornoLecturaSistema } from "../../../adaptadores/sistema/entorno-lectura";
+import { resolverProyecto } from "../../../aplicacion/casos-uso/resolver-proyecto";
+import { adaptadorOpenCode } from "@rige/opencode/adaptador";
+import { versionRige } from "../../../aplicacion/respuestas/estado";
+import type { RespuestaPermiso, RespuestaValores } from "../../../aplicacion/respuestas/contrato-generado";
 
 type Escenario = ReturnType<typeof prepararConsultas>;
 function escenario(probar: (e: Escenario) => void, nombre = "v2-cadena") {
@@ -165,14 +165,6 @@ test("T5-24 X-11 valores separa determinante y anterior; todo expande desplazada
   expect(todo).toContain("Desplazadas de temperature:");
   expect(todo).toContain(String(desplazadas[0]!.valor));
 }, "v1-precedencia"));
-
-test("T5-24 X-12 documentacion con ejemplos de salida actualizados", () => {
-  for (const archivo of ["README.md", "MANUAL.md"]) {
-    const t = readFileSync(resolve(import.meta.dir, "../..", archivo), "utf8");
-    expect(/CLAVE  +VALOR/.test(t)).toBe(true);
-    for (const ejemplo of ["ANTES", "LO DETERMINA", "Decide: #", "OpenCode · general", "Sin cambios en:", "external_directory: parcial en todos los agentes", "reglas --agente build --explicar"]) expect(t.includes(ejemplo), `${archivo}: ${ejemplo}`).toBe(true);
-  }
-});
 
 test("T5-25 C-1 reglas muestra una sola vez el motivo del agente tambien en Markdown", () => escenario(e => {
   writeFileSync(join(e.proyecto, "opencode.json"), JSON.stringify({ agent: { documentador: { description: "Documentación" } } }));

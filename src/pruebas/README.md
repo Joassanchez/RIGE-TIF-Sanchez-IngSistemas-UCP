@@ -130,9 +130,9 @@ relativa a `/` sin guardar rutas reales del temporal.
 | T2-02 S-3 ADR-061 | `../paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts` — `R-4` (formato SQL y formato del documento incompatibles como error de uso) |
 | T2-02 S-4 ADR-058 | `../paquetes/rige/aplicacion/errores.test.ts` — `S-4 ADR-058` (código desconocido con categoría uso: 1; categoría ausente/inválida: 70); `../paquetes/rige/interfaces/web/intermedios/errores.test.ts` — `W-9` (código nuevo como HTTP 422) |
 | T2-02 S-5 | `aceptacion/RF-03.test.ts` — `S-5` (valores sin crear el almacén ni modificar uno existente) |
-| RF-17 CA-1 | `aceptacion/recorrido-v1.test.ts` — `RF-17` → `RF-17 CA-1` (recuperación tras reiniciar) |
-| RF-17 CA-2 | `aceptacion/recorrido-v1.test.ts` — `RF-17` → `RF-17 CA-2` (resumen distinto y resolución anterior intacta) |
-| RF-17 CA-3 | `aceptacion/recorrido-v1.test.ts` — `RF-17` → `RF-17 CA-3` (últimas veinte) |
+| RF-17 CA-1 | `aceptacion/RF-17.test.ts` — `RF-17 CA-1` (recuperación tras reiniciar) |
+| RF-17 CA-2 | `aceptacion/RF-17.test.ts` — `RF-17 CA-2` (resumen distinto y resolución anterior intacta) |
+| RF-17 CA-3 | `aceptacion/RF-17.test.ts` — `RF-17 CA-3` (últimas veinte) |
 | RNF-01 CA-1 y CA-2 | `aceptacion/recorrido-v1.test.ts` — `RF-01 CA-2; RNF-01 CA-1 CA-2` (SHA-256, marcas de modificación y árbol antes/después) |
 | RNF-02 CA-1 | `arquitectura/referencias-nativas.test.ts` — `RN-1` a `RN-6` (comparación y guion con dobles); trabajo CI `referencia-nativa` — `bun run referencias --raiz "$(npm root -g)"` (OpenCode 1.18.25 real contra las referencias, junto con RF-01) |
 | RNF-03 CA-1 | `aceptacion/RNF-03.test.ts` — `RNF-03 CA-1` (único recorrido de toda la matriz de dependencias) |

@@ -3,10 +3,11 @@ import type { DeclaracionUbicada, Resolucion, RastroValor } from "@rige/nucleo/r
 import type { Resultado } from "../respuestas/resultado";
 import { errorResolucionesDeOtroProyecto, errorSolicitudInvalida, type ErrorUso } from "../errores";
 import type { PuertoResoluciones, ResolucionGuardada } from "../puertos/resoluciones";
-import type { RespuestaComparacion } from "../respuestas/comparacion";
+import type { RespuestaComparacion } from "../respuestas/contrato-generado";
 import { localizarDeclaracion } from "../respuestas/localizacion";
 import { versionEsquemaSalida } from "../respuestas/valores";
 import { prepararAnalisis, type DependenciasAnalisis } from "./analizar-proyecto";
+import { esIdResolucion } from "./id-resolucion";
 
 export type CompararResoluciones = (desde: string, hasta: string) => Resultado<RespuestaComparacion, ErrorUso>;
 type ComparacionAgente = RespuestaComparacion["comparaciones"][number];
@@ -90,7 +91,7 @@ function foto(guardada: ResolucionGuardada, listado: ListadoAgentes): RespuestaC
 
 export function compararResoluciones(dependencias: DependenciasAnalisis & { readonly resoluciones: PuertoResoluciones },
   desde: string, hasta: string): ReturnType<CompararResoluciones> {
-  if ([desde, hasta].some(id => !id || /[^0-9]/.test(id) || !Number.isSafeInteger(Number(id)) || Number(id) <= 0)) {
+  if (!esIdResolucion(desde) || !esIdResolucion(hasta)) {
     return { exito: false, error: errorSolicitudInvalida("desde y hasta deben ser enteros positivos en decimal") };
   }
   const a = dependencias.resoluciones.leer(Number(desde));

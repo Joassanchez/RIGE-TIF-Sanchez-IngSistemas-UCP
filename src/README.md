@@ -41,7 +41,7 @@ Las capturas `win32-x64` y `linux-x64` de T5-06c muestran que, con `core.worktre
 
 No se valida el frontmatter de Markdown ni se analiza su contenido como declaraciones de agentes o comandos. Las referencias por nombre se limitan a `default_agent` y `command.<nombre>.agent`; un agente existente pero oculto o subagente como `default_agent` queda fuera del detector. Si hay Markdown, referencias excluidas o sustituidas, no se evalúan elementos sin uso y se declara `elementos-sin-uso-no-evaluados`. Si una entrada impide cargar la configuración, los hallazgos se declaran parciales. Los hallazgos se calculan en vivo y no se guardan.
 
-La inclusión de patrones `abarca` es conservadora: no detecta que `a?*` está incluido en `*?`. Solo compara reglas posteriores del mismo bloque y sujeto literal; las rutas absolutas sin efecto se diagnostican para `read` y `edit` dentro de la base efectiva. Una forma relativa se propone únicamente si confirma el efecto declarado en las cadenas completas afectadas (ADR-105).
+La inclusión de patrones `abarca` es conservadora: no detecta que `a?*` está incluido en `*?`. Solo compara reglas posteriores del mismo bloque y sujeto literal; las rutas absolutas sin efecto se diagnostican para `read` y `edit` dentro de la base efectiva. Una forma relativa se propone únicamente si confirma el efecto declarado en las cadenas completas afectadas (ADR-105); también se propone para patrones con comodín en el último segmento (`privado/*`), salvo que una regla posterior de efecto distinto pueda tapar parte del conjunto.
 
 Las sustituciones conservan plantilla, origen, condición y posición sobre el texto original; excluyen el contenido incorporado y su huella. Las reglas de permiso con sustituciones válidas quedan excluidas (`sustitucion-no-incorporada`); un `mode` sustituido excluye al agente. RIGE no lee `auth.json` ni las variables aportadas por `wellknown`. No analiza el eje `external_directory` completo, aprobaciones permanentes ni reglas adicionales de la sesión; lo declara en las respuestas.
 
@@ -154,7 +154,7 @@ Los límites y ejes son comunes solo cuando aparecen en todas las filas de la ma
 
 La CLI elige **texto breve con tablas** si stdout es una consola interactiva; en una **tubería** o redirección devuelve el **JSON completo** de siempre. `--json` y `--texto` fuerzan el formato y son excluyentes. Sin `--proyecto`, las consultas usan la **carpeta actual**, indicada en el encabezado textual; un argumento vacío sigue siendo inválido. `--todo` amplía `valores` (incluye valores de fábrica) y `reglas` (cadena completa); con JSON no cambia nada. `permiso --explicar` agrega la explicación y las reglas coincidentes. `comparar --agente` filtra solo el texto, conservando el JSON íntegro.
 
-`rige --help`, `rige -h` y `rige <subcomando> --help` muestran uso, opciones y ejemplos sin abrir configuración ni almacén. `rige --version` informa ambas versiones; con `--json` devuelve un objeto esquema 2. `rige estado` consulta ruta, existencia y versión del almacén sin crear directorio/base ni modificar datos o esquema (puede haber auxiliares SQLite). Si falta o no tiene esquema, termina con código 0, muestra la ruta en uso y sugiere `bun run rige -- esquema`. En texto, los errores conservan sus códigos y se muestran por stderr; `--depurar` conserva el stack de fallas internas.
+`rige --help`, `rige -h` y `rige <subcomando> --help` muestran uso, opciones y ejemplos sin abrir configuración ni almacén. `rige --version` informa ambas versiones; con `--json` devuelve un objeto esquema 2. `rige estado` consulta ruta, existencia y versión del almacén sin crear directorio/base ni modificar datos o esquema (puede haber auxiliares SQLite). Si falta o no tiene esquema, termina con código 0, muestra la ruta en uso y sugiere `bun run rige -- esquema`. En texto, los errores conservan sus códigos y se muestran por stderr; `--depurar` conserva el stack de fallas internas. `rige --help` lista también los códigos de salida 0, 1, 2 y 70. En consola (`--texto`), un subcomando u opción desconocidos sugieren el candidato cercano (`¿Quisiste decir valores?`), y en JSON el error no cambia.
 
 El color ANSI solo se habilita en consola y si **NO_COLOR** no está definida; incluso `NO_COLOR=` lo deshabilita. Texto por tubería nunca lleva color. Las tablas separan columnas con espacios y subrayan sus encabezados atenuados. Solo la última columna variable se trunca con elipsis al ancho conocido (100 por defecto, mínimo 40); nombres y decisiones se conservan completos. Los párrafos se ajustan solo en espacios: una ruta o palabra larga va entera. Las ubicaciones se acortan a archivo y posición. El pie recuerda «Respuesta completa: --json».
 
@@ -194,8 +194,8 @@ bun run rige -- estado --texto
 Pruebas de esta interfaz (incluyen enlace aislado en Windows desde PowerShell y cmd):
 
 ```bash
-bun test paquetes/rige/interfaces/cli/ejecutar.test.ts paquetes/rige/interfaces/cli/presentacion.test.ts paquetes/rige/interfaces/cli/texto/texto.test.ts pruebas/aceptacion/T5-23-json.test.ts pruebas/aceptacion/T5-23-uso.test.ts
-bun test pruebas/aceptacion/T5-24.test.ts
+bun test paquetes/rige/interfaces/cli/ejecutar.test.ts paquetes/rige/interfaces/cli/presentacion.test.ts paquetes/rige/interfaces/cli/texto/texto.test.ts pruebas/regresion/T5-23-json.test.ts pruebas/regresion/T5-23-uso.test.ts
+bun test paquetes/rige/interfaces/cli/texto/presentacion-tablas.test.ts paquetes/rige/interfaces/cli/texto/estado-entradas-texto.test.ts
 bun test pruebas/arquitectura/dependencias.test.ts pruebas/arquitectura/red.test.ts pruebas/arquitectura/sustituciones.test.ts pruebas/aceptacion/RNF-03.test.ts
 ```
 
@@ -287,21 +287,21 @@ En **Comparar**, el resumen destaca las cantidades con insignias y las fotos **A
 En **Proyectos recientes**, toda la tarjeta abre la última foto; **Analizar de nuevo** es el enlace secundario. El nombre destacado es el último segmento de la ruta, que aparece debajo. «Último análisis: hoy 10:42 · 3 análisis guardados» resume la actividad. Sin proyectos, una línea invita a ingresar la carpeta y pulsar Analizar. La ayuda está en el plegable cerrado **¿Qué significa?**.
 
 ```bash
-bun test pruebas/aceptacion/T5-14.test.ts paquetes/rige/aplicacion/casos-uso/comparar-resoluciones.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts
-bun test ./paquetes/rige/interfaces/web/sistema-visual.test.ts
+bun test pruebas/regresion/T5-14.test.ts paquetes/rige/aplicacion/casos-uso/comparar-resoluciones.test.ts paquetes/rige/adaptadores/almacen-sqlite/resoluciones.test.ts
+bun test ./paquetes/rige/interfaces/web/estilos.test.ts
 bun test ./paquetes/rige/interfaces/web/recorrido-proyecto.test.ts
-bun test ./paquetes/rige/interfaces/web/vistas-secundarias.test.ts
+bun test ./paquetes/rige/interfaces/web/paginas/permiso.test.ts
 bun test ./paquetes/rige/interfaces/web/panel.test.ts ./paquetes/rige/interfaces/web/diseno.test.ts
-bun test pruebas/aceptacion/recorrido-v1.test.ts pruebas/aceptacion/T5-13-web.test.ts
+bun test pruebas/aceptacion/recorrido-v1.test.ts pruebas/regresion/T5-13-web.test.ts
 bun test
 bun run verificar
 ```
 
-Para el pulido T5-20, `bun test ./paquetes/rige/interfaces/web/recorrido-pulido.test.ts` comprueba U-1 a U-12; agregar `-t U-7`, por ejemplo, selecciona una regla. Para revisar la presentación en navegador, recorrer Inicio, resumen, agente, formulario y resultado de permiso, hallazgos, reglas, comparar, entradas y errores: emular `prefers-color-scheme: light` y `dark`, a 1440 y 360 px, con los plegables cerrados y abiertos. Comprobar contraste AA, foco y ausencia de desbordamiento.
+Para el pulido T5-20, `bun test ./paquetes/rige/interfaces/web/paginas/resolucion.test.ts` comprueba U-1 a U-12; agregar `-t U-7`, por ejemplo, selecciona una regla. Para revisar la presentación en navegador, recorrer Inicio, resumen, agente, formulario y resultado de permiso, hallazgos, reglas, comparar, entradas y errores: emular `prefers-color-scheme: light` y `dark`, a 1440 y 360 px, con los plegables cerrados y abiertos. Comprobar contraste AA, foco y ausencia de desbordamiento.
 
 Durante TDD, `bun test ./paquetes/rige/interfaces/web/` corre solo las pruebas web; `bun test ./paquetes/rige/interfaces/web/panel.test.ts -t T5-17` filtra las de nombres y fechas. Las pruebas de aceptación que leen el HTML conservan las comprobaciones de paridad y seguridad.
 
-Pruebas de T5-21 (F-1 a F-7), con `RIGE_ALMACEN` temporal: `bun test ./paquetes/rige/interfaces/web/ajustes-finales.test.ts`.
+Pruebas de T5-21 (F-1 a F-7), con `RIGE_ALMACEN` temporal: `bun test ./paquetes/rige/interfaces/web/paginas/resumen-proyecto.test.ts`.
 
 Comprobación de Windows con unidad alternativa y TEMP/TMP en nombre corto 8.3 (PowerShell, desde `src/`; `R:` debe estar libre):
 
@@ -337,7 +337,7 @@ Para reproducir un temporal 8.3 concreto, asignar a `$rigeCorto` la ruta corta d
 Regresión de textos y maquetación (T5-22, B-1 a B-6 y M-1 a M-6), con `RIGE_ALMACEN` temporal:
 
 ```bash
-bun test paquetes/rige/interfaces/web/textos-maquetacion.test.ts
+bun test paquetes/rige/interfaces/web/estilos.test.ts
 ```
 
 La prueba comprueba el HTML y las reglas CSS; la medición geométrica a 360–1920 px queda a cargo del ingeniero con Chrome.
@@ -345,14 +345,14 @@ La prueba comprueba el HTML y las reglas CSS; la medición geométrica a 360–1
 Pruebas del pulido de presentación (Z-1 a Z-11), con `RIGE_ALMACEN` temporal:
 
 ```bash
-bun test paquetes/rige/interfaces/web/pulido.test.ts
-bun test pruebas/aceptacion/T5-13-web.test.ts pruebas/aceptacion/T5-13-cli.test.ts pruebas/aceptacion/T5-14.test.ts
+bun test paquetes/rige/interfaces/web/panel.test.ts
+bun test pruebas/regresion/T5-13-web.test.ts pruebas/regresion/T5-13-cli.test.ts pruebas/regresion/T5-14.test.ts
 ```
 
 Pruebas auxiliares de la capacidad (sin CA nuevos del catálogo):
 
 ```bash
-bun test pruebas/aceptacion/T5-13.test.ts pruebas/aceptacion/T5-13-cli.test.ts pruebas/aceptacion/T5-13-web.test.ts
+bun test pruebas/regresion/T5-13.test.ts pruebas/regresion/T5-13-cli.test.ts pruebas/regresion/T5-13-web.test.ts
 ```
 
 Ejemplo ejecutable de la consulta de valores:
@@ -499,6 +499,7 @@ La batería de aceptación verifica el cumplimiento estricto de los criterios de
 - `pruebas/aceptacion/RF-11.test.ts`: Resumen del ecosistema y conteos de hallazgos.
 - `pruebas/aceptacion/RF-12.test.ts`: Localización precisa (archivo, línea, columna) de declaraciones y hallazgos.
 - `pruebas/aceptacion/RF-16.test.ts`: Listado de agentes del proyecto.
+- `pruebas/aceptacion/RF-17.test.ts`: Persistencia inmutable de resoluciones y retención de las últimas 20 (CA-1 a CA-3).
 - `pruebas/aceptacion/RNF-02.test.ts`: Paridad con resultados oficiales de referencia.
 - `pruebas/aceptacion/RNF-03.test.ts`: Independencia arquitectónica del núcleo respecto a adaptadores.
 - `pruebas/aceptacion/RNF-04.test.ts`: Protección de secretos en sustituciones.
@@ -519,6 +520,13 @@ Las filas siguientes trasladan solo usos respaldados por la declaración de la b
 
 | Fecha | Herramienta | Para qué | Pieza, archivo o commit | Verificación posterior |
 |---|---|---|---|---|
+| 12/11 | Antigravity CLI `agy` 1.5.6 (Gemini 4 Argon High), como escritor | T5-26-c1: README sin el bloque de pruebas de la ficha y nombre del archivo del almacén en una constante del adaptador; solo edición de archivos (el modo sin interfaz no habilitó comandos de git) | `90fb7cd` (commit del autor) | Cambios revisados por Claude Code; misma verificación de T5-26 |
+| 12/11 | Antigravity CLI `agy` 1.5.6 (Gemini 4 Argon High), como escritor | T5-27: títulos de pruebas vigentes tras el rediseño y prueba byte a byte L-2 con un solo camino (ejecutable congelado); solo edición de archivos | [AUTOR: hash del commit de T5-27] (commit del autor) | Diff revisado por Claude Code; Windows 1490 aprobadas en `R:` con TEMP 8.3; Ubuntu 1483 |
+| 12/11 | Claude Code (Claude Opus 5.5), ingeniero | Propuesta del refactor de `src/`, fichas T5-28 a T5-36 y MED-20, revisión de cada diff, regeneración de la referencia nativa de `v5-ruta-absoluta-tapada` con el binario sobre una copia, corridas de la suite en Windows y en Ubuntu (Docker) | `.trabajo/fichas/`, ADR-098 puntos 47 a 49, esta entrada | Suite y `verificar` en las dos plataformas en cada ficha; texto congelado validado contra el renderizador previo |
+| 12/11 | Claude Code, subagentes `critico-codigo` y `revisor-codigo` | Inventario de diseño de `src/`, pre-críticas de MED-20, T5-28 y T5-30, crítica de T5-28 y revisión de cierre | Fichas corregidas y T5-28-c1 | Cada hallazgo, contrastado por Claude Code con el código |
+| 12/11 | Antigravity CLI `agy` (Gemini 4 Argon High), como escritor | T5-28: forma relativa con comodín final, hasta agotar su cuota | `paquetes/opencode/hallazgos.ts`, escenario `v5-ruta-absoluta-tapada` | Pruebas corridas por Claude Code (EPERM del sandbox) |
+| 12/11 | Antigravity CLI `agy` (Gemini 3.8 Flash), como escritor | MED-20, T5-29, T5-28-c1, T5-30 a T5-34 | Arnés de la medición y `src/` | Diff revisado y suites corridas por Claude Code |
+| 12/11 | Antigravity CLI `agy` (Gemini 4 Hydrogen High), como escritor | T5-34-c1, T5-35, correcciones de cierre y T5-36 | `src/` | Diff revisado y suites corridas por Claude Code |
 | 11/11 | Claude Code (`claude-opus-5-5`) | Análisis de la maqueta v0, verificación de agentes con el binario, ADR-113 propuesto, fichas T5-17 a T5-21, revisión de los diff, capturas en ambos temas y a 360 px, proyecto de prueba y ejemplos de demostración fuera del repositorio, y esta entrada | `00-gestion/decisiones/ADR-113-interfaz-web-recorrido-maqueta.md`, `.trabajo/fichas/cierre/`, `bitacora.md` | [AUTOR: lectura y corrección; aceptar o rechazar ADR-113] |
 | 11/11 | Claude Code (`claude-opus-5-5`) | Auditoría automática de maquetación (CDP, 205 páginas), prueba de la CLI subcomando por subcomando, ADR-114 propuesto y fichas T5-22 a T5-24 | `00-gestion/decisiones/ADR-114-cli-salida-legible.md`, `.trabajo/fichas/cierre/` | [AUTOR: aceptar o rechazar ADR-114] |
 | 11/11 | Codex (`gpt-6.1-sol`, esfuerzo alto), como revisor | Pre-crítica de las fichas T5-17 a T5-19 | `.trabajo/fichas/cierre/precriticas/T5-17-19.json` (material descartable) | Diez precisiones incorporadas a las fichas por Claude Code |

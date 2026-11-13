@@ -5,7 +5,7 @@ import { versionRige } from "../../../aplicacion/respuestas/estado";
 import { paginaComparacion } from "../../web/paginas/comparacion";
 import * as textoCli from "./index";
 
-const contexto: ContextoPresentacion = { formato: "texto", ancho: 100, esConsola: false, colorHabilitado: false, todo: false, proyectoDesdeCarpetaActual: true };
+const contexto: ContextoPresentacion = { formato: "texto", ancho: 100, esConsola: false, colorHabilitado: false, todo: false, proyectoDesdeCarpetaActual: true, limitesGenerales: new Set() };
 const base = { esquema: 2 as const, proyecto: "/temporal/mi proyecto", entradas: [], resumenEntradas: "", declaraciones: [], reglas: {} };
 
 test("T5-26 U-12 las tablas partidas conservan marcas en cada bloque angosto", () => {

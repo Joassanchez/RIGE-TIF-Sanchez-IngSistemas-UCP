@@ -1,6 +1,6 @@
 import { copyFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas/permiso";
+import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas/contrato-generado";
 import { copiarEscenario, type OpcionesEscenario } from "./escenario";
 import { crearEntornoAislado } from "./entorno-aislado";
 import type { DecisionNativa } from "../../herramientas/decisiones-nativas/registro";

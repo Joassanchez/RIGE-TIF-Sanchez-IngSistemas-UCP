@@ -1,4 +1,4 @@
-import type { RespuestaAgentes } from "../../aplicacion/respuestas/agentes";
+import type { RespuestaAgentes } from "../../aplicacion/respuestas/contrato-generado";
 import { html, type HtmlSeguro } from "./plantillas";
 
 export interface ContextoPanel {

@@ -3,14 +3,15 @@ import { errorSolicitudInvalida, type ErrorUso } from "../errores";
 import type { PuertoResoluciones } from "../puertos/resoluciones";
 import type { RespuestaConsulta } from "../respuestas/consulta";
 import { respuestaValores } from "./proyectar-valores";
+import { esIdResolucion } from "./id-resolucion";
 
 export type ConsultarResolucion = (id: string, agente: string, clave: string) => Resultado<RespuestaConsulta, ErrorUso>;
 
 export function consultarResolucion(resoluciones: PuertoResoluciones, id: string, agente: string, clave: string): Resultado<RespuestaConsulta, ErrorUso> {
-  const numero = Number(id);
-  if (!id || /[^0-9]/.test(id) || !Number.isSafeInteger(numero) || numero <= 0) {
+  if (!esIdResolucion(id)) {
     return { exito: false, error: errorSolicitudInvalida("el id debe ser un entero positivo en decimal") };
   }
+  const numero = Number(id);
   if (!agente.trim()) return { exito: false, error: errorSolicitudInvalida("el agente está vacío") };
   const guardada = resoluciones.leer(numero);
   if (!guardada.exito) return guardada;

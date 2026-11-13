@@ -1,4 +1,4 @@
-import type { RespuestaComparacion } from "../../../aplicacion/respuestas/comparacion";
+import type { RespuestaComparacion } from "../../../aplicacion/respuestas/contrato-generado";
 import { datosRespuesta, html, type HtmlSeguro } from "../plantillas";
 import { diseno, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";

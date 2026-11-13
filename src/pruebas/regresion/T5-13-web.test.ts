@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { prepararConsultas } from "../utilidades/consultas-cli";
 import { lanzarServidor } from "../utilidades/subproceso";
 import { solicitarLocal, type SolicitudLocal } from "../utilidades/cliente-http-local";
-import type { RespuestaReglas } from "../../paquetes/rige/aplicacion/respuestas/reglas";
+import type { RespuestaReglas } from "../../paquetes/rige/aplicacion/respuestas/contrato-generado";
 import { entornoDeReferencia, type ReferenciaEntorno } from "../utilidades/entorno-referencia";
 
 function datos(cuerpo: string): RespuestaReglas {

@@ -1,11 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import type { RespuestaAgentes, RespuestaEntradas, RespuestaHallazgos, RespuestaPermiso, RespuestaValores } from "../../aplicacion/respuestas/contrato-generado";
+import type { RespuestaAgentes, RespuestaEntradas, RespuestaHallazgos, RespuestaPermiso, RespuestaValores, RespuestaComparacion, RespuestaReglas } from "../../aplicacion/respuestas/contrato-generado";
 import { versionRige } from "../../aplicacion/respuestas/estado";
 import { paginaResumenProyecto } from "./paginas/resumen-proyecto";
 import { paginaResolucion } from "./paginas/resolucion";
 import { paginaPermiso } from "./paginas/permiso";
 import { paginaHallazgos } from "./paginas/hallazgos";
 import { paginaEntradas } from "./paginas/entradas";
+import { paginaInicio } from "./paginas/inicio";
+import { paginaErrorUso, conErrores } from "./intermedios/errores";
+import { conVerificacionDeOrigen } from "./intermedios/origen";
 import { crearManejador, type CasosWeb } from "./servidor";
 import { estilos } from "./estilos";
 
@@ -39,28 +42,6 @@ const solicitar = (casos: CasosWeb, ruta: string): Response => {
   expect(respuesta.status).toBe(303);
   return solicitar(casos, respuesta.headers.get("location")!);
 };
-
-// Ruta antigua → destino → JSON principal: agentes para el resumen, valores para el agente.
-const rutasAnteriores = [
-  ["/agentes?id=7", "/resoluciones/7", agentes],
-  ["/resoluciones/7?agente=build&clave=temperature&q=TEMP&lanzadoPor=plan", "/resoluciones/7/agentes/build?clave=temperature&q=TEMP&lanzadoPor=plan", valores],
-] as const;
-
-describe("T5-18 R-10 matriz de navegación", () => {
-  test("prueba cada 303 y su destino 200, con el objeto íntegro de la consulta principal", async () => {
-    const manejar = crearManejador(12345, casos, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } });
-    const pedir = (ruta: string) => manejar(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
-    for (const [anterior, destino, json] of rutasAnteriores) {
-      const redireccion = pedir(anterior);
-      expect(redireccion.status).toBe(303);
-      expect(redireccion.headers.get("location")).toBe(destino);
-      expect(await redireccion.text()).not.toContain('id="respuesta"');
-      const final = pedir(destino);
-      expect(final.status).toBe(200);
-      expect(JSON.parse((await final.text()).match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(json);
-    }
-  });
-});
 
 describe("T5-09 N-1 agentes navegables", () => {
   test("enlaza activos, conserva clave y distingue eliminados", async () => {
@@ -267,5 +248,59 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
       expect(cuerpo.replace(bloques[0]![0], "")).not.toMatch(/<script\b/i);
       for (const [, url] of cuerpo.matchAll(/(?:href|action)="([^"]+)"/g)) expect(url).not.toMatch(/[<>" ]/);
     }
+  });
+});
+
+describe("Recorridos secundarios y gestión de errores", () => {
+  test("P-8 recorrido secundario, compacto en Inicio, marcador tenue y errores con miga Error", async () => {
+    const foto = { id: 7, instante: "2026-11-11T12:00:00Z", entradas: [], resumenEntradas: "x", noComparables: [], motivosAgentes: [], reglas: {} };
+    const inicio = await paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/privado", versionEsquema: 2 } }, { esquema: 2, proyectos: Array.from({ length: 10 }, (_, id) => ({ proyecto: `/proyecto/${id}`, id, cantidad: 2, instante: foto.instante })) }, new Date("2026-11-11T12:00:00Z")).text();
+    expect(inicio).toContain('placeholder="C:\\proyectos\\mi-app"');
+    expect(inicio).toContain('<code title="/proyecto/0">/proyecto/0</code>');
+    expect(estilos).toMatch(/\.reciente__foto\s*\{[^}]*grid-template-columns:/);
+    expect(estilos).toContain("text-overflow: ellipsis");
+    expect(estilos).toMatch(/input::placeholder\s*\{[^}]*font-weight: 400/);
+    expect(estilos).toMatch(/#analizar-proyecto form\s*\{[^}]*grid-template-columns: minmax\(0, 1fr\) auto/);
+    expect(estilos).toMatch(/\.formulario-permiso\s*\{[^}]*grid-template-columns:/);
+    expect(estilos).toMatch(/\.fila--desplazada\s*\{[^}]*color: var\(--secundario\)/);
+
+    const declaracion = { origen: { tipo: "declarado" as const, orden: 0, posicion: { linea: 2, columna: 3 } }, via: "proyecto", referencia: "/p/proyecto/config.json", valor: "allow", regla: "declarada" };
+    const comparacion: RespuestaComparacion = { esquema: 2, proyecto: "/p/proyecto", desde: foto, hasta: { ...foto, id: 8, instante: "2026-11-12T12:00:00Z" }, parcial: false, sustituciones: "solo-representacion-protegida",
+      agentes: { agregados: [], quitados: [], comunes: ["build"], inciertos: [] }, resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 2 },
+      comparaciones: [{ agente: "build", resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 0 }, cambios: [{ ruta: ["model"], tipo: "cambiada", motivos: ["valor"], antes: { valor: "antes", determinante: declaracion }, despues: { valor: "después", determinante: declaracion } }] }] };
+    const reglas: RespuestaReglas = { ...base, proyecto: "/p/proyecto", agente: "build", cadena: [], ejesParciales: [], advertencias: [], declaraciones: [], reglas: {}, matriz: { sujetos: [], motivos: [], noObservados: [], filas: [] } };
+    const servicios: CasosWeb = {
+      ...casos,
+      consultarReglas: () => ({ exito: true, valor: reglas }),
+      compararResoluciones: () => ({ exito: true, valor: comparacion }),
+      consultarPermiso: () => ({ exito: true, valor: permiso }),
+    };
+
+    const pedirRuta = (ruta: string) => crearManejador(12345, servicios, { versionHerramienta: "1.18.25", reloj: { ahora: () => "2026-11-11T12:00:00Z" } })(new Request(`http://127.0.0.1${ruta}`, { headers: { Host: "localhost:12345" } }));
+
+    const error = await pedirRuta("/inexistente").text();
+    expect(error).toContain('aria-current="page">Error</span>');
+    for (const ruta of ["/resoluciones/7/permisos?agente=build", "/permiso?id=7&agente=build&herramienta=read&objetivo=.env", "/hallazgos?proyecto=%2Fproyecto&id=7", "/reglas?id=7&agente=build", "/comparar?desde=7&hasta=8", "/entradas?proyecto=%2Fproyecto&id=7"]) {
+      const respuesta = pedirRuta(ruta); expect(respuesta.status).toBe(200);
+      const cuerpo = await respuesta.text(); expect(cuerpo).toContain('class="migas"');
+      expect(cuerpo).toContain("Local · solo lectura · sin red");
+      expect(cuerpo).not.toMatch(/\sstyle=|<script(?! type="application\/json")/);
+    }
+  });
+
+  test("G-7 errores humanos, rechazo previo sin contexto y 500 fijo", async () => {
+    const uso = await paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "Proyecto inexistente: /p/<x>" }).text();
+    expect(uso).toContain("No encontramos el proyecto"); expect(uso).toContain("/p/&lt;x&gt;");
+    expect(uso).toContain("Revisá la ruta"); expect(uso).toContain("esta máquina");
+    expect(uso).toContain('<small class="codigo-error">proyecto-inexistente</small>');
+    let llamadas = 0;
+    const manejar = conVerificacionDeOrigen(12345, () => { llamadas++; throw new Error("SECRETO"); });
+    for (const [method, headers] of [["GET", { Host: "ajeno" }], ["POST", { Host: "localhost:12345" }]] as const) {
+      const rechazo = await manejar(new Request("http://127.0.0.1/privado", { method, headers })).text();
+      expect(rechazo).not.toMatch(/Migas de pan|\/privado/); expect(rechazo).not.toContain(versionRige);
+    }
+    expect(llamadas).toBe(0);
+    const interno = await conErrores(() => { throw new Error("SECRETO"); })(new Request("http://127.0.0.1/")).text();
+    expect(interno).toContain("Falla interna de RIGE."); expect(interno).toContain("interno"); expect(interno).not.toContain("SECRETO");
   });
 });

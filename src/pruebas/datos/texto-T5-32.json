@@ -1,0 +1,617 @@
+{
+  "_procedencia": {
+    "tarea": "T5-37",
+    "descripcion": "SHA-256 (hex, UTF-8) del texto esperado de cada caso de generarTextoCongelado(), con TZ=UTC (la zona de bun test); capturado con el renderizador posterior al refactor y validado por el ingeniero contra el renderizador previo a T5-30 y T5-32 (152 de 152 iguales).",
+    "cantidadCasos": 152
+  },
+  "casos": [
+    {
+      "id": "v1-valores-build-ancho60-sincolor",
+      "sha256": "1d6041430d757bdc3dcb5ad796c8b0f663c0609e222ff23dd8c5ae057688d8a0"
+    },
+    {
+      "id": "v1-valores-build-ancho60-concolor",
+      "sha256": "b715a15992ce0bef6965f2b068e01aebb306ab6138e91a3ea14db5f7a1cf1404"
+    },
+    {
+      "id": "v1-valores-build-ancho100-sincolor",
+      "sha256": "64a478d3c6dd64abfc2baf3bf2a4f146299c64857a82c0cdd27119c5eba4a529"
+    },
+    {
+      "id": "v1-valores-build-ancho100-concolor",
+      "sha256": "80efa0d4c14cf2be8fdbc0a4dbfa5ca6dd52ffcb8c8bc5b6fb6b688582394a68"
+    },
+    {
+      "id": "v1-valores-build-todo-ancho60-sincolor",
+      "sha256": "8035f7627958a3ad4da4453d25e544787e15863cd8664890a9c2a646459cad23"
+    },
+    {
+      "id": "v1-valores-build-todo-ancho60-concolor",
+      "sha256": "56998dab271a93910a7feda2aaa208fea37891b987a19f8c725c96056982f2d7"
+    },
+    {
+      "id": "v1-valores-build-todo-ancho100-sincolor",
+      "sha256": "e7fddb5294aa7eaba0742a307d3a97abf0573706798420d23f9077def86b4ae5"
+    },
+    {
+      "id": "v1-valores-build-todo-ancho100-concolor",
+      "sha256": "08885fd9ad0ea30689e959f2cc03d994f617d9f43b726e2e00e46994ebae22b5"
+    },
+    {
+      "id": "v1-valores-temp-ancho60-sincolor",
+      "sha256": "bcf23a864bbb79556d57a1a3c35a08ad6f220a925f1099f0d887f961bdc6f83e"
+    },
+    {
+      "id": "v1-valores-temp-ancho60-concolor",
+      "sha256": "8dcbac25597e3f8c5dbc4aefe64e7c6aa2365160cb123b4bf127cc9a1040ffb0"
+    },
+    {
+      "id": "v1-valores-temp-ancho100-sincolor",
+      "sha256": "d25b56ff398917576a643dbffcabbb1cfe1664d10afdac9221d15d943451557e"
+    },
+    {
+      "id": "v1-valores-temp-ancho100-concolor",
+      "sha256": "ba50ce28c8a5dd84fc67b51a3c8e353b14d528558d06129564925c2f0c2ef26e"
+    },
+    {
+      "id": "v1-permiso-ancho60-sincolor",
+      "sha256": "df1cd12303819863a4c85ce9b176edf0fe3381a4dfb05998588e8492a58e5679"
+    },
+    {
+      "id": "v1-permiso-ancho60-concolor",
+      "sha256": "e0ff5571a79143aa9eecd3c3c6f19cef737755966c56ed1891fb52a27ae63bd2"
+    },
+    {
+      "id": "v1-permiso-ancho100-sincolor",
+      "sha256": "5822d71601c3b87a49214481898a2187b28391ca17f7ac231e965fef06213734"
+    },
+    {
+      "id": "v1-permiso-ancho100-concolor",
+      "sha256": "3a71346a78da7abc17ae428eb68ad1204fdf1c0ae6a28493049793f6fd172ca0"
+    },
+    {
+      "id": "v1-permiso-explicar-ancho60-sincolor",
+      "sha256": "a757a215c481e38e455930da3ee6ee1b3259f532e85de658754c5acb3a139172"
+    },
+    {
+      "id": "v1-permiso-explicar-ancho60-concolor",
+      "sha256": "091b6f2e4c8d30d5823603d2649cb2065793a45ce57e13382b6038a5c830c5f9"
+    },
+    {
+      "id": "v1-permiso-explicar-ancho100-sincolor",
+      "sha256": "1dc42f15f5a0f3d2db42f3b589047426a47dd6a08f9972ec774bb2d3a69b037c"
+    },
+    {
+      "id": "v1-permiso-explicar-ancho100-concolor",
+      "sha256": "676a2aa58d49011b70c839c2d3e0a7e931a7751f301cad2d6927df8b7885f939"
+    },
+    {
+      "id": "v1-reglas-ancho60-sincolor",
+      "sha256": "f88d6719e06ebd4768b4b5ac021ca549d1c3c41e0fc2fac4c5fed81835d8957e"
+    },
+    {
+      "id": "v1-reglas-ancho60-concolor",
+      "sha256": "67aafaea3a2370fbcc523b89fdb558b8fc29a4ab3b2169546f4943ad4d6b9bfd"
+    },
+    {
+      "id": "v1-reglas-ancho100-sincolor",
+      "sha256": "3d11b09b9e0ec3865ff9183a688146e59ea1e28a0c068e6ce9cfee937b17c6f6"
+    },
+    {
+      "id": "v1-reglas-ancho100-concolor",
+      "sha256": "2e8578073cfc818c23d9f1e8ad8253a5846ff1a4a2d0c835ef85ded1b6a27d93"
+    },
+    {
+      "id": "v1-reglas-explicar-ancho60-sincolor",
+      "sha256": "40d16d9499f54103c259361634081afd716463795fa9b011b8caeb17fd1d05e7"
+    },
+    {
+      "id": "v1-reglas-explicar-ancho60-concolor",
+      "sha256": "8a77592e4c34d9c842e23cb801863af8a210fc75b998661626f5696d410e235e"
+    },
+    {
+      "id": "v1-reglas-explicar-ancho100-sincolor",
+      "sha256": "bdb7eb3648d456c1bdb6d221c00ec493520bbe0bf57e96449667dc94ce33a7c2"
+    },
+    {
+      "id": "v1-reglas-explicar-ancho100-concolor",
+      "sha256": "d5924959ec02d66e881107de3cb0fec202039b02b97182e5019bbdfb249abe8f"
+    },
+    {
+      "id": "v1-reglas-todo-ancho60-sincolor",
+      "sha256": "406cb6b4fcb126de883a68728d3e9fd218d5bbe7a2674a7563ad525a4ddb80d5"
+    },
+    {
+      "id": "v1-reglas-todo-ancho60-concolor",
+      "sha256": "77ad6fe42416839e537d6c91b311adee10650fcb445a87388dd549c3cab100e9"
+    },
+    {
+      "id": "v1-reglas-todo-ancho100-sincolor",
+      "sha256": "4a03936d321505ac57ae9bb7ed8af732ec757cc41f82156a4c0dabc49b636f6a"
+    },
+    {
+      "id": "v1-reglas-todo-ancho100-concolor",
+      "sha256": "02d52286925e4cf368b789b1b6bc4bb671532caf43c8b5a133325007c5c90ddb"
+    },
+    {
+      "id": "v1-reglas-todo-explicar-ancho60-sincolor",
+      "sha256": "662b1fb36562a0f6e3792f94069d6bfdbb6b3cbc453c1b81d6dae52409b3da17"
+    },
+    {
+      "id": "v1-reglas-todo-explicar-ancho60-concolor",
+      "sha256": "814434891ef5f8b55e0d3b06afdc830f9a6e5531dec31825b58358a7ab147189"
+    },
+    {
+      "id": "v1-reglas-todo-explicar-ancho100-sincolor",
+      "sha256": "7f09d534f33fc7da6b563505a1fea69d2eeaa4defcf59978da7532eee855b626"
+    },
+    {
+      "id": "v1-reglas-todo-explicar-ancho100-concolor",
+      "sha256": "dac4b1090d8ec5f6c3db981761ab9313c4b1a84ed129d1ae36423028d68cbacf"
+    },
+    {
+      "id": "v1-agentes-ancho60-sincolor",
+      "sha256": "98b62eab7b494c58f5d083cc0df422688c4bf51d256334bb3bdf7db81152dd1b"
+    },
+    {
+      "id": "v1-agentes-ancho60-concolor",
+      "sha256": "bb9cefa08d9eb88fedcaa7a757a431e1699ab90f51dcd1b9338b97b89e4f2020"
+    },
+    {
+      "id": "v1-agentes-ancho100-sincolor",
+      "sha256": "c7a6608875213f215508ae3bbdec5d57604d7237e4c4920d0033f9ec226463d9"
+    },
+    {
+      "id": "v1-agentes-ancho100-concolor",
+      "sha256": "ac4bf5b97fe6da0ba763e17673bdaf164445a96332c59d00262fb4ae3551a278"
+    },
+    {
+      "id": "v1-agentes-explicar-ancho60-sincolor",
+      "sha256": "98b62eab7b494c58f5d083cc0df422688c4bf51d256334bb3bdf7db81152dd1b"
+    },
+    {
+      "id": "v1-agentes-explicar-ancho60-concolor",
+      "sha256": "bb9cefa08d9eb88fedcaa7a757a431e1699ab90f51dcd1b9338b97b89e4f2020"
+    },
+    {
+      "id": "v1-agentes-explicar-ancho100-sincolor",
+      "sha256": "c7a6608875213f215508ae3bbdec5d57604d7237e4c4920d0033f9ec226463d9"
+    },
+    {
+      "id": "v1-agentes-explicar-ancho100-concolor",
+      "sha256": "ac4bf5b97fe6da0ba763e17673bdaf164445a96332c59d00262fb4ae3551a278"
+    },
+    {
+      "id": "v1-entradas-ancho60-sincolor",
+      "sha256": "36f6b23e0b989cc198de50e66a95dc23a9d21f8f29888ca853a8678c96410e62"
+    },
+    {
+      "id": "v1-entradas-ancho60-concolor",
+      "sha256": "5466ecf1e22b8d0bcbf044d8d22cb317e9c7b93d41d3215e28b01ccf32f77ec1"
+    },
+    {
+      "id": "v1-entradas-ancho100-sincolor",
+      "sha256": "ba3eb6b87cc8ffc5ada9993776aef75d07c32c641172841edbedac63a82f15ae"
+    },
+    {
+      "id": "v1-entradas-ancho100-concolor",
+      "sha256": "db851500f25cbd44ba50a19a803aa3e9be0bd60891f499fc7c5e958d46f515a8"
+    },
+    {
+      "id": "v1-entradas-todo-ancho60-sincolor",
+      "sha256": "fcad6baadab91c02193fb77c9a14ae284ea4fe3732eb5d162bbcb02284e5f229"
+    },
+    {
+      "id": "v1-entradas-todo-ancho60-concolor",
+      "sha256": "675fee3d50b4d7ff48679eb1ec49cfe5d9ead30dceada707093ed01b7a6f8a40"
+    },
+    {
+      "id": "v1-entradas-todo-ancho100-sincolor",
+      "sha256": "a34fc10de5c7d26a6e1693704c4f08fd8f3d5e08c4a7cd67bc8a537f6c2354b7"
+    },
+    {
+      "id": "v1-entradas-todo-ancho100-concolor",
+      "sha256": "c48ddd1fed581f81a6c4cf6e6c323b436d93c32267707b7f581090dde194d2bd"
+    },
+    {
+      "id": "v1-hallazgos-ancho60-sincolor",
+      "sha256": "b660afe42ab3b81a65fa62cdb4104362e2403dd3f146846069f4753481dca0ca"
+    },
+    {
+      "id": "v1-hallazgos-ancho60-concolor",
+      "sha256": "e99039db72791fb89c4ebff28def49635a9db3543826cdb1a39053a998f6e5a7"
+    },
+    {
+      "id": "v1-hallazgos-ancho100-sincolor",
+      "sha256": "383d24cd871805161b08bbf124996491317d9c6fcccc733637c5f497f71dc7fa"
+    },
+    {
+      "id": "v1-hallazgos-ancho100-concolor",
+      "sha256": "f539c2c11e11e2be7ee10721cd83fd0c08c198476521dd4fda69e0da90f6e398"
+    },
+    {
+      "id": "v1-hallazgos-explicar-ancho60-sincolor",
+      "sha256": "b660afe42ab3b81a65fa62cdb4104362e2403dd3f146846069f4753481dca0ca"
+    },
+    {
+      "id": "v1-hallazgos-explicar-ancho60-concolor",
+      "sha256": "e99039db72791fb89c4ebff28def49635a9db3543826cdb1a39053a998f6e5a7"
+    },
+    {
+      "id": "v1-hallazgos-explicar-ancho100-sincolor",
+      "sha256": "383d24cd871805161b08bbf124996491317d9c6fcccc733637c5f497f71dc7fa"
+    },
+    {
+      "id": "v1-hallazgos-explicar-ancho100-concolor",
+      "sha256": "f539c2c11e11e2be7ee10721cd83fd0c08c198476521dd4fda69e0da90f6e398"
+    },
+    {
+      "id": "v2-valores-g-ancho60-sincolor",
+      "sha256": "3801182939c666376bede0f249ba8af6a42595a1a9fe1ee4b761c2a6eaaa89ef"
+    },
+    {
+      "id": "v2-valores-g-ancho60-concolor",
+      "sha256": "2d17bf74bd899a534dc4d077ce0bd475ab5217c0dce66aa204f75dbf1737e7ce"
+    },
+    {
+      "id": "v2-valores-g-ancho100-sincolor",
+      "sha256": "573dedfb6fb802ae77d9ce65fcc698c8738d67430433d9e031fae5acbfec9915"
+    },
+    {
+      "id": "v2-valores-g-ancho100-concolor",
+      "sha256": "69cef9af0ea232587537a8a1a593dcf5ec0f21b3c2a1dec67256db9b3a63c6da"
+    },
+    {
+      "id": "v2-valores-g-todo-ancho60-sincolor",
+      "sha256": "b90810c493abaa73d363b850d74e8c532b29f246a89dda3df6a0207559437e55"
+    },
+    {
+      "id": "v2-valores-g-todo-ancho60-concolor",
+      "sha256": "9064b61d1cc9bd5e8586e324875db39c023a620f9472eaca94b88a1c04ce4907"
+    },
+    {
+      "id": "v2-valores-g-todo-ancho100-sincolor",
+      "sha256": "c978e3d312b18a2f2536deb6e601fe24f87788faa5990072619759c7af050d80"
+    },
+    {
+      "id": "v2-valores-g-todo-ancho100-concolor",
+      "sha256": "d835ec142c43f25b061e524649517dc82f7d76d7f990339158bf2791178d4ece"
+    },
+    {
+      "id": "v2-permiso-cred-ancho60-sincolor",
+      "sha256": "5e467914201fb5234bb4879a73e61efad49206e190c7ac84a1ae6d9de469e3e7"
+    },
+    {
+      "id": "v2-permiso-cred-ancho60-concolor",
+      "sha256": "2f823e684951a103d810b87ee2080d83de78720939f671911ec2f63d614d4701"
+    },
+    {
+      "id": "v2-permiso-cred-ancho100-sincolor",
+      "sha256": "a48afd446b8bec779b3a63cc24a5d199bd9f47353e26df79be6486447da9789f"
+    },
+    {
+      "id": "v2-permiso-cred-ancho100-concolor",
+      "sha256": "fb09fe0d9ba7477898a1d38981ce292fe01b7e2472bbf2fb5c66f17e972dfa4a"
+    },
+    {
+      "id": "v2-permiso-cred-explicar-ancho60-sincolor",
+      "sha256": "50e4dd35e9cc1443215f7fc69ad373053a2bb92b52fd1fedb31c820bc8a0df45"
+    },
+    {
+      "id": "v2-permiso-cred-explicar-ancho60-concolor",
+      "sha256": "b80e7be023619ccc3a7209f9d0ac82369871a1ee1f7ef9bca25fb0c31427712a"
+    },
+    {
+      "id": "v2-permiso-cred-explicar-ancho100-sincolor",
+      "sha256": "4cce96b64fdb4ae4a8d9b53c6f8201ca6c62971571c6d70f588aa947dd6543d4"
+    },
+    {
+      "id": "v2-permiso-cred-explicar-ancho100-concolor",
+      "sha256": "1ead0328efb4496c6afe7c130eccc30d3ebef5f6d0e086a66eb856553eb10b5a"
+    },
+    {
+      "id": "v2-permiso-leeme-ancho60-sincolor",
+      "sha256": "964817b44e147441098fb1a871001d759d4f7f36fb6380a1a99a2a06dae82d98"
+    },
+    {
+      "id": "v2-permiso-leeme-ancho60-concolor",
+      "sha256": "b5166b659aaeb0a38161821428b6a3bc140efd59126e31fb8fef331bcb94b56e"
+    },
+    {
+      "id": "v2-permiso-leeme-ancho100-sincolor",
+      "sha256": "e6fe1079e2c2fc54156611eba9b7838a16833dcb036c5ab8ddc38f3e794ebad4"
+    },
+    {
+      "id": "v2-permiso-leeme-ancho100-concolor",
+      "sha256": "c0741bc4465b7299b46da1f0643d550b740fc95eb2fb5e8f55db136ae153c150"
+    },
+    {
+      "id": "v2-permiso-leeme-explicar-ancho60-sincolor",
+      "sha256": "f49cb0a2f4c74e0857160d27ede4c6d184e13d51d5cb24d756cc7d210ad49d7d"
+    },
+    {
+      "id": "v2-permiso-leeme-explicar-ancho60-concolor",
+      "sha256": "2d084cb3cc08469053be54726873d60fa6b02dce0e8d677fd0fe0321da6e5687"
+    },
+    {
+      "id": "v2-permiso-leeme-explicar-ancho100-sincolor",
+      "sha256": "d236f137932c30ab026eb32a4d850da102676708fd8e5daa65a9e7117791459e"
+    },
+    {
+      "id": "v2-permiso-leeme-explicar-ancho100-concolor",
+      "sha256": "7c6e17289517388982b5355386e4e80441bf8d4f970a66d887d732eab1f6d969"
+    },
+    {
+      "id": "v2-reglas-ancho60-sincolor",
+      "sha256": "19a982530fae1b8fe2667b14ea8c02a2beaae9b46aae3c1a4078be5ce7dfd739"
+    },
+    {
+      "id": "v2-reglas-ancho60-concolor",
+      "sha256": "be4107baaf5cbe769954773f554f2f3d4aa03bacc654ee2630bab005450468d0"
+    },
+    {
+      "id": "v2-reglas-ancho100-sincolor",
+      "sha256": "b7800092f2e5218e9e934f59fdf3b9c10f00bc928f9435a469bfb6e8033e5c40"
+    },
+    {
+      "id": "v2-reglas-ancho100-concolor",
+      "sha256": "217cdf2bd8d08152ab60bb8c5f76362ca6feaa18af741bce6fb6d1955aad12bb"
+    },
+    {
+      "id": "v2-reglas-explicar-ancho60-sincolor",
+      "sha256": "e292a055aa2a0fa7e1d147e6215815f2c34254ab4fa4c01f82c56da14061caaa"
+    },
+    {
+      "id": "v2-reglas-explicar-ancho60-concolor",
+      "sha256": "cfd69533a693f757d5c9564228886556edb5e68dc3e88b5b497be9bdd3a53a3f"
+    },
+    {
+      "id": "v2-reglas-explicar-ancho100-sincolor",
+      "sha256": "a26d8e819f77799767c3f68ebe214836bb3a53dccd94ffc6a2d6b6e4e7cfefcd"
+    },
+    {
+      "id": "v2-reglas-explicar-ancho100-concolor",
+      "sha256": "c59a0904a6f06a4fa7bf8b7f16a9b252cf093912fb0c0c6814f11f7a02a66e6e"
+    },
+    {
+      "id": "v2-reglas-todo-ancho60-sincolor",
+      "sha256": "47041ad9eefa66a33a2e019b7fd9d8fb4684903821ec7b435d28f08fd854cf6f"
+    },
+    {
+      "id": "v2-reglas-todo-ancho60-concolor",
+      "sha256": "01fdb152381010f6ce98f2692a084a6246a51201200c8d96b0bc2adf4f67f4f1"
+    },
+    {
+      "id": "v2-reglas-todo-ancho100-sincolor",
+      "sha256": "2c88bb475ab5a30494baf2cb293b58571bd0f145b6a8c4f415826f452ff09ce9"
+    },
+    {
+      "id": "v2-reglas-todo-ancho100-concolor",
+      "sha256": "67be0e96f2d228bc7fbb8f174770ccab19df14603ad40e5d30f0d906123d1ecd"
+    },
+    {
+      "id": "v2-reglas-todo-explicar-ancho60-sincolor",
+      "sha256": "39071e59ad0ca543fd4dd248d417999d94f5f59010da065cfeb856708628abb8"
+    },
+    {
+      "id": "v2-reglas-todo-explicar-ancho60-concolor",
+      "sha256": "2c228688806ba59c8d7bf12454b0d3ea0a9ff2fdfd3075185ee1fe9941c16941"
+    },
+    {
+      "id": "v2-reglas-todo-explicar-ancho100-sincolor",
+      "sha256": "0eb0d5758e6dee596d955385dd5e3c74d588439325feff0589735c575066ed0e"
+    },
+    {
+      "id": "v2-reglas-todo-explicar-ancho100-concolor",
+      "sha256": "e863658a5e4646d599ef3d041606e7f3be9fcea29a6617e7ccdc491329b61262"
+    },
+    {
+      "id": "v2-agentes-ancho60-sincolor",
+      "sha256": "d7a988181c24be92aec7d1876e69d34a28abc85bcd9a5c41a791feeec11ba8ec"
+    },
+    {
+      "id": "v2-agentes-ancho60-concolor",
+      "sha256": "51d25a7a574194a873b2d38bd4a3f8f9cea8d2eacb66b24954ea94a92ab883f2"
+    },
+    {
+      "id": "v2-agentes-ancho100-sincolor",
+      "sha256": "e7ca1a75c332ece0642d2f93e131353b2e4021403093ab9de56bf19ea58a18c2"
+    },
+    {
+      "id": "v2-agentes-ancho100-concolor",
+      "sha256": "0777baf8d63d27a3117e6cdce37cf8349ddb102960d6ecfd2d507c4b9d557884"
+    },
+    {
+      "id": "v2-agentes-explicar-ancho60-sincolor",
+      "sha256": "d7a988181c24be92aec7d1876e69d34a28abc85bcd9a5c41a791feeec11ba8ec"
+    },
+    {
+      "id": "v2-agentes-explicar-ancho60-concolor",
+      "sha256": "51d25a7a574194a873b2d38bd4a3f8f9cea8d2eacb66b24954ea94a92ab883f2"
+    },
+    {
+      "id": "v2-agentes-explicar-ancho100-sincolor",
+      "sha256": "e7ca1a75c332ece0642d2f93e131353b2e4021403093ab9de56bf19ea58a18c2"
+    },
+    {
+      "id": "v2-agentes-explicar-ancho100-concolor",
+      "sha256": "0777baf8d63d27a3117e6cdce37cf8349ddb102960d6ecfd2d507c4b9d557884"
+    },
+    {
+      "id": "v2-entradas-ancho60-sincolor",
+      "sha256": "cd940ecd310c95b309dad0ac090b75cb5ff96478c0b65d74dc7d77d06928cc69"
+    },
+    {
+      "id": "v2-entradas-ancho60-concolor",
+      "sha256": "a52fe5800f74ab5cd65810db8dce4807b21ca99e5cbe91dc00329bec38afc25d"
+    },
+    {
+      "id": "v2-entradas-ancho100-sincolor",
+      "sha256": "65b5dc88da8321726e83d28e5d44b28d8af02e59fea0e55add7cba20fb455cf1"
+    },
+    {
+      "id": "v2-entradas-ancho100-concolor",
+      "sha256": "41b7df1eefed553a3e45af1ea4cf632b3e06a58b67acd883d87ad5c8c90f266d"
+    },
+    {
+      "id": "v2-entradas-todo-ancho60-sincolor",
+      "sha256": "08f7ef0994f8bc198bed129d11efa579295a2851fc19bc6b2445daca51cbc4af"
+    },
+    {
+      "id": "v2-entradas-todo-ancho60-concolor",
+      "sha256": "ce1533e50cece22152f3ad36b3de6c278432595e548d3a5860eba5952b725a8d"
+    },
+    {
+      "id": "v2-entradas-todo-ancho100-sincolor",
+      "sha256": "dcd5e76ad21372c95445cb4af7c0b481822ffee19751c3f90620e9540dd9db30"
+    },
+    {
+      "id": "v2-entradas-todo-ancho100-concolor",
+      "sha256": "6c708061c06d01da814e55f4f642dbc83dc0a059562724b39898e164cfce896c"
+    },
+    {
+      "id": "v2-hallazgos-ancho60-sincolor",
+      "sha256": "af274a871ba051e9a2c2bdae68ce13e9162269ba8e409dbe88a1f39b81eb32e1"
+    },
+    {
+      "id": "v2-hallazgos-ancho60-concolor",
+      "sha256": "ac759eb87ed572a81e2dea9a7bdc8a720a3323737e686f5264e1cd36f8017a65"
+    },
+    {
+      "id": "v2-hallazgos-ancho100-sincolor",
+      "sha256": "b0af922efaaa70510e1303de3815017e0ca18654025f1270bdc4f8c7e5c757df"
+    },
+    {
+      "id": "v2-hallazgos-ancho100-concolor",
+      "sha256": "541a5f4ab76ed3d6f227486a0a18a1ed02062b44c9b689316060b43aa847f0c6"
+    },
+    {
+      "id": "v2-hallazgos-explicar-ancho60-sincolor",
+      "sha256": "a16c9e2b4f77810e9d6a50dfe42c0ee940ce1653e6e0628f8c334a3ab9f8a606"
+    },
+    {
+      "id": "v2-hallazgos-explicar-ancho60-concolor",
+      "sha256": "c8e6519f7e4194473dd10f70288ea8b4a09d9088eec260a735630dd39d4fa992"
+    },
+    {
+      "id": "v2-hallazgos-explicar-ancho100-sincolor",
+      "sha256": "e28d732a50417dd7c56afaf98be5c5e8d85e529143d35c330bf87fed7e87c448"
+    },
+    {
+      "id": "v2-hallazgos-explicar-ancho100-concolor",
+      "sha256": "6148b33777e797e48b4bc6bb9fbaf60c3ae04a127f1ca1805f6d325f595e1b2a"
+    },
+    {
+      "id": "estado-sin-esquema-ancho60-sincolor",
+      "sha256": "0117f415e1d37f33bfbf0632b62177cf44a99a96328185bc1d7cdcae60289bec"
+    },
+    {
+      "id": "estado-sin-esquema-ancho60-concolor",
+      "sha256": "4e15667d91fed862b5e323b2ef25c3d18413154ce175c2e942d08035b5fd4193"
+    },
+    {
+      "id": "estado-sin-esquema-ancho100-sincolor",
+      "sha256": "0117f415e1d37f33bfbf0632b62177cf44a99a96328185bc1d7cdcae60289bec"
+    },
+    {
+      "id": "estado-sin-esquema-ancho100-concolor",
+      "sha256": "4e15667d91fed862b5e323b2ef25c3d18413154ce175c2e942d08035b5fd4193"
+    },
+    {
+      "id": "estado-con-esquema-ancho60-sincolor",
+      "sha256": "87155a7350045acefac45130e8239e6940cc66c69d16ba05e96dce6772f4ae8c"
+    },
+    {
+      "id": "estado-con-esquema-ancho60-concolor",
+      "sha256": "1e478b5e6cccff45ba5a4ce12392f296dfba4664d37c963a08d230da582d9796"
+    },
+    {
+      "id": "estado-con-esquema-ancho100-sincolor",
+      "sha256": "87155a7350045acefac45130e8239e6940cc66c69d16ba05e96dce6772f4ae8c"
+    },
+    {
+      "id": "estado-con-esquema-ancho100-concolor",
+      "sha256": "1e478b5e6cccff45ba5a4ce12392f296dfba4664d37c963a08d230da582d9796"
+    },
+    {
+      "id": "esquema-preparado-ancho60-sincolor",
+      "sha256": "87155a7350045acefac45130e8239e6940cc66c69d16ba05e96dce6772f4ae8c"
+    },
+    {
+      "id": "esquema-preparado-ancho60-concolor",
+      "sha256": "1e478b5e6cccff45ba5a4ce12392f296dfba4664d37c963a08d230da582d9796"
+    },
+    {
+      "id": "esquema-preparado-ancho100-sincolor",
+      "sha256": "87155a7350045acefac45130e8239e6940cc66c69d16ba05e96dce6772f4ae8c"
+    },
+    {
+      "id": "esquema-preparado-ancho100-concolor",
+      "sha256": "1e478b5e6cccff45ba5a4ce12392f296dfba4664d37c963a08d230da582d9796"
+    },
+    {
+      "id": "recientes-vacio-ancho60-sincolor",
+      "sha256": "3797865992e7673ba5c372e284fa2c32f94f322ebe6006c4eaa5087ab1847034"
+    },
+    {
+      "id": "recientes-vacio-ancho60-concolor",
+      "sha256": "9b8d570ae4180f6fff0a8de2a41864c00d26ae31f7b696701c9735ee0c559a86"
+    },
+    {
+      "id": "recientes-vacio-ancho100-sincolor",
+      "sha256": "3797865992e7673ba5c372e284fa2c32f94f322ebe6006c4eaa5087ab1847034"
+    },
+    {
+      "id": "recientes-vacio-ancho100-concolor",
+      "sha256": "9b8d570ae4180f6fff0a8de2a41864c00d26ae31f7b696701c9735ee0c559a86"
+    },
+    {
+      "id": "recientes-con-proyectos-ancho60-sincolor",
+      "sha256": "66d6c192686798a335c031c26972cf7596d4ddd1f91c351734681b06c4a27207"
+    },
+    {
+      "id": "recientes-con-proyectos-ancho60-concolor",
+      "sha256": "2179c4031652d02ca92ce3477fecfe846fbd29440f3bc42afd6f49aae17608a6"
+    },
+    {
+      "id": "recientes-con-proyectos-ancho100-sincolor",
+      "sha256": "66d6c192686798a335c031c26972cf7596d4ddd1f91c351734681b06c4a27207"
+    },
+    {
+      "id": "recientes-con-proyectos-ancho100-concolor",
+      "sha256": "2179c4031652d02ca92ce3477fecfe846fbd29440f3bc42afd6f49aae17608a6"
+    },
+    {
+      "id": "comparar-global-ancho60-sincolor",
+      "sha256": "f80d869bde45665a6ecb2e72c215b06402b89c6f25d3597c596129fa3ed6bf63"
+    },
+    {
+      "id": "comparar-global-ancho60-concolor",
+      "sha256": "acfd5c16d54e18e2aa41235fedf1235dc8ce30fc4a69663831cc5dd94f7d7b78"
+    },
+    {
+      "id": "comparar-global-ancho100-sincolor",
+      "sha256": "f80d869bde45665a6ecb2e72c215b06402b89c6f25d3597c596129fa3ed6bf63"
+    },
+    {
+      "id": "comparar-global-ancho100-concolor",
+      "sha256": "be7521c730f3623f32e7e2026d12c8e2699e6149b90654639f760263f6228e48"
+    },
+    {
+      "id": "comparar-agente-g-ancho60-sincolor",
+      "sha256": "a1524af9439d12447237a098728797e47d2ba95a0c15bc1267f602daf8740cbf"
+    },
+    {
+      "id": "comparar-agente-g-ancho60-concolor",
+      "sha256": "d0126b9d04ed80a7b5f7a363bbe209e4bfbdbcc32779f148c64f0e21a4dca812"
+    },
+    {
+      "id": "comparar-agente-g-ancho100-sincolor",
+      "sha256": "a1524af9439d12447237a098728797e47d2ba95a0c15bc1267f602daf8740cbf"
+    },
+    {
+      "id": "comparar-agente-g-ancho100-concolor",
+      "sha256": "803c4560eef933019ae46423bf23109a0cc2e324f4bb37dea65490251f53258d"
+    }
+  ]
+}

@@ -41,7 +41,7 @@ function preparar(id: string, git: NonNullable<OpcionesEscenario["git"]>) {
   return { ...copia, objetivo, permiso, hallazgos };
 }
 
-describe("T5-06b A-b1 A-b2 patrones absolutos y formas relativas", () => {
+describe("RF-07 CA-5 patrones absolutos y formas relativas", () => {
   for (const { caso, prefijo, git, herramientas } of topologias) for (const herramienta of herramientas) {
     test(`${caso} / ${herramienta}: deny, forma exacta, allow y desaparicion del hallazgo`, () => {
       const absoluta = preparar(`v5-worktree-${prefijo}-absoluta`, git);
@@ -81,7 +81,7 @@ describe("T5-06b A-b1 A-b2 patrones absolutos y formas relativas", () => {
   }
 });
 
-describe("T5-06b A-b3 A-b4 A-b5 comparacion nativa sin fallback", () => {
+describe("RNF-02 CA-1 comparacion nativa sin fallback", () => {
   for (const { caso, prefijo, git, herramientas } of topologias) for (const variante of ["absoluta", "relativa"]) {
     const id = `v5-worktree-${prefijo}-${variante}`;
     const escenario = manifiesto.escenarios.find(e => e.id === id);

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas/permiso";
+import type { RespuestaPermiso } from "../../paquetes/rige/aplicacion/respuestas/contrato-generado";
 import { prepararConsultas } from "../utilidades/consultas-cli";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
@@ -146,7 +146,7 @@ describe("W-1 RNF-09", () => {
   });
 });
 
-describe("W-2", () => {
+describe("W-2 RNF-09", () => {
   test("escapa patrones HTML y evita cerrar el script de datos", async () => {
     const patron = '</script><script>alert("x")</script>';
     await conWeb("v2-decision", async ({ solicitar, id }) => {

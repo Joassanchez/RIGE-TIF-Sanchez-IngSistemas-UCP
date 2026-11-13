@@ -1,11 +1,21 @@
 import { describe, expect, test } from "bun:test";
-import type { RespuestaAgentes, RespuestaEntradas, RespuestaHallazgos, RespuestaPermiso, RespuestaValores } from "../../aplicacion/respuestas/contrato-generado";
+import type { RespuestaAgentes, RespuestaEntradas, RespuestaHallazgos, RespuestaPermiso, RespuestaValores, RespuestaReglas, RespuestaComparacion } from "../../aplicacion/respuestas/contrato-generado";
 import { versionRige } from "../../aplicacion/respuestas/estado";
 import { crearManejador, type CasosWeb } from "./servidor";
 import { estilos } from "./estilos";
 import { paginaResolucion } from "./paginas/resolucion";
 import { paginaPermiso } from "./paginas/permiso";
+import { paginaConsultasPermiso } from "./paginas/consultas-permiso";
+import { paginaEntradas } from "./paginas/entradas";
+import { paginaHallazgos } from "./paginas/hallazgos";
+import { paginaReglas } from "./paginas/reglas";
+import { paginaComparacion } from "./paginas/comparacion";
+import { paginaInicio } from "./paginas/inicio";
+import { paginaErrorUso } from "./intermedios/errores";
+import { diseno } from "./diseno";
+import { html } from "./plantillas";
 import { textoHtml } from "../../../../pruebas/utilidades/html";
+import * as textos from "./textos";
 import { nombreAnalisis } from "./textos";
 
 const base = { esquema: 2 as const, proyecto: "/proyecto", entradas: [], resumenEntradas: "a".repeat(64), declaraciones: [], reglas: {} };
@@ -349,5 +359,109 @@ describe("T5-11 P-3 migas de pan y contexto", () => {
     }
     expect(consultas).toBe(0);
     for (const sitio of [undefined, "same-origin", "none"]) expect(solicitar("/resoluciones/7/permisos", {}, { Host: "localhost:12345", ...(sitio ? { "Sec-Fetch-Site": sitio } : {}) }).status).toBe(200);
+  });
+});
+
+describe("Panel, diseño y coherencia visual", () => {
+  const css = (selector: string) => [...estilos.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    .filter(([, selectores]) => selectores!.split(",").some(s => s.trim() === selector)).map(m => m[2]).join("\n");
+  const reglaCss = (selector: string) => css(selector);
+
+  test("T5-21 F-1 selector compacto junto al titulo en todas las vistas", async () => {
+    const contextoF1 = { idResolucion: "7", agente: "build", agentes: agentes.agentes };
+    const reglasF1: RespuestaReglas = { ...base, agente: "build", cadena: [], ejesParciales: [], advertencias: [], matriz: { sujetos: [], motivos: [], noObservados: [], filas: [] } };
+    for (const pagina of [paginaPermiso(permiso, "7", contextoF1), paginaConsultasPermiso(agentes, contextoF1), paginaEntradas(base, contextoF1), paginaHallazgos(hallazgos, contextoF1), paginaReglas(reglasF1, "7", contextoF1)]) {
+      const s = await pagina.text();
+      expect(s).toMatch(/class="barra-agente">\s*<h1>[^]*?<\/h1>\s*<form id="seleccionar-agente"[^]*?<\/form>\s*<\/div>/);
+      for (const form of s.matchAll(/<form\b[^]*?<\/form>/g)) expect(form[0].match(/<form\b/g)).toHaveLength(1);
+    }
+  });
+
+  test("T5-15 Z-7 coherencia de vistas", async () => {
+    const contextoZ7 = { idResolucion: 7, agente: "build", agentes: [{ nombre: "build" }], clave: "temperature", q: "TEMP" };
+    const conteosHallazgos = { "entrada-ilegible": 0, "entrada-descartada": 0, "sustitucion-sin-valor": 0, "referencia-no-resuelta": 0, "regla-sin-efecto": 0, "elemento-sin-uso": 0 };
+    const reglasZ7: RespuestaReglas = { ...base, agente: "build", cadena: [], ejesParciales: ["external_directory"], declaraciones: [], advertencias: [],
+      reglas: { limite: "Observación limitada <fila>" }, matriz: { sujetos: ["read"], motivos: [], noObservados: [], filas: [] } };
+    const fotoZ7 = { id: 1, instante: sobre.instante, entradas: [], resumenEntradas: "", noComparables: [], motivosAgentes: [], reglas: {} };
+    const comparacionZ7: RespuestaComparacion = { esquema: 2, proyecto: base.proyecto, desde: fotoZ7, hasta: { ...fotoZ7, id: 2 },
+      agentes: { agregados: [], quitados: [], comunes: ["build"], inciertos: [] }, parcial: false, sustituciones: "solo-representacion-protegida",
+      resumen: { cambiadas: 0, agregadas: 0, quitadas: 0, sinCambio: 12 }, comparaciones: [] };
+    const estadoZ7 = { esquema: 2 as const, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 2 } };
+
+    const paginas = [paginaEntradas(base, contextoZ7),
+      paginaHallazgos({ ...base, hallazgos: [], incompleta: false, motivos: [], resumen: { elementos: null, hallazgos: conteosHallazgos } }, contextoZ7),
+      paginaConsultasPermiso(agentes, contextoZ7), paginaReglas(reglasZ7, "7", contextoZ7),
+      paginaPermiso({ ...base, agente: "build", consulta: { sujeto: "read", objetivo: ".env", objetivoEvaluado: ".env", forma: "sujeto" }, decision: null,
+        motivoSinDecision: "ninguna", determinante: null, desplazadas: [], nativaAnulada: null, advertencias: [], cadena: [], explicacion: [], porDefecto: true }, "7", contextoZ7)];
+    for (const pagina of paginas) {
+      const cuerpo = await pagina.text();
+      const cabecera = cuerpo.match(/<(?:section|div)[^>]*class="cabecera-pagina"[^>]*>([^]*?<\/details>)<\/(?:section|div)>/);
+      expect(cabecera).not.toBeNull();
+      expect(cabecera![1]).toContain("<h1>");
+      expect(cabecera![1]).toContain("proyecto");
+      const selector = cuerpo.includes('id="seleccionar-agente"') ? 'id="seleccionar-agente"' : 'id="consultar-permiso"';
+      expect(cabecera![1]).toContain(selector);
+      expect(cuerpo).not.toMatch(/style=|<style\b|<script(?! type="application\/json")/);
+    }
+    for (const pagina of [paginaInicio(estadoZ7, undefined, new Date("2026-11-11T12:00:00Z")), paginaComparacion(comparacionZ7), paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "No existe" })]) {
+      const cuerpo = await pagina.text();
+      expect(cuerpo).toContain('href="/estilos.css"');
+      expect(cuerpo.match(/<h1>/g)).toHaveLength(1);
+    }
+    expect(css(".cabecera-pagina")).toMatch(/margin-bottom:\s*2rem/);
+    for (const selector of ["h1", ".cabecera-pagina h1", ".pagina-error h1"])
+      expect(css(selector)).toMatch(/font-size:\s*1\.75rem/);
+    expect(estilos).toContain("@media (max-width: 640px)");
+    expect(css(".tabla-tarjetas td[data-etiqueta]::before")).toContain("attr(data-etiqueta)");
+  });
+
+  test("T5-15 Z-10 singular y plural en conteos sin modificar JSON", async () => {
+    const valoresZ10: RespuestaValores = { ...base, versionRige, herramienta: "opencode", versionHerramienta: "1.18.25", agente: "build", ruta: null,
+      motivo: null, noResueltas: [], valores: [{ clave: "temperature", rastro: { ruta: ["temperature"], indiceFusion: 0, valor: 0.3,
+        determinante: { valor: 0.3, origen: { tipo: "nativo", regla: "nativa" }, via: null, referencia: null, regla: "nativa" }, desplazadas: [], motivo: "nativo" } }] };
+    const fotoZ10 = { id: 1, instante: sobre.instante, entradas: [], resumenEntradas: "", noComparables: [], motivosAgentes: [], reglas: {} };
+    const comparacionZ10: RespuestaComparacion = { esquema: 2, proyecto: base.proyecto, desde: fotoZ10, hasta: { ...fotoZ10, id: 2 },
+      agentes: { agregados: [], quitados: [], comunes: ["build"], inciertos: [] }, parcial: false, sustituciones: "solo-representacion-protegida",
+      resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 12 }, comparaciones: [
+        { agente: "build", resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 0 }, cambios: [
+          { ruta: ["a"], tipo: "cambiada", motivos: ["valor"], antes: { valor: 1, determinante: valoresZ10.valores[0]!.rastro.determinante },
+            despues: { valor: 2, determinante: valoresZ10.valores[0]!.rastro.determinante } }] }] };
+    const cuerpo = await paginaResolucion(valoresZ10, sobre, { q: "temperature" }).text();
+    expect(textoHtml(cuerpo)).toContain("1 valor");
+    expect(textoHtml(cuerpo)).not.toContain("1 valores");
+    expect(textoHtml(cuerpo)).toContain("1 de 1 clave");
+    const comparada = textoHtml(await paginaComparacion(comparacionZ10).text());
+    expect(comparada).toContain("1 cambio"); expect(comparada).not.toContain("1 cambios");
+    const nueva = { ...comparacionZ10, comparaciones: [{ ...comparacionZ10.comparaciones[0]!, resumen: { cambiadas: 1, agregadas: 1, quitadas: 1, sinCambio: 1 } }] };
+    const texto = textoHtml(await paginaComparacion(nueva).text());
+    for (const fragmento of ["1 cambio", "1 clave nueva", "1 quitada", "1 clave sin cambio"]) expect(texto).toContain(fragmento);
+    for (const cantidad of [0, 1, 2]) {
+      const inicio = textoHtml(await paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/t", versionEsquema: 2 } }, { esquema: 2, proyectos: [{ proyecto: "/p", id: 7, instante: sobre.instante, cantidad }] }, new Date("2026-11-11T12:00:00Z")).text());
+      expect(inicio).toContain(`${cantidad} análisis`);
+    }
+  });
+
+  test("G-4 marca, migas escapadas, ancho legible y pie de una linea", () => {
+    const cuerpo = diseno("Valores", html`<h1>Valores</h1>`, { proyecto: '/p/<x>', agente: 'a & b', idResolucion: 7, activa: "Valores" }).texto;
+    const cabecera = cuerpo.match(/<header[^]*?<\/header>/)![0];
+    expect(cabecera).toContain('aria-label="Migas de pan"');
+    expect(cabecera).toContain("&lt;x&gt;"); expect(cabecera).toContain("a &amp; b");
+    expect(cabecera).not.toMatch(/Entradas|Hallazgos|Configuración efectiva|marca__simbolo/);
+    const pie = cuerpo.match(/<footer[^]*?<\/footer>/)![0];
+    expect(pie).toContain(`Local · solo lectura · sin red · RIGE ${versionRige}`);
+    expect(pie).not.toContain("/privado"); expect(pie.match(/<p>/g)).toHaveLength(1);
+    expect(reglaCss("main")).toContain("max-width: 1100px");
+  });
+
+  test("G-5 ayudantes puros: Windows, POSIX, raices y fechas locales entre dias y anos", () => {
+    for (const [ruta, nombre] of [["C:\\uno\\dos\\", "dos"], ["/uno/dos/", "dos"], ["/", "/"], ["C:\\", "C:\\"], ["\\\\servidor\\recurso", "recurso"]])
+      expect(textos.nombreProyecto(ruta!)).toBe(nombre!);
+    const hoy = new Date(2026, 0, 1, 0, 5), ayer = new Date(2025, 11, 31, 18, 5);
+    expect(textos.fechaLocal(hoy.toISOString())).toBe("01/01/2026 00:05");
+    expect(textos.fechaRelativa(hoy.toISOString(), hoy)).toBe("hoy 00:05");
+    expect(textos.fechaRelativa(ayer.toISOString(), hoy)).toBe("ayer 18:05");
+    expect(textos.fechaRelativa(new Date(2025, 11, 30, 10, 42).toISOString(), hoy)).toBe("30/12/2025 10:42");
+    expect(textos.fechaRelativa(new Date(2026, 0, 2, 10, 42).toISOString(), hoy)).toBe("02/01/2026 10:42");
+    expect(() => textos.fechaLocal("invalida")).toThrow();
   });
 });

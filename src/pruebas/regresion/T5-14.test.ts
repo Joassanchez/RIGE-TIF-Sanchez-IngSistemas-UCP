@@ -3,12 +3,12 @@ import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from
 import { join, resolve } from "node:path";
 import { prepararConsultas } from "../utilidades/consultas-cli";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
-import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
+import { solicitarPaginaLocal as solicitarLocal } from "../aceptacion/seguir-redireccion";
 import { type SolicitudLocal } from "../utilidades/cliente-http-local";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { crearEntornoAislado } from "../utilidades/entorno-aislado";
 import { capturarRegresionT512 } from "../utilidades/regresion-t5-12";
-import type { RespuestaComparacion } from "../../paquetes/rige/aplicacion/respuestas/comparacion";
+import type { RespuestaComparacion } from "../../paquetes/rige/aplicacion/respuestas/contrato-generado";
 import { RepositorioResolucionesSqlite } from "../../paquetes/rige/adaptadores/almacen-sqlite/resoluciones";
 import { versionRige } from "../../paquetes/rige/aplicacion/respuestas/estado";
 import { compararResoluciones } from "../../paquetes/rige/aplicacion/casos-uso/comparar-resoluciones";

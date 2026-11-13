@@ -1,9 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import type { RespuestaComparacion } from "../../../aplicacion/respuestas/comparacion";
+import type { RespuestaComparacion } from "../../../aplicacion/respuestas/contrato-generado";
 import { paginaComparacion } from "./comparacion";
 import { paginaInicio } from "./inicio";
 import { versionRige } from "../../../aplicacion/respuestas/estado";
-import { textoHtml } from "../../../../../pruebas/utilidades/html";
+import { seccionHtml, textoHtml } from "../../../../../pruebas/utilidades/html";
+import { fechaLocal } from "../textos";
 
 describe("T5-14 K-5 plantillas", () => {
   test("referencias, rutas y enlaces hostiles, todas las insignias, filtro y JSON integro", async () => {
@@ -40,5 +41,49 @@ describe("T5-14 K-5 plantillas", () => {
     expect(inicio).toContain(`/resolver?proyecto=${encodeURIComponent(r.proyecto)}`);
     expect(textoHtml(inicio)).toContain(escapar(r.proyecto));
     expect(inicio).not.toContain("<script");
+  });
+});
+
+describe("Comparación de resoluciones", () => {
+  const json = (cuerpo: string) => JSON.parse(cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!);
+  const foto = { id: 1, instante: "2026-11-10T12:00:00Z", entradas: [], resumenEntradas: "", noComparables: [], motivosAgentes: [], reglas: {} };
+  const declaracion = { valor: 0.3, via: "proyecto", referencia: "/proyecto/opencode.jsonc", localizacion: "NO PARSEAR",
+    regla: "ultima", origen: { tipo: "declarado" as const, orden: 1, posicion: { linea: 5, columna: 7 } } };
+  const comparacion: RespuestaComparacion = { esquema: 2, proyecto: "/proyecto", desde: foto, hasta: { ...foto, id: 2 },
+    agentes: { agregados: [], quitados: [], comunes: ["build", "compaction", "explore"], inciertos: [] }, parcial: false, sustituciones: "solo-representacion-protegida",
+    resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 12 }, comparaciones: [
+      { agente: "build", resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 0 }, cambios: [
+        { ruta: ["a", "b"], tipo: "cambiada", motivos: ["valor"], antes: { valor: 1, determinante: declaracion },
+          despues: { valor: 2, determinante: declaracion } }] },
+      ...["compaction", "explore"].map(agente => ({ agente, resumen: { cambiadas: 0, agregadas: 0, quitadas: 0, sinCambio: 6 }, cambios: [] })) ] };
+
+  test("T5-15 Z-9 compacta sin cambios y ofrece columnas, ruta legible, resumen y tiempos legibles", async () => {
+    const cuerpo = await paginaComparacion(comparacion).text();
+    expect(textoHtml(cuerpo)).toContain("Sin cambios: compaction (6), explore (6)");
+    for (const nombre of ["compaction", "explore"]) expect(cuerpo).not.toContain(`<h2>Agente ${nombre}</h2>`);
+    expect(cuerpo).toContain('<nav class="pestanas" aria-label="Filtrar comparación">');
+    expect(cuerpo).toContain('<th>Clave</th><th>Antes</th><th>Después</th>');
+    expect(cuerpo).toContain('data-etiqueta="Antes"');
+    expect(cuerpo).toContain('data-etiqueta="Después"');
+    expect(cuerpo).toContain('title="[&quot;a&quot;,&quot;b&quot;]">a › b</code>');
+    const resumen = seccionHtml(cuerpo, "resumen-comparacion");
+    expect(resumen.match(/class="insignia /g)?.length).toBeGreaterThanOrEqual(3);
+    expect(resumen).toContain("Antes"); expect(resumen).toContain("Después");
+    expect(resumen).toContain(fechaLocal(foto.instante));
+    expect(json(cuerpo)).toEqual(comparacion);
+  });
+
+  test("P-6 fechas locales, migas, tres columnas y procedencias enlazadas", async () => {
+    const fotoP6 = { id: 7, instante: "2026-11-11T12:00:00Z", entradas: [], resumenEntradas: "x", noComparables: [], motivosAgentes: [], reglas: {} };
+    const comparacionP6: RespuestaComparacion = { esquema: 2, proyecto: "/p/proyecto", desde: fotoP6, hasta: { ...fotoP6, id: 8, instante: "2026-11-12T12:00:00Z" }, parcial: false, sustituciones: "solo-representacion-protegida",
+      agentes: { agregados: [], quitados: [], comunes: ["a/b", "otro"], inciertos: [] }, resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 2 },
+      comparaciones: [{ agente: "a/b", resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 0 }, cambios: [{ ruta: ["model"], tipo: "cambiada", motivos: ["valor"], antes: { valor: "antes", determinante: declaracion }, despues: { valor: "después", determinante: declaracion } }] },
+        { agente: "otro", resumen: { cambiadas: 0, agregadas: 0, quitadas: 0, sinCambio: 2 }, cambios: [] }] };
+    const cuerpo = await paginaComparacion(comparacionP6).text();
+    expect(cuerpo).toContain(`<h1>Cambios entre ${fechaLocal(fotoP6.instante)} y ${fechaLocal(comparacionP6.hasta.instante)}</h1>`);
+    expect(cuerpo).toContain('aria-current="page">Comparar</span>');
+    expect(cuerpo).toContain('<th>Clave</th><th>Antes</th><th>Después</th>');
+    expect(cuerpo).toContain("Sin cambios: otro (2)");
+    expect(cuerpo).toContain("vscode://file/"); expect(json(cuerpo)).toEqual(comparacionP6);
   });
 });

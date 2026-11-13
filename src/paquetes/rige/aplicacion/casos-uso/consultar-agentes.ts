@@ -1,7 +1,7 @@
 import { localizarDeclaracion } from "../respuestas/localizacion";
 import type { Resultado } from "../respuestas/resultado";
 import type { ErrorUso } from "../errores";
-import type { RespuestaAgentes } from "../respuestas/agentes";
+import type { RespuestaAgentes } from "../respuestas/contrato-generado";
 import { versionEsquemaSalida } from "../respuestas/valores";
 import { prepararAnalisis, type DependenciasAnalisis } from "./analizar-proyecto";
 

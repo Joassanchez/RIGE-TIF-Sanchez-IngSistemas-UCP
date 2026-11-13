@@ -1,0 +1,225 @@
+{
+  "procedencia": {
+    "commit": "5e8da06",
+    "tarea": "T5-29",
+    "base": "5e8da06",
+    "bun": "1.3.14"
+  },
+  "casos": [
+    {
+      "id": "R-1",
+      "argumentos": [
+        "estado"
+      ],
+      "codigo": 0,
+      "sha256": {
+        "win32": {
+          "stdout": "b1c7a8feb401c70a80a91e00980ed96cd091dc8d6f22a9548018f21299ed69c4",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "linux": {
+          "stdout": "b1c7a8feb401c70a80a91e00980ed96cd091dc8d6f22a9548018f21299ed69c4",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "R-4-valores-todo",
+      "argumentos": [
+        "valores",
+        "--proyecto",
+        "<PROYECTO>",
+        "--agente",
+        "build",
+        "--todo"
+      ],
+      "codigo": 0,
+      "sha256": {
+        "win32": {
+          "stdout": "7f7134883644a22c9187d8adf83dc09ab365ae4dc506163287fe37700acfb499",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "linux": {
+          "stdout": "7f7134883644a22c9187d8adf83dc09ab365ae4dc506163287fe37700acfb499",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "R-4-entradas-todo",
+      "argumentos": [
+        "entradas",
+        "--proyecto",
+        "<PROYECTO>",
+        "--todo"
+      ],
+      "codigo": 0,
+      "sha256": {
+        "win32": {
+          "stdout": "77b42a3135ea4ef91c78fc0f9031e7f5529093c761c2679a43e1f4d033c935d2",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "linux": {
+          "stdout": "7352f5acfc71f5e61675f9284ad388b685da8177225af7b2d7107e7eb32a7212",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "R-4-reglas-todo",
+      "argumentos": [
+        "reglas",
+        "--proyecto",
+        "<PROYECTO>",
+        "--agente",
+        "build",
+        "--todo"
+      ],
+      "codigo": 0,
+      "sha256": {
+        "win32": {
+          "stdout": "5ed7be0f502c76cc0c6b575452d6e1b0017def757331c50e7efd148404e78fa5",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "linux": {
+          "stdout": "a6cf84fc8b4d02462a194b99acad3f83f1f0c64ecacb98351267407621fcf9c2",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "R-7-help",
+      "argumentos": [
+        "--help"
+      ],
+      "codigo": 0,
+      "sha256": {
+        "win32": {
+          "stdout": "aee10653e995a58f5e9bffc555284bd39e60f91436bb0af22d4bba1613725270",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "linux": {
+          "stdout": "aee10653e995a58f5e9bffc555284bd39e60f91436bb0af22d4bba1613725270",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "R-7-valores-help",
+      "argumentos": [
+        "valores",
+        "--help"
+      ],
+      "codigo": 0,
+      "sha256": {
+        "win32": {
+          "stdout": "2ab92fb576800b449c75f2e281eae3b6489bb612ae35cecd85213a98e287ce9d",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "linux": {
+          "stdout": "2ab92fb576800b449c75f2e281eae3b6489bb612ae35cecd85213a98e287ce9d",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "R-7-version",
+      "argumentos": [
+        "--version"
+      ],
+      "codigo": 0,
+      "sha256": {
+        "win32": {
+          "stdout": "91f2f4af03d849bade03336194ba3f422783f90a98c46d739d4fcad58da58540",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "linux": {
+          "stdout": "91f2f4af03d849bade03336194ba3f422783f90a98c46d739d4fcad58da58540",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "R-7-version-json",
+      "argumentos": [
+        "--version",
+        "--json"
+      ],
+      "codigo": 0,
+      "sha256": {
+        "win32": {
+          "stdout": "647b020304f55e05f47f529f539544ff5f931f2f106695c2c93afbe7ac86cb5e",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "linux": {
+          "stdout": "647b020304f55e05f47f529f539544ff5f931f2f106695c2c93afbe7ac86cb5e",
+          "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "R-6-json-texto",
+      "argumentos": [
+        "--json",
+        "--texto"
+      ],
+      "codigo": 2,
+      "sha256": {
+        "win32": {
+          "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr": "1d8300e57320f2abdb2bb47011332af85575fdc36ed74a50bc1f78819b6f4107"
+        },
+        "linux": {
+          "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr": "1d8300e57320f2abdb2bb47011332af85575fdc36ed74a50bc1f78819b6f4107"
+        }
+      }
+    },
+    {
+      "id": "R-6-valores-sin-agente",
+      "argumentos": [
+        "valores",
+        "--proyecto",
+        "<PROYECTO>"
+      ],
+      "codigo": 2,
+      "sha256": {
+        "win32": {
+          "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr": "20185e37e17b67ac23726785bb0e0e3a1face28fc541989bd2da3c1bd02edcc1"
+        },
+        "linux": {
+          "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr": "20185e37e17b67ac23726785bb0e0e3a1face28fc541989bd2da3c1bd02edcc1"
+        }
+      }
+    },
+    {
+      "id": "R-6-permiso-sujeto-herramienta",
+      "argumentos": [
+        "permiso",
+        "--proyecto",
+        "<PROYECTO>",
+        "--agente",
+        "build",
+        "--sujeto",
+        "read",
+        "--herramienta",
+        "bash",
+        "--objetivo",
+        "a.ts"
+      ],
+      "codigo": 2,
+      "sha256": {
+        "win32": {
+          "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr": "249466f7cabf6ba5d8e54756a6a44ebf7bfa09b4e578b5af6247976400742d0f"
+        },
+        "linux": {
+          "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr": "249466f7cabf6ba5d8e54756a6a44ebf7bfa09b4e578b5af6247976400742d0f"
+        }
+      }
+    }
+  ]
+}

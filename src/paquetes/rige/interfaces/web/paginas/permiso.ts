@@ -1,7 +1,7 @@
 import { rotuloFoto } from "../textos";
 import { comandoCli } from "../comando-cli";
 import { consultaPanel, selectorAgente, type ContextoPanel } from "../panel";
-import type { RespuestaPermiso } from "../../../aplicacion/respuestas/permiso";
+import type { RespuestaPermiso } from "../../../aplicacion/respuestas/contrato-generado";
 import { datosRespuesta, html } from "../plantillas";
 import { declaraciones, diseno, efectoVisual, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";

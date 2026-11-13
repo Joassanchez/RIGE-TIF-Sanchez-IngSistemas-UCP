@@ -1,0 +1,172 @@
+{
+  "casos": [
+    {
+      "id": "help-valores",
+      "argumentos": [
+        "valores",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige valores [--proyecto <carpeta>] --agente <nombre> [--clave <clave>] [--todo]\n\nOpciones:\n  --json, --texto       Formato explícito; consola: texto, tubería: JSON.\n  --help, -h            Ayuda sin consultar configuración ni almacén.\n  --version             Versión de RIGE y OpenCode.\n  --depurar             Stack de fallas internas.\n  --proyecto <carpeta>  Carpeta del proyecto; por defecto, la carpeta actual\n  --agente <nombre>     Agente a consultar (en comparar, filtra solo el texto)\n  --clave <clave>       Clave o ruta de clave a consultar\n  --todo                Incluir valores de fábrica y desplazadas, la cadena completa o los lugares revisados de entradas\n  --tiempos             Diagnóstico en consultas de proyecto.\n\nEjemplos:\n  rige valores --agente build\n  rige valores --agente build --clave temperature --json\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-permiso",
+      "argumentos": [
+        "permiso",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige permiso [--proyecto <carpeta>] --agente <nombre> (--sujeto <sujeto> | --herramienta <nombre>) --objetivo <objetivo> [--lanzado-por <agente>] [--explicar]\n\nOpciones:\n  --json, --texto         Formato explícito; consola: texto, tubería: JSON.\n  --help, -h              Ayuda sin consultar configuración ni almacén.\n  --version               Versión de RIGE y OpenCode.\n  --depurar               Stack de fallas internas.\n  --proyecto <carpeta>    Carpeta del proyecto; por defecto, la carpeta actual\n  --agente <nombre>       Agente a consultar (en comparar, filtra solo el texto)\n  --sujeto <sujeto>       Sujeto del permiso; excluyente con --herramienta\n  --herramienta <nombre>  Herramienta del permiso; excluyente con --sujeto\n  --objetivo <objetivo>   Acción u objetivo concreto del permiso\n  --lanzado-por <agente>  Agente que lanza la consulta como subagente\n  --explicar              Ampliar la explicación y los avisos generales (reglas: en JSON se ignora)\n  --tiempos               Diagnóstico en consultas de proyecto.\n\nEjemplos:\n  rige permiso --agente build --sujeto read --objetivo archivo.ts\n  rige permiso --agente build --herramienta bash --objetivo \"git status\" --explicar\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-reglas",
+      "argumentos": [
+        "reglas",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige reglas [--proyecto <carpeta>] --agente <nombre> [--lanzado-por <agente>] [--todo] [--explicar]\n\nOpciones:\n  --json, --texto         Formato explícito; consola: texto, tubería: JSON.\n  --help, -h              Ayuda sin consultar configuración ni almacén.\n  --version               Versión de RIGE y OpenCode.\n  --depurar               Stack de fallas internas.\n  --proyecto <carpeta>    Carpeta del proyecto; por defecto, la carpeta actual\n  --agente <nombre>       Agente a consultar (en comparar, filtra solo el texto)\n  --lanzado-por <agente>  Agente que lanza la consulta como subagente\n  --todo                  Incluir valores de fábrica y desplazadas, la cadena completa o los lugares revisados de entradas\n  --explicar              Ampliar la explicación y los avisos generales (reglas: en JSON se ignora)\n  --tiempos               Diagnóstico en consultas de proyecto.\n\nEjemplos:\n  rige reglas --agente build\n  rige reglas --agente plan --explicar --texto\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-agentes",
+      "argumentos": [
+        "agentes",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige agentes [--proyecto <carpeta>] [--explicar]\n\nOpciones:\n  --json, --texto       Formato explícito; consola: texto, tubería: JSON.\n  --help, -h            Ayuda sin consultar configuración ni almacén.\n  --version             Versión de RIGE y OpenCode.\n  --depurar             Stack de fallas internas.\n  --proyecto <carpeta>  Carpeta del proyecto; por defecto, la carpeta actual\n  --explicar            Ampliar la explicación y los avisos generales (reglas: en JSON se ignora)\n  --tiempos             Diagnóstico en consultas de proyecto.\n\nEjemplos:\n  rige agentes\n  rige agentes --proyecto ./proyecto --json\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-entradas",
+      "argumentos": [
+        "entradas",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige entradas [--proyecto <carpeta>] [--todo]\n\nOpciones:\n  --json, --texto       Formato explícito; consola: texto, tubería: JSON.\n  --help, -h            Ayuda sin consultar configuración ni almacén.\n  --version             Versión de RIGE y OpenCode.\n  --depurar             Stack de fallas internas.\n  --proyecto <carpeta>  Carpeta del proyecto; por defecto, la carpeta actual\n  --todo                Incluir valores de fábrica y desplazadas, la cadena completa o los lugares revisados de entradas\n  --tiempos             Diagnóstico en consultas de proyecto.\n\nEjemplos:\n  rige entradas\n  rige entradas --proyecto ./proyecto --texto --todo\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-hallazgos",
+      "argumentos": [
+        "hallazgos",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige hallazgos [--proyecto <carpeta>] [--explicar]\n\nOpciones:\n  --json, --texto       Formato explícito; consola: texto, tubería: JSON.\n  --help, -h            Ayuda sin consultar configuración ni almacén.\n  --version             Versión de RIGE y OpenCode.\n  --depurar             Stack de fallas internas.\n  --proyecto <carpeta>  Carpeta del proyecto; por defecto, la carpeta actual\n  --explicar            Ampliar la explicación y los avisos generales (reglas: en JSON se ignora)\n  --tiempos             Diagnóstico en consultas de proyecto.\n\nEjemplos:\n  rige hallazgos\n  rige hallazgos --explicar --json\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-recientes",
+      "argumentos": [
+        "recientes",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige recientes\n\nOpciones:\n  --json, --texto  Formato explícito; consola: texto, tubería: JSON.\n  --help, -h       Ayuda sin consultar configuración ni almacén.\n  --version        Versión de RIGE y OpenCode.\n  --depurar        Stack de fallas internas.\n\nEjemplos:\n  rige recientes\n  rige recientes --json\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-comparar",
+      "argumentos": [
+        "comparar",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige comparar --desde <id> --hasta <id> [--agente <nombre>]\n\nOpciones:\n  --json, --texto    Formato explícito; consola: texto, tubería: JSON.\n  --help, -h         Ayuda sin consultar configuración ni almacén.\n  --version          Versión de RIGE y OpenCode.\n  --depurar          Stack de fallas internas.\n  --desde <id>       Identificador del análisis anterior\n  --hasta <id>       Identificador del análisis posterior\n  --agente <nombre>  Agente a consultar (en comparar, filtra solo el texto)\n\nEjemplos:\n  rige comparar --desde 1 --hasta 2\n  rige comparar --desde 1 --hasta 2 --agente build --texto\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-estado",
+      "argumentos": [
+        "estado",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige estado\n\nOpciones:\n  --json, --texto  Formato explícito; consola: texto, tubería: JSON.\n  --help, -h       Ayuda sin consultar configuración ni almacén.\n  --version        Versión de RIGE y OpenCode.\n  --depurar        Stack de fallas internas.\n\nEjemplos:\n  rige estado\n  rige estado --json\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-esquema",
+      "argumentos": [
+        "esquema",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige esquema\n\nOpciones:\n  --json, --texto  Formato explícito; consola: texto, tubería: JSON.\n  --help, -h       Ayuda sin consultar configuración ni almacén.\n  --version        Versión de RIGE y OpenCode.\n  --depurar        Stack de fallas internas.\n\nEjemplos:\n  rige esquema\n  rige esquema --json\n",
+      "stderr": ""
+    },
+    {
+      "id": "help-servir",
+      "argumentos": [
+        "servir",
+        "--help"
+      ],
+      "codigo": 0,
+      "stdout": "Uso: rige servir\n\nOpciones:\n  --json, --texto  Formato explícito; consola: texto, tubería: JSON.\n  --help, -h       Ayuda sin consultar configuración ni almacén.\n  --version        Versión de RIGE y OpenCode.\n  --depurar        Stack de fallas internas.\n\nEjemplos:\n  rige servir\n  rige servir --texto\n",
+      "stderr": ""
+    },
+    {
+      "id": "sin-subcomando-texto",
+      "argumentos": [
+        "--texto"
+      ],
+      "codigo": 2,
+      "stdout": "",
+      "stderr": "Uso: rige <subcomando> [opciones]\n\nSubcomandos: valores, permiso, reglas, agentes, entradas, hallazgos, recientes, comparar, estado, esquema, servir\n\nOpciones:\n  --json, --texto  Formato explícito; consola: texto, tubería: JSON.\n  --help, -h       Ayuda sin consultar configuración ni almacén.\n  --version        Versión de RIGE y OpenCode.\n  --depurar        Stack de fallas internas.\n\n--proyecto usa la carpeta actual si se omite.\n--todo amplía valores, reglas y entradas; --explicar amplía permiso, reglas en texto y hallazgos.\nNO_COLOR definida (incluso vacía) deshabilita el color.\nUsá rige <subcomando> --help para opciones y ejemplos.\n\nCódigos de salida:\n  0   respuesta válida, con o sin hallazgos\n  1   error de uso (proyecto o agente inexistente, almacén sin esquema, versión no soportada)\n  2   argumentos inválidos\n  70  falla interna\n\nEjemplos:\n  rige valores --agente build\n  rige permiso --agente build --sujeto read --objetivo archivo.ts --json\n"
+    },
+    {
+      "id": "desconocido-texto",
+      "argumentos": [
+        "desconocido",
+        "--texto"
+      ],
+      "codigo": 2,
+      "stdout": "",
+      "stderr": "Error: Subcomando desconocido: desconocido.\nUsá --help\n"
+    },
+    {
+      "id": "constructor",
+      "argumentos": [
+        "constructor"
+      ],
+      "codigo": 2,
+      "stdout": "",
+      "stderr": "{\"esquema\":2,\"error\":{\"codigo\":\"argumentos-invalidos\",\"mensaje\":\"Subcomando desconocido: constructor.\"}}\n"
+    },
+    {
+      "id": "tiempos-comparar",
+      "argumentos": [
+        "comparar",
+        "--tiempos"
+      ],
+      "codigo": 2,
+      "stdout": "",
+      "stderr": "{\"esquema\":2,\"error\":{\"codigo\":\"argumentos-invalidos\",\"mensaje\":\"comparar no admite --tiempos.\"}}\n"
+    },
+    {
+      "id": "tiempos-recientes",
+      "argumentos": [
+        "recientes",
+        "--tiempos"
+      ],
+      "codigo": 2,
+      "stdout": "",
+      "stderr": "{\"esquema\":2,\"error\":{\"codigo\":\"argumentos-invalidos\",\"mensaje\":\"recientes no admite --tiempos.\"}}\n"
+    },
+    {
+      "id": "tiempos-estado",
+      "argumentos": [
+        "estado",
+        "--tiempos"
+      ],
+      "codigo": 2,
+      "stdout": "",
+      "stderr": "{\"esquema\":2,\"error\":{\"codigo\":\"argumentos-invalidos\",\"mensaje\":\"estado no admite --tiempos.\"}}\n"
+    }
+  ]
+}

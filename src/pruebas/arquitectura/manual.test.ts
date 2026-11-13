@@ -48,3 +48,86 @@ test("T5-07 M-6 humo documentado como subproceso aislado y con origen normalizad
     .toEqual([[0.1, "<RAIZ>/opencode.json"], [0.2, "<RAIZ>/proyecto/opencode.json"]]);
   expect(respuesta.entradas.filter((e: { condicion: string }) => e.condicion === "observada")).toHaveLength(3);
 });
+
+test("T5-26 U-10 instrucciones reflejan ADR-114 y la presentacion web", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  const agentes = await Bun.file(resolve(raiz, "AGENTS.md")).text();
+  expect(agentes).toContain("Consola interactiva");
+  expect(agentes).toContain("Error: …");
+  expect(agentes).toContain("JSON por tubería o con `--json`");
+  expect(agentes).toContain("la web no crea datos: solo presenta, filtra, cuenta o agrega lo que traen las respuestas de los casos de uso");
+});
+
+test("T5-26 U-11 documentacion con ejemplos y criterios corregidos", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  for (const archivo of ["MANUAL.md", "README.md"]) {
+    const texto = await Bun.file(resolve(raiz, archivo)).text();
+    for (const fragmento of ["Cadena completa:\n#1 ", "Principal y subagente", "? PREGUNTA ANTES", "→ pregunta", "Existe: no", "versionEsquema: null", "entradas --todo", "en todas las filas", "resumen de lo filtrado"]) expect(texto).toContain(fragmento);
+    expect(texto).not.toContain("Si falta, termina con código 1");
+    expect(texto).not.toContain("`--explicar` se rechaza con código 2");
+    expect(texto).not.toContain("No admite `--explicar` (código 2)");
+  }
+});
+
+test("T5-21 F-7 documentos describen los ajustes finales", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  for (const archivo of ["README.md", "MANUAL.md"]) {
+    const s = await Bun.file(resolve(raiz, archivo)).text();
+    for (const frase of ["Sin hallazgos de:", "Este proyecto no define agentes nuevos: usa los de OpenCode", "Notas del análisis", "selector compacto"]) expect(s).toContain(frase);
+  }
+});
+
+test("U-12 documentos con los controles finales", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  for (const archivo of ["README.md", "MANUAL.md"]) {
+    const documento = await Bun.file(resolve(raiz, archivo)).text();
+    for (const texto of ["Valores de fábrica (n)", "¿Qué significa?", "Límites del análisis", "Ver entradas actuales"]) expect(documento).toContain(texto);
+    expect(documento).not.toContain("**Cómo se decide**");
+  }
+});
+
+test("T5-22 M-6 documentos explican tarjetas, procedencia y reanalisis del resumen", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  for (const archivo of ["README.md", "MANUAL.md"]) {
+    const s = await Bun.file(resolve(raiz, archivo)).text();
+    for (const frase of ["700 px", "una tarjeta por agente", "OpenCode · general", "Todos los agentes:", "Analizar de nuevo** junto", "texto largo"]) expect(s).toContain(frase);
+  }
+});
+
+test("P-9 manual y README describen recorrido y vistas secundarias", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  for (const archivo of ["README.md", "MANUAL.md"]) {
+    const texto = await Bun.file(resolve(raiz, archivo)).text();
+    for (const frase of ["Inicio → resumen → agente → permiso / hallazgos", "Opciones avanzadas", "Ver reglas coincidentes", "Regla que decide", "Estado actual de los archivos"])
+      expect(texto).toContain(frase);
+  }
+});
+
+test("G-9 documenta inicio, fechas, migas y comandos de verificacion", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  for (const archivo of ["README.md", "MANUAL.md"]) {
+    const documento = await Bun.file(resolve(raiz, archivo)).text();
+    for (const texto of ["Carpeta del proyecto", "hoy", "dd/mm/aaaa hh:mm", "migas de pan", "Local · solo lectura · sin red"])
+      expect(documento).toContain(texto);
+  }
+});
+
+test("nombres finales en ejecucion y verificacion", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  for (const archivo of ["README.md", "MANUAL.md"]) {
+    const documento = await Bun.file(resolve(raiz, archivo)).text();
+    const ejecucion = documento.split("## 6.")[1]!.split("## 7.")[0]!;
+    for (const texto of ["Buscar clave", "Resumen del proyecto", "Historial", "Presentes", "Ausentes", "No observadas", "tarjeta abre", "Sin cambios:"]) expect(ejecucion).toContain(texto);
+  }
+  const verificacion = (await Bun.file(resolve(raiz, "MANUAL.md")).text()).split("## 8.")[1]!;
+  expect(verificacion).toContain("Resumen del proyecto → build");
+});
+
+test("T5-24 X-12 documentacion con ejemplos de salida actualizados", async () => {
+  const raiz = resolve(import.meta.dir, "../..");
+  for (const archivo of ["README.md", "MANUAL.md"]) {
+    const t = await Bun.file(resolve(raiz, archivo)).text();
+    expect(/CLAVE  +VALOR/.test(t)).toBe(true);
+    for (const ejemplo of ["ANTES", "LO DETERMINA", "Decide: #", "OpenCode · general", "Sin cambios en:", "external_directory: parcial en todos los agentes", "reglas --agente build --explicar"]) expect(t.includes(ejemplo), `${archivo}: ${ejemplo}`).toBe(true);
+  }
+});

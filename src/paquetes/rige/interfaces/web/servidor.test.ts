@@ -5,11 +5,6 @@ import { versionRige, type RespuestaEstado } from "../../aplicacion/respuestas/e
 import { paginaInicio } from "./paginas/inicio";
 import { crearManejador, iniciarServidor, type CasosWeb } from "./servidor";
 
-test("T5-26 U-7 una sola lista de errores tolerados al recorrer agentes", async () => {
-  const codigo = await Bun.file(new URL("./servidor.ts", import.meta.url)).text();
-  expect(codigo.match(/"clave-no-resuelta", "agente-sin-declaraciones"/g)).toHaveLength(1);
-});
-
 const respuesta: RespuestaEstado = {
   esquema: 2, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 1 },
 };

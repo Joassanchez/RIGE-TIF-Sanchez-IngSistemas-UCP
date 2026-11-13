@@ -1,5 +1,5 @@
 import { rotuloFoto } from "../textos";
-import type { RespuestaReglas } from "../../../aplicacion/respuestas/reglas";
+import type { RespuestaReglas } from "../../../aplicacion/respuestas/contrato-generado";
 import { html, datosRespuesta } from "../plantillas";
 import { diseno, efectoVisual, insignia } from "../diseno";
 import { responderHtml } from "../respuesta";

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { versionRige, type RespuestaEstado } from "../../aplicacion/respuestas/estado";
 import { errorAlmacenSinEsquema, errorConfiguracionInvalida, errorPuertoOcupado } from "../../aplicacion/errores";
-import { ejecutarCli, type Ensamblado } from "./ejecutar";
+import { ejecutarCli, type CasosUsoCli } from "./ejecutar";
 import { analizarFuente, tokenizar } from "../../../../pruebas/utilidades/analisis-arquitectura";
 import { resolve } from "node:path";
 import { consultarValores } from "../../aplicacion/casos-uso/consultar-valores";
@@ -25,14 +25,14 @@ describe("T4-01 tiempos CLI", () => {
     for (const medir of [false, true]) {
       const errores: string[] = [];
       let salida = "";
-      const codigo = ejecutarCli([...argumentos, ...(medir ? ["--tiempos"] : [])], (_, medicion) => {
+      const codigo = ejecutarCli([...argumentos, ...(medir ? ["--tiempos"] : [])], (medicion) => {
         expect(medicion !== undefined).toBe(medir);
-        return { exito: true, valor: { ...noWeb, prepararAlmacen: noWeb.consultarEstado,
+        return { ...noWeb, prepararAlmacen: noWeb.consultarEstado,
           consultarValores: (proyecto, agente, clave) => {
             const resultado = consultarValores({ ...deps, medicion }, proyecto, agente, clave);
             if (!resultado.exito) return resultado;
             return { exito: true, valor: { ...resultado.valor, declaraciones: ["aviso"], reglas: { aviso: "Mensaje" } } };
-          } } };
+          } };
       }, { escribirSalida: texto => { salida += texto; }, escribirError: texto => errores.push(texto) }, ["aviso"]);
       expect(codigo).toBe(0);
       expect(errores[0]).toBe(JSON.stringify({ esquema: 2, advertencia: { codigo: "aviso", mensaje: "Mensaje" } }) + "\n");
@@ -63,7 +63,7 @@ describe("T3-01 R-11 advertencias CLI", () => {
     for (const argumentos of [["valores", "--proyecto", "/p", "--agente", "a"], ["agentes", "--proyecto", "/p"], ["esquema"]]) {
       for (const advertidas of [undefined, ["primera", "segunda"]]) {
         const errores: string[] = [];
-        expect(ejecutarCli(argumentos, () => ({ exito: true, valor: casos }),
+        expect(ejecutarCli(argumentos, () => casos,
           { escribirSalida() {}, escribirError: texto => errores.push(texto) }, advertidas)).toBe(0);
         expect(errores).toEqual(argumentos[0] === "esquema" || advertidas === undefined ? [] : [
           JSON.stringify({ esquema: 2, advertencia: { codigo: "segunda", mensaje: "Mensaje dos" } }) + "\n",
@@ -72,6 +72,23 @@ describe("T3-01 R-11 advertencias CLI", () => {
       }
     }
   });
+
+  test("inyecta limitesGenerales en la presentacion de texto para filtrar avisos generales", () => {
+    const deps = { adaptador: adaptadorFicticio,
+      entorno: crearEntornoMemoria({ archivos: { "/p/capa-a.json": '{"dato":1}', "/p/capa-b.json": '{}' } }),
+      rutas: { canonica: () => "/p" } };
+    const consulta = consultarValores(deps, "/p", "a", undefined);
+    if (!consulta.exito) throw new Error(consulta.error.mensaje);
+    const valor = { ...consulta.valor, declaraciones: ["limite-general", "otro-aviso"],
+      reglas: { "limite-general": "Aviso limite", "otro-aviso": "Aviso otro" } };
+    let salida = "";
+    const codigo = ejecutarCli(["valores", "--proyecto", "/p", "--agente", "a", "--texto"], () => ({
+      ...noWeb, prepararAlmacen: noWeb.consultarEstado, consultarValores: () => ({ exito: true, valor }),
+    }), { escribirSalida: t => { salida += t; }, escribirError() {} }, [], ["limite-general"]);
+    expect(codigo).toBe(0);
+    expect(salida).toContain("Aviso: Aviso otro");
+    expect(salida).not.toContain("Aviso: Aviso limite");
+  });
 });
 
 describe("A2-3 S-4", () => {
@@ -79,9 +96,9 @@ describe("A2-3 S-4", () => {
     const error = { categoria: "uso" as const, codigo: "codigo-nuevo", mensaje: "Codigo del adaptador" };
     const deps = { adaptador: { ...adaptadorFicticio, ubicar: () => ({ exito: false as const, error }) },
       entorno: crearEntornoMemoria({ archivos: {} }), rutas: { canonica: () => "/proyecto" } };
-    const resultado = ejecutar(["valores", "--proyecto", "/proyecto", "--agente", "a"], () => ({ exito: true,
-      valor: { ...noWeb, prepararAlmacen: () => { throw new Error("No preparar"); },
-        consultarValores: (proyecto, agente, clave) => consultarValores(deps, proyecto, agente, clave) } }));
+    const resultado = ejecutar(["valores", "--proyecto", "/proyecto", "--agente", "a"], () => ({
+      ...noWeb, prepararAlmacen: () => { throw new Error("No preparar"); },
+      consultarValores: (proyecto, agente, clave) => consultarValores(deps, proyecto, agente, clave) }));
     expect(resultado.codigo).toBe(1);
     expect(resultado.salida).toBe("");
     expect(JSON.parse(resultado.error).error.codigo).toBe(error.codigo);
@@ -107,13 +124,15 @@ describe("V-1", () => {
 
 describe("CLI-7", () => {
   test("todos los imports, incluidos los de tipos, proceden de aplicacion o del runtime", async () => {
-    const codigo = await Bun.file(new URL("./ejecutar.ts", import.meta.url)).text();
-    const tokens = tokenizar(codigo);
-    const imports = tokens.filter((token, indice) => token.cadena &&
-      (tokens[indice - 1]?.valor === "from" || tokens[indice - 1]?.valor === "import"))
-      .map((token) => token.valor);
-    expect(imports.length).toBeGreaterThan(0);
-    expect(imports.filter((destino) => !destino.startsWith("../../aplicacion/") && !["node:util", "./ayuda", "./texto/index"].includes(destino))).toEqual([]);
+    for (const archivo of ["./ejecutar.ts", "./subcomandos.ts", "./ayuda.ts"]) {
+      const codigo = await Bun.file(new URL(archivo, import.meta.url)).text();
+      const tokens = tokenizar(codigo);
+      const imports = tokens.filter((token, indice) => token.cadena &&
+        (tokens[indice - 1]?.valor === "from" || tokens[indice - 1]?.valor === "import"))
+        .map((token) => token.valor);
+      expect(imports.length).toBeGreaterThan(0);
+      expect(imports.filter((destino) => !destino.startsWith("../../aplicacion/") && !destino.startsWith("./texto/") && !["node:util", "./ayuda", "./subcomandos", "./sugerencias"].includes(destino))).toEqual([]);
+    }
     const resultado = await Bun.file(new URL("../../aplicacion/respuestas/resultado.ts", import.meta.url)).text();
     expect(analizarFuente("paquetes/rige/aplicacion/respuestas/resultado.ts", resultado, {
       dependencias: { "@rige/nucleo": "workspace:*" },
@@ -134,13 +153,14 @@ const noWeb = {
   consultarAgentes: () => { throw new Error("No consultar agentes"); },
   consultarValores: () => { throw new Error("No consultar valores"); },
   consultarEstado: () => { throw new Error("No debe consultar estado"); },
+  describirAlmacen: () => { throw new Error("No debe describir almacen"); },
   iniciarServidor: () => { throw new Error("No debe iniciar servidor"); },
 };
-const exitoso = (): Ensamblado => ({
-  exito: true, valor: { ...noWeb, prepararAlmacen: () => ({ exito: true, valor: respuesta }) },
+const exitoso = (): CasosUsoCli => ({
+  ...noWeb, prepararAlmacen: () => ({ exito: true, valor: respuesta }),
 });
 
-function ejecutar(argumentos: readonly string[], ensamblar: () => Ensamblado = exitoso) {
+function ejecutar(argumentos: readonly string[], ensamblar: () => CasosUsoCli = exitoso) {
   let salida = "";
   let error = "";
   const codigo = ejecutarCli(argumentos, ensamblar, {
@@ -160,14 +180,11 @@ describe("CLI-1", () => {
 });
 
 describe("CLI-2", () => {
-  test("presenta errores de uso del ensamblado y del caso de uso en el canal de error", () => {
-    for (const origen of ["ensamblado", "caso de uso"]) {
-      const error = origen === "ensamblado"
-        ? errorConfiguracionInvalida("RIGE_PUERTO", "valor de prueba")
-        : errorAlmacenSinEsquema;
-      const ensamblar = (): Ensamblado => origen === "ensamblado"
-        ? { exito: false, error }
-        : { exito: true, valor: { ...noWeb, prepararAlmacen: () => ({ exito: false, error }) } };
+  test("presenta errores de uso del caso de uso en el canal de error", () => {
+    for (const error of [errorConfiguracionInvalida("RIGE_PUERTO", "valor de prueba"), errorAlmacenSinEsquema]) {
+      const ensamblar = (): CasosUsoCli => ({
+        ...noWeb, prepararAlmacen: () => ({ exito: false, error }),
+      });
       expect(ejecutar(["esquema"], ensamblar)).toEqual({
         codigo: 1, salida: "", error: JSON.stringify({ esquema: 2, error }) + "\n",
       });
@@ -219,9 +236,9 @@ describe("CLI-4", () => {
   test("captura fallas del ensamblado y del caso de uso sin publicar su detalle", () => {
     const falla = new Error("Detalle privado de infraestructura");
     falla.stack = "Stack privado de infraestructura";
-    const ensamblados: (() => Ensamblado)[] = [
+    const ensamblados: (() => CasosUsoCli)[] = [
       () => { throw falla; },
-      () => ({ exito: true, valor: { ...noWeb, prepararAlmacen: () => { throw falla; } } }),
+      () => ({ ...noWeb, prepararAlmacen: () => { throw falla; } }),
     ];
     for (const ensamblar of ensamblados) {
       expect(ejecutar(["esquema"], ensamblar)).toEqual({
@@ -237,13 +254,15 @@ describe("CLI-5", () => {
     const falla = new Error("Detalle privado de infraestructura");
     falla.stack = "Stack de prueba";
     const errorConfiguracion = errorConfiguracionInvalida("RIGE_PUERTO", "valor de prueba");
-    const errorEnsamblado = (): Ensamblado => ({ exito: false, error: errorConfiguracion });
-    const errorCaso = (): Ensamblado => ({
-      exito: true, valor: { ...noWeb, prepararAlmacen: () => ({ exito: false, error: errorAlmacenSinEsquema }) },
+    const errorConfiguracionCaso = (): CasosUsoCli => ({
+      ...noWeb, prepararAlmacen: () => ({ exito: false, error: errorConfiguracion }),
+    });
+    const errorCaso = (): CasosUsoCli => ({
+      ...noWeb, prepararAlmacen: () => ({ exito: false, error: errorAlmacenSinEsquema }),
     });
     const casos = [
       { argumentos: ["esquema"], ensamblar: exitoso },
-      { argumentos: ["esquema"], ensamblar: errorEnsamblado },
+      { argumentos: ["esquema"], ensamblar: errorConfiguracionCaso },
       { argumentos: ["esquema"], ensamblar: errorCaso },
       { argumentos: [], ensamblar: exitoso },
       { argumentos: ["otro"], ensamblar: exitoso },
@@ -262,9 +281,9 @@ describe("CLI-5", () => {
         expect(ejecutar(depurados, ensamblar)).toEqual(esperado);
       }
     }
-    const fallas: (() => Ensamblado)[] = [
+    const fallas: (() => CasosUsoCli)[] = [
       () => { throw falla; },
-      () => ({ exito: true, valor: { ...noWeb, prepararAlmacen: () => { throw falla; } } }),
+      () => ({ ...noWeb, prepararAlmacen: () => { throw falla; } }),
     ];
     for (const ensamblar of fallas) {
       for (const argumentos of [["--depurar", "esquema"], ["esquema", "--depurar"]]) {
@@ -283,35 +302,31 @@ describe("CLI-6", () => {
   test("consulta antes de iniciar, serializa direccion y conserva errores y aislamiento de esquema", () => {
     const direccion = "http://127.0.0.1:12345";
     const orden: string[] = [];
-    const ensamblado: Ensamblado = {
-      exito: true, valor: {
-        ...noWeb,
-        consultarValores: noWeb.consultarValores,
-        prepararAlmacen: () => { throw new Error("No debe preparar almacen"); },
-        consultarEstado: () => { orden.push("consultar"); return { exito: true, valor: respuesta }; },
-        iniciarServidor: () => { orden.push("iniciar"); return { exito: true, valor: { direccion, detener() {} } }; },
-      },
+    const casos: CasosUsoCli = {
+      ...noWeb,
+      consultarValores: noWeb.consultarValores,
+      prepararAlmacen: () => { throw new Error("No debe preparar almacen"); },
+      consultarEstado: () => { orden.push("consultar"); return { exito: true, valor: respuesta }; },
+      iniciarServidor: () => { orden.push("iniciar"); return { exito: true, valor: { direccion, detener() {} } }; },
     };
-    expect(ejecutar(["servir"], () => { orden.push("ensamblar"); return ensamblado; })).toEqual({
+    expect(ejecutar(["servir"], () => { orden.push("ensamblar"); return casos; })).toEqual({
       codigo: 0, salida: JSON.stringify({ esquema: 2, direccion }) + "\n", error: "",
     });
     expect(orden).toEqual(["ensamblar", "consultar", "iniciar"]);
-    if (!ensamblado.exito) throw new Error("Doble invalido");
-    const casos = ensamblado.valor;
     for (const error of [errorAlmacenSinEsquema, errorPuertoOcupado(12345)]) {
       const consultarEstado = error.codigo === "almacen-sin-esquema"
         ? () => ({ exito: false as const, error }) : casos.consultarEstado;
       const iniciarServidor = error.codigo === "almacen-sin-esquema"
         ? noWeb.iniciarServidor : () => ({ exito: false as const, error });
-      expect(ejecutar(["servir"], () => ({ exito: true, valor: { ...casos, consultarEstado, iniciarServidor } }))).toEqual({
+      expect(ejecutar(["servir"], () => ({ ...casos, consultarEstado, iniciarServidor }))).toEqual({
         codigo: 1, salida: "", error: JSON.stringify({ esquema: 2, error }) + "\n",
       });
     }
     const falla = new Error("Detalle privado");
-    const fallas: (() => Ensamblado)[] = [
+    const fallas: (() => CasosUsoCli)[] = [
       () => { throw falla; },
-      () => ({ exito: true, valor: { ...casos, consultarEstado: () => { throw falla; } } }),
-      () => ({ exito: true, valor: { ...casos, iniciarServidor: () => { throw falla; } } }),
+      () => ({ ...casos, consultarEstado: () => { throw falla; } }),
+      () => ({ ...casos, iniciarServidor: () => { throw falla; } }),
     ];
     for (const ensamblar of fallas) {
       expect(ejecutar(["servir"], ensamblar)).toEqual({
@@ -319,7 +334,52 @@ describe("CLI-6", () => {
         error: JSON.stringify({ esquema: 2, error: { codigo: "interno", mensaje: "Falla interna de RIGE." } }) + "\n",
       });
     }
-    expect(ejecutar(["servir"], () => ({ exito: false, error: errorAlmacenSinEsquema })).codigo).toBe(1);
+    expect(ejecutar(["servir"], () => ({ ...casos, consultarEstado: () => ({ exito: false, error: errorAlmacenSinEsquema }) })).codigo).toBe(1);
     expect(ejecutar(["esquema"])).toEqual({ codigo: 0, salida: JSON.stringify(respuesta) + "\n", error: "" });
+  });
+});
+
+describe("T5-33 reglas U-1 a U-5", () => {
+  test("U-1 subcomando desconocido con candidato cercano en texto sugiere correccion", () => {
+    const res = ejecutar(["valroes", "--texto"]);
+    expect(res.codigo).toBe(2);
+    expect(res.error).toBe("Error: Subcomando desconocido: valroes.\n¿Quisiste decir valores?\nUsá --help\n");
+  });
+
+  test("U-2 subcomando desconocido en JSON no emite sugerencia", () => {
+    const res = ejecutar(["valroes", "--json"]);
+    expect(res.codigo).toBe(2);
+    expect(JSON.parse(res.error)).toEqual({
+      esquema: 2,
+      error: { codigo: "argumentos-invalidos", mensaje: "Subcomando desconocido: valroes." },
+    });
+  });
+
+  test("U-3 opcion desconocida en texto sugiere opcion valida del subcomando", () => {
+    const res = ejecutar(["valores", "--agente", "build", "--clav", "temperature", "--texto"]);
+    expect(res.codigo).toBe(2);
+    expect(res.error).toContain("¿Quisiste decir --clave?\nUsá --help\n");
+  });
+
+  test("U-4 subcomando sin candidato cercano en texto no emite linea de sugerencia", () => {
+    const res = ejecutar(["xyz", "--texto"]);
+    expect(res.codigo).toBe(2);
+    expect(res.error).toBe("Error: Subcomando desconocido: xyz.\nUsá --help\n");
+  });
+
+  test("no confunde el valor de una opcion de cadena con el subcomando al sugerir", () => {
+    const res = ejecutar(["--agente", "valores", "--clav", "x", "--texto"]);
+    expect(res.codigo).toBe(2);
+    expect(res.error).not.toContain("¿Quisiste decir");
+  });
+
+  test("U-5 rige --help incluye codigos de salida y rige valores --help no cambia", () => {
+    const ayudaGeneral = ejecutar(["--help"]);
+    expect(ayudaGeneral.codigo).toBe(0);
+    expect(ayudaGeneral.salida).toContain("Códigos de salida:\n  0   respuesta válida, con o sin hallazgos\n  1   error de uso (proyecto o agente inexistente, almacén sin esquema, versión no soportada)\n  2   argumentos inválidos\n  70  falla interna\n");
+
+    const ayudaValores = ejecutar(["valores", "--help"]);
+    expect(ayudaValores.codigo).toBe(0);
+    expect(ayudaValores.salida).not.toContain("Códigos de salida:");
   });
 });

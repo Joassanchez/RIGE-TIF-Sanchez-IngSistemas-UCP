@@ -2,9 +2,9 @@ import { expect, test } from "bun:test";
 import { join, resolve } from "node:path";
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { Database } from "bun:sqlite";
-import { prepararConsultas } from "../utilidades/consultas-cli";
-import { lanzar } from "../utilidades/subproceso";
-import { validarEsquema } from "../utilidades/validar-esquema";
+import { prepararConsultas } from "../../../../../pruebas/utilidades/consultas-cli";
+import { lanzar } from "../../../../../pruebas/utilidades/subproceso";
+import { validarEsquema } from "../../../../../pruebas/utilidades/validar-esquema";
 
 test("T5-26 U-14 estado inexistente, sin esquema y correcto, sin crear ni modificar la base", async () => {
   const e = prepararConsultas();
