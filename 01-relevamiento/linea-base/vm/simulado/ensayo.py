@@ -44,11 +44,17 @@ class Ensayo(Proveedor):
         if lectura:
             return lectura
         identificador = 'med19_consulta_rige'
+        id_anidado = 'med20_consulta_rige_anidada'
         recibidos = {m.get('tool_call_id') for m in cuerpo.get('messages', []) if m.get('role') == 'tool'}
-        if self.plan.get('consulta_rige') and identificador not in recibidos:
-            return {'role': 'assistant', 'content': None, 'tool_calls': [dict(
-                id=identificador, type='function', function=dict(name='bash',
-                    arguments=json.dumps(dict(command=self.plan['consulta_rige']))))]}
+        if self.plan.get('consulta_rige'):
+            if identificador not in recibidos:
+                return {'role': 'assistant', 'content': None, 'tool_calls': [dict(
+                    id=identificador, type='function', function=dict(name='bash',
+                        arguments=json.dumps(dict(command=self.plan['consulta_rige']))))]}
+            if id_anidado not in recibidos:
+                return {'role': 'assistant', 'content': None, 'tool_calls': [dict(
+                    id=id_anidado, type='function', function=dict(name='bash',
+                        arguments=json.dumps(dict(command='como-dev ' + shlex.quote(self.plan['consulta_rige'])))))]}
         return {'role': 'assistant', 'content': 'ENSAYO: valores inventados.\n' + json.dumps(self.plan['salida'], ensure_ascii=False)}
 
 

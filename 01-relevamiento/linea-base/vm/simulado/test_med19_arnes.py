@@ -3,6 +3,7 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -39,7 +40,7 @@ class FinalTests(unittest.TestCase):
                         self.assertIn(('build', permiso, rel[2:]), eco.bateria(['build'], limpio['tarea'], escenario=limpio))
 
     def test_baterias_historicas_identicas_y_contrafactual_R(self):
-        anterior = subprocess.check_output(['git', 'show', 'HEAD:01-relevamiento/linea-base/vm/simulado/ecologica.py'], cwd=ROOT)
+        anterior = subprocess.check_output(['git', 'show', '92a5bd6~1:01-relevamiento/linea-base/vm/simulado/ecologica.py'], cwd=ROOT)
         viejo = ModuleType('eco_anterior_med19')
         viejo.__file__ = eco.__file__
         exec(compile(anterior, eco.__file__, 'exec'), viejo.__dict__)
@@ -133,7 +134,7 @@ class FinalTests(unittest.TestCase):
                     if b in ('indicado', 'disponible'):
                         self.assertTrue(comandos[0].startswith('rige permiso '))
                         self.assertEqual(pedidos[-1][0], 'bash')
-                        self.assertEqual(pedidos[-1][1]['command'], plan['consulta_rige'])
+                        self.assertEqual(pedidos[-1][1]['command'], 'como-dev ' + shlex.quote(plan['consulta_rige']))
                         self.assertIn('--herramienta', comandos[0])
                     elif b == 'probar':
                         self.assertTrue(any(cmd.startswith("como-dev 'opencode run ") for cmd in comandos))
@@ -175,7 +176,7 @@ class FinalTests(unittest.TestCase):
             h = SimpleNamespace(ejecutar=ejecutar, como_evaluador=lambda args, env: args)
             a = SimpleNamespace(hoja='final', brazo='indicado')
             eco.control_rige(h, a, carpeta, {}, '/p')
-            self.assertIn('rige hallazgos --proyecto /p', comandos[-1])
+            self.assertIn("como-dev 'rige hallazgos --proyecto /p'", comandos[-1])
             a.brazo = 'probar'
             eco.control_rige(h, a, carpeta, {}, '/p')
             self.assertIn('! command -v rige', comandos[-1])

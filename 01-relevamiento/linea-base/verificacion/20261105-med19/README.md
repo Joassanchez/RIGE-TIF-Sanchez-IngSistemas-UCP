@@ -66,6 +66,12 @@ La fecha de ese comando debe ser la del cierre efectivo elegido por el ingeniero
 
 ## Ensayo por brazo (pendiente; ejecutar por el ingeniero)
 
+Antes de cada tanda (en ensayo y en medición): pausar el escudo web del antivirus del equipo y comprobar el emisor del certificado con un contenedor aparte de la misma imagen:
+```bash
+docker run --rm --platform linux/amd64 rige-linea-base:1.18.25 sh -c 'openssl s_client -connect <host>:443 -servername <host> </dev/null 2>/dev/null | openssl x509 -noout -issuer'
+```
+para cada host del proveedor que usen los ejecutores (en el piloto del 12/11/2026, `chatgpt.com`, según la observación del autor). Si el emisor es el antivirus, la tanda no se lanza (ADR-098, punto 49). Si la imagen no trae `openssl`, usar `curl -sv https://<host> -o /dev/null` y leer la línea `issuer:`.
+
 Desde `linea-base/`, con `RIGE_BINARIO` apuntando al binario Linux compilado de la etiqueta y `RIGE_ETIQUETA` con esa etiqueta. Ambos son obligatorios para `indicado` y `disponible`, incluso en ensayo. No se simula el binario RIGE.
 
 ```bash
@@ -86,6 +92,14 @@ done
 Si se retiró una R al cerrar, quitarla de `--casos`. Para ensayar el banco completo, usar la lista explícita `BANCO` de la sección siguiente y mantener `--ensayo`: omitir `--casos` selecciona 50 tareas, mezcla el reservado y cambia el reparto de octubre. Para Charles, cambiar el cuarto argumento a `charles` y usar tandas nuevas. No reutilizar la raíz del ensayo que esté corriendo.
 
 ## Medición real: prioridades 1 a 4
+
+Paso previo a cada tanda: pausar el escudo web del antivirus del equipo y comprobar el emisor del certificado con un contenedor aparte de la misma imagen:
+```bash
+docker run --rm --platform linux/amd64 rige-linea-base:1.18.25 sh -c 'openssl s_client -connect <host>:443 -servername <host> </dev/null 2>/dev/null | openssl x509 -noout -issuer'
+```
+para cada host del proveedor que usen los ejecutores (en el piloto del 12/11/2026, `chatgpt.com`, según la observación del autor). Si el emisor es el antivirus, la tanda no se lanza (ADR-098, punto 49). Si la imagen no trae `openssl`, usar `curl -sv https://<host> -o /dev/null` y leer la línea `issuer:`.
+
+Aviso de unión: las tandas previas a MED-20 tienen otro `hash_wrapper_rige` y `unir.py` (≈33) no las une con las posteriores.
 
 Comandos para Git Bash desde `linea-base/`, sin `--ensayo`. El ingeniero carga la credencial por variable de entorno y fija el binario Linux y la etiqueta final. La raíz de medición es independiente del ensayo. Cada tanda debe ser nueva y el lanzador rechaza un destino existente. El banco conserva las **46 tareas y su orden de octubre**: con semilla 20261015 y k=3 reproduce los repartos `reparto-LB-ecologica-principal.json` y `reparto-LB-ecologica-charles.json`. No omitir `--casos` en el banco ni añadirle las R.
 
@@ -245,3 +259,22 @@ Verificación local de c5:
 - Destino de esa corrida: `C:/Users/Joa/AppData/Local/Temp/med19-c5-humo-fc88f7f7036f412eaa4a3556f305bf1f`. Las copias están en `copias/` y las salidas en `analisis/`. La primera corrida detectó el campo de ruta incorrecto y terminó con error; la corrida indicada es la posterior a la corrección.
 - Base leída directamente del tar.gz con `analizar_final.leer_base`: **0 de 342 filas** tienen `fuera_configuracion` verdadero. Se regeneró `control-base/` con el comando de este README porque c5 agrega el campo descriptivo y la línea de informe; conserva las cuatro medianas y el veredicto de falta de ejecución.
 - No se ejecutaron agentes, Docker ni una medición real; el humo verifica el recorrido del análisis, no los resultados nativos ni los grupos que faltan. No se modificó `src/`, el arnés, las entradas del ensayo, ADR-098 ni los preregistros. Sin commits.
+
+## MED-20: envoltorio invocable desde como-dev, control anidado y comprobación de certificado
+
+Resumen de los cambios:
+- `herramientas/preparar_final.py`: el envoltorio `/usr/local/bin/rige` comprueba si el usuario actual ya es `participante` (`if [[ $(id -un) == participante ]]; then exec /opt/rige/rige "$@"; fi`) antes de invocar `como-dev "$cmd"`. Funciona tanto por invocación directa como por invocación anidada desde `como-dev 'rige …'`, evitando fallos por falta de permisos en `sudo`.
+- `vm/simulado/ecologica.py`:
+  - `control_rige` (en brazos `indicado` y `disponible`) realiza la comprobación directa hacia `rige.json` y luego una comprobación anidada con `como-dev 'rige hallazgos --proyecto <proyecto>'` hacia `rige-anidado.json` y `rige-anidado.err`, exigiendo código de retorno 0 y coincidencia byte a byte (`read_bytes()`) con `rige.json`.
+  - `EnsayoAnidado.__init__` añade la consulta anidada `'como-dev ' + shlex.quote(plan['consulta_rige'])` inmediatamente después de la consulta directa y antes de `verificacion_anidada`.
+- `vm/simulado/ensayo.py`: `Ensayo.respuesta` (detección) emite la consulta directa `med19_consulta_rige` y luego la consulta anidada `med20_consulta_rige_anidada` con `'como-dev ' + shlex.quote(plan['consulta_rige'])`.
+- `vm/simulado/test_med19_arnes.py`: aserciones ajustadas a la última consulta (anidada) y corrección de la referencia histórica a `92a5bd6~1`.
+- `vm/simulado/test_med19_c2_ensayo.py`: aserciones ajustadas para reflejar la última consulta y el conteo de consultas en detección (`len(consultas) == 2 * int(brazo != 'LB')`).
+- `vm/simulado/test_med20.py`: pruebas para las reglas M20-3, M20-4 y M20-5.
+- `herramientas/test_med19_lanzadores.py`: pruebas para las reglas M20-1, M20-2 y M20-6.
+
+Resultados de las pruebas:
+- `herramientas/`: `python -B -m unittest`, 207 pruebas pasan (204 existentes + 3 de MED-20: M20-1, M20-2, M20-6).
+- `vm/simulado/`: `python -B -m unittest`, 106 pruebas (102 pasan, 4 omitidas por requisitos del entorno; 103 existentes + 3 de MED-20: M20-3, M20-4, M20-5).
+- `bash -n vm/contenedor.sh`: sintaxis válida.
+- Aviso de unión: las tandas previas a MED-20 tienen otro `hash_wrapper_rige` y `unir.py` (≈33) no las une con las posteriores.

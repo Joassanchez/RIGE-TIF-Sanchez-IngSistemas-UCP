@@ -1,6 +1,7 @@
 """MED-19-c2: guiones finales emitidos sin Docker ni agentes."""
 import json
 from pathlib import Path
+import shlex
 import sys
 import tempfile
 import unittest
@@ -53,7 +54,7 @@ class EnsayoFinalTests(unittest.TestCase):
                             provider = eco.EnsayoAnidado(plan, root / 'registro.jsonl')
                         hs = self.recorrer(provider)
                         self.assertTrue(any(h['herramienta'] in ('edit', 'write') for h in hs))
-                        self.assertEqual(hs[-1]['argumentos'].get('command'), plan['consulta_rige'])
+                        self.assertEqual(hs[-1]['argumentos'].get('command'), 'como-dev ' + shlex.quote(plan['consulta_rige']))
                         self.assertEqual(clasificar_proceso(dict(herramientas=hs, solicitudes=[]), {})['verificacion_final'], 'rige')
 
     def test_deteccion_consulta_hallazgos_antes_de_responder(self):
@@ -69,11 +70,12 @@ class EnsayoFinalTests(unittest.TestCase):
                         plan = eco.cargar_plan_ensayo(root, 'deteccion', caso, 'final', brazo)
                         hs = self.recorrer(Ensayo(plan, 'ensayo', root / 'registro.jsonl'))
                         consultas = [h for h in hs if h['herramienta'] == 'bash']
-                        self.assertEqual(len(consultas), int(brazo != 'LB'))
+                        self.assertEqual(len(consultas), 2 * int(brazo != 'LB'))
                         self.assertEqual(compartidas().observar(hs)['uso_rige'], int(brazo != 'LB'))
                         if consultas:
-                            self.assertIs(hs[-1], consultas[0])
+                            self.assertIs(hs[-1], consultas[1])
                             self.assertEqual(consultas[0]['argumentos']['command'], 'rige hallazgos --proyecto /home/participante/proyecto')
+                            self.assertEqual(consultas[1]['argumentos']['command'], "como-dev 'rige hallazgos --proyecto /home/participante/proyecto'")
 
 
 if __name__ == '__main__':

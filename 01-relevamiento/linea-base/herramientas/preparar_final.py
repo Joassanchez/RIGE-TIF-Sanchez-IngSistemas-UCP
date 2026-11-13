@@ -8,6 +8,7 @@ import shutil
 ROOT = Path(__file__).resolve().parents[1]
 ENVOLTORIO = '''#!/bin/bash
 set -euo pipefail
+if [[ $(id -un) == participante ]]; then exec /opt/rige/rige "$@"; fi
 printf -v cmd '%q ' /opt/rige/rige "$@"
 exec como-dev "$cmd"
 '''

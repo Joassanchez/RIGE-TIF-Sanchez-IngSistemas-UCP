@@ -82,6 +82,93 @@ class EntradasTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 preparar(root / 'invalido', 'indicado')
 
+    @unittest.skipUnless(shutil.which('bash'), 'Bash no disponible')
+    def test_M20_1_envoltorio_participante_directo_sin_sudo_ni_como_dev(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            falso_bin = root / 'fake_rige.sh'
+            log_args = root / 'args.log'
+            falso_bin.write_text(f'''#!/bin/bash
+for a in "$@"; do printf '%s\\n' "$a" >> "{shell(log_args)}"; done
+''', encoding='utf-8', newline='\n')
+            falso_bin.chmod(0o755)
+
+            bin_dir = root / 'bin'
+            bin_dir.mkdir()
+            (bin_dir / 'id').write_text('#!/bin/bash\necho participante\n', encoding='utf-8', newline='\n')
+            (bin_dir / 'id').chmod(0o755)
+            (bin_dir / 'sudo').write_text('#!/bin/bash\necho "ERROR: sudo invocado" >&2\nexit 91\n', encoding='utf-8', newline='\n')
+            (bin_dir / 'sudo').chmod(0o755)
+            (bin_dir / 'como-dev').write_text('#!/bin/bash\necho "ERROR: como-dev invocado" >&2\nexit 92\n', encoding='utf-8', newline='\n')
+            (bin_dir / 'como-dev').chmod(0o755)
+
+            envoltorio_texto = preparar_final.ENVOLTORIO
+            self.assertIn('/opt/rige/rige', envoltorio_texto)
+            modificado = envoltorio_texto.replace('/opt/rige/rige', shell(falso_bin))
+            self.assertNotIn('/opt/rige/rige', modificado)
+            wrapper_path = root / 'envoltorio'
+            wrapper_path.write_text(modificado, encoding='utf-8', newline='\n')
+            wrapper_path.chmod(0o755)
+
+            argumentos = ['arg con espacios', "'con comillas'", 'con|pipe']
+            env = os.environ.copy()
+            env['PATH'] = f"{shell(bin_dir)}:{env.get('PATH', '')}"
+            r = subprocess.run([shutil.which('bash'), shell(wrapper_path)] + argumentos,
+                               capture_output=True, text=True, env=env)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertEqual(log_args.read_text(encoding='utf-8').splitlines(), argumentos)
+
+    @unittest.skipUnless(shutil.which('bash'), 'Bash no disponible')
+    def test_M20_2_envoltorio_otro_usuario_camino_como_dev(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            falso_bin = root / 'fake_rige.sh'
+            falso_bin.write_text('#!/bin/bash\nexit 0\n', encoding='utf-8', newline='\n')
+            falso_bin.chmod(0o755)
+
+            log_comodev = root / 'comodev.log'
+            bin_dir = root / 'bin'
+            bin_dir.mkdir()
+            (bin_dir / 'id').write_text('#!/bin/bash\necho root\n', encoding='utf-8', newline='\n')
+            (bin_dir / 'id').chmod(0o755)
+            (bin_dir / 'como-dev').write_text(f'''#!/bin/bash
+printf '%s\\n' "$1" > "{shell(log_comodev)}"
+''', encoding='utf-8', newline='\n')
+            (bin_dir / 'como-dev').chmod(0o755)
+
+            envoltorio_texto = preparar_final.ENVOLTORIO
+            self.assertIn('/opt/rige/rige', envoltorio_texto)
+            modificado = envoltorio_texto.replace('/opt/rige/rige', shell(falso_bin))
+            self.assertNotIn('/opt/rige/rige', modificado)
+            wrapper_path = root / 'envoltorio'
+            wrapper_path.write_text(modificado, encoding='utf-8', newline='\n')
+            wrapper_path.chmod(0o755)
+
+            argumentos = ['arg con espacios', "'con comillas'", 'con|pipe']
+            env = os.environ.copy()
+            env['PATH'] = f"{shell(bin_dir)}:{env.get('PATH', '')}"
+            r = subprocess.run([shutil.which('bash'), shell(wrapper_path)] + argumentos,
+                               capture_output=True, text=True, env=env)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            llamada = log_comodev.read_text(encoding='utf-8').strip()
+            self.assertTrue(llamada.startswith(shell(falso_bin)))
+            self.assertIn('arg\\ con\\ espacios', llamada)
+            self.assertIn('con\\|pipe', llamada)
+
+    def test_M20_6_envoltorio_LF_y_hash_sha256(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            binario = root / 'binario'
+            binario.write_bytes(b'BINARIO SINTETICO')
+            with patch.object(preparar_final, 'ENVOLTORIO', preparar_final.ENVOLTORIO.replace('\n', '\r\n')):
+                preparar(root / 'salida', 'indicado', binario, 'etiqueta-sintetica')
+            wrapper = root / 'salida/rige-wrapper'
+            contenido = wrapper.read_bytes()
+            self.assertNotIn(b'\r\n', contenido)
+            contenido.decode('utf-8')
+            inventario = json.loads((root / 'salida/arnes/entradas-final.json').read_bytes())
+            self.assertEqual(inventario['rige']['hash_wrapper_rige'], hashlib.sha256(contenido).hexdigest())
+
 
 @unittest.skipUnless(shutil.which('bash'), 'Bash no disponible')
 class LanzadorTests(unittest.TestCase):

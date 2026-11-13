@@ -257,6 +257,7 @@ class EnsayoAnidado(EnsayoModificacion):
         super().__init__(plan, 'ensayo', registro)
         if plan.get('consulta_rige'):
             self.llamadas.append(('bash', dict(command=plan['consulta_rige'])))
+            self.llamadas.append(('bash', dict(command='como-dev ' + shlex.quote(plan['consulta_rige']))))
         self.verificacion_confirmada = not bool(plan.get('verificacion_anidada'))
         if plan.get('verificacion_anidada'):
             self.llamadas.append(('bash', dict(command=plan['verificacion_anidada'])))
@@ -1157,6 +1158,14 @@ def control_rige(h, a, carpeta, env, proyecto):
         raise ValueError('Control RIGE fallido antes de habilitar el agente')
     if con and (not isinstance(datos := json.loads(path.read_text()), dict) or 'esquema' not in datos):
         raise ValueError('RIGE no devolvió JSON con esquema')
+    if con:
+        anidado = 'como-dev ' + shlex.quote(comando)
+        path_anidado = carpeta / 'rige-anidado.json'
+        err_anidado = carpeta / 'rige-anidado.err'
+        if h.ejecutar(h.como_evaluador(['bash', '-c', anidado], env), path_anidado, err_anidado):
+            raise ValueError('Control RIGE fallido antes de habilitar el agente')
+        if path_anidado.read_bytes() != path.read_bytes():
+            raise ValueError('Control RIGE anidado difiere del directo')
 
 
 def medir(compartidas, ejecutar_medida=ejecutar_grupo):
