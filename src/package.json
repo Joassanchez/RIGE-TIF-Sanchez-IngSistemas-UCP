@@ -13,6 +13,7 @@
     "verificar": "bun ./herramientas/verificar.ts",
     "medir:rnf07": "bun ./herramientas/medir-rnf07.ts",
     "prueba:lenta": "bun ./herramientas/prueba-lenta.ts",
+    "prueba:rapida": "bun test paquetes",
     "referencias": "bun ./herramientas/referencias-nativas.ts",
     "decisiones": "bun ./herramientas/decisiones-nativas.ts",
     "cobertura": "bun ./herramientas/cobertura.ts",

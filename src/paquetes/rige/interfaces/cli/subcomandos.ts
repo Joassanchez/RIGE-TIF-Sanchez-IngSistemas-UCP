@@ -9,6 +9,7 @@ import type {
   RespuestaComparacion,
   RespuestaEntradas,
   RespuestaHallazgos,
+  RespuestaHistorialProyecto,
   RespuestaPermiso,
   RespuestaProyectosRecientes,
   RespuestaReglas,
@@ -18,8 +19,6 @@ import type { SolicitudReglas } from "../../aplicacion/casos-uso/consultar-regla
 import type { ConsultarAgentes } from "../../aplicacion/casos-uso/consultar-agentes";
 import type { ConsultarEntradas } from "../../aplicacion/casos-uso/consultar-entradas";
 import type { ConsultarHallazgos } from "../../aplicacion/casos-uso/consultar-hallazgos";
-import type { CompararResoluciones } from "../../aplicacion/casos-uso/comparar-resoluciones";
-import type { ConsultarProyectosRecientes } from "../../aplicacion/casos-uso/consultar-proyectos-recientes";
 import { esIdResolucion } from "../../aplicacion/casos-uso/id-resolucion";
 import type { ContextoPresentacion } from "./texto/formato";
 import { renderizarValores } from "./texto/valores";
@@ -34,8 +33,8 @@ import { renderizarEstado } from "./texto/estado";
 import { renderizarServidor } from "./texto/servidor";
 
 export interface CasosUsoCli {
-  readonly compararResoluciones: CompararResoluciones;
-  readonly consultarProyectosRecientes: ConsultarProyectosRecientes;
+  readonly compararResoluciones: (desde: string | undefined, hasta: string | undefined, proyecto?: string) => Resultado<RespuestaComparacion, ErrorUso>;
+  readonly consultarProyectosRecientes: (proyecto?: string) => Resultado<RespuestaProyectosRecientes | RespuestaHistorialProyecto, ErrorUso>;
   readonly consultarReglas: (solicitud: SolicitudReglas) => Resultado<RespuestaReglas, ErrorUso>;
   readonly consultarValores: ConsultarValores;
   readonly consultarPermiso: (solicitud: SolicitudConsultaPermiso) => Resultado<RespuestaPermiso, ErrorUso>;
@@ -58,6 +57,7 @@ export const definicionOpciones = {
   objetivo: { type: "string" },
   "lanzado-por": { type: "string" },
   explicar: { type: "boolean" },
+  estricto: { type: "boolean" },
   tiempos: { type: "boolean" },
   desde: { type: "string" },
   hasta: { type: "string" },
@@ -74,14 +74,31 @@ export interface OpcionesCrudas {
   readonly carpetaActual?: string | undefined;
 }
 
+export type GrupoSubcomando = "consultar" | "historial" | "almacen";
+
+export interface ErrorInterpretacion {
+  readonly json: string;
+  readonly texto: string;
+}
+
+export function esErrorInterpretacion(valor: unknown): valor is ErrorInterpretacion {
+  return typeof valor === "object" && valor !== null && "json" in valor && "texto" in valor;
+}
+
 export interface DefinicionSubcomando<T, R> {
   readonly nombre: string;
+  readonly grupo: GrupoSubcomando;
+  readonly resumen: string;
   readonly opciones: readonly string[];
+  readonly obligatorias?: readonly string[];
+  readonly descripcionesOpciones?: Readonly<Record<string, string>>;
+  readonly notaAyuda?: string;
   readonly consultaProyecto: boolean;
   readonly uso: readonly [string, string, string];
-  interpretar(crudas: OpcionesCrudas): string | T;
+  interpretar(crudas: OpcionesCrudas): ErrorInterpretacion | T;
   ejecutar(casos: CasosUsoCli, o: T): Resultado<R, ErrorUso>;
   renderizar(respuesta: R, c: ContextoPresentacion): string;
+  readonly codigoSalida?: (respuesta: R, o: T) => number;
 }
 
 function definir<T, R>(d: DefinicionSubcomando<T, R>): DefinicionSubcomando<unknown, unknown> {
@@ -92,6 +109,17 @@ const noVacio = (valor: unknown): valor is string => typeof valor === "string" &
 const proyectoDe = (crudas: OpcionesCrudas): string | undefined => crudas.valores.proyecto ?? crudas.carpetaActual;
 const sinOpciones = (): Record<string, never> => ({});
 const usoProyecto = " [--proyecto <carpeta>]";
+
+function causaProyecto(crudas: OpcionesCrudas, proyecto: string | undefined): string | undefined {
+  if (crudas.valores.proyecto !== undefined && !noVacio(crudas.valores.proyecto)) return "--proyecto no puede estar vacío.";
+  if (!noVacio(proyecto)) return "Falta --proyecto.";
+  return undefined;
+}
+
+function causaOpcionalNoVacia(nombre: string, valor: string | undefined, genero: "m" | "f" = "m"): string | undefined {
+  if (valor !== undefined && !noVacio(valor)) return `--${nombre} no puede estar ${genero === "f" ? "vacía" : "vacío"}.`;
+  return undefined;
+}
 
 interface OpcionesValores { readonly proyecto: string; readonly agente: string; readonly clave: string | undefined }
 interface OpcionesPermiso {
@@ -105,22 +133,28 @@ interface OpcionesPermiso {
 interface OpcionesReglas { readonly proyecto: string; readonly agente: string; readonly lanzadoPor: string | undefined }
 interface OpcionesAgentes { readonly proyecto: string }
 interface OpcionesEntradas { readonly proyecto: string }
-interface OpcionesHallazgos { readonly proyecto: string; readonly explicar: boolean }
-interface OpcionesComparar { readonly desde: string; readonly hasta: string }
+interface OpcionesHallazgos { readonly proyecto: string; readonly explicar: boolean; readonly estricto: boolean }
+interface OpcionesRecientes { readonly proyecto: string | undefined }
+interface OpcionesComparar { readonly desde: string | undefined; readonly hasta: string | undefined; readonly proyecto: string | undefined }
 
 export const subcomandos: readonly DefinicionSubcomando<unknown, unknown>[] = [
   definir<OpcionesValores, RespuestaValores>({
     nombre: "valores",
+    grupo: "consultar",
+    resumen: "Claves efectivas de configuración de un agente y su procedencia",
     opciones: ["proyecto", "agente", "clave", "todo"],
+    obligatorias: ["agente"],
     consultaProyecto: true,
     uso: [usoProyecto + " --agente <nombre> [--clave <clave>] [--todo]", "valores --agente build", "valores --agente build --clave temperature --json"],
     interpretar(crudas) {
       const proyecto = proyectoDe(crudas);
       const { agente, clave } = crudas.valores;
-      if (!noVacio(proyecto) || !noVacio(agente) || (clave !== undefined && !noVacio(clave))) {
-        return "valores requiere --agente no vacío; --proyecto y --clave son opcionales y no pueden estar vacíos.";
-      }
-      return { proyecto, agente, clave };
+      const json = "valores requiere --agente no vacío; --proyecto y --clave son opcionales y no pueden estar vacíos.";
+      const causa = causaProyecto(crudas, proyecto)
+        ?? (agente === undefined ? "Falta --agente." : !noVacio(agente) ? "--agente no puede estar vacío." : undefined)
+        ?? causaOpcionalNoVacia("clave", clave, "f");
+      if (causa) return { json, texto: causa };
+      return { proyecto: proyecto!, agente: agente!, clave };
     },
     ejecutar(casos, o) {
       return casos.consultarValores(o.proyecto, o.agente, o.clave);
@@ -129,26 +163,27 @@ export const subcomandos: readonly DefinicionSubcomando<unknown, unknown>[] = [
   }),
   definir<OpcionesPermiso, RespuestaPermiso>({
     nombre: "permiso",
+    grupo: "consultar",
+    resumen: "Decisión de permiso para un agente, sujeto/herramienta y objetivo",
     opciones: ["proyecto", "agente", "herramienta", "sujeto", "objetivo", "lanzado-por", "explicar"],
+    obligatorias: ["agente", "objetivo"],
     consultaProyecto: true,
     uso: [usoProyecto + " --agente <nombre> (--sujeto <sujeto> | --herramienta <nombre>) --objetivo <objetivo> [--lanzado-por <agente>] [--explicar]", "permiso --agente build --sujeto read --objetivo archivo.ts", 'permiso --agente build --herramienta bash --objetivo "git status" --explicar'],
     interpretar(crudas) {
       const proyecto = proyectoDe(crudas);
       const { agente, objetivo, herramienta, sujeto, "lanzado-por": lanzadoPor, explicar } = crudas.valores;
-      const mensaje = "permiso requiere --agente, --objetivo y --herramienta o --sujeto excluyentes; --proyecto y --lanzado-por son opcionales y no pueden estar vacíos.";
-      if (!noVacio(proyecto) || !noVacio(agente) || !noVacio(objetivo)
-        || (lanzadoPor !== undefined && !noVacio(lanzadoPor))) {
-        return mensaje;
-      }
-      let seleccion: OpcionesPermiso["seleccion"];
-      if (noVacio(herramienta) && sujeto === undefined) {
-        seleccion = { herramienta };
-      } else if (noVacio(sujeto) && herramienta === undefined) {
-        seleccion = { sujeto };
-      } else {
-        return mensaje;
-      }
-      return { proyecto, agente, objetivo, seleccion, lanzadoPor, explicar: explicar === true };
+      const json = "permiso requiere --agente, --objetivo y --herramienta o --sujeto excluyentes; --proyecto y --lanzado-por son opcionales y no pueden estar vacíos.";
+      const causa = causaProyecto(crudas, proyecto)
+        ?? (objetivo === undefined ? "Falta --objetivo." : !noVacio(objetivo) ? "--objetivo no puede estar vacío." : undefined)
+        ?? (agente === undefined ? "Falta --agente." : !noVacio(agente) ? "--agente no puede estar vacío." : undefined)
+        ?? causaOpcionalNoVacia("lanzado-por", lanzadoPor)
+        ?? (herramienta !== undefined && sujeto !== undefined ? "--sujeto y --herramienta son excluyentes." : undefined)
+        ?? (herramienta === undefined && sujeto === undefined ? "Falta --sujeto o --herramienta." : undefined)
+        ?? causaOpcionalNoVacia("herramienta", herramienta, "f")
+        ?? causaOpcionalNoVacia("sujeto", sujeto);
+      if (causa) return { json, texto: causa };
+      const seleccion: OpcionesPermiso["seleccion"] = noVacio(herramienta) ? { herramienta } : { sujeto: sujeto! };
+      return { proyecto: proyecto!, agente: agente!, objetivo: objetivo!, seleccion, lanzadoPor, explicar: explicar === true };
     },
     ejecutar(casos, o) {
       return casos.consultarPermiso({
@@ -164,16 +199,21 @@ export const subcomandos: readonly DefinicionSubcomando<unknown, unknown>[] = [
   }),
   definir<OpcionesReglas, RespuestaReglas>({
     nombre: "reglas",
+    grupo: "consultar",
+    resumen: "Cadena ordenada de reglas de permiso de un agente",
     opciones: ["proyecto", "agente", "lanzado-por", "todo", "explicar"],
+    obligatorias: ["agente"],
     consultaProyecto: true,
     uso: [usoProyecto + " --agente <nombre> [--lanzado-por <agente>] [--todo] [--explicar]", "reglas --agente build", "reglas --agente plan --explicar --texto"],
     interpretar(crudas) {
       const proyecto = proyectoDe(crudas);
       const { agente, "lanzado-por": lanzadoPor } = crudas.valores;
-      if (!noVacio(proyecto) || !noVacio(agente) || (lanzadoPor !== undefined && !noVacio(lanzadoPor))) {
-        return "reglas requiere --agente; --proyecto y --lanzado-por son opcionales y no pueden estar vacíos.";
-      }
-      return { proyecto, agente, lanzadoPor };
+      const json = "reglas requiere --agente; --proyecto y --lanzado-por son opcionales y no pueden estar vacíos.";
+      const causa = causaProyecto(crudas, proyecto)
+        ?? (agente === undefined ? "Falta --agente." : !noVacio(agente) ? "--agente no puede estar vacío." : undefined)
+        ?? causaOpcionalNoVacia("lanzado-por", lanzadoPor);
+      if (causa) return { json, texto: causa };
+      return { proyecto: proyecto!, agente: agente!, lanzadoPor };
     },
     ejecutar(casos, o) {
       return casos.consultarReglas({ proyecto: o.proyecto, agente: o.agente, lanzadoPor: o.lanzadoPor });
@@ -182,15 +222,16 @@ export const subcomandos: readonly DefinicionSubcomando<unknown, unknown>[] = [
   }),
   definir<OpcionesAgentes, RespuestaAgentes>({
     nombre: "agentes",
+    grupo: "consultar",
+    resumen: "Agentes efectivos del proyecto, modo y estado de resolución",
     opciones: ["proyecto", "explicar"],
     consultaProyecto: true,
     uso: [usoProyecto + " [--explicar]", "agentes", "agentes --proyecto ./proyecto --json"],
     interpretar(crudas) {
       const proyecto = proyectoDe(crudas);
-      if (!noVacio(proyecto)) {
-        return "agentes admite --proyecto opcional, no vacío.";
-      }
-      return { proyecto };
+      const causa = causaProyecto(crudas, proyecto);
+      if (causa) return { json: "agentes admite --proyecto opcional, no vacío.", texto: causa };
+      return { proyecto: proyecto! };
     },
     ejecutar(casos, o) {
       return casos.consultarAgentes(o.proyecto);
@@ -199,15 +240,16 @@ export const subcomandos: readonly DefinicionSubcomando<unknown, unknown>[] = [
   }),
   definir<OpcionesEntradas, RespuestaEntradas>({
     nombre: "entradas",
+    grupo: "consultar",
+    resumen: "Vías y archivos de configuración leídos y resumen de entradas",
     opciones: ["proyecto", "todo"],
     consultaProyecto: true,
     uso: [usoProyecto + " [--todo]", "entradas", "entradas --proyecto ./proyecto --texto --todo"],
     interpretar(crudas) {
       const proyecto = proyectoDe(crudas);
-      if (!noVacio(proyecto)) {
-        return "entradas admite --proyecto opcional, no vacío.";
-      }
-      return { proyecto };
+      const causa = causaProyecto(crudas, proyecto);
+      if (causa) return { json: "entradas admite --proyecto opcional, no vacío.", texto: causa };
+      return { proyecto: proyecto! };
     },
     ejecutar(casos, o) {
       return casos.consultarEntradas(o.proyecto);
@@ -216,51 +258,79 @@ export const subcomandos: readonly DefinicionSubcomando<unknown, unknown>[] = [
   }),
   definir<OpcionesHallazgos, RespuestaHallazgos>({
     nombre: "hallazgos",
-    opciones: ["proyecto", "explicar"],
+    grupo: "consultar",
+    resumen: "Defectos, conflictos y advertencias detectados en la configuración",
+    opciones: ["proyecto", "explicar", "estricto"],
     consultaProyecto: true,
-    uso: [usoProyecto + " [--explicar]", "hallazgos", "hallazgos --explicar --json"],
+    uso: [usoProyecto + " [--explicar] [--estricto]", "hallazgos", "hallazgos --explicar --estricto --json"],
     interpretar(crudas) {
       const proyecto = proyectoDe(crudas);
-      if (!noVacio(proyecto)) {
-        return "hallazgos admite --proyecto opcional, no vacío.";
-      }
-      return { proyecto, explicar: crudas.valores.explicar === true };
+      const causa = causaProyecto(crudas, proyecto);
+      if (causa) return { json: "hallazgos admite --proyecto opcional, no vacío.", texto: causa };
+      return { proyecto: proyecto!, explicar: crudas.valores.explicar === true, estricto: crudas.valores.estricto === true };
     },
     ejecutar(casos, o) {
       return casos.consultarHallazgos(o.proyecto, { explicar: o.explicar });
     },
     renderizar: renderizarHallazgos,
+    codigoSalida: (r, o) => (o.estricto && r.hallazgos.length > 0 ? 3 : 0),
   }),
-  definir<Record<string, never>, RespuestaProyectosRecientes>({
+  definir<OpcionesRecientes, RespuestaProyectosRecientes | RespuestaHistorialProyecto>({
     nombre: "recientes",
-    opciones: [],
+    grupo: "historial",
+    resumen: "Último análisis guardado de cada proyecto o historial de uno",
+    opciones: ["proyecto"],
+    descripcionesOpciones: {
+      proyecto: "Carpeta del proyecto cuyo historial completo se lista",
+    },
     consultaProyecto: false,
-    uso: ["", "recientes", "recientes --json"],
-    interpretar: sinOpciones,
-    ejecutar(casos) {
-      return casos.consultarProyectosRecientes();
+    uso: [" [--proyecto <carpeta>]", "recientes", "recientes --proyecto ./proyecto --json"],
+    interpretar(crudas) {
+      const { proyecto } = crudas.valores;
+      const causa = causaOpcionalNoVacia("proyecto", proyecto);
+      if (causa) return { json: "recientes admite --proyecto opcional, no vacío.", texto: causa };
+      return { proyecto };
+    },
+    ejecutar(casos, o) {
+      return casos.consultarProyectosRecientes(o.proyecto);
     },
     renderizar: renderizarRecientes,
   }),
   definir<OpcionesComparar, RespuestaComparacion>({
     nombre: "comparar",
+    grupo: "historial",
+    resumen: "Diferencias entre dos análisis guardados del mismo proyecto",
     opciones: ["desde", "hasta", "agente"],
+    descripcionesOpciones: {
+      agente: "Agente a consultar (filtra solo el texto)",
+    },
+    notaAyuda: "Sin --desde ni --hasta compara los dos últimos análisis del proyecto actual; los números se ven con `rige recientes --proyecto <carpeta>`.",
     consultaProyecto: false,
-    uso: [" --desde <id> --hasta <id> [--agente <nombre>]", "comparar --desde 1 --hasta 2", "comparar --desde 1 --hasta 2 --agente build --texto"],
+    uso: [" [--desde <id> --hasta <id>] [--agente <nombre>]", "comparar", "comparar --desde 1 --hasta 2 --agente build --texto"],
     interpretar(crudas) {
       const { desde, hasta, agente } = crudas.valores;
-      if (!esIdResolucion(desde) || !esIdResolucion(hasta) || (agente !== undefined && !noVacio(agente))) {
-        return "comparar requiere --desde y --hasta enteros positivos decimales seguros; --agente no puede estar vacío.";
+      const json = "comparar requiere --desde y --hasta enteros positivos decimales seguros; --agente no puede estar vacío.";
+      const causaAgente = causaOpcionalNoVacia("agente", agente);
+      if (desde === undefined && hasta === undefined) {
+        const causa = (!noVacio(crudas.carpetaActual) ? "Falta la carpeta actual del proyecto." : undefined) ?? causaAgente;
+        if (causa) return { json, texto: causa };
+        return { desde: undefined, hasta: undefined, proyecto: crudas.carpetaActual };
       }
-      return { desde, hasta };
+      const causa = (desde === undefined ? "Falta --desde." : !esIdResolucion(desde) ? "--desde debe ser un entero positivo." : undefined)
+        ?? (hasta === undefined ? "Falta --hasta." : !esIdResolucion(hasta) ? "--hasta debe ser un entero positivo." : undefined)
+        ?? causaAgente;
+      if (causa) return { json, texto: causa };
+      return { desde: desde!, hasta: hasta!, proyecto: undefined };
     },
     ejecutar(casos, o) {
-      return casos.compararResoluciones(o.desde, o.hasta);
+      return casos.compararResoluciones(o.desde, o.hasta, o.proyecto);
     },
     renderizar: renderizarComparacion,
   }),
   definir<Record<string, never>, RespuestaEstadoCli>({
     nombre: "estado",
+    grupo: "almacen",
+    resumen: "Estado del almacén local y de su esquema",
     opciones: [],
     consultaProyecto: false,
     uso: ["", "estado", "estado --json"],
@@ -268,10 +338,12 @@ export const subcomandos: readonly DefinicionSubcomando<unknown, unknown>[] = [
     ejecutar(casos) {
       return casos.describirAlmacen();
     },
-    renderizar: renderizarEstado,
+    renderizar: (respuesta, c) => renderizarEstado(respuesta, c, false),
   }),
   definir<Record<string, never>, RespuestaEstado>({
     nombre: "esquema",
+    grupo: "almacen",
+    resumen: "Crea o verifica el esquema del almacén SQLite",
     opciones: [],
     consultaProyecto: false,
     uso: ["", "esquema", "esquema --json"],
@@ -283,6 +355,8 @@ export const subcomandos: readonly DefinicionSubcomando<unknown, unknown>[] = [
   }),
   definir<Record<string, never>, { readonly esquema: typeof versionEsquemaSalida; readonly direccion: string }>({
     nombre: "servir",
+    grupo: "almacen",
+    resumen: "Inicia la interfaz web local de solo lectura",
     opciones: [],
     consultaProyecto: false,
     uso: ["", "servir", "servir --texto"],

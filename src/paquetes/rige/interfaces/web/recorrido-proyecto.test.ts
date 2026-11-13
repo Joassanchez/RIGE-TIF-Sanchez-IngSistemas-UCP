@@ -60,7 +60,7 @@ describe("T5-18 R-10 migración y JSON", () => {
       const cuerpo = await llegada.text();
       expect(dato(cuerpo)).toEqual(esperado);
       expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
-      expect(cuerpo).toContain("Ver en la consola");
+      expect(cuerpo).toContain("comando equivalente");
     }
     const nombre = 'a/b & "<script>';
     const redireccion = pedir(`/resoluciones/7?agente=${encodeURIComponent(nombre)}`);
@@ -77,10 +77,10 @@ describe("T5-18 R-1 resumen", () => {
   test("abre con proyecto, ruta, fecha y versión; cuatro bloques en orden", async () => {
     const cuerpo = await pedir("/resoluciones/7").text();
     expect(cuerpo).toContain("<h1>proyecto</h1>");
-    expect(cuerpo).toContain(`Análisis del ${fechaLocal(sobre.instante)}`);
+    expect(cuerpo).toContain(`n.º ${sobre.id}, ${fechaLocal(sobre.instante)}`);
     expect(cuerpo).toContain("OpenCode 1.18.25");
     expect(dato(cuerpo)).toEqual(agentes);
-    const posiciones = ["cifras", "tabla-agentes", "hallazgos-actuales", "archivos-cambios"].map(id => cuerpo.indexOf(`id="${id}"`));
+    const posiciones = ["cifras", "tabla-agentes", "hallazgos-actuales", "archivos-cambios", "historia"].map(id => cuerpo.indexOf(`id="${id}"`));
     expect(posiciones.every(i => i >= 0)).toBe(true);
     expect(posiciones).toEqual([...posiciones].sort((a, b) => a - b));
   });
@@ -111,7 +111,7 @@ describe("T5-18 R-3 agentes", () => {
       if (incompleta) expect(html).toContain("Listado parcial.");
     }
     const vacia = await pedir("/resoluciones/7", { consultarAgentes: () => ({ exito: true, valor: { ...agentes, agentes: [], eliminados: [{ nombre: "quitado", declaracion }] } }), consultarResolucion: no }).text();
-    for (const texto of ["Sin agentes activos", "quitado", "eliminado / deshabilitado", "Fecha no disponible", "Historial no disponible para este análisis", "sin dato"]) expect(vacia).toContain(texto);
+    for (const texto of ["Sin agentes activos", "quitado", "eliminado / deshabilitado", "fecha no disponible", "Historial no disponible para este análisis", "sin dato"]) expect(vacia).toContain(texto);
     expect(vacia).not.toContain("agentes de fábrica");
     expect(vacia).not.toContain("/comparar?");
     expect(vacia).not.toContain('id="historia"');
@@ -129,7 +129,7 @@ describe("T5-18 R-4 hallazgos actuales", () => {
     expect(cuerpo).toContain("La carpeta actual no existe.");
     expect(cuerpo).toContain("Versión actual no soportada.");
     expect(cuerpo).toContain("sin dato");
-    expect(cuerpo).not.toContain('insignia--permitida">Sin hallazgos');
+    expect(cuerpo).not.toContain('insignia--neutra">Sin hallazgos');
   });
   test("enlaza tipos al primer índice original; distingue análisis parcial y completo", async () => {
     const cuerpo = await pedir("/resoluciones/7").text();
@@ -141,7 +141,7 @@ describe("T5-18 R-4 hallazgos actuales", () => {
     for (const incompleta of [true, false]) {
       const vacios = { ...hallazgos, hallazgos: [], incompleta, motivos: incompleta ? ["limite"] : [], reglas: { limite: "Análisis limitado." } };
       const html = await pedir("/resoluciones/7", { consultarHallazgos: () => ({ exito: true, valor: vacios }) }).text();
-      expect(html.includes('insignia--permitida">Sin hallazgos')).toBe(!incompleta);
+      expect(html.includes('insignia--neutra">Sin hallazgos')).toBe(!incompleta);
       if (incompleta) { expect(html).toContain("Análisis limitado."); expect(html).toContain("análisis parcial"); }
     }
   });
@@ -154,7 +154,10 @@ describe("T5-18 R-5 archivos e historial", () => {
     expect(cuerpo).toContain('id="mapa-vias"');
     const archivos = cuerpo.split('id="archivos-leidos"')[1]!.split('id="historia"')[0]!;
     expect(archivos.indexOf("/global/config.json")).toBeLessThan(archivos.indexOf("/proyecto/config.json"));
-    expect(cuerpo).toContain('<details id="historia"><summary>Historial (20)</summary>');
+    expect(cuerpo).toContain('<section id="historia"><h2>Historial (20)</h2>');
+    expect(cuerpo).toContain('<form class="formulario-comparar" method="get" action="/comparar">');
+    expect(cuerpo).toContain('<select name="desde">');
+    expect(cuerpo).toContain('<select name="hasta">');
     expect(cuerpo).not.toMatch(/<details[^>]*\bopen\b/);
     for (let id = 20; id >= 1; id--) expect(cuerpo).toContain(`href="/resoluciones/${id}"`);
     for (let id = 20; id > 1; id--) expect(cuerpo).toContain(`/comparar?desde=${id - 1}&amp;hasta=${id}`);
@@ -184,10 +187,12 @@ describe("T5-18 R-7 valores", () => {
     const cuerpo = await pedir("/resoluciones/7/agentes/build?q=TEMP").text();
     expect(cuerpo).not.toContain("Consulta exacta");
     expect(cuerpo).not.toContain('id="consultar-clave"');
-    expect(cuerpo).toContain("<th>Clave</th><th>Valor</th><th>Lo determina</th><th>Desplazadas</th>");
+    expect(cuerpo).toContain('<th scope="col">Clave</th><th scope="col">Valor</th><th scope="col">Lo determina</th><th scope="col">Desplazadas</th>');
     expect(cuerpo).toContain("Proyecto ·");
-    expect(cuerpo).toContain("opencode.jsonc:5:7</a>");
-    expect(cuerpo).toContain('<del class="valor-desplazado">0.1</del>');
+    expect(cuerpo).toContain("./opencode.jsonc:5:7</a>");
+    expect(cuerpo).not.toContain("<del");
+    expect(cuerpo).toContain("desplazado");
+    expect(cuerpo).toContain("0.1");
     expect(cuerpo).not.toContain('data-etiqueta="Clave">steps');
     expect(dato(cuerpo)).toEqual(valores);
   });
@@ -201,15 +206,15 @@ describe("T5-18 R-8 enlace al editor", () => {
   test("Windows y POSIX codificados por segmento, un title y referencias ajenas solo texto", () => {
     expect(rutas).toHaveProperty("presentarUbicacion");
     const presentar = rutas.presentarUbicacion;
-    for (const [referencia, esperado] of [
-      ['C:\\a b\\%#?&"\'\\config.json', "vscode://file/C:/a%20b/%25%23%3F%26%22%27/config.json:5:7"],
-      ["/a b/%#?&\"'/config.json", "vscode://file/a%20b/%25%23%3F%26%22%27/config.json:5:7"],
+    for (const [referencia, esperado, textoEsperado] of [
+      ['C:\\a b\\%#?&"\'\\config.json', "vscode://file/C:/a%20b/%25%23%3F%26%22%27/config.json:5:7", '>C:/a b/%#?&amp;&quot;&#39;/config.json:5:7</a>'],
+      ["/a b/%#?&\"'/config.json", "vscode://file/a%20b/%25%23%3F%26%22%27/config.json:5:7", '>/a b/%#?&amp;&quot;&#39;/config.json:5:7</a>'],
     ]) {
       const html = presentar(referencia!, { linea: 5, columna: 7 }, "proyecto").texto;
       expect(html).toContain(`href="${esperado}"`);
       expect(html.match(/title=/g)).toHaveLength(1);
       expect(html).toContain("Abrir en VS Code:");
-      expect(html).toContain(">config.json:5:7</a>");
+      expect(html).toContain(textoEsperado!);
     }
     for (const referencia of ["CONFIG", "relativa/config", "https://ejemplo/config", "file:///tmp/config"]) expect(presentar(referencia, { linea: 1, columna: 1 }, "proyecto").texto).not.toContain("<a ");
     expect(presentar("/parece/archivo", { linea: 1, columna: 1 }, "variable-contenido").texto).not.toContain("<a ");

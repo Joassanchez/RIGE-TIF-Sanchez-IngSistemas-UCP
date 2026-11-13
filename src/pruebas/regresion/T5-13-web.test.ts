@@ -65,17 +65,25 @@ describe("T5-13 R-4", () => {
         const pagina = await pedir(ruta);
         expect(pagina.estado).toBe(200);
         expect(datos(pagina.cuerpo)).toEqual(JSON.parse(cli.salida));
-        for (const texto of ["Cadena completa", "Matriz de permisos", "Efecto general por sujeto de permiso; las reglas por patrón pueden cambiarlo para objetivos concretos",
-          '>parcial</span>', 'id="limites-matriz"', 'aria-current="page">Todas las reglas', "Foto guardada", "bun run rige -- reglas"]) expect(pagina.cuerpo).toContain(texto);
-        expect(pagina.cuerpo.match(/class="tabla-contenedor"/g)).toHaveLength(2);
+        for (const texto of [`Cadena de ${agente}`, "Permisos por agente", "Efecto general por sujeto de permiso; las reglas por patrón pueden cambiarlo para objetivos concretos",
+          '>parcial</span>', 'id="limites-analisis"', "Qué no cubre este análisis", 'aria-current="page">Todas las reglas', "Análisis", "bun run rige -- reglas"]) expect(pagina.cuerpo).toContain(texto);
+        const matrizHtml = pagina.cuerpo.split('id="matriz-permisos"')[1]!.split("</section>")[0]!;
+        expect(matrizHtml).toMatch(new RegExp(`<tbody>\\s*<tr[^>]*aria-current="true"[^>]*><th scope="row"><a[^>]*>${agente}</a>`));
+        const [cuerpoPrincipal, pie] = pagina.cuerpo.split('class="pie-desarrolladores"');
+        expect(cuerpoPrincipal!.match(/class="tabla-contenedor"/g)).toHaveLength(2);
+        expect(pie!.match(/class="tabla-contenedor"/g)).toHaveLength(1);
         const r = datos(pagina.cuerpo);
-        if (escenario === "v2-decision") expect(r.cadena.some(r => r.origen.tipo === "declarado")).toBe(true);
-        else expect(r.cadena.some(r => r.origen.tipo === "nativo" && r.origen.regla === "denegacion-subagente")).toBe(true);
+        if (escenario === "v2-decision") {
+          expect(r.cadena.some(r => r.origen.tipo === "declarado")).toBe(true);
+          expect(pagina.cuerpo).toContain('class="fila--declarado"');
+          expect(pagina.cuerpo).toContain('class="fila--nativo"');
+          expect(pagina.cuerpo).toMatch(/[✓?✗] (?:permitida|pregunta|denegada)/);
+        } else expect(r.cadena.some(r => r.origen.tipo === "nativo" && r.origen.regla === "denegacion-subagente")).toBe(true);
         for (const fila of r.matriz.filas) {
           const enlace = `/reglas?${new URLSearchParams({ id, agente: fila.agente, ...(lanzadoPor ? { lanzadoPor } : {}) })}#cadena-completa`;
           expect(pagina.cuerpo).toContain(`href="${escapar(enlace)}"`);
           for (const celda of fila.celdas) {
-            const formulario = `/resoluciones/${id}/permisos?${new URLSearchParams({ id, agente: fila.agente, ...(lanzadoPor ? { lanzadoPor } : {}) })}&sujeto=${encodeURIComponent(celda.sujeto)}`;
+            const formulario = `/resoluciones/${id}/permisos?${new URLSearchParams({ agente: fila.agente, ...(lanzadoPor ? { lanzadoPor } : {}), sujeto: celda.sujeto })}`;
             expect(pagina.cuerpo).toContain(`href="${escapar(formulario)}"`);
           }
         }

@@ -1,6 +1,6 @@
 # ADR-113 — Interfaz web: recorrido por proyecto y sistema visual sobrio
 
-- Estado: propuesto
+- Estado: aceptado (13/11/2026), con las modificaciones del 13/11
 - Fecha: 11/11/2026
 - Reemplaza: la parte de diseño visual y de navegación de ADR-110 (se conserva E-A: estilos locales en `/estilos.css` y CSP `style-src 'self'`)
 - Capítulos afectados: IX (interfaz), XIII (inventario), manual §6 y §8
@@ -49,7 +49,7 @@ N-A, I-A, B-A, V-A, L-A, S-A y T-A.
 
 ### Decisión del autor
 
-[Pendiente: aceptación formal. El autor aceptó las recomendaciones N a T y autorizó su implementación en la sesión del 11/11/2026 («dale acepto todo»).]
+Aceptado por el autor el 13/11/2026, junto con la primera y la segunda modificación del 13/11 («acepto todo»). En la sesión del 11/11/2026 ya había aceptado las recomendaciones N a T y autorizado su implementación.
 
 ### Consecuencias
 
@@ -59,3 +59,34 @@ N-A, I-A, B-A, V-A, L-A, S-A y T-A.
 - **Fichas:** T5-17 (sistema visual, estructura e inicio), T5-18 (resumen del proyecto y agente) y T5-19 (permiso, hallazgos y vistas secundarias).
 - **Informe:** IX y XIII describen la interfaz final, a cargo del redactor.
 - **Precisión (revisión de cierre, 11/11/2026):** la web no crea datos. Puede filtrar, contar y agregar lo que traen las respuestas de los casos de uso (resumen del proyecto, conteos, agentes con su foto) y agregar orientación de uso («Qué hacer»), pero no calcula decisiones, valores ni procedencias propias. Las etiquetas de los códigos se toman de un vocabulario de presentación único compartido con la CLI (ADR-114), y el armado de claves vive en `aplicacion`, junto a su analizador. Fichas T5-26 y T5-27.
+
+### Modificación propuesta (13/11/2026)
+
+Origen: crítica externa de la web y de la CLI con Claude Fable 5.2, del 12/11/2026 (hallazgos WEB-03, WEB-04, WEB-06 y CLI-03). Fichas T6-07, T6-09, T6-10 y T6-14. Precisa el «sistema visual sobrio con color solo con significado»; no cambia los fondos neutros.
+
+1. **Colores por roles compartidos con la CLI.** Una tabla única en `interfaces/presentacion/roles.ts` asigna un significado a cada rol (permitida, pregunta, denegada, rige, declarado, nativo, desplazado, parcial, estructura, pista). La web lo traduce a variables CSS y la CLI a ANSI básico.
+   - Verde, ámbar y rojo quedan solo para el efecto de un permiso y la severidad, siempre con su glifo (✓ ? ✗).
+   - El azul marca solo el valor o la regla que rige.
+   - El naranja marca lo declarado por el usuario, frente al gris de lo nativo de OpenCode.
+   - El violeta marca solo el análisis parcial; el índigo, solo lo que se puede cliquear.
+   - Los fondos siguen grises y neutros.
+2. **La advertencia va en ámbar.** «Esta declaración anula una protección nativa de OpenCode» deja de ser gris neutro, que la confundía con una nota. Se revierte la prueba que lo prohibía.
+3. **Barra de navegación por análisis:** Resumen · Agentes · Permisos · Reglas · Entradas · Hallazgos · Historial, con `aria-current`. El Historial sale del plegado y pasa a sección propia.
+
+**Condición que la invalidaría:** que algún par de colores no alcance 4,5:1 de contraste en claro o en oscuro. Lo verifica `estilos.test.ts`.
+
+### Segunda modificación propuesta (13/11/2026, a pedido del autor)
+
+Origen: revisión de la web por el autor el 13/11/2026. En modo oscuro la interfaz se veía gris sobre gris y el color quedaba reducido a insignias chicas. El autor eligió:
+
+- **identidad azul petróleo**, en lugar del gris neutro;
+- **selector de tema** en la cabecera;
+- **rediseño de todo el recorrido.**
+
+Reemplaza el punto «fondos neutros» de este ADR y de la modificación anterior. Fichas T6-21 a T6-23.
+
+1. **Color de marca.** Azul petróleo en la barra superior, la pestaña activa y los botones primarios. Los fondos llevan un tinte azulado suave (en oscuro, azul pizarra) en lugar de gris puro. El color con significado (permitida, pregunta, denegada, rige, declarado, nativo, parcial) se conserva y gana presencia: celdas de la matriz rellenas, bordes de color por origen e insignias rellenas.
+2. **Selector de tema sin JavaScript.** Ofrece Sistema · Claro · Oscuro. Es un enlace `GET /tema?valor=…&volver=…` que guarda la preferencia en una cookie de la propia RIGE y redirige a una ruta local. No escribe en el almacén ni en la configuración analizada, y mantiene solo GET (RNF-09) y la CSP.
+3. **Recorrido.** Tabla de valores simplificada: no repite el valor que rige, la explicación sale de la celda y la procedencia va como etiqueta de archivo coloreada por origen. Inicio, resumen y matriz de permisos pasan a un diseño más visual.
+
+**Condición que la invalidaría:** que algún par de texto y fondo no alcance 4,5:1 de contraste en cualquiera de los tres temas, o que el selector necesite JavaScript.

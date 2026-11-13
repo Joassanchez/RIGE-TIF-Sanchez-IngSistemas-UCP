@@ -1,7 +1,7 @@
 import type { Resultado } from "../../aplicacion/respuestas/resultado";
 import { errorSolicitudInvalida, type ErrorUso } from "../../aplicacion/errores";
 import type { SobreAlmacen } from "../../aplicacion/respuestas/sobre";
-import { contenidoError, diseno } from "./diseno";
+import { conTemaWeb, contenidoError, diseno, enlace, normalizarVolver, type TemaWeb } from "./diseno";
 import { paginaErrorUso } from "./intermedios/errores";
 import { paginaComparacion } from "./paginas/comparacion";
 import { paginaConsultasPermiso } from "./paginas/consultas-permiso";
@@ -12,8 +12,8 @@ import { paginaPermiso } from "./paginas/permiso";
 import { paginaReglas } from "./paginas/reglas";
 import { paginaResolucion } from "./paginas/resolucion";
 import { paginaResumenProyecto } from "./paginas/resumen-proyecto";
-import { agenteInicial, consultaPanel, type ContextoPanel } from "./panel";
-import { redirigir, responderEstilos, responderHtml } from "./respuesta";
+import { agenteInicial, comparacionAnterior, parametrosPanel, type ContextoPanel } from "./panel";
+import { redirigir, redirigirTema, responderEstilos, responderHtml } from "./respuesta";
 import type { CasosWeb, PresentacionWeb } from "./servidor";
 
 const erroresSinFoto = ["clave-no-resuelta", "agente-sin-declaraciones"];
@@ -26,9 +26,10 @@ export interface ContextoRuta {
 
 export type ManejadorRuta = (url: URL, contexto: ContextoRuta) => Response;
 
-function construirContextoSolicitud(url: URL, versionHerramienta: string): ContextoPanel {
+function construirContextoSolicitud(url: URL, presentacion: PresentacionWeb): ContextoPanel {
   return {
-    versionHerramienta,
+    versionHerramienta: presentacion.versionHerramienta,
+    ...(presentacion.hogar === undefined ? {} : { hogar: presentacion.hogar }),
     ...(url.searchParams.has("sujeto") ? { sujeto: url.searchParams.get("sujeto")! } : {}),
     clave: url.searchParams.get("clave") ?? "",
     q: url.searchParams.get("q") ?? "",
@@ -37,9 +38,9 @@ function construirContextoSolicitud(url: URL, versionHerramienta: string): Conte
   };
 }
 
-function exigirAgente(url: URL, valor = url.searchParams.get("agente") ?? undefined): Resultado<string | undefined, Response> {
+function exigirAgente(url: URL, valor = url.searchParams.get("agente") ?? undefined, proyecto?: string, hogar?: string): Resultado<string | undefined, Response> {
   if (valor !== undefined && !valor.trim()) {
-    return { exito: false, error: paginaErrorUso(errorSolicitudInvalida("el agente está vacío")) };
+    return { exito: false, error: paginaErrorUso(errorSolicitudInvalida("el agente está vacío"), proyecto, hogar) };
   }
   return { exito: true, valor };
 }
@@ -53,12 +54,23 @@ function contextoFoto(casos: CasosWeb, id: string, agente: string | undefined): 
   if (!consulta.exito && erroresSinFoto.includes(consulta.error.codigo)) {
     return { exito: true, valor: { fechaNoDisponible: consulta.error.codigo } };
   }
-  return consulta.exito ? { exito: true, valor: { instante: consulta.valor.sobre.instante } } : consulta;
+  if (!consulta.exito) return consulta;
+  const { sobre } = consulta.valor;
+  const ultimo = sobre.anteriores[0];
+  const anteriorAnalisis = comparacionAnterior(sobre);
+  return {
+    exito: true,
+    valor: {
+      instante: sobre.instante,
+      ...(ultimo !== undefined && ultimo.id !== sobre.id ? { ultimoAnalisis: { id: ultimo.id, instante: ultimo.instante } } : {}),
+      ...(anteriorAnalisis === undefined ? {} : { anteriorAnalisis }),
+    },
+  };
 }
 
 function contextoActual(url: URL, { casos, solicitud }: ContextoRuta, proyecto: string): Resultado<ContextoPanel, ErrorUso> {
   const id = url.searchParams.get("id");
-  if (id === null) return { exito: true, valor: {} };
+  if (id === null) return { exito: true, valor: solicitud };
   const agentes = casos.consultarAgentes(id);
   if (!agentes.exito) return agentes;
   if (agentes.valor.proyecto !== proyecto) {
@@ -83,11 +95,11 @@ function manejarEstilos(): Response {
   return responderEstilos();
 }
 
-function manejarComparar(url: URL, { casos }: ContextoRuta): Response {
+function manejarComparar(url: URL, { casos, presentacion }: ContextoRuta): Response {
   const agente = exigirAgente(url);
   if (!agente.exito) return agente.error;
   const resultado = casos.compararResoluciones(url.searchParams.get("desde") ?? "", url.searchParams.get("hasta") ?? "");
-  return resultado.exito ? paginaComparacion(resultado.valor, agente.valor) : paginaErrorUso(resultado.error);
+  return resultado.exito ? paginaComparacion(resultado.valor, agente.valor, { hogar: presentacion.hogar }) : paginaErrorUso(resultado.error);
 }
 
 function manejarReglas(url: URL, { casos, solicitud }: ContextoRuta): Response {
@@ -102,17 +114,21 @@ function manejarReglas(url: URL, { casos, solicitud }: ContextoRuta): Response {
 }
 
 function manejarHallazgos(url: URL, contexto: ContextoRuta): Response {
-  const resultado = contexto.casos.consultarHallazgos(url.searchParams.get("proyecto") ?? "", { explicar: true });
-  if (!resultado.exito) return paginaErrorUso(resultado.error);
+  const proyecto = url.searchParams.get("proyecto") ?? undefined;
+  const resultado = contexto.casos.consultarHallazgos(proyecto ?? "", { explicar: true });
+  if (!resultado.exito) return paginaErrorUso(resultado.error, proyecto, contexto.presentacion.hogar);
   const actual = contextoActual(url, contexto, resultado.valor.proyecto);
-  return actual.exito ? paginaHallazgos(resultado.valor, actual.valor) : paginaErrorUso(actual.error);
+  return actual.exito ? paginaHallazgos(resultado.valor, actual.valor)
+    : paginaErrorUso(actual.error, resultado.valor.proyecto, contexto.presentacion.hogar);
 }
 
 function manejarEntradas(url: URL, contexto: ContextoRuta): Response {
-  const resultado = contexto.casos.consultarEntradas(url.searchParams.get("proyecto") ?? "");
-  if (!resultado.exito) return paginaErrorUso(resultado.error);
+  const proyecto = url.searchParams.get("proyecto") ?? undefined;
+  const resultado = contexto.casos.consultarEntradas(proyecto ?? "");
+  if (!resultado.exito) return paginaErrorUso(resultado.error, proyecto, contexto.presentacion.hogar);
   const actual = contextoActual(url, contexto, resultado.valor.proyecto);
-  return actual.exito ? paginaEntradas(resultado.valor, actual.valor) : paginaErrorUso(actual.error);
+  return actual.exito ? paginaEntradas(resultado.valor, actual.valor)
+    : paginaErrorUso(actual.error, resultado.valor.proyecto, contexto.presentacion.hogar);
 }
 
 function manejarPermiso(url: URL, { casos, solicitud }: ContextoRuta): Response {
@@ -145,22 +161,18 @@ function manejarAgentes(url: URL, { casos, solicitud }: ContextoRuta): Response 
   const id = url.searchParams.get("id") ?? "";
   const resultado = casos.consultarAgentes(id);
   if (!resultado.exito) return paginaErrorUso(resultado.error);
-  return redirigir(`/resoluciones/${encodeURIComponent(id)}${consultaPanel({ ...solicitud, agente: undefined }).replace(/^&/, "?")}`);
+  return redirigir(enlace(`/resoluciones/${encodeURIComponent(id)}`, parametrosPanel({ ...solicitud, agente: undefined })));
 }
 
-function manejarResolver(url: URL, { casos }: ContextoRuta): Response {
-  const agente = exigirAgente(url);
+function manejarResolver(url: URL, { casos, presentacion }: ContextoRuta): Response {
+  const proyectoParametro = url.searchParams.get("proyecto") ?? undefined;
+  const agente = exigirAgente(url, undefined, proyectoParametro, presentacion.hogar);
   if (!agente.exito) return agente.error;
   const clave = url.searchParams.get("clave") ?? "";
-  const proyecto = url.searchParams.get("proyecto") ?? "";
+  const proyecto = proyectoParametro ?? "";
   const resultado = agente.valor === undefined ? casos.resolverProyecto(proyecto) : casos.resolverProyecto(proyecto, agente.valor);
-  if (!resultado.exito) return paginaErrorUso(resultado.error);
-  const contexto = new URLSearchParams();
-  if (agente.valor !== undefined) contexto.set("agente", agente.valor);
-  if (clave) contexto.set("clave", clave);
-  // encodeURIComponent conserva la codificación de los enlaces existentes (espacios como %20).
-  const consulta = [...contexto].map(([nombre, valor]) => `${nombre}=${encodeURIComponent(valor)}`).join("&");
-  return redirigir(`/resoluciones/${resultado.valor.id}${consulta ? `?${consulta}` : ""}`);
+  if (!resultado.exito) return paginaErrorUso(resultado.error, proyectoParametro ?? "", presentacion.hogar);
+  return redirigir(enlace(`/resoluciones/${resultado.valor.id}`, { agente: agente.valor, clave: clave || undefined }));
 }
 
 function decodificarAgente(nombreCodificado: string): Resultado<string, Response> {
@@ -232,7 +244,7 @@ function manejarResolucion(id: string, subruta: string | undefined, nombreCodifi
   if (nombreCodificado === undefined && contexto.solicitud.agente !== undefined) {
     const agente = exigirAgente(url);
     if (!agente.exito) return agente.error;
-    return redirigir(`/resoluciones/${id}/agentes/${encodeURIComponent(agente.valor!)}${consultaPanel({ ...contexto.solicitud, agente: undefined }).replace(/^&/, "?")}`);
+    return redirigir(enlace(`/resoluciones/${id}/agentes/${encodeURIComponent(agente.valor!)}`, parametrosPanel({ ...contexto.solicitud, agente: undefined })));
   }
   if (nombreCodificado !== undefined) return manejarAgenteResolucion(id, nombreCodificado, url, contexto);
   return manejarResumenResolucion(id, contexto);
@@ -243,8 +255,30 @@ function manejarNoEncontrada(url: URL): Response {
   return responderHtml(404, pagina);
 }
 
+export function leerTemaDeCookie(solicitud: Request): TemaWeb {
+  const cabecera = solicitud.headers.get("Cookie");
+  if (!cabecera) return "sistema";
+  for (const parte of cabecera.split(";")) {
+    const indice = parte.indexOf("=");
+    if (indice < 0) continue;
+    if (parte.slice(0, indice).trim() !== "rige_tema") continue;
+    const valor = parte.slice(indice + 1).trim();
+    if (valor === "claro" || valor === "oscuro") return valor;
+  }
+  return "sistema";
+}
+
+function manejarTema(url: URL): Response {
+  const valor = url.searchParams.get("valor");
+  if (valor !== "sistema" && valor !== "claro" && valor !== "oscuro") {
+    return paginaErrorUso(errorSolicitudInvalida("el tema debe ser sistema, claro u oscuro"));
+  }
+  return redirigirTema(normalizarVolver(url.searchParams.get("volver")), valor);
+}
+
 const rutasExactas: Record<string, ManejadorRuta> = {
   "/estilos.css": manejarEstilos,
+  "/tema": manejarTema,
   "/comparar": manejarComparar,
   "/reglas": manejarReglas,
   "/hallazgos": manejarHallazgos,
@@ -260,17 +294,19 @@ const patronResolucion = /^\/resoluciones\/([0-9]+)(\/permisos|\/agentes\/([^/]+
 export function crearEnrutador(casos: CasosWeb, presentacion: PresentacionWeb): (solicitud: Request) => Response {
   return (solicitud: Request): Response => {
     const url = new URL(solicitud.url);
-    const contexto: ContextoRuta = {
-      casos,
-      presentacion,
-      solicitud: construirContextoSolicitud(url, presentacion.versionHerramienta),
-    };
-    const exacto = Object.hasOwn(rutasExactas, url.pathname) ? rutasExactas[url.pathname] : undefined;
-    if (exacto) return exacto(url, contexto);
-    const rutaResolucion = patronResolucion.exec(url.pathname);
-    if (rutaResolucion?.[1] !== undefined) {
-      return manejarResolucion(rutaResolucion[1], rutaResolucion[2], rutaResolucion[3], url, contexto);
-    }
-    return manejarNoEncontrada(url);
+    return conTemaWeb(leerTemaDeCookie(solicitud), `${url.pathname}${url.search}`, () => {
+      const contexto: ContextoRuta = {
+        casos,
+        presentacion,
+        solicitud: construirContextoSolicitud(url, presentacion),
+      };
+      const exacto = Object.hasOwn(rutasExactas, url.pathname) ? rutasExactas[url.pathname] : undefined;
+      if (exacto) return exacto(url, contexto);
+      const rutaResolucion = patronResolucion.exec(url.pathname);
+      if (rutaResolucion?.[1] !== undefined) {
+        return manejarResolucion(rutaResolucion[1], rutaResolucion[2], rutaResolucion[3], url, contexto);
+      }
+      return manejarNoEncontrada(url);
+    });
   };
 }

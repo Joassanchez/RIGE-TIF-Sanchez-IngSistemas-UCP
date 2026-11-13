@@ -70,15 +70,26 @@ function comprobarTemperatura(cuerpo: string, raiz: string, temperatura = 0.3) {
   const valores = seccionHtml(cuerpo, "valores");
   const ruta = raiz.replaceAll("\\", "/");
   expect(valores).toContain(`<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor">${temperatura}</td>`);
-  const fila = /<tr><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(valores);
+  const fila = /<tr\b[^>]*><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(valores);
   expect(fila).not.toBeNull();
+  expect(fila![0]).toContain('class="fila--declarado"');
   const celdas = fila![0].match(/<td\b[^>]*>.*?<\/td>/gs)!;
   expect(celdas).toHaveLength(4);
-  expect(textoHtml(celdas[2]!)).toBe("Proyecto · opencode.jsonc:6:7");
+  expect(celdas[2]).toContain("procedencia-chip--declarado");
+  expect(celdas[2]).not.toContain("<details");
+  expect(textoHtml(celdas[2]!)).toBe("Proyecto · esta carpeta · ./opencode.jsonc:6:7");
   expect(celdas[2]).toContain(`title="Abrir en VS Code: ${ruta}/proyecto/opencode.jsonc"`);
-  const desplazadas = [...celdas[3]!.matchAll(/<div class="declaracion-desplazada">(.*?)<\/div>/gs)].map(li => textoHtml(li[1]!));
-  expect(desplazadas).toEqual(["0.1 · Proyecto · opencode.json:5:7", "0.2 · Proyecto · opencode.json:5:7"]);
-  expect(cuerpo).toContain(regla);
+  expect(celdas[3]).toContain('<ol class="cadena-desplazadas">');
+  expect(celdas[3]).not.toContain("<del");
+  expect(celdas[3]).not.toContain("insignia--rige");
+  expect(textoHtml(celdas[3]!)).not.toContain("rige");
+  expect(celdas[3]).not.toContain(`>${temperatura}<`);
+  const desplazadas = [...celdas[3]!.matchAll(/<li class="declaracion-desplazada">(.*?)<\/li>/gs)].map(li => textoHtml(li[1]!));
+  expect(desplazadas).toEqual([
+    "0.2 Proyecto · esta carpeta · ./opencode.json:5:7",
+    "0.1 Proyecto · carpeta superior · ../opencode.json:5:7",
+  ]);
+  expect(valores.split(regla).length - 1).toBe(1);
   expect(cuerpo).toContain("Página armada con la resolución leída del almacén de RIGE.");
 }
 
@@ -140,7 +151,9 @@ describe("RF-01 CA-1 · recorrido del README (guía, paso 8)", () => {
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const cabecera = seccionHtml(pagina.cuerpo, "resumen-resolucion");
     expect(cabecera).toContain("<h1>build</h1>");
-    expect(cabecera).toMatch(/Foto guardada · proyecto · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/);
+    expect(cabecera).toContain('class="contexto"');
+    expect(cabecera).toMatch(/<dt>Proyecto<\/dt><dd><code[^>]*>[^<]*proyecto<\/code><\/dd>/);
+    expect(cabecera).toMatch(/<dt>Análisis<\/dt><dd>n\.º 1, \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}<\/dd>/);
     expect(cabecera.match(/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/g)).toHaveLength(1);
     expect(cabecera).not.toMatch(/hoy \d|ayer \d|Resolución \d/);
     resumen(pagina.cuerpo);
@@ -168,17 +181,24 @@ describe("RF-01 CA-2; RNF-01 CA-1 CA-2", () => {
       valores: Record<string, string | number>;
     };
     const tabla = seccionHtml(pagina.cuerpo, "valores"); // Declaradas y fábrica: se comprueban todas las filas.
-    const claves = [...tabla.matchAll(/<tr><td[^>]*>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
+    const claves = [...tabla.matchAll(/<tr\b[^>]*><td[^>]*>([^<]+)<\/td>/g)].map(coincidencia => coincidencia[1]);
     expect(claves.filter(clave => Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["description", "steps", "temperature"]);
     expect(claves.filter(clave => !Object.hasOwn(referencia.valores, clave!)).sort()).toEqual(["mode", "name", "native", "options"]);
     for (const [clave, valor] of Object.entries(referencia.valores)) {
       expect(tabla).toContain(`<td data-etiqueta="Clave">${clave}</td><td data-etiqueta="Valor">${JSON.stringify(valor).replaceAll('"', "&quot;")}</td>`);
     }
+    const filaSteps = /<tr\b[^>]*><td[^>]*>steps<\/td>.*?<\/tr>/s.exec(tabla)![0];
+    expect(filaSteps.match(/<td\b[^>]*>.*?<\/td>/gs)![3]).toContain(">—<");
+    const filaDescripcion = /<tr\b[^>]*><td[^>]*>description<\/td>.*?<\/tr>/s.exec(tabla)![0];
+    expect(filaDescripcion.match(/<td\b[^>]*>.*?<\/td>/gs)![3]).toContain("OpenCode · valor de fábrica");
+    expect(tabla).toContain("Estos valores los fija OpenCode 1.18.25 cuando nadie los declara");
+    expect(pagina.cuerpo.replace(/<script type="application\/json" id="respuesta">[^]*?<\/script>/, "")
+      .replace(/<details id="ver-json">[^]*?<\/details>/, "")).not.toContain("valor implicito del agente");
     comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
     const puntual = await recorrido.solicitar(paginaPrimera);
     expect(puntual.estado).toBe(200);
     const fila = (cuerpo: string) => {
-      const encontrada = /<tr><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(seccionHtml(cuerpo, "valores"));
+      const encontrada = /<tr\b[^>]*><td[^>]*>temperature<\/td>.*?<\/tr>/s.exec(seccionHtml(cuerpo, "valores"));
       expect(encontrada).not.toBeNull();
       return encontrada![0];
     };
@@ -262,7 +282,7 @@ describe("RF-03 / RF-05 errores de uso por la web", () => {
       expect(agente.cuerpo).toContain("El agente ausente no tiene declaraciones.");
       const valida = await recorrido.resolver();
       expect(valida.estado).toBe(303);
-      expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build&clave=temperature");
+      expect(valida.cabeceras.location).toBe("/resoluciones/1?agente=build&clave=temperature");
       const pagina = await recorrido.solicitar(ubicacion(valida));
       expect(pagina.estado).toBe(200);
       comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
@@ -286,20 +306,72 @@ describe("RF-03 / RF-05 errores de uso por la web", () => {
       expect(rechazo.cuerpo).toContain("tools");
       const valida = await recorrido.resolver("");
       expect(valida.estado).toBe(303);
-      expect(valida.cabeceras.location).toBe("/resoluciones/2?agente=build");
-      const pagina = await recorrido.solicitar("/resoluciones/2?agente=build");
+      expect(valida.cabeceras.location).toBe("/resoluciones/1?agente=build");
+      const pagina = await recorrido.solicitar("/resoluciones/1?agente=build");
       expect(pagina.estado).toBe(200);
       expect(pagina.cuerpo).toContain('<td data-etiqueta="Clave">temperature</td><td data-etiqueta="Valor">0.3</td>');
-      expect(pagina.cuerpo).toContain("Claves no incorporadas por RIGE");
-      expect(pagina.cuerpo).toContain("<li>permission:");
-      const pendientes = /<ul>(.*?)<\/ul>/s.exec(seccionHtml(pagina.cuerpo, "claves-no-incorporadas", "details"))?.[1];
-      expect(pendientes).toBeDefined();
-      expect(pendientes?.match(/<li>/g)).toHaveLength(2);
-      expect(pendientes).toContain("<li>tools:");
+      expect(pagina.cuerpo).toContain("Qué no cubre este análisis");
+      const limites = seccionHtml(pagina.cuerpo, "limites-analisis");
+      expect(limites).toContain("Clave no incorporada (<code>permission</code>):");
+      expect(limites).toContain("Clave no incorporada (<code>tools</code>):");
+      expect(limites.match(/Clave no incorporada \(<code>/g)).toHaveLength(2);
       expect(pagina.cuerpo).not.toContain("otro.permission");
-      const recuperada = await recorrido.solicitar("/resoluciones/2?agente=build&clave=permission");
+      const recuperada = await recorrido.solicitar("/resoluciones/1?agente=build&clave=permission");
       expect(recuperada.estado).toBe(422);
       expect(recuperada.cuerpo).toContain("permission");
     });
+  });
+});
+
+describe("T6-08 R-1 R-3 R-4 R-5 R-6 presentacion y procedencia", () => {
+  const preparar = prepararRecorrido();
+
+  test("R-1, R-3, R-5 y R-6 en v1-precedencia por CLI y Web", async () => {
+    const recorrido = preparar();
+    const redireccion = await recorrido.solicitar(`/resolver?proyecto=${encodeURIComponent(recorrido.proyecto)}&agente=build`);
+    expect(redireccion.estado).toBe(303);
+    const pagina = await recorrido.solicitar(ubicacion(redireccion));
+    expect(pagina.estado).toBe(200);
+    comprobarTemperatura(pagina.cuerpo, recorrido.raiz);
+    const migaProyecto = recorrido.proyecto.replaceAll("\\", "/").split("/").filter(Boolean).slice(-2).join("/");
+    const migaEscapada = migaProyecto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    expect(pagina.cuerpo).toMatch(new RegExp(`class="migas__proyecto"[^>]*>${migaEscapada}</a>`));
+
+    const jsonPorTuberia = recorrido.consultar("valores", "--proyecto", recorrido.proyecto, "--agente", "build");
+    const jsonExplicito = recorrido.consultar("valores", "--proyecto", recorrido.proyecto, "--agente", "build", "--json");
+    expect(jsonPorTuberia.codigo).toBe(0);
+    expect(jsonExplicito.codigo).toBe(0);
+    expect(jsonPorTuberia.salida).toBe(jsonExplicito.salida);
+    const embebido = pagina.cuerpo.match(/id="respuesta">([^]*?)<\/script>/)![1]!;
+    expect(JSON.parse(embebido)).toEqual(JSON.parse(jsonPorTuberia.salida));
+
+    const textoPorTuberia = recorrido.consultar("valores", "--proyecto", recorrido.proyecto, "--agente", "build", "--todo", "--texto");
+    expect(textoPorTuberia.codigo).toBe(0);
+    expect(textoPorTuberia.salida).toContain("./opencode.jsonc:6:7 (proyecto)");
+    expect(textoPorTuberia.salida).toContain("./opencode.json:5:7 (proyecto)");
+    expect(textoPorTuberia.salida).toContain("../opencode.json:5:7 (proyecto)");
+    expect(textoPorTuberia.salida).not.toContain("…");
+  });
+
+  test("R-4 inicio distingue tres proyectos homonimos con dos segmentos", async () => {
+    const recorrido = preparar();
+    const baseHomonimos = mkdtempSync(join(tmpdir(), "rige-homonimos-"));
+    try {
+      for (const padre of ["uno", "dos", "tres"]) {
+        const carpeta = join(baseHomonimos, padre, "proyecto");
+        mkdirSync(carpeta, { recursive: true });
+        writeFileSync(join(carpeta, "opencode.json"), '{"agent":{"build":{"temperature":0.5}}}');
+        const res = await recorrido.solicitar(`/resolver?proyecto=${encodeURIComponent(carpeta)}`);
+        expect(res.estado).toBe(303);
+      }
+      const inicio = await recorrido.solicitar("/");
+      expect(inicio.estado).toBe(200);
+      const recientes = seccionHtml(inicio.cuerpo, "proyectos-recientes");
+      const nombres = [...recientes.matchAll(/<a class="reciente__foto"[^>]*><strong>(.*?)<\/strong>/g)].map(m => m[1]);
+      expect(nombres.slice(0, 3).sort()).toEqual(["dos/proyecto", "tres/proyecto", "uno/proyecto"]);
+      expect(new Set(nombres.slice(0, 3)).size).toBe(3);
+    } finally {
+      borrarTemporal(baseHomonimos);
+    }
   });
 });

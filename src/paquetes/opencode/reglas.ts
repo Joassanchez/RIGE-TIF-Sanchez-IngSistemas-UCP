@@ -59,6 +59,7 @@ export const reglas: Readonly<Record<string, string>> = {
   "orden-de-aplicacion": "OpenCode 1.18.25 aplica las entradas en orden de precedencia; prevalece la declaración de la última entrada que declara la clave (RD-01).",
   "fuera-del-v1": "Clave que OpenCode combina o deriva con reglas que RIGE no incorpora; se resuelve en una iteración posterior.",
   "markdown-no-observado": "Agente declarado también en Markdown, que RIGE no incorpora; sus claves no se informan para no presentar un valor incompleto.",
+  "forma-v2-no-incorporada": "La configuración usa formas de esquema v2 (agents, commands o model como objeto) que OpenCode normaliza por archivo y RIGE no incorpora; la ruta afectada queda sin resolver para evitar un resultado incorrecto.",
 };
 
 export const reglasHallazgos: Readonly<Record<string, string>> = {

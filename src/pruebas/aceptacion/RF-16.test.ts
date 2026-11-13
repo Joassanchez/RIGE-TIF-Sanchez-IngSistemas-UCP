@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { resolver } from "../../paquetes/nucleo/resolucion/resolver";
+import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
+import { EntornoLecturaSistema } from "../../paquetes/rige/adaptadores/sistema/entorno-lectura";
 import { prepararConsultas } from "../utilidades/consultas-cli";
 
 const limpiezas: (() => void)[] = [];
@@ -63,6 +66,39 @@ describe("RF-16 CA-2", () => {
     const referencia = await Bun.file(new URL(`../escenarios/${nombre}/REFERENCIA.json`, import.meta.url)).json();
     expect(referencia.agentes.length).toBeGreaterThan(0);
     expect(JSON.parse(resultado.salida).agentes.map(({ nombre, modo }: { nombre: string; modo: string }) => ({ nombre, modo }))).toEqual(referencia.agentes);
+  });
+  test("v6-plurales-v2 declara no resueltos agents y model objeto frente a la referencia nativa", async () => {
+    const escenario = preparar("v6-plurales-v2");
+    const referencia = await Bun.file(new URL("../escenarios/v6-plurales-v2/REFERENCIA.json", import.meta.url)).json();
+    expect(referencia.agentes).toContainEqual({ nombre: "rev", modo: "primary" });
+    expect(referencia.agentes.some((a: { nombre: string }) => a.nombre === "build")).toBe(false);
+    const listado = JSON.parse(escenario.consultar("agentes").salida);
+    expect(listado).toMatchObject({ incompleta: true, motivos: ["forma-v2-no-incorporada"] });
+    const entorno = new EntornoLecturaSistema({ plataforma: process.platform, entorno: escenario.variables });
+    const contexto = adaptadorOpenCode.contexto(escenario.proyecto, entorno);
+    if (!contexto.exito) throw new Error(contexto.error.mensaje);
+    const resuelta = resolver(adaptadorOpenCode, escenario.proyecto, entorno, contexto.valor);
+    expect(resuelta.exito).toBe(true);
+    if (!resuelta.exito) throw new Error(resuelta.error.mensaje);
+    const efectivos = adaptadorOpenCode.listarAgentes(resuelta.valor, contexto.valor);
+    for (const agente of ["rev", "build"]) {
+      expect(listado.agentes.some((a: { nombre: string }) => a.nombre === agente)).toBe(true);
+      expect(efectivos.agentes.find(a => a.nombre === agente)).toMatchObject({
+        estado: "no-observado", motivo: "forma-v2-no-incorporada",
+      });
+      const valores = escenario.consultar("valores", ["--agente", agente]);
+      expect(valores.codigo).toBe(1);
+      expect(JSON.parse(valores.error)).toMatchObject({
+        error: { codigo: "clave-no-resuelta", mensaje: expect.stringContaining("formas de esquema v2") },
+      });
+    }
+    expect(resuelta.valor.noResueltas).toEqual(expect.arrayContaining([
+      { ruta: ["model"], regla: "forma-v2-no-incorporada" },
+      { ruta: ["agents"], regla: "forma-v2-no-incorporada" },
+      { ruta: ["agent", "rev"], regla: "forma-v2-no-incorporada" },
+      { ruta: ["agent", "build"], regla: "forma-v2-no-incorporada" },
+    ]));
+    expect(resuelta.valor.valores.some(v => v.ruta[0] === "model")).toBe(false);
   });
 });
 

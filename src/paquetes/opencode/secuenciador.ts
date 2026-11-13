@@ -81,6 +81,17 @@ export function secuenciar(lecturas: readonly LecturaEntrada[]): Resultado<Secue
       }
       const longitudPrefijo = ["instructions", "plugin"].includes(ruta[0]!) ? 1 : 0;
       if (longitudPrefijo) excluir(ruta.slice(0, longitudPrefijo), "fuera-del-v1");
+      if (ruta[0] === "agents") {
+        excluir(["agents"], "forma-v2-no-incorporada");
+        if (ruta.length >= 2) excluir(["agent", ruta[1]!], "forma-v2-no-incorporada");
+      }
+      if (ruta[0] === "commands") {
+        excluir(["commands"], "forma-v2-no-incorporada");
+        excluir(["command"], "forma-v2-no-incorporada");
+      }
+      if (ruta[0] === "model" && (ruta.length >= 2 || esObjeto(valor))) {
+        excluir(["model"], "forma-v2-no-incorporada");
+      }
     }
   }
   const hojas = new Map<string, { readonly ruta: readonly string[]; readonly valor: ValorJson }>();

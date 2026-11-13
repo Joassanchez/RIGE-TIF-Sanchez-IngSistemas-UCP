@@ -4,8 +4,22 @@ import { ayuda } from "./ayuda";
 
 describe("S-2", () => {
   test("la lista de la ayuda general coincide con subcomandos.map(s => s.nombre)", () => {
-    const listaEsperada = subcomandos.map(s => s.nombre).join(", ");
-    expect(ayuda()).toContain(`Subcomandos: ${listaEsperada}\n`);
+    const texto = ayuda();
+    for (const titulo of ["Consultar:", "Historial:", "Almacén y servidor:"]) {
+      expect(texto).toContain(`${titulo}\n`);
+    }
+    const seccionSubcomandos = texto.split("\nOpciones generales:")[0]!;
+    const listados = [...seccionSubcomandos.matchAll(/^  ([a-z-]+) {2,}(.+)$/gm)].map(m => ({
+      nombre: m[1]!,
+      resumen: m[2]!,
+    }));
+    expect(listados).toHaveLength(subcomandos.length);
+    expect(new Set(listados.map(s => s.nombre))).toEqual(new Set(subcomandos.map(s => s.nombre)));
+    for (const sub of subcomandos) {
+      expect(sub.resumen.trim().length).toBeGreaterThan(0);
+      const entrada = listados.find(s => s.nombre === sub.nombre);
+      expect(entrada?.resumen).toBe(sub.resumen);
+    }
   });
 
   test("--tiempos y opciones admitidas se derivan de la tabla para cada subcomando", () => {

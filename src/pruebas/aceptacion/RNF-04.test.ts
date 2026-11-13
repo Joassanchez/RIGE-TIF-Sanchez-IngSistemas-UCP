@@ -5,6 +5,7 @@ import { copiarEscenario } from "../utilidades/escenario";
 import { entornoDeReferencia } from "../utilidades/entorno-referencia";
 import { lanzar, lanzarServidor } from "../utilidades/subproceso";
 import { solicitarPaginaLocal as solicitarLocal } from "./seguir-redireccion";
+import { textoHtml } from "../utilidades/html";
 import { validarEsquema } from "../utilidades/validar-esquema";
 import { consultarCadenas } from "../utilidades/cadenas";
 import { adaptadorOpenCode } from "../../paquetes/opencode/adaptador";
@@ -134,7 +135,7 @@ describe("RNF-04 CA-1 y CA-2 T3-04 R-8", () => {
           for (const ruta of [`/resolver?proyecto=${encodeURIComponent(e.proyecto)}&agente=revisor`, `/entradas?proyecto=${encodeURIComponent(e.proyecto)}`, `/hallazgos?proyecto=${encodeURIComponent(e.proyecto)}`]) {
             const r = await solicitarLocal({ host: "127.0.0.1", puerto: servidor.puerto, ruta });
             const parcial = !ruta.startsWith("/resolver?") && legibilidad !== null;
-            expect(r.estado).toBe(parcial ? 200 : errorEsperado === "configuracion-invalida" ? 500 : 422);
+            expect(r.estado).toBe(parcial ? 200 : 422);
             if (parcial) {
               const comando = ruta.split("?")[0]!.slice(1);
               const cuerpo = datos(r.cuerpo);
@@ -151,7 +152,16 @@ describe("RNF-04 CA-1 y CA-2 T3-04 R-8", () => {
                 expect(r.cuerpo).toContain("<p>Falla interna de RIGE.</p>");
                 expect(r.cuerpo).toContain('<small class="codigo-error">interno</small>');
                 expect(r.cuerpo).not.toContain(escapar(error!.error.mensaje));
-              } else expect(r.cuerpo).toContain(`<p>${escapar(error!.error.mensaje)}</p>`);
+              } else {
+                const parrafo = r.cuerpo.match(/<section class="tarjeta pagina-error"><h1>[^<]*<\/h1><p>([^]*?)<\/p>/)?.[1];
+                expect(parrafo).toBeDefined();
+                const ref = escapar(entrada.replaceAll("\\", "/"));
+                const refRegex = new RegExp(`${ref.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(.*) \\((\\d+:\\d+)\\)`);
+                const esperado = escapar(error!.error.mensaje)
+                  .replace(`(${ref}:`, "(./opencode.json:")
+                  .replace(refRegex, "./opencode.json:$2$1");
+                expect(textoHtml(parrafo!)).toBe(esperado);
+              }
             }
             sinContenido(r.cuerpo, marcas);
           }

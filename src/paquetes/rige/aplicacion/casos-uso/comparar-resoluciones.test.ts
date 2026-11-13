@@ -119,3 +119,104 @@ describe("T5-14 K-1", () => {
     expect(raiz.resumen.sinCambio).toBe(0);
   });
 });
+
+describe("T6-18 propagacion de error de contexto guardado", () => {
+  test("devuelve ErrorUso en lugar de lanzar excepcion cuando prepararAnalisis falla", async () => {
+    const { compararResoluciones } = await import("./comparar-resoluciones");
+    const base = foto();
+    const invalida: Resolucion = { ...base, contexto: { ...base.contexto, plataforma: "" } };
+    for (const [desde, hasta] of [[invalida, base], [base, invalida]] as const) {
+      expect(compararResoluciones(dependencias(desde, hasta), "1", "2")).toMatchObject({
+        exito: false,
+        error: { codigo: "almacen-sin-esquema" },
+      });
+    }
+    const sinHogar = dependencias(base, base);
+    const rechazo = {
+      ...sinHogar,
+      adaptador: {
+        ...sinHogar.adaptador,
+        restaurarContexto: () => ({
+          exito: false as const,
+          error: { categoria: "uso" as const, codigo: "almacen-sin-esquema", mensaje: "Falta hogar." },
+        }),
+      },
+    };
+    expect(compararResoluciones(rechazo, "1", "2")).toEqual({
+      exito: false,
+      error: { codigo: "almacen-sin-esquema", mensaje: "Falta hogar." },
+    });
+  });
+});
+
+describe("T6-19 compararUltimasResoluciones y consultarProyectosRecientes --proyecto", () => {
+  test("H-4: compara los dos ultimos analisis del proyecto y falla con analisis-insuficientes si hay menos de 2", async () => {
+    const { compararUltimasResoluciones } = await import("./comparar-resoluciones");
+    const base = foto();
+    const sinProyecto = compararUltimasResoluciones({
+      ...dependencias(base, base),
+      rutas: { canonica: () => null },
+    }, "/no-existe");
+    expect(sinProyecto).toMatchObject({ exito: false, error: { codigo: "proyecto-inexistente" } });
+
+    for (const cantidad of [0, 1]) {
+      const deps = dependencias(base, base);
+      const insuf = compararUltimasResoluciones({
+        ...deps,
+        rutas: { canonica: () => "/proyecto" },
+        resoluciones: {
+          ...deps.resoluciones,
+          listar: () => ({
+            exito: true,
+            valor: cantidad === 0 ? [] : [{ id: 1, instante: "foto-1", resumenEntradas: "a" }],
+          }),
+        },
+      }, "/proyecto");
+      expect(insuf).toMatchObject({ exito: false, error: { codigo: "analisis-insuficientes" } });
+    }
+
+    const deps = dependencias(base, base);
+    const ok = compararUltimasResoluciones({
+      ...deps,
+      rutas: { canonica: () => "/proyecto" },
+      resoluciones: {
+        ...deps.resoluciones,
+        listar: () => ({
+          exito: true,
+          // listar devuelve mas reciente primero: [2] es hasta, [1] es desde
+          valor: [
+            { id: 2, instante: "foto-2", resumenEntradas: "r2" },
+            { id: 1, instante: "foto-1", resumenEntradas: "r1" },
+            { id: 99, instante: "foto-0", resumenEntradas: "r0" },
+          ],
+        }),
+      },
+    }, "/proyecto");
+    expect(ok.exito).toBe(true);
+    if (!ok.exito) return;
+    expect(ok.valor.desde.id).toBe(1);
+    expect(ok.valor.hasta.id).toBe(2);
+    expect(deps.leidos).toEqual([1, 2]);
+  });
+
+  test("H-3: consultarProyectosRecientes con proyecto canoniza, devuelve esquema 2 y propaga errores", async () => {
+    const { consultarProyectosRecientes } = await import("./consultar-proyectos-recientes");
+    const deps = dependencias(foto(), foto());
+    const inexistente = consultarProyectosRecientes(deps.resoluciones, { canonica: () => null }, "/ausente");
+    expect(inexistente).toMatchObject({ exito: false, error: { codigo: "proyecto-inexistente" } });
+
+    const analisis = [
+      { id: 4, instante: "2026-02-02T00:00:00Z", resumenEntradas: "h4" },
+      { id: 2, instante: "2026-01-01T00:00:00Z", resumenEntradas: "h2" },
+    ];
+    const ok = consultarProyectosRecientes(
+      { ...deps.resoluciones, listar: p => ({ exito: true, valor: p === "/canonico" ? analisis : [] }) },
+      { canonica: () => "/canonico" },
+      " ./relativo ",
+    );
+    expect(ok).toEqual({
+      exito: true,
+      valor: { esquema: 2, proyecto: "/canonico", analisis },
+    });
+  });
+});

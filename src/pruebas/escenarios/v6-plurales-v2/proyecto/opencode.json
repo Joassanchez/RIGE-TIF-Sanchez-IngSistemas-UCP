@@ -1,0 +1,15 @@
+{
+  "model": {
+    "providerID": "anthropic",
+    "model": "claude-sonnet-4-5"
+  },
+  "agents": {
+    "rev": {
+      "mode": "primary",
+      "description": "Revisor"
+    },
+    "build": {
+      "disabled": true
+    }
+  }
+}

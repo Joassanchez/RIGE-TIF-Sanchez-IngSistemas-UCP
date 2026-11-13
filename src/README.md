@@ -412,7 +412,13 @@ bun run medir:rnf07 --estricto
 bun run cobertura
 ```
 
-Todos deben terminar con código 0. La prueba unitaria optimizada de combinatoria `abarca`, ejecutada con `bun test paquetes/opencode/hallazgos.test.ts`, corre en menos de 500 ms; la suite completa no requiere prórrogas de timeout. Durante el desarrollo se usa `bun test <archivo>` para las pruebas afectadas. El grupo de web y aceptación se ejecuta con `bun test paquetes/rige/interfaces/web pruebas/aceptacion`.
+Todos deben terminar con código 0. La prueba unitaria optimizada de combinatoria `abarca`, ejecutada con `bun test paquetes/opencode/hallazgos.test.ts`, corre en menos de 500 ms; la suite completa no requiere prórrogas de timeout. Durante el desarrollo se usa `bun test <archivo>` para las pruebas afectadas o el ciclo rápido por paquetes (la suite completa `bun test` y `bun run verificar` siguen siendo obligatorios al final):
+
+```bash
+bun run prueba:rapida
+```
+
+El grupo de web y aceptación se ejecuta con `bun test paquetes/rige/interfaces/web pruebas/aceptacion`.
 
 El arnés RNF-07 copia `openchamber-doble` a un temporal (32 archivos, 12 agentes, 14 LSP y 20 comandos), aísla el entorno y ejecuta diez consultas de valores y diez de permiso en procesos nuevos. Informa mínimo, mediana y peor caso por etapa. `invocacionMs` mide el subproceso completo, incluido Bun; `--estricto` o `RNF07_ESTRICTO=1` exige un peor caso menor que 2000 ms. Sin la opción, `bun run medir:rnf07` es diagnóstico. La acreditación corresponde al contenedor Ubuntu 26.04 de referencia (ADR-054/055), con el escenario dentro de su sistema de archivos; Windows aporta diagnóstico.
 
@@ -473,6 +479,7 @@ Tras regenerar, se actualizan los SHA-256 de `REFERENCIA.json` en `pruebas/escen
 | 0 | Respuesta válida, con o sin hallazgos o decisión | JSON | Advertencias si corresponden; tiempos si se solicitan |
 | 1 | Error de uso o configuración | Vacío | JSON de error |
 | 2 | Argumentos inválidos | Vacío | JSON `argumentos-invalidos` |
+| 3 | Hallazgos detectados con `--estricto` | JSON | Advertencias si corresponden; tiempos si se solicitan |
 | 70 | Falla interna | Vacío | JSON `interno`; stack solo con `--depurar` |
 
 Todos los errores declaran `esquema: 2`. Sin esquema, el servidor informa `almacen-sin-esquema` y pide `bun run esquema`; si el puerto está ocupado informa `puerto-ocupado`. La web usa HTTP 400 para solicitudes inválidas, 404 para proyecto, resolución o agente inexistente y 422 para configuración no soportada o ilegible. La versión de RIGE es `1.0.0`.
@@ -520,6 +527,11 @@ Las filas siguientes trasladan solo usos respaldados por la declaración de la b
 
 | Fecha | Herramienta | Para qué | Pieza, archivo o commit | Verificación posterior |
 |---|---|---|---|---|
+| 13/11 | Claude Fable 5.2 (subagentes de Claude Code), como crítico | Tres pasadas de crítica externa de `src/` sin ADR (CLI, web y diseño interno): 50 hallazgos, con experimentos contra el binario 1.18.25 | Informe en el chat; fichas T6-01 a T6-20 en `.trabajo/fichas/mejoras/` (material descartable) | Cada hallazgo de fidelidad se reprodujo con el binario; NUC-13 se refutó con el binario y se retiró |
+| 13/11 | Claude Code (`claude-opus-5-5`), como ingeniero | Consolidación de los hallazgos, fichas T6-01 a T6-20, ADR-115 y ADR-116 propuestos, modificación de ADR-113, verificaciones con el binario (P-5, normalización por sujeto, NUC-13), recaptura de instantáneas y revisión de los diff | `00-gestion/decisiones/`, `.trabajo/fichas/mejoras/`, `pruebas/datos/*.json` | Instantáneas recapturadas solo tras comprobar que ningún caso JSON cambió; las 37 referencias nativas en `ok` |
+| 13/11 | Antigravity CLI `agy` (Gemini 4 Hydrogen High), como revisor | Pre-crítica de las fichas T6-01 a T6-20 contra el código | Informe descartable en el chat | Unos 25 bloqueantes incorporados a la sección 9 de cada ficha |
+| 13/11 | Antigravity CLI `agy` (Gemini 4 Hydrogen, esfuerzos bajo a extra alto), como escritor | T6-01 a T6-19: fidelidad con OpenCode, escenarios `v6-*`, vocabulario y roles, procedencia, color, paleta, ayuda, errores, navegación y accesibilidad web, `--estricto` e historial, limpieza interna | `src/` [AUTOR: hash de los commits] | Pruebas y `verificar` corridos por Claude Code tras cada ficha; suite completa en Windows y en Ubuntu |
+| 13/11 | Antigravity CLI `agy` (Gemini 3.8 Flash), como escritor | T6-20: actualización de README y MANUAL con las mejoras de fidelidad, CLI y web, y declaración de IA al día | `src/README.md`, `src/MANUAL.md` | Revisión del diff y verificación de cadenas por Claude Code |
 | 12/11 | Antigravity CLI `agy` 1.5.6 (Gemini 4 Argon High), como escritor | T5-26-c1: README sin el bloque de pruebas de la ficha y nombre del archivo del almacén en una constante del adaptador; solo edición de archivos (el modo sin interfaz no habilitó comandos de git) | `90fb7cd` (commit del autor) | Cambios revisados por Claude Code; misma verificación de T5-26 |
 | 12/11 | Antigravity CLI `agy` 1.5.6 (Gemini 4 Argon High), como escritor | T5-27: títulos de pruebas vigentes tras el rediseño y prueba byte a byte L-2 con un solo camino (ejecutable congelado); solo edición de archivos | [AUTOR: hash del commit de T5-27] (commit del autor) | Diff revisado por Claude Code; Windows 1490 aprobadas en `R:` con TEMP 8.3; Ubuntu 1483 |
 | 12/11 | Claude Code (Claude Opus 5.5), ingeniero | Propuesta del refactor de `src/`, fichas T5-28 a T5-36 y MED-20, revisión de cada diff, regeneración de la referencia nativa de `v5-ruta-absoluta-tapada` con el binario sobre una copia, corridas de la suite en Windows y en Ubuntu (Docker) | `.trabajo/fichas/`, ADR-098 puntos 47 a 49, esta entrada | Suite y `verificar` en las dos plataformas en cada ficha; texto congelado validado contra el renderizador previo |

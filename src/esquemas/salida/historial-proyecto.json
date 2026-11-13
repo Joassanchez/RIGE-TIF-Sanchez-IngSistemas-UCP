@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Respuesta historial de proyecto de RIGE v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["esquema", "proyecto", "analisis"],
+  "properties": {
+    "esquema": {
+      "const": 2
+    },
+    "proyecto": {
+      "type": "string"
+    },
+    "analisis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "instante", "resumenEntradas"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "instante": {
+            "type": "string"
+          },
+          "resumenEntradas": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

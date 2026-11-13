@@ -10,7 +10,7 @@ import { prepararGitReferencia } from "./referencias-nativas/git";
 
 type Referencia = {
   readonly procedencia: ReferenciaEntorno["procedencia"] & { readonly version: string; readonly directorio: string; readonly hogar: string;
-    readonly fallaEsperada?: boolean;
+    readonly fallaEsperada?: boolean | "sintaxis" | "configuracion";
     readonly OPENCODE_CONFIG?: string; readonly git?: OpcionesEscenario["git"]; readonly skillsExternosExcluidos?: boolean; readonly [clave: string]: unknown };
   readonly agente: string;
   readonly valores: Record<string, unknown>;
@@ -20,7 +20,7 @@ type Referencia = {
   readonly herramientas?: Record<string, Record<string, boolean>>;
   readonly comandos?: readonly string[];
   readonly registro?: { readonly codigo: number; readonly diagnosticoVisible: boolean; readonly avisoEnRegistro: boolean };
-  readonly falla?: { readonly codigo: number; readonly archivo: string; readonly linea?: number; readonly columna?: number };
+  readonly falla?: { readonly codigo: number; readonly tipo?: "configuracion-invalida"; readonly archivo?: string; readonly linea?: number; readonly columna?: number };
 };
 // Variantes oficiales de opencode-ai@1.18.25 por plataforma: en Windows el postinstall elige la baseline
 // si no detecta AVX2; en Linux las dos variantes son el mismo binario.
@@ -126,11 +126,25 @@ function ejecutar(): number {
         const proceso = Bun.spawnSync([binario, "debug", "agent", referencia.agente], {
           cwd: join(copia.raiz, referencia.procedencia.directorio), env, stdout: "pipe", stderr: "pipe", timeout: 120000,
         });
-        const archivo = /Config file at (.+?) is not valid JSON\(C\)/.exec(proceso.stderr.toString())?.[1];
-        if (proceso.exitCode === 0 || !archivo) throw new Error("El binario no confirmo la falla de sintaxis esperada.");
-        const posicion = /at line (\d+), column (\d+)/.exec(proceso.stderr.toString());
-        const falla = { codigo: proceso.exitCode, archivo: relative(copia.raiz, archivo).replaceAll("\\", "/"),
-          ...(posicion ? { linea: Number(posicion[1]), columna: Number(posicion[2]) } : {}) };
+        const stderr = proceso.stderr.toString();
+        let falla: NonNullable<Referencia["falla"]>;
+        if (referencia.procedencia.fallaEsperada === "configuracion") {
+          if (proceso.exitCode === 0 || !/Configuration is invalid/.test(stderr)) {
+            throw new Error("El binario no confirmo la falla de configuracion esperada.");
+          }
+          const archivo = /(?:Configuration is invalid at|Config file at) (.+?\.jsonc?)(?=[:\r\n]|$)/.exec(stderr)?.[1]?.trim();
+          falla = {
+            codigo: proceso.exitCode,
+            tipo: "configuracion-invalida",
+            ...(archivo ? { archivo: relative(copia.raiz, archivo).replaceAll("\\", "/") } : {}),
+          };
+        } else {
+          const archivo = /Config file at (.+?) is not valid JSON\(C\)/.exec(stderr)?.[1];
+          if (proceso.exitCode === 0 || !archivo) throw new Error("El binario no confirmo la falla de sintaxis esperada.");
+          const posicion = /at line (\d+), column (\d+)/.exec(stderr);
+          falla = { codigo: proceso.exitCode, archivo: relative(copia.raiz, archivo).replaceAll("\\", "/"),
+            ...(posicion ? { linea: Number(posicion[1]), columna: Number(posicion[2]) } : {}) };
+        }
         const capturada = { ...referencia,
           procedencia: { ...referencia.procedencia, binario: `${variante}@${obtenida}`, sha256Binario: hash,
             fecha: new Date().toISOString().slice(0, 10), comando: "opencode debug agent <agente>", ...(controlGit ? { controlGit } : {}) }, falla,

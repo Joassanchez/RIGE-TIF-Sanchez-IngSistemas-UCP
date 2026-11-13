@@ -32,8 +32,7 @@ describe("T5-14 K-5 plantillas", () => {
     expect(JSON.parse(json)).toEqual(r);
     expect(json).not.toContain("<");
     expect(pagina).toContain(`/comparar?desde=1&amp;hasta=2&amp;agente=${encodeURIComponent(nombre)}`);
-    expect(pagina).toContain("insignia--neutra");
-    expect(pagina).not.toMatch(/insignia--(?:permitida|denegada|pregunta)/);
+    for (const clase of ["insignia--pregunta", "insignia--permitida", "insignia--denegada"]) expect(pagina).toContain(clase);
     for (const conteo of ["1 cambio", "1 clave nueva", "1 quitada"]) expect(pagina).toContain(`>${conteo}</span>`);
     expect(pagina).not.toContain("<h2>Agente otro</h2>");
     const inicio = await paginaInicio({ esquema: 2, versionRige, almacen: { ruta: "/privado", versionEsquema: 2 } },
@@ -62,7 +61,7 @@ describe("Comparación de resoluciones", () => {
     expect(textoHtml(cuerpo)).toContain("Sin cambios: compaction (6), explore (6)");
     for (const nombre of ["compaction", "explore"]) expect(cuerpo).not.toContain(`<h2>Agente ${nombre}</h2>`);
     expect(cuerpo).toContain('<nav class="pestanas" aria-label="Filtrar comparación">');
-    expect(cuerpo).toContain('<th>Clave</th><th>Antes</th><th>Después</th>');
+    expect(cuerpo).toContain('<th scope="col">Clave</th><th scope="col">Antes</th><th scope="col">Después</th>');
     expect(cuerpo).toContain('data-etiqueta="Antes"');
     expect(cuerpo).toContain('data-etiqueta="Después"');
     expect(cuerpo).toContain('title="[&quot;a&quot;,&quot;b&quot;]">a › b</code>');
@@ -80,10 +79,37 @@ describe("Comparación de resoluciones", () => {
       comparaciones: [{ agente: "a/b", resumen: { cambiadas: 1, agregadas: 0, quitadas: 0, sinCambio: 0 }, cambios: [{ ruta: ["model"], tipo: "cambiada", motivos: ["valor"], antes: { valor: "antes", determinante: declaracion }, despues: { valor: "después", determinante: declaracion } }] },
         { agente: "otro", resumen: { cambiadas: 0, agregadas: 0, quitadas: 0, sinCambio: 2 }, cambios: [] }] };
     const cuerpo = await paginaComparacion(comparacionP6).text();
-    expect(cuerpo).toContain(`<h1>Cambios entre ${fechaLocal(fotoP6.instante)} y ${fechaLocal(comparacionP6.hasta.instante)}</h1>`);
+    expect(cuerpo).toContain("<h1>Análisis n.º 7 → n.º 8</h1>");
     expect(cuerpo).toContain('aria-current="page">Comparar</span>');
-    expect(cuerpo).toContain('<th>Clave</th><th>Antes</th><th>Después</th>');
+    expect(cuerpo).toContain('<th scope="col">Clave</th><th scope="col">Antes</th><th scope="col">Después</th>');
     expect(cuerpo).toContain("Sin cambios: otro (2)");
     expect(cuerpo).toContain("vscode://file/"); expect(json(cuerpo)).toEqual(comparacionP6);
+  });
+
+  test("T6-14 N-4 omite desplegables vacíos, muestra segundos y usa comandoCli comparar con ids reales", async () => {
+    const conSegundos = { ...foto, id: 7, instante: "2026-11-11T12:00:09Z" };
+    const hastaSegundos = { ...foto, id: 8, instante: "2026-11-12T12:00:45Z" };
+    const limpia: RespuestaComparacion = { ...comparacion, desde: conSegundos, hasta: hastaSegundos };
+    const cuerpo = await paginaComparacion(limpia, "build").text();
+    expect(cuerpo).toContain("<h1>Análisis n.º 7 → n.º 8</h1>");
+    expect(cuerpo).toContain(`${fechaLocal(conSegundos.instante)}:09`);
+    expect(cuerpo).toContain(`${fechaLocal(hastaSegundos.instante)}:45`);
+    expect(cuerpo).not.toContain('id="limites-analisis"');
+    const cli = cuerpo.match(/<details id="comando-cli"[^]*?<\/details>/)?.[0] ?? "";
+    expect(cli).toContain("Consultar por CLI sobre las mismas fotos");
+    expect(cli).not.toContain("No recupera esta foto; coincide si las entradas y el contexto no cambiaron");
+    expect(cli).toContain("bun run rige -- comparar");
+    expect(cli).toContain("--desde &#39;7&#39;");
+    expect(cli).toContain("--hasta &#39;8&#39;");
+    expect(cli).toContain("--agente &#39;build&#39;");
+
+    const conMotivos: RespuestaComparacion = {
+      ...limpia,
+      desde: { ...conSegundos, motivosAgentes: ["motivo"], reglas: { motivo: "Agente con motivo" } },
+    };
+    const cuerpoConMotivos = await paginaComparacion(conMotivos).text();
+    expect(cuerpoConMotivos).toContain('id="limites-analisis"');
+    expect(cuerpoConMotivos).toContain("Qué no cubre este análisis");
+    expect(cuerpoConMotivos).not.toContain("<details><summary>Rutas no comparables");
   });
 });

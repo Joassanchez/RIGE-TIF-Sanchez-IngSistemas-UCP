@@ -89,7 +89,7 @@ describe("T5-14 K-2", () => {
       expect(r.comparaciones.find(a => a.agente === "build")!.cambios).toContainEqual(expect.objectContaining({
         ruta: ["temperature"], tipo: "cambiada", motivos: ["valor"], antes: expect.objectContaining({ valor: 0.3 }), despues: expect.objectContaining({ valor: 0.7 }),
       }));
-      for (const texto of ["Agentes agregados", "nuevo", "Antes", "Después", "temperature", "insignia--neutra"]) expect(pagina.cuerpo).toContain(texto);
+      for (const texto of ["Agentes agregados", "nuevo", "Antes", "Después", "temperature", "insignia--pregunta"]) expect(pagina.cuerpo).toContain(texto);
       const filtrada = await pedir(ruta + "&agente=build");
       expect(datos(filtrada.cuerpo)).toEqual(r);
       const cliFiltro = e.cli(["comparar", "--desde", desde, "--hasta", hasta, "--agente", "build"]);
@@ -123,7 +123,10 @@ describe("T5-14 K-3", () => {
       expect(vacio.cuerpo).toContain("Ingresá la carpeta de un proyecto y pulsá Analizar");
       expect(vacio.cuerpo).not.toContain('<ul class="recientes">');
       expect(e.cli(["recientes"])).toMatchObject({ codigo: 0, error: "", salida: '{"esquema":2,"proyectos":[]}\n' });
-      await guardar(); const id = await guardar();
+      await guardar();
+      const archivo = join(e.proyecto, "opencode.jsonc");
+      writeFileSync(archivo, readFileSync(archivo, "utf8").replace('"temperature": 0.3', '"temperature": 0.4'));
+      const id = await guardar();
       const pagina = await pedir("/");
       expect(pagina.cuerpo).toContain("Proyectos recientes");
       expect(pagina.cuerpo).not.toContain("<script");
@@ -151,7 +154,10 @@ describe("T5-14 K-4", () => {
         expect(r.estado).toBe(303);
         return /\/resoluciones\/(\d+)/.exec(String(r.cabeceras.location))![1]!;
       };
-      const desde = await alta(); ultimoId = await alta();
+      const desde = await alta();
+      const archivo = join(e.proyecto, "opencode.jsonc");
+      writeFileSync(archivo, readFileSync(archivo, "utf8").replace('"temperature": 0.3', '"temperature": 0.4'));
+      ultimoId = await alta();
       const pagina = () => solicitarLocal({ host: "127.0.0.1", puerto: servidor.puerto, ruta: `/resoluciones/${ultimoId}?agente=build` });
       primerCuerpo = (await pagina()).cuerpo;
       const base = join(e.variables.RIGE_ALMACEN!, "rige.db"), antes = readFileSync(base);
@@ -187,13 +193,16 @@ describe("T5-14 K-4", () => {
 describe("T5-14 K-5", () => {
   test("ids invalidos e inexistentes, proyectos distintos, almacen ausente, CLI 0/1/2 y error web", async () => {
     const ausente = preparar();
-    for (const args of [["recientes"], ["comparar", "--desde", "1", "--hasta", "2"]]) {
+    for (const args of [["recientes"], ["recientes", "--proyecto", ausente.proyecto], ["comparar"], ["comparar", "--desde", "1", "--hasta", "2"]]) {
       const r = ausente.cli(args);
       expect(r.codigo).toBe(1); expect(r.salida).toBe("");
       expect(JSON.parse(r.error)).toMatchObject({ esquema: 2, error: { codigo: "almacen-sin-esquema" } });
       expect(existsSync(ausente.variables.RIGE_ALMACEN!)).toBe(false);
     }
-    for (const args of [["comparar"], ["comparar", "--desde", "x", "--hasta", "1"], ["comparar", "--desde", "1", "--hasta", "2", "--agente", " "], ["recientes", "--proyecto", "/x"], ["recientes", "--tiempos"]]) {
+    const proyAusente = ausente.cli(["recientes", "--proyecto", join(ausente.raiz, "inexistente")]);
+    expect(proyAusente.codigo).toBe(1); expect(proyAusente.salida).toBe("");
+    expect(JSON.parse(proyAusente.error)).toMatchObject({ esquema: 2, error: { codigo: "proyecto-inexistente" } });
+    for (const args of [["comparar", "--desde", "1"], ["comparar", "--hasta", "2"], ["comparar", "--desde", "x", "--hasta", "1"], ["comparar", "--desde", "1", "--hasta", "2", "--agente", " "], ["recientes", "--proyecto", ""], ["recientes", "--tiempos"]]) {
       const r = ausente.cli(args);
       expect(r.codigo).toBe(2); expect(r.salida).toBe("");
     }
@@ -283,5 +292,90 @@ describe("T5-14 K-6", () => {
     }
     const manual = readFileSync(new URL("../../MANUAL.md", import.meta.url), "utf8");
     for (const n of [6, 8]) expect(manual.split(`## ${n}.`)[1]!.split(`## ${n + 1}.`)[0]).toContain("comparar");
+  });
+});
+
+describe("T6-19 CLI-16 y CLI-08", () => {
+  test("H-1 H-2 H-5: hallazgos --estricto sale con 3 solo cuando hay hallazgos y --help documenta el codigo 3", () => {
+    const e = preparar();
+    const ayuda = e.cli(["--help"]);
+    expect(ayuda.codigo).toBe(0);
+    expect(ayuda.salida).toContain("3   hallazgos detectados con --estricto");
+
+    const limpio = join(e.raiz, "limpio");
+    mkdirSync(limpio, { recursive: true });
+    writeFileSync(join(limpio, "opencode.jsonc"), '{"agent":{"build":{"model":"m"}}}');
+    const normalLimpio = e.cli(["hallazgos", "--proyecto", limpio]);
+    const estrictoLimpio = e.cli(["hallazgos", "--proyecto", limpio, "--estricto"]);
+    expect(normalLimpio.codigo).toBe(0);
+    expect(estrictoLimpio).toEqual(normalLimpio);
+
+    const archivo = join(e.proyecto, "opencode.jsonc");
+    writeFileSync(archivo, '{"agent":{"build":{"prompt":"{env:VARIABLE_INEXISTENTE_T619}"}}}');
+    const normalCon = e.cli(["hallazgos", "--proyecto", e.proyecto]);
+    const estrictoCon = e.cli(["hallazgos", "--proyecto", e.proyecto, "--estricto"]);
+    expect(normalCon.codigo).toBe(0);
+    expect(JSON.parse(normalCon.salida).hallazgos.length).toBeGreaterThan(0);
+    expect(estrictoCon.codigo).toBe(3);
+    expect(estrictoCon.salida).toBe(normalCon.salida);
+    expect(estrictoCon.error).toBe("");
+
+    const estrictoTexto = e.cli(["hallazgos", "--proyecto", e.proyecto, "--estricto", "--texto"]);
+    expect(estrictoTexto.codigo).toBe(3);
+    expect(estrictoTexto.salida).toBe(e.cli(["hallazgos", "--proyecto", e.proyecto, "--texto"]).salida);
+  });
+
+  test("H-3 H-4 H-5: recientes --proyecto lista todos del mas reciente al mas antiguo y comparar sin ids toma los dos ultimos", async () => {
+    const esquemaHistorial = await Bun.file(new URL("../../esquemas/salida/historial-proyecto.json", import.meta.url)).json();
+    await conWeb(async (e, _pedir, guardar) => {
+      const compararCero = lanzar(e.raiz, ["comparar"], e.variables, e.proyecto);
+      expect(compararCero.codigo).toBe(1);
+      expect(JSON.parse(compararCero.error).error.codigo).toBe("analisis-insuficientes");
+
+      const vacio = join(e.raiz, "otro-vacio");
+      mkdirSync(vacio, { recursive: true });
+      const historialVacio = e.cli(["recientes", "--proyecto", vacio]);
+      expect(historialVacio.codigo).toBe(0);
+      const parsedVacio = JSON.parse(historialVacio.salida);
+      expect(validarEsquema(esquemaHistorial, parsedVacio)).toEqual([]);
+      expect(parsedVacio.analisis).toEqual([]);
+      expect(e.cli(["recientes", "--proyecto", vacio, "--texto"]).salida).toContain("Sin análisis guardados");
+
+      const archivo = join(e.proyecto, "opencode.jsonc");
+      writeFileSync(archivo, '{"agent":{"build":{"temperature":0.1}}}');
+      const id1 = await guardar();
+
+      const compararUno = lanzar(e.raiz, ["comparar"], e.variables, e.proyecto);
+      expect(compararUno.codigo).toBe(1);
+      expect(JSON.parse(compararUno.error).error.codigo).toBe("analisis-insuficientes");
+
+      writeFileSync(archivo, '{"agent":{"build":{"temperature":0.2}}}');
+      const id2 = await guardar();
+      const compararDos = lanzar(e.raiz, ["comparar"], e.variables, e.proyecto);
+      expect(compararDos.codigo).toBe(0);
+      expect(compararDos.salida).toBe(e.cli(["comparar", "--desde", id1, "--hasta", id2]).salida);
+
+      writeFileSync(archivo, '{"agent":{"build":{"temperature":0.3}}}');
+      const id3 = await guardar();
+      const compararTres = lanzar(e.raiz, ["comparar"], e.variables, e.proyecto);
+      expect(compararTres.codigo).toBe(0);
+      expect(compararTres.salida).toBe(e.cli(["comparar", "--desde", id2, "--hasta", id3]).salida);
+
+      const historial = e.cli(["recientes", "--proyecto", e.proyecto]);
+      expect(historial.codigo).toBe(0);
+      const parsed = JSON.parse(historial.salida);
+      expect(validarEsquema(esquemaHistorial, parsed)).toEqual([]);
+      expect(parsed.proyecto).toBe(realpathSync.native(e.proyecto).replaceAll("\\", "/"));
+      expect(parsed.analisis.map((a: { id: number }) => a.id)).toEqual([Number(id3), Number(id2), Number(id1)]);
+
+      const historialTexto = e.cli(["recientes", "--proyecto", e.proyecto, "--texto"]);
+      expect(historialTexto.codigo).toBe(0);
+      expect(historialTexto.salida).toContain("ANÁLISIS");
+      expect(historialTexto.salida).toContain(id3);
+
+      const general = e.cli(["recientes"]);
+      expect(general.codigo).toBe(0);
+      expect(Object.hasOwn(JSON.parse(general.salida), "proyectos")).toBe(true);
+    });
   });
 });

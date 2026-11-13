@@ -203,6 +203,8 @@ regeneran con el binario; la regeneracion no recalcula las decisiones.
 - `utilidades/`: aislamiento, dobles, copia de escenarios, subprocesos y cliente HTTP local del arnés.
 - `../paquetes/`: unitarias junto al código; cada regla se verifica en su capa y los casos de uso comprueban su integración con los puertos.
 
+Para el ciclo rápido de trabajo durante el desarrollo, `bun run prueba:rapida` (`bun test paquetes`) ejecuta las pruebas unitarias de los paquetes (`nucleo`, `opencode` y `rige`). No sustituye la corrida de integración/aceptación: la suite completa (`bun test`) y `bun run verificar` siguen siendo obligatorias al final.
+
 M-3 corre fuera de bun test con `bun run prueba:lenta`, sobre una copia del
 proyecto. Comprueba el hash del fuente real durante el rojo y el verde.
 

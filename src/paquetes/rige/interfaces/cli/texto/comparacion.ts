@@ -1,19 +1,35 @@
 import type { RespuestaComparacion } from "../../../aplicacion/respuestas/contrato-generado";
 import { fechaLocal } from "../../presentacion/fechas";
+import { motivoNoResolucion, plural } from "../../presentacion/vocabulario";
 import {
+  type CeldaTabla,
   type ContextoPresentacion,
+  ancho,
+  pintar,
   proyecto,
   atenuar,
   seguro,
   tabla,
   valor,
-  ubicacion,
+  recortar,
+  ubicacionFragmentos,
+  referencias,
   noResueltas,
   terminar,
+  unirBloques,
 } from "./formato";
 
 export function renderizarComparacion(r: RespuestaComparacion, c: ContextoPresentacion): string {
-  const agentes = r.comparaciones.filter(a => !c.agente || a.agente === c.agente);
+  const ctx: ContextoPresentacion = { ...c, proyecto: c.proyecto ?? r.proyecto };
+  const agentes = r.comparaciones.filter(a => !ctx.agente || a.agente === ctx.agente);
+  const existeAgenteEnComparacion = !ctx.agente
+    || agentes.length > 0
+    || r.agentes.agregados.includes(ctx.agente)
+    || r.agentes.quitados.includes(ctx.agente)
+    || r.agentes.inciertos.includes(ctx.agente);
+  const avisoAgenteInexistente = !existeAgenteEnComparacion && ctx.agente
+    ? [`${pintar("pregunta", "Aviso:", ctx)} el agente "${seguro(ctx.agente)}" no aparece en esta comparación.${r.comparaciones.length ? ` Agentes: ${r.comparaciones.map(a => seguro(a.agente)).join(", ")}.` : ""}`]
+    : [];
   const resumen = agentes.reduce(
     (acum, a) => ({
       cambiadas: acum.cambiadas + a.resumen.cambiadas,
@@ -30,13 +46,13 @@ export function renderizarComparacion(r: RespuestaComparacion, c: ContextoPresen
     c
   )}`;
   const resumenPartes = [
-    `${resumen.cambiadas} cambiadas`,
-    `${resumen.agregadas} agregadas`,
-    `${resumen.quitadas} quitadas`,
-    `${resumen.sinCambio} sin cambio`,
+    pintar("pregunta", `${resumen.cambiadas} ${plural(resumen.cambiadas, "cambiada", "cambiadas")}`, ctx),
+    pintar("permitida", `${resumen.agregadas} ${plural(resumen.agregadas, "agregada", "agregadas")}`, ctx),
+    pintar("denegada", `${resumen.quitadas} ${plural(resumen.quitadas, "quitada", "quitadas")}`, ctx),
+    pintar("estructura", `${resumen.sinCambio} sin cambio`, ctx),
   ];
   const lineaResumen = resumenPartes.join(" · ");
-  const avisoParcial = r.parcial ? ["Análisis incompleto: comparación parcial"] : [];
+  const avisoParcial = r.parcial ? [`${pintar("pregunta", "Análisis incompleto:", ctx)} comparación parcial`] : [];
 
   const lineasAgentesEstado = ["agregados", "quitados", "inciertos"].flatMap(tipo => {
     const lista = r.agentes[tipo as "agregados" | "quitados" | "inciertos"].filter(
@@ -47,33 +63,53 @@ export function renderizarComparacion(r: RespuestaComparacion, c: ContextoPresen
 
   const lineasSinCambios = sinCambios.length ? [`Sin cambios en: ${sinCambios.join(", ")}`] : [];
 
-  const tablasPorAgente = agentes
+  const limiteAncho = ancho(ctx);
+  const bloquesPorAgente = agentes
     .filter(a => a.cambios.length)
-    .flatMap(a => {
-      const filas = a.cambios.map(v => [
-        v.ruta.join("."),
-        v.antes ? valor(v.antes.valor) : "—",
-        v.despues ? valor(v.despues.valor) : "—",
-        ubicacion(v.despues?.determinante ?? v.antes?.determinante ?? null),
-      ]);
-      return [seguro(a.agente), ...tabla(["CLAVE", "ANTES", "DESPUÉS", "LO DETERMINA"], filas, c)];
+    .map(a => {
+      const filas: CeldaTabla[][] = a.cambios.map(v => {
+        const textoAntes = v.antes ? valor(v.antes.valor) : "—";
+        const textoDespues = v.despues ? valor(v.despues.valor) : "—";
+        const soloProcedencia = v.antes !== null && v.despues !== null && textoAntes === textoDespues;
+        return [
+          v.ruta.join("."),
+          v.antes ? { texto: textoAntes, rol: soloProcedencia ? "pregunta" : "denegada" } : { texto: "—", rol: "estructura" },
+          v.despues ? { texto: textoDespues, rol: soloProcedencia ? "pregunta" : "permitida" } : { texto: "—", rol: "estructura" },
+          ubicacionFragmentos(v.despues?.determinante ?? v.antes?.determinante ?? null, undefined, ctx),
+        ];
+      });
+      return [
+        seguro(a.agente),
+        ...tabla(["CLAVE", "ANTES", "DESPUÉS", "LO DETERMINA"], filas, ctx, {
+          elasticas: [1, 2],
+          apilado: ([clave, antes, despues, determina]) => {
+            const soloProcedencia = antes !== "—" && despues !== "—" && antes === despues;
+            return [
+              clave!,
+              `  ${pintar(antes === "—" ? "estructura" : soloProcedencia ? "pregunta" : "denegada", `antes: ${recortar(antes!, Math.max(1, limiteAncho - 9))}`, ctx)}`,
+              `  ${pintar(despues === "—" ? "estructura" : soloProcedencia ? "pregunta" : "permitida", `después: ${recortar(despues!, Math.max(1, limiteAncho - 11))}`, ctx)}`,
+              `  ← ${determina!}`,
+            ];
+          },
+        }),
+      ];
     });
 
   const lineasNoComparables = [r.desde, r.hasta].flatMap(f => [
-    ...noResueltas(f.noComparables),
-    ...f.motivosAgentes.map(seguro),
+    ...noResueltas(f.noComparables, f.reglas),
+    ...f.motivosAgentes.map(m => seguro(motivoNoResolucion(m, f.reglas))),
   ]);
 
-  const lineas = [
-    ...proyecto(r, { ...c, proyectoDesdeCarpetaActual: false }),
-    rangoInstantes,
-    lineaResumen,
-    ...avisoParcial,
-    ...lineasAgentesEstado,
-    ...lineasSinCambios,
-    ...tablasPorAgente,
-    ...lineasNoComparables,
-  ];
+  const lineas = unirBloques([
+    proyecto(r, { ...ctx, proyectoDesdeCarpetaActual: false }),
+    [rangoInstantes, lineaResumen, ...avisoParcial, ...avisoAgenteInexistente, ...lineasAgentesEstado, ...lineasSinCambios],
+    ...bloquesPorAgente,
+    lineasNoComparables,
+  ]);
 
-  return terminar(lineas, c);
+  const refs = referencias(
+    agentes.flatMap(a => a.cambios.flatMap(v => [v.despues?.determinante ?? null, v.antes?.determinante ?? null])),
+    ctx,
+  );
+  return terminar(lineas, ctx, refs);
 }

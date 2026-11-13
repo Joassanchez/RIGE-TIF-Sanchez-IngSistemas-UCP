@@ -4,7 +4,7 @@ import { responderHtml } from "../respuesta";
 
 const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
   "almacen-sin-esquema": 503,
-  "configuracion-invalida": 500,
+  "configuracion-invalida": 422,
   "puerto-ocupado": 500,
   "solicitud-invalida": 400,
   "proyecto-inexistente": 404,
@@ -18,9 +18,11 @@ const estadoPorCodigo: Record<ErrorUso["codigo"], number> = {
   "entorno-incompleto": 500,
 };
 
-export function paginaErrorUso(error: ErrorUso): Response {
+export function paginaErrorUso(error: ErrorUso, proyecto?: string, hogar?: string): Response {
   const estado = Object.hasOwn(estadoPorCodigo, error.codigo) ? estadoPorCodigo[error.codigo]! : 422;
-  return responderHtml(estado, diseno(`Error ${estado}`, contenidoError(estado, error.mensaje, error.codigo)));
+  const contexto = proyecto === undefined && hogar === undefined ? undefined
+    : { ...(proyecto === undefined ? {} : { proyecto }), ...(hogar === undefined ? {} : { hogar }) };
+  return responderHtml(estado, diseno(`Error ${estado}`, contenidoError(estado, error.mensaje, error.codigo, contexto)));
 }
 
 export function conErrores(manejador: (solicitud: Request) => Response): (solicitud: Request) => Response {

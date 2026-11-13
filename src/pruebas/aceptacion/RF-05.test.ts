@@ -122,11 +122,11 @@ describe("C-3 T3-01 R-11", () => {
         const respuesta = datos(pagina.cuerpo);
         const resultados = ruta === "/agentes?id=1" ? "tabla-agentes" : "valores";
         seccionHtml(pagina.cuerpo, resultados);
-        const declaraciones = seccionHtml(pagina.cuerpo, "declaraciones");
-        if (resultados === "valores") expect(pagina.cuerpo.indexOf('id="declaraciones"')).toBeLessThan(pagina.cuerpo.indexOf(`id="${resultados}"`));
+        const limites = seccionHtml(pagina.cuerpo, "limites-analisis");
+        if (resultados === "valores") expect(pagina.cuerpo.indexOf(`id="${resultados}"`)).toBeLessThan(pagina.cuerpo.indexOf('id="limites-analisis"'));
         else expect(pagina.cuerpo).toContain("Estado actual de los archivos");
-        for (const codigo of ["version-no-determinada", "ejecutable-no-encontrado"]) {
-          expect(declaraciones).toContain(respuesta.reglas[codigo]);
+        for (const texto of ["Versión instalada de OpenCode no determinada", "Ejecutable de OpenCode no encontrado en PATH"]) {
+          expect(limites).toContain(texto);
         }
         if (ruta !== "/agentes?id=1") expect(respuesta).toEqual(valores);
       }

@@ -42,7 +42,7 @@ describe("T3-04 cobertura RNF-04 RNF-02", () => {
   test("los cuatro criterios tienen escenario y pruebas de la iteracion 3", () => {
     const items = informarCobertura(leer(), matriz()).items;
     for (const id of ["RNF-04 CA-1", "RNF-04 CA-2", "RNF-04 CA-3", "RNF-02 CA-1"]) {
-      expect(items.find(i => i.id === id)).toMatchObject({ iteracion: 3, estado: "cubierto", escenarios: ["v3-sustituciones"] });
+      expect(items.find(i => i.id === id)).toMatchObject({ iteracion: 3, estado: "cubierto", escenarios: expect.arrayContaining(["v3-sustituciones"]) });
     }
   });
 });

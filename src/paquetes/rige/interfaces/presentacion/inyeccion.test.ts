@@ -10,6 +10,11 @@ test("T5-26 U-4 version inyectada en CLI y web, detectada si viene en la respues
     versionHerramienta: "9.8.7", escribirSalida: t => { salida += t; }, escribirError: () => { throw new Error("Sin error"); },
   });
   expect(codigo).toBe(0); expect(JSON.parse(salida).versionHerramienta).toBe("9.8.7");
+  let salidaAyuda = "";
+  const codigoAyuda = ejecutarCli(["--help"], () => { throw new Error("No ensamblar"); }, {
+    versionHerramienta: "9.8.7", escribirSalida: t => { salidaAyuda += t; }, escribirError: () => { throw new Error("Sin error"); },
+  });
+  expect(codigoAyuda).toBe(0); expect(salidaAyuda).toContain("OpenCode 9.8.7");
   const agentes = { esquema: 2 as const, proyecto: "/p", entradas: [], resumenEntradas: "", declaraciones: [], reglas: {}, agentes: [], eliminados: [], incompleta: false, motivos: [] };
   const error = { exito: false as const, error: { codigo: "prueba", mensaje: "prueba" } };
   expect(await paginaResumenProyecto(agentes, error, error, "1", undefined, { versionHerramienta: "9.8.7" }).text()).toContain("OpenCode 9.8.7");

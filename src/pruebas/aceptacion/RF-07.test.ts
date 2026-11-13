@@ -15,6 +15,7 @@ import { abarca } from "../../paquetes/opencode/hallazgos";
 import { consultarEntradas } from "../../paquetes/rige/aplicacion/casos-uso/consultar-entradas";
 import { consultarHallazgos } from "../../paquetes/rige/aplicacion/casos-uso/consultar-hallazgos";
 import type { RespuestaHallazgos } from "../../paquetes/rige/aplicacion/respuestas/contrato-generado";
+import { rutaVisible } from "../../paquetes/rige/interfaces/presentacion/rutas";
 import { nombresHallazgos } from "../../paquetes/rige/interfaces/web/componentes-proyecto";
 import type { TipoHallazgo } from "../../paquetes/nucleo/hallazgos/tipos";
 import { explicarHallazgo } from "../../paquetes/nucleo/hallazgos/explicar";
@@ -66,6 +67,11 @@ describe("T3-05 R-9 completitud", () => {
     for (const esc of manifiesto.escenarios) {
       const e = prepararDisponible(esc.id);
       const r = consultarHallazgos(e.dependencias(), e.proyecto);
+      if ("referencia" in e && (e as { referencia?: { procedencia?: { fallaEsperada?: string } } }).referencia?.procedencia?.fallaEsperada === "configuracion") {
+        expect(r.exito).toBe(false);
+        if (!r.exito) expect(r.error.codigo).toBe("configuracion-invalida");
+        continue;
+      }
       expect(r.exito).toBe(true);
       if (!r.exito) throw new Error(`${esc.id}: ${r.error.codigo}: ${r.error.mensaje}`);
       for (const h of r.valor.hallazgos) causasEmitidas.add(h.causa);
@@ -1068,9 +1074,10 @@ describe("RF-07 CA-4 T3-07 R-3", () => {
         const filas = [...seccionHtml(pagina.cuerpo, "tabla-hallazgos").matchAll(/<article id="h-(\d+)"[^>]*>(.*?)<\/article>/gs)]
           .sort((a, b) => Number(a[1]) - Number(b[1]));
         expect(filas).toHaveLength(rCli.hallazgos.length);
+        const hogar = (process.platform === "win32" ? e.env.USERPROFILE || e.env.HOME : e.env.HOME) || undefined;
         expect(filas.map(f => [f[2]!.match(/<h3>(.*?)<\/h3>/s)![1]!, f[2]!.match(/<p>Ubicación: (.*?)<\/p>/s)![1]!, f[2]!.match(/<p><strong>Causa:<\/strong> (.*?)<\/p>/s)![1]!].map(celda => textoHtml(celda)))).toEqual(rCli.hallazgos.map((h: RespuestaHallazgos["hallazgos"][number]) => [
           escaparHtml(nombresHallazgos[h.tipo]![0]), escaparHtml(h.entrada.condicion === "observada" && (posix.isAbsolute(h.entrada.referencia) || win32.isAbsolute(h.entrada.referencia))
-            ? h.entrada.referencia.replaceAll("\\", "/").split("/").at(-1) + `:${h.posicion.linea}:${h.posicion.columna}` : h.localizacion), escaparHtml(h.explicacion ?? ""),
+            ? `${rutaVisible(h.entrada.referencia, rCli.proyecto, hogar)}:${h.posicion.linea}:${h.posicion.columna}` : h.localizacion), escaparHtml(h.explicacion ?? ""),
         ]));
         for (const [indice, h] of rCli.hallazgos.entries()) {
           expect(typeof h.explicacion).toBe("string");

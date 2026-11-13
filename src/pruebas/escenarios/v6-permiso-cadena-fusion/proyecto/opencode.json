@@ -1,0 +1,10 @@
+{
+  "permission": {
+    "bash": "deny"
+  },
+  "agent": {
+    "build": {
+      "permission": "allow"
+    }
+  }
+}

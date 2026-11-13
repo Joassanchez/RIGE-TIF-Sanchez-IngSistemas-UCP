@@ -115,7 +115,7 @@ test("T5-24 X-7 comparacion compacta con resumen y procedencia", () => escenario
   expect(r.codigo, r.error).toBe(0);
   expect(r.salida).toContain("Proyecto: proyecto\n"); expect(r.salida).not.toContain("carpeta actual");
   expect(r.salida).toContain("Cambios entre 02/01/2020 11:14 y 03/01/2020 18:05");
-  expect(r.salida).toMatch(/1 cambiadas.*0 agregadas.*0 quitadas.*\d+ sin cambio/);
+  expect(r.salida).toMatch(/1 cambiada.*0 agregadas.*0 quitadas.*\d+ sin cambio/);
   expect(r.salida).toMatch(/Sin cambios en: .*, /);
   expect(r.salida).toMatch(/CLAVE\s+ANTES\s+DESPUÉS\s+LO DETERMINA/);
   expect(r.salida).toContain("opencode.json:");
@@ -182,10 +182,25 @@ test("T5-25 C-2 ayuda general y por subcomando alinea todas las descripciones", 
   for (const comando of [[], ...["valores", "permiso", "reglas", "agentes", "entradas", "hallazgos", "recientes", "comparar", "estado", "esquema", "servir"].map(c => [c])]) {
     const r = lanzar(e.raiz, [...comando, "--help"], e.variables);
     expect(r.codigo).toBe(0);
-    const filas = r.salida.split("\n").filter(l => l.startsWith("  --"));
-    const opciones = filas.map(l => l.match(/^  (.+?) {2,}(.+)$/)!);
-    expect(opciones.every(Boolean)).toBe(true);
-    const columna = 2 + Math.max(...opciones.map(m => m[1]!.length)) + 2;
-    for (const [i, m] of opciones.entries()) expect(filas[i]!.indexOf(m[2]!, 2 + m[1]!.length)).toBe(columna);
+    const bloquesOpciones = r.salida
+      .split("\n\n")
+      .map(bloque => bloque.split("\n").filter(l => l.startsWith("  --")))
+      .filter(filas => filas.length > 0);
+    expect(bloquesOpciones.length).toBeGreaterThan(0);
+    for (const filas of bloquesOpciones) {
+      const opciones = filas.map(l => l.match(/^  (.+?) {2,}(.+)$/)!);
+      expect(opciones.every(Boolean)).toBe(true);
+      const columna = 2 + Math.max(...opciones.map(m => m[1]!.length)) + 2;
+      for (const [i, m] of opciones.entries()) expect(filas[i]!.indexOf(m[2]!, 2 + m[1]!.length)).toBe(columna);
+    }
+    if (comando.length === 0) {
+      const antesOpciones = r.salida.split("\nOpciones generales:")[0]!;
+      const filasSub = antesOpciones.split("\n").filter(l => /^  [a-z-]+ {2,}/.test(l));
+      expect(filasSub.length).toBeGreaterThan(0);
+      const subs = filasSub.map(l => l.match(/^  ([a-z-]+) {2,}(.+)$/)!);
+      expect(subs.every(Boolean)).toBe(true);
+      const colSub = 2 + Math.max(...subs.map(m => m[1]!.length)) + 2;
+      for (const [i, m] of subs.entries()) expect(filasSub[i]!.indexOf(m[2]!, 2 + m[1]!.length)).toBe(colSub);
+    }
   }
 }));

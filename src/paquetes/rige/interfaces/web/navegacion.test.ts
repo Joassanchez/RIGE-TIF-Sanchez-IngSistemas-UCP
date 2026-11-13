@@ -87,7 +87,7 @@ describe("T5-09-c1 C-1 selector compacto", () => {
     const cuerpo = await solicitar(casos, "/resoluciones/7?agente=build").text();
     const formulario = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)![0];
     expect(formulario).toContain('class="selector-agente"');
-    expect(formulario).toContain('<label for="agente-seleccionado">Agente</label>');
+    expect(formulario).toContain('<label for="agente-seleccionado">Cambiar de agente</label>');
     expect(formulario).toMatch(/<\/label>\s*<select name="agente" id="agente-seleccionado">/);
     expect(formulario).toMatch(/<\/select>\s*<button class="boton--secundario">Ver agente<\/button>/);
     expect(estilos).toMatch(/\.selector-agente\s*\{[^}]*display: flex;[^}]*align-items: center;[^}]*gap: 1rem;[^}]*margin: 2rem 0;[^}]*background: var\(--superficie\);[^}]*border:/);
@@ -103,7 +103,7 @@ describe("T5-09-c1 C-2 visibilidad en castellano", () => {
   test("marca ocultos por agente y mantiene los booleanos del JSON", async () => {
     const cuerpo = await paginaResumenProyecto(agentes, { exito: true, valor: { ...agentes, entradas: [] } }, { exito: false, error: { codigo: "prueba", mensaje: "No disponible" } }, "7").text();
     const tabla = cuerpo.match(/<section id="tabla-agentes">[^]*?<\/section>/)![0];
-    const filas = [...tabla.matchAll(/<tbody>([^]*?)<\/tbody>/g)][0]![1]!.match(/<tr class="[^"]+">[^]*?<\/tr>/g)!;
+    const filas = [...tabla.matchAll(/<tbody>([^]*?)<\/tbody>/g)][0]![1]!.match(/<tr[^>]*class="[^"]+"[^>]*>[^]*?<\/tr>/g)!;
     expect(filas).toHaveLength(2);
     expect(filas[0]).toContain('>build</a>');
     expect(filas[0]).not.toContain('>oculto</span>');
@@ -138,9 +138,9 @@ describe("T5-09 N-3 permiso como subagente", () => {
     expect(solicitudes[1]!.lanzadoPor).toBe("plan");
     const conLanzador = { ...permiso, lanzadoPor: "plan <principal>" };
     const pagina = await paginaPermiso(conLanzador).text();
-    expect(pagina).toContain('Lanzado por: <code>plan &lt;principal&gt;</code>');
+    expect(pagina).toContain('<dt>Lanzado por</dt><dd><code>plan &lt;principal&gt;</code></dd>');
     expect(JSON.parse(pagina.match(/id="respuesta">([^]*?)<\/script>/)![1]!)).toEqual(conLanzador);
-    expect(await paginaPermiso(permiso).text()).not.toContain("Lanzado por:");
+    expect(await paginaPermiso(permiso).text()).not.toContain("<dt>Lanzado por</dt>");
   });
 });
 
@@ -184,7 +184,7 @@ describe("T5-09 N-5 del hallazgo a su entrada", () => {
     expect(cuerpo).toContain('href="vscode://file/proyecto/config:2:3" title="Abrir en VS Code: /proyecto/config"');
     const sinArchivo = await paginaHallazgos({ ...hallazgos, hallazgos: hallazgos.hallazgos.map(h => ({ ...h, entrada: { ...h.entrada, referencia: "VARIABLE", via: "variable-contenido" } })) }).text();
     expect(sinArchivo).toContain('href="/entradas?proyecto=%2Fproyecto#entrada-0"');
-    expect(await paginaEntradas(entradas).text()).toContain('<tr id="entrada-0"><td data-etiqueta="Orden">0</td>');
+    expect(await paginaEntradas(entradas).text()).toContain('<tr role="row" id="entrada-0"><td role="cell" data-etiqueta="Orden">0</td>');
     const resolucion = await paginaResolucion({ ...valores, entradas: [entrada] }, sobre).text();
     expect(resolucion).toContain('<tr id="entrada-leida-0"><td data-etiqueta="Orden">0</td>');
     const ids = [...resolucion.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
@@ -226,7 +226,7 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
     } }, `/permiso?id=7&agente=${codificado}&herramienta=read&objetivo=${codificado}&lanzadoPor=${codificado}`).text();
     expect(recibida).toEqual({ agente: ataque, herramienta: "read", objetivo: ataque, lanzadoPor: ataque });
     expect(paginaConsulta).toContain(`<code class="ficha-codigo">read: ${escapado}</code>`);
-    expect(paginaConsulta).toContain(`Lanzado por: <code>${escapado}</code>`);
+    expect(paginaConsulta).toContain(`<dt>Lanzado por</dt><dd><code>${escapado}</code></dd>`);
     const paginas: [string, unknown][] = [[paginaListado, listado], [paginaValores, { ...valores, proyecto, agente: ataque }],
       [paginaDiagnostico, diagnostico], [paginaConsulta, consulta], [await paginaEntradas({ ...entradas, proyecto }).text(), { ...entradas, proyecto }]];
     for (const [cuerpo, dato] of paginas) {
@@ -234,10 +234,11 @@ describe("T5-09 N-6 seguridad de navegacion", () => {
       if (cuerpo.includes('id="tabla-entradas"')) {
         expect(enlace).toBeUndefined(); // Ya no hay enlaces sueltos en la cabecera.
         expect(cuerpo).toContain(`title="/p/${escapado}"`);
-      } else if (cuerpo === paginaListado) expect(enlace).toBeDefined();
-      if (cuerpo === paginaListado) expect(enlace).toContain("&amp;id=7");
+      } else if (cuerpo === paginaListado || cuerpo === paginaValores) {
+        expect(enlace).toBeDefined();
+        expect(enlace).toContain("&amp;id=7");
+      }
       if (cuerpo === paginaValores) {
-        expect(enlace).toBeUndefined();
         expect(cuerpo).toContain(`title="/p/${escapado}"`);
         expect(cuerpo.split('<details id="comando-cli">')[1]).toContain('id="entradas-leidas"');
       }

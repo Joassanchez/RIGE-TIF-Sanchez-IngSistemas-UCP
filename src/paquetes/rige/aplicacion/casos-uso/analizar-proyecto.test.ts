@@ -5,6 +5,8 @@ import { crearEntornoMemoria } from "../../../../pruebas/utilidades/entorno-memo
 import { resolver } from "../../../../pruebas/utilidades/resolver";
 import { prepararAnalisis } from "./analizar-proyecto";
 import { consultarPermiso } from "./consultar-permiso";
+import { consultarAgentes } from "./consultar-agentes";
+import { consultarReglas } from "./consultar-reglas";
 import { EntornoLecturaSistema } from "../../adaptadores/sistema/entorno-lectura";
 
 test("T2-17 Z-3 consulta win32 guardada conserva rutas y decision en linux", () => {
@@ -13,7 +15,7 @@ test("T2-17 Z-3 consulta win32 guardada conserva rutas y decision en linux", () 
   if (!original.exito) throw new Error(original.error.mensaje);
   const proyecto = "C:/p";
   const resolucion = { ...original.valor, proyecto, contexto: { ...original.valor.contexto, proyecto,
-    plataforma: "win32", parametros: { hogar: "C:/h", data: "C:/data", tmp: "C:/tmp", worktree: proyecto } } };
+    plataforma: "win32", parametros: { hogar: "C:/h", config: "C:/config", data: "C:/data", tmp: "C:/tmp", worktree: proyecto } } };
   const rutas = { canonica: () => { throw new Error("Sin E/S"); } };
   // Simula tambien las operaciones actuales de Linux cuando el test corre en Windows.
   const actual = Object.assign(new EntornoLecturaSistema({ plataforma: "linux", entorno: {} }), {
@@ -33,4 +35,29 @@ test("T2-17 Z-3 consulta win32 guardada conserva rutas y decision en linux", () 
   const esperada = consultarPermiso({ ...deps, entorno: windows }, solicitud);
   expect(esperada).toMatchObject({ exito: true, valor: { decision: "allow" } });
   expect(consultarPermiso(deps, solicitud)).toEqual(esperada);
+});
+
+test("T6-18 Q-1 resolucion guardada con parametros.hogar ausente o contexto invalido falla visiblemente", () => {
+  const entorno = crearEntornoMemoria({ archivos: {}, directorios: ["/p"], variables: { HOME: "/h" } });
+  const original = resolver(adaptadorOpenCode, "/p", entorno);
+  if (!original.exito) throw new Error(original.error.mensaje);
+  const rutas = { canonica: () => { throw new Error("Sin E/S"); } };
+  const { hogar: _, ...sinHogar } = original.valor.contexto.parametros;
+  const sinHogarResolucion = {
+    ...original.valor,
+    contexto: { ...original.valor.contexto, parametros: sinHogar },
+  };
+  const sinPlataformaResolucion = {
+    ...original.valor,
+    contexto: { ...original.valor.contexto, plataforma: "" },
+  };
+  for (const resolucion of [sinHogarResolucion, sinPlataformaResolucion]) {
+    const deps = { adaptador: adaptadorOpenCode, entorno, rutas, resolucion };
+    expect(prepararAnalisis(deps, "/p")).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+    expect(consultarPermiso(deps, { proyecto: "/p", agente: "build", sujeto: "read", objetivo: "a" }))
+      .toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+    expect(consultarAgentes(deps, "/p")).toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+    expect(consultarReglas(deps, { proyecto: "/p", agente: "build" }))
+      .toMatchObject({ exito: false, error: { codigo: "almacen-sin-esquema" } });
+  }
 });

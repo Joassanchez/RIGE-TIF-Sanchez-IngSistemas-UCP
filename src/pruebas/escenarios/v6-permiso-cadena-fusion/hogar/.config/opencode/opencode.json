@@ -1,0 +1,11 @@
+{
+  "permission": "allow",
+  "agent": {
+    "build": {
+      "permission": {
+        "*": "ask",
+        "edit": "deny"
+      }
+    }
+  }
+}

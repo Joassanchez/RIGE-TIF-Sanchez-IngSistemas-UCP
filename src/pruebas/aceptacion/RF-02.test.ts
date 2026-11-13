@@ -172,7 +172,7 @@ describe("T2-06 D-3 sensibilidad RF-02 CA-1", () => {
 
 describe("RF-02 CA-2 (cadena)", () => {
   let mutaciones = 0;
-  for (const escenario of ["v1-precedencia", "v1-vias", "v2-fusion-permisos", "v2-cadena", "v2-decision"]) {
+  for (const escenario of ["v1-precedencia", "v1-vias", "v2-fusion-permisos", "v2-cadena", "v2-decision", "v6-permiso-cadena-fusion", "v6-clave-duplicada"]) {
     test(escenario, () => {
       const { referencia, cadenas, normalizar } = consultarCadenas(escenario);
       expect(Object.keys(referencia.cadenas).length).toBeGreaterThanOrEqual(4);

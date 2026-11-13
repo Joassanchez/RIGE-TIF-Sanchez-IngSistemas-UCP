@@ -33,7 +33,7 @@ test("T5-26 U-13 entradas --todo por proceso, revisados solo en texto ampliado y
   const e = prepararConsultas();
   try {
     const breve = e.consultar("entradas", ["--texto"]), todo = e.consultar("entradas", ["--texto", "--todo"]);
-    expect(todo.codigo).toBe(0); expect(todo.salida).toContain("Revisado:"); expect(breve.salida).not.toContain("Revisado:");
+    expect(todo.codigo).toBe(0); expect(todo.salida).toContain("\n  ./opencode.json"); expect(breve.salida).not.toContain("\n  ./opencode.json");
     expect(e.consultar("entradas", ["--todo", "--json"])).toEqual(e.consultar("entradas", ["--json"]));
   } finally { e.borrar(); }
 });

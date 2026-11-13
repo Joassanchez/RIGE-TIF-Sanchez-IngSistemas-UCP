@@ -9,7 +9,7 @@ import { permisos } from "./permisos";
 import { resumirPermisos } from "./resumen-permisos";
 import { prepararConsulta } from "./objetivo";
 import { listarAgentes } from "./agentes";
-import { contextoOpenCode, type ContextoOpenCode } from "./contexto";
+import { contextoOpenCode, restaurarContextoOpenCode, type ContextoOpenCode } from "./contexto";
 import { abarca, causaRutaRegla, elementosSinUso } from "./hallazgos";
 
 export const adaptadorOpenCode: Adaptador<ContextoOpenCode> = {
@@ -22,6 +22,7 @@ export const adaptadorOpenCode: Adaptador<ContextoOpenCode> = {
   causaRutaRegla,
   elementosSinUso,
   contexto: contextoOpenCode,
+  restaurarContexto: restaurarContextoOpenCode,
   listarAgentes,
   resumirPermisos,
   permisos,

@@ -30,4 +30,26 @@ describe("A11-1", () => { test("T2-11b C-3 listado y cadena comparten existencia
   expect(adaptadorOpenCode.listarAgentes(resolucion.valor, contexto.valor)).toEqual(efectivos);
   expect(efectivos.motivos).toContain("markdown-no-observado");
   expect(efectivos.agentes.find(a => a.nombre === "fuera")).toMatchObject({ motivo: "agente-deshabilitado", eliminacion: { regla: "agente-deshabilitado" } });
+});
+
+test("T6-04 V-1/V-2 agents v2 marca incompleta y propaga cadena-incompleta solo a afectados", () => {
+  const entorno = crearEntornoMemoria({ archivos: {
+    "/p/opencode.json": JSON.stringify({ agents: { rev: { mode: "primary" }, build: { disabled: true } } }),
+  }, directorios: ["/p"], variables: { HOME: "/h" } });
+  const contexto = adaptadorOpenCode.contexto("/p", entorno);
+  const resolucion = resolver(adaptadorOpenCode, "/p", entorno);
+  if (!contexto.exito || !resolucion.exito) throw new Error("Preparacion fallida");
+  const efectivos = agentesEfectivos(resolucion.valor, contexto.valor);
+  expect(efectivos.motivos).toContain("forma-v2-no-incorporada");
+  expect(efectivos.agentes.find(a => a.nombre === "rev")).toMatchObject({ estado: "no-observado", motivo: "forma-v2-no-incorporada" });
+  expect(efectivos.agentes.find(a => a.nombre === "build")).toMatchObject({ estado: "no-observado", motivo: "forma-v2-no-incorporada" });
+  expect(efectivos.agentes.find(a => a.nombre === "plan")).toMatchObject({ estado: "activo" });
+
+  expect(adaptadorOpenCode.cadena(resolucion.valor, "rev", contexto.valor))
+    .toMatchObject({ exito: false, error: { codigo: "cadena-incompleta", mensaje: expect.stringContaining("forma-v2-no-incorporada") } });
+  expect(adaptadorOpenCode.cadena(resolucion.valor, "build", contexto.valor))
+    .toMatchObject({ exito: false, error: { codigo: "cadena-incompleta", mensaje: expect.stringContaining("forma-v2-no-incorporada") } });
+  expect(adaptadorOpenCode.cadena(resolucion.valor, "plan", contexto.valor, "rev"))
+    .toMatchObject({ exito: false, error: { codigo: "cadena-incompleta", mensaje: expect.stringContaining("forma-v2-no-incorporada") } });
+  expect(adaptadorOpenCode.cadena(resolucion.valor, "plan", contexto.valor).exito).toBe(true);
 }); });

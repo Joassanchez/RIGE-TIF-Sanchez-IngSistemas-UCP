@@ -27,11 +27,10 @@ describe("T5-12 M-4 PC-07 PC-08", () => {
     const cuerpo = await paginaEntradas(respuesta, { idResolucion: "foto" }).text();
     expect(cuerpo.indexOf('id="mapa-vias"')).toBeGreaterThan(0);
     expect(cuerpo.indexOf('id="mapa-vias"')).toBeLessThan(cuerpo.indexOf('id="tabla-entradas"'));
-    expect(cuerpo).toContain('data-etiqueta="Cantidad">7<');
-    for (const tipo of ["neutra", "no-observada"]) expect(cuerpo).toContain(`insignia--${tipo}`);
+    expect(cuerpo).toContain('id="lugares-revisados"');
+    expect(cuerpo).toContain('href="#revisados-');
+    expect(cuerpo.match(/<table[\s\S]*?<\/table>/g)?.join("") ?? "").not.toContain("<details");
     expect(cuerpo).not.toContain("insignia--permitida");
-    expect(cuerpo).toContain("<details>");
-    expect(cuerpo).toContain("<summary>Lugares revisados</summary>");
     expect(cuerpo).toContain("&amp;&quot;");
     expect(cuerpo).not.toContain(ataque);
     expect(cuerpo).not.toContain("style=");
@@ -71,7 +70,7 @@ describe("Mapa de vías y presentación de entradas", () => {
       ...["segunda", "primera"].map(via => ({ via, estado: "presente" as const, cantidad: 1, revisados: [] })) ] };
     const cuerpo = await paginaEntradas(respuesta).text();
     const mapa = seccionHtml(cuerpo, "mapa-vias");
-    const posiciones = ["Presentes", ">segunda</td>", ">primera</td>", "Ausentes", ">vacia</td>", "No observadas", ">remota</td>"].map(s => mapa.indexOf(s));
+    const posiciones = ["Presentes", ">segunda</td>", ">primera</td>", "Ausentes", ">vacia</td>", "No observadas", ">configuración remota</td>"].map(s => mapa.indexOf(s));
     expect(posiciones.every(p => p >= 0)).toBe(true);
     expect(posiciones).toEqual([...posiciones].sort((a, b) => a - b));
     expect(json(cuerpo)).toEqual(respuesta);
@@ -80,10 +79,16 @@ describe("Mapa de vías y presentación de entradas", () => {
   test("T5-22 B-4 mapa en tarjetas sin encabezados de columna sticky sobre el grupo", async () => {
     const entradas = { ...base, vias: [{ via: "proyecto", estado: "presente" as const, cantidad: 1, revisados: ["/p/opencode.json"] }] };
     const s = await paginaEntradas(entradas).text();
-    expect(s).toContain('class="grupo-vias"><th colspan="4" scope="rowgroup">Presentes');
+    expect(s).toContain('class="grupos-entradas"');
+    expect(s).toContain('class="grupo-entradas grupo-entradas--presente"');
+    expect(s).toContain('class="grupo-entradas grupo-entradas--ausente"');
+    expect(s).toContain('class="grupo-entradas grupo-entradas--no-observada"');
+    expect(css(".grupo-entradas--presente")).toMatch(/border-left-color:\s*var\(--marca\)/);
+    expect(css(".grupo-entradas--ausente")).toMatch(/border-left-color:\s*var\(--neutro\)/);
+    expect(css(".grupo-entradas--no-observada")).toMatch(/border-left-color:\s*var\(--parcial\)/);
     const movil = estilos.split("@media (max-width: 640px) {").slice(1).join("\n");
     expect(css(".tabla-tarjetas thead th", movil)).toMatch(/position:\s*static/);
-    expect(css(".grupo-vias th", movil)).toMatch(/display:\s*block/);
+    expect(css(".grupos-entradas", estilos)).toMatch(/gap:\s*1\.5rem/);
   });
 
   test("P-7 archivos por precedencia, mapa agrupado y lugares plegados", async () => {
@@ -97,7 +102,11 @@ describe("Mapa de vías y presentación de entradas", () => {
     expect(cuerpo).toContain("la de abajo prevalece");
     expect(cuerpo.indexOf('id="entrada-0"')).toBeLessThan(cuerpo.indexOf('id="entrada-2"'));
     for (const grupo of ["Presentes", "Ausentes", "No observadas"]) expect(cuerpo).toContain(grupo);
-    expect(cuerpo).toContain("<details><summary>Lugares revisados</summary>");
+    expect(cuerpo).toContain('id="lugares-revisados"');
+    expect(cuerpo.match(/<table[\s\S]*?<\/table>/g)?.join("") ?? "").not.toContain("<details");
     expect(cuerpo).not.toMatch(/<details[^>]* open/); expect(json(cuerpo)).toEqual(entradasP7);
+    const pie = cuerpo.split('class="pie-desarrolladores"')[1]!;
+    expect(pie).toContain('id="entradas-leidas"');
+    expect(cuerpo.split('class="pie-desarrolladores"')[0]).not.toMatch(/\b[0-9a-f]{64}\b/);
   });
 });

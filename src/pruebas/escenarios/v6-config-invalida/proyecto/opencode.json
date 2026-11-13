@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "bash": "deny"
+  },
+  "permission": {
+    "webfetch": {
+      "*": "deny"
+    }
+  }
+}

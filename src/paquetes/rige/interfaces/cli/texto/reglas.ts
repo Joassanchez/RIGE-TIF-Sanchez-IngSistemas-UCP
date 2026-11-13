@@ -1,18 +1,23 @@
 import type { RespuestaReglas } from "../../../aplicacion/respuestas/contrato-generado";
-import { decisionTexto as efecto, efectoRegla } from "../../presentacion/vocabulario";
+import { rolEfecto } from "../../presentacion/roles";
+import { decisionTexto as efecto, efectoRegla, motivoNoResolucion } from "../../presentacion/vocabulario";
 import {
+  type CeldaTabla,
   type ContextoPresentacion,
+  pintar,
   proyecto,
   tabla,
   seguro,
   regla,
   referencias,
   terminar,
+  unirBloques,
 } from "./formato";
 
 export function renderizarReglas(r: RespuestaReglas, c: ContextoPresentacion): string {
-  const explicarCodigo = (codigo: string) => seguro(r.reglas[codigo] ?? codigo.replaceAll("-", " "));
-  const visible = (codigo: string) => c.explicar || !c.limitesGenerales.has(codigo);
+  const ctx: ContextoPresentacion = { ...c, proyecto: c.proyecto ?? r.proyecto };
+  const explicarCodigo = (codigo: string) => seguro(motivoNoResolucion(codigo, r.reglas));
+  const visible = (codigo: string) => ctx.explicar || !ctx.limitesGenerales.has(codigo);
 
   const comunes = (obtener: (f: RespuestaReglas["matriz"]["filas"][number]) => readonly string[]) =>
     r.matriz.filas.length
@@ -23,25 +28,31 @@ export function renderizarReglas(r: RespuestaReglas, c: ContextoPresentacion): s
   const avisosComunes = comunes(f => [...f.declaraciones, ...f.advertencias]).filter(visible);
   const motivo = (codigo: string) =>
     codigo === "eje-parcialmente-observado"
-      ? "parcial; no hay decisión sin un objetivo concreto"
+      ? `${pintar("parcial", "parcial", ctx)}; no hay decisión sin un objetivo concreto`
       : explicarCodigo(codigo);
 
-  const filas = r.matriz.filas.map(f => [
-    f.agente,
-    ...r.matriz.sujetos.map(s => {
+  const filas: CeldaTabla[][] = r.matriz.filas.map(f => [
+    f.agente === r.agente ? { texto: `▸ ${f.agente}`, rol: "rige" as const } : `  ${f.agente}`,
+    ...r.matriz.sujetos.map((s): CeldaTabla => {
       const celda = f.celdas.find(cel => cel.sujeto === s);
-      if (!celda || celda.efecto === null) return f.ejesParciales.includes(s) ? "◐" : "—";
-      return f.ejesParciales.includes(s) ? "◐" : efecto(celda.efecto).split(" ")[0]!;
+      if (!celda || celda.efecto === null) {
+        return f.ejesParciales.includes(s)
+          ? { texto: "◐", rol: "parcial" }
+          : { texto: "—", rol: "estructura" };
+      }
+      return f.ejesParciales.includes(s)
+        ? { texto: "◐", rol: "parcial" }
+        : { texto: efecto(celda.efecto).split(" ")[0]!, rol: rolEfecto(celda.efecto) };
     }),
   ]);
 
   const leyendaEfectos = ["allow", "ask", "deny"]
-    .map(e => `${efecto(e).split(" ")[0]} ${efectoRegla(e)}`)
+    .map(e => `${pintar(rolEfecto(e), efecto(e).split(" ")[0]!, ctx)} ${efectoRegla(e)}`)
     .join(" · ");
-  const leyendaSimbolos = "◐ parcial, sin decisión sobre un objetivo · — sin decisión";
+  const leyendaSimbolos = `${pintar("parcial", "◐", ctx)} ${pintar("parcial", "parcial", ctx)}, sin decisión sobre un objetivo · ${pintar("estructura", "—", ctx)} sin decisión`;
 
   const lineasEjesComunes = ejesComunes.map(
-    s => `${seguro(s)}: parcial en todos los agentes; no hay decisión sin un objetivo concreto`
+    s => `${seguro(s)}: ${pintar("parcial", "parcial", ctx)} en todos los agentes; no hay decisión sin un objetivo concreto`
   );
   const lineasAvisosComunes = avisosComunes.length
     ? [`Todos los agentes: ${avisosComunes.map(explicarCodigo).join("; ")}`]
@@ -68,30 +79,31 @@ export function renderizarReglas(r: RespuestaReglas, c: ContextoPresentacion): s
     .filter(m => !r.matriz.noObservados.some(a => a.motivo === m))
     .map(explicarCodigo);
 
-  const lineasCadena = c.todo ? ["Cadena completa:", ...r.cadena.map(reg => regla(reg, 1))] : [];
+  const lineasCadena = ctx.todo ? [`Cadena de ${seguro(r.agente)}:`, ...r.cadena.map(reg => regla(reg, 1, ctx))] : [];
 
   const lineasAvisosGenerales = [...new Set([...r.declaraciones, ...r.advertencias])]
     .filter(a => visible(a) && !r.matriz.filas.some(f => f.declaraciones.includes(a) || f.advertencias.includes(a)))
     .map(a => `Aviso: ${explicarCodigo(a)}`);
 
-  const lineas = [
-    ...proyecto(r, c),
-    ...tabla(["AGENTE", ...r.matriz.sujetos], filas, c, false),
-    leyendaEfectos,
-    leyendaSimbolos,
-    ...lineasEjesComunes,
-    ...lineasAvisosComunes,
-    ...lineasFilas,
-    ...lineasNoObservados,
-    ...lineasMotivos,
-    ...lineasCadena,
-    ...lineasAvisosGenerales,
-  ];
+  const lineas = unirBloques([
+    proyecto(r, ctx),
+    [pintar("rige", "Matriz", ctx), ...tabla(["AGENTE", ...r.matriz.sujetos], filas, ctx, false)],
+    [leyendaEfectos, leyendaSimbolos],
+    [
+      ...lineasEjesComunes,
+      ...lineasAvisosComunes,
+      ...lineasFilas,
+      ...lineasNoObservados,
+      ...lineasMotivos,
+    ],
+    lineasCadena,
+    lineasAvisosGenerales,
+  ]);
 
   const indivisibles = [
     ...r.cadena.map(reg => seguro(reg.patron)),
-    ...referencias(r.cadena.map(reg => reg.declaracion)),
+    ...referencias(r.cadena.map(reg => reg.declaracion), ctx),
   ];
 
-  return terminar(lineas, c, indivisibles);
+  return terminar(lineas, ctx, indivisibles);
 }

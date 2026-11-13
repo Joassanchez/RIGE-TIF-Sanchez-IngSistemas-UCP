@@ -1,5 +1,11 @@
 import type { RespuestaAgentes } from "../../aplicacion/respuestas/contrato-generado";
+import type { SobreAlmacen } from "../../aplicacion/respuestas/sobre";
 import { html, type HtmlSeguro } from "./plantillas";
+
+export interface CambioAnterior {
+  readonly id: number;
+  readonly cambio: boolean;
+}
 
 export interface ContextoPanel {
   readonly versionHerramienta?: string;
@@ -12,10 +18,31 @@ export interface ContextoPanel {
   readonly agentes?: readonly { readonly nombre: string }[];
   readonly lanzadoPor?: string;
   readonly sujeto?: string;
+  readonly hogar?: string | undefined;
+  readonly ultimoAnalisis?: { readonly id: number; readonly instante: string } | undefined;
+  readonly anteriorAnalisis?: CambioAnterior | undefined;
+}
+
+export function comparacionAnterior(sobre?: SobreAlmacen): CambioAnterior | undefined {
+  if (sobre === undefined) return undefined;
+  const indice = sobre.anteriores.findIndex(foto => foto.id === sobre.id);
+  const anterior = indice >= 0 ? sobre.anteriores[indice + 1] : undefined;
+  if (anterior === undefined) return undefined;
+  const actual = sobre.anteriores[indice]!;
+  return { id: anterior.id, cambio: actual.resumenEntradas !== anterior.resumenEntradas };
 }
 
 export function agenteInicial(agentes: RespuestaAgentes["agentes"]): string | undefined {
   return agentes.find(a => a.nombre === "build")?.nombre ?? agentes[0]?.nombre;
+}
+
+export function parametrosPanel(contexto: ContextoPanel): Record<string, string | undefined> {
+  return {
+    agente: contexto.agente,
+    clave: contexto.clave || undefined,
+    q: contexto.q || undefined,
+    lanzadoPor: contexto.lanzadoPor,
+  };
 }
 
 export function consultaPanel(contexto: ContextoPanel): string {
@@ -26,18 +53,17 @@ export function camposContexto(contexto: ContextoPanel): HtmlSeguro {
   return html`${contexto.clave ? html`<input type="hidden" name="clave" value="${contexto.clave}">` : html``}${contexto.q ? html`<input type="hidden" name="q" value="${contexto.q}">` : html``}`;
 }
 
-export function selectorAgente(contexto: ContextoPanel, vista: string | undefined, proyecto?: string): HtmlSeguro {
+export function selectorAgente(contexto: ContextoPanel, vista: string | undefined, _proyecto?: string): HtmlSeguro {
   if (contexto.idResolucion === undefined || contexto.agentes === undefined) return html``;
   const id = String(contexto.idResolucion);
   const accion = vista === "Permisos" ? `/resoluciones/${encodeURIComponent(id)}/permisos`
-    : vista === "Todas las reglas" ? "/reglas" : vista === "Entradas" ? "/entradas" : vista === "Hallazgos" ? "/hallazgos" : `/resoluciones/${encodeURIComponent(id)}`;
+    : vista === "Todas las reglas" ? "/reglas" : `/resoluciones/${encodeURIComponent(id)}`;
   return html`<form id="seleccionar-agente" class="selector-agente" action="${accion}" method="get">
-<label for="agente-seleccionado">Agente</label>
+<label for="agente-seleccionado">Cambiar de agente</label>
 <select name="agente" id="agente-seleccionado">${contexto.agentes.map(agente => agente.nombre === contexto.agente
     ? html`<option value="${agente.nombre}" selected>${agente.nombre}</option>`
     : html`<option value="${agente.nombre}">${agente.nombre}</option>`)}</select>
-${["Todas las reglas", "Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type="hidden" name="id" value="${id}">` : html``}
-${["Entradas", "Hallazgos"].includes(vista ?? "") ? html`<input type="hidden" name="proyecto" value="${proyecto}">` : html``}
+${vista === "Todas las reglas" ? html`<input type="hidden" name="id" value="${id}">` : html``}
 ${camposContexto(contexto)}
 ${contexto.lanzadoPor === undefined ? html`` : html`<input type="hidden" name="lanzadoPor" value="${contexto.lanzadoPor}">`}
 ${contexto.sujeto === undefined ? html`` : html`<input type="hidden" name="sujeto" value="${contexto.sujeto}">`}

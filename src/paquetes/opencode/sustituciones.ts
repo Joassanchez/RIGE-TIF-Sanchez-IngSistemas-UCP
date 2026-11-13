@@ -45,6 +45,11 @@ export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura
   }, ErrorAnalisis> {
   const referencia = via.referencia.replaceAll("\\", "/");
   const permiso = via.via === "variable-permiso";
+  const vacio = () => {
+    const nodo = parseTree("{}")!;
+    return { exito: true as const, valor: { original: nodo, expandido: nodo, sustituciones: [] as readonly SustitucionInterna[] } };
+  };
+  if (!permiso && texto === "") return vacio();
   const literal = !sustituye(via);
   const ocurrencias = literal ? [] : [...texto.matchAll(/\{(?:env|file):[^}]+\}/g)];
   const original = escanear(texto);
@@ -70,10 +75,7 @@ export function expandir(via: ViaUbicada, texto: string, entorno: EntornoLectura
   if (permiso) {
     let valor: unknown;
     try { valor = JSON.parse(texto); } catch { return ilegible(errores[0]?.offset ?? 0); }
-    if (valor === null || (Array.isArray(valor) && valor.length === 0)) {
-      const vacio = parseTree("{}")!;
-      return { exito: true, valor: { original: vacio, expandido: vacio, sustituciones: [] } };
-    }
+    if (valor === null || (Array.isArray(valor) && valor.length === 0)) return vacio();
     if (!errores.length && raiz?.type !== "object") return { exito: false, error: { categoria: "uso", codigo: "contenido-no-soportado",
       mensaje: `RIGE no incorpora ${via.referencia}: el permiso debe ser un objeto.` } };
   }

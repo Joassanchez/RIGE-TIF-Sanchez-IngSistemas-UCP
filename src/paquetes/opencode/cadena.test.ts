@@ -5,7 +5,9 @@ import { crearEntornoMemoria } from "../../pruebas/utilidades/entorno-memoria";
 import { adaptadorFicticio } from "../../pruebas/utilidades/adaptador-ficticio";
 import { adaptadorOpenCode } from "./adaptador";
 import { prepararConsulta } from "./objetivo";
+import { permisos } from "./permisos";
 import type { ContextoOpenCode } from "./contexto";
+import type { Resolucion } from "@rige/nucleo/resolucion/tipos";
 
 function preparar(textos: readonly string[] = [], plataforma = "linux", variables = {}, proyecto = plataforma === "win32" ? "C:\\proyecto" : "/proyecto") {
   const rutas = plataforma === "win32" ? win32 : posix;
@@ -122,5 +124,131 @@ describe("T2-05 K-3 RNF-03", () => {
     const { resolucion, entorno } = preparar();
     const resultado = adaptadorFicticio.cadena(resolucion, "a", { proyecto: resolucion.proyecto, entorno, parametros: {}, declaraciones: [] });
     expect(resultado).toMatchObject({ exito: true, valor: { agente: "a", reglas: [{ sujeto: "documento", patron: "todos", efecto: "conceder" }], ejesParciales: [] } });
+  });
+});
+
+describe("T6-02 fusion de permission como accion", () => {
+  test("P-1: conserva el orden de fusion cuando proyecto declara permission como string", () => {
+    const { cadena, resolucion } = preparar(['{"permission":{"*":"ask","bash":"deny"}}', '{"permission":"allow"}']);
+    const res = cadena();
+    expect(res.exito).toBe(true);
+    if (!res.exito) throw new Error(res.error.mensaje);
+    const declaradas = res.valor.reglas.filter(r => r.origen.tipo === "declarado");
+    expect(declaradas).toMatchObject([
+      { sujeto: "*", patron: "*", efecto: "allow", declaracion: { via: "proyecto", referencia: "/capa-1" } },
+      { sujeto: "bash", patron: "*", efecto: "deny", declaracion: { via: "global", referencia: "/capa-0" } },
+    ]);
+    expect(resolucion.valores.find(v => v.ruta.join(".") === "permission.*")?.desplazadas).toMatchObject([
+      { valor: "ask", via: "global", referencia: "/capa-0" },
+    ]);
+    const evBash = permisos.evaluar(res.valor.reglas, "bash", "ls", "linux");
+    expect(res.valor.reglas[evBash.determinante!]?.efecto).toBe("deny");
+    expect(res.valor.reglas[evBash.determinante!]?.declaracion?.referencia).toBe("/capa-0");
+    const evEdit = permisos.evaluar(res.valor.reglas, "edit", "a.ts", "linux");
+    expect(res.valor.reglas[evEdit.determinante!]?.efecto).toBe("allow");
+    expect(res.valor.reglas[evEdit.determinante!]?.declaracion?.referencia).toBe("/capa-1");
+  });
+
+  test("P-2: permission string declarado se evalua despues de la proteccion nativa del agente explore", () => {
+    const cad = obtener(['{"permission":"allow"}', '{"permission":{"bash":"deny"}}'], "explore");
+    const declaradas = cad.reglas.filter(r => r.origen.tipo === "declarado");
+    expect(declaradas).toMatchObject([
+      { sujeto: "*", patron: "*", efecto: "allow", declaracion: { via: "global", referencia: "/capa-0" } },
+      { sujeto: "bash", patron: "*", efecto: "deny", declaracion: { via: "proyecto", referencia: "/capa-1" } },
+    ]);
+    const nativaExplore = cad.reglas.findLast(
+      r => r.origen.tipo === "nativo" && r.sujeto === "*" && r.patron === "*" && r.efecto === "deny",
+    );
+    expect(nativaExplore).toBeDefined();
+    expect(nativaExplore!.indice).toBeLessThan(declaradas[0]!.indice);
+    const evEdit = permisos.evaluar(cad.reglas, "edit", "a.ts", "linux");
+    expect(evEdit.determinante).toBe(declaradas[0]!.indice);
+    const evBash = permisos.evaluar(cad.reglas, "bash", "ls", "linux");
+    expect(evBash.determinante).toBe(declaradas[1]!.indice);
+  });
+
+  test("P-3: un solo archivo con permission string genera regla comodin con la posicion de la clave", () => {
+    const { cadena, resolucion } = preparar(['{\n  "permission": "ask"\n}']);
+    const res = cadena();
+    expect(res.exito).toBe(true);
+    if (!res.exito) throw new Error(res.error.mensaje);
+    const declaradas = res.valor.reglas.filter(r => r.origen.tipo === "declarado");
+    expect(declaradas).toMatchObject([
+      {
+        sujeto: "*",
+        patron: "*",
+        efecto: "ask",
+        origen: { tipo: "declarado", posicion: { linea: 2, columna: 3 } },
+        declaracion: { via: "global", referencia: "/capa-0", valor: "ask" },
+      },
+    ]);
+    expect(declaradas).toHaveLength(1);
+    expect(resolucion.valores.find(v => v.ruta.join(".") === "permission.*")?.valor).toBe("ask");
+  });
+
+  test("P-4: fusiona permission string y objeto por agente en ambas ordenes", () => {
+    const cadA = obtener(['{"agent":{"build":{"permission":"deny"}}}', '{"agent":{"build":{"permission":{"read":"allow"}}}}']);
+    const declaradasA = cadA.reglas.filter(r => r.origen.tipo === "declarado");
+    expect(declaradasA).toMatchObject([
+      { sujeto: "*", patron: "*", efecto: "deny", declaracion: { via: "global", referencia: "/capa-0" } },
+      { sujeto: "read", patron: "*", efecto: "allow", declaracion: { via: "proyecto", referencia: "/capa-1" } },
+    ]);
+    expect(permisos.evaluar(cadA.reglas, "read", "a.ts", "linux").determinante).toBe(declaradasA[1]!.indice);
+    expect(permisos.evaluar(cadA.reglas, "bash", "ls", "linux").determinante).toBe(declaradasA[0]!.indice);
+
+    const cadB = obtener(['{"agent":{"build":{"permission":{"read":"allow"}}}}', '{"agent":{"build":{"permission":"deny"}}}']);
+    const declaradasB = cadB.reglas.filter(r => r.origen.tipo === "declarado");
+    expect(declaradasB).toMatchObject([
+      { sujeto: "read", patron: "*", efecto: "allow", declaracion: { via: "global", referencia: "/capa-0" } },
+      { sujeto: "*", patron: "*", efecto: "deny", declaracion: { via: "proyecto", referencia: "/capa-1" } },
+    ]);
+    expect(permisos.evaluar(cadB.reglas, "read", "a.ts", "linux").determinante).toBe(declaradasB[1]!.indice);
+  });
+
+  test("rechaza rutas vacias tras quitar el respaldo de comodin implicito e ignora permission vacio", () => {
+    const { resolucion, contexto } = preparar();
+    const resolucionSinNormalizar: Resolucion = {
+      ...resolucion,
+      valores: [
+        ...resolucion.valores,
+        {
+          ruta: ["permission"],
+          indiceFusion: 99,
+          valor: "allow",
+          determinante: {
+            origen: { tipo: "declarado", orden: 0, posicion: { linea: 1, columna: 2 } },
+            via: "global",
+            referencia: "/capa-0",
+            valor: "allow",
+            regla: "declarado",
+          },
+          motivo: "unica-declaracion",
+          desplazadas: [],
+        },
+      ],
+    };
+    expect(adaptadorOpenCode.cadena(resolucionSinNormalizar, "build", contexto)).toMatchObject({
+      exito: false,
+      error: { categoria: "uso", codigo: "cadena-incompleta" },
+    });
+
+    const cadVacia = obtener(['{"permission":{}}']);
+    expect(cadVacia.reglas.some(r => r.origen.tipo === "declarado")).toBe(false);
+    const resolucionBooleana: Resolucion = {
+      ...resolucion,
+      valores: [
+        ...resolucion.valores,
+        {
+          ...resolucionSinNormalizar.valores.at(-1)!,
+          ruta: ["permission", "*"],
+          valor: true,
+          determinante: { ...resolucionSinNormalizar.valores.at(-1)!.determinante, valor: true },
+        },
+      ],
+    };
+    expect(adaptadorOpenCode.cadena(resolucionBooleana, "build", contexto)).toMatchObject({
+      exito: false,
+      error: { categoria: "uso", codigo: "cadena-incompleta" },
+    });
   });
 });

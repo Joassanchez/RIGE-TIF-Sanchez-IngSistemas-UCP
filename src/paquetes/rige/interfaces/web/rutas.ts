@@ -1,12 +1,24 @@
 import { html, type HtmlSeguro } from "./plantillas";
+import { rutaVisible } from "../presentacion/rutas";
+
+export interface ContextoRutaVisible {
+  readonly proyecto?: string | undefined;
+  readonly hogar?: string | undefined;
+}
 
 // Conserva la frase y reemplaza solo la ubicación exacta de la referencia estructurada.
-export function presentarTextoUbicado(texto: string, referencia: string | null, posicion: { readonly linea: number; readonly columna: number }, via?: string | null): HtmlSeguro {
+export function presentarTextoUbicado(
+  texto: string,
+  referencia: string | null,
+  posicion: { readonly linea: number; readonly columna: number },
+  via?: string | null,
+  contexto?: ContextoRutaVisible,
+): HtmlSeguro {
   if (referencia === null) return html`${texto}`;
   const localizacion = `${referencia}:${posicion.linea}:${posicion.columna}`;
   const inicio = texto.indexOf(localizacion);
   return inicio < 0 ? html`${texto}`
-    : html`${texto.slice(0, inicio)}${presentarUbicacion(referencia, posicion, via)}${texto.slice(inicio + localizacion.length)}`;
+    : html`${texto.slice(0, inicio)}${presentarUbicacion(referencia, posicion, via, contexto)}${texto.slice(inicio + localizacion.length)}`;
 }
 
 export function esArchivoLocal(referencia: string, via?: string | null): boolean {
@@ -15,15 +27,21 @@ export function esArchivoLocal(referencia: string, via?: string | null): boolean
 }
 
 // La posición siempre proviene del contrato, nunca del texto de localización.
-export function presentarUbicacion(referencia: string | null, posicion?: { readonly linea: number; readonly columna: number } | null, via?: string | null): HtmlSeguro {
+export function presentarUbicacion(
+  referencia: string | null,
+  posicion?: { readonly linea: number; readonly columna: number } | null,
+  via?: string | null,
+  contexto?: ContextoRutaVisible,
+): HtmlSeguro {
   const ruta = referencia ?? "—";
-  if (!posicion || !esArchivoLocal(ruta, via)) return html`<code>${ruta}${posicion ? `:${posicion.linea}:${posicion.columna}` : ""}</code>`;
+  const visible = referencia === null ? "—" : rutaVisible(referencia, contexto?.proyecto, contexto?.hogar);
+  if (!posicion || !esArchivoLocal(ruta, via)) return html`<code>${visible}${posicion ? `:${posicion.linea}:${posicion.columna}` : ""}</code>`;
   const normalizada = ruta.replaceAll("\\", "/");
   const codificar = (segmento: string) => encodeURIComponent(segmento).replaceAll("'", "%27").replaceAll('"', "%22");
   const partes = normalizada.split("/");
   const codificada = partes.map((parte, indice) => indice === 0 && /^[a-z]:$/i.test(parte) ? parte : codificar(parte)).join("/");
   const enlace = `vscode://file/${codificada.startsWith("/") ? codificada.slice(1) : codificada}:${posicion.linea}:${posicion.columna}`;
-  return html`<a href="${enlace}" title="${`Abrir en VS Code: ${ruta}`}">${partes.at(-1)}:${posicion.linea}:${posicion.columna}</a>`;
+  return html`<a href="${enlace}" title="${`Abrir en VS Code: ${ruta}`}">${visible}:${posicion.linea}:${posicion.columna}</a>`;
 }
 
 export function presentarRuta(ruta: string): HtmlSeguro {

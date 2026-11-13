@@ -15,6 +15,24 @@ export const adaptadorFicticio: Adaptador = {
   resumirPermisos: () => { throw new Error("No resumir permisos en este doble"); },
   referencias: [], plantillasHallazgo: {},
   contexto: (proyecto, entorno) => ({ exito: true, valor: { proyecto, entorno, parametros: {}, declaraciones: [] } }),
+  restaurarContexto(datos, entorno) {
+    const crudo: unknown = datos;
+    if (typeof crudo !== "object" || crudo === null || Array.isArray(crudo)) {
+      return { exito: false, error: { categoria: "uso", codigo: "almacen-sin-esquema", mensaje: "El contexto guardado en el almacén es inválido." } };
+    }
+    const objeto = crudo as Record<string, unknown>;
+    const proyecto = Object.hasOwn(objeto, "proyecto") ? objeto.proyecto : undefined;
+    const declaraciones = Object.hasOwn(objeto, "declaraciones") ? objeto.declaraciones : undefined;
+    const parametros = Object.hasOwn(objeto, "parametros") ? objeto.parametros : undefined;
+    if (typeof proyecto !== "string"
+      || !Array.isArray(declaraciones) || declaraciones.some(d => typeof d !== "string")
+      || typeof parametros !== "object" || parametros === null || Array.isArray(parametros)
+      || Object.values(parametros).some(v => typeof v !== "string")) {
+      return { exito: false, error: { categoria: "uso", codigo: "almacen-sin-esquema", mensaje: "El contexto guardado en el almacén es inválido." } };
+    }
+    return { exito: true, valor: { proyecto, entorno, parametros: { ...(parametros as Record<string, string>) },
+      declaraciones: [...(declaraciones as readonly string[])] } };
+  },
   prepararConsulta: (_, solicitud) => ({ exito: true, valor: { sujeto: solicitud.sujeto ?? solicitud.herramienta,
     objetivoEvaluado: solicitud.objetivo, motivoSinDecision: null } }),
   listarAgentes: () => ({ agentes: [{ nombre: "a", origen: "declarado", modo: "all", oculto: false, estado: "activo", motivo: null }], motivos: [] }),

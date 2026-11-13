@@ -47,7 +47,9 @@ describe("T5-17 G-5 nombres de las fotos guardadas", () => {
     for (const ruta of ["/resoluciones/7?agente=build", "/resoluciones/7/permisos?agente=build", "/agentes?id=7&agente=build",
       "/permiso?id=7&agente=build&herramienta=read&objetivo=.env"]) {
       const cuerpo = await solicitar(ruta).text();
-      expect(textoHtml(cuerpo)).toContain(ruta.startsWith("/agentes") ? "Análisis del " + nombreAnalisis(base.proyecto, sobre.instante).split(" · ")[1] : nombreAnalisis(base.proyecto, sobre.instante));
+      const fecha = nombreAnalisis(base.proyecto, sobre.instante).split(" · ")[1]!;
+      expect(textoHtml(cuerpo)).toContain("proyecto");
+      expect(textoHtml(cuerpo)).toContain(fecha);
       expect(cuerpo.replace(/<script[^]*?<\/script>/g, "")).not.toMatch(/(?:Resolución|resolución|Foto) 7/);
       expect(cuerpo).not.toMatch(/hoy \d|ayer \d/);
     }
@@ -58,7 +60,7 @@ describe("T5-17 G-5 nombres de las fotos guardadas", () => {
     expect(recibida.status).toBe(200);
     const cuerpo = await recibida.text();
     expect(dato(cuerpo)).toEqual(agentes);
-    expect(cuerpo).toContain("Fecha no disponible");
+    expect(cuerpo.toLowerCase()).toContain("fecha no disponible");
     expect(cuerpo).not.toMatch(/Resolución 7|hoy \d|ayer \d/);
   });
 });
@@ -67,14 +69,19 @@ describe("T5-15 Z-1 estado entre vistas", () => {
   test("cada vista con selector recibe y devuelve q y clave escapadas sin panel ni cambios en el dato", async () => {
     const q = 'TEMP & "<#', clave = "/options/a.b";
     const estado = `agente=build&clave=${encodeURIComponent(clave)}&q=${encodeURIComponent(q)}`;
-    for (const ruta of [`/resoluciones/7?${estado}`, `/resoluciones/7/permisos?${estado}`,
-      `/entradas?proyecto=%2Fproyecto&id=7&${estado}`, `/hallazgos?proyecto=%2Fproyecto&id=7&${estado}`]) {
+    for (const ruta of [`/resoluciones/7?${estado}`, `/resoluciones/7/permisos?${estado}`]) {
       const cuerpo = await solicitar(ruta).text();
       expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
       const selector = cuerpo.match(/<form id="(?:seleccionar-agente|consultar-permiso)"[^]*?<\/form>/)![0];
       expect(selector).toContain('name="clave" value="/options/a.b"');
       expect(selector).toContain('name="q" value="TEMP &amp; &quot;&lt;#"');
-      if (!ruta.includes("/permisos")) expect(dato(cuerpo)).toEqual(ruta.startsWith("/entradas") ? entradas : ruta.startsWith("/hallazgos") ? hallazgos : valores);
+      if (!ruta.includes("/permisos")) expect(dato(cuerpo)).toEqual(valores);
+    }
+    for (const [ruta, esperado] of [[`/entradas?proyecto=%2Fproyecto&id=7&${estado}`, entradas], [`/hallazgos?proyecto=%2Fproyecto&id=7&${estado}`, hallazgos]] as const) {
+      const cuerpo = await solicitar(ruta).text();
+      expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
+      expect(cuerpo).not.toContain('id="seleccionar-agente"');
+      expect(dato(cuerpo)).toEqual(esperado);
     }
   });
 });
@@ -175,15 +182,21 @@ describe("T5-11 P-5 reglas fuera de la tabla", () => {
     ] };
     const cuerpo = await paginaResolucion(datoValores, sobre).text();
     const tabla = cuerpo.match(/<section id="valores">[^]*?<\/section>/)![0];
-    expect(tabla).not.toContain("<th>Regla aplicada</th>");
-    expect(tabla.match(/<th>/g)).toHaveLength(8); // Declaradas y fábrica conservan las cuatro columnas.
+    expect(tabla).not.toContain('<th scope="col">Regla aplicada</th>');
+    const tablas = [...tabla.matchAll(/<table\b[^]*?<\/table>/g)].map(m => m[0]);
+    expect(tablas).toHaveLength(2);
+    expect(tablas[0]!.match(/<th scope="col">/g)).toHaveLength(4);
+    expect(tablas[1]!.match(/<th scope="col">/g)).toHaveLength(2);
+    expect(tabla.match(/<th scope="col">/g)).toHaveLength(6); // Cuatro columnas en declaradas y dos en fábrica.
+    for (const t of tablas) expect(t).not.toContain("<details");
     const ayuda = cuerpo.match(/<details><summary>¿Qué significa\?<\/summary>[^]*?<\/details>/)![0];
-    expect(ayuda).toContain("Precedencia &lt;RD-01&gt; completa.");
-    expect(ayuda).toContain("Valor &amp; implícito RD-04.");
     expect(cuerpo.indexOf(ayuda)).toBeLessThan(cuerpo.indexOf("<table"));
-    expect(tabla.match(/<details class="regla-detalle">/g)).toHaveLength(2);
-    expect(tabla).toContain("Regla sin código.");
-    expect(tabla).toContain("Otra &lt;regla&gt;.");
+    const notas = [...tabla.matchAll(/<ul class="notas-reglas">([^]*?)<\/ul>/g)].map(m => m[1]!);
+    expect(notas).toHaveLength(2);
+    expect(notas[0]).toContain("<li>Precedencia &lt;RD-01&gt; completa.</li>");
+    expect(notas[0]).toContain("<li>Regla sin código.</li>");
+    expect(notas[0]).toContain("<li>Otra &lt;regla&gt;.</li>");
+    expect(notas[1]).toContain("<li>Valor &amp; implícito RD-04.</li>");
     expect(dato(cuerpo)).toEqual(datoValores);
     const sinPlantilla = await paginaResolucion(valores, sobre).text();
     expect(sinPlantilla).not.toContain("Cómo se decide:");
@@ -241,7 +254,7 @@ describe("T5-11 P-7 D-5 responsive", () => {
     expect(movil).toContain("display: block");
     expect(movil).toContain("white-space: normal");
     expect(estilos).toMatch(/\.pestanas\s*\{[^}]*overflow-x: auto/);
-    expect(estilos).toMatch(/#comando-cli pre\s*\{[^}]*overflow-x: auto/);
+    expect(estilos).toMatch(/#comando-cli pre,\s*#ver-json pre\s*\{[^}]*overflow-x: auto/);
     const entrada = { orden: 0, via: "variable-contenido", referencia: "VARIABLE", condicion: "observada" as const, resumen: null };
     const paginas = [
       await solicitar("/resoluciones/7?agente=build").text(),
@@ -255,10 +268,10 @@ describe("T5-11 P-7 D-5 responsive", () => {
         for (const texto of ["Entrada ilegible", "Ubicación:", "Causa:", "detalle", "#entrada-0"]) expect(tarjeta).toContain(texto);
         continue;
       }
-      const tabla = cuerpo.match(/<table class="tabla-tarjetas(?: [^"]*)?">[^]*?<\/table>/)?.[0];
+      const tabla = cuerpo.match(/<table class="tabla-tarjetas(?: [^"]*)?"[^>]*>[^]*?<\/table>/)?.[0];
       expect(tabla).toBeDefined();
-      const titulos = [...tabla!.matchAll(/<th>(.*?)<\/th>/g)].map(m => m[1]);
-      const etiquetas = [...tabla!.matchAll(/<td data-etiqueta="([^"]+)"/g)].map(m => m[1]);
+      const titulos = [...tabla!.matchAll(/<th\b[^>]*>(.*?)<\/th>/g)].map(m => m[1]);
+      const etiquetas = [...tabla!.matchAll(/<td[^>]*data-etiqueta="([^"]+)"/g)].map(m => m[1]);
       expect(etiquetas.length).toBeGreaterThan(0);
       etiquetas.forEach((etiqueta, indice) => expect(etiqueta).toBe(titulos[indice % titulos.length]));
     }
@@ -301,10 +314,10 @@ describe("T5-11 P-3 migas de pan y contexto", () => {
       const cuerpo = await recibida.text();
       expect(cuerpo).not.toContain('aria-label="Panel del proyecto"');
       expect(cuerpo).toContain('aria-label="Migas de pan"');
-      if (activa === "Valores") expect(cuerpo).toContain(nombreAnalisis(base.proyecto, sobre.instante));
-      else if (["Entradas", "Hallazgos"].includes(activa)) expect(cuerpo).toContain("Estado actual de las entradas de configuración (no es la foto guardada)");
-      else if (activa === "Agentes") expect(cuerpo).toContain("Análisis del");
-      else expect(cuerpo).toContain(`Foto guardada · ${nombreAnalisis(base.proyecto, sobre.instante)}`);
+      const fecha = nombreAnalisis(base.proyecto, sobre.instante).split(" · ")[1]!;
+      expect(cuerpo).toContain('class="contexto"');
+      if (["Entradas", "Hallazgos"].includes(activa)) expect(cuerpo).toMatch(/Estado actual[^<]*foto guardada/i);
+      else expect(cuerpo).toContain(fecha);
       if (respuesta === null) {
         expect(cuerpo).not.toContain('<script');
         expect(cuerpo).toContain('id="consultar-permiso"');
@@ -312,7 +325,7 @@ describe("T5-11 P-3 migas de pan y contexto", () => {
         expect(cuerpo).not.toContain("Consultar por CLI");
       } else expect(dato(cuerpo)).toEqual(respuesta);
       const selector = cuerpo.match(/<form id="seleccionar-agente"[^]*?<\/form>/)?.[0];
-      expect(selector === undefined).toBe(activa === "Agentes");
+      expect(selector === undefined).toBe(["Agentes", "Entradas", "Hallazgos"].includes(activa));
       if (respuesta === null) {
         const formulario = cuerpo.match(/<form id="consultar-permiso"[^]*?<\/form>/)![0];
         expect(formulario).toContain('<select name="agente" required>');
@@ -367,13 +380,20 @@ describe("Panel, diseño y coherencia visual", () => {
     .filter(([, selectores]) => selectores!.split(",").some(s => s.trim() === selector)).map(m => m[2]).join("\n");
   const reglaCss = (selector: string) => css(selector);
 
-  test("T5-21 F-1 selector compacto junto al titulo en todas las vistas", async () => {
+  test("T5-21 F-1 selector compacto junto al titulo en vistas de agente y omitido en entradas/hallazgos", async () => {
     const contextoF1 = { idResolucion: "7", agente: "build", agentes: agentes.agentes };
     const reglasF1: RespuestaReglas = { ...base, agente: "build", cadena: [], ejesParciales: [], advertencias: [], matriz: { sujetos: [], motivos: [], noObservados: [], filas: [] } };
-    for (const pagina of [paginaPermiso(permiso, "7", contextoF1), paginaConsultasPermiso(agentes, contextoF1), paginaEntradas(base, contextoF1), paginaHallazgos(hallazgos, contextoF1), paginaReglas(reglasF1, "7", contextoF1)]) {
+    for (const pagina of [paginaPermiso(permiso, "7", contextoF1), paginaConsultasPermiso(agentes, contextoF1), paginaReglas(reglasF1, "7", contextoF1)]) {
       const s = await pagina.text();
       expect(s).toMatch(/class="barra-agente">\s*<h1>[^]*?<\/h1>\s*<form id="seleccionar-agente"[^]*?<\/form>\s*<\/div>/);
+      expect(s).toContain("Cambiar de agente");
       for (const form of s.matchAll(/<form\b[^]*?<\/form>/g)) expect(form[0].match(/<form\b/g)).toHaveLength(1);
+    }
+    for (const pagina of [paginaEntradas(base, contextoF1), paginaHallazgos(hallazgos, contextoF1)]) {
+      const s = await pagina.text();
+      expect(s).not.toContain('id="seleccionar-agente"');
+      expect(s).not.toContain('name="agente"');
+      expect(s).not.toContain('class="barra-agente"');
     }
   });
 
@@ -388,25 +408,30 @@ describe("Panel, diseño y coherencia visual", () => {
       resumen: { cambiadas: 0, agregadas: 0, quitadas: 0, sinCambio: 12 }, comparaciones: [] };
     const estadoZ7 = { esquema: 2 as const, versionRige, almacen: { ruta: "/temporal/rige.db", versionEsquema: 2 } };
 
-    const paginas = [paginaEntradas(base, contextoZ7),
-      paginaHallazgos({ ...base, hallazgos: [], incompleta: false, motivos: [], resumen: { elementos: null, hallazgos: conteosHallazgos } }, contextoZ7),
-      paginaConsultasPermiso(agentes, contextoZ7), paginaReglas(reglasZ7, "7", contextoZ7),
+    const paginasConSelector = [paginaConsultasPermiso(agentes, contextoZ7), paginaReglas(reglasZ7, "7", contextoZ7),
       paginaPermiso({ ...base, agente: "build", consulta: { sujeto: "read", objetivo: ".env", objetivoEvaluado: ".env", forma: "sujeto" }, decision: null,
         motivoSinDecision: "ninguna", determinante: null, desplazadas: [], nativaAnulada: null, advertencias: [], cadena: [], explicacion: [], porDefecto: true }, "7", contextoZ7)];
-    for (const pagina of paginas) {
+    const paginasActuales = [paginaEntradas(base, contextoZ7),
+      paginaHallazgos({ ...base, hallazgos: [], incompleta: false, motivos: [], resumen: { elementos: null, hallazgos: conteosHallazgos } }, contextoZ7)];
+    for (const pagina of [...paginasConSelector, ...paginasActuales]) {
       const cuerpo = await pagina.text();
       const cabecera = cuerpo.match(/<(?:section|div)[^>]*class="cabecera-pagina"[^>]*>([^]*?<\/details>)<\/(?:section|div)>/);
       expect(cabecera).not.toBeNull();
       expect(cabecera![1]).toContain("<h1>");
       expect(cabecera![1]).toContain("proyecto");
-      const selector = cuerpo.includes('id="seleccionar-agente"') ? 'id="seleccionar-agente"' : 'id="consultar-permiso"';
-      expect(cabecera![1]).toContain(selector);
+      expect(cabecera![1]).toContain('class="contexto"');
+      if (paginasConSelector.includes(pagina)) {
+        const selector = cuerpo.includes('id="seleccionar-agente"') ? 'id="seleccionar-agente"' : 'id="consultar-permiso"';
+        expect(cabecera![1]).toContain(selector);
+      } else {
+        expect(cuerpo).not.toContain('id="seleccionar-agente"');
+      }
       expect(cuerpo).not.toMatch(/style=|<style\b|<script(?! type="application\/json")/);
     }
     for (const pagina of [paginaInicio(estadoZ7, undefined, new Date("2026-11-11T12:00:00Z")), paginaComparacion(comparacionZ7), paginaErrorUso({ codigo: "proyecto-inexistente", mensaje: "No existe" })]) {
       const cuerpo = await pagina.text();
       expect(cuerpo).toContain('href="/estilos.css"');
-      expect(cuerpo.match(/<h1>/g)).toHaveLength(1);
+      expect(cuerpo.match(/<h1\b[^>]*>/g)).toHaveLength(1);
     }
     expect(css(".cabecera-pagina")).toMatch(/margin-bottom:\s*2rem/);
     for (const selector of ["h1", ".cabecera-pagina h1", ".pagina-error h1"])
@@ -463,5 +488,70 @@ describe("Panel, diseño y coherencia visual", () => {
     expect(textos.fechaRelativa(new Date(2025, 11, 30, 10, 42).toISOString(), hoy)).toBe("30/12/2025 10:42");
     expect(textos.fechaRelativa(new Date(2026, 0, 2, 10, 42).toISOString(), hoy)).toBe("02/01/2026 10:42");
     expect(() => textos.fechaLocal("invalida")).toThrow();
+  });
+});
+
+describe("T6-14 navegación por análisis, aviso anterior, selector y contexto", () => {
+  test("N-1 barra de análisis en las siete vistas con un solo aria-current y ausente en comparar", async () => {
+    const reglasN1: RespuestaReglas = { ...base, agente: "build", cadena: [], ejesParciales: [], declaraciones: [], advertencias: [],
+      matriz: { sujetos: ["read"], motivos: [], noObservados: [], filas: [{ agente: "build", oculto: false, error: null, ejesParciales: [], declaraciones: [], advertencias: [], celdas: [] }] } };
+    const casosConReglas: Partial<CasosWeb> = { consultarReglas: () => ({ exito: true, valor: reglasN1 }) };
+    const rutas: readonly [string, string][] = [
+      ["/resoluciones/7", "Resumen"],
+      ["/resoluciones/7/agentes/build", "Agentes"],
+      ["/resoluciones/7/permisos?agente=build", "Permisos"],
+      ["/permiso?id=7&agente=build&herramienta=read&objetivo=.env", "Permisos"],
+      ["/reglas?id=7&agente=build", "Reglas"],
+      ["/entradas?proyecto=%2Fproyecto&id=7", "Entradas"],
+      ["/hallazgos?proyecto=%2Fproyecto&id=7", "Hallazgos"],
+    ];
+    for (const [ruta, activa] of rutas) {
+      const cuerpo = await solicitar(ruta, casosConReglas).text();
+      const barra = cuerpo.match(/<nav class="pestanas barra-analisis" aria-label="Vistas del análisis">([^]*?)<\/nav>/)?.[1];
+      expect(barra).toBeDefined();
+      for (const destino of ["Resumen", "Agentes", "Permisos", "Reglas", "Entradas", "Hallazgos"]) {
+        expect(barra).toContain(`>${destino}</a>`);
+      }
+      expect(barra).not.toContain("Historial");
+      expect(barra).not.toContain("#historia");
+      const actuales = [...barra!.matchAll(/aria-current="page">([^<]+)<\/a>/g)].map(m => m[1]);
+      expect(actuales).toEqual([activa]);
+    }
+    const fotoComparar = { id: 1, instante: sobre.instante, entradas: [], resumenEntradas: "", noComparables: [], motivosAgentes: [], reglas: {} };
+    const compararHtml = await solicitar("/comparar?desde=1&hasta=2", {
+      compararResoluciones: () => ({ exito: true, valor: { esquema: 2, proyecto: base.proyecto, desde: fotoComparar, hasta: { ...fotoComparar, id: 2 },
+        agentes: { agregados: [], quitados: [], comunes: ["build"], inciertos: [] }, parcial: false, sustituciones: "solo-representacion-protegida",
+        resumen: { cambiadas: 0, agregadas: 0, quitadas: 0, sinCambio: 0 }, comparaciones: [] } }),
+    }).text();
+    expect(compararHtml).not.toContain('barra-analisis');
+  });
+
+  test("N-3 aviso cuando el análisis visto no es el más reciente y ausencia en el último", async () => {
+    const sobreAnterior = { id: 7, instante: "2026-11-10T12:00:00Z", anteriores: [
+      { id: 9, instante: "2026-11-11T12:00:00Z", resumenEntradas: "b".repeat(64) },
+      { id: 7, instante: "2026-11-10T12:00:00Z", resumenEntradas: "a".repeat(64) },
+    ] };
+    const reglasN3: RespuestaReglas = { ...base, agente: "build", cadena: [], ejesParciales: [], declaraciones: [], advertencias: [],
+      matriz: { sujetos: ["read"], motivos: [], noObservados: [], filas: [] } };
+    const cambiosAnterior: Partial<CasosWeb> = {
+      consultarResolucion: (_id, agente) => ({ exito: true, valor: { respuesta: { ...valores, agente }, sobre: sobreAnterior } }),
+      consultarReglas: () => ({ exito: true, valor: reglasN3 }),
+    };
+    for (const ruta of [
+      "/resoluciones/7",
+      "/resoluciones/7/agentes/build",
+      "/resoluciones/7/permisos?agente=build",
+      "/permiso?id=7&agente=build&herramienta=read&objetivo=.env",
+      "/reglas?id=7&agente=build",
+    ]) {
+      const cuerpo = await solicitar(ruta, cambiosAnterior).text();
+      expect(cuerpo).toContain("Estás viendo un análisis anterior.");
+      expect(cuerpo).toContain('href="/resoluciones/9"');
+    }
+    const sobreUltimo = { id: 9, instante: "2026-11-11T12:00:00Z", anteriores: sobreAnterior.anteriores };
+    const ultimo = await solicitar("/resoluciones/9", {
+      consultarResolucion: (_id, agente) => ({ exito: true, valor: { respuesta: { ...valores, agente }, sobre: sobreUltimo } }),
+    }).text();
+    expect(ultimo).not.toContain("Estás viendo un análisis anterior.");
   });
 });
