@@ -1,6 +1,6 @@
 # ADR-113 — Interfaz web: recorrido por proyecto y sistema visual sobrio
 
-- Estado: propuesto
+- Estado: aceptado (13/11/2026), con las modificaciones del 13/11
 - Fecha: 11/11/2026
 - Reemplaza: la parte de diseño visual y de navegación de ADR-110 (se conserva E-A: estilos locales en `/estilos.css` y CSP `style-src 'self'`)
 - Capítulos afectados: IX (interfaz), XIII (inventario), manual §6 y §8
@@ -49,7 +49,7 @@ N-A, I-A, B-A, V-A, L-A, S-A y T-A.
 
 ### Decisión del autor
 
-[Pendiente: aceptación formal. El autor aceptó las recomendaciones N a T y autorizó su implementación en la sesión del 11/11/2026 («dale acepto todo»).]
+Aceptado por el autor el 13/11/2026, junto con la primera y la segunda modificación del 13/11 («acepto todo»). En la sesión del 11/11/2026 ya había aceptado las recomendaciones N a T y autorizado su implementación.
 
 ### Consecuencias
 
@@ -74,3 +74,19 @@ Origen: crítica externa de la web y de la CLI con Claude Fable 5.2, del 12/11/2
 3. **Barra de navegación por análisis:** Resumen · Agentes · Permisos · Reglas · Entradas · Hallazgos · Historial, con `aria-current`. El Historial sale del plegado y pasa a sección propia.
 
 **Condición que la invalidaría:** que algún par de colores no alcance 4,5:1 de contraste en claro o en oscuro. Lo verifica `estilos.test.ts`.
+
+### Segunda modificación propuesta (13/11/2026, a pedido del autor)
+
+Origen: revisión de la web por el autor el 13/11/2026. En modo oscuro la interfaz se veía gris sobre gris y el color quedaba reducido a insignias chicas. El autor eligió:
+
+- **identidad azul petróleo**, en lugar del gris neutro;
+- **selector de tema** en la cabecera;
+- **rediseño de todo el recorrido.**
+
+Reemplaza el punto «fondos neutros» de este ADR y de la modificación anterior. Fichas T6-21 a T6-23.
+
+1. **Color de marca.** Azul petróleo en la barra superior, la pestaña activa y los botones primarios. Los fondos llevan un tinte azulado suave (en oscuro, azul pizarra) en lugar de gris puro. El color con significado (permitida, pregunta, denegada, rige, declarado, nativo, parcial) se conserva y gana presencia: celdas de la matriz rellenas, bordes de color por origen e insignias rellenas.
+2. **Selector de tema sin JavaScript.** Ofrece Sistema · Claro · Oscuro. Es un enlace `GET /tema?valor=…&volver=…` que guarda la preferencia en una cookie de la propia RIGE y redirige a una ruta local. No escribe en el almacén ni en la configuración analizada, y mantiene solo GET (RNF-09) y la CSP.
+3. **Recorrido.** Tabla de valores simplificada: no repite el valor que rige, la explicación sale de la celda y la procedencia va como etiqueta de archivo coloreada por origen. Inicio, resumen y matriz de permisos pasan a un diseño más visual.
+
+**Condición que la invalidaría:** que algún par de texto y fondo no alcance 4,5:1 de contraste en cualquiera de los tres temas, o que el selector necesite JavaScript.

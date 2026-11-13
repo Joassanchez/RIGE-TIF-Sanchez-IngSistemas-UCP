@@ -1,6 +1,6 @@
 # ADR-116 — `hallazgos --estricto` con código 3 e historial de análisis desde la CLI
 
-- Estado: propuesto
+- Estado: aceptado (13/11/2026), con las modificaciones del 13/11
 - Fecha: 13/11/2026
 - Capítulos afectados: IX; XIII; manual §6; `src/AGENTS.md` §5 (lo edita el autor)
 - Origen: crítica externa de `src/` del 12-13/11/2026, hallazgos CLI-16 y CLI-08; ficha T6-19. Precisa ADR-058 (códigos de salida) y ADR-114 (CLI legible).
@@ -34,7 +34,7 @@
 
 ### Decisión del autor
 
-[Pendiente]
+Aceptado por el autor el 13/11/2026 («acepto todo»), después de revisar la web y la CLI implementadas.
 
 ### Consecuencias
 

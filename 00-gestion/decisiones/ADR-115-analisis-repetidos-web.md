@@ -1,6 +1,6 @@
 # ADR-115 — La web no guarda un análisis repetido si las entradas no cambiaron
 
-- Estado: propuesto
+- Estado: aceptado (13/11/2026), con las modificaciones del 13/11
 - Fecha: 13/11/2026
 - Capítulos afectados: IX; XIII; manual §6
 - Origen: crítica externa de `src/` del 12-13/11/2026, hallazgo WEB-18; ficha T6-16
@@ -35,7 +35,7 @@ La prueba de RF-17 CA-3 pasa a cambiar un archivo en cada vuelta. Así se siguen
 
 ### Decisión del autor
 
-[Pendiente]
+Aceptado por el autor el 13/11/2026 («acepto todo»), después de revisar la web y la CLI implementadas.
 
 ### Consecuencias
 

@@ -69,6 +69,7 @@ Va sin agentes reales: no gasta cuota de medición. Da validez al resultado: la 
 - [ ] **Autor:** prueba del manual en otra máquina, por otra persona (AE4-05). Va **antes** de la etiqueta: cada falla es un cambio del manual.
 
 - [x] Refactor de cierre de `src/` (T5-28 a T5-37, 12/11/2026, rama `refactor-src`; AE4-35). **Autor:** commits, unión a `main` y CI.
+- [x] Mejoras de `src/` tras la crítica externa con Claude Fable 5.2 (T6-01 a T6-24, 13/11/2026; ADR-113, ADR-115 y ADR-116 aceptados). Fidelidad con OpenCode (cinco divergencias corregidas, escenarios `v6-*` y 37 referencias en `ok`), CLI y rediseño web. **Autor:** rama `mejoras-src`, commits, unión a `main` y CI. Mejora visual de la web registrada como trabajo futuro.
 
 ### B4 · Etiqueta
 
